@@ -15,13 +15,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton
+  IconButton,
+  CircularProgress,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
+import { authService } from '../services/auth';
 
 const featureItems = [
   {
@@ -70,30 +74,101 @@ const galleryImages = [
 const HomePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
+    // Reset form state when opening the dialog
+    setEmail('');
+    setPassword('');
+    setUsername('');
+    setError(null);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleEmailSignup = () => {
-    // Handle email signup logic here
-    console.log('Email signup:', email);
-    handleClose();
-    // Redirect to payment page after signup
-    navigate('/payment');
+  const showSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
   };
 
-  const handleGoogleSignup = () => {
-    // Handle Google signup logic here
-    console.log('Google signup');
-    handleClose();
-    // Redirect to payment page after signup
-    navigate('/payment');
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleEmailSignup = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      if (!email || !password || !username) {
+        setError('Please fill in all required fields');
+        setIsLoading(false);
+        return;
+      }
+
+      // Call signup API using auth service
+      const response = await authService.signupWithEmail(email, password, username);
+      
+      // Store authentication data
+      authService.storeAuthData(response);
+
+      setIsLoading(false);
+      handleClose();
+      showSnackbar('Account created successfully! Please check your email to verify your account.');
+      
+      // Redirect to payment page after signup
+      navigate('/payment');
+    } catch (error: any) {
+      setIsLoading(false);
+      if (error.response) {
+        setError(error.response.data.error || 'Signup failed. Please try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Get Google ID token
+      const idToken = await authService.signInWithGoogle();
+      
+      // Send token to backend
+      const response = await authService.loginWithGoogle(idToken);
+      
+      // Store authentication data
+      authService.storeAuthData(response);
+      
+      setIsLoading(false);
+      handleClose();
+      showSnackbar('Signed in with Google successfully!');
+      
+      // Redirect to payment page after signup
+      navigate('/payment');
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error('Google sign-in error:', error);
+      
+      if (error.error === 'popup_closed_by_user') {
+        setError('Google sign-in was cancelled. Please try again.');
+      } else if (error.response) {
+        setError(error.response.data.error || 'Google sign-in failed. Please try again.');
+      } else {
+        setError('Google sign-in failed. Please try again or use email signup.');
+      }
+    }
   };
 
   return (
@@ -179,8 +254,24 @@ const HomePage: React.FC = () => {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
             <TextField
               autoFocus
+              margin="dense"
+              id="username"
+              label="Username"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
               margin="dense"
               id="email"
               label="Email Address"
@@ -189,6 +280,17 @@ const HomePage: React.FC = () => {
               variant="outlined"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              margin="dense"
+              id="password"
+              label="Password"
+              type="password"
+              fullWidth
+              variant="outlined"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               sx={{ mb: 3 }}
             />
             <Button 
@@ -196,21 +298,35 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary"
               onClick={handleEmailSignup}
+              disabled={isLoading}
               sx={{ mb: 2 }}
             >
-              Sign up with Email
+              {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
             </Button>
             <Button 
               fullWidth 
               variant="outlined" 
               startIcon={<GoogleIcon />}
               onClick={handleGoogleSignup}
+              disabled={isLoading}
             >
               Sign up with Google
             </Button>
           </Box>
         </DialogContent>
       </Dialog>
+      
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       
       {/* Gallery Preview */}
       <Container maxWidth="lg" sx={{ mt: -6, position: 'relative', zIndex: 1 }}>

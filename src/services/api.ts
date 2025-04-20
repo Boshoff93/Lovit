@@ -3,21 +3,11 @@ import { Photo, TrainingModel, GeneratedImage, ApiResponse } from '../types';
 
 // In a real app, this would come from environment variables
 const API_URL = 'http://localhost:3001/api';
-const FAL_API_KEY = 'your-fal-api-key';
 
 // Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// FAL.ai specific endpoints
-const falApi = axios.create({
-  baseURL: 'https://api.fal.ai',
-  headers: {
-    'Authorization': `Key ${FAL_API_KEY}`,
     'Content-Type': 'application/json',
   },
 });

@@ -10,6 +10,8 @@ import HomePage from './pages/HomePage';
 import AppPage from './pages/AppPage';
 import AccountPage from './pages/AccountPage';
 import PaymentPage from './pages/PaymentPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
+import ResendVerificationPage from './pages/ResendVerificationPage';
 
 // Route guard to check premium membership
 const RequirePremium = ({ children }: { children: React.ReactNode }) => {
@@ -69,6 +71,12 @@ function App() {
             </Layout>
           </RequirePremium>
         } />
+        
+        {/* Verify email page */}
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        
+        {/* Resend verification page */}
+        <Route path="/resend-verification" element={<ResendVerificationPage />} />
       </Routes>
     </Router>
   );
