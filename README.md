@@ -1,46 +1,89 @@
-# Getting Started with Create React App
+# Lovit - AI-Generated Fashion Photo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Lovit is a React application that allows users to upload their photos, train a LoRA model using FAL.ai, and generate images of themselves wearing different outfits and styles.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Photo uploading and management
+- Integration with FAL.ai for model training
+- Image generation with custom prompts
+- Gallery to view and manage generated images
+- Responsive design
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Node.js 14+ and npm
+- FAL.ai API key
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone the repository:
+   ```
+   git clone <your-repo-url>
+   cd lovit
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-### `npm run build`
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following:
+   ```
+   REACT_APP_API_URL=http://your-backend-api-url
+   REACT_APP_FAL_API_KEY=your-fal-api-key
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Development
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To start the development server:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+npm start
+```
 
-### `npm run eject`
+This will run the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Building for Production
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To build the app for production:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+This builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## Learn More
+## Backend Requirements
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This frontend application requires a backend API with the following endpoints:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `/api/photos/upload` - POST - Upload photos
+- `/api/photos` - GET - Get all uploaded photos
+- `/api/models/train` - POST - Train a new model
+- `/api/models` - GET - Get all models
+- `/api/models/:id/status` - GET - Get model training status
+- `/api/images/generate` - POST - Generate a new image
+- `/api/images` - GET - Get all generated images
+
+## FAL.ai Integration
+
+This application uses FAL.ai's API for LoRA model training and image generation. You need to obtain an API key from FAL.ai to use these features.
+
+## Technologies Used
+
+- React
+- TypeScript
+- Material-UI
+- Axios
+- React Router
+- FAL.ai API
+
+## Note on Grid Issues
+
+There are currently some TypeScript issues with the Material UI Grid component that may cause linting errors. These do not affect the functionality of the application but should be resolved in future updates.
+
+## License
+
+MIT
