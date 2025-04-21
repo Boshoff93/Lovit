@@ -27,7 +27,10 @@ import {
   Checkbox,
   Badge,
   Stack,
-  useMediaQuery
+  useMediaQuery,
+  Alert,
+  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -65,6 +68,9 @@ interface UserProfile {
 
 // Responsive drawer width
 const drawerWidth = 360;
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const MIN_REQUIRED_IMAGES = 10;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -149,6 +155,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [open, setOpen] = useState(!isMobile);
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   
   // Update drawer state when screen size changes
   useEffect(() => {
@@ -180,6 +196,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [uploadedCount, setUploadedCount] = useState(0);
+  const [modelId, setModelId] = useState<string | null>(null);
   
   // Prompt creation state
   const [promptData, setPromptData] = useState<PromptData>({
@@ -352,13 +369,106 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
   
   // Submit handlers
-  const handleCreateModel = () => {
-    console.log('Model data:', userProfile);
-    console.log('Uploaded images:', uploadedImages);
-    // Here you would normally send this data to your backend
-    navigate('/models');
-    if (isMobile) {
-      setOpen(false);
+  const handleCreateModel = async () => {
+    // Validate we have at least 10 images
+    if (uploadedImages.length < MIN_REQUIRED_IMAGES) {
+      setNotification({
+        open: true,
+        message: `Please upload at least ${MIN_REQUIRED_IMAGES} images for better model training`,
+        severity: 'error'
+      });
+      return;
+    }
+
+    // Validate profile data is complete
+    if (!userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
+        !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
+        !userProfile.eyeColor || !userProfile.bodyType) {
+      setNotification({
+        open: true,
+        message: 'Please fill in all required model details',
+        severity: 'error'
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      // Get auth token
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
+        setNotification({
+          open: true,
+          message: 'Authentication required. Please log in again.',
+          severity: 'error'
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Create form data with all images and profile data
+      const formData = new FormData();
+      uploadedImages.forEach(image => {
+        formData.append('images', image);
+      });
+      formData.append('profileData', JSON.stringify(userProfile));
+
+      // Send to API
+      const response = await fetch(`${API_URL}/api/train-model`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to train model');
+      }
+
+      const data = await response.json();
+      setModelId(data.modelId);
+
+      setNotification({
+        open: true,
+        message: `Model training started successfully! Model ID: ${data.modelId}`,
+        severity: 'success'
+      });
+
+      // Reset form
+      setUserProfile({
+        name: '',
+        gender: '',
+        age: 25,
+        height: '',
+        ethnicity: '',
+        hairColor: '',
+        hairStyle: '',
+        eyeColor: '',
+        bodyType: '',
+        breastSize: ''
+      });
+      
+      setUploadedImages([]);
+      setUploadedCount(0);
+      
+      // Navigate to dashboard
+      navigate('/dashboard');
+      if (isMobile) {
+        setOpen(false);
+      }
+    } catch (error) {
+      console.error('Error creating model:', error);
+      setNotification({
+        open: true,
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -371,6 +481,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   };
 
+  const handleCloseNotification = () => {
+    setNotification(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
+  
   const isPathActive = (path: string) => {
     return location.pathname === path;
   };
@@ -628,7 +745,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     
                     {/* Image Upload - Simplified */}
                     <Typography variant="body2" gutterBottom>
-                      Upload 10-20 Photos
+                      Upload {MIN_REQUIRED_IMAGES}+ Photos
                     </Typography>
                     
                     <Paper 
@@ -682,7 +799,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       onClick={handleFileButtonClick}
                       fullWidth
                     >
-                      Select Photos ({uploadedCount})
+                      Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}+)
                     </Button>
                     
                     {uploadedImages.length > 0 && (
@@ -734,12 +851,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       variant="contained"
                       color="primary"
                       fullWidth
-                      disabled={!userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
+                      disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
                                 !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-                                !userProfile.eyeColor || !userProfile.bodyType || uploadedImages.length === 0}
+                                !userProfile.eyeColor || !userProfile.bodyType}
                       onClick={handleCreateModel}
                     >
-                      Create Model
+                      {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Model'}
                     </Button>
                   </Stack>
                 </Box>
@@ -902,6 +1019,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Box>
         </Box>
       </Main>
+      
+      {/* Loading indicator */}
+      {loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
+          }}
+        >
+          <CircularProgress color="primary" />
+        </Box>
+      )}
+      
+      {/* Notification */}
+      <Snackbar 
+        open={notification.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseNotification} severity={notification.severity}>
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

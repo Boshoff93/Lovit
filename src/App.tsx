@@ -54,24 +54,6 @@ function App() {
           </RequirePremium>
         } />
         
-        {/* Gallery page - protected route */}
-        <Route path="/gallery" element={
-          <RequirePremium>
-            <Layout>
-              <AppPage />
-            </Layout>
-          </RequirePremium>
-        } />
-        
-        {/* Models page - protected route */}
-        <Route path="/models" element={
-          <RequirePremium>
-            <Layout>
-              <AppPage />
-            </Layout>
-          </RequirePremium>
-        } />
-        
         {/* Verify email page */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         

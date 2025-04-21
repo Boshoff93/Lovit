@@ -299,7 +299,7 @@ const HomePage: React.FC = () => {
               color="primary"
               onClick={handleEmailSignup}
               disabled={isLoading}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, py: 1.5 }}
             >
               {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
             </Button>
@@ -309,6 +309,7 @@ const HomePage: React.FC = () => {
               startIcon={<GoogleIcon />}
               onClick={handleGoogleSignup}
               disabled={isLoading}
+              sx={{ py: 1.5 }}
             >
               Sign up with Google
             </Button>
