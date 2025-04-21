@@ -75,6 +75,7 @@ const HomePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +88,7 @@ const HomePage: React.FC = () => {
     // Reset form state when opening the dialog
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setUsername('');
     setError(null);
   };
@@ -111,6 +113,12 @@ const HomePage: React.FC = () => {
 
       if (!email || !password || !username) {
         setError('Please fill in all required fields');
+        setIsLoading(false);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
         setIsLoading(false);
         return;
       }
@@ -291,6 +299,17 @@ const HomePage: React.FC = () => {
               variant="outlined"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            <TextField
+              margin="dense"
+              id="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              fullWidth
+              variant="outlined"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               sx={{ mb: 3 }}
             />
             <Button 
