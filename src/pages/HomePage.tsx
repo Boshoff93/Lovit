@@ -132,7 +132,7 @@ const HomePage: React.FC = () => {
         setIsLoading(false);
         return;
       }
-      console.log("got here 1")
+      console.log("got here 3")
       // Password validation
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
       if (!passwordRegex.test(password)) {
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
       // Call signup API using auth service
       console.log("got here 3")
       const response = await authService.signupWithEmail(email, password, username);
-      console.log("response.data")
+      console.log(response)
       
       // Store authentication data
       authService.storeAuthData(response);

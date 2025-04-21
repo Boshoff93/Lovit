@@ -69,7 +69,7 @@ interface UserProfile {
 // Responsive drawer width
 const drawerWidth = 360;
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://trylovit.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 const MIN_REQUIRED_IMAGES = 10;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
