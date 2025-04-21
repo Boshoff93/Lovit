@@ -141,6 +141,7 @@ const HomePage: React.FC = () => {
 
       // Call signup API using auth service
       const response = await authService.signupWithEmail(email, password, username);
+      console.log(response)
       
       // Store authentication data
       authService.storeAuthData(response);
