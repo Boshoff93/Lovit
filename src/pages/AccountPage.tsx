@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Box, 
   Container,
@@ -7,10 +7,32 @@ import {
   TextField,
   Button,
   Divider,
-  Avatar
+  Avatar,
+  Chip
 } from '@mui/material';
+import { useAuth } from '../hooks/useAuth';
 
 const AccountPage: React.FC = () => {
+  const { user, subscription, getUserSubscription, createStripePortal } = useAuth();
+
+  useEffect(() => {
+    // Fetch subscription data when component mounts
+    getUserSubscription();
+  }, [getUserSubscription]);
+
+  const handleManageSubscription = async () => {
+    try {
+      await createStripePortal();
+    } catch (error) {
+      console.error('Failed to open subscription portal:', error);
+    }
+  };
+
+  // Format subscription tier for display
+  const formatTier = (tier: string) => {
+    return tier.charAt(0).toUpperCase() + tier.slice(1);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
@@ -41,8 +63,17 @@ const AccountPage: React.FC = () => {
                   mb: 2,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}
-                alt="User Profile"
+                alt={user?.username || 'User Profile'}
                 src="/lovit.jpeg"
+              />
+              <Typography variant="h6" gutterBottom>
+                {user?.username || 'Loading...'}
+              </Typography>
+              <Chip 
+                label={user?.isVerified ? 'Verified' : 'Unverified'} 
+                color={user?.isVerified ? 'success' : 'warning'}
+                size="small"
+                sx={{ mb: 1 }}
               />
             </Box>
             
@@ -50,15 +81,16 @@ const AccountPage: React.FC = () => {
             
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Account Status
+                Subscription Plan
               </Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Active - Premium Plan
+                {formatTier(subscription?.tier || 'free')} - {subscription?.status || 'Active'}
               </Typography>
               <Button 
                 variant="outlined" 
                 size="small" 
                 sx={{ mt: 1 }}
+                onClick={handleManageSubscription}
               >
                 Manage Subscription
               </Button>
@@ -90,31 +122,32 @@ const AccountPage: React.FC = () => {
               <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)' } }}>
                 <TextField 
                   fullWidth 
-                  label="First Name" 
-                  defaultValue="John" 
-                  size="small" 
+                  label="Username" 
+                  value={user?.username || ''}
+                  size="small"
+                  disabled
                 />
               </Box>
               <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)' } }}>
                 <TextField 
                   fullWidth 
-                  label="Last Name" 
-                  defaultValue="Smith" 
-                  size="small" 
-                />
-              </Box>
-              <Box sx={{ width: '100%' }}>
-                <TextField 
-                  fullWidth 
                   label="Email Address" 
-                  defaultValue="john.smith@example.com" 
-                  size="small" 
+                  value={user?.email || ''}
+                  size="small"
+                  disabled
                 />
               </Box>
               <Box sx={{ width: '100%' }}>
-                <Button variant="contained" sx={{ mt: 2 }}>
+                <Button 
+                  variant="contained" 
+                  sx={{ mt: 2 }}
+                  disabled
+                >
                   Save Changes
                 </Button>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                  Contact support to update your account information
+                </Typography>
               </Box>
             </Box>
           </Paper>
