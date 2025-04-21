@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
 // Layout
@@ -17,6 +17,13 @@ import ResendVerificationPage from './pages/ResendVerificationPage';
 const RequirePremium = ({ children }: { children: React.ReactNode }) => {
   const isPremiumMember = localStorage.getItem('isPremiumMember') === 'true';
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isVerified = searchParams.get('verified') === 'true';
+
+  // If user is coming from email verification, allow access
+  if (isVerified) {
+    return <>{children}</>;
+  }
 
   if (!isPremiumMember) {
     // Redirect to payment page if not a premium member

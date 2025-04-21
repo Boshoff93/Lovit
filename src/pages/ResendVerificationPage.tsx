@@ -47,7 +47,7 @@ const ResendVerificationPage: React.FC = () => {
   };
 
   const handleGoToLogin = () => {
-    navigate('/login');
+    navigate('/');
   };
 
   return (

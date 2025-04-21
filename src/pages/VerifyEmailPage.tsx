@@ -21,8 +21,16 @@ const VerifyEmailPage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
+  const verified = searchParams.get('verified');
 
   useEffect(() => {
+    // Check if this is a redirect from successful backend verification
+    if (verified === 'true') {
+      setStatus('success');
+      setMessage('Your email has been successfully verified!');
+      return;
+    }
+
     const verifyEmail = async () => {
       if (!token || !userId) {
         setStatus('error');
@@ -45,10 +53,14 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyEmail();
-  }, [token, userId]);
+  }, [token, userId, verified]);
 
-  const handleGoToLogin = () => {
-    navigate('/login');
+  const handleGoToHome = () => {
+    navigate('/');
+  };
+
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
   };
 
   const handleResendVerification = () => {
@@ -91,15 +103,15 @@ const VerifyEmailPage: React.FC = () => {
                 {message}
               </Typography>
               <Typography color="text.secondary" align="center" paragraph>
-                You can now log in to your account and enjoy all the features of Lovit.
+                You can now access all the features of Lovit.
               </Typography>
               <Button 
                 variant="contained" 
                 color="primary" 
-                onClick={handleGoToLogin}
+                onClick={handleGoToDashboard}
                 sx={{ mt: 2 }}
               >
-                Go to Login
+                Go to Dashboard
               </Button>
             </>
           )}
@@ -128,10 +140,10 @@ const VerifyEmailPage: React.FC = () => {
                 <Link 
                   component="button" 
                   variant="body2" 
-                  onClick={handleGoToLogin}
+                  onClick={handleGoToHome}
                   underline="hover"
                 >
-                  Back to Login
+                  Back to Home
                 </Link>
               </Box>
             </>
