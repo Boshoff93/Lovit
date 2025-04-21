@@ -23,7 +23,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setPremiumStatus } from '../store/authSlice';
+import { setSubscription } from '../store/authSlice';
 
 interface PlanFeature {
   title: string;
@@ -118,7 +118,7 @@ const PaymentPage: React.FC = () => {
     // For now, just simulate a successful payment
     setTimeout(() => {
       // Set user as premium member in Redux
-      dispatch(setPremiumStatus(true));
+      dispatch(setSubscription({ tier: 'premium', status: 'active' }));
       navigate('/dashboard');
     }, 1000);
   };
