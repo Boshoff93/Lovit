@@ -120,8 +120,8 @@ export const useAuth = () => {
   // Check if user is authenticated
   const isAuthenticated = !!token;
   
-  // Check if user has a premium subscription (tier is not 'free')
-  const isPremiumMember = subscription.tier !== 'free';
+  // Check if user has a premium subscription (returns false if subscription is undefined or tier is 'free')
+  const isPremiumMember = subscription?.tier && subscription.tier !== 'free';
 
   return {
     user,
