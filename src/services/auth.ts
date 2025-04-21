@@ -143,8 +143,17 @@ export const authService = {
 
   // Store authentication data
   storeAuthData: (data: AuthResponse): void => {
-    localStorage.setItem('token', data.token);
+    // Set HTTP-only cookie with token instead of localStorage
+    document.cookie = `token=${data.token}; path=/; max-age=604800; SameSite=Strict; Secure`;
+    
+    // Still store non-sensitive user data in localStorage for easy access
     localStorage.setItem('user', JSON.stringify(data.user));
+  },
+
+  // Get token from cookies
+  getToken: (): string | null => {
+    const match = document.cookie.match(/token=([^;]+)/);
+    return match ? match[1] : null;
   },
 
   // Get current user
@@ -158,12 +167,13 @@ export const authService = {
 
   // Check if user is authenticated
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('token');
+    return !!authService.getToken();
   },
 
   // Logout
   logout: (): void => {
-    localStorage.removeItem('token');
+    // Clear the cookie by setting expired date
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure';
     localStorage.removeItem('user');
   }
 };
