@@ -50,6 +50,9 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PromptData } from '../types';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store/store';
+import { logout } from '../store/authSlice';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -151,6 +154,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch();
+  const { token } = useSelector((state: RootState) => state.auth);
   
   const [open, setOpen] = useState(!isMobile);
   const [modelOpen, setModelOpen] = useState(false);
@@ -395,9 +400,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLoading(true);
     
     try {
-      // Get auth token
-      const token = localStorage.getItem('auth_token');
-      
+      // Get auth token from Redux state instead of localStorage
       if (!token) {
         setNotification({
           open: true,
@@ -490,6 +493,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return location.pathname === path;
   };
 
+  // Update logout handler to use Redux logout
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBarStyled position="fixed" open={open}>
@@ -523,7 +532,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Button 
             color="inherit" 
             startIcon={<LogoutIcon />} 
-            onClick={() => navigate('/')}
+            onClick={handleLogout}
           >
             Logout
           </Button>

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { RootState } from './store/store';
 
 // Layout
 import Layout from './components/Layout';
@@ -13,20 +15,23 @@ import PaymentPage from './pages/PaymentPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import ResendVerificationPage from './pages/ResendVerificationPage';
 
-// Route guard to check premium membership
-const RequirePremium = ({ children }: { children: React.ReactNode }) => {
-  const isPremiumMember = localStorage.getItem('isPremiumMember') === 'true';
+// Route guard to check authentication and premium membership
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const { token, isPremiumMember, user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const isVerified = searchParams.get('verified') === 'true';
 
-  // If user is coming from email verification, allow access
-  if (isVerified) {
-    return <>{children}</>;
+  // Check if user is authenticated
+  if (!token) {
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
+  // Check if user is verified (using status from token/auth state)
+  if (user && !user.isVerified) {
+    return <Navigate to="/resend-verification" state={{ from: location }} replace />;
+  }
+
+  // Check if user is a premium member
   if (!isPremiumMember) {
-    // Redirect to payment page if not a premium member
     return <Navigate to="/payment" state={{ from: location }} replace />;
   }
 
@@ -45,20 +50,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-          <RequirePremium>
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
-          </RequirePremium>
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-          <RequirePremium>
+          <RequireAuth>
             <Layout>
               <AccountPage />
             </Layout>
-          </RequirePremium>
+          </RequireAuth>
         } />
         
         {/* Verify email page */}

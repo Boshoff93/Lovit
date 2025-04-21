@@ -27,7 +27,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
-import { authService } from '../services/auth';
+import { useAuth } from '../hooks/useAuth';
 
 const featureItems = [
   {
@@ -85,6 +85,7 @@ const HomePage: React.FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
   const navigate = useNavigate();
+  const { login, signup, googleLogin, user, isLoading: authLoading, error: authError, resendVerificationEmail, getGoogleIdToken } = useAuth();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -145,23 +146,16 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      // Call signup API using auth service
-      const response = await authService.signupWithEmail(email, password, username);
+      // Call signup using useAuth hook
+      await signup(email, password, username);
       
-      // Store authentication data
-      authService.storeAuthData(response);
-
       setIsLoading(false);
       handleClose();
       showSnackbar('Account created successfully! Please check your email to verify your account.');
     } catch (error: any) {
       setIsLoading(false);
-      if (error.response) {
-        setError(error.response.data.error || 'Signup failed. Please try again.');
-      } else {
-        console.log(error);
-        setError('Network error. Please check your connection and try again.');
-      }
+      // Use authError from useAuth hook if available
+      setError(authError || 'Signup failed. Please try again.');
     }
   };
 
@@ -170,28 +164,27 @@ const HomePage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
-      // Get Google ID token
-      const idToken = await authService.signInWithGoogle();
+      // Get Google ID token using the auth hook utility
+      const idToken = await getGoogleIdToken();
       
-      // Send token to backend
-      const response = await authService.loginWithGoogle(idToken);
-      
-      // Store authentication data
-      authService.storeAuthData(response);
+      // Use our Redux action through the useAuth hook
+      await googleLogin(idToken);
       
       setIsLoading(false);
       handleClose();
       showSnackbar('Signed in with Google successfully!');
+      
+      // Navigate to dashboard if authentication was successful
+      navigate('/dashboard');
     } catch (error: any) {
       setIsLoading(false);
       console.error('Google sign-in error:', error);
       
+      // Use authError from useAuth hook if available
       if (error.error === 'popup_closed_by_user') {
         setError('Google sign-in was cancelled. Please try again.');
-      } else if (error.response) {
-        setError(error.response.data.error || 'Google sign-in failed. Please try again.');
       } else {
-        setError('Google sign-in failed. Please try again or use email signup.');
+        setError(authError || 'Google sign-in failed. Please try again or use email signup.');
       }
     }
   };
@@ -207,20 +200,17 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      // Call login API using auth service
-      const response = await authService.loginWithEmail(email, password);
+      // Call login using our useAuth hook
+      await login(email, password);
       
-      // Store authentication data
-      authService.storeAuthData(response);
-
       setIsLoading(false);
       handleClose();
 
       // Check if user is verified
-      if (!response.user.isVerified) {
+      if (user && !user.isVerified) {
         // User is not verified, send verification email and show single notification
         try {
-          await authService.resendVerification(response.user.email);
+          await resendVerificationEmail(user.email);
           showSnackbar('Your email is not verified. A new verification email has been sent - please check your inbox.');
         } catch (err) {
           console.error('Failed to resend verification email:', err);
@@ -233,12 +223,8 @@ const HomePage: React.FC = () => {
       }
     } catch (error: any) {
       setIsLoading(false);
-      if (error.response) {
-        setError(error.response.data.error || 'Login failed. Please check your credentials.');
-      } else {
-        console.log(error);
-        setError('Network error. Please check your connection and try again.');
-      }
+      // Use authError from useAuth hook if available
+      setError(authError || 'Login failed. Please check your credentials.');
     }
   };
 

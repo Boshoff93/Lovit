@@ -22,6 +22,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setPremiumStatus } from '../store/authSlice';
 
 interface PlanFeature {
   title: string;
@@ -96,6 +98,7 @@ const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch();
 
   const handleToggleInterval = () => {
     setIsYearly(!isYearly);
@@ -111,12 +114,11 @@ const PaymentPage: React.FC = () => {
     // In a real application, redirect to payment processor
     console.log(`Processing payment for ${selectedPlan} plan (${isYearly ? 'yearly' : 'monthly'})`);
     
-    // After successful payment, redirect to dashboard
+    // After successful payment, update Redux state and redirect to dashboard
     // For now, just simulate a successful payment
     setTimeout(() => {
-      // Set user as premium member in your state management/context
-      localStorage.setItem('isPremiumMember', 'true');
-      localStorage.setItem('selectedPlan', selectedPlan);
+      // Set user as premium member in Redux
+      dispatch(setPremiumStatus(true));
       navigate('/dashboard');
     }, 1000);
   };

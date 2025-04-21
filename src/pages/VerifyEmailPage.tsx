@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { authService } from '../services/auth';
+import { useAuth } from '../hooks/useAuth';
 
 const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -22,6 +22,8 @@ const VerifyEmailPage: React.FC = () => {
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
   const verified = searchParams.get('verified');
+  
+  const { verifyUserEmail, isLoading, error } = useAuth();
 
   useEffect(() => {
     // Check if this is a redirect from successful backend verification
@@ -31,7 +33,7 @@ const VerifyEmailPage: React.FC = () => {
       return;
     }
 
-    const verifyEmail = async () => {
+    const verifyUserEmailAsync = async () => {
       if (!token || !userId) {
         setStatus('error');
         setMessage('Invalid verification link. Missing token or user ID. Please request a new one.');
@@ -39,21 +41,18 @@ const VerifyEmailPage: React.FC = () => {
       }
 
       try {
-        // Call the verify email endpoint with both token and userId
-        await authService.verifyEmail(token, userId);
+        // Use Redux through the useAuth hook to verify email
+        await verifyUserEmail(token, userId);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
       } catch (error: any) {
         setStatus('error');
-        setMessage(
-          error.response?.data?.error || 
-          'Failed to verify your email. The token may be expired or invalid.'
-        );
+        setMessage(error || 'Failed to verify your email. The token may be expired or invalid.');
       }
     };
 
-    verifyEmail();
-  }, [token, userId, verified]);
+    verifyUserEmailAsync();
+  }, [token, userId, verified, verifyUserEmail]);
 
   const handleGoToHome = () => {
     navigate('/');

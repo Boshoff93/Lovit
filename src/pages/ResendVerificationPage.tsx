@@ -12,37 +12,26 @@ import {
   Link
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
-import { authService } from '../services/auth';
+import { useAuth } from '../hooks/useAuth';
 
 const ResendVerificationPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { resendVerificationEmail, isLoading, error } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email) {
-      setError('Email is required');
-      return;
+      return; // The form validation will handle this
     }
 
     try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await authService.resendVerification(email);
+      await resendVerificationEmail(email);
       setSuccess(true);
-      setIsLoading(false);
     } catch (error: any) {
-      setIsLoading(false);
-      if (error.response?.status === 400) {
-        setError(error.response.data.error);
-      } else {
-        setError('An error occurred. Please try again later.');
-      }
+      // Error is handled by Redux and available through useAuth
     }
   };
 

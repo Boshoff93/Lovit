@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { Photo, TrainingModel, GeneratedImage, ApiResponse } from '../types';
+import { store } from '../store/store';
+import { createAuthenticatedRequest } from '../store/authSlice';
 
 // In a real app, this would come from environment variables
-const API_URL = 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
-// Create axios instance
+// Create a base axios instance
 const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: API_BASE_URL,
 });
 
 // Photo uploads
@@ -67,12 +66,79 @@ export const getGeneratedImages = async (): Promise<ApiResponse<GeneratedImage[]
   return response.data;
 };
 
-export default {
-  uploadPhotos,
-  getPhotos,
-  trainModel,
-  getModelStatus,
-  getModels,
-  generateImage,
-  getGeneratedImages,
-}; 
+// API service with methods for different endpoints
+export const apiService = {
+  // Function to get authenticated API instance
+  getAuthInstance: () => {
+    const state = store.getState();
+    const token = state.auth.token;
+    
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+    
+    return createAuthenticatedRequest(token);
+  },
+  
+  // Models
+  models: {
+    // Get all models for a user
+    getAll: async () => {
+      try {
+        const authApi = apiService.getAuthInstance();
+        const state = store.getState();
+        const userId = state.auth.user?.userId;
+        
+        if (!userId) {
+          throw new Error('User ID not found');
+        }
+        
+        const response = await authApi.get(`/api/users/${userId}/models`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    
+    // Get a specific model
+    getById: async (modelId: string) => {
+      try {
+        const authApi = apiService.getAuthInstance();
+        const state = store.getState();
+        const userId = state.auth.user?.userId;
+        
+        if (!userId) {
+          throw new Error('User ID not found');
+        }
+        
+        const response = await authApi.get(`/api/users/${userId}/models/${modelId}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    
+    // Train a new model (using FormData)
+    train: async (formData: FormData) => {
+      try {
+        const authApi = apiService.getAuthInstance();
+        const response = await authApi.post('/api/train-model', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  
+  // Other API endpoints can be added here
+  // For example:
+  // - user profile management
+  // - payment processing
+  // - image generation
+};
+
+export default apiService; 
