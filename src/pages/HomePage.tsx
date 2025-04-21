@@ -18,7 +18,9 @@ import {
   IconButton,
   CircularProgress,
   Alert,
-  Snackbar
+  Snackbar,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -81,6 +83,7 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [authTab, setAuthTab] = useState<number>(0);
   const navigate = useNavigate();
 
   const handleClickOpen = () => {
@@ -95,6 +98,11 @@ const HomePage: React.FC = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setAuthTab(newValue);
+    setError(null);
   };
 
   const showSnackbar = (message: string) => {
@@ -149,9 +157,6 @@ const HomePage: React.FC = () => {
       setIsLoading(false);
       handleClose();
       showSnackbar('Account created successfully! Please check your email to verify your account.');
-      
-      // Redirect to payment page after signup
-      navigate('/payment');
     } catch (error: any) {
       setIsLoading(false);
       if (error.response) {
@@ -193,6 +198,38 @@ const HomePage: React.FC = () => {
         setError(error.response.data.error || 'Google sign-in failed. Please try again.');
       } else {
         setError('Google sign-in failed. Please try again or use email signup.');
+      }
+    }
+  };
+
+  const handleEmailLogin = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      if (!email || !password) {
+        setError('Please enter both email and password');
+        setIsLoading(false);
+        return;
+      }
+
+      // Call login API using auth service
+      const response = await authService.loginWithEmail(email, password);
+      
+      // Store authentication data
+      authService.storeAuthData(response);
+
+      setIsLoading(false);
+      handleClose();
+      showSnackbar('Logged in successfully!');
+      navigate('/dashboard');
+    } catch (error: any) {
+      setIsLoading(false);
+      if (error.response) {
+        setError(error.response.data.error || 'Login failed. Please check your credentials.');
+      } else {
+        console.log(error);
+        setError('Network error. Please check your connection and try again.');
       }
     }
   };
@@ -262,10 +299,10 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
       
-      {/* Signup Dialog */}
+      {/* Auth Dialog */}
       <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
         <DialogTitle>
-          Sign Up for Lovit
+          {authTab === 0 ? 'Login to Lovit' : 'Sign Up for Lovit'}
           <IconButton
             aria-label="close"
             onClick={handleClose}
@@ -279,77 +316,135 @@ const HomePage: React.FC = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
+          <Tabs value={authTab} onChange={handleTabChange} variant="fullWidth" sx={{ mb: 2 }}>
+            <Tab label="Login" />
+            <Tab label="Sign Up" />
+          </Tabs>
+          
           <Box sx={{ mt: 2 }}>
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
                 {error}
               </Alert>
             )}
-            <TextField
-              autoFocus
-              margin="dense"
-              id="username"
-              label="Username"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="dense"
-              id="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="dense"
-              id="password"
-              label="Password"
-              type="password"
-              fullWidth
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{ mb: 3 }}
-            />
-            <TextField
-              margin="dense"
-              id="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              fullWidth
-              variant="outlined"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              sx={{ mb: 3 }}
-            />
-            <Button 
-              fullWidth 
-              variant="contained" 
-              color="primary"
-              onClick={handleEmailSignup}
-              disabled={isLoading}
-              sx={{ mb: 2, py: 1.5 }}
-            >
-              {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
-            </Button>
-            <Button 
-              fullWidth 
-              variant="outlined" 
-              startIcon={<GoogleIcon />}
-              onClick={handleGoogleSignup}
-              disabled={isLoading}
-              sx={{ py: 1.5 }}
-            >
-              Sign up with Google
-            </Button>
+            
+            {authTab === 0 ? (
+              // Login Form
+              <>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="email-login"
+                  label="Email Address"
+                  type="email"
+                  fullWidth
+                  variant="outlined"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  margin="dense"
+                  id="password-login"
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  variant="outlined"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
+                <Button 
+                  fullWidth 
+                  variant="contained" 
+                  color="primary"
+                  onClick={handleEmailLogin}
+                  disabled={isLoading}
+                  sx={{ mb: 2, py: 1.5 }}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : 'Login with Email'}
+                </Button>
+                <Button 
+                  fullWidth 
+                  variant="outlined" 
+                  startIcon={<GoogleIcon />}
+                  onClick={handleGoogleSignup}
+                  disabled={isLoading}
+                  sx={{ py: 1.5 }}
+                >
+                  Continue with Google
+                </Button>
+              </>
+            ) : (
+              // Sign Up Form
+              <>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="username"
+                  label="Username"
+                  type="text"
+                  fullWidth
+                  variant="outlined"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  margin="dense"
+                  id="email"
+                  label="Email Address"
+                  type="email"
+                  fullWidth
+                  variant="outlined"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  margin="dense"
+                  id="password"
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  variant="outlined"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
+                <TextField
+                  margin="dense"
+                  id="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  fullWidth
+                  variant="outlined"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
+                <Button 
+                  fullWidth 
+                  variant="contained" 
+                  color="primary"
+                  onClick={handleEmailSignup}
+                  disabled={isLoading}
+                  sx={{ mb: 2, py: 1.5 }}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
+                </Button>
+                <Button 
+                  fullWidth 
+                  variant="outlined" 
+                  startIcon={<GoogleIcon />}
+                  onClick={handleGoogleSignup}
+                  disabled={isLoading}
+                  sx={{ py: 1.5 }}
+                >
+                  Sign up with Google
+                </Button>
+              </>
+            )}
           </Box>
         </DialogContent>
       </Dialog>
