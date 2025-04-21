@@ -473,9 +473,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
   
   const handleGenerateImages = () => {
-    console.log('Generate images with:', promptData);
     // Here you would normally send this data to your backend
-    navigate('/gallery');
     if (isMobile) {
       setOpen(false);
     }
