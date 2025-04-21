@@ -185,9 +185,6 @@ const HomePage: React.FC = () => {
       setIsLoading(false);
       handleClose();
       showSnackbar('Signed in with Google successfully!');
-      
-      // Redirect to payment page after signup
-      navigate('/payment');
     } catch (error: any) {
       setIsLoading(false);
       console.error('Google sign-in error:', error);
