@@ -112,7 +112,23 @@ const HomePage: React.FC = () => {
       setError(null);
 
       if (!email || !password || !username) {
-        setError('Please fill in all required fields');
+        setError('Please fill in all fields');
+        setIsLoading(false);
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError('Please enter a valid email address');
+        setIsLoading(false);
+        return;
+      }
+
+      // Password validation
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        setError('Password must be at least 8 characters and include at least one capital letter, one number, and one special character');
         setIsLoading(false);
         return;
       }
@@ -140,6 +156,7 @@ const HomePage: React.FC = () => {
       if (error.response) {
         setError(error.response.data.error || 'Signup failed. Please try again.');
       } else {
+        console.log(error);
         setError('Network error. Please check your connection and try again.');
       }
     }

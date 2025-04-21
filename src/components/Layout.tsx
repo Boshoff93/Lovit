@@ -69,7 +69,7 @@ interface UserProfile {
 // Responsive drawer width
 const drawerWidth = 360;
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://trylovit.com';
 const MIN_REQUIRED_IMAGES = 10;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
@@ -383,10 +383,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Validate profile data is complete
     if (!userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
         !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-        !userProfile.eyeColor || !userProfile.bodyType) {
+        !userProfile.eyeColor) {
       setNotification({
         open: true,
-        message: 'Please fill in all required model details',
+        message: 'Please fill in all model details',
         severity: 'error'
       });
       return;
