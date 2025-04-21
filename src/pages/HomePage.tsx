@@ -157,11 +157,18 @@ const HomePage: React.FC = () => {
       }
 
       // Call signup using useAuth hook
-      await signup(email, password, username);
+      const result = await signup(email, password, username);
       
-      setIsLoading(false);
-      handleClose();
-      showSnackbar('Account created successfully! Please check your email to verify your account.');
+      // Check if the signup was successful by looking at the fulfilled action
+      if (result.type.endsWith('/fulfilled')) {
+        setIsLoading(false);
+        handleClose();
+        showSnackbar('Account created successfully! Please check your email to verify your account.');
+      } else {
+        // If we get here, there was an error
+        setIsLoading(false);
+        setError(result.payload || 'Signup failed. Please try again.');
+      }
     } catch (error: any) {
       setIsLoading(false);
       // Use authError from useAuth hook if available
