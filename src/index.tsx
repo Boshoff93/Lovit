@@ -8,6 +8,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
+import { setupAxiosInterceptors } from './store/authSlice';
+
+// Initialize axios interceptors with the Redux store
+setupAxiosInterceptors(store);
 
 // Create theme with lilac colors
 const theme = createTheme({

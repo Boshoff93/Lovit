@@ -5,13 +5,17 @@ import {
   signupWithEmail, 
   loginWithGoogle, 
   logout, 
-  setPremiumStatus,
+  setSubscription,
   setToken,
   setUser,
   verifyEmail,
   resendVerification,
   requestPasswordReset,
-  refreshToken
+  refreshToken,
+  fetchSubscription,
+  createCheckoutSession,
+  createPortalSession,
+  Subscription
 } from '../store/authSlice';
 import { signInWithGoogle } from '../utils/googleAuth';
 import { getToken as getStoredToken, storeAuthData as storeData, AuthData, User } from '../utils/storage';
@@ -19,7 +23,7 @@ import { getToken as getStoredToken, storeAuthData as storeData, AuthData, User 
 // Authentication custom hook
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, token, isPremiumMember, isLoading, error } = useSelector(
+  const { user, token, subscription, isLoading, error } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -73,9 +77,24 @@ export const useAuth = () => {
     dispatch(logout());
   };
 
-  // Set premium membership status
-  const setPremium = (status: boolean) => {
-    dispatch(setPremiumStatus(status));
+  // Get user subscription data
+  const getUserSubscription = () => {
+    return dispatch(fetchSubscription());
+  };
+
+  // Create checkout session
+  const createStripeCheckout = (priceId: string, productId: string) => {
+    return dispatch(createCheckoutSession({ priceId, productId }));
+  };
+
+  // Create portal session
+  const createStripePortal = () => {
+    return dispatch(createPortalSession());
+  };
+
+  // Update subscription data
+  const updateSubscription = (subscriptionData: Subscription) => {
+    dispatch(setSubscription(subscriptionData));
   };
 
   // Set token manually (useful when retrieving from cookies)
@@ -100,10 +119,14 @@ export const useAuth = () => {
 
   // Check if user is authenticated
   const isAuthenticated = !!token;
+  
+  // Check if user has a premium subscription (tier is not 'free')
+  const isPremiumMember = subscription.tier !== 'free';
 
   return {
     user,
     token,
+    subscription,
     isPremiumMember,
     isLoading,
     error,
@@ -116,8 +139,11 @@ export const useAuth = () => {
     resendVerificationEmail,
     resetPassword,
     refreshAuthToken,
+    getUserSubscription,
+    createStripeCheckout,
+    createStripePortal,
+    updateSubscription,
     signout,
-    setPremium,
     updateToken,
     updateUser,
     storeAuthData

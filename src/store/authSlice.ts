@@ -4,11 +4,23 @@ import { User, storeAuthData, getToken, clearAuthData } from '../utils/storage';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
+// Define subscription tier type
+export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'premium';
+
+// Define subscription interface
+export interface Subscription {
+  tier: SubscriptionTier;
+  status: string;
+  subscriptionId?: string;
+  customerId?: string;
+  currentPeriodEnd?: number;
+}
+
 // Auth state interface
 interface AuthState {
   user: User | null;
   token: string | null;
-  isPremiumMember: boolean;
+  subscription: Subscription;
   isLoading: boolean;
   error: string | null;
 }
@@ -17,7 +29,10 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   token: getToken(),
-  isPremiumMember: false,
+  subscription: {
+    tier: 'free',
+    status: 'active'
+  },
   isLoading: false,
   error: null
 };
@@ -61,24 +76,6 @@ export const requestPasswordReset = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to request password reset');
-    }
-  }
-);
-
-export const refreshToken = createAsyncThunk(
-  'auth/refreshToken',
-  async (currentToken: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
-        token: currentToken
-      });
-      
-      // Store the new token in cookies
-      storeAuthData(response.data);
-      
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.error || 'Failed to refresh token');
     }
   }
 );
@@ -140,6 +137,27 @@ export const loginWithGoogle = createAsyncThunk(
   }
 );
 
+// Add the missing refreshToken thunk
+export const refreshToken = createAsyncThunk(
+  'auth/refreshToken',
+  async (currentToken: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+        token: currentToken
+      });
+      
+      // Store the new token
+      if (response.data.token) {
+        storeAuthData(response.data);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Token refresh failed');
+    }
+  }
+);
+
 // Create axios instance with auth header
 export const createAuthenticatedRequest = (token: string) => {
   return axios.create({
@@ -150,14 +168,94 @@ export const createAuthenticatedRequest = (token: string) => {
   });
 };
 
+// Add thunk for fetching user subscription data
+export const fetchSubscription = createAsyncThunk(
+  'auth/fetchSubscription',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState() as { auth: AuthState };
+      
+      if (!auth.token) {
+        return rejectWithValue('No auth token available');
+      }
+      
+      const response = await axios.get(`${API_BASE_URL}/api/user/subscription`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      });
+      
+      return response.data.subscription;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to fetch subscription data');
+    }
+  }
+);
+
+// Create checkout session thunk
+export const createCheckoutSession = createAsyncThunk(
+  'auth/createCheckoutSession',
+  async ({ priceId, productId }: { priceId: string; productId: string }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState() as { auth: AuthState };
+      
+      if (!auth.token) {
+        return rejectWithValue('No auth token available');
+      }
+      
+      const response = await axios.post(
+        `${API_BASE_URL}/api/create-checkout-session`,
+        { priceId, productId },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to create checkout session');
+    }
+  }
+);
+
+// Create customer portal session thunk
+export const createPortalSession = createAsyncThunk(
+  'auth/createPortalSession',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState() as { auth: AuthState };
+      
+      if (!auth.token) {
+        return rejectWithValue('No auth token available');
+      }
+      
+      const response = await axios.post(
+        `${API_BASE_URL}/api/create-portal-session`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to create portal session');
+    }
+  }
+);
+
 // Auth slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Set premium status
-    setPremiumStatus: (state, action: PayloadAction<boolean>) => {
-      state.isPremiumMember = action.payload;
+    // Set subscription data
+    setSubscription: (state, action: PayloadAction<Subscription>) => {
+      state.subscription = action.payload;
     },
     // Logout action
     logout: (state) => {
@@ -167,7 +265,10 @@ const authSlice = createSlice({
       // Reset state
       state.user = null;
       state.token = null;
-      state.isPremiumMember = false;
+      state.subscription = {
+        tier: 'free',
+        status: 'active'
+      };
       state.error = null;
     },
     // Set token manually (useful for restoring from storage)
@@ -299,16 +400,90 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       });
+
+    // Fetch subscription
+    builder
+      .addCase(fetchSubscription.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchSubscription.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.subscription = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchSubscription.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Create checkout session
+    builder
+      .addCase(createCheckoutSession.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createCheckoutSession.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(createCheckoutSession.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Create portal session
+    builder
+      .addCase(createPortalSession.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createPortalSession.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(createPortalSession.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   }
 });
 
 // Export actions and reducer
 export const { 
-  setPremiumStatus, 
+  setSubscription,
   logout, 
   setToken, 
   setUser,
   clearError 
 } = authSlice.actions;
 
-export default authSlice.reducer; 
+export default authSlice.reducer;
+
+// Setup axios interceptors to handle token refresh
+export const setupAxiosInterceptors = (appStore: any) => {
+  axios.interceptors.response.use(
+    response => response,
+    async error => {
+      const originalRequest = error.config;
+      
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        
+        try {
+          const state = appStore.getState();
+          const currentToken = state.auth.token;
+          
+          if (currentToken) {
+            await appStore.dispatch(refreshToken(currentToken));
+            return axios(originalRequest);
+          }
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
+      }
+      
+      return Promise.reject(error);
+    }
+  );
+}; 

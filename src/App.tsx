@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearc
 import { Box, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
+import { useAuth } from './hooks/useAuth';
 
 // Layout
 import Layout from './components/Layout';
@@ -17,7 +18,8 @@ import ResendVerificationPage from './pages/ResendVerificationPage';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  const { token, isPremiumMember, user } = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
+  const { isPremiumMember } = useAuth();
   const location = useLocation();
 
   // Check if user is authenticated
@@ -25,12 +27,12 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // Check if user is verified (using status from token/auth state)
+  // Check if user is verified
   if (user && !user.isVerified) {
     return <Navigate to="/resend-verification" state={{ from: location }} replace />;
   }
 
-  // Check if user is a premium member
+  // Use isPremiumMember instead of checking subscription tier
   if (!isPremiumMember) {
     return <Navigate to="/payment" state={{ from: location }} replace />;
   }
