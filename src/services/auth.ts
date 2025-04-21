@@ -55,9 +55,9 @@ export const authService = {
   },
 
   // Verify email with token
-  verifyEmail: async (token: string): Promise<void> => {
+  verifyEmail: async (token: string, userId: string): Promise<void> => {
     try {
-      await axios.get(`${API_BASE_URL}/auth/verify-email/${token}`);
+      await axios.get(`${API_BASE_URL}/auth/verify-email?token=${token}&userId=${userId}`);
     } catch (error) {
       throw error;
     }

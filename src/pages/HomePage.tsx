@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(true);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
   const navigate = useNavigate();

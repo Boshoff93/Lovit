@@ -20,18 +20,19 @@ const VerifyEmailPage: React.FC = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState<string>('');
   const token = searchParams.get('token');
+  const userId = searchParams.get('userId');
 
   useEffect(() => {
     const verifyEmail = async () => {
-      if (!token) {
+      if (!token || !userId) {
         setStatus('error');
-        setMessage('Invalid verification link. Please request a new one.');
+        setMessage('Invalid verification link. Missing token or user ID. Please request a new one.');
         return;
       }
 
       try {
-        // Call the verify email endpoint
-        await authService.verifyEmail(token);
+        // Call the verify email endpoint with both token and userId
+        await authService.verifyEmail(token, userId);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
       } catch (error: any) {
@@ -44,7 +45,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyEmail();
-  }, [token]);
+  }, [token, userId]);
 
   const handleGoToLogin = () => {
     navigate('/login');
