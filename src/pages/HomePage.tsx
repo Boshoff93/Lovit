@@ -245,6 +245,18 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const handleKeyPressLogin = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleEmailLogin();
+    }
+  };
+
+  const handleKeyPressSignup = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleEmailSignup();
+    }
+  };
+
   return (
     <Box>
       {/* Hero Section */}
@@ -363,6 +375,7 @@ const HomePage: React.FC = () => {
                   variant="outlined"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={handleKeyPressLogin}
                   sx={{ mb: 3 }}
                 />
                 <Button 
@@ -421,6 +434,7 @@ const HomePage: React.FC = () => {
                   variant="outlined"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={handleKeyPressSignup}
                   sx={{ mb: 3 }}
                 />
                 <TextField
@@ -432,6 +446,7 @@ const HomePage: React.FC = () => {
                   variant="outlined"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyPress={handleKeyPressSignup}
                   sx={{ mb: 3 }}
                 />
                 <Button 

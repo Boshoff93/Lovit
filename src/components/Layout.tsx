@@ -805,6 +805,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       startIcon={<CloudUploadIcon />}
                       onClick={handleFileButtonClick}
                       fullWidth
+                      sx={{ height: 48 }}
                     >
                       Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}+)
                     </Button>
@@ -858,6 +859,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       variant="contained"
                       color="primary"
                       fullWidth
+                      sx={{ height: 48 }}
                       disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
                                 !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
                                 !userProfile.eyeColor || !userProfile.bodyType}
@@ -942,6 +944,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       startIcon={<CloudUploadIcon />}
                       onClick={handleClothButtonClick}
                       size="small"
+                      sx={{ height: 48 }}
                     >
                       Upload Clothing Reference
                     </Button>
@@ -978,6 +981,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       variant="contained"
                       color="primary"
                       fullWidth
+                      sx={{ height: 48 }}
                       disabled={!promptData.prompt}
                       onClick={handleGenerateImages}
                     >

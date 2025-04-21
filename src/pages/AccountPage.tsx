@@ -44,115 +44,100 @@ const AccountPage: React.FC = () => {
         </Typography>
       </Box>
       
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
-        <Box sx={{ width: { xs: '100%', md: '33.333%' } }}>
-          <Paper 
-            elevation={0} 
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          p: 3,
+          borderRadius: 3,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+          mb: 4,
+          maxWidth: 480,
+          mx: 'auto'
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
+          <Avatar 
             sx={{ 
-              p: 3,
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              mb: 4
+              width: 120, 
+              height: 120, 
+              mb: 2,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
-          >
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-              <Avatar 
-                sx={{ 
-                  width: 120, 
-                  height: 120, 
-                  mb: 2,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                }}
-                alt={user?.username || 'User Profile'}
-                src="/lovit.jpeg"
-              />
-              <Typography variant="h6" gutterBottom>
-                {user?.username || 'Loading...'}
-              </Typography>
-              <Chip 
-                label={user?.isVerified ? 'Verified' : 'Unverified'} 
-                color={user?.isVerified ? 'success' : 'warning'}
-                size="small"
-                sx={{ mb: 1 }}
-              />
-            </Box>
-            
-            <Divider sx={{ my: 2 }} />
-            
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Subscription Plan
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {formatTier(subscription?.tier || 'free')} - {subscription?.status || 'Active'}
-              </Typography>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                sx={{ mt: 1 }}
-                onClick={handleManageSubscription}
-              >
-                Manage Subscription
-              </Button>
-              
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, mt: 2 }}>
-                Member Since
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                April 2024
-              </Typography>
-            </Box>
-          </Paper>
+            alt={user?.username || 'User Profile'}
+            src="/lovit.jpeg"
+          />
+          <Typography variant="h6" gutterBottom>
+            {user?.username || 'Loading...'}
+          </Typography>
+          <Chip 
+            label={user?.isVerified ? 'Verified' : 'Unverified'} 
+            color={user?.isVerified ? 'success' : 'warning'}
+            size="small"
+            sx={{ mb: 1 }}
+          />
         </Box>
         
-        <Box sx={{ width: { xs: '100%', md: '66.667%' } }}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              p: 3,
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              mb: 4
-            }}
+        <Divider sx={{ my: 2 }} />
+        
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+            Subscription Plan
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {formatTier(subscription?.tier || 'free')} - {subscription?.status || 'Active'}
+          </Typography>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            sx={{ mt: 1 }}
+            onClick={handleManageSubscription}
           >
-            <Typography variant="h6" gutterBottom>
-              Personal Information
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1 }}>
-              <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)' } }}>
-                <TextField 
-                  fullWidth 
-                  label="Username" 
-                  value={user?.username || ''}
-                  size="small"
-                  disabled
-                />
-              </Box>
-              <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)' } }}>
-                <TextField 
-                  fullWidth 
-                  label="Email Address" 
-                  value={user?.email || ''}
-                  size="small"
-                  disabled
-                />
-              </Box>
-              <Box sx={{ width: '100%' }}>
-                <Button 
-                  variant="contained" 
-                  sx={{ mt: 2 }}
-                  disabled
-                >
-                  Save Changes
-                </Button>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                  Contact support to update your account information
-                </Typography>
-              </Box>
+            Manage Subscription
+          </Button>
+          
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, mt: 2 }}>
+            Member Since
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            April 2024
+          </Typography>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+            Personal Information
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField 
+              fullWidth 
+              label="Username" 
+              value={user?.username || ''}
+              size="small"
+              disabled
+            />
+            <TextField 
+              fullWidth 
+              label="Email Address" 
+              value={user?.email || ''}
+              size="small"
+              disabled
+            />
+            <Box>
+              <Button 
+                variant="contained" 
+                fullWidth
+                sx={{ mt: 1 }}
+                disabled
+              >
+                Save Changes
+              </Button>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, textAlign: 'center' }}>
+                Contact support to update your account information
+              </Typography>
             </Box>
-          </Paper>
+          </Box>
         </Box>
-      </Box>
+      </Paper>
     </Container>
   );
 };
