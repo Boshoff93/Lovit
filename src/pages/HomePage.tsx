@@ -132,7 +132,7 @@ const HomePage: React.FC = () => {
         setIsLoading(false);
         return;
       }
-
+      console.log("got here 1")
       // Password validation
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
       if (!passwordRegex.test(password)) {
@@ -140,7 +140,7 @@ const HomePage: React.FC = () => {
         setIsLoading(false);
         return;
       }
-
+      console.log("got here 2")
       if (password !== confirmPassword) {
         setError('Passwords do not match');
         setIsLoading(false);
@@ -148,8 +148,9 @@ const HomePage: React.FC = () => {
       }
 
       // Call signup API using auth service
+      console.log("got here 3")
       const response = await authService.signupWithEmail(email, password, username);
-      console.log(response)
+      console.log("response.data")
       
       // Store authentication data
       authService.storeAuthData(response);

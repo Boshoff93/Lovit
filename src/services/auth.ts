@@ -18,11 +18,14 @@ export const authService = {
   // Email signup
   signupWithEmail: async (email: string, password: string, username: string): Promise<AuthResponse> => {
     try {
+      console.log("got here request")
       const response = await axios.post(`${API_BASE_URL}/auth/signup`, {
         email,
         password,
         username
       });
+      console.log("response.data")
+      console.log(response.data)
       return response.data;
     } catch (error) {
       throw error;
