@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(true);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
   const navigate = useNavigate();
@@ -215,8 +215,22 @@ const HomePage: React.FC = () => {
 
       setIsLoading(false);
       handleClose();
-      showSnackbar('Logged in successfully!');
-      navigate('/dashboard');
+
+      // Check if user is verified
+      if (!response.user.isVerified) {
+        // User is not verified, send verification email and show single notification
+        try {
+          await authService.resendVerification(response.user.email);
+          showSnackbar('Your email is not verified. A new verification email has been sent - please check your inbox.');
+        } catch (err) {
+          console.error('Failed to resend verification email:', err);
+          showSnackbar('Your email is not verified. Please check your inbox for the verification email.');
+        }
+      } else {
+        // User is verified, proceed as normal
+        showSnackbar('Logged in successfully!');
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       setIsLoading(false);
       if (error.response) {
@@ -448,7 +462,7 @@ const HomePage: React.FC = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
           {snackbarMessage}
