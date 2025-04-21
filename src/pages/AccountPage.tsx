@@ -35,7 +35,7 @@ const AccountPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4, textAlign: 'center', maxWidth: 480, mx: 'auto' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Account Settings
         </Typography>
