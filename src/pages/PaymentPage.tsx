@@ -16,7 +16,8 @@ import {
   CardContent,
   CardActions,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  CircularProgress
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -24,6 +25,7 @@ import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSubscription } from '../store/authSlice';
+import axios from 'axios';
 
 interface PlanFeature {
   title: string;
@@ -44,6 +46,11 @@ interface PricePlan {
     parallel: string;
     other?: string[];
   };
+  stripePrices: {
+    monthly: string;
+    yearly: string;
+  };
+  productId: string;
 }
 
 const plans: PricePlan[] = [
@@ -59,7 +66,12 @@ const plans: PricePlan[] = [
       likeness: 'Low Likeness',
       parallel: '1 photo at a time',
       other: ['Photorealistic images']
-    }
+    },
+    stripePrices: {
+      monthly: 'price_1RGUCfPU9E45VDzj0yy0rp9M',
+      yearly: 'price_1RGUAdPU9E45VDzjB0cxMIkA'
+    },
+    productId: 'prod_SApqHExCIJHZbN'
   },
   {
     id: 'pro',
@@ -73,7 +85,12 @@ const plans: PricePlan[] = [
       likeness: 'Medium likeness',
       parallel: '4 photos in parallel',
       other: ['Photorealistic models']
-    }
+    },
+    stripePrices: {
+      monthly: 'price_1RGUD3PU9E45VDzjCxaJWHm7',
+      yearly: 'price_1RGUBLPU9E45VDzjaqxSyZgk'
+    },
+    productId: 'prod_SAprsgkM7ZjCXr'
   },
   {
     id: 'premium',
@@ -87,14 +104,20 @@ const plans: PricePlan[] = [
       quality: 'High quality photos',
       likeness: 'High likeness',
       parallel: '8 photos in parallel',
-      other: ['Photorealistic models', 'Priority support', 'Advanced editing tools']
-    }
+      other: ['Photorealistic models', 'Priority support']
+    },
+    stripePrices: {
+      monthly: 'price_1RGUDJPU9E45VDzjF6MoO9vT',
+      yearly: 'price_1RGUBzPU9E45VDzjANCpxjAB'
+    },
+    productId: 'prod_SAprvoCikmsgYW'
   }
 ];
 
 const PaymentPage: React.FC = () => {
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -108,19 +131,35 @@ const PaymentPage: React.FC = () => {
     setSelectedPlan(planId);
   };
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = async () => {
     if (!selectedPlan) return;
     
-    // In a real application, redirect to payment processor
-    console.log(`Processing payment for ${selectedPlan} plan (${isYearly ? 'yearly' : 'monthly'})`);
+    // Find the selected plan
+    const plan = plans.find(p => p.id === selectedPlan);
+    if (!plan) return;
     
-    // After successful payment, update Redux state and redirect to dashboard
-    // For now, just simulate a successful payment
-    setTimeout(() => {
-      // Set user as premium member in Redux
-      dispatch(setSubscription({ tier: 'premium', status: 'active' }));
-      navigate('/dashboard');
-    }, 1000);
+    // Get the appropriate price ID based on billing interval
+    const priceId = isYearly ? plan.stripePrices.yearly : plan.stripePrices.monthly;
+    const productId = plan.productId;
+    
+    try {
+      setIsLoading(true);
+      
+      // Create Stripe checkout session
+      const response = await axios.post('/api/create-checkout-session', {
+        priceId,
+        productId,
+        allowPriceSwitch: true // Let the backend know we want to enable price switching
+      });
+      
+      // Redirect to Stripe checkout
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      }
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -325,7 +364,7 @@ const PaymentPage: React.FC = () => {
           variant="contained" 
           color="primary" 
           size="large" 
-          disabled={!selectedPlan}
+          disabled={!selectedPlan || isLoading}
           onClick={handleProceedToPayment}
           sx={{
             py: 1.5,
@@ -333,7 +372,11 @@ const PaymentPage: React.FC = () => {
             fontSize: '1.1rem',
           }}
         >
-          Proceed to Payment
+          {isLoading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Proceed to Payment'
+          )}
         </Button>
         
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
