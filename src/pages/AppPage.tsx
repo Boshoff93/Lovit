@@ -12,7 +12,7 @@ import MainTabs from '../components/MainTabs';
 import { useAuth } from '../hooks/useAuth';
 
 const AppPage: React.FC = () => {
-  const { getUserSubscription } = useAuth();
+  const { refreshAuthToken } = useAuth();
   const [searchParams] = useSearchParams();
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -46,8 +46,8 @@ const AppPage: React.FC = () => {
   };
 
   useEffect(() => {
-    getUserSubscription();
-}, [getUserSubscription]);
+    refreshAuthToken();
+  }, [refreshAuthToken]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 3, md: 4 } }}>

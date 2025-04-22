@@ -15,13 +15,12 @@ import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal, getUserSubscription } = useAuth();
+  const { user, subscription, createStripePortal, refreshAuthToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch subscription data when component mounts
-    getUserSubscription();
-  }, [getUserSubscription]);
+    refreshAuthToken();
+  }, [refreshAuthToken]);
 
 
   const handleManageSubscription = async () => {
