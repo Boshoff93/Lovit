@@ -104,7 +104,7 @@ const plans: PricePlan[] = [
     },
     stripePrices: {
       monthly: 'price_1RGUD3PU9E45VDzjCxaJWHm7',
-      yearly: 'price_1RGUBLPU9E45VDzjaqxSyZgk'
+      yearly: 'price_1RGYP6PU9E45VDzjejMIqaWW'
     },
     productId: 'prod_SAprsgkM7ZjCXr'
   },
