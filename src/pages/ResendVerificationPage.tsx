@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -14,13 +14,23 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import { useAuth } from '../hooks/useAuth';
 import { useAccountData } from '../hooks/useAccountData';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 const ResendVerificationPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
   const { resendVerificationEmail, isLoading, error } = useAuth();
   const { fetchAccountData } = useAccountData(false); // Don't fetch initially
+
+  // Redirect to dashboard if user is verified
+  useEffect(() => {
+    if (user?.isVerified) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
