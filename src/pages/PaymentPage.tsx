@@ -20,12 +20,15 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
-  keyframes
+  keyframes,
+  AppBar,
+  Toolbar
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/SpaceDashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -38,6 +41,7 @@ import {
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
+import { useAuth } from '../hooks/useAuth';
 
 interface PlanFeature {
   title: string;
@@ -141,6 +145,9 @@ const PaymentPage: React.FC = () => {
   
   // Use account data hook
   const { fetchAccountData } = useAccountData(true);
+  
+  // Get signout function from useAuth
+  const { signout } = useAuth();
 
   // Check if user is logged in
   useEffect(() => {
@@ -235,6 +242,11 @@ const PaymentPage: React.FC = () => {
   const handleNavigateToDashboard = () => {
     navigate('/dashboard');
   };
+  
+  const handleLogout = () => {
+    signout();
+    navigate('/');
+  };
 
   // Determine the button text based on subscription status
   const getButtonText = () => {
@@ -250,264 +262,309 @@ const PaymentPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
-          Choose Your Plan
-        </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-          Select the perfect plan for your needs
-        </Typography>
-        
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 4 }}>
-          
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', maxWidth: '500px' }}>
-              {error}
-            </Alert>
-          )}
-
-          <Snackbar 
-            open={!!success} 
-            autoHideDuration={6000} 
-            onClose={() => setSuccess(null)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    <>
+      <AppBar position="static" color="transparent" elevation={0} sx={{ mb: 2 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img 
+              src="/lovit.jpeg" 
+              alt="Lovit Logo" 
+              style={{ 
+                height: '32px', 
+                width: '32px', 
+                marginRight: '10px',
+                borderRadius: '50%'
+              }} 
+            />
+            <Typography variant="h6" component="div">
+              Lovit
+            </Typography>
+          </Box>
+          <Button 
+            color="primary" 
+            startIcon={<LogoutIcon />} 
+            onClick={handleLogout}
           >
-            <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
-              {success}
-            </Alert>
-          </Snackbar>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+            Choose Your Plan
+          </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+            Select the perfect plan for your needs
+          </Typography>
           
-          <FormControlLabel
-            control={
-              <Switch 
-                checked={isYearly}
-                onChange={handleToggleInterval}
-                color="primary"
-              />
-            }
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    fontWeight: isYearly ? 'normal' : 'bold', 
-                    color: isYearly ? 'text.secondary' : 'primary.main'
-                  }}
-                >
-                  Monthly
-                </Typography>
-                <Box sx={{ mx: 1 }}>|</Box>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    fontWeight: isYearly ? 'bold' : 'normal', 
-                    color: isYearly ? 'primary.main' : 'text.secondary'
-                  }}
-                >
-                  Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
-                    (Save up to 57%)
-                  </Box>
-                </Typography>
-              </Box>
-            }
-            labelPlacement="end"
-          />
-          
-          {/* Subscription info alert */}
-          {subscription && subscription.tier !== 'free' && (
-            <Alert severity="info" sx={{ mt: 1, width: '100%', maxWidth: '500px' }}>
-              You currently have the {subscription.tier} plan ({subscription.status})
-              {subscription.currentPeriodEnd && (
-                <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
-              )}
-            </Alert>
-          )}
-        </Box>
-      </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 4 }}>
+            
+            {error && (
+              <Alert severity="error" sx={{ width: '100%', maxWidth: '500px' }}>
+                {error}
+              </Alert>
+            )}
 
-      <Box sx={{ 
-        display: 'flex', 
-        flexWrap: 'wrap', 
-        gap: 3,
-        justifyContent: 'center'
-      }}>
-        {plans.map((plan) => (
-          <Box 
-            key={plan.id}
-            sx={{ 
-              flex: { xs: '1 1 100%', md: '1 1 calc(33% - 24px)' }, 
-              maxWidth: { xs: '100%', md: 'calc(33% - 24px)' },
-              minWidth: { xs: '100%', md: '300px' }
-            }}
-          >
-            <Card 
-              elevation={plan.popular ? 6 : 2} 
-              onClick={() => handleSelectPlan(plan.id)}
-              sx={{ 
-                height: '100%',
-                border: selectedPlan === plan.id 
-                  ? `2px solid ${theme.palette.primary.main}` 
-                  : plan.popular ? `2px solid ${theme.palette.primary.main}` : 'none',
-                position: 'relative',
-                overflow: 'visible',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: theme.shadows[selectedPlan === plan.id ? 8 : 4],
-                },
-                bgcolor: selectedPlan === plan.id ? 'rgba(147, 112, 219, 0.05)' : 'background.paper'
-              }}
+            <Snackbar 
+              open={!!success} 
+              autoHideDuration={6000} 
+              onClose={() => setSuccess(null)}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-              {plan.popular && (
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    top: -15, 
-                    left: 0, 
-                    right: 0,
-                    textAlign: 'center'
-                  }}
-                >
-                  <Box 
+              <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+                {success}
+              </Alert>
+            </Snackbar>
+            
+            <FormControlLabel
+              control={
+                <Switch 
+                  checked={isYearly}
+                  onChange={handleToggleInterval}
+                  color="primary"
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography 
+                    variant="body1" 
                     sx={{ 
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      backgroundColor: theme.palette.primary.main,
-                      color: 'white',
-                      px: 2,
-                      py: 0.5,
-                      borderRadius: 2,
-                      fontSize: '0.875rem',
-                      fontWeight: 'bold'
+                      fontWeight: isYearly ? 'normal' : 'bold', 
+                      color: isYearly ? 'text.secondary' : 'primary.main'
                     }}
                   >
-                    <StarIcon fontSize="small" sx={{ mr: 0.5 }} />
-                    Most Popular
-                  </Box>
-                </Box>
-              )}
-              
-              <CardContent sx={{ p: 3, flex: '1 1 auto' }}>
-                <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
-                  {plan.title}
-                </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
-                  <Typography variant="h3" component="span" fontWeight="bold">
-                    ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                    Monthly
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ ml: 1 }}>
-                    /month
+                  <Box sx={{ mx: 1 }}>|</Box>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontWeight: isYearly ? 'bold' : 'normal', 
+                      color: isYearly ? 'primary.main' : 'text.secondary'
+                    }}
+                  >
+                    Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                      (Save up to 57%)
+                    </Box>
                   </Typography>
                 </Box>
-                
-                {isYearly && (
-                  <Typography variant="body2" color="success.main" sx={{ mb: 2 }}>
-                    Billed annually (${plan.yearlyPrice * 12}/year)
-                  </Typography>
+              }
+              labelPlacement="end"
+            />
+            
+            {/* Subscription info alert */}
+            {subscription && subscription.tier !== 'free' && (
+              <Alert severity="info" sx={{ mt: 1, width: '100%', maxWidth: '500px' }}>
+                You currently have the {subscription.tier} plan ({subscription.status})
+                {subscription.currentPeriodEnd && (
+                  <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
                 )}
-                
-                <Divider sx={{ my: 2 }} />
-                
-                <List dense disablePadding>
-                  <ListItem disableGutters>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={plan.features.photoCount} />
-                  </ListItem>
-                  
-                  <ListItem disableGutters>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={plan.features.modelCount} />
-                  </ListItem>
-                  
-                  <ListItem disableGutters>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={plan.features.quality} />
-                  </ListItem>
-                  
-                  <ListItem disableGutters>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={plan.features.likeness} />
-                  </ListItem>
-                  
-                  <ListItem disableGutters>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={plan.features.parallel} />
-                  </ListItem>
-                  
-                  {plan.features.other?.map((feature, index) => (
-                    <ListItem disableGutters key={index}>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
-                      </ListItemIcon>
-                      <ListItemText primary={feature} />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-              
-              <CardActions sx={{ p: 3, pt: 0, mt: 'auto' }}>
-                <Button 
-                  fullWidth 
-                  variant={selectedPlan === plan.id ? "contained" : "outlined"}
-                  color="primary"
-                  size="large"
-                  sx={{ py: 1 }}
-                >
-                  {selectedPlan === plan.id ? "Selected" : "Select Plan"}
-                </Button>
-              </CardActions>
-            </Card>
+              </Alert>
+            )}
           </Box>
-        ))}
-      </Box>
-      
-      <Box sx={{ mt: 6, textAlign: 'center' }}>
+        </Box>
+
         <Box sx={{ 
           display: 'flex', 
           flexWrap: 'wrap', 
-          justifyContent: 'center', 
-          gap: 2,
-          mb: 2
+          gap: 3,
+          justifyContent: 'center'
         }}>
-          {(!subscription || subscription.tier === 'free') && (
-            <Button 
-              variant="contained" 
-              color="primary" 
-              size="large" 
-              disabled={!selectedPlan || isLoading}
-              onClick={handleButtonClick}
-              sx={{
-                py: 1.5,
-                px: 6,
-                fontSize: '1.1rem',
-                width: { xs: '100%', sm: 'auto', md: 'auto' }
+          {plans.map((plan) => (
+            <Box 
+              key={plan.id}
+              sx={{ 
+                flex: { xs: '1 1 100%', md: '1 1 calc(33% - 24px)' }, 
+                maxWidth: { xs: '100%', md: 'calc(33% - 24px)' },
+                minWidth: { xs: '100%', md: '300px' }
               }}
             >
-              {getButtonText()}
-            </Button>
-          )}
-          
-          {subscription && subscription.tier !== 'free' && (
-            <Button
-              variant="contained"
+              <Card 
+                elevation={plan.popular ? 6 : 2} 
+                onClick={() => handleSelectPlan(plan.id)}
+                sx={{ 
+                  height: '100%',
+                  border: selectedPlan === plan.id 
+                    ? `2px solid ${theme.palette.primary.main}` 
+                    : plan.popular ? `2px solid ${theme.palette.primary.main}` : 'none',
+                  position: 'relative',
+                  overflow: 'visible',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: theme.shadows[selectedPlan === plan.id ? 8 : 4],
+                  },
+                  bgcolor: selectedPlan === plan.id ? 'rgba(147, 112, 219, 0.05)' : 'background.paper'
+                }}
+              >
+                {plan.popular && (
+                  <Box 
+                    sx={{ 
+                      position: 'absolute', 
+                      top: -15, 
+                      left: 0, 
+                      right: 0,
+                      textAlign: 'center'
+                    }}
+                  >
+                    <Box 
+                      sx={{ 
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        backgroundColor: theme.palette.primary.main,
+                        color: 'white',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 2,
+                        fontSize: '0.875rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      <StarIcon fontSize="small" sx={{ mr: 0.5 }} />
+                      Most Popular
+                    </Box>
+                  </Box>
+                )}
+                
+                <CardContent sx={{ p: 3, flex: '1 1 auto' }}>
+                  <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+                    {plan.title}
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
+                    <Typography variant="h3" component="span" fontWeight="bold">
+                      ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+                      /month
+                    </Typography>
+                  </Box>
+                  
+                  {isYearly && (
+                    <Typography variant="body2" color="success.main" sx={{ mb: 2 }}>
+                      Billed annually (${plan.yearlyPrice * 12}/year)
+                    </Typography>
+                  )}
+                  
+                  <Divider sx={{ my: 2 }} />
+                  
+                  <List dense disablePadding>
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={plan.features.photoCount} />
+                    </ListItem>
+                    
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={plan.features.modelCount} />
+                    </ListItem>
+                    
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={plan.features.quality} />
+                    </ListItem>
+                    
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={plan.features.likeness} />
+                    </ListItem>
+                    
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={plan.features.parallel} />
+                    </ListItem>
+                    
+                    {plan.features.other?.map((feature, index) => (
+                      <ListItem disableGutters key={index}>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          <CheckCircleIcon color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={feature} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
+                
+                <CardActions sx={{ p: 3, pt: 0, mt: 'auto' }}>
+                  <Button 
+                    fullWidth 
+                    variant={selectedPlan === plan.id ? "contained" : "outlined"}
+                    color="primary"
+                    size="large"
+                    sx={{ py: 1 }}
+                  >
+                    {selectedPlan === plan.id ? "Selected" : "Select Plan"}
+                  </Button>
+                </CardActions>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+        
+        <Box sx={{ mt: 6, textAlign: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            justifyContent: 'center', 
+            gap: 2,
+            mb: 2
+          }}>
+            {(!subscription || subscription.tier === 'free') && (
+              <Button 
+                variant="contained" 
+                color="primary" 
+                size="large" 
+                disabled={!selectedPlan || isLoading}
+                onClick={handleButtonClick}
+                sx={{
+                  py: 1.5,
+                  px: 6,
+                  fontSize: '1.1rem',
+                  width: { xs: '100%', sm: 'auto', md: 'auto' }
+                }}
+              >
+                {getButtonText()}
+              </Button>
+            )}
+            
+            {subscription && subscription.tier !== 'free' && (
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={handleManageSubscription}
+                sx={{ 
+                  py: 1.5, 
+                  px: 6, 
+                  fontSize: '1.1rem',
+                  width: { xs: '100%', sm: 'auto', md: 'auto' }
+                }}
+              >
+                Manage Subscription
+              </Button>
+            )}
+
+            {subscription && subscription.tier !== 'free' && (<Button
+              variant="outlined"
               color="primary"
               size="large"
-              onClick={handleManageSubscription}
+              startIcon={<DashboardIcon />}
+              onClick={handleNavigateToDashboard}
               sx={{ 
                 py: 1.5, 
                 px: 6, 
@@ -515,40 +572,24 @@ const PaymentPage: React.FC = () => {
                 width: { xs: '100%', sm: 'auto', md: 'auto' }
               }}
             >
-              Manage Subscription
-            </Button>
-          )}
-
-          {subscription && subscription.tier !== 'free' && (<Button
-            variant="outlined"
-            color="primary"
-            size="large"
-            startIcon={<DashboardIcon />}
-            onClick={handleNavigateToDashboard}
+              Back to Dashboard
+            </Button>)}
+          </Box>
+          
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
             sx={{ 
-              py: 1.5, 
-              px: 6, 
-              fontSize: '1.1rem',
-              width: { xs: '100%', sm: 'auto', md: 'auto' }
+              mt: 2,
+              maxWidth: '600px',
+              mx: 'auto'  // Centers the text block
             }}
           >
-            Back to Dashboard
-          </Button>)}
+            If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
+          </Typography>
         </Box>
-        
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          sx={{ 
-            mt: 2,
-            maxWidth: '600px',
-            mx: 'auto'  // Centers the text block
-          }}
-        >
-          If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
-        </Typography>
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 };
 
