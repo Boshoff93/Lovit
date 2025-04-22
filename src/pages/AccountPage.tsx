@@ -13,12 +13,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, getUserSubscription, createStripePortal } = useAuth();
-
-  useEffect(() => {
-    // Fetch subscription data when component mounts
-    getUserSubscription();
-  }, [getUserSubscription]);
+  const { user, subscription, createStripePortal } = useAuth();
 
   const handleManageSubscription = async () => {
     try {
