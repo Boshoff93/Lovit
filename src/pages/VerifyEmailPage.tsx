@@ -105,7 +105,7 @@ const VerifyEmailPage: React.FC = () => {
                 onClick={handleGoToDashboard}
                 sx={{ mt: 2 }}
               >
-                Go to Dashboard
+                Continue
               </Button>
             </>
           )}
