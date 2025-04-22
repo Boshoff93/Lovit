@@ -14,7 +14,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
     if (!token) return;
     
     // Skip fetch if we recently fetched and force is false
-    if (!force && lastFetched && (new Date().getTime() - lastFetched.getTime() < 5000)) {
+    if (!force && lastFetched && (new Date().getTime() - lastFetched.getTime() < 60000)) {
       return;
     }
     

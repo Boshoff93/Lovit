@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useAccountData } from '../hooks/useAccountData';
+import { useAuth } from '../hooks/useAuth';
 
 const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -23,14 +23,19 @@ const VerifyEmailPage: React.FC = () => {
   const userId = searchParams.get('userId');
   const verified = searchParams.get('verified');
   
-  const { fetchAccountData } = useAccountData(false); // Don't fetch initially, we'll do it manually
+  const { verifyUserEmail } = useAuth();
 
   useEffect(() => {
     const verifyUserEmailAsync = async () => {
+      if (!token || !userId) {
+        return;
+      }
+
       try {
+        // Use Redux through the useAuth hook to verify email
+        await verifyUserEmail(token, userId);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
-        fetchAccountData(true); // Force fetch account data to update user status
       } catch (error: any) {
         setStatus('error');
         setMessage(error || 'Failed to verify your email. The token may be expired or invalid.');
@@ -38,7 +43,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [fetchAccountData, token, userId, verified]);
+  }, [token, userId, verified, verifyUserEmail]);
 
   const handleGoToHome = () => {
     navigate('/');

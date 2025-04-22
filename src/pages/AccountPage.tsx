@@ -98,9 +98,10 @@ const AccountPage: React.FC = () => {
             sx={{ 
               mb: 1,
               ...(user?.isVerified && {
-                backgroundColor: '#f0e6cc',
-                color: '#8a7c4f',
-                borderColor: '#e6d9b2'
+                backgroundColor: '#F5F5DC',
+                color: '#8B7D3A',
+                borderColor: '#D4BA6A',
+                fontWeight: 500
               })
             }}
           />
