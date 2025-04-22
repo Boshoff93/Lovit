@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Box, 
@@ -13,6 +13,7 @@ import {
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useAuth } from '../hooks/useAuth';
+import { useAccountData } from '../hooks/useAccountData';
 
 const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -21,18 +22,22 @@ const VerifyEmailPage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
-  
+  const verificationAttempted = useRef(false);
+  const { fetchAccountData } = useAccountData(false);
   const { verifyUserEmail } = useAuth();
 
   useEffect(() => {
     const verifyUserEmailAsync = async () => {
-      if (!token || !userId) {
+      if (!token || !userId || verificationAttempted.current) {
         return;
       }
+
+      verificationAttempted.current = true;
 
       try {
         // Use Redux through the useAuth hook to verify email
         await verifyUserEmail(token, userId);
+        await fetchAccountData(true);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
       } catch (error: any) {
@@ -42,7 +47,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [verifyUserEmail, token, userId]);
+  }, [verifyUserEmail, token, userId, fetchAccountData]);
 
   const handleGoToHome = () => {
     navigate('/');

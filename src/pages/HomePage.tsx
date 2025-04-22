@@ -243,10 +243,10 @@ const HomePage: React.FC = () => {
       const result = await login(email, password);
       
       setIsLoading(false);
-      handleClose();
 
       // Check if the login was successful
       if (result.type === 'auth/loginWithEmail/fulfilled') {
+        handleClose();
         const userData = result.payload.user;
         
         // Check if user is verified using response data
