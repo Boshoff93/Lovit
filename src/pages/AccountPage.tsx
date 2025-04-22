@@ -9,7 +9,8 @@ import {
   Divider,
   Avatar,
   Chip,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
@@ -19,12 +20,14 @@ const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const { isLoading, error: fetchError } = useAccountData();
+  const [portalLoading, setPortalLoading] = useState(false);
 
   const handleManageSubscription = async () => {
     try {
       setError(null);
+      setPortalLoading(true);
       // Use the Redux action to create a portal session
-      const resultAction = createStripePortal()
+      const resultAction = await createStripePortal()
       
       if (createPortalSession.fulfilled.match(resultAction)) {
         // Redirect to Stripe customer portal
@@ -36,6 +39,8 @@ const AccountPage: React.FC = () => {
       }
     } catch (error: any) {
       setError(error.message || 'An error occurred');
+    } finally {
+      setPortalLoading(false);
     }
   };
 
@@ -88,9 +93,16 @@ const AccountPage: React.FC = () => {
           </Typography>
           <Chip 
             label={user?.isVerified ? 'Verified' : 'Unverified'} 
-            color={user?.isVerified ? 'success' : 'warning'}
+            color={user?.isVerified ? undefined : 'warning'}
             size="small"
-            sx={{ mb: 1 }}
+            sx={{ 
+              mb: 1,
+              ...(user?.isVerified && {
+                backgroundColor: '#f0e6cc',
+                color: '#8a7c4f',
+                borderColor: '#e6d9b2'
+              })
+            }}
           />
         </Box>
         
@@ -108,9 +120,10 @@ const AccountPage: React.FC = () => {
             size="small" 
             sx={{ mt: 1 }}
             onClick={handleManageSubscription}
-            disabled={isLoading}
+            disabled={isLoading || portalLoading}
+            startIcon={portalLoading ? <CircularProgress size={16} /> : undefined}
           >
-            Manage Subscription
+            {portalLoading ? 'Loading...' : 'Manage Subscription'}
           </Button>
           
           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, mt: 2 }}>

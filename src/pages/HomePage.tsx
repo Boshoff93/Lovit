@@ -184,15 +184,37 @@ const HomePage: React.FC = () => {
       // Get Google ID token using the auth hook utility
       const idToken = await getGoogleIdToken();
       
-      // Use our Redux action through the useAuth hook
-      await googleLogin(idToken);
+      // Use our Redux action through the useAuth hook and store the result
+      const result = await googleLogin(idToken);
       
       setIsLoading(false);
       handleClose();
-      showSnackbar('Signed in with Google successfully!');
       
-      // Navigate to dashboard if authentication was successful
-      navigate('/dashboard');
+      // Check if the login was successful
+      if (result.type === 'auth/loginWithGoogle/fulfilled') {
+        showSnackbar('Signed in with Google successfully!');
+        
+        // Get user data from the response
+        const userData = result.payload.user;
+        
+        // Check if user is verified using response data
+        if (!userData.isVerified) {
+          // User is not verified, send verification email and show notification
+          try {
+            await resendVerificationEmail(userData.email);
+            showSnackbar('Your email is not verified. A new verification email has been sent - please check your inbox.');
+          } catch (err) {
+            console.error('Failed to resend verification email:', err);
+            showSnackbar('Your email is not verified. Please check your inbox for the verification email.');
+          }
+        } else {
+          // Navigate to dashboard if authentication was successful
+          navigate('/dashboard');
+        }
+      } else {
+        // Login was rejected, set error message
+        setError(result.payload || 'Google login failed.');
+      }
     } catch (error: any) {
       setIsLoading(false);
       console.error('Google sign-in error:', error);
@@ -217,26 +239,34 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      // Call login using our useAuth hook
-      await login(email, password);
+      // Call login using our useAuth hook and store the result
+      const result = await login(email, password);
       
       setIsLoading(false);
       handleClose();
 
-      // Check if user is verified
-      if (user && !user.isVerified) {
-        // User is not verified, send verification email and show single notification
-        try {
-          await resendVerificationEmail(user.email);
-          showSnackbar('Your email is not verified. A new verification email has been sent - please check your inbox.');
-        } catch (err) {
-          console.error('Failed to resend verification email:', err);
-          showSnackbar('Your email is not verified. Please check your inbox for the verification email.');
+      // Check if the login was successful
+      if (result.type === 'auth/loginWithEmail/fulfilled') {
+        const userData = result.payload.user;
+        
+        // Check if user is verified using response data
+        if (!userData.isVerified) {
+          // User is not verified, send verification email and show single notification
+          try {
+            await resendVerificationEmail(userData.email);
+            showSnackbar('Your email is not verified. A new verification email has been sent - please check your inbox.');
+          } catch (err) {
+            console.error('Failed to resend verification email:', err);
+            showSnackbar('Your email is not verified. Please check your inbox for the verification email.');
+          }
+        } else {
+          // User is verified, proceed as normal
+          showSnackbar('Logged in successfully!');
+          navigate('/dashboard');
         }
       } else {
-        // User is verified, proceed as normal
-        showSnackbar('Logged in successfully!');
-        navigate('/dashboard');
+        // Login was rejected, set error message
+        setError(result.payload || 'Login failed. Please check your credentials.');
       }
     } catch (error: any) {
       setIsLoading(false);
