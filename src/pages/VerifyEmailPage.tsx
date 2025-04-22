@@ -21,7 +21,6 @@ const VerifyEmailPage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
-  const verified = searchParams.get('verified');
   
   const { verifyUserEmail } = useAuth();
 
@@ -43,7 +42,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [token, userId, verified, verifyUserEmail]);
+  }, [verifyUserEmail, token, userId]);
 
   const handleGoToHome = () => {
     navigate('/');

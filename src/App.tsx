@@ -29,8 +29,10 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
+  const redirectVerified = searchParams.get('verified') === 'true';
+
   // Check if user is verified
-  if (user && !user.isVerified) {
+  if (user && !user.isVerified && !redirectVerified) {
     return <Navigate to="/resend-verification" state={{ from: location }} replace />;
   }
 
