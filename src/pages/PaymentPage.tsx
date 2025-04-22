@@ -19,11 +19,13 @@ import {
   useMediaQuery,
   CircularProgress,
   Alert,
-  Snackbar
+  Snackbar,
+  keyframes
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -232,6 +234,24 @@ const PaymentPage: React.FC = () => {
       setError(error.message || 'An error occurred');
     }
   };
+
+  const handleNavigateToDashboard = () => {
+    navigate('/dashboard');
+  };
+
+  // Animation keyframes for the bounce effect
+  const bounceAnimation = keyframes`
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  `;
+
   // Determine the button text based on subscription status
   const getButtonText = () => {
     if (isLoading) {
@@ -255,6 +275,25 @@ const PaymentPage: React.FC = () => {
           Select the perfect plan for your needs
         </Typography>
         
+        <Button
+          variant="outlined"
+          color="primary"
+          size="medium"
+          startIcon={<DashboardIcon />}
+          onClick={handleNavigateToDashboard}
+          sx={{
+            mb: 3,
+            animation: `${bounceAnimation} 2s infinite`,
+            '&:hover': {
+              animation: 'none',
+              transform: 'scale(1.05)',
+              transition: 'transform 0.2s'
+            }
+          }}
+        >
+          Back to Dashboard
+        </Button>
+        
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -271,16 +310,6 @@ const PaymentPage: React.FC = () => {
             {success}
           </Alert>
         </Snackbar>
-        
-        {/* Subscription info alert */}
-        {subscription && subscription.tier !== 'free' && (
-          <Alert severity="info" sx={{ mb: 3, display: 'inline-flex', maxWidth: 'fit-content', mx: 'auto' }}>
-            You currently have the {subscription.tier} plan ({subscription.status})
-            {subscription.currentPeriodEnd && (
-              <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
-            )}
-          </Alert>
-        )}
         
         <FormControlLabel
           control={
@@ -317,6 +346,16 @@ const PaymentPage: React.FC = () => {
           }
           labelPlacement="end"
         />
+        
+        {/* Subscription info alert */}
+        {subscription && subscription.tier !== 'free' && (
+          <Alert severity="info" sx={{ mb: 3, mt: 2, display: 'inline-flex', maxWidth: 'fit-content', mx: 'auto' }}>
+            You currently have the {subscription.tier} plan ({subscription.status})
+            {subscription.currentPeriodEnd && (
+              <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
+            )}
+          </Alert>
+        )}
       </Box>
 
       <Box sx={{ 
