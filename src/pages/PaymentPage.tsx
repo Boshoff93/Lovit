@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -17,15 +17,24 @@ import {
   CardActions,
   useTheme,
   useMediaQuery,
-  CircularProgress
+  CircularProgress,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { setSubscription } from '../store/authSlice';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  setSubscription, 
+  createCheckoutSession, 
+  fetchSubscription,
+  createPortalSession,
+  Subscription
+} from '../store/authSlice';
+import { RootState } from '../store/store';
+import { AppDispatch } from '../store/store';
 
 interface PlanFeature {
   title: string;
@@ -117,11 +126,54 @@ const plans: PricePlan[] = [
 const PaymentPage: React.FC = () => {
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  
+  // Get auth state from Redux
+  const { isLoading, token, subscription, user } = useSelector((state: RootState) => state.auth);
+
+  // Check if user is logged in
+  useEffect(() => {
+    if (!token) {
+      // Redirect to login page if not logged in
+      navigate('/login', { state: { from: '/payment' } });
+    }
+  }, [token, navigate]);
+
+  // Fetch user's subscription on component mount
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchSubscription());
+    }
+  }, [dispatch, token]);
+
+  // Auto-select current plan if user has one
+  useEffect(() => {
+    if (subscription?.tier && subscription.tier !== 'free') {
+      setSelectedPlan(subscription.tier);
+    }
+  }, [subscription]);
+
+  // Check for success query param (for Stripe redirect)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+    
+    if (success === 'true') {
+      setSuccess('Payment successful! Your subscription has been updated.');
+      // Clear the URL parameters after reading them
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Refresh subscription data
+      dispatch(fetchSubscription());
+    } else if (success === 'false') {
+      setError('Payment was not completed. Please try again.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [dispatch]);
 
   const handleToggleInterval = () => {
     setIsYearly(!isYearly);
@@ -143,22 +195,79 @@ const PaymentPage: React.FC = () => {
     const productId = plan.productId;
     
     try {
-      setIsLoading(true);
+      setError(null);
       
-      // Create Stripe checkout session
-      const response = await axios.post('/api/create-checkout-session', {
-        priceId,
-        productId,
-        allowPriceSwitch: true // Let the backend know we want to enable price switching
-      });
+      // Use the Redux action to create a checkout session
+      const resultAction = await dispatch(createCheckoutSession({ priceId, productId }));
       
-      // Redirect to Stripe checkout
-      if (response.data.url) {
-        window.location.href = response.data.url;
+      if (createCheckoutSession.fulfilled.match(resultAction)) {
+        // Redirect to Stripe checkout
+        if (resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        }
+      } else if (createCheckoutSession.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to create checkout session');
       }
-    } catch (error) {
-      console.error('Failed to create checkout session:', error);
-      setIsLoading(false);
+    } catch (error: any) {
+      setError(error.message || 'An error occurred');
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      setError(null);
+      
+      // Use the Redux action to create a portal session
+      const resultAction = await dispatch(createPortalSession());
+      
+      if (createPortalSession.fulfilled.match(resultAction)) {
+        // Redirect to Stripe customer portal
+        if (resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        }
+      } else if (createPortalSession.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to access subscription management');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred');
+    }
+  };
+
+  // Check if the user is allowed to proceed based on their current subscription
+  const canProceedToPayment = () => {
+    if (!selectedPlan) return false;
+    
+    // If the user is on a free plan, they can select any plan
+    if (!subscription || subscription.tier === 'free') return true;
+    
+    // If they selected the same plan they already have, redirect to management
+    if (subscription.tier === selectedPlan) return false;
+    
+    return true;
+  };
+
+  // Determine the button text based on subscription status
+  const getButtonText = () => {
+    if (isLoading) {
+      return <CircularProgress size={24} color="inherit" />;
+    }
+    
+    if (subscription?.tier === selectedPlan) {
+      return 'Manage Subscription';
+    }
+    
+    if (subscription && subscription.tier !== 'free') {
+      return 'Change Plan';
+    }
+    
+    return 'Proceed to Payment';
+  };
+
+  const handleButtonClick = () => {
+    if (subscription?.tier === selectedPlan) {
+      handleManageSubscription();
+    } else {
+      handleProceedToPayment();
     }
   };
 
@@ -171,6 +280,33 @@ const PaymentPage: React.FC = () => {
         <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
           Select the perfect plan for your needs
         </Typography>
+        
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Snackbar 
+          open={!!success} 
+          autoHideDuration={6000} 
+          onClose={() => setSuccess(null)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+            {success}
+          </Alert>
+        </Snackbar>
+        
+        {/* Subscription info alert */}
+        {subscription && subscription.tier !== 'free' && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            You currently have the {subscription.tier} plan ({subscription.status})
+            {subscription.currentPeriodEnd && (
+              <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
+            )}
+          </Alert>
+        )}
         
         <FormControlLabel
           control={
@@ -364,23 +500,31 @@ const PaymentPage: React.FC = () => {
           variant="contained" 
           color="primary" 
           size="large" 
-          disabled={!selectedPlan || isLoading}
-          onClick={handleProceedToPayment}
+          disabled={!selectedPlan || isLoading || !canProceedToPayment()}
+          onClick={handleButtonClick}
           sx={{
             py: 1.5,
             px: 6,
             fontSize: '1.1rem',
           }}
         >
-          {isLoading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            'Proceed to Payment'
-          )}
+          {getButtonText()}
         </Button>
         
+        {subscription && subscription.tier !== 'free' && (
+          <Button
+            variant="outlined"
+            color="primary"
+            size="medium"
+            onClick={handleManageSubscription}
+            sx={{ ml: 2, py: 1.5 }}
+          >
+            Manage Current Subscription
+          </Button>
+        )}
+        
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          All plans include a 7-day money-back guarantee
+          If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
         </Typography>
       </Box>
     </Container>
