@@ -24,18 +24,10 @@ const VerifyEmailPage: React.FC = () => {
   const userId = searchParams.get('userId');
   const verified = searchParams.get('verified');
   
-  const { verifyUserEmail, isLoading, error } = useAuth();
+  const { verifyUserEmail } = useAuth();
   const { fetchAccountData } = useAccountData(false); // Don't fetch initially, we'll do it manually
 
   useEffect(() => {
-    // Check if this is a redirect from successful backend verification
-    if (verified === 'true') {
-      setStatus('success');
-      setMessage('Your email has been successfully verified!');
-      fetchAccountData(true); // Force fetch account data to update user status
-      return;
-    }
-
     const verifyUserEmailAsync = async () => {
       if (!token || !userId) {
         setStatus('error');
@@ -56,7 +48,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [token, userId, verified, verifyUserEmail, fetchAccountData]);
+  }, [fetchAccountData, token, userId, verified, verifyUserEmail]);
 
   const handleGoToHome = () => {
     navigate('/');
