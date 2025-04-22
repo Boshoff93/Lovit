@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Container,
@@ -13,15 +13,12 @@ import {
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
+import { useAccountData } from '../hooks/useAccountData';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal, refreshAuthToken } = useAuth();
+  const { user, subscription, createStripePortal } = useAuth();
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    refreshAuthToken();
-  }, [refreshAuthToken]);
-
+  const { isLoading, error: fetchError } = useAccountData();
 
   const handleManageSubscription = async () => {
     try {
@@ -58,9 +55,9 @@ const AccountPage: React.FC = () => {
         </Typography>
       </Box>
       
-      {error && (
+      {(error || fetchError) && (
         <Alert severity="error" sx={{ mb: 3, maxWidth: 480, mx: 'auto' }}>
-          {error}
+          {error || fetchError}
         </Alert>
       )}
       
@@ -111,6 +108,7 @@ const AccountPage: React.FC = () => {
             size="small" 
             sx={{ mt: 1 }}
             onClick={handleManageSubscription}
+            disabled={isLoading}
           >
             Manage Subscription
           </Button>

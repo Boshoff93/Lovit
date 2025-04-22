@@ -37,6 +37,7 @@ import {
 } from '../store/authSlice';
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
+import { useAccountData } from '../hooks/useAccountData';
 
 interface PlanFeature {
   title: string;
@@ -137,6 +138,9 @@ const PaymentPage: React.FC = () => {
   
   // Get auth state from Redux
   const { isLoading, token, subscription, user } = useSelector((state: RootState) => state.auth);
+  
+  // Use account data hook
+  const { fetchAccountData } = useAccountData(true);
 
   // Check if user is logged in
   useEffect(() => {
@@ -145,13 +149,6 @@ const PaymentPage: React.FC = () => {
     //   navigate('/', { state: { from: '/payment' } });
     // }
   }, [token, navigate]);
-
-  // Fetch user's subscription on component mount
-  useEffect(() => {
-    if (token) {
-      dispatch(fetchSubscription());
-    }
-  }, [dispatch, token]);
 
   // Auto-select current plan if user has one
   useEffect(() => {
@@ -169,13 +166,13 @@ const PaymentPage: React.FC = () => {
       setSuccess('Payment successful! Your subscription has been updated.');
       // Clear the URL parameters after reading them
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Refresh subscription data
-      dispatch(fetchSubscription());
+      // Refresh account data
+      fetchAccountData(true);
     } else if (success === 'false') {
       setError('Payment was not completed. Please try again.');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [dispatch]);
+  }, [fetchAccountData]);
 
   const handleToggleInterval = () => {
     setIsYearly(!isYearly);

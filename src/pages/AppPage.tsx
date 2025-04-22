@@ -10,9 +10,9 @@ import {
 import { useLocation, useSearchParams } from 'react-router-dom';
 import MainTabs from '../components/MainTabs';
 import { useAuth } from '../hooks/useAuth';
+import { useAccountData } from '../hooks/useAccountData';
 
 const AppPage: React.FC = () => {
-  const { refreshAuthToken } = useAuth();
   const [searchParams] = useSearchParams();
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -23,6 +23,9 @@ const AppPage: React.FC = () => {
     message: '',
     severity: 'success'
   });
+
+  // Fetch latest account data when the dashboard loads
+  useAccountData();
 
   useEffect(() => {
     // Check if user just subscribed
@@ -44,10 +47,6 @@ const AppPage: React.FC = () => {
       open: false
     }));
   };
-
-  useEffect(() => {
-    refreshAuthToken();
-  }, [refreshAuthToken]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 3, md: 4 } }}>

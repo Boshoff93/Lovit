@@ -13,12 +13,14 @@ import {
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import { useAuth } from '../hooks/useAuth';
+import { useAccountData } from '../hooks/useAccountData';
 
 const ResendVerificationPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
   const { resendVerificationEmail, isLoading, error } = useAuth();
+  const { fetchAccountData } = useAccountData(false); // Don't fetch initially
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +32,8 @@ const ResendVerificationPage: React.FC = () => {
     try {
       await resendVerificationEmail(email);
       setSuccess(true);
+      // Refresh account data after successful email resend
+      fetchAccountData(true);
     } catch (error: any) {
       // Error is handled by Redux and available through useAuth
     }

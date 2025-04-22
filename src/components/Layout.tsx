@@ -175,13 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     setOpen(!isMobile);
   }, [isMobile]);
-  
-  // Navigate to gallery by default
-  useEffect(() => {
-    if (location.pathname === '/') {
-      navigate('/gallery');
-    }
-  }, [location.pathname, navigate]);
+
   
   // Model creation state
   const [userProfile, setUserProfile] = useState<UserProfile>({

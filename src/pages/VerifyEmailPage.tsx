@@ -13,6 +13,7 @@ import {
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useAuth } from '../hooks/useAuth';
+import { useAccountData } from '../hooks/useAccountData';
 
 const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -24,12 +25,14 @@ const VerifyEmailPage: React.FC = () => {
   const verified = searchParams.get('verified');
   
   const { verifyUserEmail, isLoading, error } = useAuth();
+  const { fetchAccountData } = useAccountData(false); // Don't fetch initially, we'll do it manually
 
   useEffect(() => {
     // Check if this is a redirect from successful backend verification
     if (verified === 'true') {
       setStatus('success');
       setMessage('Your email has been successfully verified!');
+      fetchAccountData(true); // Force fetch account data to update user status
       return;
     }
 
@@ -45,6 +48,7 @@ const VerifyEmailPage: React.FC = () => {
         await verifyUserEmail(token, userId);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
+        fetchAccountData(true); // Force fetch account data to update user status
       } catch (error: any) {
         setStatus('error');
         setMessage(error || 'Failed to verify your email. The token may be expired or invalid.');
@@ -52,7 +56,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [token, userId, verified, verifyUserEmail]);
+  }, [token, userId, verified, verifyUserEmail, fetchAccountData]);
 
   const handleGoToHome = () => {
     navigate('/');

@@ -107,6 +107,19 @@ export const useAuth = () => {
     dispatch(setUser(newUser));
   };
 
+  // Update user information with subscription data
+  const updateUserInfo = (userData: any) => {
+    // Update user data
+    if (userData) {
+      dispatch(setUser(userData));
+      
+      // Update subscription if present
+      if (userData.subscription) {
+        dispatch(setSubscription(userData.subscription));
+      }
+    }
+  };
+
   // Store auth data (token in cookies, user in Redux)
   const storeAuthData = (data: AuthData) => {
     // Store token in cookies
@@ -146,6 +159,7 @@ export const useAuth = () => {
     signout,
     updateToken,
     updateUser,
+    updateUserInfo,
     storeAuthData
   };
 }; 
