@@ -232,43 +232,17 @@ const PaymentPage: React.FC = () => {
       setError(error.message || 'An error occurred');
     }
   };
-
-  // Check if the user is allowed to proceed based on their current subscription
-  const canProceedToPayment = () => {
-    if (!selectedPlan) return false;
-    
-    // If the user is on a free plan, they can select any plan
-    if (!subscription || subscription.tier === 'free') return true;
-    
-    // If they selected the same plan they already have, redirect to management
-    if (subscription.tier === selectedPlan) return false;
-    
-    return true;
-  };
-
   // Determine the button text based on subscription status
   const getButtonText = () => {
     if (isLoading) {
       return <CircularProgress size={24} color="inherit" />;
     }
     
-    if (subscription?.tier === selectedPlan) {
-      return 'Manage Subscription';
-    }
-    
-    if (subscription && subscription.tier !== 'free') {
-      return 'Change Plan';
-    }
-    
     return 'Proceed to Payment';
   };
 
   const handleButtonClick = () => {
-    if (subscription?.tier === selectedPlan) {
-      handleManageSubscription();
-    } else {
-      handleProceedToPayment();
-    }
+    handleProceedToPayment();
   };
 
   return (
@@ -300,7 +274,7 @@ const PaymentPage: React.FC = () => {
         
         {/* Subscription info alert */}
         {subscription && subscription.tier !== 'free' && (
-          <Alert severity="info" sx={{ mb: 3 }}>
+          <Alert severity="info" sx={{ mb: 3, display: 'inline-flex', maxWidth: 'fit-content', mx: 'auto' }}>
             You currently have the {subscription.tier} plan ({subscription.status})
             {subscription.currentPeriodEnd && (
               <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
@@ -496,30 +470,32 @@ const PaymentPage: React.FC = () => {
       </Box>
       
       <Box sx={{ mt: 6, textAlign: 'center' }}>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          size="large" 
-          disabled={!selectedPlan || isLoading || !canProceedToPayment()}
-          onClick={handleButtonClick}
-          sx={{
-            py: 1.5,
-            px: 6,
-            fontSize: '1.1rem',
-          }}
-        >
-          {getButtonText()}
-        </Button>
+        {(!subscription || subscription.tier === 'free') && (
+          <Button 
+            variant="contained" 
+            color="primary" 
+            size="large" 
+            disabled={!selectedPlan || isLoading}
+            onClick={handleButtonClick}
+            sx={{
+              py: 1.5,
+              px: 6,
+              fontSize: '1.1rem',
+            }}
+          >
+            {getButtonText()}
+          </Button>
+        )}
         
         {subscription && subscription.tier !== 'free' && (
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
-            size="medium"
+            size="large"
             onClick={handleManageSubscription}
-            sx={{ ml: 2, py: 1.5 }}
+            sx={{ py: 1.5, px: 6, fontSize: '1.1rem' }}
           >
-            Manage Current Subscription
+            Manage Subscription
           </Button>
         )}
         
