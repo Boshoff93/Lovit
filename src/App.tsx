@@ -24,11 +24,8 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const [searchParams] = useSearchParams();
   
   useEffect(() => {
-    const hasNewSubscription = searchParams.get('subscription') === 'true';
-    if (hasNewSubscription) {
       getUserSubscription();
-    }
-  }, [searchParams, getUserSubscription]);
+  }, [getUserSubscription]);
 
   // Check if user is authenticated
   if (!token) {
