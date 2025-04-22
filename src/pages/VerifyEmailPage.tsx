@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useAuth } from '../hooks/useAuth';
 import { useAccountData } from '../hooks/useAccountData';
 
 const VerifyEmailPage: React.FC = () => {
@@ -24,20 +23,11 @@ const VerifyEmailPage: React.FC = () => {
   const userId = searchParams.get('userId');
   const verified = searchParams.get('verified');
   
-  const { verifyUserEmail } = useAuth();
   const { fetchAccountData } = useAccountData(false); // Don't fetch initially, we'll do it manually
 
   useEffect(() => {
     const verifyUserEmailAsync = async () => {
-      if (!token || !userId) {
-        setStatus('error');
-        setMessage('Invalid verification link. Missing token or user ID. Please request a new one.');
-        return;
-      }
-
       try {
-        // Use Redux through the useAuth hook to verify email
-        await verifyUserEmail(token, userId);
         setStatus('success');
         setMessage('Your email has been successfully verified!');
         fetchAccountData(true); // Force fetch account data to update user status
@@ -48,7 +38,7 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [fetchAccountData, token, userId, verified, verifyUserEmail]);
+  }, [fetchAccountData, token, userId, verified]);
 
   const handleGoToHome = () => {
     navigate('/');
