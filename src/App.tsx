@@ -19,13 +19,10 @@ import ResendVerificationPage from './pages/ResendVerificationPage';
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { token, user } = useSelector((state: RootState) => state.auth);
-  const { isPremiumMember, getUserSubscription } = useAuth();
+  const { isPremiumMember } = useAuth();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   
-  useEffect(() => {
-      getUserSubscription();
-  }, [getUserSubscription]);
 
   // Check if user is authenticated
   if (!token) {

@@ -15,13 +15,18 @@ import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal } = useAuth();
+  const { user, subscription, createStripePortal, getUserSubscription } = useAuth();
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch subscription data when component mounts
+    getUserSubscription();
+  }, [getUserSubscription]);
+
 
   const handleManageSubscription = async () => {
     try {
       setError(null);
-      
       // Use the Redux action to create a portal session
       const resultAction = createStripePortal()
       

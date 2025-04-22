@@ -9,8 +9,10 @@ import {
 } from '@mui/material';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import MainTabs from '../components/MainTabs';
+import { useAuth } from '../hooks/useAuth';
 
 const AppPage: React.FC = () => {
+  const { getUserSubscription } = useAuth();
   const [searchParams] = useSearchParams();
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -42,6 +44,10 @@ const AppPage: React.FC = () => {
       open: false
     }));
   };
+
+  useEffect(() => {
+    getUserSubscription();
+}, [getUserSubscription]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 3, md: 4 } }}>
