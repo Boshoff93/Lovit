@@ -523,7 +523,15 @@ const PaymentPage: React.FC = () => {
           </Button>
         )}
         
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          sx={{ 
+            mt: 2,
+            maxWidth: '600px',
+            mx: 'auto'  // Centers the text block
+          }}
+        >
           If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
         </Typography>
       </Box>
