@@ -19,8 +19,16 @@ import ResendVerificationPage from './pages/ResendVerificationPage';
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { token, user } = useSelector((state: RootState) => state.auth);
-  const { isPremiumMember } = useAuth();
+  const { isPremiumMember, getUserSubscription } = useAuth();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  
+  useEffect(() => {
+    const hasNewSubscription = searchParams.get('subscription') === 'true';
+    if (hasNewSubscription) {
+      getUserSubscription();
+    }
+  }, [searchParams, getUserSubscription]);
 
   // Check if user is authenticated
   if (!token) {
@@ -32,8 +40,12 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/resend-verification" state={{ from: location }} replace />;
   }
 
+  // Check for subscription in URL params (user just subscribed)
+  const hasNewSubscription = searchParams.get('subscription') === 'true';
+  
   // Use isPremiumMember instead of checking subscription tier
-  if (!isPremiumMember) {
+  // Allow user through if they have just successfully subscribed
+  if (!isPremiumMember && !hasNewSubscription) {
     return <Navigate to="/payment" state={{ from: location }} replace />;
   }
 
