@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Box, 
   Container,
@@ -8,18 +8,33 @@ import {
   Button,
   Divider,
   Avatar,
-  Chip
+  Chip,
+  Alert
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
+import { createPortalSession } from '../store/authSlice';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   const handleManageSubscription = async () => {
     try {
-      await createStripePortal();
-    } catch (error) {
-      console.error('Failed to open subscription portal:', error);
+      setError(null);
+      
+      // Use the Redux action to create a portal session
+      const resultAction = createStripePortal()
+      
+      if (createPortalSession.fulfilled.match(resultAction)) {
+        // Redirect to Stripe customer portal
+        if (resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        }
+      } else if (createPortalSession.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to access subscription management');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred');
     }
   };
 
@@ -38,6 +53,12 @@ const AccountPage: React.FC = () => {
           Manage your profile and account preferences
         </Typography>
       </Box>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, maxWidth: 480, mx: 'auto' }}>
+          {error}
+        </Alert>
+      )}
       
       <Paper 
         elevation={0} 

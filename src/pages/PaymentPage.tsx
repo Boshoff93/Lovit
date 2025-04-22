@@ -25,7 +25,7 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -140,10 +140,10 @@ const PaymentPage: React.FC = () => {
 
   // Check if user is logged in
   useEffect(() => {
-    if (!token) {
-      // Redirect to login page if not logged in
-      navigate('/login', { state: { from: '/payment' } });
-    }
+    // if (!token) {
+    //   // Redirect to login page if not logged in
+    //   navigate('/', { state: { from: '/payment' } });
+    // }
   }, [token, navigate]);
 
   // Fetch user's subscription on component mount
@@ -239,19 +239,6 @@ const PaymentPage: React.FC = () => {
     navigate('/dashboard');
   };
 
-  // Animation keyframes for the bounce effect
-  const bounceAnimation = keyframes`
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-10px);
-    }
-    60% {
-      transform: translateY(-5px);
-    }
-  `;
-
   // Determine the button text based on subscription status
   const getButtonText = () => {
     if (isLoading) {
@@ -275,87 +262,71 @@ const PaymentPage: React.FC = () => {
           Select the perfect plan for your needs
         </Typography>
         
-        <Button
-          variant="outlined"
-          color="primary"
-          size="medium"
-          startIcon={<DashboardIcon />}
-          onClick={handleNavigateToDashboard}
-          sx={{
-            mb: 3,
-            animation: `${bounceAnimation} 2s infinite`,
-            '&:hover': {
-              animation: 'none',
-              transform: 'scale(1.05)',
-              transition: 'transform 0.2s'
-            }
-          }}
-        >
-          Back to Dashboard
-        </Button>
-        
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 4 }}>
+          
+          {error && (
+            <Alert severity="error" sx={{ width: '100%', maxWidth: '500px' }}>
+              {error}
+            </Alert>
+          )}
 
-        <Snackbar 
-          open={!!success} 
-          autoHideDuration={6000} 
-          onClose={() => setSuccess(null)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
-            {success}
-          </Alert>
-        </Snackbar>
-        
-        <FormControlLabel
-          control={
-            <Switch 
-              checked={isYearly}
-              onChange={handleToggleInterval}
-              color="primary"
-            />
-          }
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  fontWeight: isYearly ? 'normal' : 'bold', 
-                  color: isYearly ? 'text.secondary' : 'primary.main'
-                }}
-              >
-                Monthly
-              </Typography>
-              <Box sx={{ mx: 1 }}>|</Box>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  fontWeight: isYearly ? 'bold' : 'normal', 
-                  color: isYearly ? 'primary.main' : 'text.secondary'
-                }}
-              >
-                Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
-                  (Save up to 57%)
-                </Box>
-              </Typography>
-            </Box>
-          }
-          labelPlacement="end"
-        />
-        
-        {/* Subscription info alert */}
-        {subscription && subscription.tier !== 'free' && (
-          <Alert severity="info" sx={{ mb: 3, mt: 2, display: 'inline-flex', maxWidth: 'fit-content', mx: 'auto' }}>
-            You currently have the {subscription.tier} plan ({subscription.status})
-            {subscription.currentPeriodEnd && (
-              <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
-            )}
-          </Alert>
-        )}
+          <Snackbar 
+            open={!!success} 
+            autoHideDuration={6000} 
+            onClose={() => setSuccess(null)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+              {success}
+            </Alert>
+          </Snackbar>
+          
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={isYearly}
+                onChange={handleToggleInterval}
+                color="primary"
+              />
+            }
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: isYearly ? 'normal' : 'bold', 
+                    color: isYearly ? 'text.secondary' : 'primary.main'
+                  }}
+                >
+                  Monthly
+                </Typography>
+                <Box sx={{ mx: 1 }}>|</Box>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: isYearly ? 'bold' : 'normal', 
+                    color: isYearly ? 'primary.main' : 'text.secondary'
+                  }}
+                >
+                  Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                    (Save up to 57%)
+                  </Box>
+                </Typography>
+              </Box>
+            }
+            labelPlacement="end"
+          />
+          
+          {/* Subscription info alert */}
+          {subscription && subscription.tier !== 'free' && (
+            <Alert severity="info" sx={{ mt: 1, width: '100%', maxWidth: '500px' }}>
+              You currently have the {subscription.tier} plan ({subscription.status})
+              {subscription.currentPeriodEnd && (
+                <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
+              )}
+            </Alert>
+          )}
+        </Box>
       </Box>
 
       <Box sx={{ 
@@ -509,34 +480,64 @@ const PaymentPage: React.FC = () => {
       </Box>
       
       <Box sx={{ mt: 6, textAlign: 'center' }}>
-        {(!subscription || subscription.tier === 'free') && (
-          <Button 
-            variant="contained" 
-            color="primary" 
-            size="large" 
-            disabled={!selectedPlan || isLoading}
-            onClick={handleButtonClick}
-            sx={{
-              py: 1.5,
-              px: 6,
-              fontSize: '1.1rem',
-            }}
-          >
-            {getButtonText()}
-          </Button>
-        )}
-        
-        {subscription && subscription.tier !== 'free' && (
-          <Button
-            variant="contained"
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          justifyContent: 'center', 
+          gap: 2,
+          mb: 2
+        }}>
+          {(!subscription || subscription.tier === 'free') && (
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large" 
+              disabled={!selectedPlan || isLoading}
+              onClick={handleButtonClick}
+              sx={{
+                py: 1.5,
+                px: 6,
+                fontSize: '1.1rem',
+                width: { xs: '100%', sm: 'auto', md: 'auto' }
+              }}
+            >
+              {getButtonText()}
+            </Button>
+          )}
+          
+          {subscription && subscription.tier !== 'free' && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleManageSubscription}
+              sx={{ 
+                py: 1.5, 
+                px: 6, 
+                fontSize: '1.1rem',
+                width: { xs: '100%', sm: 'auto', md: 'auto' }
+              }}
+            >
+              Manage Subscription
+            </Button>
+          )}
+
+          {subscription && subscription.tier !== 'free' && (<Button
+            variant="outlined"
             color="primary"
             size="large"
-            onClick={handleManageSubscription}
-            sx={{ py: 1.5, px: 6, fontSize: '1.1rem' }}
+            startIcon={<DashboardIcon />}
+            onClick={handleNavigateToDashboard}
+            sx={{ 
+              py: 1.5, 
+              px: 6, 
+              fontSize: '1.1rem',
+              width: { xs: '100%', sm: 'auto', md: 'auto' }
+            }}
           >
-            Manage Subscription
-          </Button>
-        )}
+            Back to Dashboard
+          </Button>)}
+        </Box>
         
         <Typography 
           variant="body2" 
