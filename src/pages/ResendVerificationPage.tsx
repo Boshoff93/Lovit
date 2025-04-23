@@ -49,9 +49,9 @@ const ResendVerificationPage: React.FC = () => {
     }
   };
 
-  const handleGoToLogin = () => {
+  const handleGoToLogin = useCallback(() => {
     navigate('/');
-  };
+  }, [navigate]);
 
   return (
     <Container maxWidth="sm">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Box, 
@@ -49,17 +49,17 @@ const VerifyEmailPage: React.FC = () => {
     verifyUserEmailAsync();
   }, [verifyUserEmail, token, userId, fetchAccountData]);
 
-  const handleGoToHome = () => {
+  const handleGoToHome = useCallback(() => {
     navigate('/');
-  };
+  }, [navigate]);
 
-  const handleGoToDashboard = () => {
-    navigate('/dashboard');
-  };
+  const handleGoToPayment = useCallback(() => {
+    navigate('/payment');
+  }, [navigate]);
 
-  const handleResendVerification = () => {
+  const handleResendVerification = useCallback(() => {
     navigate('/resend-verification');
-  };
+  }, [navigate]);
 
   return (
     <Container maxWidth="sm">
@@ -102,7 +102,7 @@ const VerifyEmailPage: React.FC = () => {
               <Button 
                 variant="contained" 
                 color="primary" 
-                onClick={handleGoToDashboard}
+                onClick={handleGoToPayment}
                 sx={{ mt: 2 }}
               >
                 Continue
