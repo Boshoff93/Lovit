@@ -30,6 +30,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
+  console.log(subscription?.tier)
   const redirectVerified = searchParams.get('verified') === 'true';
 
   // Check if user is verified
@@ -39,6 +40,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
 
   // Check for subscription in URL params (user just subscribed)
   const hasNewSubscription = searchParams.get('subscription') === 'true';
+  console.log(hasNewSubscription, isPremiumMember)
   
   // Use isPremiumMember instead of checking subscription tier
   // Allow user through if they have just successfully subscribed
