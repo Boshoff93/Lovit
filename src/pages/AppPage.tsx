@@ -42,7 +42,7 @@ const AppPage: React.FC = () => {
     if (hasSubscribed) {
       setNotification({
         open: true,
-        message: `Welcome to ${tier} Tier! Can't wait to see what you try on!`,
+        message: `Welcome to Lovit! Create a model and start trying on cloths!`,
         severity: 'success'
       });
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Typography, 
   Button, 
@@ -86,7 +86,8 @@ const HomePage: React.FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
   const navigate = useNavigate();
-  const { login, signup, googleLogin, user, isLoading: authLoading, error: authError, resendVerificationEmail, getGoogleIdToken, isPremiumMember } = useAuth();
+  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
+  const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
 
   const handleClickOpen = () => {
     if (user) {

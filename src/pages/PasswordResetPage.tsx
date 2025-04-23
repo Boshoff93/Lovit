@@ -21,9 +21,10 @@ const PasswordResetPage: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { confirmResetPassword, isLoading, error, isPremiumMember } = useAuth();
+  const { confirmResetPassword, isLoading, error, subscription } = useAuth();
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
+  const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
 
   useEffect(() => {
     if (!token) {

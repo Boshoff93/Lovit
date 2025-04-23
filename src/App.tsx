@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -20,10 +20,10 @@ import PasswordResetPage from './pages/PasswordResetPage';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  const { token, user } = useSelector((state: RootState) => state.auth);
-  const { isPremiumMember } = useAuth();
+  const { token, user, subscription} = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [searchParams] = useSearchParams();
+   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   
 
   // Check if user is authenticated
