@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from './useAuth';
 
@@ -8,13 +8,13 @@ export const useAccountData = (shouldFetch: boolean = true) => {
   const { user, subscription, token, updateUser } = useAuth();
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const lastFetched = useRef<Date | null>(null);
 
   const fetchAccountData = useCallback(async (force: boolean = false) => {
     if (!token) return;
     
     // Skip fetch if we recently fetched and force is false
-    if (!force && lastFetched && (new Date().getTime() - lastFetched.getTime() < 60000)) {
+    if (!force && lastFetched.current && (new Date().getTime() - lastFetched.current.getTime() < 60000)) {
       return;
     }
     
@@ -41,12 +41,17 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       const { user: fetchedUser } = response.data;
       
       // Always update if we have fetched user data
-      if (fetchedUser) {
+      if (fetchedUser && 
+        (fetchedUser.username !== user?.username || 
+         fetchedUser.email !== user?.email || 
+         fetchedUser.isVerified !== user?.isVerified ||
+         fetchedUser.subscription?.tier !== subscription?.tier ||
+         fetchedUser.subscription?.status !== subscription?.status)) {
         console.log('Updating user with:', fetchedUser);
         updateUser(fetchedUser);
       }
       
-      setLastFetched(new Date());
+      lastFetched.current = new Date();
       setStatus('success');
     } catch (err: any) {
       console.error('Failed to fetch account data:', err);
@@ -58,7 +63,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, user?.userId, updateUser, lastFetched, user]);
+  },[token, updateUser, user, subscription?.status, subscription?.tier]);
 
   // Initial fetch on mount
   useEffect(() => {
@@ -71,7 +76,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
     status,
     isLoading: status === 'loading',
     error,
-    lastFetched,
+    lastFetched: lastFetched.current,
     fetchAccountData
   };
 }; 
