@@ -28,11 +28,8 @@ const VerifyEmailPage: React.FC = () => {
   const { verifyUserEmail } = useAuth();
 
   useEffect(() => {
-    if (!hasInitialFetch.current) {
       fetchAccountData(true);
-      hasInitialFetch.current = true;
-    }
-  }, [fetchAccountData]);
+  }, []);
 
   useEffect(() => {
     const verifyUserEmailAsync = async () => {

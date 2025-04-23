@@ -23,15 +23,11 @@ const ResendVerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
   const { resendVerificationEmail, isLoading, error } = useAuth();
-  const hasInitialFetch = useRef<boolean>(false);
   const { fetchAccountData } = useAccountData(false);
 
   useEffect(() => {
-    if (!hasInitialFetch.current) {
       fetchAccountData(true);
-      hasInitialFetch.current = true;
-    }
-  }, [fetchAccountData]);
+  }, []);
 
   // Redirect to dashboard if user is verified
   useEffect(() => {

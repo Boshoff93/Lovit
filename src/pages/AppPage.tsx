@@ -28,11 +28,8 @@ const AppPage: React.FC = () => {
 
   // Fetch latest account data when the dashboard loads
   useEffect(() => {
-    if (!hasInitialFetch.current) {
       fetchAccountData(true);
-      hasInitialFetch.current = true;
-    }
-  }, [fetchAccountData]);
+  }, []);
 
   useEffect(() => {
     // Check if user just subscribed

@@ -19,15 +19,11 @@ import { useAccountData } from '../hooks/useAccountData';
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal } = useAuth();
   const [error, setError] = useState<string | null>(null);
-  const hasInitialFetch = useRef<boolean>(false);
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
 
   useEffect(() => {
-    if (!hasInitialFetch.current) {
       fetchAccountData(true);
-      hasInitialFetch.current = true;
-    }
-  }, [fetchAccountData]);
+  }, []);
 
   const [portalLoading, setPortalLoading] = useState(false);
 

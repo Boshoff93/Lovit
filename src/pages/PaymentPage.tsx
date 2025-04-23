@@ -276,7 +276,7 @@ const PaymentPage: React.FC = () => {
 
   useEffect(() => {
       fetchAccountData(true);
-  }, [fetchAccountData]);
+  }, []);
 
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {

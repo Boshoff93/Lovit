@@ -63,7 +63,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, updateUser, user, subscription?.status, subscription?.tier]);
+  },[token, updateUser]); // don't add all dependencies
 
   // Initial fetch on mount
   useEffect(() => {
