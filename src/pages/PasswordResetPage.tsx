@@ -66,15 +66,11 @@ const PasswordResetPage: React.FC = () => {
       
       if (result.type.endsWith('/fulfilled')) {
         setSuccess(true);
-        setTimeout(() => {
-          // Navigate to dashboard or payment based on subscription status
-          navigate(isPremiumMember ? '/dashboard' : '/payment');
-        }, 3000);
       }
     } catch (error: any) {
       // Error is handled by Redux and available through useAuth
     }
-  }, [confirmResetPassword, isPremiumMember, navigate, token, confirmPassword, newPassword, userId]);
+  }, [confirmResetPassword, token, confirmPassword, newPassword, userId]);
 
   const handleBackToHome = useCallback(() => {
     navigate('/');
@@ -161,7 +157,7 @@ const PasswordResetPage: React.FC = () => {
                   onClick={handleBackToHome}
                   underline="hover"
                 >
-                  Back to Login
+                  Back to Home
                 </Link>
               </Box>
             </Box>

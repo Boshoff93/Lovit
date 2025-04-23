@@ -110,7 +110,7 @@ const PasswordResetRequestPage: React.FC = () => {
                   onClick={handleGoToLogin}
                   underline="hover"
                 >
-                  Back to Login
+                  Back to Home
                 </Link>
               </Box>
             </Box>
@@ -129,7 +129,7 @@ const PasswordResetRequestPage: React.FC = () => {
                 onClick={handleGoToLogin}
                 sx={{ mt: 2 }}
               >
-                Back to Login
+                Back to Home
               </Button>
             </Box>
           )}
