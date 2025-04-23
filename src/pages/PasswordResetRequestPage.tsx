@@ -117,7 +117,7 @@ const PasswordResetRequestPage: React.FC = () => {
           ) : (
             <Box sx={{ mt: 2, textAlign: 'center' }}>
               <Alert severity="success" sx={{ mb: 3 }}>
-                Reset email sent successfully!
+                If an account exists with this email address, we've sent a reset link.
               </Alert>
               <Typography color="text.secondary" paragraph>
                 Please check your email inbox for the password reset link.
