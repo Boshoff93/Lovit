@@ -155,7 +155,7 @@ const PaymentPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   
   // Get auth state from Redux
-  const { isLoading, token, subscription, user } = useSelector((state: RootState) => state.auth);
+  const { isLoading, subscription } = useSelector((state: RootState) => state.auth);
   
   // Use account data hook
   const { fetchAccountData } = useAccountData(false);
@@ -164,6 +164,7 @@ const PaymentPage: React.FC = () => {
   const { signout } = useAuth();
 
   const proceedRef = useRef<HTMLDivElement>(null);
+  const hasInitialFetch = useRef<boolean>(false);
 
   // Auto-select current plan if user has one
   useEffect(() => {
@@ -275,11 +276,9 @@ const PaymentPage: React.FC = () => {
   },[signout, navigate]);
 
   useEffect(() => {
-    try {
-      fetchAccountData(true);
-    } catch (error) {
-      console.error('Failed to fetch account data:', error);
-      handleLogout();
+    if (!hasInitialFetch.current) {
+        fetchAccountData(true);
+        hasInitialFetch.current = true;
     }
   }, [fetchAccountData, handleLogout]);
 

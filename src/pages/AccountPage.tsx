@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { 
   Box, 
   Container,
@@ -19,7 +19,16 @@ import { useAccountData } from '../hooks/useAccountData';
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal } = useAuth();
   const [error, setError] = useState<string | null>(null);
-  const { isLoading, error: fetchError } = useAccountData();
+  const hasInitialFetch = useRef<boolean>(false);
+  const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
+
+  useEffect(() => {
+    if (!hasInitialFetch.current) {
+      fetchAccountData(true);
+      hasInitialFetch.current = true;
+    }
+  }, [fetchAccountData]);
+
   const [portalLoading, setPortalLoading] = useState(false);
 
   const handleManageSubscription = useCallback(async () => {

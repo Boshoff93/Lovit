@@ -23,8 +23,16 @@ const VerifyEmailPage: React.FC = () => {
   const token = searchParams.get('token');
   const userId = searchParams.get('userId');
   const verificationAttempted = useRef(false);
+  const hasInitialFetch = useRef<boolean>(false);
   const { fetchAccountData } = useAccountData(false);
   const { verifyUserEmail } = useAuth();
+
+  useEffect(() => {
+    if (!hasInitialFetch.current) {
+      fetchAccountData(true);
+      hasInitialFetch.current = true;
+    }
+  }, [fetchAccountData]);
 
   useEffect(() => {
     const verifyUserEmailAsync = async () => {

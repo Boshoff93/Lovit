@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Box, 
   Container,
@@ -14,6 +14,8 @@ import { useAccountData } from '../hooks/useAccountData';
 
 const AppPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const hasInitialFetch = useRef<boolean>(false);
+  const { fetchAccountData } = useAccountData(false);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -25,7 +27,12 @@ const AppPage: React.FC = () => {
   });
 
   // Fetch latest account data when the dashboard loads
-  useAccountData();
+  useEffect(() => {
+    if (!hasInitialFetch.current) {
+      fetchAccountData(true);
+      hasInitialFetch.current = true;
+    }
+  }, [fetchAccountData]);
 
   useEffect(() => {
     // Check if user just subscribed
