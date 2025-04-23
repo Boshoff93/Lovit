@@ -25,8 +25,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const [searchParams] = useSearchParams();
    const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   
-
-  // Check if user is authenticated
+  console.log(subscription)
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
