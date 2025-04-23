@@ -15,6 +15,8 @@ import AccountPage from './pages/AccountPage';
 import PaymentPage from './pages/PaymentPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import ResendVerificationPage from './pages/ResendVerificationPage';
+import PasswordResetRequestPage from './pages/PasswordResetRequestPage';
+import PasswordResetPage from './pages/PasswordResetPage';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -81,6 +83,12 @@ function App() {
         
         {/* Resend verification page */}
         <Route path="/resend-verification" element={<ResendVerificationPage />} />
+
+        {/* Password reset request page */}
+        <Route path="/reset-password-request" element={<PasswordResetRequestPage />} />
+        
+        {/* Password reset page */}
+        <Route path="/reset-password" element={<PasswordResetPage />} />
       </Routes>
     </Router>
   );

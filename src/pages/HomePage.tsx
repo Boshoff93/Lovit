@@ -20,7 +20,8 @@ import {
   Alert,
   Snackbar,
   Tabs,
-  Tab
+  Tab,
+  Link
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -408,6 +409,16 @@ const HomePage: React.FC = () => {
                   onKeyPress={handleKeyPressLogin}
                   sx={{ mb: 3 }}
                 />
+                <Box sx={{ width: '100%', textAlign: 'center', mb: 2 }}>
+                  <Link
+                    component={RouterLink}
+                    to="/reset-password-request"
+                    variant="body2"
+                    underline="hover"
+                  >
+                    Forgot Password?
+                  </Link>
+                </Box>
                 <Button 
                   fullWidth 
                   variant="contained" 

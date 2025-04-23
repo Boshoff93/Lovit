@@ -11,6 +11,7 @@ import {
   verifyEmail,
   resendVerification,
   requestPasswordReset,
+  confirmPasswordReset,
   refreshToken,
   fetchSubscription,
   createCheckoutSession,
@@ -62,6 +63,11 @@ export const useAuth = () => {
     return dispatch(requestPasswordReset(email));
   };
 
+  // Confirm password reset with token and new password
+  const confirmResetPassword = async (token: string, newPassword: string, userId?: string) => {
+    return dispatch(confirmPasswordReset({ token, newPassword, userId }));
+  };
+
   // Refresh auth token
   const refreshAuthToken = async () => {
     // First check if we have a token to refresh
@@ -107,19 +113,6 @@ export const useAuth = () => {
     dispatch(setUser(newUser));
   };
 
-  // Update user information with subscription data
-  const updateUserInfo = (userData: any) => {
-    // Update user data
-    if (userData) {
-      dispatch(setUser(userData));
-      
-      // Update subscription if present
-      if (userData.subscription) {
-        dispatch(setSubscription(userData.subscription));
-      }
-    }
-  };
-
   // Store auth data (token in cookies, user in Redux)
   const storeAuthData = (data: AuthData) => {
     // Store token in cookies
@@ -151,6 +144,7 @@ export const useAuth = () => {
     verifyUserEmail,
     resendVerificationEmail,
     resetPassword,
+    confirmResetPassword,
     refreshAuthToken,
     getUserSubscription,
     createStripeCheckout,
@@ -159,7 +153,6 @@ export const useAuth = () => {
     signout,
     updateToken,
     updateUser,
-    updateUserInfo,
     storeAuthData
   };
 }; 

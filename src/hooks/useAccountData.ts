@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from './useAuth';
 
 type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export const useAccountData = (shouldFetch: boolean = true) => {
-  const { user, subscription, token, updateUserInfo } = useAuth();
+  const { user, subscription, token, updateUser } = useAuth();
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
 
-  const fetchAccountData = async (force: boolean = false) => {
+  const fetchAccountData = useCallback(async (force: boolean = false) => {
     if (!token) return;
     
     // Skip fetch if we recently fetched and force is false
@@ -40,7 +40,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
            fetchedUser.isVerified !== user?.isVerified ||
            fetchedUser.subscription?.tier !== subscription?.tier ||
            fetchedUser.subscription?.status !== subscription?.status)) {
-        updateUserInfo(fetchedUser);
+        updateUser(fetchedUser);
       }
       
       setLastFetched(new Date());
@@ -50,14 +50,14 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  };
+  },[token, user, subscription, updateUser, lastFetched]);
 
   // Initial fetch on mount
   useEffect(() => {
     if (shouldFetch && token) {
       fetchAccountData();
     }
-  }, [token, shouldFetch]);
+  }, [token, shouldFetch, fetchAccountData]);
 
   return {
     status,

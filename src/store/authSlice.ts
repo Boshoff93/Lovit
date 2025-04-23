@@ -80,6 +80,28 @@ export const requestPasswordReset = createAsyncThunk(
   }
 );
 
+export const confirmPasswordReset = createAsyncThunk(
+  'auth/confirmPasswordReset',
+  async ({ token, newPassword, userId }: { token: string; newPassword: string; userId?: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/reset-password-confirm`, {
+        token,
+        newPassword,
+        userId
+      });
+      
+      // Store auth data in cookies and localStorage if login successful
+      if (response.data.token) {
+        storeAuthData(response.data);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Password reset failed');
+    }
+  }
+);
+
 export const loginWithEmail = createAsyncThunk(
   'auth/loginWithEmail',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
@@ -381,6 +403,23 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Confirm Password Reset
+    builder
+      .addCase(confirmPasswordReset.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(confirmPasswordReset.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+      })
+      .addCase(confirmPasswordReset.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
