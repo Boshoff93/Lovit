@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Container,
@@ -29,6 +29,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/SpaceDashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -130,11 +131,24 @@ const plans: PricePlan[] = [
   }
 ];
 
+const bounceAnimation = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+`;
+
 const PaymentPage: React.FC = () => {
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -148,6 +162,8 @@ const PaymentPage: React.FC = () => {
   
   // Get signout function from useAuth
   const { signout } = useAuth();
+
+  const proceedRef = useRef<HTMLDivElement>(null);
 
   // Check if user is logged in
   useEffect(() => {
@@ -180,6 +196,24 @@ const PaymentPage: React.FC = () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [fetchAccountData]);
+
+  // Use Intersection Observer to detect if proceed button is in viewport
+  useEffect(() => {
+    if (!proceedRef.current || !selectedPlan || !isMobile) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsButtonVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(proceedRef.current);
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, [selectedPlan, isMobile]);
 
   const handleToggleInterval = () => {
     setIsYearly(!isYearly);
@@ -259,6 +293,10 @@ const PaymentPage: React.FC = () => {
 
   const handleButtonClick = () => {
     handleProceedToPayment();
+  };
+
+  const scrollToProceed = () => {
+    proceedRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -378,7 +416,8 @@ const PaymentPage: React.FC = () => {
               sx={{ 
                 flex: { xs: '1 1 100%', md: '1 1 calc(33% - 24px)' }, 
                 maxWidth: { xs: '100%', md: 'calc(33% - 24px)' },
-                minWidth: { xs: '100%', md: '300px' }
+                minWidth: { xs: '100%', md: '300px' },
+                position: 'relative'
               }}
             >
               <Card 
@@ -501,22 +540,25 @@ const PaymentPage: React.FC = () => {
                 </CardContent>
                 
                 <CardActions sx={{ p: 3, pt: 0, mt: 'auto' }}>
-                  <Button 
-                    fullWidth 
-                    variant={selectedPlan === plan.id ? "contained" : "outlined"}
-                    color="primary"
-                    size="large"
-                    sx={{ py: 1 }}
+                  <Typography 
+                    variant="body1" 
+                    align="center"
+                    color={selectedPlan === plan.id ? "primary" : "text.secondary"}
+                    sx={{ 
+                      width: '100%', 
+                      fontWeight: selectedPlan === plan.id ? 'bold' : 'normal',
+                      py: 1
+                    }}
                   >
-                    {selectedPlan === plan.id ? "Selected" : "Select Plan"}
-                  </Button>
+                    {selectedPlan === plan.id ? "✓ Selected" : "Select"}
+                  </Typography>
                 </CardActions>
               </Card>
             </Box>
           ))}
         </Box>
         
-        <Box sx={{ mt: 6, textAlign: 'center' }}>
+        <Box ref={proceedRef} sx={{ mt: 6, textAlign: 'center' }}>
           <Box sx={{ 
             display: 'flex', 
             flexWrap: 'wrap', 
@@ -589,6 +631,40 @@ const PaymentPage: React.FC = () => {
           </Typography>
         </Box>
       </Container>
+
+      {/* Only show arrow when "Proceed to Payment" button is not visible */}
+      {isMobile && selectedPlan && !isButtonVisible && (
+        <Box 
+          onClick={scrollToProceed}
+          sx={{ 
+            position: 'fixed',
+            bottom: 20,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 1000,
+            animation: `${bounceAnimation} 2s infinite`,
+            cursor: 'pointer'
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: theme.palette.primary.main,
+              color: 'white',
+              borderRadius: '50%',
+              boxShadow: 4,
+              p: 1.5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              filter: 'drop-shadow(0 4px 12px rgba(103, 58, 183, 0.5))'
+            }}
+          >
+            <KeyboardArrowDownIcon fontSize="medium" />
+          </Box>
+        </Box>
+      )}
     </>
   );
 };
