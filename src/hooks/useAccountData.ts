@@ -5,7 +5,7 @@ import { useAuth } from './useAuth';
 type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export const useAccountData = (shouldFetch: boolean = true) => {
-  const { user, subscription, token, updateUser } = useAuth();
+  const { user, subscription, token, updateUser, updateSubscription } = useAuth();
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const lastFetched = useRef<Date | null>(null);
@@ -44,11 +44,25 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       if (fetchedUser && 
         (fetchedUser.username !== user?.username || 
          fetchedUser.email !== user?.email || 
-         fetchedUser.isVerified !== user?.isVerified ||
-         fetchedUser.subscription?.tier !== subscription?.tier ||
-         fetchedUser.subscription?.status !== subscription?.status)) {
+         fetchedUser.isVerified !== user?.isVerified)) {
         console.log('Updating user with:', fetchedUser);
         updateUser(fetchedUser);
+      }
+      
+      // Check if subscription data exists and update it separately
+      if (fetchedUser?.subscription) {
+        const fetchedSubscription = fetchedUser.subscription;
+        if (
+          !subscription ||
+          fetchedSubscription.tier !== subscription.tier ||
+          fetchedSubscription.status !== subscription.status ||
+          fetchedSubscription.subscriptionId !== subscription.subscriptionId ||
+          fetchedSubscription.customerId !== subscription.customerId ||
+          fetchedSubscription.currentPeriodEnd !== subscription.currentPeriodEnd
+        ) {
+          console.log('Updating subscription with:', fetchedSubscription);
+          updateSubscription(fetchedSubscription);
+        }
       }
       
       lastFetched.current = new Date();
@@ -63,7 +77,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, updateUser]); // don't add all dependencies
+  },[token, updateUser, updateSubscription]); // added updateSubscription to dependencies
 
   // Initial fetch on mount
   useEffect(() => {
