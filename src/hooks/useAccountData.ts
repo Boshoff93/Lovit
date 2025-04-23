@@ -33,13 +33,8 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       
       const { user: fetchedUser } = response.data;
       
-      // Only update if data is different
-      if (fetchedUser && 
-          (fetchedUser.username !== user?.username || 
-           fetchedUser.email !== user?.email || 
-           fetchedUser.isVerified !== user?.isVerified ||
-           fetchedUser.subscription?.tier !== subscription?.tier ||
-           fetchedUser.subscription?.status !== subscription?.status)) {
+      // Always update if we have fetched user data
+      if (fetchedUser) {
         updateUser(fetchedUser);
       }
       
@@ -50,7 +45,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, user, subscription, updateUser, lastFetched]);
+  },[token, updateUser, lastFetched]);
 
   // Initial fetch on mount
   useEffect(() => {

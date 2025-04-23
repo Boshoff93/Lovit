@@ -164,11 +164,10 @@ const PaymentPage: React.FC = () => {
   const { signout } = useAuth();
 
   const proceedRef = useRef<HTMLDivElement>(null);
-  const hasInitialFetch = useRef<boolean>(false);
 
   // Auto-select current plan if user has one
   useEffect(() => {
-    if (subscription?.tier && subscription.tier !== 'free') {
+    if (subscription?.tier &&  subscription.tier !== 'free') {
       setSelectedPlan(subscription.tier);
     }
   }, [subscription]);
@@ -276,11 +275,8 @@ const PaymentPage: React.FC = () => {
   },[signout, navigate]);
 
   useEffect(() => {
-    if (!hasInitialFetch.current) {
-        fetchAccountData(true);
-        hasInitialFetch.current = true;
-    }
-  }, [fetchAccountData, handleLogout]);
+      fetchAccountData(true);
+  }, [fetchAccountData]);
 
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {
