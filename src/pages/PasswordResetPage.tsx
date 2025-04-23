@@ -60,9 +60,14 @@ const PasswordResetPage: React.FC = () => {
       return;
     }
 
+    if (!userId) {
+      setValidationError('User ID is missing');
+      return;
+    }
+
     try {
       // Call API to reset password with token and userId
-      const result = await confirmResetPassword(token, newPassword, userId || undefined);
+      const result = await confirmResetPassword(token, newPassword, userId);
       
       if (result.type.endsWith('/fulfilled')) {
         setSuccess(true);
