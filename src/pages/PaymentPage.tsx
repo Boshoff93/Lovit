@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -165,14 +165,6 @@ const PaymentPage: React.FC = () => {
 
   const proceedRef = useRef<HTMLDivElement>(null);
 
-  // Check if user is logged in
-  useEffect(() => {
-    // if (!token) {
-    //   // Redirect to login page if not logged in
-    //   navigate('/', { state: { from: '/payment' } });
-    // }
-  }, [token, navigate]);
-
   // Auto-select current plan if user has one
   useEffect(() => {
     if (subscription?.tier && subscription.tier !== 'free') {
@@ -215,15 +207,15 @@ const PaymentPage: React.FC = () => {
     };
   }, [selectedPlan, isMobile]);
 
-  const handleToggleInterval = () => {
+  const handleToggleInterval = useCallback(() => {
     setIsYearly(!isYearly);
-  };
+  },[setIsYearly, isYearly]);
 
-  const handleSelectPlan = (planId: string) => {
+  const handleSelectPlan = useCallback((planId: string) => {
     setSelectedPlan(planId);
-  };
+  },[setSelectedPlan]);
 
-  const handleProceedToPayment = async () => {
+  const handleProceedToPayment = useCallback(async () => {
     if (!selectedPlan) return;
     
     // Find the selected plan
@@ -251,9 +243,9 @@ const PaymentPage: React.FC = () => {
     } catch (error: any) {
       setError(error.message || 'An error occurred');
     }
-  };
+  },[dispatch, selectedPlan, isYearly]);
 
-  const handleManageSubscription = async () => {
+  const handleManageSubscription = useCallback(async () => {
     try {
       setError(null);
       
@@ -271,33 +263,33 @@ const PaymentPage: React.FC = () => {
     } catch (error: any) {
       setError(error.message || 'An error occurred');
     }
-  };
+  },[dispatch]);
 
-  const handleNavigateToDashboard = () => {
+  const handleNavigateToDashboard = useCallback(() => {
     navigate('/dashboard');
-  };
+  },[navigate]);
   
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     signout();
     navigate('/');
-  };
+  },[signout, navigate]);
 
   // Determine the button text based on subscription status
-  const getButtonText = () => {
+  const getButtonText = useCallback(() => {
     if (isLoading) {
       return <CircularProgress size={24} color="inherit" />;
     }
     
     return 'Proceed to Payment';
-  };
+  },[isLoading]);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     handleProceedToPayment();
-  };
+  },[handleProceedToPayment]);
 
-  const scrollToProceed = () => {
+  const scrollToProceed = useCallback(() => {
     proceedRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  },[proceedRef]);
 
   return (
     <>

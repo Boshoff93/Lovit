@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { 
   Box, 
   Container,
@@ -22,7 +22,7 @@ const AccountPage: React.FC = () => {
   const { isLoading, error: fetchError } = useAccountData();
   const [portalLoading, setPortalLoading] = useState(false);
 
-  const handleManageSubscription = async () => {
+  const handleManageSubscription = useCallback(async () => {
     try {
       setError(null);
       setPortalLoading(true);
@@ -42,12 +42,12 @@ const AccountPage: React.FC = () => {
     } finally {
       setPortalLoading(false);
     }
-  };
+  },[createStripePortal, setError, setPortalLoading]);
 
   // Format subscription tier for display
-  const formatTier = (tier: string) => {
+  const formatTier = useCallback((tier: string) => {
     return tier.charAt(0).toUpperCase() + tier.slice(1);
-  };
+  },[]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

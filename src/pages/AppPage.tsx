@@ -41,12 +41,12 @@ const AppPage: React.FC = () => {
     }
   }, [searchParams]);
 
-  const handleCloseNotification = () => {
+  const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({
       ...prev,
       open: false
     }));
-  };
+  },[setNotification]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 3, md: 4 } }}>
