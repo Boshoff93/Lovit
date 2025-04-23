@@ -279,10 +279,6 @@ const PaymentPage: React.FC = () => {
     navigate('/');
   },[signout, navigate]);
 
-  useEffect(() => {
-      fetchAccountData(true);
-  }, []);
-
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {
     if (isLoading) {
@@ -329,7 +325,7 @@ const PaymentPage: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
             Choose Your Plan

@@ -14,7 +14,6 @@ import { useAccountData } from '../hooks/useAccountData';
 
 const AppPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const hasInitialFetch = useRef<boolean>(false);
   const { fetchAccountData } = useAccountData(false);
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -34,7 +33,6 @@ const AppPage: React.FC = () => {
   useEffect(() => {
     // Check if user just subscribed
     const hasSubscribed = searchParams.get('subscription') === 'true';
-    const tier = searchParams.get('tier') || 'Premium';
     
     if (hasSubscribed) {
       setNotification({
@@ -53,7 +51,7 @@ const AppPage: React.FC = () => {
   },[setNotification]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 3, md: 4 } }}>
+    <Container maxWidth="xl" sx={{ py: 2, px: { xs: 1, sm: 1, md: 1 } }}>
       <Box sx={{ mb: 5 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Welcome to Your Lovit Dashboard
