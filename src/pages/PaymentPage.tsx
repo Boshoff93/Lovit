@@ -37,8 +37,7 @@ import {
   createCheckoutSession, 
   fetchSubscription,
   createPortalSession,
-  Subscription,
-  logout
+  Subscription
 } from '../store/authSlice';
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
@@ -160,15 +159,6 @@ const PaymentPage: React.FC = () => {
   
   // Use account data hook
   const { fetchAccountData } = useAccountData(false);
-
-  useEffect(() => {
-    try {
-      fetchAccountData(true);
-    } catch (error) {
-      console.error('Failed to fetch account data:', error);
-      logout()
-    }
-  }, [fetchAccountData]);
   
   // Get signout function from useAuth
   const { signout } = useAuth();
@@ -283,6 +273,15 @@ const PaymentPage: React.FC = () => {
     signout();
     navigate('/');
   },[signout, navigate]);
+
+  useEffect(() => {
+    try {
+      fetchAccountData(true);
+    } catch (error) {
+      console.error('Failed to fetch account data:', error);
+      handleLogout();
+    }
+  }, [fetchAccountData, handleLogout]);
 
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {
