@@ -22,9 +22,6 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setStatus('loading');
       setError(null);
       
-      console.log('Fetching account data with token:', token);
-      console.log('Current user:', user);
-      
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/user/account`, 
         {
@@ -37,7 +34,6 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         }
       );
       
-      console.log('Account data response:', response.data);
       const { user: fetchedUser } = response.data;
       
       // Always update if we have fetched user data
@@ -45,7 +41,6 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         (fetchedUser.username !== user?.username || 
          fetchedUser.email !== user?.email || 
          fetchedUser.isVerified !== user?.isVerified)) {
-        console.log('Updating user with:', fetchedUser);
         updateUser(fetchedUser);
       }
       
@@ -60,7 +55,6 @@ export const useAccountData = (shouldFetch: boolean = true) => {
           fetchedSubscription.customerId !== subscription.customerId ||
           fetchedSubscription.currentPeriodEnd !== subscription.currentPeriodEnd
         ) {
-          console.log('Updating subscription with:', fetchedSubscription);
           updateSubscription(fetchedSubscription);
         }
       }
@@ -68,12 +62,6 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       lastFetched.current = new Date();
       setStatus('success');
     } catch (err: any) {
-      console.error('Failed to fetch account data:', err);
-      console.error('Error details:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        headers: err.response?.headers
-      });
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }

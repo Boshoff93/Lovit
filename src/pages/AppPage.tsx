@@ -27,7 +27,7 @@ const AppPage: React.FC = () => {
 
   // Fetch latest account data when the dashboard loads
   useEffect(() => {
-      fetchAccountData(true);
+      fetchAccountData(false);
   }, []);
 
   useEffect(() => {

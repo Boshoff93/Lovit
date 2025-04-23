@@ -25,12 +25,10 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const [searchParams] = useSearchParams();
    const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   
-  console.log(subscription)
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  console.log(subscription?.tier)
   const redirectVerified = searchParams.get('verified') === 'true';
 
   // Check if user is verified
@@ -40,7 +38,6 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
 
   // Check for subscription in URL params (user just subscribed)
   const hasNewSubscription = searchParams.get('subscription') === 'true';
-  console.log(hasNewSubscription, isPremiumMember)
   
   // Use isPremiumMember instead of checking subscription tier
   // Allow user through if they have just successfully subscribed
@@ -63,18 +60,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
- 
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-
+          <RequireAuth>
             <Layout>
               <AccountPage />
             </Layout>
+          </RequireAuth>
         } />
         
         {/* Verify email page */}
