@@ -22,19 +22,27 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setStatus('loading');
       setError(null);
       
+      console.log('Fetching account data with token:', token);
+      console.log('Current user:', user);
+      
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/user/account`, 
         {
           headers: {
             Authorization: `Bearer ${token}`
+          },
+          params: {
+            userId: user?.userId
           }
         }
       );
       
+      console.log('Account data response:', response.data);
       const { user: fetchedUser } = response.data;
       
       // Always update if we have fetched user data
       if (fetchedUser) {
+        console.log('Updating user with:', fetchedUser);
         updateUser(fetchedUser);
       }
       
@@ -42,10 +50,15 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setStatus('success');
     } catch (err: any) {
       console.error('Failed to fetch account data:', err);
+      console.error('Error details:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, updateUser, lastFetched]);
+  },[token, user?.userId, updateUser, lastFetched, user]);
 
   // Initial fetch on mount
   useEffect(() => {
