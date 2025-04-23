@@ -19,7 +19,7 @@ const PasswordResetRequestPage: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { resetPassword, isLoading, error: authError } = useAuth();
+  const { resetPassword, isLoading } = useAuth();
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,12 +71,6 @@ const PasswordResetRequestPage: React.FC = () => {
               <Typography color="text.secondary" align="center" paragraph>
                 Enter your email address and we'll send you a password reset link.
               </Typography>
-
-              {(error || authError) && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error || authError}
-                </Alert>
-              )}
 
               <TextField
                 margin="normal"
