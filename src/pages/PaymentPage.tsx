@@ -37,7 +37,8 @@ import {
   createCheckoutSession, 
   fetchSubscription,
   createPortalSession,
-  Subscription
+  Subscription,
+  logout
 } from '../store/authSlice';
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
@@ -158,7 +159,16 @@ const PaymentPage: React.FC = () => {
   const { isLoading, token, subscription, user } = useSelector((state: RootState) => state.auth);
   
   // Use account data hook
-  const { fetchAccountData } = useAccountData(true);
+  const { fetchAccountData } = useAccountData(false);
+
+  useEffect(() => {
+    try {
+      fetchAccountData(true);
+    } catch (error) {
+      console.error('Failed to fetch account data:', error);
+      logout()
+    }
+  }, [fetchAccountData]);
   
   // Get signout function from useAuth
   const { signout } = useAuth();
