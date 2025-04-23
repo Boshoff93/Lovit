@@ -174,18 +174,8 @@ const PaymentPage: React.FC = () => {
   
   // Fetch subscription data directly on component mount
   useEffect(() => {
-    // Fetch general account data
     fetchAccountData(true);
-    // Directly fetch subscription data from API
-    getUserSubscription().then(result => {
-      console.log('Subscription data directly fetched:', result);
-    }).catch(error => {
-      console.error('Error fetching subscription:', error);
-    });
-
-    // Debug current subscription state
-    console.log('Current subscription state:', subscription);
-  }, [fetchAccountData, getUserSubscription, subscription]);
+  }, []);
 
   // Check for success query param (for Stripe redirect)
   useEffect(() => {
