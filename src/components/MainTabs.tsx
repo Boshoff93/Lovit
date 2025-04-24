@@ -163,7 +163,8 @@ const MainTabs: React.FC = () => {
   const hasFetchedRef = useRef(false);
   
   // Get auth token from Redux store
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
+  const userId = user?.userId;
   
   // Get training updates from WebSocket context
   const { trainingUpdates, connect } = useWebSocket();
@@ -174,11 +175,11 @@ const MainTabs: React.FC = () => {
   // Fetch models on component mount
   useEffect(() => {
     const fetchModels = async () => {
-      if (hasFetchedRef.current) return;
+      if (hasFetchedRef.current || !userId) return;
       
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/models`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/models?userId=${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -208,7 +209,7 @@ const MainTabs: React.FC = () => {
     if (token) {
       fetchModels();
     }
-  }, [token, connect]);
+  }, [token, connect, userId]);
 
   // Update models when training updates are received
   useEffect(() => {
