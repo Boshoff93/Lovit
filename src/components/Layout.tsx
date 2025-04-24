@@ -1307,36 +1307,112 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(4px)',
               zIndex: 9999,
             }}
           >
-            <CircularProgress color="secondary" />
-            {isCompressing && (
-              <Box sx={{ mt: 2, width: '80%', maxWidth: 400 }}>
-                <Typography variant="body2" color="white" gutterBottom align="center">
-                  Processing Images: {compressionProgress}%
+            <Paper 
+              elevation={6}
+              sx={{ 
+                py: 4, 
+                px: 5, 
+                maxWidth: 450, 
+                width: '90%', 
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 3
+              }}
+            >
+              {/* Main loading spinner */}
+              <CircularProgress size={60} />
+              
+              <Typography variant="h6" align="center" sx={{ fontWeight: 600 }}>
+                {isCompressing ? 'Processing Your Images' : 
+                 isUploading ? 'Uploading Your Model' : 
+                 'Initializing...'}
+              </Typography>
+                
+              {/* Status description */}
+              <Typography variant="body2" color="text.secondary" align="center">
+                {isCompressing ? 'Converting and optimizing your photos.' : 
+                 isUploading ? 'Uploading photos and model data.' : 
+                 'Getting things ready...'}
+              </Typography>
+              
+              {/* Compression progress */}
+              {isCompressing && (
+                <Box sx={{ width: '100%' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">Processing</Typography>
+                    <Typography variant="body2" color="primary" fontWeight={600}>{compressionProgress}%</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={compressionProgress} 
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 4,
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: 'linear-gradient(90deg, #3f51b5, #2196f3)'
+                      }
+                    }} 
+                  />
+                </Box>
+              )}
+              
+              {/* Upload progress */}
+              {isUploading && (
+                <Box sx={{ width: '100%' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">Uploading</Typography>
+                    <Typography variant="body2" color="primary" fontWeight={600}>{uploadProgress}%</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={uploadProgress} 
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 4,
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: 'linear-gradient(90deg, #f50057, #ff4081)'
+                      }
+                    }}
+                  />
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary" 
+                    align="center" 
+                    sx={{ 
+                      display: 'block', 
+                      mt: 2,
+                      fontStyle: 'italic'
+                    }}
+                  >
+                    Please keep this window open until the upload completes
+                  </Typography>
+                </Box>
+              )}
+              
+              {/* Tips section */}
+              <Box 
+                sx={{ 
+                  mt: 2, 
+                  pt: 2, 
+                  borderTop: '1px solid', 
+                  borderColor: 'divider',
+                  width: '100%'
+                }}
+              >
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  <b>While you wait:</b> After your model is trained, you'll be able to try generating images and try on any cloths of your liking!
                 </Typography>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={compressionProgress} 
-                  sx={{ height: 10, borderRadius: 5 }} 
-                />
               </Box>
-            )}
-            {isUploading && (
-              <Box sx={{ mt: 2, width: '80%', maxWidth: 400 }}>
-                <Typography variant="body2" color="white" gutterBottom align="center">
-                  Uploading Images: {uploadProgress}%
-                </Typography>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={uploadProgress} 
-                  sx={{ height: 10, borderRadius: 5 }} 
-                  color="primary"
-                />
-              </Box>
-            )}
+            </Paper>
           </Box>
         )}
         
