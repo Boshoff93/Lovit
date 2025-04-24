@@ -1357,7 +1357,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       borderRadius: 4,
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 4,
-                        background: 'linear-gradient(90deg, #9370DB, #D8BFD8)'
+                        background: 'linear-gradient(90deg, #9370DB, #9370DB)'
                       }
                     }} 
                   />
@@ -1379,7 +1379,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       borderRadius: 4,
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 4,
-                        background: 'linear-gradient(90deg, #9370DB, #D8BFD8)'
+                        background: 'linear-gradient(90deg, #9370DB, #9370DB)'
                       }
                     }}
                   />
