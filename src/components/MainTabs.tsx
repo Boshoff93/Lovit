@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -19,6 +19,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import { useLayout } from './Layout';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -165,6 +166,9 @@ const MainTabs: React.FC = () => {
   
   // Get training updates from WebSocket context
   const { trainingUpdates, connect } = useWebSocket();
+  
+  // Get openModel function from Layout context
+  const { openModel } = useLayout();
 
   // Fetch models on component mount
   useEffect(() => {
@@ -237,12 +241,12 @@ const MainTabs: React.FC = () => {
     }
   }, [trainingUpdates]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
+  }, []);
 
   // Helper function to render status chip based on training status
-  const renderStatusChip = (status?: string) => {
+  const renderStatusChip = useCallback((status?: string) => {
     if (!status) return null;
     
     let color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' = 'default';
@@ -278,7 +282,7 @@ const MainTabs: React.FC = () => {
         sx={{ mt: 1 }}
       />
     );
-  };
+  }, []);
 
   return (
     <Box sx={{ width: '100%'}}>
@@ -326,7 +330,7 @@ const MainTabs: React.FC = () => {
               <Button 
                 variant="contained" 
                 sx={{ mt: 2 }}
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={openModel}
               >
                 Create Your First Model
               </Button>

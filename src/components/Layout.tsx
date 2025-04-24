@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -70,6 +70,22 @@ interface UserProfile {
   bodyType: string;
   breastSize: string;
 }
+
+// Create a context for the Layout functions
+interface LayoutContextType {
+  openModel: () => void;
+}
+
+export const LayoutContext = createContext<LayoutContextType | null>(null);
+
+// Hook to use the Layout context
+export const useLayout = () => {
+  const context = useContext(LayoutContext);
+  if (!context) {
+    throw new Error('useLayout must be used within a LayoutProvider');
+  }
+  return context;
+};
 
 // Responsive drawer width
 const drawerWidth = 360;
@@ -234,6 +250,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     breastSize: ''
   });
   
+  // Add a ref for the Model Name TextField
+  const modelNameRef = useRef<HTMLInputElement>(null);
+  
   // Image upload state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -265,6 +284,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleModelClick = () => {
     setModelOpen(!modelOpen);
     if (imagesOpen) setImagesOpen(false);
+  };
+
+  // Function to open model section and focus on name field
+  const openModel = () => {
+    setModelOpen(true);
+    if (imagesOpen) setImagesOpen(false);
+    
+    if (modelNameRef.current) {
+      modelNameRef.current.focus();
+    }
   };
 
   const handleImagesClick = () => {
@@ -542,10 +571,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBarStyled position="fixed" open={open}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <LayoutContext.Provider value={{ openModel }}>
+      <Box sx={{ display: 'flex' }}>
+        <AppBarStyled position="fixed" open={open}>
+          <Toolbar>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -555,587 +584,574 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <img 
-                src="/lovit.jpeg" 
-                alt="Lovit Logo" 
-                style={{ 
-                  height: '32px', 
-                  width: '32px', 
-                  marginRight: '10px',
-                  borderRadius: '50%'
-                }} 
-              />
-              <Typography variant="h6" noWrap component="div">
-                Lovit
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              Lovit
+            </Typography>
+            {token && (
+              <IconButton color="inherit" onClick={() => handleLogout()}>
+                <LogoutIcon />
+              </IconButton>
+            )}
+          </Toolbar>
+        </AppBarStyled>
+        <Drawer
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              borderRight: 'none',
+              boxShadow: '4px 0 10px rgba(0,0,0,0.05)',
+            },
+          }}
+          variant={isMobile ? "temporary" : "persistent"}
+          anchor="left"
+          open={open}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true,
+          }}
+        >
+          <DrawerHeader>
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'left', width: '100%' }}>
+                Lovit Hub
               </Typography>
             </Box>
-          </Box>
-          <Button 
-            color="inherit" 
-            startIcon={<LogoutIcon />} 
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBarStyled>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            borderRight: 'none',
-            boxShadow: '4px 0 10px rgba(0,0,0,0.05)',
-          },
-        }}
-        variant={isMobile ? "temporary" : "persistent"}
-        anchor="left"
-        open={open}
-        onClose={handleDrawerClose}
-        ModalProps={{
-          keepMounted: true,
-        }}
-      >
-        <DrawerHeader>
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'left', width: '100%' }}>
-              Lovit Hub
-            </Typography>
-          </Box>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <Box sx={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
-          <List sx={{ px: 1 }}>
-            
-            {/* Account Section */}
-            <ListItem disablePadding>
-              <ListItemButton 
-                sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                onClick={() => handleNavigate('/account')}
-              >
-                <ListItemIcon>
-                  <AccountCircleIcon />
-                </ListItemIcon>
-                <ListItemText primary="My Account" />
-              </ListItemButton>
-            </ListItem>
-            
-            {/* Dashboard Section */}
-            <ListItem disablePadding>
-              <ListItemButton 
-                sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                onClick={() => handleNavigate('/dashboard')}
-              >
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" />
-              </ListItemButton>
-            </ListItem>
-            
-            {/* Models Section */}
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton 
-                sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                onClick={handleModelClick}
-              >
-                <ListItemIcon>
-                  <FaceIcon />
-                </ListItemIcon>
-                <ListItemText primary="Create Model" />
-                {modelOpen ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-              <Collapse in={modelOpen} timeout="auto" unmountOnExit>
-                <Box sx={{ p: 2 }}>
-                  {/* Simplified Model Form */}
-                  <Stack spacing={2}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Model Name"
-                      name="name"
-                      value={userProfile.name}
-                      onChange={handleTextChange}
-                      required
-                    />
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Gender</InputLabel>
-                      <Select
-                        name="gender"
-                        value={userProfile.gender}
-                        label="Gender"
-                        onChange={handleSelectChange}
-                      >
-                        {GENDER_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Age"
-                      name="age"
-                      type="text"
-                      value={userProfile.age}
-                      onChange={handleAgeChange}
-                      required
-                      inputProps={{
-                        inputMode: 'numeric',
-                        pattern: '[0-9]*'
-                      }}
-                    />
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Height</InputLabel>
-                      <Select
-                        name="height"
-                        value={userProfile.height}
-                        label="Height"
-                        onChange={handleSelectChange}
-                      >
-                        {HEIGHT_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Ethnicity</InputLabel>
-                      <Select
-                        name="ethnicity"
-                        value={userProfile.ethnicity}
-                        label="Ethnicity"
-                        onChange={handleSelectChange}
-                      >
-                        {ETHNICITY_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Hair Color</InputLabel>
-                      <Select
-                        name="hairColor"
-                        value={userProfile.hairColor}
-                        label="Hair Color"
-                        onChange={handleSelectChange}
-                      >
-                        {HAIR_COLOR_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Hair Style</InputLabel>
-                      <Select
-                        name="hairStyle"
-                        value={userProfile.hairStyle}
-                        label="Hair Style"
-                        onChange={handleSelectChange}
-                      >
-                        {HAIR_STYLE_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Eye Color</InputLabel>
-                      <Select
-                        name="eyeColor"
-                        value={userProfile.eyeColor}
-                        label="Eye Color"
-                        onChange={handleSelectChange}
-                      >
-                        {EYE_COLOR_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small" required>
-                      <InputLabel>Body Type</InputLabel>
-                      <Select
-                        name="bodyType"
-                        value={userProfile.bodyType}
-                        label="Body Type"
-                        onChange={handleSelectChange}
-                      >
-                        {BODY_TYPE_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <FormControl fullWidth size="small">
-                      <InputLabel>Breast Size</InputLabel>
-                      <Select
-                        name="breastSize"
-                        value={userProfile.breastSize}
-                        label="Breast Size"
-                        onChange={handleSelectChange}
-                      >
-                        {BREAST_SIZE_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    {/* Image Upload - Simplified */}
-                    <Typography variant="body2" gutterBottom>
-                      Upload {MIN_REQUIRED_IMAGES}+ Photos
-                    </Typography>
-                    
-                    <Paper 
-                      variant="outlined" 
-                      sx={{ 
-                        p: 1.5, 
-                        mb: 1.5,
-                        borderRadius: 1,
-                        backgroundColor: theme.palette.success.light + '10', 
-                        borderColor: theme.palette.success.light
-                      }}
-                    >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        Good Photos:
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <Box sx={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
+            <List sx={{ px: 1 }}>
+              
+              {/* Account Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={() => handleNavigate('/account')}
+                >
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="My Account" />
+                </ListItemButton>
+              </ListItem>
+              
+              {/* Dashboard Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={() => handleNavigate('/dashboard')}
+                >
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" />
+                </ListItemButton>
+              </ListItem>
+              
+              {/* Models Section */}
+              <ListItem disablePadding sx={{ display: 'block' }}>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={handleModelClick}
+                >
+                  <ListItemIcon>
+                    <FaceIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Create Model" />
+                  {modelOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={modelOpen} timeout="auto" unmountOnExit>
+                  <Box sx={{ p: 2 }}>
+                    {/* Simplified Model Form */}
+                    <Stack spacing={2}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Model Name"
+                        name="name"
+                        value={userProfile.name}
+                        onChange={handleTextChange}
+                        required
+                        inputRef={modelNameRef}
+                      />
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Gender</InputLabel>
+                        <Select
+                          name="gender"
+                          value={userProfile.gender}
+                          label="Gender"
+                          onChange={handleSelectChange}
+                        >
+                          {GENDER_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Age"
+                        name="age"
+                        type="text"
+                        value={userProfile.age}
+                        onChange={handleAgeChange}
+                        required
+                        inputProps={{
+                          inputMode: 'numeric',
+                          pattern: '[0-9]*'
+                        }}
+                      />
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Height</InputLabel>
+                        <Select
+                          name="height"
+                          value={userProfile.height}
+                          label="Height"
+                          onChange={handleSelectChange}
+                        >
+                          {HEIGHT_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Ethnicity</InputLabel>
+                        <Select
+                          name="ethnicity"
+                          value={userProfile.ethnicity}
+                          label="Ethnicity"
+                          onChange={handleSelectChange}
+                        >
+                          {ETHNICITY_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Hair Color</InputLabel>
+                        <Select
+                          name="hairColor"
+                          value={userProfile.hairColor}
+                          label="Hair Color"
+                          onChange={handleSelectChange}
+                        >
+                          {HAIR_COLOR_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Hair Style</InputLabel>
+                        <Select
+                          name="hairStyle"
+                          value={userProfile.hairStyle}
+                          label="Hair Style"
+                          onChange={handleSelectChange}
+                        >
+                          {HAIR_STYLE_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Eye Color</InputLabel>
+                        <Select
+                          name="eyeColor"
+                          value={userProfile.eyeColor}
+                          label="Eye Color"
+                          onChange={handleSelectChange}
+                        >
+                          {EYE_COLOR_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Body Type</InputLabel>
+                        <Select
+                          name="bodyType"
+                          value={userProfile.bodyType}
+                          label="Body Type"
+                          onChange={handleSelectChange}
+                        >
+                          {BODY_TYPE_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <FormControl fullWidth size="small">
+                        <InputLabel>Breast Size</InputLabel>
+                        <Select
+                          name="breastSize"
+                          value={userProfile.breastSize}
+                          label="Breast Size"
+                          onChange={handleSelectChange}
+                        >
+                          {BREAST_SIZE_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      {/* Image Upload - Simplified */}
+                      <Typography variant="body2" gutterBottom>
+                        Upload {MIN_REQUIRED_IMAGES}+ Photos
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        High quality, mix of close up selfies and full body shots in a variety of places, angles, clothes, and expressions
-                      </Typography>
-                    </Paper>
-                    
-                    <Paper 
-                      variant="outlined" 
-                      sx={{ 
-                        p: 1.5, 
-                        mb: 1.5,
-                        borderRadius: 1,
-                        backgroundColor: theme.palette.error.light + '10', 
-                        borderColor: theme.palette.error.light
-                      }}
-                    >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        Bad Photos:
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Low variety, group photos, other people, sunglasses, hats, face cutoff
-                      </Typography>
-                    </Paper>
-                    
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                    />
-                    
-                    <Button 
-                      variant="outlined" 
-                      startIcon={<CloudUploadIcon />}
-                      onClick={handleFileButtonClick}
-                      fullWidth
-                      sx={{ height: 48 }}
-                    >
-                      Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}+)
-                    </Button>
-                    
-                    {uploadedImages.length > 0 && (
-                      <Box 
+                      
+                      <Paper 
+                        variant="outlined" 
                         sx={{ 
-                          display: 'flex', 
-                          flexWrap: 'wrap', 
-                          gap: 1,
-                          maxHeight: '140px',
-                          overflowY: 'auto',
-                          p: 1,
-                          border: '1px solid',
-                          borderColor: 'divider',
-                          borderRadius: 1
+                          p: 1.5, 
+                          mb: 1.5,
+                          borderRadius: 1,
+                          backgroundColor: theme.palette.success.light + '10', 
+                          borderColor: theme.palette.success.light
                         }}
                       >
-                        {uploadedImages.map((image, index) => (
-                          <Box key={index} sx={{ position: 'relative', width: 60, height: 60 }}>
-                            <img 
-                              src={URL.createObjectURL(image)} 
-                              alt={`Upload ${index}`} 
-                              style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                objectFit: 'cover',
-                                borderRadius: '4px'
-                              }}
-                            />
-                            <IconButton
-                              size="small"
-                              sx={{ 
-                                position: 'absolute', 
-                                top: -8, 
-                                right: -8,
-                                backgroundColor: 'rgba(255,255,255,0.8)',
-                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' },
-                                p: 0.5
-                              }}
-                              onClick={() => handleRemoveImage(index)}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
-                    
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      sx={{ height: 48 }}
-                      disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
-                                !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-                                !userProfile.eyeColor || !userProfile.bodyType}
-                      onClick={handleCreateModel}
-                    >
-                      {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Model'}
-                    </Button>
-                  </Stack>
-                </Box>
-              </Collapse>
-            </ListItem>
-            
-            {/* Images Section */}
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton 
-                sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                onClick={handleImagesClick}
-              >
-                <ListItemIcon>
-                  <ImageIcon />
-                </ListItemIcon>
-                <ListItemText primary="Generate Images" />
-                {imagesOpen ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-              <Collapse in={imagesOpen} timeout="auto" unmountOnExit>
-                <Box sx={{ p: 2 }}>
-                  {/* Simplified Prompt Form */}
-                  <Stack spacing={2}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Prompt"
-                      name="prompt"
-                      value={promptData.prompt}
-                      onChange={handlePromptTextChange}
-                      multiline
-                      rows={2}
-                      placeholder="Describe what you want to generate"
-                      required
-                    />
-                    
-                    <FormControl fullWidth size="small">
-                      <InputLabel>Orientation</InputLabel>
-                      <Select
-                        name="orientation"
-                        value={promptData.orientation}
-                        label="Orientation"
-                        onChange={handlePromptSelectChange}
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                          Good Photos:
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          High quality, mix of close up selfies and full body shots in a variety of places, angles, clothes, and expressions
+                        </Typography>
+                      </Paper>
+                      
+                      <Paper 
+                        variant="outlined" 
+                        sx={{ 
+                          p: 1.5, 
+                          mb: 1.5,
+                          borderRadius: 1,
+                          backgroundColor: theme.palette.error.light + '10', 
+                          borderColor: theme.palette.error.light
+                        }}
                       >
-                        {ORIENTATION_OPTIONS.map(option => (
-                          <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    <Box>
-                      <Typography variant="body2" gutterBottom>
-                        Number of Images: {promptData.numberOfImages}
-                      </Typography>
-                      <Slider
-                        value={promptData.numberOfImages}
-                        onChange={handleSliderChange}
-                        step={1}
-                        marks
-                        min={1}
-                        max={16}
-                        size="small"
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                          Bad Photos:
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Low variety, group photos, other people, sunglasses, hats, face cutoff
+                        </Typography>
+                      </Paper>
+                      
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
                       />
-                    </Box>
-                    
-                    {/* Clothing Upload - Simplified */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      ref={clothFileInputRef}
-                      onChange={handleClothFileChange}
-                    />
-                    
-                    <Button 
-                      variant="outlined" 
-                      startIcon={<CloudUploadIcon />}
-                      onClick={handleClothButtonClick}
-                      size="small"
-                      sx={{ height: 48 }}
-                    >
-                      Upload Clothing Reference
-                    </Button>
-                    
-                    {clothPreviewUrl && (
-                      <Box sx={{ position: 'relative', height: 100 }}>
-                        <img 
-                          src={clothPreviewUrl} 
-                          alt="Clothing reference" 
-                          style={{ 
-                            maxWidth: '100%', 
-                            maxHeight: '100%', 
-                            objectFit: 'contain',
-                            borderRadius: '4px'
-                          }}
-                        />
-                        <IconButton
-                          size="small"
+                      
+                      <Button 
+                        variant="outlined" 
+                        startIcon={<CloudUploadIcon />}
+                        onClick={handleFileButtonClick}
+                        fullWidth
+                        sx={{ height: 48 }}
+                      >
+                        Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}+)
+                      </Button>
+                      
+                      {uploadedImages.length > 0 && (
+                        <Box 
                           sx={{ 
-                            position: 'absolute', 
-                            top: 0, 
-                            right: 0,
-                            backgroundColor: 'rgba(255,255,255,0.8)',
-                            p: 0.5
+                            display: 'flex', 
+                            flexWrap: 'wrap', 
+                            gap: 1,
+                            maxHeight: '140px',
+                            overflowY: 'auto',
+                            p: 1,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1
                           }}
-                          onClick={handleClearCloth}
                         >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                          {uploadedImages.map((image, index) => (
+                            <Box key={index} sx={{ position: 'relative', width: 60, height: 60 }}>
+                              <img 
+                                src={URL.createObjectURL(image)} 
+                                alt={`Upload ${index}`} 
+                                style={{ 
+                                  width: '100%', 
+                                  height: '100%', 
+                                  objectFit: 'cover',
+                                  borderRadius: '4px'
+                                }}
+                              />
+                              <IconButton
+                                size="small"
+                                sx={{ 
+                                  position: 'absolute', 
+                                  top: -8, 
+                                  right: -8,
+                                  backgroundColor: 'rgba(255,255,255,0.8)',
+                                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' },
+                                  p: 0.5
+                                }}
+                                onClick={() => handleRemoveImage(index)}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Box>
+                          ))}
+                        </Box>
+                      )}
+                      
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ height: 48 }}
+                        disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
+                                  !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
+                                  !userProfile.eyeColor || !userProfile.bodyType}
+                        onClick={handleCreateModel}
+                      >
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Model'}
+                      </Button>
+                    </Stack>
+                  </Box>
+                </Collapse>
+              </ListItem>
+              
+              {/* Images Section */}
+              <ListItem disablePadding sx={{ display: 'block' }}>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={handleImagesClick}
+                >
+                  <ListItemIcon>
+                    <ImageIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Generate Images" />
+                  {imagesOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={imagesOpen} timeout="auto" unmountOnExit>
+                  <Box sx={{ p: 2 }}>
+                    {/* Simplified Prompt Form */}
+                    <Stack spacing={2}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Prompt"
+                        name="prompt"
+                        value={promptData.prompt}
+                        onChange={handlePromptTextChange}
+                        multiline
+                        rows={2}
+                        placeholder="Describe what you want to generate"
+                        required
+                      />
+                      
+                      <FormControl fullWidth size="small">
+                        <InputLabel>Orientation</InputLabel>
+                        <Select
+                          name="orientation"
+                          value={promptData.orientation}
+                          label="Orientation"
+                          onChange={handlePromptSelectChange}
+                        >
+                          {ORIENTATION_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      <Box>
+                        <Typography variant="body2" gutterBottom>
+                          Number of Images: {promptData.numberOfImages}
+                        </Typography>
+                        <Slider
+                          value={promptData.numberOfImages}
+                          onChange={handleSliderChange}
+                          step={1}
+                          marks
+                          min={1}
+                          max={16}
+                          size="small"
+                        />
                       </Box>
-                    )}
-                    
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      sx={{ height: 48 }}
-                      disabled={!promptData.prompt}
-                      onClick={handleGenerateImages}
-                    >
-                      Generate {promptData.numberOfImages} Image{promptData.numberOfImages > 1 ? 's' : ''}
-                    </Button>
-                  </Stack>
-                </Box>
-              </Collapse>
-            </ListItem>
-          </List>
-          
-          <Box sx={{ mt: 'auto', p: 2 }}>
-            <Paper 
-              variant="outlined" 
-              sx={{ 
-                p: 2, 
-                borderRadius: 2,
-                backgroundColor: theme.palette.primary.light + '10', 
-                borderColor: theme.palette.primary.light
-              }}
-            >
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Pro Tip
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                For best results, use high-quality photos with neutral expressions and clear lighting.
-              </Typography>
-            </Paper>
+                      
+                      {/* Clothing Upload - Simplified */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        ref={clothFileInputRef}
+                        onChange={handleClothFileChange}
+                      />
+                      
+                      <Button 
+                        variant="outlined" 
+                        startIcon={<CloudUploadIcon />}
+                        onClick={handleClothButtonClick}
+                        size="small"
+                        sx={{ height: 48 }}
+                      >
+                        Upload Clothing Reference
+                      </Button>
+                      
+                      {clothPreviewUrl && (
+                        <Box sx={{ position: 'relative', height: 100 }}>
+                          <img 
+                            src={clothPreviewUrl} 
+                            alt="Clothing reference" 
+                            style={{ 
+                              maxWidth: '100%', 
+                              maxHeight: '100%', 
+                              objectFit: 'contain',
+                              borderRadius: '4px'
+                            }}
+                          />
+                          <IconButton
+                            size="small"
+                            sx={{ 
+                              position: 'absolute', 
+                              top: 0, 
+                              right: 0,
+                              backgroundColor: 'rgba(255,255,255,0.8)',
+                              p: 0.5
+                            }}
+                            onClick={handleClearCloth}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      )}
+                      
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ height: 48 }}
+                        disabled={!promptData.prompt}
+                        onClick={handleGenerateImages}
+                      >
+                        Generate {promptData.numberOfImages} Image{promptData.numberOfImages > 1 ? 's' : ''}
+                      </Button>
+                    </Stack>
+                  </Box>
+                </Collapse>
+              </ListItem>
+            </List>
+            
+            <Box sx={{ mt: 'auto', p: 2 }}>
+              <Paper 
+                variant="outlined" 
+                sx={{ 
+                  p: 2, 
+                  borderRadius: 2,
+                  backgroundColor: theme.palette.primary.light + '10', 
+                  borderColor: theme.palette.primary.light
+                }}
+              >
+                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                  Pro Tip
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  For best results, use high-quality photos with neutral expressions and clear lighting.
+                </Typography>
+              </Paper>
+            </Box>
           </Box>
-        </Box>
-      </Drawer>
-      <Main open={open}>
-        <DrawerHeader />
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: 3, 
-            width: '100%', 
-            px: { xs: 2, sm: 3, md: 4 },
-            py: { xs: 3, sm: 4 }
-          }}
-        >
-          <Box sx={{ flexGrow: 1, width: '100%' }}>
-            {children}
+        </Drawer>
+        <Main open={open}>
+          <DrawerHeader />
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              gap: 3, 
+              width: '100%', 
+              px: { xs: 2, sm: 3, md: 4 },
+              py: { xs: 3, sm: 4 }
+            }}
+          >
+            <Box sx={{ flexGrow: 1, width: '100%' }}>
+              {children}
+            </Box>
           </Box>
-        </Box>
-      </Main>
-      
-      {/* Loading indicator */}
-      {loading && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 9999,
-          }}
-        >
-          <CircularProgress color="primary" />
-        </Box>
-      )}
-      
-      {/* Notification */}
-      <Snackbar 
-        open={notification.open} 
-        autoHideDuration={6000} 
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseNotification} severity={notification.severity}>
-          {notification.message}
-        </Alert>
-      </Snackbar>
-      
-      {/* Training Progress Indicator */}
-      {lastMessage && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: 2,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            color: 'white',
-            zIndex: 1000,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography variant="body2" gutterBottom>
-            Training Model: {lastMessage.modelId}
-          </Typography>
-          <Box sx={{ width: '100%', maxWidth: 400, mb: 1 }}>
-            <LinearProgress variant="determinate" value={lastMessage.progress} 
-              sx={{ height: 10, borderRadius: 5 }} 
-            />
+        </Main>
+        
+        {/* Loading indicator */}
+        {loading && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 9999,
+            }}
+          >
+            <CircularProgress color="primary" />
           </Box>
-          <Typography variant="caption">
-            Progress: {lastMessage.progress}%
-          </Typography>
-        </Box>
-      )}
-    </Box>
+        )}
+        
+        {/* Notification */}
+        <Snackbar 
+          open={notification.open} 
+          autoHideDuration={6000} 
+          onClose={handleCloseNotification}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseNotification} severity={notification.severity}>
+            {notification.message}
+          </Alert>
+        </Snackbar>
+        
+        {/* Training Progress Indicator */}
+        {lastMessage && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: 2,
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              color: 'white',
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="body2" gutterBottom>
+              Training Model: {lastMessage.modelId}
+            </Typography>
+            <Box sx={{ width: '100%', maxWidth: 400, mb: 1 }}>
+              <LinearProgress variant="determinate" value={lastMessage.progress} 
+                sx={{ height: 10, borderRadius: 5 }} 
+              />
+            </Box>
+            <Typography variant="caption">
+              Progress: {lastMessage.progress}%
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </LayoutContext.Provider>
   );
 };
 
