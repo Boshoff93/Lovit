@@ -60,28 +60,36 @@ export const fetchModels = createAsyncThunk(
 // Async thunk for training a new model
 export const trainModel = createAsyncThunk(
   'models/trainModel',
-  async (formData: FormData, { getState, rejectWithValue }) => {
+  async (
+    payload: FormData | { formData: FormData; axiosConfig?: any }, 
+    { getState, rejectWithValue }
+  ) => {
     try {
-      const { auth } = getState() as { auth: { token: string | null } };
+      const state = getState() as RootState;
+      const { auth } = state;
       
+      // Extract formData and axiosConfig from payload
+      let formData: FormData;
+      let axiosConfig = {};
+      
+      if (payload instanceof FormData) {
+        formData = payload;
+      } else {
+        formData = payload.formData;
+        axiosConfig = payload.axiosConfig || {};
+      }
+
       if (!auth.token) {
         return rejectWithValue('Authentication required');
       }
-      
+
       const response = await axios.post(`${API_BASE_URL}/api/train-model`, formData, {
         headers: {
           'Authorization': `Bearer ${auth.token}`,
           'Content-Type': 'multipart/form-data'
         },
-        // Add timeout to prevent hanging requests
-        timeout: 180000, // 3 minutes timeout
-        // Add upload progress tracking
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log(`Upload Progress: ${percentCompleted}%`);
-          }
-        }
+        timeout: 0,
+        ...axiosConfig
       });
       
       return response.data;

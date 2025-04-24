@@ -53,6 +53,7 @@ import { useWebSocket } from '../contexts/WebSocketContext';
 import { trainModel, selectModels } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
 import imageCompression from 'browser-image-compression';
+import axios from 'axios';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -268,6 +269,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Add compression progress state
   const [compressionProgress, setCompressionProgress] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Add a ref for the Model Name TextField
   const modelNameRef = useRef<HTMLInputElement>(null);
@@ -518,6 +521,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLoading(true);
     setIsCompressing(true);
     setCompressionProgress(0);
+    setUploadProgress(0);
+    setIsUploading(false);
     
     try {
       // Get auth token from Redux state instead of localStorage
@@ -529,6 +534,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         });
         setLoading(false);
         setIsCompressing(false);
+        setIsUploading(false);
         return;
       }
 
@@ -587,6 +593,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       // Compression complete
       setIsCompressing(false);
+      setIsUploading(true);
       
       // Update notification
       setNotification({
@@ -605,8 +612,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         formData.append('userId', user.userId);
       }
 
-      // Use Redux action to train model
-      const result = await dispatch(trainModel(formData)).unwrap();
+      // Create custom axios config to track upload progress
+      const axiosConfig = {
+        onUploadProgress: (progressEvent: any) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+            console.log(`Upload Progress: ${percentCompleted}%`);
+          }
+        }
+      };
+
+      // Use Redux action to train model with progress tracking
+      const result = await dispatch(trainModel({ formData, axiosConfig })).unwrap();
 
       // Connect to WebSocket for this specific model
       if (result.modelId) {
@@ -651,6 +669,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } finally {
       setLoading(false);
       setIsCompressing(false);
+      setIsUploading(false);
     }
   }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
   
@@ -1292,16 +1311,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               zIndex: 9999,
             }}
           >
-            <CircularProgress color="primary" />
+            <CircularProgress color="secondary" />
             {isCompressing && (
               <Box sx={{ mt: 2, width: '80%', maxWidth: 400 }}>
                 <Typography variant="body2" color="white" gutterBottom align="center">
-                  Uploading images: {compressionProgress}%
+                  Processing Images: {compressionProgress}%
                 </Typography>
                 <LinearProgress 
                   variant="determinate" 
                   value={compressionProgress} 
                   sx={{ height: 10, borderRadius: 5 }} 
+                />
+              </Box>
+            )}
+            {isUploading && (
+              <Box sx={{ mt: 2, width: '80%', maxWidth: 400 }}>
+                <Typography variant="body2" color="white" gutterBottom align="center">
+                  Uploading Images: {uploadProgress}%
+                </Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={uploadProgress} 
+                  sx={{ height: 10, borderRadius: 5 }} 
+                  color="primary"
                 />
               </Box>
             )}
