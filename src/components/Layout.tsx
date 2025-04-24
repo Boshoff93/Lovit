@@ -57,7 +57,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { trainModel, fetchModels, selectModels } from '../store/modelsSlice';
+import { trainModel, selectModels } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
 import { Model } from '../store/modelsSlice';
 
@@ -195,8 +195,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { lastMessage, trainingUpdates, connect } = useWebSocket();
   
   const [open, setOpen] = useState(true);
-  const [modelDialogOpen, setModelDialogOpen] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -209,15 +207,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     message: '',
     severity: 'info'
   });
-  
-  const [modelId, setModelId] = useState<string | null>(null);
-  
-  // Fetch models on component mount
-  useEffect(() => {
-    if (token) {
-      dispatch(fetchModels());
-    }
-  }, [dispatch, token]);
   
   // Get max allowed images based on subscription tier
   const getMaxImagesForTier = useCallback(() => {
@@ -552,7 +541,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       // Use Redux action to train model
       const result = await dispatch(trainModel(formData)).unwrap();
-      setModelId(result.modelId);
 
       // Connect to WebSocket for this specific model
       if (result.modelId) {
