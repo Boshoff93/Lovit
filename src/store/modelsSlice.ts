@@ -85,8 +85,7 @@ export const trainModel = createAsyncThunk(
 
       const response = await axios.post(`${API_BASE_URL}/api/train-model`, formData, {
         headers: {
-          'Authorization': `Bearer ${auth.token}`,
-          'Content-Type': 'multipart/form-data'
+          'Authorization': `Bearer ${auth.token}`
         },
         timeout: 0,
         ...axiosConfig
