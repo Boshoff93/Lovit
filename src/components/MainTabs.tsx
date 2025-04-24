@@ -17,9 +17,11 @@ import {
 import FaceIcon from '@mui/icons-material/Face';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { useLayout } from './Layout';
+import { fetchModels, updateModel, Model } from '../store/modelsSlice';
+import { AppDispatch } from '../store/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -45,17 +47,6 @@ function TabPanel(props: TabPanelProps) {
       )}
     </div>
   );
-}
-
-interface Model {
-  id: string;
-  name: string;
-  gender: string;
-  bodyType: string;
-  createdAt: string;
-  imageUrl: string;
-  status?: string;
-  progress?: number;
 }
 
 interface ImageGroup {
@@ -158,13 +149,17 @@ const mockImageGroups: ImageGroup[] = [
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 1)
   const [value, setValue] = useState(0);
-  const [models, setModels] = useState<Model[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const hasFetchedRef = useRef(false);
   
   // Get auth token from Redux store
   const { token, user } = useSelector((state: RootState) => state.auth);
   const userId = user?.userId;
+  
+  // Get models from Redux store
+  const dispatch = useDispatch<AppDispatch>();
+  const models = useSelector((state: RootState) => state.models.models);
+  const modelsLoading = useSelector((state: RootState) => state.models.isLoading);
   
   // Get training updates from WebSocket context
   const { trainingUpdates, connect } = useWebSocket();
@@ -174,30 +169,19 @@ const MainTabs: React.FC = () => {
 
   // Fetch models on component mount
   useEffect(() => {
-    const fetchModels = async () => {
-      if (hasFetchedRef.current || !userId) return;
+    const fetchModelsData = async () => {
+      if (hasFetchedRef.current || !userId || !token) return;
       
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/models?userId=${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        await dispatch(fetchModels());
+        
+        // Connect to WebSocket for in-progress models
+        models.forEach((model: Model) => {
+          if ((model.status === 'IN_PROGRESS' || model.status === 'WAITING') && model.id) {
+            connect(model.id);
           }
         });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setModels(data.models || []);
-          
-          // Connect to WebSocket for each model
-          data.models.forEach((model: Model) => {
-            if (model.status === 'IN_PROGRESS' || model.status === 'WAITING') {
-              connect(model.id);
-            }
-          });
-        } else {
-          console.error('Failed to fetch models');
-        }
       } catch (error) {
         console.error('Error fetching models:', error);
       } finally {
@@ -206,31 +190,25 @@ const MainTabs: React.FC = () => {
       }
     };
     
-    if (token) {
-      fetchModels();
-    }
-  }, [token, connect, userId]);
+    fetchModelsData();
+  }, [token, connect, userId, dispatch, models]);
 
   // Update models when training updates are received
   useEffect(() => {
     if (Object.keys(trainingUpdates).length > 0) {
-      setModels(prevModels => 
-        prevModels.map(model => {
-          const updates = trainingUpdates[model.id];
-          if (updates && updates.length > 0) {
-            // Get the latest update
-            const latestUpdate = updates[updates.length - 1];
-            return {
-              ...model,
-              status: latestUpdate.status,
-              progress: latestUpdate.progress
-            };
-          }
-          return model;
-        })
-      );
+      Object.entries(trainingUpdates).forEach(([modelId, updates]) => {
+        if (updates && updates.length > 0) {
+          // Get the latest update
+          const latestUpdate = updates[updates.length - 1];
+          dispatch(updateModel({
+            modelId,
+            status: latestUpdate.status,
+            progress: latestUpdate.progress
+          }));
+        }
+      });
     }
-  }, [trainingUpdates]);
+  }, [trainingUpdates, dispatch]);
 
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -309,7 +287,7 @@ const MainTabs: React.FC = () => {
           Your Models
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          {loading ? (
+          {modelsLoading || loading ? (
             <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
               <CircularProgress />
             </Box>

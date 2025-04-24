@@ -53,8 +53,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PromptData } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { logout } from '../store/authSlice';
+import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
+import { trainModel } from '../store/modelsSlice';
+import { AppDispatch } from '../store/store';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -92,6 +94,7 @@ const drawerWidth = 360;
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 const MIN_REQUIRED_IMAGES = 10;
+const MAX_ALLOWED_IMAGES = 20;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -172,13 +175,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { token } = useSelector((state: RootState) => state.auth);
   
   // WebSocket integration
   const { lastMessage, trainingUpdates, connect } = useWebSocket();
   
-  const [open, setOpen] = useState(!isMobile);
+  const [open, setOpen] = useState(true);
+  const [modelDialogOpen, setModelDialogOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -366,10 +371,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newImages = Array.from(files);
-      setUploadedImages(prev => [...prev, ...newImages]);
-      setUploadedCount(prev => prev + newImages.length);
+      
+      setUploadedImages(prev => {
+        // Calculate combined images
+        const combined = [...prev, ...newImages];
+        
+        // If exceeding maximum, show notification
+        if (combined.length > MAX_ALLOWED_IMAGES) {
+          setNotification({
+            open: true,
+            message: `Maximum ${MAX_ALLOWED_IMAGES} images allowed. Only the first ${MAX_ALLOWED_IMAGES} images will be used.`,
+            severity: 'info'
+          });
+        }
+        
+        // Return capped array
+        return combined.slice(0, MAX_ALLOWED_IMAGES);
+      });
+      
+      // Update count based on capped array
+      setUploadedCount(prev => {
+        const newCount = prev + newImages.length;
+        return Math.min(newCount, MAX_ALLOWED_IMAGES);
+      });
     }
-  }, []);
+  }, [setNotification]);
   
   const handleRemoveImage = useCallback((index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
@@ -484,31 +510,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
       formData.append('profileData', JSON.stringify(userProfile));
 
-      // Send to API
-      const response = await fetch(`${API_URL}/api/train-model`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to train model');
-      }
-
-      const data = await response.json();
-      setModelId(data.modelId);
+      // Use Redux action to train model
+      const result = await dispatch(trainModel(formData)).unwrap();
+      setModelId(result.modelId);
 
       // Connect to WebSocket for this specific model
-      if (data.modelId) {
-        connect(data.modelId);
+      if (result.modelId) {
+        connect(result.modelId);
       }
 
       setNotification({
         open: true,
-        message: `Model training started successfully! Model ID: ${data.modelId}`,
+        message: `Model training started successfully! Model ID: ${result.modelId}`,
         severity: 'success'
       });
 
@@ -544,7 +557,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [userProfile, uploadedImages, token, connect, navigate, isMobile, setNotification, setLoading]);
+  }, [uploadedImages, userProfile, token, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
   
   const handleGenerateImages = useCallback(() => {
     // Here you would normally send this data to your backend
@@ -562,9 +575,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Update logout handler to use Redux logout
   const handleLogout = useCallback(() => {
-    dispatch(logout());
-    navigate('/');
-  }, [dispatch, navigate]);
+    dispatch(logoutAllState());
+    navigate('/login');
+    if (isMobile) {
+      setOpen(false);
+    }
+  }, [dispatch, navigate, isMobile, setOpen]);
 
   return (
     <LayoutContext.Provider value={{ openModel }}>
@@ -805,7 +821,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       
                       {/* Image Upload - Simplified */}
                       <Typography variant="body2" gutterBottom>
-                        Upload {MIN_REQUIRED_IMAGES}+ Photos
+                        Upload {MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES} Photos
                       </Typography>
                       
                       <Paper 
@@ -860,7 +876,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         fullWidth
                         sx={{ height: 48 }}
                       >
-                        Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}+)
+                        Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES})
                       </Button>
                       
                       {uploadedImages.length > 0 && (

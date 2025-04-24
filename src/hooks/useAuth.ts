@@ -20,6 +20,8 @@ import {
 } from '../store/authSlice';
 import { signInWithGoogle } from '../utils/googleAuth';
 import { getToken as getStoredToken, storeAuthData as storeData, AuthData, User } from '../utils/storage';
+import { logoutAllState } from '../store/actions';
+import { useEffect, useState, useCallback } from 'react';
 
 // Authentication custom hook
 export const useAuth = () => {
@@ -79,9 +81,9 @@ export const useAuth = () => {
   };
 
   // Sign out user
-  const signout = () => {
-    dispatch(logout());
-  };
+  const logout = useCallback(() => {
+    dispatch(logoutAllState());
+  }, [dispatch]);
 
   // Get user subscription data
   const getUserSubscription = () => {
@@ -146,7 +148,7 @@ export const useAuth = () => {
     createStripeCheckout,
     createStripePortal,
     updateSubscription,
-    signout,
+    logout,
     updateToken,
     updateUser,
     storeAuthData

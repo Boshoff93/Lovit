@@ -93,7 +93,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onUploadComplete }) => {
         </label>
         
         <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-          Select 5-10 photos of yourself for best results
+          Select 10-20 photos of yourself for best results
         </Typography>
       </Box>
 
