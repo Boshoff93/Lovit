@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext, useCallback } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -287,37 +287,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   // Function to open model section and focus on name field
-  const openModel = () => {
+  const openModel = useCallback(() => {
     setModelOpen(true);
-    if (imagesOpen) setImagesOpen(false);
-    
     if (modelNameRef.current) {
       modelNameRef.current.focus();
     }
-  };
+  }, []);
 
-  const handleImagesClick = () => {
+  const handleImagesClick = useCallback(() => {
     setImagesOpen(!imagesOpen);
     if (modelOpen) setModelOpen(false);
-  };
+  }, [imagesOpen, modelOpen]);
   
-  const handleNavigate = (path: string, e?: React.MouseEvent) => {
+  const handleNavigate = useCallback((path: string, e?: React.MouseEvent) => {
     navigate(path);
     if (isMobile && (!e || !(e.target instanceof Element) || !e.target.closest('.MuiSelect-select'))) {
       setOpen(false);
     }
-  };
+  }, [navigate, isMobile]);
   
   // Model form handlers
-  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setUserProfile(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNumberChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const numberValue = parseInt(value);
     if (!isNaN(numberValue)) {
@@ -326,9 +324,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         [name]: numberValue
       }));
     }
-  };
+  }, []);
   
-  const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAgeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     // Allow empty string to clear the input
     if (value === '') {
@@ -345,77 +343,77 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }));
       }
     }
-  };
+  }, []);
 
-  const handleSelectChange = (event: SelectChangeEvent) => {
+  const handleSelectChange = useCallback((event: SelectChangeEvent) => {
     const { name, value } = event.target;
     setUserProfile(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
   
   // Image upload handlers
-  const handleFileButtonClick = () => {
+  const handleFileButtonClick = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
+  }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newImages = Array.from(files);
       setUploadedImages(prev => [...prev, ...newImages]);
       setUploadedCount(prev => prev + newImages.length);
     }
-  };
+  }, []);
   
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = useCallback((index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
     setUploadedCount(prev => prev - 1);
-  };
+  }, []);
   
   // Prompt form handlers
-  const handlePromptTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePromptTextChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setPromptData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handlePromptSelectChange = (event: SelectChangeEvent) => {
+  const handlePromptSelectChange = useCallback((event: SelectChangeEvent) => {
     const { name, value } = event.target;
     setPromptData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleSliderChange = (_event: Event, newValue: number | number[]) => {
+  const handleSliderChange = useCallback((_event: Event, newValue: number | number[]) => {
     setPromptData(prev => ({
       ...prev,
       numberOfImages: newValue as number
     }));
-  };
+  }, []);
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setPromptData(prev => ({
       ...prev,
       [name]: checked
     }));
-  };
+  }, []);
   
   // Clothing image upload handlers
-  const handleClothButtonClick = () => {
+  const handleClothButtonClick = useCallback(() => {
     if (clothFileInputRef.current) {
       clothFileInputRef.current.click();
     }
-  };
+  }, []);
 
-  const handleClothFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClothFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files[0]) {
       setPromptData(prev => ({
@@ -426,9 +424,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       const previewUrl = URL.createObjectURL(files[0]);
       setClothPreviewUrl(previewUrl);
     }
-  };
+  }, []);
   
-  const handleClearCloth = () => {
+  const handleClearCloth = useCallback(() => {
     setPromptData(prev => ({
       ...prev,
       uploadedClothImage: null
@@ -437,10 +435,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (clothFileInputRef.current) {
       clothFileInputRef.current.value = '';
     }
-  };
+  }, []);
   
   // Submit handlers
-  const handleCreateModel = async () => {
+  const handleCreateModel = useCallback(async () => {
     // Validate we have at least 10 images
     if (uploadedImages.length < MIN_REQUIRED_IMAGES) {
       setNotification({
@@ -544,31 +542,27 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userProfile, uploadedImages, token, connect, navigate, isMobile, setNotification, setLoading]);
   
-  const handleGenerateImages = () => {
+  const handleGenerateImages = useCallback(() => {
     // Here you would normally send this data to your backend
     if (isMobile) {
       setOpen(false);
     }
-  };
+  }, [isMobile, setOpen]);
 
-  const handleCloseNotification = () => {
+  const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({
       ...prev,
       open: false
     }));
-  };
-  
-  const isPathActive = (path: string) => {
-    return location.pathname === path;
-  };
+  }, [setNotification]);
 
   // Update logout handler to use Redux logout
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     dispatch(logout());
     navigate('/');
-  };
+  }, [dispatch, navigate]);
 
   return (
     <LayoutContext.Provider value={{ openModel }}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -160,6 +160,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasFetchedRef = useRef(false);
   
   // Get auth token from Redux store
   const { token } = useSelector((state: RootState) => state.auth);
@@ -173,6 +174,8 @@ const MainTabs: React.FC = () => {
   // Fetch models on component mount
   useEffect(() => {
     const fetchModels = async () => {
+      if (hasFetchedRef.current) return;
+      
       try {
         setLoading(true);
         const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/models`, {
@@ -193,30 +196,17 @@ const MainTabs: React.FC = () => {
           });
         } else {
           console.error('Failed to fetch models');
-          // Fallback to mock data in development
-          if (process.env.NODE_ENV === 'development') {
-            setModels(mockModels);
-          }
         }
       } catch (error) {
         console.error('Error fetching models:', error);
-        // Fallback to mock data in development
-        if (process.env.NODE_ENV === 'development') {
-          setModels(mockModels);
-        }
       } finally {
         setLoading(false);
+        hasFetchedRef.current = true;
       }
     };
     
     if (token) {
       fetchModels();
-    } else {
-      // If no token, use mock data in development
-      if (process.env.NODE_ENV === 'development') {
-        setModels(mockModels);
-        setLoading(false);
-      }
     }
   }, [token, connect]);
 
