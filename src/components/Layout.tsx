@@ -608,9 +608,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         formData.append('images', image);
       });
       formData.append('profileData', JSON.stringify(userProfile));
-      if (user?.userId) {
-        formData.append('userId', user.userId);
-      }
 
       // Create custom axios config to track upload progress
       const axiosConfig = {
