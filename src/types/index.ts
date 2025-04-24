@@ -42,10 +42,12 @@ export interface PromptData {
   uploadedClothImage?: File | null;
   seedNumber?: string;
   useSeed: boolean;
+  modelId?: string;
 }
 
 export interface ApiResponse<T> {
-  data: T;
   success: boolean;
   message?: string;
+  error?: string;
+  data: T;
 } 

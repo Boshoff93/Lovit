@@ -125,10 +125,11 @@ export const getModels = async (): Promise<ApiResponse<TrainingModel[]>> => {
 };
 
 // Image generation
-export const generateImage = async (modelId: string, prompt: string): Promise<ApiResponse<GeneratedImage>> => {
+export const generateImage = async (modelId: string, prompt: string, numberOfImages: number = 1): Promise<ApiResponse<GeneratedImage>> => {
   const response = await api.post<ApiResponse<GeneratedImage>>('/images/generate', {
     modelId,
     prompt,
+    numberOfImages
   });
   
   return response.data;

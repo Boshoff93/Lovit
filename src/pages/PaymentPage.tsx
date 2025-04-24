@@ -161,7 +161,7 @@ const PaymentPage: React.FC = () => {
   const { fetchAccountData } = useAccountData(false);
   
   // Get signout function from useAuth
-  const { signout, getUserSubscription } = useAuth();
+  const { logout } = useAuth();
 
   const proceedRef = useRef<HTMLDivElement>(null);
 
@@ -275,9 +275,9 @@ const PaymentPage: React.FC = () => {
   },[navigate]);
   
   const handleLogout = useCallback(() => {
-    signout();
+    logout();
     navigate('/');
-  },[signout, navigate]);
+  },[logout, navigate]);
 
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {

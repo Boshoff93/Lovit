@@ -31,7 +31,8 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
-  LinearProgress
+  LinearProgress,
+  Chip
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -49,14 +50,16 @@ import CollectionsIcon from '@mui/icons-material/Collections';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import StarIcon from '@mui/icons-material/Star';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PromptData } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { trainModel } from '../store/modelsSlice';
+import { trainModel, fetchModels, selectModels } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
+import { Model } from '../store/modelsSlice';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -72,6 +75,14 @@ interface UserProfile {
   bodyType: string;
   breastSize: string;
 }
+
+// Define the maximum number of images per tier
+const TIER_IMAGE_LIMITS = {
+  free: 0,
+  starter: 1,
+  pro: 2,
+  premium: 4
+};
 
 // Create a context for the Layout functions
 interface LayoutContextType {
@@ -177,6 +188,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
   const { token } = useSelector((state: RootState) => state.auth);
+  const { subscription } = useSelector((state: RootState) => state.auth);
+  const models = useSelector(selectModels);
   
   // WebSocket integration
   const { lastMessage, trainingUpdates, connect } = useWebSocket();
@@ -196,6 +209,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     message: '',
     severity: 'info'
   });
+  
+  const [modelId, setModelId] = useState<string | null>(null);
+  
+  // Fetch models on component mount
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchModels());
+    }
+  }, [dispatch, token]);
+  
+  // Get max allowed images based on subscription tier
+  const getMaxImagesForTier = useCallback(() => {
+    const tier = subscription?.tier || 'free';
+    return TIER_IMAGE_LIMITS[tier as keyof typeof TIER_IMAGE_LIMITS] || 0;
+  }, [subscription?.tier]);
   
   // Update notification when WebSocket receives a message
   useEffect(() => {
@@ -262,7 +290,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [uploadedCount, setUploadedCount] = useState(0);
-  const [modelId, setModelId] = useState<string | null>(null);
   
   // Prompt creation state
   const [promptData, setPromptData] = useState<PromptData>({
@@ -272,7 +299,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     numberOfImages: 4,
     uploadedClothImage: null,
     seedNumber: '',
-    useSeed: false
+    useSeed: false,
+    modelId: ''
   });
   
   const clothFileInputRef = useRef<HTMLInputElement>(null);
@@ -419,12 +447,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }));
   }, []);
 
-  const handleSliderChange = useCallback((_event: Event, newValue: number | number[]) => {
+  const handleModelSelectChange = useCallback((event: SelectChangeEvent) => {
+    const modelId = event.target.value;
     setPromptData(prev => ({
       ...prev,
-      numberOfImages: newValue as number
+      modelId
     }));
   }, []);
+
+  const handleSliderChange = useCallback((_event: Event, newValue: number | number[]) => {
+    const maxAllowed = getMaxImagesForTier();
+    // Cap the value based on subscription tier
+    const cappedValue = Math.min(newValue as number, maxAllowed === 0 ? 1 : maxAllowed);
+    
+    setPromptData(prev => ({
+      ...prev,
+      numberOfImages: cappedValue
+    }));
+  }, [getMaxImagesForTier]);
 
   const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
@@ -560,11 +600,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [uploadedImages, userProfile, token, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
   
   const handleGenerateImages = useCallback(() => {
-    // Here you would normally send this data to your backend
+    // Ensure we have a model selected
+    if (!promptData.modelId) {
+      setNotification({
+        open: true,
+        message: 'Please select a model to generate images',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    // Check if user has appropriate tier
+    const maxImages = getMaxImagesForTier();
+    if (maxImages === 0) {
+      setNotification({
+        open: true,
+        message: 'Please upgrade your subscription to generate images',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    // Here you would normally send this data to your backend with modelId
+    console.log('Generating images with:', {
+      modelId: promptData.modelId,
+      prompt: promptData.prompt,
+      numberOfImages: promptData.numberOfImages,
+      orientation: promptData.orientation,
+      uploadedClothImage: promptData.uploadedClothImage ? 'yes' : 'no'
+    });
+    
     if (isMobile) {
       setOpen(false);
     }
-  }, [isMobile, setOpen]);
+  }, [isMobile, setOpen, promptData, getMaxImagesForTier, setNotification]);
 
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({
@@ -957,6 +1026,27 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <Box sx={{ p: 2 }}>
                     {/* Simplified Prompt Form */}
                     <Stack spacing={2}>
+                      <FormControl fullWidth size="small" required>
+                        <InputLabel>Select Model</InputLabel>
+                        <Select
+                          name="modelId"
+                          value={promptData.modelId || ''}
+                          label="Select Model"
+                          onChange={handleModelSelectChange}
+                        >
+                          {models.map(model => (
+                            <MenuItem key={model.id} value={model.id}>
+                              {model.name}
+                            </MenuItem>
+                          ))}
+                          {models.length === 0 && (
+                            <MenuItem disabled value="">
+                              No models available
+                            </MenuItem>
+                          )}
+                        </Select>
+                      </FormControl>
+                    
                       <TextField
                         fullWidth
                         size="small"
@@ -985,18 +1075,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </FormControl>
                       
                       <Box>
-                        <Typography variant="body2" gutterBottom>
-                          Number of Images: {promptData.numberOfImages}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Typography variant="body2">
+                            Number of Images: {promptData.numberOfImages}
+                          </Typography>
+                          
+                          {/* Show subscription tier limit info */}
+                          <Chip
+                            label={`${subscription?.tier || 'Free'}: ${getMaxImagesForTier()} max`}
+                            size="small"
+                            sx={{ 
+                              backgroundColor: '#F5F5DC',
+                              color: 'text.primary',
+                              fontWeight: 500
+                            }}
+                          />
+                        </Box>
                         <Slider
                           value={promptData.numberOfImages}
                           onChange={handleSliderChange}
                           step={1}
                           marks
                           min={1}
-                          max={16}
-                          size="small"
+                          max={8}
+                          size="medium"
+                          disabled={getMaxImagesForTier() === 0}
                         />
+                        
+                        {getMaxImagesForTier() === 0 && (
+                          <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+                            Upgrade your subscription to generate images
+                          </Typography>
+                        )}
                       </Box>
                       
                       {/* Clothing Upload - Simplified */}
@@ -1051,11 +1161,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={!promptData.prompt}
+                        disabled={!promptData.prompt || !promptData.modelId || getMaxImagesForTier() === 0}
                         onClick={handleGenerateImages}
                       >
-                        Generate {promptData.numberOfImages} Image{promptData.numberOfImages > 1 ? 's' : ''}
+                        {getMaxImagesForTier() === 0 ? 'Upgrade to Generate Images' : 
+                          `Generate ${promptData.numberOfImages} Image${promptData.numberOfImages > 1 ? 's' : ''}`}
                       </Button>
+
+                      {getMaxImagesForTier() < 4 && (
+                        <Box sx={{ mt: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                            <StarIcon sx={{ fontSize: 16, mr: 0.5, color: 'gold' }} />
+                            Upgrade to Premium for up to 4 images at once
+                          </Typography>
+                        </Box>
+                      )}
                     </Stack>
                   </Box>
                 </Collapse>
