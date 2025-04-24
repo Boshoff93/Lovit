@@ -102,6 +102,7 @@ export const trainModel = createAsyncThunk(
         // that falls out of the range of 2xx
         return rejectWithValue(error.response.data?.error || `Server error: ${error.response.status}`);
       } else if (error.request) {
+        console.log('error.request', error);
         // The request was made but no response was received
         return rejectWithValue('No response from server. Please check your connection.');
       } else {
