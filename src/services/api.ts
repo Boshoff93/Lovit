@@ -77,8 +77,9 @@ export const modelsApi = {
     });
     
     return api.post('/api/train-model', formData, {
-      // Let the browser set the Content-Type with boundary automatically
-      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
   },
 };
@@ -196,8 +197,9 @@ export const apiService = {
       try {
         const authApi = apiService.getAuthInstance();
         const response = await authApi.post('/api/train-model', formData, {
-          // Let browser set Content-Type with boundary automatically
-          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
         return response.data;
       } catch (error) {

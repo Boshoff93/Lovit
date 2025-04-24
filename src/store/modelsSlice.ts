@@ -68,24 +68,20 @@ export const trainModel = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      // Make sure we don't have duplicate Content-Type headers
-      // Let the browser set the boundary parameter automatically
       const response = await axios.post(`${API_BASE_URL}/api/train-model`, formData, {
         headers: {
-          'Authorization': `Bearer ${auth.token}`
-          // Remove explicit Content-Type, let browser set it with boundary
+          'Authorization': `Bearer ${auth.token}`,
+          'Content-Type': 'multipart/form-data'
         },
         // Add timeout to prevent hanging requests
-        timeout: 300000, // Increased to 5 minutes timeout
+        timeout: 180000, // 3 minutes timeout
         // Add upload progress tracking
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             console.log(`Upload Progress: ${percentCompleted}%`);
           }
-        },
-        // Add withCredentials to handle CORS with credentials
-        withCredentials: true
+        }
       });
       
       return response.data;
@@ -97,15 +93,12 @@ export const trainModel = createAsyncThunk(
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.error('Error response:', error.response);
         return rejectWithValue(error.response.data?.error || `Server error: ${error.response.status}`);
       } else if (error.request) {
         // The request was made but no response was received
-        console.error('Error request:', error.request);
         return rejectWithValue('No response from server. Please check your connection.');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.error('Error message:', error.message);
         return rejectWithValue(`Error: ${error.message || 'Unknown error'}`);
       }
     }
