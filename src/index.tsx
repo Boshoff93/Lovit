@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
 import { setupAxiosInterceptors } from './store/authSlice';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 
 // Initialize axios interceptors with the Redux store
 setupAxiosInterceptors(store);
@@ -114,8 +115,10 @@ const AppRoot = () => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
+            <WebSocketProvider>
+              <CssBaseline />
+              <App />
+            </WebSocketProvider>
           </ThemeProvider>
         </PersistGate>
       </Provider>

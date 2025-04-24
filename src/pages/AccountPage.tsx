@@ -122,7 +122,7 @@ const AccountPage: React.FC = () => {
           </Typography>
           <Button 
             variant="outlined" 
-            size="small" 
+            size="medium" 
             sx={{ mt: 1 }}
             onClick={handleManageSubscription}
             disabled={isLoading || portalLoading}

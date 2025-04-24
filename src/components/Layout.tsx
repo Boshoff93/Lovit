@@ -30,7 +30,8 @@ import {
   useMediaQuery,
   Alert,
   Snackbar,
-  CircularProgress
+  CircularProgress,
+  LinearProgress
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -53,6 +54,7 @@ import { PromptData } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logout } from '../store/authSlice';
+import { useWebSocket } from '../contexts/WebSocketContext';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -157,6 +159,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
   const { token } = useSelector((state: RootState) => state.auth);
   
+  // WebSocket integration
+  const { lastMessage, trainingUpdates, connect } = useWebSocket();
+  
   const [open, setOpen] = useState(!isMobile);
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
@@ -170,6 +175,44 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     message: '',
     severity: 'info'
   });
+  
+  // Update notification when WebSocket receives a message
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === 'model_training_update') {
+      // Set notification based on training status
+      let severity: 'success' | 'error' | 'info' | 'warning' = 'info';
+      let message = '';
+      
+      switch (lastMessage.status) {
+        case 'WAITING':
+          severity = 'info';
+          message = `Model training queued - ${lastMessage.modelId}`;
+          break;
+        case 'IN_PROGRESS':
+          severity = 'info';
+          message = `Training in progress ${lastMessage.progress ? `- ${lastMessage.progress}%` : ''}`;
+          break;
+        case 'completed':
+          severity = 'success';
+          message = 'Model training completed successfully!';
+          break;
+        case 'FAILED':
+        case 'failed':
+          severity = 'error';
+          message = 'Model training failed. Please try again.';
+          break;
+        default:
+          severity = 'info';
+          message = `Model status: ${lastMessage.status}`;
+      }
+      
+      setNotification({
+        open: true,
+        message,
+        severity
+      });
+    }
+  }, [lastMessage]);
   
   // Update drawer state when screen size changes
   useEffect(() => {
@@ -428,6 +471,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       const data = await response.json();
       setModelId(data.modelId);
+
+      // Connect to WebSocket for this specific model
+      if (data.modelId) {
+        connect(data.modelId);
+      }
 
       setNotification({
         open: true,
@@ -1056,6 +1104,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {notification.message}
         </Alert>
       </Snackbar>
+      
+      {/* Training Progress Indicator */}
+      {lastMessage && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: 2,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="body2" gutterBottom>
+            Training Model: {lastMessage.modelId}
+          </Typography>
+          <Box sx={{ width: '100%', maxWidth: 400, mb: 1 }}>
+            <LinearProgress variant="determinate" value={lastMessage.progress} 
+              sx={{ height: 10, borderRadius: 5 }} 
+            />
+          </Box>
+          <Typography variant="caption">
+            Progress: {lastMessage.progress}%
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

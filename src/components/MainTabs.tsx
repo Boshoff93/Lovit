@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -9,10 +9,16 @@ import {
   CardMedia,
   CardContent,
   Divider,
-  Button
+  Button,
+  LinearProgress,
+  Chip,
+  CircularProgress
 } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import { useWebSocket } from '../contexts/WebSocketContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,6 +53,8 @@ interface Model {
   bodyType: string;
   createdAt: string;
   imageUrl: string;
+  status?: string;
+  progress?: number;
 }
 
 interface ImageGroup {
@@ -149,9 +157,127 @@ const mockImageGroups: ImageGroup[] = [
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 1)
   const [value, setValue] = useState(0);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Get auth token from Redux store
+  const { token } = useSelector((state: RootState) => state.auth);
+  
+  // Get training updates from WebSocket context
+  const { trainingUpdates, connect } = useWebSocket();
+
+  // Fetch models on component mount
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/models`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setModels(data.models || []);
+          
+          // Connect to WebSocket for each model
+          data.models.forEach((model: Model) => {
+            if (model.status === 'IN_PROGRESS' || model.status === 'WAITING') {
+              connect(model.id);
+            }
+          });
+        } else {
+          console.error('Failed to fetch models');
+          // Fallback to mock data in development
+          if (process.env.NODE_ENV === 'development') {
+            setModels(mockModels);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error);
+        // Fallback to mock data in development
+        if (process.env.NODE_ENV === 'development') {
+          setModels(mockModels);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (token) {
+      fetchModels();
+    } else {
+      // If no token, use mock data in development
+      if (process.env.NODE_ENV === 'development') {
+        setModels(mockModels);
+        setLoading(false);
+      }
+    }
+  }, [token, connect]);
+
+  // Update models when training updates are received
+  useEffect(() => {
+    if (Object.keys(trainingUpdates).length > 0) {
+      setModels(prevModels => 
+        prevModels.map(model => {
+          const updates = trainingUpdates[model.id];
+          if (updates && updates.length > 0) {
+            // Get the latest update
+            const latestUpdate = updates[updates.length - 1];
+            return {
+              ...model,
+              status: latestUpdate.status,
+              progress: latestUpdate.progress
+            };
+          }
+          return model;
+        })
+      );
+    }
+  }, [trainingUpdates]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  // Helper function to render status chip based on training status
+  const renderStatusChip = (status?: string) => {
+    if (!status) return null;
+    
+    let color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' = 'default';
+    let label = status;
+    
+    switch (status) {
+      case 'WAITING':
+        color = 'secondary';
+        label = 'Queued';
+        break;
+      case 'IN_PROGRESS':
+        color = 'primary';
+        label = 'Training';
+        break;
+      case 'completed':
+        color = 'success';
+        label = 'Ready';
+        break;
+      case 'FAILED':
+      case 'failed':
+        color = 'error';
+        label = 'Failed';
+        break;
+      default:
+        color = 'default';
+    }
+    
+    return (
+      <Chip 
+        label={label} 
+        color={color} 
+        size="small" 
+        sx={{ mt: 1 }}
+      />
+    );
   };
 
   return (
@@ -188,39 +314,76 @@ const MainTabs: React.FC = () => {
           Your Models
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          {mockModels.map((model) => (
-            <Box 
-              key={model.id} 
-              sx={{ 
-                flex: { 
-                  xs: '1 1 100%', 
-                  sm: '1 1 calc(50% - 16px)', 
-                  md: '1 1 calc(33.333% - 16px)' 
-                } 
-              }}
-            >
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardMedia
-                  component="img"
-                  height="240"
-                  image={model.imageUrl}
-                  alt={model.name}
-                  sx={{ objectFit: 'cover' }}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" component="div">
-                    {model.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {model.gender} • {model.bodyType}
-                  </Typography>
-                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    Created on {new Date(model.createdAt).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </Card>
+          {loading ? (
+            <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+              <CircularProgress />
             </Box>
-          ))}
+          ) : models.length === 0 ? (
+            <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="text.secondary">
+                You haven't created any models yet.
+              </Typography>
+              <Button 
+                variant="contained" 
+                sx={{ mt: 2 }}
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                Create Your First Model
+              </Button>
+            </Box>
+          ) : (
+            models.map((model) => (
+              <Box 
+                key={model.id} 
+                sx={{ 
+                  flex: { 
+                    xs: '1 1 100%', 
+                    sm: '1 1 calc(50% - 16px)', 
+                    md: '1 1 calc(33.333% - 16px)' 
+                  } 
+                }}
+              >
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardMedia
+                    component="img"
+                    height="240"
+                    image={model.imageUrl}
+                    alt={model.name}
+                    sx={{ objectFit: 'cover' }}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <Typography variant="h6" component="div">
+                        {model.name}
+                      </Typography>
+                      {renderStatusChip(model.status)}
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {model.gender} • {model.bodyType}
+                    </Typography>
+                    
+                    {/* Show progress bar for in-progress models */}
+                    {model.status === 'IN_PROGRESS' && model.progress && (
+                      <Box sx={{ mt: 1.5, mb: 0.5 }}>
+                        <LinearProgress 
+                          variant="determinate" 
+                          value={model.progress} 
+                          sx={{ height: 6, borderRadius: 3 }} 
+                        />
+                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
+                          {model.progress}% Complete
+                        </Typography>
+                      </Box>
+                    )}
+                    
+                    <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                      Created on {new Date(model.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            ))
+          )}
         </Box>
       </TabPanel>
       
@@ -288,4 +451,4 @@ const MainTabs: React.FC = () => {
   );
 };
 
-export default MainTabs; 
+export default MainTabs;
