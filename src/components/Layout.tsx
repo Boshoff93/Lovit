@@ -1233,7 +1233,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           open={notification.open} 
           autoHideDuration={6000} 
           onClose={handleCloseNotification}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert onClose={handleCloseNotification} severity={notification.severity}>
             {notification.message}
