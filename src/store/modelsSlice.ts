@@ -41,9 +41,12 @@ export const fetchModels = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      const response = await axios.get(`${API_BASE_URL}/api/models?userId=${auth.user.userId}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/models`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
+        },
+        params: {
+          userId: auth.user.userId
         }
       });
       

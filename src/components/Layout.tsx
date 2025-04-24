@@ -78,10 +78,10 @@ interface UserProfile {
 
 // Define the maximum number of images per tier
 const TIER_IMAGE_LIMITS = {
-  Free: 0,
-  Starter: 1,
-  Pro: 2,
-  Premium: 4
+  free: 0,
+  starter: 1,
+  pro: 2,
+  premium: 4
 };
 
 // Create a context for the Layout functions
@@ -296,7 +296,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     prompt: '',
     negativePrompt: '',
     orientation: 'Portrait',
-    numberOfImages: 4,
+    numberOfImages: 1,
     uploadedClothImage: null,
     seedNumber: '',
     useSeed: false,
