@@ -72,12 +72,35 @@ export const trainModel = createAsyncThunk(
         headers: {
           'Authorization': `Bearer ${auth.token}`,
           'Content-Type': 'multipart/form-data'
+        },
+        // Add timeout to prevent hanging requests
+        timeout: 180000, // 3 minutes timeout
+        // Add upload progress tracking
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`Upload Progress: ${percentCompleted}%`);
+          }
         }
       });
       
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.error || 'Failed to train model');
+      // Enhanced error handling
+      if (error.code === 'ECONNABORTED') {
+        return rejectWithValue('Request timed out. The file upload may be too large.');
+      }
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        return rejectWithValue(error.response.data?.error || `Server error: ${error.response.status}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        return rejectWithValue('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        return rejectWithValue(`Error: ${error.message || 'Unknown error'}`);
+      }
     }
   }
 );

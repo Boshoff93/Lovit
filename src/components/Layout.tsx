@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -23,9 +23,6 @@ import {
   MenuItem,
   SelectChangeEvent,
   Slider,
-  FormControlLabel,
-  Checkbox,
-  Badge,
   Stack,
   useMediaQuery,
   Alert,
@@ -37,16 +34,12 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import AddIcon from '@mui/icons-material/Add';
 import ImageIcon from '@mui/icons-material/Image';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import FaceIcon from '@mui/icons-material/Face';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CollectionsIcon from '@mui/icons-material/Collections';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -59,7 +52,7 @@ import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { trainModel, selectModels } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
-import { Model } from '../store/modelsSlice';
+import imageCompression from 'browser-image-compression';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -187,7 +180,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
   const models = useSelector(selectModels);
   
@@ -271,6 +264,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     bodyType: '',
     breastSize: ''
   });
+  
+  // Add compression progress state
+  const [compressionProgress, setCompressionProgress] = useState(0);
+  const [isCompressing, setIsCompressing] = useState(false);
   
   // Add a ref for the Model Name TextField
   const modelNameRef = useRef<HTMLInputElement>(null);
@@ -519,6 +516,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
 
     setLoading(true);
+    setIsCompressing(true);
+    setCompressionProgress(0);
     
     try {
       // Get auth token from Redux state instead of localStorage
@@ -529,15 +528,82 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           severity: 'error'
         });
         setLoading(false);
+        setIsCompressing(false);
         return;
       }
 
+      // Compress all images before uploading
+      setNotification({
+        open: true,
+        message: 'Compressing images before upload...',
+        severity: 'info'
+      });
+      
+      // Configure compression options
+      const options = {
+        maxSizeMB: 1,         // Max file size in MB
+        maxWidthOrHeight: 1024, // Resize to this dimension (keeping aspect ratio)
+        useWebWorker: true,   // Use web workers for better performance
+        fileType: 'image/jpeg' // Force JPEG for better compression
+      };
+      
+      const totalImages = uploadedImages.length;
+      let completedImages = 0;
+      
+      // Track when each image is completed to update progress
+      const updateProgress = () => {
+        completedImages++;
+        const progress = Math.round((completedImages / totalImages) * 100);
+        setCompressionProgress(progress);
+      };
+      
+      // Create an array of compression promises
+      const compressionPromises = uploadedImages.map(async (image, index) => {
+        try {
+          // Log original file size
+          console.log(`Original image size (${index+1}/${totalImages}): ${(image.size / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Compress the image
+          const compressedFile = await imageCompression(image, options);
+          
+          // Log compressed file size
+          console.log(`Compressed image size (${index+1}/${totalImages}): ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Update progress after each image is compressed
+          updateProgress();
+          
+          return compressedFile;
+        } catch (error) {
+          console.error(`Error compressing image ${image.name}:`, error);
+          // Update progress even if compression fails
+          updateProgress();
+          // If compression fails, use the original
+          return image;
+        }
+      });
+      
+      // Wait for all compressions to complete in parallel
+      const compressedImages = await Promise.all(compressionPromises);
+      
+      // Compression complete
+      setIsCompressing(false);
+      
+      // Update notification
+      setNotification({
+        open: true,
+        message: 'Uploading images...',
+        severity: 'info'
+      });
+      
       // Create form data with all images and profile data
       const formData = new FormData();
-      uploadedImages.forEach(image => {
+      compressedImages.forEach(image => {
         formData.append('images', image);
       });
       formData.append('profileData', JSON.stringify(userProfile));
+      if (user?.userId) {
+        formData.append('userId', user.userId);
+      }
 
       // Use Redux action to train model
       const result = await dispatch(trainModel(formData)).unwrap();
@@ -584,8 +650,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
     } finally {
       setLoading(false);
+      setIsCompressing(false);
     }
-  }, [uploadedImages, userProfile, token, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
+  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
   
   const handleGenerateImages = useCallback(() => {
     // Ensure we have a model selected
@@ -1218,6 +1285,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               right: 0,
               bottom: 0,
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1225,6 +1293,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             }}
           >
             <CircularProgress color="primary" />
+            {isCompressing && (
+              <Box sx={{ mt: 2, width: '80%', maxWidth: 400 }}>
+                <Typography variant="body2" color="white" gutterBottom align="center">
+                  Uploading images: {compressionProgress}%
+                </Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={compressionProgress} 
+                  sx={{ height: 10, borderRadius: 5 }} 
+                />
+              </Box>
+            )}
           </Box>
         )}
         
