@@ -43,7 +43,8 @@ export const fetchModels = createAsyncThunk(
       
       const response = await axios.get(`${API_BASE_URL}/api/models`, {
         headers: {
-          'Authorization': `Bearer ${auth.token}`
+          'Authorization': `Bearer ${auth.token}`,
+          'Content-Type': 'multipart/form-data'
         },
         params: {
           userId: auth.user.userId
