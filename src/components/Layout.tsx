@@ -289,9 +289,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Function to open model section and focus on name field
   const openModel = useCallback(() => {
     setModelOpen(true);
-    if (modelNameRef.current) {
-      modelNameRef.current.focus();
-    }
+    setTimeout(() => {
+      if (modelNameRef.current) {
+        modelNameRef.current.focus();
+      }
+    }, 750);
   }, []);
 
   const handleImagesClick = useCallback(() => {
