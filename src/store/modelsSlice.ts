@@ -43,8 +43,7 @@ export const fetchModels = createAsyncThunk(
       
       const response = await axios.get(`${API_BASE_URL}/api/models`, {
         headers: {
-          'Authorization': `Bearer ${auth.token}`,
-          'Content-Type': 'multipart/form-data'
+          'Authorization': `Bearer ${auth.token}`
         },
         params: {
           userId: auth.user.userId
@@ -86,7 +85,8 @@ export const trainModel = createAsyncThunk(
 
       const response = await axios.post(`${API_BASE_URL}/api/train-model`, formData, {
         headers: {
-          'Authorization': `Bearer ${auth.token}`
+          'Authorization': `Bearer ${auth.token}`,
+          'Content-Type': 'multipart/form-data'
         },
         timeout: 0,
         ...axiosConfig
