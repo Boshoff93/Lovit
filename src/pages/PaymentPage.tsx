@@ -100,7 +100,7 @@ const plans: PricePlan[] = [
       modelCount: '3 AI models',
       quality: 'Medium quality photos',
       likeness: 'Medium likeness',
-      parallel: '4 photos in parallel',
+      parallel: '2 photos in parallel',
       other: ['Photorealistic models']
     },
     stripePrices: {
@@ -120,7 +120,7 @@ const plans: PricePlan[] = [
       modelCount: '10 AI models',
       quality: 'High quality photos',
       likeness: 'High likeness',
-      parallel: '8 photos in parallel',
+      parallel: '4 photos in parallel',
       other: ['Photorealistic models', 'Priority support']
     },
     stripePrices: {

@@ -78,10 +78,10 @@ interface UserProfile {
 
 // Define the maximum number of images per tier
 const TIER_IMAGE_LIMITS = {
-  free: 0,
-  starter: 1,
-  pro: 2,
-  premium: 4
+  Free: 0,
+  Starter: 1,
+  Pro: 2,
+  Premium: 4
 };
 
 // Create a context for the Layout functions
@@ -221,7 +221,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   // Get max allowed images based on subscription tier
   const getMaxImagesForTier = useCallback(() => {
-    const tier = subscription?.tier || 'free';
+    const tier = (subscription?.tier || 'free').charAt(0).toUpperCase() + (subscription?.tier || 'free').slice(1);
     return TIER_IMAGE_LIMITS[tier as keyof typeof TIER_IMAGE_LIMITS] || 0;
   }, [subscription?.tier]);
   
@@ -890,7 +890,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       
                       {/* Image Upload - Simplified */}
                       <Typography variant="body2" gutterBottom>
-                        Upload {MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES} Photos
+                        Required: {MIN_REQUIRED_IMAGES} to {MAX_ALLOWED_IMAGES} Photos
                       </Typography>
                       
                       <Paper 
@@ -945,7 +945,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         fullWidth
                         sx={{ height: 48 }}
                       >
-                        Select Photos ({uploadedCount}/{MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES})
+                        Upload Photos • {uploadedCount} of {MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES} Required
                       </Button>
                       
                       {uploadedImages.length > 0 && (
@@ -1097,7 +1097,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           step={1}
                           marks
                           min={1}
-                          max={8}
+                          max={4}
                           size="medium"
                           disabled={getMaxImagesForTier() === 0}
                         />
