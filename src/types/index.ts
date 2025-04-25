@@ -43,6 +43,7 @@ export interface PromptData {
   seedNumber?: string;
   useSeed: boolean;
   modelId?: string;
+  useRandomPrompt?: boolean;
 }
 
 export interface ApiResponse<T> {

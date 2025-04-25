@@ -29,7 +29,12 @@ import {
   Snackbar,
   CircularProgress,
   LinearProgress,
-  Chip
+  Chip,
+  Checkbox,
+  FormControlLabel,
+  Switch,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -44,6 +49,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import StarIcon from '@mui/icons-material/Star';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PromptData } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -286,7 +293,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     uploadedClothImage: null,
     seedNumber: '',
     useSeed: false,
-    modelId: ''
+    modelId: '',
+    useRandomPrompt: false
   });
   
   const clothFileInputRef = useRef<HTMLInputElement>(null);
@@ -676,13 +684,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       return;
     }
     
+    // Allow empty prompt if useRandomPrompt is true
+    if (!promptData.prompt && !promptData.useRandomPrompt) {
+      setNotification({
+        open: true,
+        message: 'Please enter a prompt or use "Pick for me" option',
+        severity: 'error'
+      });
+      return;
+    }
+    
     // Here you would normally send this data to your backend with modelId
     console.log('Generating images with:', {
       modelId: promptData.modelId,
       prompt: promptData.prompt,
       numberOfImages: promptData.numberOfImages,
       orientation: promptData.orientation,
-      uploadedClothImage: promptData.uploadedClothImage ? 'yes' : 'no'
+      uploadedClothImage: promptData.uploadedClothImage ? 'yes' : 'no',
+      useRandomPrompt: promptData.useRandomPrompt
     });
     
     if (isMobile) {
@@ -705,6 +724,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setOpen(false);
     }
   }, [dispatch, navigate, isMobile, setOpen]);
+
+  // Add to handle checkbox change near the other prompt handlers
+  const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setPromptData(prev => ({
+      ...prev,
+      [name]: checked
+    }));
+  }, []);
+
+  // Add a new handler for the toggle button
+  const handlePromptModeChange = useCallback((_event: React.MouseEvent<HTMLElement>, newValue: string | null) => {
+    // Prevent null value (i.e., disable toggling off both buttons)
+    if (newValue !== null) {
+      setPromptData(prev => ({
+        ...prev,
+        useRandomPrompt: newValue === 'random'
+      }));
+    }
+  }, []);
 
   return (
     <LayoutContext.Provider value={{ openModel }}>
@@ -972,8 +1011,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           p: 1.5, 
                           mb: 1.5,
                           borderRadius: 1,
-                          backgroundColor: theme.palette.error.light + '10', 
-                          borderColor: theme.palette.error.light
+                          backgroundColor: theme.palette.warning.light + '10', 
+                          borderColor: theme.palette.warning.light
                         }}
                       >
                         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
@@ -1101,20 +1140,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           )}
                         </Select>
                       </FormControl>
-                    
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Prompt"
-                        name="prompt"
-                        value={promptData.prompt}
-                        onChange={handlePromptTextChange}
-                        multiline
-                        rows={2}
-                        placeholder="Describe what you want to generate"
-                        required
-                      />
-                      
                       <FormControl fullWidth size="small">
                         <InputLabel>Orientation</InputLabel>
                         <Select
@@ -1128,6 +1153,106 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           ))}
                         </Select>
                       </FormControl>
+                    
+                      <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                        <Paper 
+                          elevation={0}
+                          variant="outlined" 
+                          sx={{ 
+                            borderRadius: 6, 
+                            padding: 0.2,
+                            backgroundColor: 'background.paper',
+                          }}
+                        >
+                          <ToggleButtonGroup
+                            exclusive
+                            value={promptData.useRandomPrompt ? 'random' : 'custom'}
+                            onChange={handlePromptModeChange}
+                            aria-label="prompt type"
+                            size="small"
+                            sx={{ width: '100%' }}
+                          >
+                            <ToggleButton 
+                              value="custom" 
+                              aria-label="custom prompt"
+                              sx={{ 
+                                px: 2,
+                                borderRadius: 5,
+                                '&.Mui-selected': {
+                                  backgroundColor: theme.palette.primary.main + '15',
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 'bold'
+                                }
+                              }}
+                            >
+                              <EditIcon sx={{ mr: 1, fontSize: '1rem' }} />
+                              Write My Own
+                            </ToggleButton>
+                            <ToggleButton 
+                              value="random" 
+                              aria-label="random prompt"
+                              sx={{ 
+                                px: 2,
+                                borderRadius: 5,
+                                '&.Mui-selected': {
+                                  backgroundColor: theme.palette.primary.main + '15',
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 'bold'
+                                }
+                              }}
+                            >
+                              <AutoFixHighIcon sx={{ mr: 1, fontSize: '1rem' }} />
+                              Pick For Me
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Paper>
+                      </Box>
+                      
+                      {!promptData.useRandomPrompt ? (
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Describe your outfit & location"
+                          name="prompt"
+                          value={promptData.prompt}
+                          onChange={handlePromptTextChange}
+                          multiline
+                          rows={4}
+                          placeholder="Example: 'Me in a red dress walking in New York City"
+                          required
+                        />
+                      ) : (
+                        <Paper
+                          elevation={0}
+                          variant="outlined"
+                          sx={{
+                            p: 2,
+                            borderRadius: 1,
+                            borderWidth: 2,
+                            borderStyle: 'dashed',
+                            borderColor: theme.palette.secondary.main,
+                            backgroundColor: theme.palette.secondary.light + '10',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 108, // Same height as the TextField with 3 rows
+                            textAlign: 'center'
+                          }}
+                        >
+                          <AutoFixHighIcon 
+                            color="secondary" 
+                            sx={{ fontSize: 28, mb: 1 }}
+                          />
+                          <Typography 
+                            variant="body1" 
+                            color="secondary.main"
+                            sx={{ fontWeight: 500 }}
+                          >
+                            We'll create something for you with your model
+                          </Typography>
+                        </Paper>
+                      )}
                       
                       <Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -1216,7 +1341,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={!promptData.prompt || !promptData.modelId || getMaxImagesForTier() === 0}
+                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0}
                         onClick={handleGenerateImages}
                       >
                         {getMaxImagesForTier() === 0 ? 'Upgrade to Generate Images' : 
@@ -1226,8 +1351,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       {getMaxImagesForTier() < 4 && (
                         <Box sx={{ mt: 1 }}>
                           <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-                            <StarIcon sx={{ fontSize: 16, mr: 0.5, color: 'gold' }} />
-                            Upgrade to Premium for up to 4 images at once
+                            <StarIcon sx={{ fontSize: 16, mr: 1.5, color: 'gold' }} />
+                            Upgrade to Premium to generate up to 4 images at a time
                           </Typography>
                         </Box>
                       )}
