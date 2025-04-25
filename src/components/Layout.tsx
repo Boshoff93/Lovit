@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext, useCallback } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -30,9 +30,6 @@ import {
   CircularProgress,
   LinearProgress,
   Chip,
-  Checkbox,
-  FormControlLabel,
-  Switch,
   ToggleButton,
   ToggleButtonGroup
 } from '@mui/material';
@@ -52,15 +49,21 @@ import StarIcon from '@mui/icons-material/Star';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { PromptData } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { selectModels, getModelUploadUrls, trainModelWithS3 } from '../store/modelsSlice';
+import { 
+  generateImages, 
+  uploadClothingItem,
+  selectIsUploadingClothing,
+  selectClothingKey
+} from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
+
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -88,6 +91,7 @@ const TIER_IMAGE_LIMITS = {
 // Create a context for the Layout functions
 interface LayoutContextType {
   openModel: () => void;
+  openImages: () => void;
 }
 
 export const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -169,7 +173,14 @@ const ETHNICITY_OPTIONS = ['Asian', 'Black', 'Caucasian', 'Hispanic/Latino', 'Mi
 const HEIGHT_OPTIONS = ['Very Short (~140cm/4\'7")', 'Petite (~150cm/4\'11")', 'Short (~160cm/5\'3")', 'Average (~170cm/5\'7")', 'Tall (~180cm/5\'11")', 'Very Tall (190cm+/6\'3"+)'];
 
 // Generation specific constants
-const ORIENTATION_OPTIONS = ['Portrait', 'Landscape', 'Square'];
+const ORIENTATION_OPTIONS = [
+  { value: 'square_hd', label: 'Square HD' },
+  { value: 'square', label: 'Square' },
+  { value: 'portrait_4_3', label: 'Portrait 4:3' },
+  { value: 'portrait_16_9', label: 'Portrait 16:9' },
+  { value: 'landscape_4_3', label: 'Landscape 4:3' },
+  { value: 'landscape_16_9', label: 'Landscape 16:9' }
+];
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -182,6 +193,17 @@ const recentImages = [
   { id: 4, title: 'Casual Weekend Outfit', date: 'Last week' },
 ];
 
+interface PromptData {
+  modelId: string;
+  prompt: string;
+  numberOfImages: number;
+  orientation: string;
+  uploadedClothImage: File | null;
+  useRandomPrompt: boolean;
+  seedNumber?: number;
+  inferenceSteps?: number;
+}
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -191,6 +213,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { token, user } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
   const models = useSelector(selectModels);
+  
+  // Selectors for clothing upload state
+  const isUploadingClothing = useSelector(selectIsUploadingClothing);
+  const storedClothingKey = useSelector(selectClothingKey);
   
   // WebSocket integration
   const { lastMessage, trainingUpdates, connect } = useWebSocket();
@@ -290,18 +316,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Prompt creation state
   const [promptData, setPromptData] = useState<PromptData>({
     prompt: '',
-    negativePrompt: '',
-    orientation: 'Portrait',
-    numberOfImages: 1,
+    numberOfImages: 4,
+    orientation: 'portrait',
     uploadedClothImage: null,
-    seedNumber: '',
-    useSeed: false,
     modelId: '',
-    useRandomPrompt: false
+    useRandomPrompt: false,
+    seedNumber: undefined,
+    inferenceSteps: 50
   });
   
   const clothFileInputRef = useRef<HTMLInputElement>(null);
   const [clothPreviewUrl, setClothPreviewUrl] = useState<string | null>(null);
+
+  // Add clothing item state
+  const [clothingFile, setClothingFile] = useState<File | null>(null);
+  const [clothingUrl, setClothingUrl] = useState<string | null>(null);
+  const [clothingKey, setClothingKey] = useState<string | null>(null);
+  
+  // Sync clothingKey from Redux when it changes
+  useEffect(() => {
+    if (storedClothingKey) {
+      setClothingKey(storedClothingKey);
+    }
+  }, [storedClothingKey]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -330,6 +367,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setImagesOpen(!imagesOpen);
     if (modelOpen) setModelOpen(false);
   }, [imagesOpen, modelOpen]);
+  
+  // Function to open images section
+  const openImages = useCallback(() => {
+    setImagesOpen(true);
+    if (modelOpen) setModelOpen(false);
+  }, [modelOpen]);
   
   const handleNavigate = useCallback((path: string, e?: React.MouseEvent) => {
     navigate(path);
@@ -463,36 +506,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }));
   }, [getMaxImagesForTier]);
   
-  // Clothing image upload handlers
-  const handleClothButtonClick = useCallback(() => {
-    if (clothFileInputRef.current) {
-      clothFileInputRef.current.click();
-    }
-  }, []);
 
-  const handleClothFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files[0]) {
-      setPromptData(prev => ({
-        ...prev,
-        uploadedClothImage: files[0]
-      }));
-      
-      const previewUrl = URL.createObjectURL(files[0]);
-      setClothPreviewUrl(previewUrl);
-    }
-  }, []);
-  
-  const handleClearCloth = useCallback(() => {
-    setPromptData(prev => ({
-      ...prev,
-      uploadedClothImage: null
-    }));
-    setClothPreviewUrl(null);
-    if (clothFileInputRef.current) {
-      clothFileInputRef.current.value = '';
-    }
-  }, []);
   
   // Submit handlers
   const handleCreateModel = useCallback(async () => {
@@ -734,52 +748,123 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
   
-  const handleGenerateImages = useCallback(() => {
-    // Ensure we have a model selected
-    if (!promptData.modelId) {
+  // Add this function for clothing upload
+  const handleClothingFileChange = async (file: File | null) => {
+    if (!file) {
+      setClothingFile(null);
+      setClothingUrl(null);
+      setClothingKey(null);
+      return;
+    }
+
+    setClothingFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setClothingUrl(e.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleGenerateImages = async () => {
+    if (!promptData.modelId || !promptData.prompt) {
       setNotification({
         open: true,
-        message: 'Please select a model to generate images',
+        message: 'Please select a model and enter a prompt',
         severity: 'error'
       });
       return;
     }
-    
-    // Check if user has appropriate tier
-    const maxImages = getMaxImagesForTier();
-    if (maxImages === 0) {
+
+    try {
+      setLoading(true);
+      setIsCompressing(true);
+      setCompressionProgress(0);
+      setUploadProgress(0);
+      setIsUploading(false);
+
+      let uploadedClothingKey = null;
+      if (clothingFile) {
+        try {
+          const result = await dispatch(uploadClothingItem({
+            file: clothingFile
+          })).unwrap();
+          uploadedClothingKey = result.key;
+        } catch (error) {
+          console.error('Error uploading clothing item:', error);
+          setNotification({
+            open: true,
+            message: 'Failed to upload clothing item',
+            severity: 'error'
+          });
+          setLoading(false);
+          setIsCompressing(false);
+          return;
+        }
+      }
+      
+      // Dispatch event to notify about image generation starting
+      window.dispatchEvent(new CustomEvent('imageGenerationStart', { 
+        detail: { 
+          generationRequest: {
+            modelId: promptData.modelId,
+            prompt: promptData.prompt,
+            numberOfImages: promptData.numberOfImages,
+            orientation: promptData.orientation,
+            clothingKey: uploadedClothingKey
+          }
+        }
+      }));
+
+      const result = await dispatch(generateImages({
+        modelId: promptData.modelId,
+        prompt: promptData.prompt,
+        numberOfImages: promptData.numberOfImages,
+        orientation: promptData.orientation,
+        clothingKey: uploadedClothingKey || undefined,
+        seedNumber: promptData.seedNumber !== undefined ? String(promptData.seedNumber) : undefined,
+        inferenceSteps: promptData.inferenceSteps || 30
+      })).unwrap();
+
+      if (result && !result.error) {
+        // The actual images will be received through the WebSocket
+        setNotification({
+          open: true,
+          message: 'Images generated successfully!',
+          severity: 'success'
+        });
+        
+        // Navigate to the gallery tab after successful generation
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', 'gallery');
+        window.history.replaceState({}, '', url);
+        window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'gallery' } }));
+        
+        // Optionally navigate to dashboard if we're not already there
+        if (!location.pathname.includes('/dashboard')) {
+          navigate('/dashboard');
+        }
+      } else {
+        setNotification({
+          open: true,
+          message: result?.error || 'Failed to generate images',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('Error generating images:', error);
       setNotification({
         open: true,
-        message: 'Please upgrade your subscription to generate images',
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
         severity: 'error'
       });
-      return;
+    } finally {
+      setLoading(false);
+      setIsCompressing(false);
+      setIsUploading(false);
     }
-    
-    // Allow empty prompt if useRandomPrompt is true
-    if (!promptData.prompt && !promptData.useRandomPrompt) {
-      setNotification({
-        open: true,
-        message: 'Please enter a prompt or use "Pick for me" option',
-        severity: 'error'
-      });
-      return;
-    }
-    
-    // Here you would normally send this data to your backend with modelId
-    console.log('Generating images with:', {
-      modelId: promptData.modelId,
-      prompt: promptData.prompt,
-      numberOfImages: promptData.numberOfImages,
-      orientation: promptData.orientation,
-      uploadedClothImage: promptData.uploadedClothImage ? 'yes' : 'no',
-      useRandomPrompt: promptData.useRandomPrompt
-    });
-    
-    if (isMobile) {
-      setOpen(false);
-    }
-  }, [isMobile, setOpen, promptData, getMaxImagesForTier, setNotification]);
+  };
 
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({
@@ -818,7 +903,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <LayoutContext.Provider value={{ openModel }}>
+    <LayoutContext.Provider value={{ openModel, openImages: openImages }}>
       <Box sx={{ display: 'flex' }}>
         <AppBarStyled position="fixed" open={open}>
           <Toolbar>
@@ -1221,7 +1306,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           onChange={handlePromptSelectChange}
                         >
                           {ORIENTATION_OPTIONS.map(option => (
-                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                           ))}
                         </Select>
                       </FormControl>
@@ -1362,51 +1447,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </Box>
                       
                       {/* Clothing Upload - Simplified */}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        ref={clothFileInputRef}
-                        onChange={handleClothFileChange}
-                      />
-                      
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<CloudUploadIcon />}
-                        onClick={handleClothButtonClick}
-                        size="small"
-                        sx={{ height: 48 }}
-                      >
-                        Upload Clothing Reference
-                      </Button>
-                      
-                      {clothPreviewUrl && (
-                        <Box sx={{ position: 'relative', height: 100 }}>
-                          <img 
-                            src={clothPreviewUrl} 
-                            alt="Clothing reference" 
-                            style={{ 
-                              maxWidth: '100%', 
-                              maxHeight: '100%', 
-                              objectFit: 'contain',
-                              borderRadius: '4px'
-                            }}
+                      <Box sx={{ mt: 2, mb: 2 }}>
+                        <Typography variant="subtitle1">Upload Reference Clothing (Optional)</Typography>
+                        <Button
+                          variant="outlined"
+                          component="label"
+                          disabled={loading || !clothingFile}
+                          startIcon={<CloudUploadIcon />}
+                          sx={{ mt: 1 }}
+                        >
+                          Upload Clothing
+                          <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={(e) => handleClothingFileChange(e.target.files ? e.target.files[0] : null)}
                           />
-                          <IconButton
-                            size="small"
-                            sx={{ 
-                              position: 'absolute', 
-                              top: 0, 
-                              right: 0,
-                              backgroundColor: 'rgba(255,255,255,0.8)',
-                              p: 0.5
-                            }}
-                            onClick={handleClearCloth}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      )}
+                        </Button>
+                        {clothingUrl && (
+                          <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
+                            <img 
+                              src={clothingUrl} 
+                              alt="Clothing reference" 
+                              style={{ width: 100, height: 100, objectFit: 'cover' }} 
+                            />
+                            <IconButton onClick={() => handleClothingFileChange(null)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Box>
+                        )}
+                      </Box>
                       
                       <Button
                         variant="contained"

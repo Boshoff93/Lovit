@@ -3,18 +3,20 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 import modelsReducer from './modelsSlice';
+import galleryReducer from './gallerySlice';
 
 // Root reducer
 const rootReducer = combineReducers({
   auth: authReducer,
   models: modelsReducer,
+  gallery: galleryReducer,
 });
 
 // Redux persist configuration
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'models'], // Persist auth and models state
+  whitelist: ['auth', 'models', 'gallery'], // Persist auth, models, and gallery state
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -12,15 +12,28 @@ import {
   Button,
   LinearProgress,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Skeleton
 } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import ImageIcon from '@mui/icons-material/Image';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { useLayout } from './Layout';
 import { fetchModels, updateModel, Model } from '../store/modelsSlice';
+import { 
+  fetchGeneratedImages, 
+  selectImageGroups,
+  selectGeneratingImages,
+  selectGalleryLoading,
+  removeGeneratingImage,
+  addGeneratedImages,
+  GeneratedImage,
+  ImageGroup as GalleryImageGroup
+} from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
 
@@ -100,7 +113,7 @@ const mockModels: Model[] = [
     gender: 'Female',
     bodyType: 'Slim',
     createdAt: '2024-04-16T18:30:00Z',
-    imageUrl: '/dress3.jpg',
+    imageUrl: '/dress2.jpg',
     status: 'WAITING',
     progress: 0,
     ethnicity: 'Hispanic/Latino',
@@ -214,11 +227,30 @@ const mockImageGroups: ImageGroup[] = [
   }
 ];
 
+// Add a new interface for generating images
+interface GeneratingImage {
+  id: string;
+  modelId: string;
+  prompt: string;
+  timestamp: number;
+  numberOfImages: number;
+}
+
+// Add interface to handle WebSocket image generation updates
+interface ImageGenerationUpdate {
+  type: string;
+  status: string;
+  generationId: string;
+  modelId: string;
+  images?: GeneratedImage[];
+}
+
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 0)
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const hasFetchedRef = useRef(false);
+  const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
   
   // Get auth token from Redux store
@@ -230,11 +262,16 @@ const MainTabs: React.FC = () => {
   const models = useSelector((state: RootState) => state.models.models);
   const modelsLoading = useSelector((state: RootState) => state.models.isLoading);
   
+  // Get gallery data from Redux store
+  const imageGroups = useSelector(selectImageGroups);
+  const generatingImages = useSelector(selectGeneratingImages);
+  const isLoadingImages = useSelector(selectGalleryLoading);
+  
   // Get training updates from WebSocket context
-  const { trainingUpdates, connect } = useWebSocket();
+  const { lastMessage, trainingUpdates, connect } = useWebSocket();
   
   // Get openModel function from Layout context
-  const { openModel } = useLayout();
+  const { openModel, openImages } = useLayout();
 
   // Check for tab parameter in URL and set active tab
   useEffect(() => {
@@ -249,7 +286,6 @@ const MainTabs: React.FC = () => {
     
     // Listen for custom tab change events
     const handleTabChange = (e: CustomEvent) => {
-      const url = new URL(window.location.href);
       if (e.detail && e.detail.tab === 'models') {
         setValue(1); // Set to Models tab
       } else if (e.detail && e.detail.tab === 'gallery') {
@@ -291,6 +327,47 @@ const MainTabs: React.FC = () => {
     
     fetchModelsData();
   }, [token, connect, userId, dispatch, models]);
+
+  // Fetch images when gallery tab is active
+  useEffect(() => {
+    const fetchImagesData = async () => {
+      if (hasLoadedImagesRef.current || !userId || !token) return;
+      
+      try {
+        if (value === 0) { // Gallery tab is active
+          await dispatch(fetchGeneratedImages());
+          hasLoadedImagesRef.current = true;
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+    
+    fetchImagesData();
+  }, [value, token, userId, dispatch]);
+
+  // Listen for image generation updates from WebSocket
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === 'image_generation_update') {
+      // Process the update based on status
+      const update = lastMessage as unknown as ImageGenerationUpdate;
+      
+      if (update.status === 'completed' && update.images && update.images.length > 0) {
+        // Add the new images to the store
+        dispatch(addGeneratedImages(update.images));
+        
+        // Remove from generating images
+        dispatch(removeGeneratingImage(update.generationId));
+        
+        // Show notification - possibly implement this
+      } else if (update.status === 'failed') {
+        // Remove from generating images
+        dispatch(removeGeneratingImage(update.generationId));
+        
+        // Show error notification - possibly implement this
+      }
+    }
+  }, [lastMessage, dispatch]);
 
   // Update models when training updates are received
   useEffect(() => {
@@ -363,6 +440,12 @@ const MainTabs: React.FC = () => {
       />
     );
   }, []);
+
+  // Function to handle create image button
+  const handleCreateImageClick = useCallback(() => {
+    // Use the context function to open the images tab
+    openImages();
+  }, [openImages]);
 
   return (
     <Box sx={{ width: '100%'}}>
@@ -477,8 +560,30 @@ const MainTabs: React.FC = () => {
           Your Gallery
         </Typography>
         
-        {mockImageGroups.map((group) => (
-          <Box key={group.date} sx={{ mb: 4 }}>
+        {isLoadingImages ? (
+          // Loading state
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            {[1, 2, 3, 4].map(skeleton => (
+              <Box 
+                key={`skeleton-${skeleton}`}
+                sx={{ 
+                  flex: { 
+                    xs: '1 1 100%', 
+                    sm: '1 1 calc(50% - 8px)', 
+                    md: '1 1 calc(33.333% - 10px)', 
+                    lg: '1 1 calc(25% - 12px)' 
+                  } 
+                }}
+              >
+                <Skeleton variant="rectangular" height={280} />
+                <Skeleton variant="text" sx={{ mt: 1 }} />
+                <Skeleton variant="text" width="60%" />
+              </Box>
+            ))}
+          </Box>
+        ) : generatingImages.length > 0 ? (
+          // Show generating images
+          <Box sx={{ mb: 4 }}>
             <Paper 
               sx={{ 
                 p: 2, 
@@ -493,14 +598,14 @@ const MainTabs: React.FC = () => {
               }}
             >
               <Typography variant="h6" component="div">
-                {group.formattedDate}
+                Currently Generating
               </Typography>
             </Paper>
             
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {group.images.map((image) => (
+              {generatingImages.map((genImage) => (
                 <Box 
-                  key={image.id} 
+                  key={genImage.id} 
                   sx={{ 
                     flex: { 
                       xs: '1 1 100%', 
@@ -511,17 +616,29 @@ const MainTabs: React.FC = () => {
                   }}
                 >
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <CardMedia
-                      component="img"
-                      height={280}
-                      image={image.url}
-                      alt={image.title}
-                      sx={{ objectFit: 'cover' }}
-                    />
+                    <Box 
+                      sx={{ 
+                        height: 280, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        bgcolor: 'action.hover',
+                        p: 2
+                      }}
+                    >
+                      <CircularProgress sx={{ mb: 2 }} />
+                      <Typography variant="body2" align="center" sx={{ mb: 1 }}>
+                        Generating {genImage.numberOfImages} image{genImage.numberOfImages > 1 ? 's' : ''}
+                      </Typography>
+                      <Typography variant="caption" align="center" color="text.secondary">
+                        "{genImage.prompt.length > 60 ? genImage.prompt.substring(0, 60) + '...' : genImage.prompt}"
+                      </Typography>
+                    </Box>
                     <CardContent>
-                      <Typography variant="subtitle1">{image.title}</Typography>
+                      <Typography variant="subtitle1">In Progress</Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        Started {new Date(genImage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -529,7 +646,108 @@ const MainTabs: React.FC = () => {
               ))}
             </Box>
           </Box>
-        ))}
+        ) : null}
+        
+        {imageGroups.length > 0 ? (
+          // Show existing images grouped by date
+          imageGroups.map((group) => (
+            <Box key={group.date} sx={{ mb: 4 }}>
+              <Paper 
+                sx={{ 
+                  p: 2, 
+                  mb: 2, 
+                  display: 'flex',
+                  alignItems: 'center',
+                  bgcolor: 'background.default',
+                  borderRadius: '12px 12px 0 0',
+                  boxShadow: 'none',
+                  borderBottom: 1,
+                  borderColor: 'divider'
+                }}
+              >
+                <Typography variant="h6" component="div">
+                  {group.formattedDate}
+                </Typography>
+              </Paper>
+              
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {group.images.map((image) => (
+                  <Box 
+                    key={image.id} 
+                    sx={{ 
+                      flex: { 
+                        xs: '1 1 100%', 
+                        sm: '1 1 calc(50% - 8px)', 
+                        md: '1 1 calc(33.333% - 10px)', 
+                        lg: '1 1 calc(25% - 12px)' 
+                      } 
+                    }}
+                  >
+                    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <CardMedia
+                        component="img"
+                        height={280}
+                        image={image.url}
+                        alt={image.title || image.prompt.substring(0, 30)}
+                        sx={{ objectFit: 'cover' }}
+                      />
+                      <CardContent>
+                        <Typography variant="subtitle1">
+                          {image.title || image.prompt.substring(0, 30) + (image.prompt.length > 30 ? '...' : '')}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ))
+        ) : generatingImages.length === 0 ? (
+          // Show empty state when no images and nothing generating
+          <Box 
+            sx={{ 
+              width: '100%', 
+              textAlign: 'center', 
+              py: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Box 
+              sx={{ 
+                bgcolor: 'action.hover', 
+                borderRadius: '50%', 
+                width: 80, 
+                height: 80, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                mb: 3
+              }}
+            >
+              <ImageIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
+            </Box>
+            <Typography variant="h6" color="text.primary">
+              No images yet
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+              Generate your first image with one of your models
+            </Typography>
+            <Button 
+              variant="contained" 
+              size="large"
+              startIcon={<AutoFixHighIcon />}
+              onClick={handleCreateImageClick}
+            >
+              Create Your First Image
+            </Button>
+          </Box>
+        ) : null}
       </TabPanel>
     </Box>
   );
