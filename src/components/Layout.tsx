@@ -899,26 +899,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <ListItemText primary="Dashboard" />
                 </ListItemButton>
               </ListItem>
-
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                  onClick={() => {
-                          // Set URL parameter without page refresh
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', 'models');
-      window.history.replaceState({}, '', url);
-      
-      // Dispatch a custom event to notify components about the tab change
-      window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'models' } }));
-                  }}
-                >
-                  <ListItemIcon>
-                    <DashboardIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Texs" />
-                </ListItemButton>
-              </ListItem>
               
               {/* Models Section */}
               <ListItem disablePadding sx={{ display: 'block' }}>

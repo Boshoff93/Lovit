@@ -64,30 +64,97 @@ interface ImageGroup {
 // Mock data
 const mockModels: Model[] = [
   {
-    id: '1',
-    name: 'Summer Model',
+    id: 'model_1',
+    name: 'Summer Casual',
     gender: 'Female',
     bodyType: 'Athletic',
     createdAt: '2024-04-18T14:22:18Z',
-    imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=962&q=80'
+    status: 'completed',
+    progress: 100,
+    ethnicity: 'Asian',
+    hairColor: 'Black',
+    hairStyle: 'Long',
+    eyeColor: 'Brown',
+    height: 'Average (~170cm/5\'7")',
+    age: 24
   },
   {
-    id: '2',
-    name: 'Casual Style',
+    id: 'model_2',
+    name: 'Professional Look',
     gender: 'Male',
     bodyType: 'Average',
     createdAt: '2024-04-17T09:15:00Z',
-    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1287&q=80'
+    imageUrl: '/dress3.jpg',
+    status: 'IN_PROGRESS',
+    progress: 67,
+    ethnicity: 'Caucasian',
+    hairColor: 'Brown',
+    hairStyle: 'Short',
+    eyeColor: 'Blue',
+    height: 'Tall (~180cm/5\'11")',
+    age: 32
   },
   {
-    id: '3',
-    name: 'Evening Elegance',
+    id: 'model_3',
+    name: 'Evening Style',
     gender: 'Female',
     bodyType: 'Slim',
     createdAt: '2024-04-16T18:30:00Z',
-    imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
+    imageUrl: '/dress3.jpg',
+    status: 'WAITING',
+    progress: 0,
+    ethnicity: 'Hispanic/Latino',
+    hairColor: 'Brown',
+    hairStyle: 'Wavy',
+    eyeColor: 'Brown',
+    height: 'Short (~160cm/5\'3")',
+    age: 28
+  },
+  {
+    id: 'model_4',
+    name: 'Urban Streetwear',
+    gender: 'Non-binary',
+    bodyType: 'Athletic',
+    createdAt: '2024-04-15T11:45:00Z',
+    imageUrl: '/dress3.jpg',
+    status: 'FAILED',
+    progress: 45,
+    ethnicity: 'Mixed',
+    hairColor: 'Black',
+    hairStyle: 'Medium',
+    eyeColor: 'Hazel',
+    height: 'Average (~170cm/5\'7")',
+    age: 26
+  },
+  {
+    id: 'model_5',
+    name: 'Boho Chic',
+    gender: 'Female',
+    bodyType: 'Curvy',
+    createdAt: '2024-04-14T16:20:00Z',
+    imageUrl: '/dress1.jpg',
+    status: 'completed',
+    progress: 100,
+    ethnicity: 'Black',
+    hairColor: 'Black',
+    hairStyle: 'Curly',
+    eyeColor: 'Brown',
+    height: 'Average (~170cm/5\'7")',
+    age: 29
   }
 ];
+
+// Helper function to get fallback image based on model ID hash
+const getFallbackImage = (modelId: string): string => {
+  // Simple hash function
+  const hash = modelId.split('').reduce((acc, char) => {
+    return acc + char.charCodeAt(0);
+  }, 0);
+  
+  // Use modulo 3 to get a number between 0-2
+  const imageIndex = hash % 3;
+  return `/dress${imageIndex + 1}.jpg`;
+};
 
 // Mock image data grouped by date
 const mockImageGroups: ImageGroup[] = [
@@ -248,6 +315,7 @@ const MainTabs: React.FC = () => {
     if(newValue === 1) {
       url.searchParams.set('tab', 'models');
       window.history.replaceState({}, '', url);
+
       window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'models' } }));
     } else {
       url.searchParams.set('tab', 'gallery');
@@ -362,25 +430,25 @@ const MainTabs: React.FC = () => {
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardMedia
                     component="img"
-                    height="240"
-                    image={model.imageUrl}
+                    height="320"
+                    image={model.imageUrl ?? getFallbackImage(model.id)}
                     alt={model.name}
                     sx={{ objectFit: 'cover' }}
                   />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                       <Typography variant="h6" component="div">
                         {model.name}
                       </Typography>
                       {renderStatusChip(model.status)}
                     </Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                       {model.gender} • {model.bodyType}
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
                     {model.status === 'IN_PROGRESS' && model.progress && (
-                      <Box sx={{ mt: 1.5, mb: 0.5 }}>
+                      <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
                           variant="determinate" 
                           value={model.progress} 
@@ -392,8 +460,8 @@ const MainTabs: React.FC = () => {
                       </Box>
                     )}
                     
-                    <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                      Created on {new Date(model.createdAt).toLocaleDateString()}
+                    <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
+                      Created on {new Date(model.createdAt ?? '').toLocaleDateString()}
                     </Typography>
                   </CardContent>
                 </Card>

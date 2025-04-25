@@ -7,13 +7,20 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com'
 // Model interface
 export interface Model {
   id: string;
-  name: string;
-  gender: string;
-  bodyType: string;
-  createdAt: string;
-  imageUrl: string;
+  name?: string;
+  gender?: string;
+  bodyType?: string;
+  createdAt?: string;
+  imageUrl?: string;
   status?: string;
   progress?: number;
+  profileData?: any;
+  ethnicity?: string;
+  hairColor?: string;
+  hairStyle?: string;
+  eyeColor?: string;
+  height?: string;
+  age?: number;
 }
 
 // Models state interface
