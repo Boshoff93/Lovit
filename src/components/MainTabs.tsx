@@ -285,7 +285,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
@@ -543,8 +543,9 @@ const MainTabs: React.FC = () => {
                 sx={{ 
                   flex: { 
                     xs: '1 1 100%', 
-                    sm: '1 1 calc(50% - 16px)', 
-                    md: '1 1 calc(33.333% - 16px)' 
+                    sm: '1 1 calc(50% - 8px)', 
+                    md: '1 1 calc(50% - 10px)', 
+                    lg: '1 1 calc(33% - 10px)' 
                   } 
                 }}
               >
@@ -575,6 +576,10 @@ const MainTabs: React.FC = () => {
                         position: 'relative',
                         zIndex: 1,
                         height: '100%',
+                        width: 'auto',
+                        maxWidth: '100%',
+                        margin: '0 auto',
+                        display: 'block',
                         boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                         borderRadius: '4px',
                         backgroundColor: 'rgba(255,255,255,0.1)',
@@ -619,11 +624,12 @@ const MainTabs: React.FC = () => {
               <Box 
                 key={model.id} 
                 sx={{ 
-                  flex: { 
-                    xs: '1 1 100%', 
-                    sm: '1 1 calc(50% - 16px)', 
-                    md: '1 1 calc(33.333% - 16px)' 
-                  } 
+                   flex: { 
+                      xs: '1 1 100%', 
+                      sm: '1 1 calc(50% - 8px)', 
+                      md: '1 1 calc(50% - 10px)', 
+                      lg: '1 1 calc(33% - 10px)' 
+                    } 
                 }}
               >
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -653,6 +659,10 @@ const MainTabs: React.FC = () => {
                         position: 'relative',
                         zIndex: 1,
                         height: '100%',
+                        width: 'auto',
+                        maxWidth: '100%',
+                        margin: '0 auto',
+                        display: 'block',
                         boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                         borderRadius: '4px',
                         backgroundColor: 'rgba(255,255,255,0.1)',
@@ -708,12 +718,12 @@ const MainTabs: React.FC = () => {
               <Box 
                 key={`skeleton-${skeleton}`}
                 sx={{ 
-                  flex: { 
-                    xs: '1 1 100%', 
-                    sm: '1 1 calc(50% - 8px)', 
-                    md: '1 1 calc(33.333% - 10px)', 
-                    lg: '1 1 calc(25% - 12px)' 
-                  } 
+                    flex: { 
+                      xs: '1 1 100%', 
+                      sm: '1 1 calc(50% - 8px)', 
+                      md: '1 1 calc(50% - 10px)', 
+                      lg: '1 1 calc(33% - 10px)' 
+                    } 
                 }}
               >
                 <Skeleton variant="rectangular" height={320} />
@@ -748,12 +758,12 @@ const MainTabs: React.FC = () => {
                 <Box 
                   key={genImage.id} 
                   sx={{ 
-                    flex: { 
-                      xs: '1 1 100%', 
-                      sm: '1 1 calc(50% - 8px)', 
-                      md: '1 1 calc(33.333% - 10px)', 
-                      lg: '1 1 calc(25% - 12px)' 
-                    } 
+                      flex: { 
+                        xs: '1 1 100%', 
+                        sm: '1 1 calc(50% - 8px)', 
+                        md: '1 1 calc(50% - 10px)', 
+                        lg: '1 1 calc(33% - 10px)' 
+                      } 
                   }}
                 >
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -817,8 +827,8 @@ const MainTabs: React.FC = () => {
                       flex: { 
                         xs: '1 1 100%', 
                         sm: '1 1 calc(50% - 8px)', 
-                        md: '1 1 calc(33.333% - 10px)', 
-                        lg: '1 1 calc(25% - 12px)' 
+                        md: '1 1 calc(50% - 10px)', 
+                        lg: '1 1 calc(33% - 10px)' 
                       } 
                     }}
                   >
@@ -849,6 +859,10 @@ const MainTabs: React.FC = () => {
                             position: 'relative',
                             zIndex: 1,
                             height: '100%',
+                            width: 'auto',
+                            maxWidth: '100%',
+                            margin: '0 auto',
+                            display: 'block',
                             boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                             borderRadius: '4px',
                             backgroundColor: 'rgba(255,255,255,0.1)',
@@ -899,8 +913,8 @@ const MainTabs: React.FC = () => {
                       flex: { 
                         xs: '1 1 100%', 
                         sm: '1 1 calc(50% - 8px)', 
-                        md: '1 1 calc(33.333% - 10px)', 
-                        lg: '1 1 calc(25% - 12px)' 
+                        md: '1 1 calc(50% - 10px)', 
+                        lg: '1 1 calc(33% - 10px)' 
                       } 
                     }}
                   >
@@ -931,6 +945,10 @@ const MainTabs: React.FC = () => {
                             position: 'relative',
                             zIndex: 1,
                             height: '100%',
+                            width: 'auto',
+                            maxWidth: '100%',
+                            margin: '0 auto',
+                            display: 'block',
                             boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                             borderRadius: '4px',
                             padding: '8px',
