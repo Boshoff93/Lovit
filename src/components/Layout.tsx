@@ -60,6 +60,7 @@ import { useWebSocket } from '../contexts/WebSocketContext';
 import { selectModels, getModelUploadUrls, trainModelWithS3 } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
 import axios from 'axios';
+import imageCompression from 'browser-image-compression';
 
 // Define UserProfile interface here to modify the age type
 interface UserProfile {
@@ -272,7 +273,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     breastSize: ''
   });
   
-  // Add upload progress state
+  // Add upload and compression progress state
+  const [compressionProgress, setCompressionProgress] = useState(0);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -516,8 +519,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
 
     setLoading(true);
+    setIsCompressing(true);
+    setCompressionProgress(0);
     setUploadProgress(0);
-    setIsUploading(true);
+    setIsUploading(false);
     
     try {
       // Get auth token from Redux state instead of localStorage
@@ -528,11 +533,69 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           severity: 'error'
         });
         setLoading(false);
+        setIsCompressing(false);
         setIsUploading(false);
         return;
       }
 
-      // Now that we're using S3 direct uploads, we don't need to compress images
+      // Compress all images before uploading
+      setNotification({
+        open: true,
+        message: 'Preparing images...',
+        severity: 'info'
+      });
+      
+      // Configure compression options
+      const options = {
+        maxSizeMB: 1,         // Max file size in MB
+        maxWidthOrHeight: 1024, // Resize to this dimension (keeping aspect ratio)
+        useWebWorker: true,   // Use web workers for better performance
+        fileType: 'image/jpeg' // Force JPEG for better compression
+      };
+      
+      const totalImages = uploadedImages.length;
+      let completedImages = 0;
+      
+      // Track when each image is completed to update progress
+      const updateProgress = () => {
+        completedImages++;
+        const progress = Math.round((completedImages / totalImages) * 100);
+        setCompressionProgress(progress);
+      };
+      
+      // Create an array of compression promises
+      const compressionPromises = uploadedImages.map(async (image, index) => {
+        try {
+          // Log original file size
+          console.log(`Original image size (${index+1}/${totalImages}): ${(image.size / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Compress the image
+          const compressedFile = await imageCompression(image, options);
+          
+          // Log compressed file size
+          console.log(`Compressed image size (${index+1}/${totalImages}): ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Update progress after each image is compressed
+          updateProgress();
+          
+          return compressedFile;
+        } catch (error) {
+          console.error(`Error compressing image ${image.name}:`, error);
+          // Update progress even if compression fails
+          updateProgress();
+          // If compression fails, use the original
+          return image;
+        }
+      });
+      
+      // Wait for all compressions to complete in parallel
+      const compressedImages = await Promise.all(compressionPromises);
+      
+      // Compression complete
+      setIsCompressing(false);
+      setIsUploading(true);
+      
+      // Update notification
       setNotification({
         open: true,
         message: 'Preparing to upload images...',
@@ -540,11 +603,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
       
       // Get the MIME types of each image
-      const fileTypes = uploadedImages.map(file => file.type);
+      const fileTypes = compressedImages.map(file => file.type);
       
       // First, get presigned URLs for uploading images
       const urlsResponse = await dispatch(getModelUploadUrls({
-        fileCount: uploadedImages.length,
+        fileCount: compressedImages.length,
         fileTypes
       })).unwrap();
       
@@ -564,8 +627,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       let uploadedCount = 0;
       const imageKeys: string[] = [];
       
-      for (let i = 0; i < uploadedImages.length; i++) {
-        const file = uploadedImages[i];
+      for (let i = 0; i < compressedImages.length; i++) {
+        const file = compressedImages[i];
         const { url, key } = urls[i];
         
         try {
@@ -577,7 +640,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               if (progressEvent.total) {
                 // Calculate overall progress based on this file's progress and previously completed files
                 const fileProgress = (progressEvent.loaded / progressEvent.total);
-                const overallProgress = Math.round(((uploadedCount + fileProgress) / uploadedImages.length) * 100);
+                const overallProgress = Math.round(((uploadedCount + fileProgress) / compressedImages.length) * 100);
                 setUploadProgress(overallProgress);
               }
             }
@@ -587,7 +650,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           uploadedCount++;
           
           // Update progress notification
-          const percentComplete = Math.round((uploadedCount / uploadedImages.length) * 100);
+          const percentComplete = Math.round((uploadedCount / compressedImages.length) * 100);
           setNotification({
             open: true,
             message: `Uploading images: ${percentComplete}% complete`,
@@ -658,6 +721,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
     } finally {
       setLoading(false);
+      setIsCompressing(false);
       setIsUploading(false);
     }
   }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
@@ -1436,13 +1500,39 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <CircularProgress size={60} />
               
               <Typography variant="h6" align="center" sx={{ fontWeight: 600 }}>
-                {isUploading ? 'Uploading Your Model' : 'Initializing...'}
+                {isCompressing ? 'Processing Your Images' : 
+                 isUploading ? 'Uploading Your Model' : 
+                 'Initializing...'}
               </Typography>
                 
               {/* Status description */}
               <Typography variant="body2" color="text.secondary" align="center">
-                {isUploading ? 'Uploading photos and model data.' : 'Getting things ready...'}
+                {isCompressing ? 'Converting and optimizing your photos.' : 
+                 isUploading ? 'Uploading photos to secure storage.' : 
+                 'Getting things ready...'}
               </Typography>
+              
+              {/* Compression progress */}
+              {isCompressing && (
+                <Box sx={{ width: '100%' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">Processing</Typography>
+                    <Typography variant="body2" color="primary" fontWeight={600}>{compressionProgress}%</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={compressionProgress} 
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 4,
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: 'linear-gradient(90deg, #9370DB, #9370DB)'
+                      }
+                    }} 
+                  />
+                </Box>
+              )}
               
               {/* Upload progress */}
               {isUploading && (
