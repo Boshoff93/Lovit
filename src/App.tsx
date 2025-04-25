@@ -60,20 +60,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-   
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
-     
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-    
+          <RequireAuth>
             <Layout>
               <AccountPage />
             </Layout>
-    
+          </RequireAuth>
         } />
         
         {/* Verify email page */}
