@@ -57,57 +57,85 @@ export const fetchModels = createAsyncThunk(
   }
 );
 
-// Async thunk for training a new model
-export const trainModel = createAsyncThunk(
-  'models/trainModel',
+// New async thunk for getting presigned URLs for model image uploads
+export const getModelUploadUrls = createAsyncThunk(
+  'models/getModelUploadUrls',
   async (
-    payload: FormData | { formData: FormData; axiosConfig?: any }, 
+    payload: { fileCount: number, fileTypes: string[] },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState() as RootState;
+      
+      if (!auth.token || !auth.user?.userId) {
+        return rejectWithValue('Authentication required');
+      }
+      
+      const response = await axios.post(
+        `${API_BASE_URL}/api/get-model-upload-urls`,
+        {
+          userId: auth.user.userId,
+          fileCount: payload.fileCount,
+          fileTypes: payload.fileTypes
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        return rejectWithValue(error.response.data?.message || 'You have reached your model limit');
+      }
+      return rejectWithValue(error.response?.data?.error || 'Failed to get upload URLs');
+    }
+  }
+);
+
+// New async thunk for training a model with S3 uploaded images
+export const trainModelWithS3 = createAsyncThunk(
+  'models/trainModelWithS3',
+  async (
+    payload: { 
+      modelId: string; 
+      imageKeys: string[]; 
+      profileData: any;
+    },
     { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
       const { auth } = state;
       
-      // Extract formData and axiosConfig from payload
-      let formData: FormData;
-      let axiosConfig = {};
-      
-      if (payload instanceof FormData) {
-        formData = payload;
-      } else {
-        formData = payload.formData;
-        axiosConfig = payload.axiosConfig || {};
-      }
-
-      if (!auth.token) {
+      if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/train-model`, formData, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`,
-          'Content-Type': 'multipart/form-data'
+      const response = await axios.post(
+        `${API_BASE_URL}/api/train-model`,
+        {
+          userId: auth.user.userId,
+          modelId: payload.modelId,
+          imageKeys: payload.imageKeys,
+          profileData: payload.profileData
         },
-        timeout: 0,
-        ...axiosConfig
-      });
+        {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        }
+      );
       
       return response.data;
     } catch (error: any) {
-      // Enhanced error handling
-      if (error.code === 'ECONNABORTED') {
-        return rejectWithValue('Request timed out. The file upload may be too large.');
-      }
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        return rejectWithValue(error.response.data?.error || `Server error: ${error.response.status}`);
+        return rejectWithValue(error.response.data?.error || error.response.data?.message || `Server error: ${error.response.status}`);
       } else if (error.request) {
-        console.log('error.request', error);
-        // The request was made but no response was received
         return rejectWithValue('No response from server. Please check your connection.');
       } else {
-        // Something happened in setting up the request that triggered an Error
         return rejectWithValue(`Error: ${error.message || 'Unknown error'}`);
       }
     }
@@ -154,22 +182,36 @@ const modelsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       });
-      
-    // Train model
+
+    // Handle getModelUploadUrls thunk
     builder
-      .addCase(trainModel.pending, (state) => {
+      .addCase(getModelUploadUrls.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(trainModel.fulfilled, (state, action) => {
+      .addCase(getModelUploadUrls.fulfilled, (state) => {
         state.isLoading = false;
-        // Add the new model to the list if it's returned in the response
+        state.error = null;
+      })
+      .addCase(getModelUploadUrls.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle trainModelWithS3 thunk
+    builder
+      .addCase(trainModelWithS3.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(trainModelWithS3.fulfilled, (state, action) => {
+        state.isLoading = false;
         if (action.payload?.model) {
           state.models.push(action.payload.model);
         }
         state.error = null;
       })
-      .addCase(trainModel.rejected, (state, action) => {
+      .addCase(trainModelWithS3.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

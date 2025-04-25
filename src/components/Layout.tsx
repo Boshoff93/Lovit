@@ -50,9 +50,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { trainModel, selectModels } from '../store/modelsSlice';
+import { selectModels, getModelUploadUrls, trainModelWithS3 } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
-import imageCompression from 'browser-image-compression';
 import axios from 'axios';
 
 // Define UserProfile interface here to modify the age type
@@ -266,9 +265,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     breastSize: ''
   });
   
-  // Add compression progress state
-  const [compressionProgress, setCompressionProgress] = useState(0);
-  const [isCompressing, setIsCompressing] = useState(false);
+  // Add upload progress state
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -519,110 +516,106 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
 
     setLoading(true);
-    setIsCompressing(true);
-    setCompressionProgress(0);
     setUploadProgress(0);
-    setIsUploading(false);
+    setIsUploading(true);
     
     try {
       // Get auth token from Redux state instead of localStorage
-      if (!token) {
+      if (!token || !user?.userId) {
         setNotification({
           open: true,
           message: 'Authentication required. Please log in again.',
           severity: 'error'
         });
         setLoading(false);
-        setIsCompressing(false);
         setIsUploading(false);
         return;
       }
 
-      // Compress all images before uploading
+      // Now that we're using S3 direct uploads, we don't need to compress images
       setNotification({
         open: true,
-        message: 'Compressing images before upload...',
+        message: 'Preparing to upload images...',
         severity: 'info'
       });
       
-      // Configure compression options
-      const options = {
-        maxSizeMB: 1,         // Max file size in MB
-        maxWidthOrHeight: 1024, // Resize to this dimension (keeping aspect ratio)
-        useWebWorker: true,   // Use web workers for better performance
-        fileType: 'image/jpeg' // Force JPEG for better compression
-      };
+      // Get the MIME types of each image
+      const fileTypes = uploadedImages.map(file => file.type);
       
-      const totalImages = uploadedImages.length;
-      let completedImages = 0;
+      // First, get presigned URLs for uploading images
+      const urlsResponse = await dispatch(getModelUploadUrls({
+        fileCount: uploadedImages.length,
+        fileTypes
+      })).unwrap();
       
-      // Track when each image is completed to update progress
-      const updateProgress = () => {
-        completedImages++;
-        const progress = Math.round((completedImages / totalImages) * 100);
-        setCompressionProgress(progress);
-      };
+      const { modelId, urls } = urlsResponse;
       
-      // Create an array of compression promises
-      const compressionPromises = uploadedImages.map(async (image, index) => {
+      if (!modelId || !urls || !urls.length) {
+        throw new Error('Failed to get upload URLs');
+      }
+      
+      setNotification({
+        open: true,
+        message: 'Uploading images to secure storage...',
+        severity: 'info'
+      });
+      
+      // Upload each image directly to S3 using the presigned URLs
+      let uploadedCount = 0;
+      const imageKeys: string[] = [];
+      
+      for (let i = 0; i < uploadedImages.length; i++) {
+        const file = uploadedImages[i];
+        const { url, key } = urls[i];
+        
         try {
-          // Log original file size
-          console.log(`Original image size (${index+1}/${totalImages}): ${(image.size / 1024 / 1024).toFixed(2)} MB`);
+          await axios.put(url, file, {
+            headers: {
+              'Content-Type': file.type
+            },
+            onUploadProgress: (progressEvent) => {
+              if (progressEvent.total) {
+                // Calculate overall progress based on this file's progress and previously completed files
+                const fileProgress = (progressEvent.loaded / progressEvent.total);
+                const overallProgress = Math.round(((uploadedCount + fileProgress) / uploadedImages.length) * 100);
+                setUploadProgress(overallProgress);
+              }
+            }
+          });
           
-          // Compress the image
-          const compressedFile = await imageCompression(image, options);
+          imageKeys.push(key);
+          uploadedCount++;
           
-          // Log compressed file size
-          console.log(`Compressed image size (${index+1}/${totalImages}): ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+          // Update progress notification
+          const percentComplete = Math.round((uploadedCount / uploadedImages.length) * 100);
+          setNotification({
+            open: true,
+            message: `Uploading images: ${percentComplete}% complete`,
+            severity: 'info'
+          });
           
-          // Update progress after each image is compressed
-          updateProgress();
-          
-          return compressedFile;
         } catch (error) {
-          console.error(`Error compressing image ${image.name}:`, error);
-          // Update progress even if compression fails
-          updateProgress();
-          // If compression fails, use the original
-          return image;
+          console.error(`Error uploading image ${i}:`, error);
         }
-      });
+      }
       
-      // Wait for all compressions to complete in parallel
-      const compressedImages = await Promise.all(compressionPromises);
+      if (imageKeys.length === 0) {
+        throw new Error('Failed to upload any images');
+      }
       
-      // Compression complete
-      setIsCompressing(false);
-      setIsUploading(true);
-      
-      // Update notification
       setNotification({
         open: true,
-        message: 'Uploading images...',
+        message: 'Starting model training...',
         severity: 'info'
       });
       
-      // Create form data with all images and profile data
-      const formData = new FormData();
-      compressedImages.forEach(image => {
-        formData.append('images', image);
-      });
-      formData.append('profileData', JSON.stringify(userProfile));
-
-      // Create custom axios config to track upload progress
-      const axiosConfig = {
-        onUploadProgress: (progressEvent: any) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(percentCompleted);
-            console.log(`Upload Progress: ${percentCompleted}%`);
-          }
-        }
-      };
-
-      // Use Redux action to train model with progress tracking
-      const result = await dispatch(trainModel({ formData, axiosConfig })).unwrap();
-
+      // Now start the model training process with the uploaded image keys
+      const result = await dispatch(trainModelWithS3({
+        modelId,
+        imageKeys,
+        profileData: userProfile
+      })).unwrap();
+      
       // Connect to WebSocket for this specific model
       if (result.modelId) {
         connect(result.modelId);
@@ -665,7 +658,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
     } finally {
       setLoading(false);
-      setIsCompressing(false);
       setIsUploading(false);
     }
   }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
@@ -1327,39 +1319,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <CircularProgress size={60} />
               
               <Typography variant="h6" align="center" sx={{ fontWeight: 600 }}>
-                {isCompressing ? 'Processing Your Images' : 
-                 isUploading ? 'Uploading Your Model' : 
-                 'Initializing...'}
+                {isUploading ? 'Uploading Your Model' : 'Initializing...'}
               </Typography>
                 
               {/* Status description */}
               <Typography variant="body2" color="text.secondary" align="center">
-                {isCompressing ? 'Converting and optimizing your photos.' : 
-                 isUploading ? 'Uploading photos and model data.' : 
-                 'Getting things ready...'}
+                {isUploading ? 'Uploading photos and model data.' : 'Getting things ready...'}
               </Typography>
-              
-              {/* Compression progress */}
-              {isCompressing && (
-                <Box sx={{ width: '100%' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2" color="text.secondary">Processing</Typography>
-                    <Typography variant="body2" color="primary" fontWeight={600}>{compressionProgress}%</Typography>
-                  </Box>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={compressionProgress} 
-                    sx={{ 
-                      height: 8, 
-                      borderRadius: 4,
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 4,
-                        background: 'linear-gradient(90deg, #9370DB, #9370DB)'
-                      }
-                    }} 
-                  />
-                </Box>
-              )}
               
               {/* Upload progress */}
               {isUploading && (
