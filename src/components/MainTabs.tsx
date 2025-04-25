@@ -285,7 +285,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(true);
+  const [useMockData, setUseMockData] = useState(false);
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
