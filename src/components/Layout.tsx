@@ -315,7 +315,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Prompt creation state
   const [promptData, setPromptData] = useState<PromptData>({
     prompt: '',
-    numberOfImages: 4,
+    numberOfImages: 1,
     orientation: 'portrait',
     uploadedClothImage: null,
     modelId: '',
@@ -802,19 +802,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           return;
         }
       }
-      
-      // Dispatch event to notify about image generation starting
-      window.dispatchEvent(new CustomEvent('imageGenerationStart', { 
-        detail: { 
-          generationRequest: {
-            modelId: promptData.modelId,
-            prompt: promptData.prompt,
-            numberOfImages: promptData.numberOfImages,
-            orientation: promptData.orientation,
-            clothingKey: uploadedClothingKey
-          }
-        }
-      }));
 
       const result = await dispatch(generateImages({
         modelId: promptData.modelId,
@@ -830,7 +817,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         // The actual images will be received through the WebSocket
         setNotification({
           open: true,
-          message: 'Images generated successfully!',
+          message: 'Images generating!',
           severity: 'success'
         });
         
@@ -839,11 +826,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         url.searchParams.set('tab', 'gallery');
         window.history.replaceState({}, '', url);
         window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'gallery' } }));
-        
-        // Optionally navigate to dashboard if we're not already there
-        if (!location.pathname.includes('/dashboard')) {
-          navigate('/dashboard');
-        }
       } else {
         setNotification({
           open: true,
@@ -1451,9 +1433,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <Button
                           variant="outlined"
                           component="label"
-                          disabled={loading || !clothingFile}
+                          disabled={loading}
                           startIcon={<CloudUploadIcon />}
-                          sx={{ mt: 1 }}
+                          sx={{ mt: 1, width: '100%' }}
+                          fullWidth
                         >
                           Upload Clothing
                           <input
