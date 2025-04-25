@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Photo, TrainingModel, GeneratedImage, ApiResponse } from '../types';
 import { store } from '../store/store';
 import { createAuthenticatedRequest } from '../store/authSlice';
 
