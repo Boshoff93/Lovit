@@ -118,12 +118,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   flexGrow: 1,
   width: '100%',
   padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   [theme.breakpoints.up('md')]: {
-    marginLeft: open ? 0 : `-${drawerWidth}px`,
+    marginLeft: open ? `${drawerWidth}px` : 0,
+    width: open ? `calc(100% - ${drawerWidth}px)` : '100%',
   },
   [theme.breakpoints.down('md')]: {
     marginLeft: 0,
@@ -767,7 +768,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleGenerateImages = async () => {
-    if (!promptData.modelId || !promptData.prompt) {
+    if (!promptData.modelId) {
       setNotification({
         open: true,
         message: 'Please select a model and enter a prompt',
@@ -915,7 +916,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               width: drawerWidth,
               boxSizing: 'border-box',
               borderRight: 'none',
-              boxShadow: '4px 0 10px rgba(0,0,0,0.05)',
+              boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+              backgroundColor: theme.palette.background.paper,
+              borderRadius: '0 16px 16px 0',
             },
           }}
           variant={isMobile ? "temporary" : "persistent"}
