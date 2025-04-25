@@ -175,8 +175,8 @@ const HEIGHT_OPTIONS = ['Very Short (~140cm/4\'7")', 'Petite (~150cm/4\'11")', '
 // Generation specific constants
 const ORIENTATION_OPTIONS = [
   { value: 'square_hd', label: 'Square' },
-  { value: 'portrait_4_3', label: 'Portrait 4:3' },
-  { value: 'portrait_16_9', label: 'Portrait 16:9' },
+  { value: 'portrait_4_3', label: 'Portrait 3:4' },
+  { value: 'portrait_16_9', label: 'Portrait 9:16' },
   { value: 'landscape_4_3', label: 'Landscape 4:3' },
   { value: 'landscape_16_9', label: 'Landscape 16:9' }
 ];
