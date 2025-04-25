@@ -203,7 +203,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   // Get max allowed images based on subscription tier
   const getMaxImagesForTier = useCallback(() => {
-    const tier = (subscription?.tier || 'free').charAt(0).toUpperCase() + (subscription?.tier || 'free').slice(1);
+    const tier = (subscription?.tier || 'free').toLowerCase();
     return TIER_IMAGE_LIMITS[tier as keyof typeof TIER_IMAGE_LIMITS] || 0;
   }, [subscription?.tier]);
   
@@ -451,14 +451,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       numberOfImages: cappedValue
     }));
   }, [getMaxImagesForTier]);
-
-  const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    setPromptData(prev => ({
-      ...prev,
-      [name]: checked
-    }));
-  }, []);
   
   // Clothing image upload handlers
   const handleClothButtonClick = useCallback(() => {
@@ -1145,7 +1137,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           
                           {/* Show subscription tier limit info */}
                           <Chip
-                            label={`${subscription?.tier || 'Free'}: ${getMaxImagesForTier()} max`}
+                            label={`${(subscription?.tier || 'free').charAt(0).toUpperCase() + (subscription?.tier || 'free').slice(1)}: ${getMaxImagesForTier()} max`}
                             size="small"
                             sx={{ 
                               backgroundColor: '#F5F5DC',
