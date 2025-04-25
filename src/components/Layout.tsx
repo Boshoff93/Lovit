@@ -1447,15 +1447,51 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           />
                         </Button>
                         {clothingUrl && (
-                          <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
-                            <img 
-                              src={clothingUrl} 
-                              alt="Clothing reference" 
-                              style={{ width: 100, height: 100, objectFit: 'cover' }} 
-                            />
-                            <IconButton onClick={() => handleClothingFileChange(null)}>
-                              <DeleteIcon />
-                            </IconButton>
+                          <Box sx={{ mt: 2, width: '100%' }}>
+                            <Paper 
+                              elevation={0}
+                              sx={{ 
+                                p: 1, 
+                                borderRadius: 2,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                position: 'relative',
+                                overflow: 'hidden'
+                              }}
+                            >
+                              <Box sx={{ p:1, position: 'relative', width: '100%', height: 200, display: 'flex', justifyContent: 'center' }}>
+                                <img 
+                                  src={clothingUrl} 
+                                  alt="Clothing reference" 
+                                  style={{ 
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: 8,
+                                  }} 
+                                />
+                              </Box>
+                              <Box sx={{ 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                           
+                              }}>
+                                <IconButton 
+                                  onClick={() => handleClothingFileChange(null)}
+                                  size="small"
+                                  sx={{ 
+                                    color: 'black'
+                                  }}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Box>
+                            </Paper>
                           </Box>
                         )}
                       </Box>
