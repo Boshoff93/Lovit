@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { updateModel } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
+import { removeGeneratingImage, addGeneratedImages } from '../store/gallerySlice';
 
 // Define the shape of a training update message
 interface TrainingUpdate {
@@ -14,10 +15,32 @@ interface TrainingUpdate {
   timestamp: number;
 }
 
+// Define the shape of an image generation update message
+interface ImageGenerationUpdate {
+  type: string;
+  status: string;
+  generationId: string;
+  modelId: string;
+  progress?: number;
+  images?: Array<{
+    id: string;
+    url: string;
+    prompt: string;
+    createdAt: string;
+    modelId: string;
+    title?: string;
+    clothingKey?: string;
+    seedNumber?: string;
+    orientation?: string;
+  }>;
+}
+
 // WebSocket context interface
 interface WebSocketContextType {
   trainingUpdates: Record<string, TrainingUpdate[]>;
-  lastMessage: TrainingUpdate | null;
+  lastMessage: TrainingUpdate | ImageGenerationUpdate | null;
+  imageGenerationUpdates: Record<string, ImageGenerationUpdate>;
+  lastImageUpdate: ImageGenerationUpdate | null;
   connect: (modelId: string) => void;
   disconnect: (modelId: string) => void;
 }
@@ -26,6 +49,8 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType>({
   trainingUpdates: {},
   lastMessage: null,
+  imageGenerationUpdates: {},
+  lastImageUpdate: null,
   connect: () => {},
   disconnect: () => {}
 });
@@ -44,7 +69,13 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   const [trainingUpdates, setTrainingUpdates] = useState<Record<string, TrainingUpdate[]>>({});
   
   // Store last message for notifications
-  const [lastMessage, setLastMessage] = useState<TrainingUpdate | null>(null);
+  const [lastMessage, setLastMessage] = useState<TrainingUpdate | ImageGenerationUpdate | null>(null);
+  
+  // Store image generation updates
+  const [imageGenerationUpdates, setImageGenerationUpdates] = useState<Record<string, ImageGenerationUpdate>>({});
+  
+  // Store last image update
+  const [lastImageUpdate, setLastImageUpdate] = useState<ImageGenerationUpdate | null>(null);
   
   // Redux
   const token = useSelector((state: RootState) => state.auth.token);
@@ -53,27 +84,57 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   // Process incoming WebSocket message
   const handleMessage = useCallback((modelId: string, event: MessageEvent) => {
     try {
-      const data = JSON.parse(event.data) as TrainingUpdate;
+      const data = JSON.parse(event.data);
       
       // Set last message for notifications
       setLastMessage(data);
       
-      // Update the training updates for this model
-      setTrainingUpdates(prev => {
-        const modelUpdates = prev[modelId] || [];
-        return {
+      // Check the type of update
+      if (data.type === 'model_training_update') {
+        const trainingData = data as TrainingUpdate;
+        
+        // Update the training updates for this model
+        setTrainingUpdates(prev => {
+          const modelUpdates = prev[modelId] || [];
+          return {
+            ...prev,
+            [modelId]: [...modelUpdates, trainingData]
+          };
+        });
+        
+        // Update model in Redux store
+        if (trainingData.modelId && trainingData.status) {
+          dispatch(updateModel({
+            modelId: trainingData.modelId,
+            status: trainingData.status,
+            progress: trainingData.progress
+          }));
+        }
+      } 
+      // Handle image generation updates
+      else if (data.type === 'image_generation_update') {
+        const imageData = data as ImageGenerationUpdate;
+        
+        // Set last image update
+        setLastImageUpdate(imageData);
+        
+        // Update image generation updates
+        setImageGenerationUpdates(prev => ({
           ...prev,
-          [modelId]: [...modelUpdates, data]
-        };
-      });
-      
-      // Update model in Redux store
-      if (data.modelId && data.status) {
-        dispatch(updateModel({
-          modelId: data.modelId,
-          status: data.status,
-          progress: data.progress
+          [imageData.generationId]: imageData
         }));
+        
+        // Update Redux store for image generation
+        if (imageData.status === 'completed' && imageData.images && imageData.images.length > 0) {
+          // Add completed images to gallery store
+          dispatch(addGeneratedImages(imageData.images));
+          
+          // Remove from generating images
+          dispatch(removeGeneratingImage(imageData.generationId));
+        } else if (imageData.status === 'failed') {
+          // Remove from generating images if failed
+          dispatch(removeGeneratingImage(imageData.generationId));
+        }
       }
     } catch (error) {
       console.error('Error processing WebSocket message:', error);
@@ -137,7 +198,14 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   }, [sockets]);
   
   return (
-    <WebSocketContext.Provider value={{ trainingUpdates, lastMessage, connect, disconnect }}>
+    <WebSocketContext.Provider value={{ 
+      trainingUpdates, 
+      lastMessage, 
+      imageGenerationUpdates,
+      lastImageUpdate,
+      connect, 
+      disconnect 
+    }}>
       {children}
     </WebSocketContext.Provider>
   );

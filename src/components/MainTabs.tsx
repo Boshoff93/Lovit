@@ -305,7 +305,7 @@ const MainTabs: React.FC = () => {
   const isLoadingImages = useSelector(selectGalleryLoading);
   
   // Get training updates from WebSocket context
-  const { lastMessage, trainingUpdates, connect } = useWebSocket();
+  const { lastMessage, trainingUpdates, connect, imageGenerationUpdates, lastImageUpdate } = useWebSocket();
   
   // Get openModel function from Layout context
   const { openModel, openImages } = useLayout();
@@ -385,26 +385,24 @@ const MainTabs: React.FC = () => {
 
   // Listen for image generation updates from WebSocket
   useEffect(() => {
-    if (lastMessage && lastMessage.type === 'image_generation_update') {
+    if (lastImageUpdate && lastImageUpdate.type === 'image_generation_update') {
       // Process the update based on status
-      const update = lastMessage as unknown as ImageGenerationUpdate;
-      
-      if (update.status === 'completed' && update.images && update.images.length > 0) {
+      if (lastImageUpdate.status === 'completed' && lastImageUpdate.images && lastImageUpdate.images.length > 0) {
         // Add the new images to the store
-        dispatch(addGeneratedImages(update.images));
+        dispatch(addGeneratedImages(lastImageUpdate.images));
         
         // Remove from generating images
-        dispatch(removeGeneratingImage(update.generationId));
+        dispatch(removeGeneratingImage(lastImageUpdate.generationId));
         
         // Show notification - possibly implement this
-      } else if (update.status === 'failed') {
+      } else if (lastImageUpdate.status === 'failed') {
         // Remove from generating images
-        dispatch(removeGeneratingImage(update.generationId));
+        dispatch(removeGeneratingImage(lastImageUpdate.generationId));
         
         // Show error notification - possibly implement this
       }
     }
-  }, [lastMessage, dispatch]);
+  }, [lastImageUpdate, dispatch]);
 
   // Update models when training updates are received
   useEffect(() => {
