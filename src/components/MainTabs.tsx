@@ -22,6 +22,7 @@ import { RootState } from '../store/store';
 import { useLayout } from './Layout';
 import { fetchModels, updateModel, Model } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
+import { useLocation } from 'react-router-dom';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -147,10 +148,11 @@ const mockImageGroups: ImageGroup[] = [
 ];
 
 const MainTabs: React.FC = () => {
-  // Set default tab to Gallery (index 1)
+  // Set default tab to Gallery (index 0)
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const hasFetchedRef = useRef(false);
+  const location = useLocation();
   
   // Get auth token from Redux store
   const { token, user } = useSelector((state: RootState) => state.auth);
@@ -166,6 +168,35 @@ const MainTabs: React.FC = () => {
   
   // Get openModel function from Layout context
   const { openModel } = useLayout();
+
+  // Check for tab parameter in URL and set active tab
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    
+    if (tabParam === 'models') {
+      setValue(1); // Set to Models tab
+    } else if (tabParam === 'gallery') {
+      setValue(0); // Set to Gallery tab
+    }
+    
+    // Listen for custom tab change events
+    const handleTabChange = (e: CustomEvent) => {
+      if (e.detail && e.detail.tab === 'models') {
+        setValue(1); // Set to Models tab
+      } else if (e.detail && e.detail.tab === 'gallery') {
+        setValue(0); // Set to Gallery tab
+      }
+    };
+    
+    // Add event listener for custom tab change events
+    window.addEventListener('tabChange', handleTabChange as EventListener);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('tabChange', handleTabChange as EventListener);
+    };
+  }, [location.search]);
 
   // Fetch models on component mount
   useEffect(() => {

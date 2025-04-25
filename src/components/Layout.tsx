@@ -679,6 +679,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         profileData: userProfile
       })).unwrap();
       
+      // Set URL parameter without page refresh
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'models');
+      window.history.replaceState({}, '', url);
+      
+      // Dispatch a custom event to notify components about the tab change
+      window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'models' } }));
+      
       // Connect to WebSocket for this specific model
       if (result.modelId) {
         connect(result.modelId);
@@ -686,7 +694,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       setNotification({
         open: true,
-        message: `Model training started successfully! Model ID: ${result.modelId}`,
+        message: `Model training started successfully! Model name: ${result.modelId}`,
         severity: 'success'
       });
 
