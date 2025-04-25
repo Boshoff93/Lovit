@@ -107,6 +107,10 @@ export const generateImages = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
+      // Determine inference steps based on subscription tier
+      const tier = (auth.subscription?.tier || 'free').toLowerCase();
+      const inferenceSteps = payload.inferenceSteps || (tier === 'starter' ? 1000 : 2000);
+      
       const response = await axios.post(
         `${API_BASE_URL}/api/generate-image`,
         {
@@ -117,7 +121,7 @@ export const generateImages = createAsyncThunk(
           orientation: payload.orientation,
           clothingKey: payload.clothingKey,
           seedNumber: payload.seedNumber,
-          inferenceSteps: payload.inferenceSteps
+          inferenceSteps
         },
         {
           headers: {

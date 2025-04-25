@@ -174,8 +174,7 @@ const HEIGHT_OPTIONS = ['Very Short (~140cm/4\'7")', 'Petite (~150cm/4\'11")', '
 
 // Generation specific constants
 const ORIENTATION_OPTIONS = [
-  { value: 'square_hd', label: 'Square HD' },
-  { value: 'square', label: 'Square' },
+  { value: 'square_hd', label: 'Square' },
   { value: 'portrait_4_3', label: 'Portrait 4:3' },
   { value: 'portrait_16_9', label: 'Portrait 16:9' },
   { value: 'landscape_4_3', label: 'Landscape 4:3' },
@@ -824,7 +823,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         orientation: promptData.orientation,
         clothingKey: uploadedClothingKey || undefined,
         seedNumber: promptData.seedNumber !== undefined ? String(promptData.seedNumber) : undefined,
-        inferenceSteps: promptData.inferenceSteps || 30
+        inferenceSteps: promptData.inferenceSteps
       })).unwrap();
 
       if (result && !result.error) {
