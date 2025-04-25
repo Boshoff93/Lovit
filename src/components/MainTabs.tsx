@@ -182,6 +182,7 @@ const MainTabs: React.FC = () => {
     
     // Listen for custom tab change events
     const handleTabChange = (e: CustomEvent) => {
+      const url = new URL(window.location.href);
       if (e.detail && e.detail.tab === 'models') {
         setValue(1); // Set to Models tab
       } else if (e.detail && e.detail.tab === 'gallery') {
@@ -242,7 +243,18 @@ const MainTabs: React.FC = () => {
   }, [trainingUpdates, dispatch]);
 
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
+    const url = new URL(window.location.href);
     setValue(newValue);
+    if(newValue === 1) {
+      url.searchParams.set('tab', 'models');
+      window.history.replaceState({}, '', url);
+      window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'models' } }));
+    } else {
+      url.searchParams.set('tab', 'gallery');
+      window.history.replaceState({}, '', url);
+      window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'gallery' } }));
+    }
+
   }, []);
 
   // Helper function to render status chip based on training status
