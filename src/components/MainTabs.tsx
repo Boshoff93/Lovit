@@ -179,6 +179,7 @@ const mockModels: Model[] = [
 // Helper function to get fallback image based on model ID hash
 const getFallbackImage = (modelId: string): string => {
   // Simple hash function
+  if(!modelId) return '/dress1.jpg';
   const hash = modelId.split('').reduce((acc, char) => {
     return acc + char.charCodeAt(0);
   }, 0);
