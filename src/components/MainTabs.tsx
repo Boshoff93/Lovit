@@ -981,7 +981,9 @@ const MainTabs: React.FC = () => {
                   </Paper>
                   
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {group.images.map((image) => (
+                    {group.images.map((image) => {
+                      console.log(image);
+                      return (
                       <Box 
                         key={image.id} 
                         sx={{ 
@@ -1014,7 +1016,7 @@ const MainTabs: React.FC = () => {
                               component="img"
                               height={320}
                               image={image.url}
-                              alt={image.title || image.prompt.substring(0, 30)}
+                              alt={image.title}
                               sx={{ 
                                 objectFit: 'contain',
                                 position: 'relative',
@@ -1033,7 +1035,7 @@ const MainTabs: React.FC = () => {
                           </Box>
                           <CardContent sx={{ py: 1.5 }}>
                             <Typography variant="subtitle1">
-                              {image.title || image.prompt.substring(0, 30) + (image.prompt.length > 30 ? '...' : '')}
+                              {image.title}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
                               {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -1041,7 +1043,7 @@ const MainTabs: React.FC = () => {
                           </CardContent>
                         </Card>
                       </Box>
-                    ))}
+                    )})}
                   </Box>
                 </Box>
               ))
