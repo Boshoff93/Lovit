@@ -402,7 +402,8 @@ const MainTabs: React.FC = () => {
           modelId: generatingImage?.modelId || '',
           orientation: generatingImage?.orientation,
           clothingKey: generatingImage?.clothingKey,
-          seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined
+          seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined,
+          dripRating: generatingImage?.dripRating
         };
         
         // Add the new image to the store
