@@ -1705,7 +1705,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Snackbar>
         
         {/* Training Progress Indicator */}
-        {lastMessage && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
+        {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
           <Box
             sx={{
               position: 'fixed',
@@ -1722,7 +1722,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             }}
           >
             <Typography variant="body2" gutterBottom>
-              Training Model: {lastMessage.modelId}
+              Training Model: {(lastMessage as TrainingUpdate).modelId}
             </Typography>
             <Box sx={{ width: '100%', maxWidth: 400, mb: 1 }}>
               <LinearProgress variant="determinate" value={lastMessage.progress} 
