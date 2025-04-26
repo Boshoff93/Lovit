@@ -356,16 +356,10 @@ const MainTabs: React.FC = () => {
       try {
         if (value === 0) { // Gallery tab is active
           console.log("Fetching generated images from API");
+          await dispatch(clearGeneratingImages());
           const result = await dispatch(fetchGeneratedImages());
           console.log("Fetched images result:", result.payload);
           hasLoadedImagesRef.current = true;
-          
-          // If images array is empty, make sure to clear any leftover generating images
-          if (result.payload && Array.isArray(result.payload) && result.payload.length === 0) {
-            console.log("No images found, clearing any stale generating images");
-            // Clear any stale generating images that might be showing
-            dispatch(clearGeneratingImages());
-          }
         }
       } catch (error) {
         console.error('Error fetching images:', error);
@@ -381,7 +375,7 @@ const MainTabs: React.FC = () => {
       hasLoadedImagesRef.current = false;
     };
   }, [value, token, userId, dispatch]);
-
+  
   // Listen for image generation updates from WebSocket
   useEffect(() => {
     if (lastImageUpdate && lastImageUpdate.type === 'image_generation_update') {

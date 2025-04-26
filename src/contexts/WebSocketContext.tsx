@@ -68,6 +68,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   
   // Redux
   const token = useSelector((state: RootState) => state.auth.token);
+  const user = useSelector((state: RootState) => state.auth.user);
   const generatingImages = useSelector((state: RootState) => state.gallery.generatingImages);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -190,7 +191,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }
     
     try {
-      const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/model/${modelId}?token=${token}`;
+      if (!user?.userId) {
+        console.error('Cannot connect to WebSocket: userId is missing');
+        return;
+      }
+
+      const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${modelId}?token=${token}&userId=${user.userId}`;
       console.log(`Connecting to WebSocket for ${modelId}`);
       
       const socket = new WebSocket(wsUrl);
@@ -217,7 +223,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     } catch (error) {
       console.error(`Error connecting to WebSocket for model ${modelId}:`, error);
     }
-  }, [sockets, token, handleMessage]);
+  }, [sockets, token, handleMessage, user]);
   
   // Clean up sockets on unmount
   useEffect(() => {

@@ -130,7 +130,7 @@ export const generateImages = createAsyncThunk(
         }
       );
       
-      const imageId = response.data.id || `gen_${Date.now()}`;
+      const imageId = response.data.imageId;
       
       return {
         ...response.data,
