@@ -432,21 +432,28 @@ const MainTabs: React.FC = () => {
       console.log(`Checking WebSockets for ${generatingImages.length} existing generating images`);
       
       generatingImages.forEach(img => {
-        console.log(`Generating image: ${JSON.stringify(img)}`);
+        console.log(`Generating image details:`, JSON.stringify(img));
+        
         // Only connect if we haven't already connected to this image AND the image has a valid ID
         if (img.imageId && typeof img.imageId === 'string' && !connectedImageIdsRef.current.has(img.imageId)) {
           console.log(`Connecting to WebSocket for image ${img.imageId}`);
           connect(img.imageId);
           connectedImageIdsRef.current.add(img.imageId);
+        } else {
+          console.warn(`Skipping WebSocket connection for image with invalid or missing imageId:`, 
+            img.imageId ? `Already connected to ${img.imageId}` : 'No imageId present',
+            JSON.stringify(img)
+          );
         }
       });
     }
     
     // Return cleanup function to reset connectedImageIds ref when component unmounts
     return () => {
+      console.log(`Clearing ${connectedImageIdsRef.current.size} WebSocket connections`);
       connectedImageIdsRef.current.clear();
     };
-  }, [generatingImages, token, connect]); // Remove generatingImages from dependency array to prevent infinite loop
+  }, [generatingImages, token, connect]);
 
   // Update models when training updates are received
   useEffect(() => {

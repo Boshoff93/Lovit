@@ -134,13 +134,19 @@ export const generateImages = createAsyncThunk(
         }
       );
       
-      const { imageId } = response.data
+      // Extract imageId from response
+      const { imageId } = response.data;
+      
+      if (!imageId) {
+        console.error('Warning: Missing imageId in API response', response.data);
+      } else {
+        console.log("Received image generation response with imageId:", imageId);
+      }
       
       return {
         ...response.data,
-        imageId,
         generatingImage: {
-          imageId: imageId,
+          imageId,
           modelId: payload.modelId,
           prompt: payload.prompt,
           timestamp: Date.now(),
@@ -326,9 +332,14 @@ const gallerySlice = createSlice({
       })
       .addCase(generateImages.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Add to generating images
+        // Add to generating images if it has a valid imageId
         if (action.payload.generatingImage) {
-          state.generatingImages.push(action.payload.generatingImage);
+          if (!action.payload.generatingImage.imageId) {
+            console.error('Cannot add generating image without imageId:', action.payload.generatingImage);
+          } else {
+            console.log(`Adding generating image with imageId: ${action.payload.generatingImage.imageId}`);
+            state.generatingImages.push(action.payload.generatingImage);
+          }
         }
         state.error = null;
       })
