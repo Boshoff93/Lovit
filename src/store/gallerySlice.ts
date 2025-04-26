@@ -15,6 +15,7 @@ export interface GeneratedImage {
   clothingKey?: string;
   seedNumber?: number;
   orientation?: string;
+  dripRating?: string[];
 }
 
 // Image group interface for displaying in gallery
@@ -35,6 +36,7 @@ export interface GeneratingImage {
   clothingKey?: string;
   seedNumber?: string;
   progress?: number;
+  dripRating?: string[];
 }
 
 // Gallery state interface
@@ -98,6 +100,7 @@ export const generateImages = createAsyncThunk(
       clothingKey?: string;
       seedNumber?: string;
       inferenceSteps?: number;
+      dripRating?: string[];
     },
     { getState, rejectWithValue }
   ) => {
@@ -144,7 +147,8 @@ export const generateImages = createAsyncThunk(
           numberOfImages: payload.numberOfImages,
           orientation: payload.orientation,
           clothingKey: payload.clothingKey,
-          seedNumber: payload.seedNumber
+          seedNumber: payload.seedNumber,
+          dripRating: payload.dripRating
         }
       };
     } catch (error: any) {
