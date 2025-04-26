@@ -313,7 +313,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(true);
+  const [useMockData, setUseMockData] = useState(false);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
