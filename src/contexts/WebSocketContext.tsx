@@ -125,14 +125,15 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         const imageData = data as ImageGenerationUpdate;
         console.log(`Image Generation Update for:`, imageData);
         
+        // For image generation updates, the socket might be connected with imageId directly
         if (imageData.imageId !== modelId) {
-          console.warn(`Image ID mismatch: Message for ${imageData.imageId} but connected to ${modelId}`);
+          console.log(`Note: Message for ${imageData.imageId} received on connection ${modelId}`);
         }
         
         // Set last image update
         setLastImageUpdate(imageData);
         
-        // Update image generation updates using imageId
+        // Update image generation updates using imageId (not modelId)
         setImageGenerationUpdates(prev => ({
           ...prev,
           [imageData.imageId]: imageData
@@ -175,6 +176,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           // Disconnect the WebSocket as we no longer need updates for this image
           disconnect(modelId);
         }
+      } else if (data.type === 'connected') {
+        console.log(`Connection established for ${modelId}, connectionId: ${data.connectionId}`);
       } else {
         console.log("Unknown message type:", data.type, data);
       }
@@ -185,6 +188,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 
   // Connect to WebSocket for a model
   const connect = useCallback((modelId: string) => {
+    if (!modelId) {
+      console.error('Cannot connect to WebSocket: modelId is undefined');
+      return;
+    }
+    
     if (sockets[modelId]) {
       console.log(`WebSocket already connected for model ${modelId}`);
       return; // Already connected
@@ -213,6 +221,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       
       socket.onclose = (event) => {
         console.log(`WebSocket closed for ${modelId}. Code: ${event.code}, Reason: ${event.reason}`);
+        // Remove from sockets when closed
+        setSockets(prev => {
+          const newSockets = { ...prev };
+          delete newSockets[modelId];
+          return newSockets;
+        });
       };
       
       // Store the socket
