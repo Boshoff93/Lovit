@@ -1190,7 +1190,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       
                       <Button
                         variant="contained"
-                        color="secondary"
+                        color="primary"
                         fullWidth
                         component="label"
                         disabled={isExecutingGenerating || isGeneratingImages}
