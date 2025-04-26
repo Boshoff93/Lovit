@@ -40,11 +40,7 @@ const initialState: ModelsState = {
 // Async thunk for fetching models
 export const fetchModels = createAsyncThunk(
   'models/fetchModels',
-  async (
-    // Add connect callback parameter with optional config object
-    { connectCallback }: { connectCallback?: (modelId: string) => void } = {}, 
-    { getState, rejectWithValue }
-  ) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
       const { auth } = getState() as { auth: { token: string | null, user: { userId: string } | null } };
       
@@ -61,18 +57,7 @@ export const fetchModels = createAsyncThunk(
         }
       });
       
-      const models = response.data.models || [];
-      
-      // Connect to WebSocket for in-progress or queued models if callback provided
-      if (connectCallback) {
-        models.forEach((model: Model) => {
-          if ((model.status === 'in_progress' || model.status === 'queued') && model.modelId) {
-            connectCallback(model.modelId);
-          }
-        });
-      }
-      
-      return models;
+      return response.data.models || [];
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch models');
     }

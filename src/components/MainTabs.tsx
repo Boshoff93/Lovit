@@ -332,11 +332,22 @@ const MainTabs: React.FC = () => {
   // Fetch models on component mount
   useEffect(() => {
     const fetchModelsData = async () => {
+      // Only fetch models once during component lifecycle
       if (hasFetchedRef.current || !userId || !token) return;
       
       try {
         setLoading(true);
-        await dispatch(fetchModels({ connectCallback: connect }));
+        const result = await dispatch(fetchModels());
+        
+        // Connect to WebSocket for in-progress models
+        // After fetching models, connect to any that are in progress
+        if (result.payload && Array.isArray(result.payload)) {
+          result.payload.forEach((model: Model) => {
+            if ((model.status === 'in_progress' || model.status === 'queued') && model.modelId) {
+              connect(model.modelId);
+            }
+          });
+        }
       } catch (error) {
         console.error('Error fetching models:', error);
       } finally {
@@ -346,7 +357,7 @@ const MainTabs: React.FC = () => {
     };
     
     fetchModelsData();
-  }, [token, connect, userId, dispatch]);
+  }, [token, userId, dispatch, connect]);
 
   // Fetch images when gallery tab is active
   useEffect(() => {
