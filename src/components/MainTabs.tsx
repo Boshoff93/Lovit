@@ -30,7 +30,8 @@ import {
   selectGeneratingImages,
   selectGalleryLoading,
   clearGeneratingImages,
-  ImageGroup as GalleryImageGroup
+  ImageGroup as GalleryImageGroup,
+  GeneratedImage
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
@@ -64,12 +65,7 @@ function TabPanel(props: TabPanelProps) {
 interface ImageGroup {
   date: string;
   formattedDate: string;
-  images: {
-    id: string;
-    url: string;
-    title: string;
-    createdAt: string;
-  }[];
+  images: GeneratedImage[];
 }
 
 // Mock data
@@ -192,26 +188,26 @@ const mockImageGroups: ImageGroup[] = [
     formattedDate: 'Sun, 21st April, 2024',
     images: [
       {
-        id: '1',
-        url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&q=80',
+        imageId: '1',
+        imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&q=80',
         title: 'Elegant Formal Outfit',
         createdAt: '2024-04-21T15:30:00Z'
       },
       {
-        id: '2',
-        url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80',
+        imageId: '2',
+        imageUrl: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80',
         title: 'Luxury Evening Wear',
         createdAt: '2024-04-21T14:20:00Z'
       },
       {
-        id: '3',
-        url: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=672&q=80',
+        imageId: '3',
+        imageUrl: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=672&q=80',
         title: 'Bright Summer Collection',
         createdAt: '2024-04-21T12:10:00Z'
       },
       {
-        id: '4',
-        url: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=673&q=80',
+        imageId: '4',
+        imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=673&q=80',
         title: 'City Street Fashion',
         createdAt: '2024-04-21T10:15:00Z'
       }
@@ -222,20 +218,20 @@ const mockImageGroups: ImageGroup[] = [
     formattedDate: 'Sat, 20th April, 2024',
     images: [
       {
-        id: '5',
-        url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=688&q=80',
+        imageId: '5',
+        imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=688&q=80',
         title: 'Professional Business Look',
         createdAt: '2024-04-20T19:45:00Z'
       },
       {
-        id: '6',
-        url: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
+        imageId: '6',
+        imageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
         title: 'Evening Gown Collection',
         createdAt: '2024-04-20T18:30:00Z'
       },
       {
-        id: '7',
-        url: 'https://images.unsplash.com/photo-1632149877166-f75d49000351?ixlib=rb-4.0.3&auto=format&fit=crop&w=664&q=80',
+        imageId: '7',
+        imageUrl: 'https://images.unsplash.com/photo-1632149877166-f75d49000351?ixlib=rb-4.0.3&auto=format&fit=crop&w=664&q=80',
         title: 'Urban Fashion Style',
         createdAt: '2024-04-20T16:40:00Z'
       }
@@ -246,14 +242,14 @@ const mockImageGroups: ImageGroup[] = [
     formattedDate: 'Fri, 19th April, 2024',
     images: [
       {
-        id: '8',
-        url: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
+        imageId: '8',
+        imageUrl: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
         title: 'Casual Summer Outfit',
         createdAt: '2024-04-19T16:20:00Z'
       },
       {
-        id: '9',
-        url: 'https://images.unsplash.com/photo-1576185850227-1f72b7f8d483?ixlib=rb-4.0.3&auto=format&fit=crop&w=725&q=80',
+        imageId: '9',
+        imageUrl: 'https://images.unsplash.com/photo-1576185850227-1f72b7f8d483?ixlib=rb-4.0.3&auto=format&fit=crop&w=725&q=80',
         title: 'Winter Collection',
         createdAt: '2024-04-19T14:10:00Z'
       }
@@ -293,7 +289,7 @@ const MainTabs: React.FC = () => {
   const { openModel, openImages } = useLayout();
 
   // Function to handle image errors
-  const handleImageError = useCallback((imageId: string, url: string) => {
+  const handleImageError = useCallback(() => {
     return '/dress4.jpg';
   }, []);
 
@@ -725,7 +721,7 @@ const MainTabs: React.FC = () => {
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                 {group.images.map((image) => (
                   <Box 
-                    key={image.id} 
+                    key={image.imageId} 
                     sx={{ 
                       flex: { 
                         xs: '1 1 100%', 
@@ -744,7 +740,7 @@ const MainTabs: React.FC = () => {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            backgroundImage: `url(${image.url})`,
+                            backgroundImage: `url(${image.imageUrl})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             filter: 'blur(18px)',
@@ -757,17 +753,17 @@ const MainTabs: React.FC = () => {
                               img.onerror = () => {
                                 el.style.backgroundImage = 'url(/dress4.jpg)';
                               };
-                              img.src = image.url;
+                              img.src = image.imageUrl ?? '';
                             }
                           }}
                         />
                         <CardMedia
                           component="img"
                           height={320}
-                          image={image.url}
+                          image={image.imageUrl ?? ''}
                           alt={image.title}
                           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                            e.currentTarget.src = handleImageError(image.id, image.url);
+                            e.currentTarget.src = handleImageError();
                           }}
                           sx={{ 
                             objectFit: 'contain',
@@ -789,7 +785,7 @@ const MainTabs: React.FC = () => {
                           {image.title}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </Typography>
                       </CardContent>
                     </Card>
@@ -958,7 +954,7 @@ const MainTabs: React.FC = () => {
                               image={image.imageUrl}
                               alt={image.title}
                               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                e.currentTarget.src = handleImageError(image.imageId, image.imageUrl);
+                                e.currentTarget.src = handleImageError();
                               }}
                               sx={{ 
                                 objectFit: 'contain',
