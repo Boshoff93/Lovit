@@ -157,7 +157,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
             modelId: generatingImage?.modelId || '',
             orientation: generatingImage?.orientation,
             clothingKey: generatingImage?.clothingKey,
-            seedNumber: generatingImage?.seedNumber
+            seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined
           };
           
           console.log("Adding completed image to gallery:", newImage);
