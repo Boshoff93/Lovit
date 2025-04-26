@@ -272,7 +272,6 @@ const MainTabs: React.FC = () => {
   const [useMockData, setUseMockData] = useState(false);
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
-  const connectedImageIdsRef = useRef<Set<string>>(new Set());
   const location = useLocation();
   
   // Get auth token from Redux store
@@ -363,7 +362,12 @@ const MainTabs: React.FC = () => {
       try {
         console.log("Fetching generated images from API");
         await dispatch(clearGeneratingImages());
-        const result = await dispatch(fetchGeneratedImages());
+        
+        // Pass the connect function as a callback
+        const result = await dispatch(fetchGeneratedImages({
+          connectCallback: connect
+        }));
+        
         console.log("Fetched images result:", result.payload);
         hasLoadedImagesRef.current = true;
       } catch (error) {
@@ -379,7 +383,7 @@ const MainTabs: React.FC = () => {
     return () => {
       hasLoadedImagesRef.current = false;
     };
-  }, [token, userId, dispatch]);
+  }, [token, userId, dispatch, connect]);
   
   // Listen for image generation updates from WebSocket
   useEffect(() => {
@@ -425,35 +429,6 @@ const MainTabs: React.FC = () => {
       }
     }
   }, [lastImageUpdate, dispatch, generatingImages]);
-
-  // Connect websockets for any existing generating images
-  useEffect(() => {
-    if (generatingImages.length > 0 && token) {
-      console.log(`Checking WebSockets for ${generatingImages.length} existing generating images`);
-      
-      generatingImages.forEach(img => {
-        console.log(`Generating image details:`, JSON.stringify(img));
-        
-        // Only connect if we haven't already connected to this image AND the image has a valid ID
-        if (img.imageId && typeof img.imageId === 'string' && !connectedImageIdsRef.current.has(img.imageId)) {
-          console.log(`Connecting to WebSocket for image ${img.imageId}`);
-          connect(img.imageId);
-          connectedImageIdsRef.current.add(img.imageId);
-        } else {
-          console.warn(`Skipping WebSocket connection for image with invalid or missing imageId:`, 
-            img.imageId ? `Already connected to ${img.imageId}` : 'No imageId present',
-            JSON.stringify(img)
-          );
-        }
-      });
-    }
-    
-    // Return cleanup function to reset connectedImageIds ref when component unmounts
-    return () => {
-      console.log(`Clearing ${connectedImageIdsRef.current.size} WebSocket connections`);
-      connectedImageIdsRef.current.clear();
-    };
-  }, [generatingImages, token, connect]);
 
   // Update models when training updates are received
   useEffect(() => {

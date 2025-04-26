@@ -37,6 +37,7 @@ export interface GeneratingImage {
   seedNumber?: string;
   progress?: number;
   dripRating?: string[];
+  isConnected?: boolean;
 }
 
 // Gallery state interface
@@ -64,7 +65,11 @@ const initialState: GalleryState = {
 // Async thunk for fetching all generated images
 export const fetchGeneratedImages = createAsyncThunk(
   'gallery/fetchGeneratedImages',
-  async (_, { getState, rejectWithValue }) => {
+  async (
+    // Add an optional object parameter
+    options: { connectCallback?: ((imageId: string) => void) | undefined } = {},
+    { getState, rejectWithValue }
+  ) => {
     try {
       const { auth } = getState() as { auth: { token: string | null, user: { userId: string } | null } };
       
@@ -81,7 +86,23 @@ export const fetchGeneratedImages = createAsyncThunk(
         }
       });
       
-      return response.data.images || [];
+      // Check if there are any generating images in the response and connect to their WebSockets
+      const images = response.data.images || [];
+      const generatingImages = images.filter((img: any) => img.status === 'in_progress');
+      const connectCallback = options?.connectCallback;
+      
+      if (generatingImages.length > 0 && connectCallback && typeof connectCallback === 'function') {
+        console.log(`Connecting to WebSockets for ${generatingImages.length} existing generating images`);
+        
+        generatingImages.forEach((img: any) => {
+          if (img.imageId) {
+            console.log(`Connecting to WebSocket for existing generating image ${img.imageId}`);
+            connectCallback(img.imageId);
+          }
+        });
+      }
+      
+      return images;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch images');
     }
@@ -101,6 +122,7 @@ export const generateImages = createAsyncThunk(
       seedNumber?: string;
       inferenceSteps?: number;
       dripRating?: string[];
+      connectCallback?: (imageId: string) => void; // Add callback for connection
     },
     { getState, rejectWithValue }
   ) => {
@@ -144,6 +166,12 @@ export const generateImages = createAsyncThunk(
         console.error('Warning: Missing imageId in API response', JSON.stringify(response.data));
       } else {
         console.log("Received image generation response with imageId:", imageId);
+        
+        // Connect to WebSocket for this image ID using the provided callback
+        if (payload.connectCallback && typeof payload.connectCallback === 'function') {
+          console.log(`Connecting to WebSocket for newly generated image ${imageId}`);
+          payload.connectCallback(imageId);
+        }
       }
       
       return {
@@ -384,7 +412,7 @@ export const {
   addGeneratedImages,
   clearClothingKey,
   clearGeneratingImages,
-  clearGallery 
+  clearGallery
 } = gallerySlice.actions;
 
 export default gallerySlice.reducer;

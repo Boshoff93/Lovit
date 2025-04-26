@@ -810,16 +810,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         orientation: promptData.orientation,
         clothingKey: uploadedClothingKey || undefined,
         seedNumber: promptData.seedNumber !== undefined ? String(promptData.seedNumber) : undefined,
-        inferenceSteps: promptData.inferenceSteps
+        inferenceSteps: promptData.inferenceSteps,
+        connectCallback: connect
       })).unwrap();
 
       if (result && !result.error) {
-        // Connect to the WebSocket for image generation updates
-        if (result.imageId) {
-          console.log(`Connecting to WebSocket for image generation: ${result.imageId}`);
-          connect(result.imageId);
-        }
-        
         // The actual images will be received through the WebSocket
         setNotification({
           open: true,
