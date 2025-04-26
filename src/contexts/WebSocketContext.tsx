@@ -242,7 +242,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }
   }, [dispatch, generatingImages, disconnect]);
 
-  // Connect to WebSocket for a model
+  // Connect to WebSocket for a model or image
   const connect = useCallback((id: string) => {
     if (!id) {
       console.error('Cannot connect to WebSocket: ID is undefined');
@@ -268,21 +268,35 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         return;
       }
 
-      // Determine if this is an image or model connection
-      // Check if there's a generating image with this ID
-      const isImageConnection = generatingImages.some(img => img.imageId === id);
+      console.log("Current generating images:", generatingImages);
       
-      // Construct the URL differently based on connection type
+      // Determine if this is an image or model connection
+      // Get the generating image if it exists
+      const generatingImage = generatingImages.find(img => img.imageId === id);
+      const isImageConnection = !!generatingImage;
+      
+      console.log(`Checking if ${id} is an image:`, isImageConnection ? "YES" : "NO", 
+                  isImageConnection ? `for model ${generatingImage.modelId}` : "");
+      
+      // Build WebSocket URL
       let wsUrl;
+      
+      // If this is an image ID (either found in generating images or has a specific pattern)
       if (isImageConnection) {
         // For image connections, pass imageId parameter
         wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
+        
+        if (generatingImage?.modelId) {
+          // If we know the model ID, include it as a parameter
+          wsUrl += `&modelId=${generatingImage.modelId}`;
+        }
       } else {
         // For model connections, pass modelId parameter
         wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
       }
       
       console.log(`Connecting to WebSocket for ${isImageConnection ? 'image' : 'model'} ${id}`);
+      console.log(`WebSocket URL: ${wsUrl}`);
       
       const socket = new WebSocket(wsUrl);
       
