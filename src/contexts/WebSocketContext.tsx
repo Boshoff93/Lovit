@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { updateModel } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
-import { removeGeneratingImage, addGeneratedImages } from '../store/gallerySlice';
+import { removeGeneratingImage, addGeneratedImages, GeneratedImage } from '../store/gallerySlice';
 
 // Define the shape of a training update message
 interface TrainingUpdate {
@@ -11,7 +11,6 @@ interface TrainingUpdate {
   modelId: string;
   status: string;
   progress?: number;
-  logs?: string[];
   timestamp: number;
 }
 
@@ -19,20 +18,10 @@ interface TrainingUpdate {
 interface ImageGenerationUpdate {
   type: string;
   status: string;
-  generationId: string;
-  modelId: string;
+  imageId: string;
   progress?: number;
-  images?: Array<{
-    id: string;
-    url: string;
-    prompt: string;
-    createdAt: string;
-    modelId: string;
-    title?: string;
-    clothingKey?: string;
-    seedNumber?: string;
-    orientation?: string;
-  }>;
+  imageUrl?: string;
+  timestamp: number;
 }
 
 // WebSocket context interface
@@ -79,6 +68,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   
   // Redux
   const token = useSelector((state: RootState) => state.auth.token);
+  const generatingImages = useSelector((state: RootState) => state.gallery.generatingImages);
   const dispatch = useDispatch<AppDispatch>();
 
   // Process incoming WebSocket message
@@ -114,32 +104,48 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       // Handle image generation updates
       else if (data.type === 'image_generation_update') {
         const imageData = data as ImageGenerationUpdate;
-        
+        console.log("Image Data", imageData)
         // Set last image update
         setLastImageUpdate(imageData);
         
-        // Update image generation updates
+        // Update image generation updates using imageId
         setImageGenerationUpdates(prev => ({
           ...prev,
-          [imageData.generationId]: imageData
+          [imageData.imageId]: imageData
         }));
         
+        // Find the original generating image to get prompt and modelId
+        const generatingImage = generatingImages.find(
+          (img) => img.id === imageData.imageId
+        );
+        
         // Update Redux store for image generation
-        if (imageData.status === 'completed' && imageData.images && imageData.images.length > 0) {
-          // Add completed images to gallery store
-          dispatch(addGeneratedImages(imageData.images));
+        if (imageData.status === 'completed' && imageData.imageUrl) {
+          // Add completed image to gallery store
+          const newImage: GeneratedImage = {
+            id: imageData.imageId,
+            url: imageData.imageUrl,
+            prompt: generatingImage?.prompt || '',
+            createdAt: new Date().toISOString(),
+            modelId: generatingImage?.modelId || '',
+            orientation: generatingImage?.orientation,
+            clothingKey: generatingImage?.clothingKey,
+            seedNumber: generatingImage?.seedNumber
+          };
+          
+          dispatch(addGeneratedImages([newImage]));
           
           // Remove from generating images
-          dispatch(removeGeneratingImage(imageData.generationId));
+          dispatch(removeGeneratingImage(imageData.imageId));
         } else if (imageData.status === 'failed') {
           // Remove from generating images if failed
-          dispatch(removeGeneratingImage(imageData.generationId));
+          dispatch(removeGeneratingImage(imageData.imageId));
         }
       }
     } catch (error) {
       console.error('Error processing WebSocket message:', error);
     }
-  }, [dispatch]);
+  }, [dispatch, generatingImages]);
 
   // Connect to WebSocket for a model
   const connect = useCallback((modelId: string) => {

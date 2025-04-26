@@ -276,9 +276,10 @@ interface GeneratingImage {
 interface ImageGenerationUpdate {
   type: string;
   status: string;
-  generationId: string;
-  modelId: string;
-  images?: GeneratedImage[];
+  imageId: string;
+  imageUrl?: string;
+  progress?: number;
+  timestamp: number;
 }
 
 const MainTabs: React.FC = () => {
@@ -306,7 +307,7 @@ const MainTabs: React.FC = () => {
   const isLoadingImages = useSelector(selectGalleryLoading);
   
   // Get training updates from WebSocket context
-  const { lastMessage, trainingUpdates, connect, imageGenerationUpdates, lastImageUpdate } = useWebSocket();
+  const { trainingUpdates, connect, lastImageUpdate } = useWebSocket();
   
   // Get openModel function from Layout context
   const { openModel, openImages } = useLayout();
@@ -401,22 +402,39 @@ const MainTabs: React.FC = () => {
   useEffect(() => {
     if (lastImageUpdate && lastImageUpdate.type === 'image_generation_update') {
       // Process the update based on status
-      if (lastImageUpdate.status === 'completed' && lastImageUpdate.images && lastImageUpdate.images.length > 0) {
-        // Add the new images to the store
-        dispatch(addGeneratedImages(lastImageUpdate.images));
+      if (lastImageUpdate.status === 'completed' && lastImageUpdate.imageUrl) {
+        // Find the original generating image to get prompt and modelId
+        const generatingImage = generatingImages.find(
+          (img) => img.id === lastImageUpdate.imageId
+        );
+        
+        // Create new image with data from generating image
+        const newImage = {
+          id: lastImageUpdate.imageId,
+          url: lastImageUpdate.imageUrl,
+          prompt: generatingImage?.prompt || '',
+          createdAt: new Date().toISOString(),
+          modelId: generatingImage?.modelId || '',
+          orientation: generatingImage?.orientation,
+          clothingKey: generatingImage?.clothingKey,
+          seedNumber: generatingImage?.seedNumber
+        };
+        
+        // Add the new image to the store
+        dispatch(addGeneratedImages([newImage]));
         
         // Remove from generating images
-        dispatch(removeGeneratingImage(lastImageUpdate.generationId));
+        dispatch(removeGeneratingImage(lastImageUpdate.imageId));
         
         // Show notification - possibly implement this
       } else if (lastImageUpdate.status === 'failed') {
         // Remove from generating images
-        dispatch(removeGeneratingImage(lastImageUpdate.generationId));
+        dispatch(removeGeneratingImage(lastImageUpdate.imageId));
         
         // Show error notification - possibly implement this
       }
     }
-  }, [lastImageUpdate, dispatch]);
+  }, [lastImageUpdate, dispatch, generatingImages]);
 
   // Update models when training updates are received
   useEffect(() => {
