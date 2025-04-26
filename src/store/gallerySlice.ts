@@ -134,17 +134,21 @@ export const generateImages = createAsyncThunk(
         }
       );
       
-      // Extract imageId from response
-      const { imageId } = response.data;
+      console.log("Image generation response:", response.data);
+      
+      // Extract imageId from the image object
+      const imageData = response.data.image || {};
+      const { imageId } = imageData;
       
       if (!imageId) {
-        console.error('Warning: Missing imageId in API response', response.data);
+        console.error('Warning: Missing imageId in API response', JSON.stringify(response.data));
       } else {
         console.log("Received image generation response with imageId:", imageId);
       }
       
       return {
         ...response.data,
+        imageId, // Include imageId at the top level for consistency
         generatingImage: {
           imageId,
           modelId: payload.modelId,
@@ -332,15 +336,21 @@ const gallerySlice = createSlice({
       })
       .addCase(generateImages.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Add to generating images if it has a valid imageId
-        if (action.payload.generatingImage) {
-          if (!action.payload.generatingImage.imageId) {
-            console.error('Cannot add generating image without imageId:', action.payload.generatingImage);
+        
+        // Check if we have a valid generating image to add
+        const generatingImage = action.payload.generatingImage;
+        
+        if (generatingImage) {
+          if (!generatingImage.imageId) {
+            console.error('Cannot add generating image without imageId:', JSON.stringify(generatingImage));
           } else {
-            console.log(`Adding generating image with imageId: ${action.payload.generatingImage.imageId}`);
-            state.generatingImages.push(action.payload.generatingImage);
+            console.log(`Adding generating image with imageId: ${generatingImage.imageId}`);
+            state.generatingImages.push(generatingImage);
           }
+        } else {
+          console.error('No generating image data in fulfilled action:', JSON.stringify(action.payload));
         }
+        
         state.error = null;
       })
       .addCase(generateImages.rejected, (state, action) => {
