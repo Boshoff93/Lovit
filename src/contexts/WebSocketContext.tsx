@@ -9,6 +9,7 @@ import {
   GeneratedImage, 
   addGeneratingImage,
   updateGeneratingImageProgress,
+  updateGeneratingImage,
   ImageBase
 } from '../store/gallerySlice';
 
@@ -131,11 +132,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           console.log("Found generating image:", generatingImage);
         } else {
           console.log(`No generating image found for imageId: ${imageData.imageId}`);
-          // Add the missing image to the generating images store
-          dispatch(addGeneratingImage({
-           ...imageData
-          }));
         }
+        
+        // Update or add the image to the generating images store
+        dispatch(updateGeneratingImage({
+          ...imageData
+        }));
         
         // Update Redux store for image generation
         if (imageData.status === 'completed' && imageData.imageUrl) {
@@ -184,9 +186,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         } else if (imageData.progress !== undefined) {
           // Update progress for generating image
           console.log(`Updating progress for image ${imageData.imageId}: ${imageData.progress}%`);
-          dispatch(updateGeneratingImageProgress({ 
-            imageId: imageData.imageId, 
-            progress: imageData.progress 
+          dispatch(updateGeneratingImage({
+            imageId: imageData.imageId,
+            progress: imageData.progress
           }));
         }
       } else if (data.type === 'connected') {

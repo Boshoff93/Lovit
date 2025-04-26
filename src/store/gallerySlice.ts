@@ -329,6 +329,22 @@ const gallerySlice = createSlice({
       }
     },
     
+    // Update an existing generating image or add it if it doesn't exist
+    updateGeneratingImage: (state, action: PayloadAction<GeneratingImage>) => {
+      console.log("Updating generating image:", action.payload);
+      const index = state.generatingImages.findIndex(img => img.imageId === action.payload.imageId);
+      if (index !== -1) {
+        // Update existing image
+        state.generatingImages[index] = {
+          ...state.generatingImages[index],
+          ...action.payload
+        };
+      } else {
+        // Add new image if it doesn't exist
+        state.generatingImages.push(action.payload);
+      }
+    },
+    
     // Add new images when they're received from WebSocket
     addGeneratedImages: (state, action: PayloadAction<GeneratedImage[]>) => {
       state.images = [...action.payload, ...state.images];
@@ -433,6 +449,7 @@ export const {
   addGeneratingImages,
   removeGeneratingImage, 
   updateGeneratingImageProgress,
+  updateGeneratingImage,
   addGeneratedImages,
   clearClothingKey,
   clearGeneratingImages,
