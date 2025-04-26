@@ -263,25 +263,6 @@ const mockImageGroups: ImageGroup[] = [
   }
 ];
 
-// Add a new interface for generating images
-interface GeneratingImage {
-  id: string;
-  modelId: string;
-  prompt: string;
-  timestamp: number;
-  numberOfImages: number;
-}
-
-// Add interface to handle WebSocket image generation updates
-interface ImageGenerationUpdate {
-  type: string;
-  status: string;
-  imageId: string;
-  imageUrl?: string;
-  progress?: number;
-  timestamp: number;
-}
-
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 0)
   const [value, setValue] = useState(0);

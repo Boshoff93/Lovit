@@ -52,7 +52,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
-import { useWebSocket } from '../contexts/WebSocketContext';
+import { TrainingUpdate, useWebSocket } from '../contexts/WebSocketContext';
 import { selectModels, getModelUploadUrls, trainModelWithS3 } from '../store/modelsSlice';
 import { 
   generateImages, 
@@ -246,15 +246,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // Set notification based on training status
       let severity: 'success' | 'error' | 'info' | 'warning' = 'info';
       let message = '';
-      
-      switch (lastMessage.status) {
+      const trainingUpdate = lastMessage as TrainingUpdate;
+      switch (trainingUpdate.status) {
         case 'WAITING':
           severity = 'info';
-          message = `Model training queued - ${lastMessage.modelId}`;
+          message = `Model training queued - ${trainingUpdate.modelId}`;
           break;
         case 'IN_PROGRESS':
           severity = 'info';
-          message = `Training in progress ${lastMessage.progress ? `- ${lastMessage.progress}%` : ''}`;
+          message = `Training in progress ${trainingUpdate.progress ? `- ${trainingUpdate.progress}%` : ''}`;
           break;
         case 'completed':
           severity = 'success';
@@ -267,7 +267,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           break;
         default:
           severity = 'info';
-          message = `Model status: ${lastMessage.status}`;
+          message = `Model status: ${trainingUpdate.status}`;
       }
       
       setNotification({

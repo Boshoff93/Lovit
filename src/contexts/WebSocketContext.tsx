@@ -6,7 +6,7 @@ import { AppDispatch } from '../store/store';
 import { removeGeneratingImage, addGeneratedImages, GeneratedImage } from '../store/gallerySlice';
 
 // Define the shape of a training update message
-interface TrainingUpdate {
+export interface TrainingUpdate {
   type: string;
   modelId: string;
   status: string;
@@ -15,7 +15,7 @@ interface TrainingUpdate {
 }
 
 // Define the shape of an image generation update message
-interface ImageGenerationUpdate {
+export interface ImageGenerationUpdate {
   type: string;
   status: string;
   imageId: string;
