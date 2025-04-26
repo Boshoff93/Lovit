@@ -32,6 +32,7 @@ import {
   removeGeneratingImage,
   addGeneratedImages,
   clearGeneratingImages,
+  updateGeneratingImageProgress,
   GeneratedImage,
   ImageGroup as GalleryImageGroup
 } from '../store/gallerySlice';
@@ -411,6 +412,12 @@ const MainTabs: React.FC = () => {
         dispatch(removeGeneratingImage(lastImageUpdate.imageId));
         
         // Show error notification - possibly implement this
+      } else if (lastImageUpdate.progress !== undefined) {
+        // Update progress for generating image
+        dispatch(updateGeneratingImageProgress({ 
+          id: lastImageUpdate.imageId, 
+          progress: lastImageUpdate.progress 
+        }));
       }
     }
   }, [lastImageUpdate, dispatch, generatingImages]);
@@ -893,12 +900,49 @@ const MainTabs: React.FC = () => {
                             justifyContent: 'center',
                             flexDirection: 'column',
                             bgcolor: 'action.hover',
-                            p: 2
+                            p: 2,
+                            position: 'relative'
                           }}
                         >
-                          <CircularProgress sx={{ mb: 2 }} />
+                          {genImage.progress !== undefined ? (
+                            <>
+                              <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
+                                <CircularProgress 
+                                  variant="determinate" 
+                                  value={genImage.progress} 
+                                  size={60} 
+                                  thickness={4}
+                                />
+                                <Box
+                                  sx={{
+                                    top: 0,
+                                    left: 0,
+                                    bottom: 0,
+                                    right: 0,
+                                    position: 'absolute',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}
+                                >
+                                  <Typography variant="caption" component="div" color="text.secondary">
+                                    {`${Math.round(genImage.progress)}%`}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              <LinearProgress 
+                                variant="determinate" 
+                                value={genImage.progress} 
+                                sx={{ width: '80%', height: 6, borderRadius: 3, mb: 2 }} 
+                              />
+                            </>
+                          ) : (
+                            <CircularProgress sx={{ mb: 2 }} />
+                          )}
                           <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                            Generating Image
+                            {genImage.progress !== undefined 
+                              ? `Generating Image (${Math.round(genImage.progress)}% complete)`
+                              : "Generating Image"}
                           </Typography>
                         </Box>
                         <CardContent sx={{ py: 1.5 }}>

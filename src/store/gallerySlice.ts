@@ -34,6 +34,7 @@ export interface GeneratingImage {
   orientation: string;
   clothingKey?: string;
   seedNumber?: string;
+  progress?: number;
 }
 
 // Gallery state interface
@@ -259,6 +260,14 @@ const gallerySlice = createSlice({
       );
     },
     
+    // Update progress for a generating image
+    updateGeneratingImageProgress: (state, action: PayloadAction<{id: string, progress: number}>) => {
+      const index = state.generatingImages.findIndex(img => img.id === action.payload.id);
+      if (index !== -1) {
+        state.generatingImages[index].progress = action.payload.progress;
+      }
+    },
+    
     // Add new images when they're received from WebSocket
     addGeneratedImages: (state, action: PayloadAction<GeneratedImage[]>) => {
       state.images = [...action.payload, ...state.images];
@@ -344,6 +353,7 @@ const gallerySlice = createSlice({
 export const { 
   addGeneratingImage, 
   removeGeneratingImage, 
+  updateGeneratingImageProgress,
   addGeneratedImages,
   clearClothingKey,
   clearGeneratingImages,
