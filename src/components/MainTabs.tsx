@@ -432,8 +432,10 @@ const MainTabs: React.FC = () => {
       console.log(`Checking WebSockets for ${generatingImages.length} existing generating images`);
       
       generatingImages.forEach(img => {
+        console.log(`Generating image: ${img.id}`);
         // Only connect if we haven't already connected to this image AND the image has a valid ID
         if (img.id && typeof img.id === 'string' && !connectedImageIdsRef.current.has(img.id)) {
+          console.log(`Connecting to WebSocket for image ${img.id}`);
           connect(img.id);
           connectedImageIdsRef.current.add(img.id);
         }
