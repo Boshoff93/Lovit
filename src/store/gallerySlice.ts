@@ -112,7 +112,7 @@ export const generateImages = createAsyncThunk(
       const inferenceSteps = payload.inferenceSteps || (tier === 'starter' ? 1000 : 2000);
       
       const response = await axios.post(
-        `${API_BASE_URL}/api/generate-image`,
+        `${API_BASE_URL}/api/generate-photo`,
         {
           userId: auth.user.userId,
           modelId: payload.modelId,
