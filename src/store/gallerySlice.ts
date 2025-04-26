@@ -134,7 +134,7 @@ export const generateImages = createAsyncThunk(
         }
       );
       
-      const imageId = response.data.imageId;
+      const imageId = response.data.id;
       
       return {
         ...response.data,
