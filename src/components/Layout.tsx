@@ -814,6 +814,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       })).unwrap();
 
       if (result && !result.error) {
+        // Connect to the WebSocket for image generation updates
+        if (result.imageId) {
+          console.log(`Connecting to WebSocket for image generation: ${result.imageId}`);
+          connect(result.imageId);
+        }
+        
         // The actual images will be received through the WebSocket
         setNotification({
           open: true,

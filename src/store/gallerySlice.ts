@@ -130,10 +130,13 @@ export const generateImages = createAsyncThunk(
         }
       );
       
+      const imageId = response.data.id || `gen_${Date.now()}`;
+      
       return {
         ...response.data,
+        imageId,
         generatingImage: {
-          id: response.data.id || `gen_${Date.now()}`,
+          id: imageId,
           modelId: payload.modelId,
           prompt: payload.prompt,
           timestamp: Date.now(),

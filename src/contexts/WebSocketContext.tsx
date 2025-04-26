@@ -71,8 +71,25 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   const generatingImages = useSelector((state: RootState) => state.gallery.generatingImages);
   const dispatch = useDispatch<AppDispatch>();
 
+  // Define disconnect function first so it can be referenced in handleMessage
+  const disconnect = useCallback((modelId: string) => {
+    const socket = sockets[modelId];
+    if (socket) {
+      // Check if this is an image ID
+      console.log(`Disconnecting WebSocket for ${modelId}`);
+      socket.close();
+      setSockets(prev => {
+        const newSockets = { ...prev };
+        delete newSockets[modelId];
+        return newSockets;
+      });
+    }
+  }, [sockets]);
+
   // Process incoming WebSocket message
   const handleMessage = useCallback((modelId: string, event: MessageEvent) => {
+    console.log(`Received WS message for ${modelId}`);
+    
     try {
       const data = JSON.parse(event.data);
       
@@ -82,6 +99,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       // Check the type of update
       if (data.type === 'model_training_update') {
         const trainingData = data as TrainingUpdate;
+        console.log(`Processing training update for model ${modelId}:`, trainingData);
         
         // Update the training updates for this model
         setTrainingUpdates(prev => {
@@ -104,7 +122,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       // Handle image generation updates
       else if (data.type === 'image_generation_update') {
         const imageData = data as ImageGenerationUpdate;
-        console.log("Image Data", imageData)
+        console.log(`Image Generation Update for ${modelId}:`, imageData);
+        
+        if (imageData.imageId !== modelId) {
+          console.warn(`Image ID mismatch: Message for ${imageData.imageId} but connected to ${modelId}`);
+        }
+        
         // Set last image update
         setLastImageUpdate(imageData);
         
@@ -118,6 +141,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         const generatingImage = generatingImages.find(
           (img) => img.id === imageData.imageId
         );
+        
+        console.log("Found generating image:", generatingImage);
         
         // Update Redux store for image generation
         if (imageData.status === 'completed' && imageData.imageUrl) {
@@ -133,40 +158,55 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
             seedNumber: generatingImage?.seedNumber
           };
           
+          console.log("Adding completed image to gallery:", newImage);
           dispatch(addGeneratedImages([newImage]));
           
           // Remove from generating images
           dispatch(removeGeneratingImage(imageData.imageId));
+          
+          // Disconnect the WebSocket as we no longer need updates for this image
+          disconnect(modelId);
         } else if (imageData.status === 'failed') {
+          console.log("Image generation failed, removing from generating images:", imageData.imageId);
           // Remove from generating images if failed
           dispatch(removeGeneratingImage(imageData.imageId));
+          
+          // Disconnect the WebSocket as we no longer need updates for this image
+          disconnect(modelId);
         }
+      } else {
+        console.log("Unknown message type:", data.type, data);
       }
     } catch (error) {
       console.error('Error processing WebSocket message:', error);
     }
-  }, [dispatch, generatingImages]);
+  }, [dispatch, generatingImages, disconnect]);
 
   // Connect to WebSocket for a model
   const connect = useCallback((modelId: string) => {
-    if (sockets[modelId]) return; // Already connected
+    if (sockets[modelId]) {
+      console.log(`WebSocket already connected for model ${modelId}`);
+      return; // Already connected
+    }
     
     try {
       const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/model/${modelId}?token=${token}`;
+      console.log(`Connecting to WebSocket for ${modelId}`);
+      
       const socket = new WebSocket(wsUrl);
       
       socket.onopen = () => {
-        console.log(`WebSocket connected for model ${modelId}`);
+        console.log(`WebSocket connected for ${modelId}`);
       };
       
       socket.onmessage = (event) => handleMessage(modelId, event);
       
       socket.onerror = (error) => {
-        console.error(`WebSocket error for model ${modelId}:`, error);
+        console.error(`WebSocket error for ${modelId}:`, error);
       };
       
-      socket.onclose = () => {
-        console.log(`WebSocket closed for model ${modelId}`);
+      socket.onclose = (event) => {
+        console.log(`WebSocket closed for ${modelId}. Code: ${event.code}, Reason: ${event.reason}`);
       };
       
       // Store the socket
@@ -178,19 +218,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       console.error(`Error connecting to WebSocket for model ${modelId}:`, error);
     }
   }, [sockets, token, handleMessage]);
-  
-  // Disconnect from WebSocket
-  const disconnect = useCallback((modelId: string) => {
-    const socket = sockets[modelId];
-    if (socket) {
-      socket.close();
-      setSockets(prev => {
-        const newSockets = { ...prev };
-        delete newSockets[modelId];
-        return newSockets;
-      });
-    }
-  }, [sockets]);
   
   // Clean up sockets on unmount
   useEffect(() => {
