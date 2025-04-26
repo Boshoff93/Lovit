@@ -254,6 +254,7 @@ const gallerySlice = createSlice({
   reducers: {
     // Add a generating image (for tracking in-progress generations)
     addGeneratingImage: (state, action: PayloadAction<GeneratingImage>) => {
+      console.log("Adding generating image:", action.payload);
       state.generatingImages.push(action.payload);
     },
     
@@ -266,6 +267,7 @@ const gallerySlice = createSlice({
     
     // Update progress for a generating image
     updateGeneratingImageProgress: (state, action: PayloadAction<{imageId: string, progress: number}>) => {
+      console.log("Updating generating image progress:", action.payload);
       const index = state.generatingImages.findIndex(img => img.imageId === action.payload.imageId);
       if (index !== -1) {
         state.generatingImages[index].progress = action.payload.progress;
