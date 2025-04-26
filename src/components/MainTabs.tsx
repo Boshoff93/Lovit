@@ -724,6 +724,11 @@ const MainTabs: React.FC = () => {
                       <Skeleton variant="text" sx={{ mt: 0.5 }} />
                       <Skeleton variant="text" width="60%" />
                     </Box>
+                    <Skeleton variant="rectangular" height={imageHeight} />
+                    <Box sx={{ p: 1, bgcolor: 'background.paper' }}>
+                      <Skeleton variant="text" sx={{ mt: 0.5 }} />
+                      <Skeleton variant="text" width="60%" />
+                    </Box>
                   </Card>
                 </Grid>
               );

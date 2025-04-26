@@ -221,7 +221,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [open, setOpen] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isModelUploading, setIsModelUploading] = useState(false);
+  const [isExecutingGenerating, setIsExecutingGenerating] = useState(false);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -539,7 +540,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       return;
     }
 
-    setLoading(true);
+    setIsModelUploading(true);
     setIsCompressing(true);
     setCompressionProgress(0);
     setUploadProgress(0);
@@ -553,7 +554,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           message: 'Authentication required. Please log in again.',
           severity: 'error'
         });
-        setLoading(false);
+        setIsModelUploading(false);
         setIsCompressing(false);
         setIsUploading(false);
         return;
@@ -749,7 +750,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         severity: 'error'
       });
     } finally {
-      setLoading(false);
+      setIsModelUploading(false);
       setIsCompressing(false);
       setIsUploading(false);
     }
@@ -795,14 +796,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
 
     try {
-      setLoading(true);
-      setIsCompressing(true);
-      setCompressionProgress(0);
-      setUploadProgress(0);
-      setIsUploading(false);
-
       let uploadedClothingKey = null;
       if (clothingFile) {
+        setIsModelUploading(true);
+        setIsUploading(false);
+        setCompressionProgress(0);
+        setUploadProgress(0);
+        setIsCompressing(true);
         try {
           const result = await dispatch(uploadClothingItem({
             file: clothingFile
@@ -815,12 +815,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             message: 'Failed to upload clothing item',
             severity: 'error'
           });
-          setLoading(false);
-          setIsCompressing(false);
+          setIsModelUploading(false);
           return;
+        } finally {
+          setIsCompressing(false);
         }
+      } else {
+        uploadedClothingKey = null;
       }
 
+      setIsExecutingGenerating(true);
       const result = await dispatch(generateImages({
         modelId: promptData.modelId,
         prompt: promptData.prompt,
@@ -831,6 +835,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         inferenceSteps: promptData.inferenceSteps,
         connectCallback: connect
       })).unwrap();
+      setIsExecutingGenerating(false);
 
       if (result && !result.error) {
         // The actual images will be received through the WebSocket
@@ -860,9 +865,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         severity: 'error'
       });
     } finally {
-      setLoading(false);
+      setIsModelUploading(false);
       setIsCompressing(false);
       setIsUploading(false);
+      setIsExecutingGenerating(false);
     }
   };
 
@@ -1152,7 +1158,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           p: 1.5, 
                           mb: 1.5,
                           borderRadius: 1,
-                          backgroundColor: theme.palette.success.light + '10', 
+                          backgroundColor: `${theme.palette.success.light}10`, 
                           borderColor: theme.palette.success.light
                         }}
                       >
@@ -1170,7 +1176,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           p: 1.5, 
                           mb: 1.5,
                           borderRadius: 1,
-                          backgroundColor: theme.palette.warning.light + '10', 
+                          backgroundColor: `${theme.palette.warning.light}10`, 
                           borderColor: theme.palette.warning.light
                         }}
                       >
@@ -1187,11 +1193,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="secondary"
                         fullWidth
                         component="label"
-                        disabled={loading || isGeneratingImages}
+                        disabled={isExecutingGenerating || isGeneratingImages}
                         startIcon={<CloudUploadIcon />}
                         sx={{ mb: 1 }}
                       >
-                        {isGeneratingImages ? 'Please Wait...' : 'Upload Images'}
+                        {isExecutingGenerating || isGeneratingImages ? 'Please Wait...' : 'Upload Images'}
                         <input
                           type="file"
                           multiple
@@ -1251,13 +1257,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
+                        disabled={isModelUploading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
                                   !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-                                  !userProfile.eyeColor || !userProfile.bodyType || isGeneratingImages}
+                                  !userProfile.eyeColor || !userProfile.bodyType || isGeneratingImages || isExecutingGenerating}
                         onClick={handleCreateModel}
                       >
-                        {loading ? <CircularProgress size={24} color="inherit" /> : 
-                         isGeneratingImages ? 'Wait for Image Generation' : 'Create Model'}
+                        {isModelUploading ? <CircularProgress size={24} color="inherit" /> : 
+                         isGeneratingImages || isExecutingGenerating ? 'Wait for Image Generation' : 'Create Model'}
                       </Button>
                     </Stack>
                   </Box>
@@ -1339,7 +1345,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 px: 2,
                                 borderRadius: 5,
                                 '&.Mui-selected': {
-                                  backgroundColor: theme.palette.primary.main + '15',
+                                  backgroundColor: `${theme.palette.primary.main}15`,
                                   color: theme.palette.primary.main,
                                   fontWeight: 'bold'
                                 }
@@ -1355,7 +1361,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 px: 2,
                                 borderRadius: 5,
                                 '&.Mui-selected': {
-                                  backgroundColor: theme.palette.primary.main + '15',
+                                  backgroundColor: `${theme.palette.primary.main}15`,
                                   color: theme.palette.primary.main,
                                   fontWeight: 'bold'
                                 }
@@ -1455,7 +1461,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <Button
                           variant="outlined"
                           component="label"
-                          disabled={loading}
+                          disabled={isGeneratingImages || isExecutingGenerating}
                           startIcon={<CloudUploadIcon />}
                           sx={{ mt: 1, width: '100%' }}
                           fullWidth
@@ -1523,10 +1529,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0 || isGeneratingImages}
+                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0 || isGeneratingImages || isExecutingGenerating}
                         onClick={handleGenerateImages}
                       >
-                        {isGeneratingImages ? 'Images Currently Generating...' :
+                        {isGeneratingImages || isExecutingGenerating ? 'Images Currently Generating...' :
                           getMaxImagesForTier() === 0 ? 'Upgrade to Generate Images' : 
                           `Generate ${promptData.numberOfImages} Image${promptData.numberOfImages > 1 ? 's' : ''}`}
                       </Button>
@@ -1584,7 +1590,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Main>
         
         {/* Loading indicator */}
-        {loading && (
+        {isModelUploading && (
           <Box
             sx={{
               position: 'fixed',
@@ -1699,6 +1705,92 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               >
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
                   <b>While you wait:</b> After your model is trained, you'll be able to try generating images and try on any cloths of your liking!
+                </Typography>
+              </Box>
+            </Paper>
+          </Box>
+        )}
+        
+        {/* Image Generation Popup */}
+        {!isGeneratingImages && isExecutingGenerating && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 9999,
+            }}
+          >
+            <Paper 
+              elevation={6}
+              sx={{ 
+                py: 4, 
+                px: 5, 
+                maxWidth: 450, 
+                width: '90%', 
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 3
+              }}
+            >
+              {/* Animation spinner */}
+              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                <CircularProgress size={70} thickness={3} />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <AutoFixHighIcon sx={{ fontSize: 30, color: 'primary.main' }} />
+                </Box>
+              </Box>
+              
+              <Typography variant="h6" align="center" sx={{ fontWeight: 600 }}>
+                Generating Your Images
+              </Typography>
+                
+              <Typography variant="body1" color="text.secondary" align="center">
+                Your images are being created and will appear momentarily
+              </Typography>
+              
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <LinearProgress 
+                  sx={{ 
+                    width: '70%',
+                    height: 6, 
+                    borderRadius: 3,
+                  }}
+                />
+              </Box>
+              
+              <Box 
+                sx={{ 
+                  mt: 3, 
+                  pt: 2, 
+                  borderTop: '1px solid', 
+                  borderColor: 'divider',
+                  width: '100%'
+                }}
+              >
+                <Typography variant="body2" color="text.secondary" align="center">
+                  <b>AI Styling in Progress:</b> Our AI is styling your model in the outfit you described. Images will appear in your gallery when ready.
                 </Typography>
               </Box>
             </Paper>
