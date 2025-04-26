@@ -268,8 +268,21 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         return;
       }
 
-      const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}`;
-      console.log(`Connecting to WebSocket for ${id}`);
+      // Determine if this is an image or model connection
+      // Check if there's a generating image with this ID
+      const isImageConnection = generatingImages.some(img => img.imageId === id);
+      
+      // Construct the URL differently based on connection type
+      let wsUrl;
+      if (isImageConnection) {
+        // For image connections, pass imageId parameter
+        wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
+      } else {
+        // For model connections, pass modelId parameter
+        wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
+      }
+      
+      console.log(`Connecting to WebSocket for ${isImageConnection ? 'image' : 'model'} ${id}`);
       
       const socket = new WebSocket(wsUrl);
       
