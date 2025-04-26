@@ -271,6 +271,7 @@ const MainTabs: React.FC = () => {
   const [useMockData, setUseMockData] = useState(false);
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
+  const connectedImageIdsRef = useRef<Set<string>>(new Set());
   const location = useLocation();
   
   // Get auth token from Redux store
@@ -418,12 +419,17 @@ const MainTabs: React.FC = () => {
   useEffect(() => {
     if (generatingImages.length > 0 && token) {
       console.log(`Connecting to WebSockets for ${generatingImages.length} existing generating images`);
+      
       generatingImages.forEach(img => {
-        console.log(`Connecting to WebSocket for existing generating image: ${img.id}`);
-        connect(img.id);
+        // Only connect if we haven't already connected to this image
+        if (!connectedImageIdsRef.current.has(img.id)) {
+          console.log(`Connecting to WebSocket for generating image: ${img.id}`);
+          connect(img.id);
+          connectedImageIdsRef.current.add(img.id);
+        }
       });
     }
-  }, [generatingImages, connect, token]);
+  }, [token, generatingImages, connect]);  // Include connect and generatingImages but use ref to prevent duplicate connections
 
   // Update models when training updates are received
   useEffect(() => {
@@ -751,68 +757,6 @@ const MainTabs: React.FC = () => {
               </Box>
             ))}
           </Box>
-        ) : generatingImages.length > 0 && !useMockData ? (
-          // Show generating images
-          <Box sx={{ mb: 4 }}>
-            <Paper 
-              sx={{ 
-                p: 2, 
-                mb: 2, 
-                display: 'flex',
-                alignItems: 'center',
-                bgcolor: 'background.default',
-                borderRadius: '12px 12px 0 0',
-                boxShadow: 'none',
-                borderBottom: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <Typography variant="h6" component="div">
-                Currently Generating
-              </Typography>
-            </Paper>
-            
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {generatingImages.map((genImage) => (
-                <Box 
-                  key={genImage.id} 
-                  sx={{ 
-                      flex: { 
-                        xs: '1 1 100%', 
-                        sm: '1 1 calc(50% - 8px)', 
-                        md: '1 1 calc(50% - 10px)', 
-                        lg: '1 1 calc(33% - 10px)' 
-                      } 
-                  }}
-                >
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <Box 
-                      sx={{ 
-                        height: 320, 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        bgcolor: 'action.hover',
-                        p: 2
-                      }}
-                    >
-                      <CircularProgress sx={{ mb: 2 }} />
-                      <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                        Generating Image
-                      </Typography>
-                    </Box>
-                    <CardContent sx={{ py: 1.5 }}>
-                      <Typography variant="subtitle1">In Progress</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Started {new Date(genImage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
-              ))}
-            </Box>
-          </Box>
         ) : useMockData ? (
           // Show mock image data
           mockImageGroups.map((group) => (
@@ -899,136 +843,205 @@ const MainTabs: React.FC = () => {
               </Box>
             </Box>
           ))
-        ) : imageGroups.length > 0 ? (
-          // Show existing images grouped by date
-          imageGroups.map((group) => (
-            <Box key={group.date} sx={{ mb: 4 }}>
-              <Paper 
-                sx={{ 
-                  p: 2, 
-                  mb: 2, 
-                  display: 'flex',
-                  alignItems: 'center',
-                  bgcolor: 'background.default',
-                  borderRadius: '12px 12px 0 0',
-                  boxShadow: 'none',
-                  borderBottom: 1,
-                  borderColor: 'divider'
-                }}
-              >
-                <Typography variant="h6" component="div">
-                  {group.formattedDate}
-                </Typography>
-              </Paper>
-              
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                {group.images.map((image) => (
-                  <Box 
-                    key={image.id} 
+        ) : (
+          // Show real data (both generating and finished images)
+          <>
+            {/* Show generating images section */}
+            {generatingImages.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Paper 
+                  sx={{ 
+                    p: 2, 
+                    mb: 2, 
+                    display: 'flex',
+                    alignItems: 'center',
+                    bgcolor: 'background.default',
+                    borderRadius: '12px 12px 0 0',
+                    boxShadow: 'none',
+                    borderBottom: 1,
+                    borderColor: 'divider'
+                  }}
+                >
+                  <Typography variant="h6" component="div">
+                    Currently Generating
+                  </Typography>
+                </Paper>
+                
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  {generatingImages.map((genImage) => (
+                    <Box 
+                      key={genImage.id} 
+                      sx={{ 
+                          flex: { 
+                            xs: '1 1 100%', 
+                            sm: '1 1 calc(50% - 8px)', 
+                            md: '1 1 calc(50% - 10px)', 
+                            lg: '1 1 calc(33% - 10px)' 
+                          } 
+                      }}
+                    >
+                      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <Box 
+                          sx={{ 
+                            height: 320, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            bgcolor: 'action.hover',
+                            p: 2
+                          }}
+                        >
+                          <CircularProgress sx={{ mb: 2 }} />
+                          <Typography variant="body2" align="center" sx={{ mb: 1 }}>
+                            Generating Image
+                          </Typography>
+                        </Box>
+                        <CardContent sx={{ py: 1.5 }}>
+                          <Typography variant="subtitle1">In Progress</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Started {new Date(genImage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {/* Show finished images grouped by date */}
+            {imageGroups.length > 0 ? (
+              imageGroups.map((group) => (
+                <Box key={group.date} sx={{ mb: 4 }}>
+                  <Paper 
                     sx={{ 
-                      flex: { 
-                        xs: '1 1 100%', 
-                        sm: '1 1 calc(50% - 8px)', 
-                        md: '1 1 calc(50% - 10px)', 
-                        lg: '1 1 calc(33% - 10px)' 
-                      } 
+                      p: 2, 
+                      mb: 2, 
+                      display: 'flex',
+                      alignItems: 'center',
+                      bgcolor: 'background.default',
+                      borderRadius: '12px 12px 0 0',
+                      boxShadow: 'none',
+                      borderBottom: 1,
+                      borderColor: 'divider'
                     }}
                   >
-                    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundImage: `url(${image.url})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            filter: 'blur(15px)',
-                            transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
-                            opacity: 0.9,
-                          }}
-                        />
-                        <CardMedia
-                          component="img"
-                          height={320}
-                          image={image.url}
-                          alt={image.title || image.prompt.substring(0, 30)}
-                          sx={{ 
-                            objectFit: 'contain',
-                            position: 'relative',
-                            zIndex: 1,
-                            height: '100%',
-                            width: 'auto',
-                            maxWidth: '100%',
-                            margin: '0 auto',
-                            display: 'block',
-                            boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                            borderRadius: '4px',
-                            padding: '8px',
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                          }}
-                        />
+                    <Typography variant="h6" component="div">
+                      {group.formattedDate}
+                    </Typography>
+                  </Paper>
+                  
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {group.images.map((image) => (
+                      <Box 
+                        key={image.id} 
+                        sx={{ 
+                          flex: { 
+                            xs: '1 1 100%', 
+                            sm: '1 1 calc(50% - 8px)', 
+                            md: '1 1 calc(50% - 10px)', 
+                            lg: '1 1 calc(33% - 10px)' 
+                          } 
+                        }}
+                      >
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundImage: `url(${image.url})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                filter: 'blur(15px)',
+                                transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
+                                opacity: 0.9,
+                              }}
+                            />
+                            <CardMedia
+                              component="img"
+                              height={320}
+                              image={image.url}
+                              alt={image.title || image.prompt.substring(0, 30)}
+                              sx={{ 
+                                objectFit: 'contain',
+                                position: 'relative',
+                                zIndex: 1,
+                                height: '100%',
+                                width: 'auto',
+                                maxWidth: '100%',
+                                margin: '0 auto',
+                                display: 'block',
+                                boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                                borderRadius: '4px',
+                                padding: '8px',
+                                backgroundColor: 'rgba(255,255,255,0.1)',
+                              }}
+                            />
+                          </Box>
+                          <CardContent sx={{ py: 1.5 }}>
+                            <Typography variant="subtitle1">
+                              {image.title || image.prompt.substring(0, 30) + (image.prompt.length > 30 ? '...' : '')}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Typography>
+                          </CardContent>
+                        </Card>
                       </Box>
-                      <CardContent sx={{ py: 1.5 }}>
-                        <Typography variant="subtitle1">
-                          {image.title || image.prompt.substring(0, 30) + (image.prompt.length > 30 ? '...' : '')}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </Typography>
-                      </CardContent>
-                    </Card>
+                    ))}
                   </Box>
-                ))}
+                </Box>
+              ))
+            ) : generatingImages.length === 0 ? (
+              // Show empty state only when there are no images and nothing generating
+              <Box 
+                sx={{ 
+                  width: '100%', 
+                  textAlign: 'center', 
+                  py: 8,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    bgcolor: 'action.hover', 
+                    borderRadius: '50%', 
+                    width: 80, 
+                    height: 80, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mb: 3
+                  }}
+                >
+                  <ImageIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
+                </Box>
+                <Typography variant="h6" color="text.primary">
+                  No images yet
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+                  Generate your first image with one of your models
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  size="large"
+                  startIcon={<AutoFixHighIcon />}
+                  onClick={handleCreateImageClick}
+                >
+                  Create Your First Image
+                </Button>
               </Box>
-            </Box>
-          ))
-        ) : generatingImages.length === 0 ? (
-          // Show empty state when no images and nothing generating
-          <Box 
-            sx={{ 
-              width: '100%', 
-              textAlign: 'center', 
-              py: 8,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Box 
-              sx={{ 
-                bgcolor: 'action.hover', 
-                borderRadius: '50%', 
-                width: 80, 
-                height: 80, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mb: 3
-              }}
-            >
-              <ImageIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
-            </Box>
-            <Typography variant="h6" color="text.primary">
-              No images yet
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
-              Generate your first image with one of your models
-            </Typography>
-            <Button 
-              variant="contained" 
-              size="large"
-              startIcon={<AutoFixHighIcon />}
-              onClick={handleCreateImageClick}
-            >
-              Create Your First Image
-            </Button>
-          </Box>
-        ) : null}
+            ) : null}
+          </>
+        )}
       </TabPanel>
     </Box>
   );

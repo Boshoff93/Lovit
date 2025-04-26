@@ -123,7 +123,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       // Handle image generation updates
       else if (data.type === 'image_generation_update') {
         const imageData = data as ImageGenerationUpdate;
-        console.log(`Image Generation Update for ${modelId}:`, imageData);
+        console.log(`Image Generation Update for:`, imageData);
         
         if (imageData.imageId !== modelId) {
           console.warn(`Image ID mismatch: Message for ${imageData.imageId} but connected to ${modelId}`);
@@ -163,7 +163,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           dispatch(addGeneratedImages([newImage]));
           
           // Remove from generating images
-          dispatch(removeGeneratingImage(imageData.imageId));
+          dispatch(removeGeneratingImage(newImage.id));
           
           // Disconnect the WebSocket as we no longer need updates for this image
           disconnect(modelId);
