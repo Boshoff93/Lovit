@@ -141,7 +141,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         
         // Find the original generating image to get prompt and modelId
         const generatingImage = generatingImages.find(
-          (img) => img.id === imageData.imageId
+          (img) => img.imageId === imageData.imageId
         );
         
         console.log("Found generating image:", generatingImage);
@@ -150,7 +150,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         if (imageData.status === 'completed' && imageData.imageUrl) {
           // Add completed image to gallery store
           const newImage: GeneratedImage = {
-            id: imageData.imageId,
+            imageId: imageData.imageId,
             url: imageData.imageUrl,
             prompt: generatingImage?.prompt || '',
             createdAt: new Date().toISOString(),
@@ -165,7 +165,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           dispatch(addGeneratedImages([newImage]));
           
           // Remove from generating images
-          dispatch(removeGeneratingImage(newImage.id));
+          dispatch(removeGeneratingImage(newImage.imageId));
           
           // Disconnect the WebSocket as we no longer need updates for this image
           disconnect(modelId);

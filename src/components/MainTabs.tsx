@@ -388,12 +388,12 @@ const MainTabs: React.FC = () => {
       if (lastImageUpdate.status === 'completed' && lastImageUpdate.imageUrl) {
         // Find the original generating image to get prompt and modelId
         const generatingImage = generatingImages.find(
-          (img) => img.id === lastImageUpdate.imageId
+          (img) => img.imageId === lastImageUpdate.imageId
         );
         
         // Create new image with data from generating image
         const newImage = {
-          id: lastImageUpdate.imageId,
+          imageId: lastImageUpdate.imageId,
           url: lastImageUpdate.imageUrl,
           prompt: generatingImage?.prompt || '',
           createdAt: new Date().toISOString(),
@@ -419,7 +419,7 @@ const MainTabs: React.FC = () => {
       } else if (lastImageUpdate.progress !== undefined) {
         // Update progress for generating image
         dispatch(updateGeneratingImageProgress({ 
-          id: lastImageUpdate.imageId, 
+          imageId: lastImageUpdate.imageId, 
           progress: lastImageUpdate.progress 
         }));
       }
@@ -434,10 +434,10 @@ const MainTabs: React.FC = () => {
       generatingImages.forEach(img => {
         console.log(`Generating image: ${JSON.stringify(img)}`);
         // Only connect if we haven't already connected to this image AND the image has a valid ID
-        if (img.id && typeof img.id === 'string' && !connectedImageIdsRef.current.has(img.id)) {
-          console.log(`Connecting to WebSocket for image ${img.id}`);
-          connect(img.id);
-          connectedImageIdsRef.current.add(img.id);
+        if (img.imageId && typeof img.imageId === 'string' && !connectedImageIdsRef.current.has(img.imageId)) {
+          console.log(`Connecting to WebSocket for image ${img.imageId}`);
+          connect(img.imageId);
+          connectedImageIdsRef.current.add(img.imageId);
         }
       });
     }
@@ -899,7 +899,7 @@ const MainTabs: React.FC = () => {
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                   {generatingImages.map((genImage) => (
                     <Box 
-                      key={genImage.id} 
+                      key={genImage.imageId} 
                       sx={{ 
                           flex: { 
                             xs: '1 1 100%', 
@@ -1002,7 +1002,7 @@ const MainTabs: React.FC = () => {
                     {group.images.map((image) => {
                       return (
                       <Box 
-                        key={image.id} 
+                        key={image.imageId} 
                         sx={{ 
                           flex: { 
                             xs: '1 1 100%', 
@@ -1035,7 +1035,7 @@ const MainTabs: React.FC = () => {
                               image={image.url}
                               alt={image.title}
                               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                e.currentTarget.src = handleImageError(image.id, image.url);
+                                e.currentTarget.src = handleImageError(image.imageId, image.url);
                               }}
                               sx={{ 
                                 objectFit: 'contain',

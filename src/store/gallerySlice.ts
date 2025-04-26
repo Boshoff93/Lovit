@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com'
 
 // Image interface
 export interface GeneratedImage {
-  id: string;
+  imageId: string;
   url: string;
   modelId: string;
   prompt: string;
@@ -27,7 +27,7 @@ export interface ImageGroup {
 
 // Generating image interface for tracking in-progress generations
 export interface GeneratingImage {
-  id: string;
+  imageId: string;
   modelId: string;
   prompt: string;
   timestamp: number;
@@ -134,13 +134,13 @@ export const generateImages = createAsyncThunk(
         }
       );
       
-      const imageId = response.data.id;
+      const { imageId } = response.data
       
       return {
         ...response.data,
         imageId,
         generatingImage: {
-          id: imageId,
+          imageId: imageId,
           modelId: payload.modelId,
           prompt: payload.prompt,
           timestamp: Date.now(),
@@ -260,13 +260,13 @@ const gallerySlice = createSlice({
     // Remove a generating image when completed or failed
     removeGeneratingImage: (state, action: PayloadAction<string>) => {
       state.generatingImages = state.generatingImages.filter(
-        img => img.id !== action.payload
+        img => img.imageId !== action.payload
       );
     },
     
     // Update progress for a generating image
-    updateGeneratingImageProgress: (state, action: PayloadAction<{id: string, progress: number}>) => {
-      const index = state.generatingImages.findIndex(img => img.id === action.payload.id);
+    updateGeneratingImageProgress: (state, action: PayloadAction<{imageId: string, progress: number}>) => {
+      const index = state.generatingImages.findIndex(img => img.imageId === action.payload.imageId);
       if (index !== -1) {
         state.generatingImages[index].progress = action.payload.progress;
       }
