@@ -295,6 +295,31 @@ const MainTabs: React.FC = () => {
   // Get openModel function from Layout context
   const { openModel, openImages } = useLayout();
 
+  // Create a state to keep track of image load failures and timestamps
+  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
+  
+  // Refresh image URLs if they've failed to load (which might mean they've expired)
+  useEffect(() => {
+    if (failedImageIds.size > 0 && userId && token) {
+      console.log(`Refreshing ${failedImageIds.size} failed images`);
+      // Fetch images to get fresh URLs
+      dispatch(fetchGeneratedImages());
+      // Clear the failed image IDs
+      setFailedImageIds(new Set());
+    }
+  }, [failedImageIds, userId, token, dispatch]);
+  
+  // Function to handle image errors
+  const handleImageError = useCallback((imageId: string, url: string) => {
+    console.error(`Image failed to load: ${url}`);
+    setFailedImageIds(prev => {
+      const newSet = new Set(prev);
+      newSet.add(imageId);
+      return newSet;
+    });
+    return 'https://via.placeholder.com/320x320?text=Image+Unavailable';
+  }, []);
+
   // Check for tab parameter in URL and set active tab
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -353,7 +378,7 @@ const MainTabs: React.FC = () => {
   // Fetch images when gallery tab is active
   useEffect(() => {
     const fetchImagesData = async () => {
-      if (hasLoadedImagesRef.current || !userId || !token) return;
+      if (!userId || !token) return;
       
       try {
         if (value === 0) { // Gallery tab is active
@@ -397,7 +422,7 @@ const MainTabs: React.FC = () => {
           modelId: generatingImage?.modelId || '',
           orientation: generatingImage?.orientation,
           clothingKey: generatingImage?.clothingKey,
-          seedNumber: generatingImage?.seedNumber
+          seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined
         };
         
         // Add the new image to the store
@@ -825,6 +850,9 @@ const MainTabs: React.FC = () => {
                           height={320}
                           image={image.url}
                           alt={image.title}
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                            e.currentTarget.src = handleImageError(image.id, image.url);
+                          }}
                           sx={{ 
                             objectFit: 'contain',
                             position: 'relative',
@@ -836,6 +864,7 @@ const MainTabs: React.FC = () => {
                             display: 'block',
                             boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                             borderRadius: '4px',
+                            padding: '8px',
                             backgroundColor: 'rgba(255,255,255,0.1)',
                           }}
                         />
@@ -1017,6 +1046,9 @@ const MainTabs: React.FC = () => {
                               height={320}
                               image={image.url}
                               alt={image.title}
+                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                e.currentTarget.src = handleImageError(image.id, image.url);
+                              }}
                               sx={{ 
                                 objectFit: 'contain',
                                 position: 'relative',

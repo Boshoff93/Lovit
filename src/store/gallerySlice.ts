@@ -13,7 +13,7 @@ export interface GeneratedImage {
   createdAt: string;
   title?: string;
   clothingKey?: string;
-  seedNumber?: string;
+  seedNumber?: number;
   orientation?: string;
 }
 
