@@ -56,7 +56,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   const [sockets, setSockets] = useState<Record<string, WebSocket | null>>({});
   // Store last message for notifications
   const [lastMessage, setLastMessage] = useState<TrainingUpdate | ImageGenerationUpdate | null>(null);
-
+  // Track which image updates are coming through which connections
+  const [imageToSocketMap, setImageToSocketMap] = useState<Record<string, string>>({});
   
   // Redux
   const token = useSelector((state: RootState) => state.auth.token);
@@ -75,6 +76,18 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         const newSockets = { ...prev };
         delete newSockets[id];
         return newSockets;
+      });
+      
+      // Clean up any image mappings to this socket
+      setImageToSocketMap(prev => {
+        const newMap = { ...prev };
+        // Remove any entries where this socket ID was being used
+        Object.keys(newMap).forEach(imageId => {
+          if (newMap[imageId] === id) {
+            delete newMap[imageId];
+          }
+        });
+        return newMap;
       });
     }
   }, [sockets]);
@@ -118,9 +131,17 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         const imageData = data as ImageGenerationUpdate;
         console.log(`Image Generation Update for:`, imageData);
         
-        // For image generation updates, the socket might be connected with imageId directly
+        // For image generation updates, the socket might be connected with a different ID
         if (imageData.imageId !== id) {
           console.log(`Note: Message for ${imageData.imageId} received on connection ${id}`);
+          
+          // Map this image ID to this socket connection for future reference
+          setImageToSocketMap(prev => ({
+            ...prev,
+            [imageData.imageId]: id
+          }));
+          
+          // Don't try to open a new connection for this image if we're already getting updates
         }
         
         // Find the original generating image to get prompt and modelId
@@ -174,15 +195,35 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           // Remove from generating images
           dispatch(removeGeneratingImage(newImage.imageId));
           
-          // Disconnect the WebSocket as we no longer need updates for this image
-          disconnect(newImage.imageId);
+          // Clean up the image-to-socket mapping
+          setImageToSocketMap(prev => {
+            const newMap = { ...prev };
+            delete newMap[imageData.imageId];
+            return newMap;
+          });
+          
+          // If this was a message for a different image ID than the socket,
+          // don't disconnect the socket (as it might be handling other images)
+          if (imageData.imageId === id) {
+            disconnect(imageData.imageId);
+          }
         } else if (imageData.status === 'failed') {
           console.log("Image generation failed, removing from generating images:", imageData.imageId);
           // Remove from generating images if failed
           dispatch(removeGeneratingImage(imageData.imageId));
           
-          // Disconnect the WebSocket as we no longer need updates for this image
-          disconnect(imageData.imageId);
+          // Clean up the image-to-socket mapping
+          setImageToSocketMap(prev => {
+            const newMap = { ...prev };
+            delete newMap[imageData.imageId];
+            return newMap;
+          });
+          
+          // If this was a message for a different image ID than the socket,
+          // don't disconnect the socket (as it might be handling other images)
+          if (imageData.imageId === id) {
+            disconnect(imageData.imageId);
+          }
         } else if (imageData.progress !== undefined) {
           // Update progress for generating image
           console.log(`Updating progress for image ${imageData.imageId}: ${imageData.progress}%`);
@@ -204,13 +245,21 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   // Connect to WebSocket for a model
   const connect = useCallback((id: string) => {
     if (!id) {
-      console.error('Cannot connect to WebSocket: modelId is undefined');
+      console.error('Cannot connect to WebSocket: ID is undefined');
       return;
     }
     
+    // Check if we already have a socket for this ID
     if (sockets[id]) {
-      console.log(`WebSocket already connected for model ${id}`);
+      console.log(`WebSocket already connected for ${id}`);
       return; // Already connected
+    }
+    
+    // Check if this image is already getting updates through another socket
+    const existingSocketId = imageToSocketMap[id];
+    if (existingSocketId && sockets[existingSocketId]) {
+      console.log(`Image ${id} is already receiving updates through socket ${existingSocketId}`);
+      return; // Already receiving updates through another socket
     }
     
     try {
@@ -235,12 +284,24 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       };
       
       socket.onclose = (event) => {
-        console.log(`WebSocket closed for ${id}. Code: ${event.code}, Reason: ${event.reason}`);
+        console.log(`WebSocket closed for ${id}. Code: ${event.code}, Reason: ${event.reason || ''}`);
         // Remove from sockets when closed
         setSockets(prev => {
           const newSockets = { ...prev };
           delete newSockets[id];
           return newSockets;
+        });
+        
+        // Clean up any image mappings to this socket
+        setImageToSocketMap(prev => {
+          const newMap = { ...prev };
+          // Remove any entries where this socket ID was being used
+          Object.keys(newMap).forEach(imageId => {
+            if (newMap[imageId] === id) {
+              delete newMap[imageId];
+            }
+          });
+          return newMap;
         });
       };
       
@@ -250,9 +311,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         [id]: socket
       }));
     } catch (error) {
-      console.error(`Error connecting to WebSocket for model ${id}:`, error);
+      console.error(`Error connecting to WebSocket for ${id}:`, error);
     }
-  }, [sockets, token, handleMessage, user]);
+  }, [sockets, token, handleMessage, user, imageToSocketMap]);
   
   // Clean up sockets on unmount
   useEffect(() => {
