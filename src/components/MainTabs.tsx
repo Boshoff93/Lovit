@@ -210,28 +210,32 @@ const mockImageGroups: ImageGroup[] = [
         imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&q=80',
         title: 'Elegant Formal Outfit',
         createdAt: '2024-04-21T15:30:00Z',
-        orientation: 'portrait_4_3'
+        orientation: 'portrait_4_3',
+        dripRating: ['Chic', 'Elegant', 'Sophisticated', 'Glamorous', 'Formal']
       },
       {
         imageId: '2',
         imageUrl: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80',
         title: 'Luxury Evening Wear',
         createdAt: '2024-04-21T14:20:00Z',
-        orientation: 'portrait_16_9'
+        orientation: 'portrait_16_9',
+        dripRating: ['Elegant', 'Glamorous', 'Luxurious', 'Sophisticated', 'Stylish']
       },
       {
         imageId: '3',
         imageUrl: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=672&q=80',
         title: 'Bright Summer Collection',
         createdAt: '2024-04-21T12:10:00Z',
-        orientation: 'landscape_16_9'
+        orientation: 'landscape_16_9',
+        dripRating: ['Vibrant', 'Playful', 'Casual', 'Fun', 'Summery']
       },
       {
         imageId: '4',
         imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=673&q=80',
         title: 'City Street Fashion',
         createdAt: '2024-04-21T10:15:00Z',
-        orientation: 'square_hd'
+        orientation: 'square_hd',
+        dripRating: ['Urban', 'Stylish', 'Edgy', 'Modern', 'Trendy']
       }
     ]
   },
@@ -244,21 +248,24 @@ const mockImageGroups: ImageGroup[] = [
         imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=688&q=80',
         title: 'Professional Business Look',
         createdAt: '2024-04-20T19:45:00Z',
-        orientation: 'portrait_4_3'
+        orientation: 'portrait_4_3',
+        dripRating: ['Professional', 'Sophisticated', 'Polished', 'Formal', 'Elegant']
       },
       {
         imageId: '6',
         imageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
         title: 'Evening Gown Collection',
         createdAt: '2024-04-20T18:30:00Z',
-        orientation: 'landscape_4_3'
+        orientation: 'landscape_4_3',
+        dripRating: ['Glamorous', 'Elegant', 'Sophisticated', 'Luxurious', 'Chic']
       },
       {
         imageId: '7',
         imageUrl: 'https://images.unsplash.com/photo-1632149877166-f75d49000351?ixlib=rb-4.0.3&auto=format&fit=crop&w=664&q=80',
         title: 'Urban Fashion Style',
         createdAt: '2024-04-20T16:40:00Z',
-        orientation: 'portrait_16_9'
+        orientation: 'portrait_16_9',
+        dripRating: ['Urban', 'Edgy', 'Stylish', 'Modern', 'Trendy']
       }
     ]
   },
@@ -270,13 +277,15 @@ const mockImageGroups: ImageGroup[] = [
         imageId: '8',
         imageUrl: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
         title: 'Casual Summer Outfit',
-        createdAt: '2024-04-19T16:20:00Z'
+        createdAt: '2024-04-19T16:20:00Z',
+        dripRating: ['Casual', 'Fun', 'Vibrant', 'Summery', 'Relaxed']
       },
       {
         imageId: '9',
         imageUrl: 'https://images.unsplash.com/photo-1576185850227-1f72b7f8d483?ixlib=rb-4.0.3&auto=format&fit=crop&w=725&q=80',
         title: 'Winter Collection',
-        createdAt: '2024-04-19T14:10:00Z'
+        createdAt: '2024-04-19T14:10:00Z',
+        dripRating: ['Cozy', 'Elegant', 'Sophisticated', 'Warm', 'Seasonal']
       }
     ]
   }
@@ -871,6 +880,24 @@ const MainTabs: React.FC = () => {
                           </Box>
                         </Box>
                         <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                          {image.dripRating && image.dripRating.length > 0 && (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
+                              {image.dripRating.map((tag, idx) => (
+                                <Chip
+                                  key={idx}
+                                  label={tag}
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: '#F5F5DC', // Gold color
+                                    color: 'rgba(0, 0, 0, 0.87)', // Dark text for contrast
+                                    fontWeight: 500,
+                                    fontSize: '0.7rem',
+                                    height: 20
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          )}
                           <Typography variant="subtitle1" noWrap>
                             {image.title}
                           </Typography>
@@ -1135,6 +1162,24 @@ const MainTabs: React.FC = () => {
                               </Box>
                             </Box>
                             <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                              {image.dripRating && image.dripRating.length > 0 && (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
+                                  {image.dripRating.map((tag, idx) => (
+                                    <Chip
+                                      key={idx}
+                                      label={tag}
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: '#F5F5DC', // Gold color
+                                        color: 'rgba(0, 0, 0, 0.87)', // Dark text for contrast
+                                        fontWeight: 500,
+                                        fontSize: '0.7rem',
+                                        height: 20
+                                      }}
+                                    />
+                                  ))}
+                                </Box>
+                              )}
                               <Typography variant="subtitle1" noWrap>
                                 {image.title}
                               </Typography>
