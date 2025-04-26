@@ -291,6 +291,7 @@ const MainTabs: React.FC = () => {
   
   // Get training updates from WebSocket context
   const { trainingUpdates, connect, lastImageUpdate } = useWebSocket();
+  const connectRef = useRef(connect);
   
   // Get openModel function from Layout context
   const { openModel, openImages } = useLayout();
@@ -359,6 +360,11 @@ const MainTabs: React.FC = () => {
     fetchModelsData();
   }, [token, userId, dispatch, connect]);
 
+  // Update connectRef when connect changes
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
+
   // Fetch images when gallery tab is active
   useEffect(() => {
     const fetchImagesData = async () => {
@@ -368,9 +374,9 @@ const MainTabs: React.FC = () => {
         console.log("Fetching generated images from API");
         await dispatch(clearGeneratingImages());
         
-        // Pass the connect function as a callback
+        // Pass the connect function as a callback via the ref
         const result = await dispatch(fetchGeneratedImages({
-          connectCallback: connect
+          connectCallback: connectRef.current
         }));
         
         console.log("Fetched images result:", result.payload);
@@ -388,7 +394,7 @@ const MainTabs: React.FC = () => {
     return () => {
       hasLoadedImagesRef.current = false;
     };
-  }, [token, userId, dispatch, connect]);
+  }, [token, userId, dispatch]);
   
   // Listen for image generation updates from WebSocket
   useEffect(() => {
