@@ -31,6 +31,7 @@ import {
   selectGalleryLoading,
   removeGeneratingImage,
   addGeneratedImages,
+  clearGeneratingImages,
   GeneratedImage,
   ImageGroup as GalleryImageGroup
 } from '../store/gallerySlice';
@@ -372,15 +373,28 @@ const MainTabs: React.FC = () => {
       
       try {
         if (value === 0) { // Gallery tab is active
-          await dispatch(fetchGeneratedImages());
+          const result = await dispatch(fetchGeneratedImages());
           hasLoadedImagesRef.current = true;
+          
+          // If images array is empty, make sure to clear any leftover generating images
+          if (result.payload && Array.isArray(result.payload) && result.payload.length === 0) {
+            // Clear any stale generating images that might be showing
+            dispatch(clearGeneratingImages());
+          }
         }
       } catch (error) {
         console.error('Error fetching images:', error);
+        // Clear generating images on error as well
+        dispatch(clearGeneratingImages());
       }
     };
     
     fetchImagesData();
+    
+    // Reset hasLoadedImagesRef when component unmounts
+    return () => {
+      hasLoadedImagesRef.current = false;
+    };
   }, [value, token, userId, dispatch]);
 
   // Listen for image generation updates from WebSocket
@@ -778,7 +792,7 @@ const MainTabs: React.FC = () => {
                     >
                       <CircularProgress sx={{ mb: 2 }} />
                       <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                        Generating {genImage.numberOfImages} image{genImage.numberOfImages > 1 ? 's' : ''}
+                        Generating Image
                       </Typography>
                     </Box>
                     <CardContent sx={{ py: 1.5 }}>

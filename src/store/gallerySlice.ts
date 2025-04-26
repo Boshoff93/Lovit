@@ -268,6 +268,11 @@ const gallerySlice = createSlice({
       state.clothingKey = null;
     },
     
+    // Clear all generating images
+    clearGeneratingImages: (state) => {
+      state.generatingImages = [];
+    },
+    
     // Clear gallery data (e.g., on logout)
     clearGallery: (state) => {
       state.images = [];
@@ -338,6 +343,7 @@ export const {
   removeGeneratingImage, 
   addGeneratedImages,
   clearClothingKey,
+  clearGeneratingImages,
   clearGallery 
 } = gallerySlice.actions;
 
