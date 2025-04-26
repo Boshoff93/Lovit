@@ -780,9 +780,6 @@ const MainTabs: React.FC = () => {
                       <Typography variant="body2" align="center" sx={{ mb: 1 }}>
                         Generating {genImage.numberOfImages} image{genImage.numberOfImages > 1 ? 's' : ''}
                       </Typography>
-                      <Typography variant="caption" align="center" color="text.secondary">
-                        "{genImage.prompt.length > 60 ? genImage.prompt.substring(0, 60) + '...' : genImage.prompt}"
-                      </Typography>
                     </Box>
                     <CardContent sx={{ py: 1.5 }}>
                       <Typography variant="subtitle1">In Progress</Typography>
