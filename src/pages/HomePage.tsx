@@ -523,6 +523,9 @@ const HomePage: React.FC = () => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          mt: 7
+        }}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
           {snackbarMessage}

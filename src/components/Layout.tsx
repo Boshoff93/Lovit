@@ -118,13 +118,12 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   flexGrow: 1,
   width: '100%',
   padding: theme.spacing(3),
-  transition: theme.transitions.create(['margin', 'width'], {
+  transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   [theme.breakpoints.up('md')]: {
-    marginLeft: open ? `${drawerWidth}px` : 0,
-    width: open ? `calc(100% - ${drawerWidth}px)` : '100%',
+    marginLeft: open ? 0 : `-${drawerWidth}px`,
   },
   [theme.breakpoints.down('md')]: {
     marginLeft: 0,
@@ -1691,6 +1690,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           autoHideDuration={6000} 
           onClose={handleCloseNotification}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          sx={{
+            mt: 7,
+            [theme.breakpoints.up('md')]: {
+              ...(open && {
+                marginLeft: `${drawerWidth/2}px`
+              })
+            }
+          }}
         >
           <Alert onClose={handleCloseNotification} severity={notification.severity}>
             {notification.message}

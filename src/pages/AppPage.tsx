@@ -80,6 +80,9 @@ const AppPage: React.FC = () => {
         autoHideDuration={6000}
         onClose={handleCloseNotification}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          mt: 7
+        }}
       >
         <Alert 
           onClose={handleCloseNotification} 

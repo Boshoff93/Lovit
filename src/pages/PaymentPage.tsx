@@ -347,6 +347,9 @@ const PaymentPage: React.FC = () => {
               autoHideDuration={6000} 
               onClose={() => setSuccess(null)}
               anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+              sx={{
+                mt: 7
+              }}
             >
               <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
                 {success}
