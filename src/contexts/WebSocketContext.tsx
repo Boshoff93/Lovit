@@ -33,8 +33,6 @@ export interface ImageGenerationUpdate extends ImageBase {
 // WebSocket context interface
 interface WebSocketContextType {
   lastMessage: TrainingUpdate | ImageGenerationUpdate | null;
-  imageGenerationUpdates: Record<string, ImageGenerationUpdate>;
-  lastImageUpdate: ImageGenerationUpdate | null;
   connect: (modelId: string) => void;
   disconnect: (modelId: string) => void;
 }
@@ -42,8 +40,6 @@ interface WebSocketContextType {
 // Create context
 const WebSocketContext = createContext<WebSocketContextType>({
   lastMessage: null,
-  imageGenerationUpdates: {},
-  lastImageUpdate: null,
   connect: () => {},
   disconnect: () => {}
 });
@@ -57,15 +53,9 @@ interface WebSocketProviderProps {
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
   // We'll store WebSocket connections for each model
   const [sockets, setSockets] = useState<Record<string, WebSocket | null>>({});
-  
   // Store last message for notifications
   const [lastMessage, setLastMessage] = useState<TrainingUpdate | ImageGenerationUpdate | null>(null);
-  
-  // Store image generation updates
-  const [imageGenerationUpdates, setImageGenerationUpdates] = useState<Record<string, ImageGenerationUpdate>>({});
-  
-  // Store last image update
-  const [lastImageUpdate, setLastImageUpdate] = useState<ImageGenerationUpdate | null>(null);
+
   
   // Redux
   const token = useSelector((state: RootState) => state.auth.token);
@@ -131,15 +121,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         if (imageData.imageId !== modelId) {
           console.log(`Note: Message for ${imageData.imageId} received on connection ${modelId}`);
         }
-        
-        // Set last image update
-        setLastImageUpdate(imageData);
-        
-        // Update image generation updates using imageId (not modelId)
-        setImageGenerationUpdates(prev => ({
-          ...prev,
-          [imageData.imageId]: imageData
-        }));
         
         // Find the original generating image to get prompt and modelId
         const generatingImage = generatingImages.find(
@@ -284,9 +265,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   
   return (
     <WebSocketContext.Provider value={{ 
-      lastMessage, 
-      imageGenerationUpdates,
-      lastImageUpdate,
+      lastMessage,
       connect, 
       disconnect 
     }}>

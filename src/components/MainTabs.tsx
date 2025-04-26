@@ -286,7 +286,7 @@ const MainTabs: React.FC = () => {
   const isLoadingImages = useSelector(selectGalleryLoading);
   
   // Get training updates from WebSocket context
-  const { trainingUpdates, connect } = useWebSocket();
+  const { connect } = useWebSocket();
   const connectRef = useRef(connect);
   
   // Get openModel function from Layout context
@@ -891,9 +891,6 @@ const MainTabs: React.FC = () => {
                         </Box>
                         <CardContent sx={{ py: 1.5 }}>
                           <Typography variant="subtitle1">In Progress</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Started {new Date(genImage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </Typography>
                         </CardContent>
                       </Card>
                     </Box>
@@ -947,7 +944,7 @@ const MainTabs: React.FC = () => {
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                backgroundImage: `url(${image.url})`,
+                                backgroundImage: `url(${image.imageUrl})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 filter: 'blur(15px)',
@@ -958,10 +955,10 @@ const MainTabs: React.FC = () => {
                             <CardMedia
                               component="img"
                               height={320}
-                              image={image.url}
+                              image={image.imageUrl}
                               alt={image.title}
                               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                e.currentTarget.src = handleImageError(image.imageId, image.url);
+                                e.currentTarget.src = handleImageError(image.imageId, image.imageUrl);
                               }}
                               sx={{ 
                                 objectFit: 'contain',
@@ -984,7 +981,7 @@ const MainTabs: React.FC = () => {
                               {image.title}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {new Date(image.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </Typography>
                           </CardContent>
                         </Card>
