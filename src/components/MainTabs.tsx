@@ -79,7 +79,7 @@ interface ImageGroup {
 // Mock data
 const mockModels: Model[] = [
   {
-    id: 'model_1',
+    modelId: 'model_1',
     name: 'Summer Casual',
     gender: 'Female',
     bodyType: 'Athletic',
@@ -95,12 +95,12 @@ const mockModels: Model[] = [
     imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=764&q=80'
   },
   {
-    id: 'model_2',
+    modelId: 'model_2',
     name: 'Business Professional',
     gender: 'Male',
     bodyType: 'Average',
     createdAt: '2024-04-19T09:15:00Z',
-    status: 'IN_PROGRESS',
+    status: 'in_progress',
     progress: 67,
     ethnicity: 'Caucasian',
     hairColor: 'Brown',
@@ -111,12 +111,12 @@ const mockModels: Model[] = [
     imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
   },
   {
-    id: 'model_3',
+    modelId: 'model_3',
     name: 'Evening Elegance',
     gender: 'Female',
     bodyType: 'Slim',
     createdAt: '2024-04-18T18:30:00Z',
-    status: 'WAITING',
+    status: 'queued',
     progress: 0,
     ethnicity: 'Hispanic/Latino',
     hairColor: 'Brown',
@@ -127,12 +127,12 @@ const mockModels: Model[] = [
     imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
   },
   {
-    id: 'model_4',
+    modelId: 'model_4',
     name: 'Urban Streetwear',
     gender: 'Non-binary',
     bodyType: 'Athletic',
     createdAt: '2024-04-17T11:45:00Z',
-    status: 'FAILED',
+    status: 'failed',
     progress: 45,
     ethnicity: 'Mixed',
     hairColor: 'Black',
@@ -143,7 +143,7 @@ const mockModels: Model[] = [
     imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=764&q=80'
   },
   {
-    id: 'model_5',
+    modelId: 'model_5',
     name: 'Bohemian Style',
     gender: 'Female',
     bodyType: 'Curvy',
@@ -159,7 +159,7 @@ const mockModels: Model[] = [
     imageUrl: 'https://images.unsplash.com/photo-1539701938214-0d9736e1c16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=691&q=80'
   },
   {
-    id: 'model_6',
+    modelId: 'model_6',
     name: 'Sporty Casual',
     gender: 'Male',
     bodyType: 'Athletic',
@@ -335,14 +335,7 @@ const MainTabs: React.FC = () => {
       
       try {
         setLoading(true);
-        await dispatch(fetchModels());
-        
-        // Connect to WebSocket for in-progress models
-        models.forEach((model: Model) => {
-          if ((model.status === 'IN_PROGRESS' || model.status === 'WAITING') && model.id) {
-            connect(model.id);
-          }
-        });
+        await dispatch(fetchModels({ connectCallback: connect }));
       } catch (error) {
         console.error('Error fetching models:', error);
       } finally {
@@ -352,7 +345,7 @@ const MainTabs: React.FC = () => {
     };
     
     fetchModelsData();
-  }, [token, connect, userId, dispatch, models]);
+  }, [token, connect, userId, dispatch]);
 
   // Fetch images when gallery tab is active
   useEffect(() => {
@@ -471,11 +464,11 @@ const MainTabs: React.FC = () => {
     let label = status;
     
     switch (status) {
-      case 'WAITING':
+      case 'queued':
         color = 'secondary';
         label = 'Queued';
         break;
-      case 'IN_PROGRESS':
+      case 'in_progress':
         color = 'primary';
         label = 'Training';
         break;
@@ -483,7 +476,6 @@ const MainTabs: React.FC = () => {
         color = 'success';
         label = 'Ready';
         break;
-      case 'FAILED':
       case 'failed':
         color = 'error';
         label = 'Failed';
@@ -563,7 +555,7 @@ const MainTabs: React.FC = () => {
             // Show mock models
             mockModels.map((model) => (
               <Box 
-                key={model.id} 
+                key={model.modelId} 
                 sx={{ 
                   flex: { 
                     xs: '1 1 100%', 
@@ -582,7 +574,7 @@ const MainTabs: React.FC = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.id)})`,
+                        backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.modelId)})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(15px)',
@@ -593,7 +585,7 @@ const MainTabs: React.FC = () => {
                     <CardMedia
                       component="img"
                       height="320"
-                      image={model.imageUrl ?? getFallbackImage(model.id)}
+                      image={model.imageUrl ?? getFallbackImage(model.modelId)}
                       alt={model.name}
                       sx={{ 
                         objectFit: 'contain',
@@ -622,7 +614,7 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {model.status === 'IN_PROGRESS' && model.progress && (
+                    {model.status === 'in_progress' && model.progress && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
                           variant="determinate" 
@@ -646,7 +638,7 @@ const MainTabs: React.FC = () => {
             // Show API models
             models.map((model) => (
               <Box 
-                key={model.id} 
+                key={model.modelId} 
                 sx={{ 
                    flex: { 
                       xs: '1 1 100%', 
@@ -665,7 +657,7 @@ const MainTabs: React.FC = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.id)})`,
+                        backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.modelId)})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(15px)',
@@ -676,7 +668,7 @@ const MainTabs: React.FC = () => {
                     <CardMedia
                       component="img"
                       height="320"
-                      image={model.imageUrl ?? getFallbackImage(model.id)}
+                      image={model.imageUrl ?? getFallbackImage(model.modelId)}
                       alt={model.name}
                       sx={{ 
                         objectFit: 'contain',
@@ -705,7 +697,7 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {model.status === 'IN_PROGRESS' && model.progress && (
+                    {model.status === 'in_progress' && model.progress && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
                           variant="determinate" 

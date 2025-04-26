@@ -248,11 +248,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       let message = '';
       const trainingUpdate = lastMessage as TrainingUpdate;
       switch (trainingUpdate.status) {
-        case 'WAITING':
+        case 'queued':
           severity = 'info';
           message = `Model training queued - ${trainingUpdate.modelId}`;
           break;
-        case 'IN_PROGRESS':
+        case 'in_progress':
           severity = 'info';
           message = `Training in progress ${trainingUpdate.progress ? `- ${trainingUpdate.progress}%` : ''}`;
           break;
@@ -260,7 +260,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           severity = 'success';
           message = 'Model training completed successfully!';
           break;
-        case 'FAILED':
         case 'failed':
           severity = 'error';
           message = 'Model training failed. Please try again.';
@@ -1270,7 +1269,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           onChange={handleModelSelectChange}
                         >
                           {models.map(model => (
-                            <MenuItem key={model.id} value={model.id}>
+                            <MenuItem key={model.modelId} value={model.modelId}>
                               {model.name}
                             </MenuItem>
                           ))}
@@ -1706,7 +1705,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Snackbar>
         
         {/* Training Progress Indicator */}
-        {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'IN_PROGRESS' && lastMessage.progress && (
+        {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'in_progress' && lastMessage.progress && (
           <Box
             sx={{
               position: 'fixed',

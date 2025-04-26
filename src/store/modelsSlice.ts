@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com'
 
 // Model interface
 export interface Model {
-  id: string;
+  modelId: string;
   name?: string;
   gender?: string;
   bodyType?: string;
@@ -40,7 +40,11 @@ const initialState: ModelsState = {
 // Async thunk for fetching models
 export const fetchModels = createAsyncThunk(
   'models/fetchModels',
-  async (_, { getState, rejectWithValue }) => {
+  async (
+    // Add connect callback parameter with optional config object
+    { connectCallback }: { connectCallback?: (modelId: string) => void } = {}, 
+    { getState, rejectWithValue }
+  ) => {
     try {
       const { auth } = getState() as { auth: { token: string | null, user: { userId: string } | null } };
       
@@ -57,7 +61,18 @@ export const fetchModels = createAsyncThunk(
         }
       });
       
-      return response.data.models || [];
+      const models = response.data.models || [];
+      
+      // Connect to WebSocket for in-progress or queued models if callback provided
+      if (connectCallback) {
+        models.forEach((model: Model) => {
+          if ((model.status === 'in_progress' || model.status === 'queued') && model.modelId) {
+            connectCallback(model.modelId);
+          }
+        });
+      }
+      
+      return models;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch models');
     }
@@ -157,7 +172,7 @@ const modelsSlice = createSlice({
     // Update a model (e.g., from WebSocket updates)
     updateModel: (state, action: PayloadAction<{ modelId: string, status: string, progress?: number }>) => {
       const { modelId, status, progress } = action.payload;
-      const model = state.models.find(model => model.id === modelId);
+      const model = state.models.find(model => model.modelId === modelId);
       
       if (model) {
         model.status = status;
