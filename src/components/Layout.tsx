@@ -108,7 +108,6 @@ export const useLayout = () => {
 // Responsive drawer width
 const drawerWidth = 360;
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 const MIN_REQUIRED_IMAGES = 10;
 const MAX_ALLOWED_IMAGES = 20;
 
@@ -206,7 +205,6 @@ interface PromptData {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
   const { token, user } = useSelector((state: RootState) => state.auth);
@@ -214,11 +212,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const models = useSelector(selectModels);
   
   // Selectors for clothing upload state
-  const isUploadingClothing = useSelector(selectIsUploadingClothing);
   const storedClothingKey = useSelector(selectClothingKey);
   
   // WebSocket integration
-  const { lastMessage, trainingUpdates, connect } = useWebSocket();
+  const { lastMessage, connect } = useWebSocket();
   
   const [open, setOpen] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);
@@ -322,9 +319,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     seedNumber: undefined,
     inferenceSteps: 50
   });
-  
-  const clothFileInputRef = useRef<HTMLInputElement>(null);
-  const [clothPreviewUrl, setClothPreviewUrl] = useState<string | null>(null);
 
   // Add clothing item state
   const [clothingFile, setClothingFile] = useState<File | null>(null);

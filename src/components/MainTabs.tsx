@@ -29,11 +29,7 @@ import {
   selectImageGroups,
   selectGeneratingImages,
   selectGalleryLoading,
-  removeGeneratingImage,
-  addGeneratedImages,
   clearGeneratingImages,
-  updateGeneratingImageProgress,
-  GeneratedImage,
   ImageGroup as GalleryImageGroup
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
@@ -290,7 +286,7 @@ const MainTabs: React.FC = () => {
   const isLoadingImages = useSelector(selectGalleryLoading);
   
   // Get training updates from WebSocket context
-  const { trainingUpdates, connect, lastImageUpdate } = useWebSocket();
+  const { trainingUpdates, connect } = useWebSocket();
   const connectRef = useRef(connect);
   
   // Get openModel function from Layout context
@@ -395,68 +391,6 @@ const MainTabs: React.FC = () => {
       hasLoadedImagesRef.current = false;
     };
   }, [token, userId, dispatch]);
-  
-  // Listen for image generation updates from WebSocket
-  useEffect(() => {
-    if (lastImageUpdate && lastImageUpdate.type === 'image_generation_update') {
-      // Process the update based on status
-      if (lastImageUpdate.status === 'completed' && lastImageUpdate.imageUrl) {
-        // Find the original generating image to get prompt and modelId
-        const generatingImage = generatingImages.find(
-          (img) => img.imageId === lastImageUpdate.imageId
-        );
-        
-        // Create new image with data from generating image
-        const newImage = {
-          imageId: lastImageUpdate.imageId,
-          url: lastImageUpdate.imageUrl,
-          prompt: generatingImage?.prompt || '',
-          createdAt: new Date().toISOString(),
-          modelId: generatingImage?.modelId || '',
-          orientation: generatingImage?.orientation,
-          clothingKey: generatingImage?.clothingKey,
-          seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined,
-          dripRating: generatingImage?.dripRating
-        };
-        
-        // Add the new image to the store
-        dispatch(addGeneratedImages([newImage]));
-        
-        // Remove from generating images
-        dispatch(removeGeneratingImage(lastImageUpdate.imageId));
-        
-        // Show notification - possibly implement this
-      } else if (lastImageUpdate.status === 'failed') {
-        // Remove from generating images
-        dispatch(removeGeneratingImage(lastImageUpdate.imageId));
-        
-        // Show error notification - possibly implement this
-      } else if (lastImageUpdate.progress !== undefined) {
-        // Update progress for generating image
-        dispatch(updateGeneratingImageProgress({ 
-          imageId: lastImageUpdate.imageId, 
-          progress: lastImageUpdate.progress 
-        }));
-      }
-    }
-  }, [lastImageUpdate, dispatch, generatingImages]);
-
-  // Update models when training updates are received
-  useEffect(() => {
-    if (Object.keys(trainingUpdates).length > 0) {
-      Object.entries(trainingUpdates).forEach(([modelId, updates]) => {
-        if (updates && updates.length > 0) {
-          // Get the latest update
-          const latestUpdate = updates[updates.length - 1];
-          dispatch(updateModel({
-            modelId,
-            status: latestUpdate.status,
-            progress: latestUpdate.progress
-          }));
-        }
-      });
-    }
-  }, [trainingUpdates, dispatch]);
 
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     const url = new URL(window.location.href);

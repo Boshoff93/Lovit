@@ -3,7 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { updateModel } from '../store/modelsSlice';
 import { AppDispatch } from '../store/store';
-import { removeGeneratingImage, addGeneratedImages, GeneratedImage } from '../store/gallerySlice';
+import { 
+  removeGeneratingImage, 
+  addGeneratedImages, 
+  GeneratedImage, 
+  addGeneratingImage,
+  updateGeneratingImageProgress,
+  ImageBase
+} from '../store/gallerySlice';
 
 // Define the shape of a training update message
 export interface TrainingUpdate {
@@ -12,21 +19,19 @@ export interface TrainingUpdate {
   status: string;
   progress?: number;
   timestamp: number;
+  name?: string;
+  profileData?: any;
 }
 
 // Define the shape of an image generation update message
-export interface ImageGenerationUpdate {
+export interface ImageGenerationUpdate extends ImageBase {
   type: string;
-  status: string;
-  imageId: string;
-  progress?: number;
-  imageUrl?: string;
   timestamp: number;
+  progress?: number;
 }
 
 // WebSocket context interface
 interface WebSocketContextType {
-  trainingUpdates: Record<string, TrainingUpdate[]>;
   lastMessage: TrainingUpdate | ImageGenerationUpdate | null;
   imageGenerationUpdates: Record<string, ImageGenerationUpdate>;
   lastImageUpdate: ImageGenerationUpdate | null;
@@ -36,7 +41,6 @@ interface WebSocketContextType {
 
 // Create context
 const WebSocketContext = createContext<WebSocketContextType>({
-  trainingUpdates: {},
   lastMessage: null,
   imageGenerationUpdates: {},
   lastImageUpdate: null,
@@ -53,9 +57,6 @@ interface WebSocketProviderProps {
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
   // We'll store WebSocket connections for each model
   const [sockets, setSockets] = useState<Record<string, WebSocket | null>>({});
-  
-  // Store updates from WebSocket
-  const [trainingUpdates, setTrainingUpdates] = useState<Record<string, TrainingUpdate[]>>({});
   
   // Store last message for notifications
   const [lastMessage, setLastMessage] = useState<TrainingUpdate | ImageGenerationUpdate | null>(null);
@@ -102,22 +103,23 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         const trainingData = data as TrainingUpdate;
         console.log(`Processing training update for model ${modelId}:`, trainingData);
         
-        // Update the training updates for this model
-        setTrainingUpdates(prev => {
-          const modelUpdates = prev[modelId] || [];
-          return {
-            ...prev,
-            [modelId]: [...modelUpdates, trainingData]
-          };
-        });
-        
         // Update model in Redux store
         if (trainingData.modelId && trainingData.status) {
-          dispatch(updateModel({
+          const modelUpdate = {
             modelId: trainingData.modelId,
             status: trainingData.status,
             progress: trainingData.progress
-          }));
+          };
+          
+          // If this is a completed update with additional model data, include it
+          if (trainingData.status === 'completed' && trainingData.name) {
+            Object.assign(modelUpdate, {
+              name: trainingData.name,
+              profileData: trainingData.profileData
+            });
+          }
+          
+          dispatch(updateModel(modelUpdate));
         }
       } 
       // Handle image generation updates
@@ -144,21 +146,43 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           (img) => img.imageId === imageData.imageId
         );
         
-        console.log("Found generating image:", generatingImage);
+        if(generatingImage) {
+          console.log("Found generating image:", generatingImage);
+        } else {
+          console.log(`No generating image found for imageId: ${imageData.imageId}`);
+          // Add the missing image to the generating images store
+          dispatch(addGeneratingImage({
+           ...imageData
+          }));
+        }
         
         // Update Redux store for image generation
         if (imageData.status === 'completed' && imageData.imageUrl) {
-          // Add completed image to gallery store
+          // Find the original generating image to merge any missing data
+          const generatingImage = generatingImages.find(
+            (img) => img.imageId === imageData.imageId
+          );
+          
+          // When we receive a completed image, log all data
+          console.log("Completed image data from WebSocket:", imageData);
+          if (generatingImage) {
+            console.log("Existing generating image data:", generatingImage);
+          }
+          
+          // Add completed image to gallery store - prioritize WebSocket data over generating image
           const newImage: GeneratedImage = {
             imageId: imageData.imageId,
-            url: imageData.imageUrl,
-            prompt: generatingImage?.prompt || '',
-            createdAt: new Date().toISOString(),
-            modelId: generatingImage?.modelId || '',
-            orientation: generatingImage?.orientation,
-            clothingKey: generatingImage?.clothingKey,
-            seedNumber: generatingImage?.seedNumber ? Number(generatingImage.seedNumber) : undefined,
-            dripRating: generatingImage?.dripRating
+            imageUrl: imageData.imageUrl,
+            createdAt: new Date(imageData.timestamp).toISOString(),
+            status: imageData.status,
+            // WebSocket data now includes all these fields - use with fallbacks
+            modelId: imageData.modelId || generatingImage?.modelId,
+            prompt: imageData.prompt || generatingImage?.prompt,
+            title: imageData.title || generatingImage?.title || "Untitled Image",
+            orientation: imageData.orientation || generatingImage?.orientation,
+            seedNumber: imageData.seedNumber || generatingImage?.seedNumber,
+            clothingKey: imageData.clothingKey || generatingImage?.clothingKey,
+            dripRating: imageData.dripRating || generatingImage?.dripRating || []
           };
           
           console.log("Adding completed image to gallery:", newImage);
@@ -176,6 +200,13 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           
           // Disconnect the WebSocket as we no longer need updates for this image
           disconnect(modelId);
+        } else if (imageData.progress !== undefined) {
+          // Update progress for generating image
+          console.log(`Updating progress for image ${imageData.imageId}: ${imageData.progress}%`);
+          dispatch(updateGeneratingImageProgress({ 
+            imageId: imageData.imageId, 
+            progress: imageData.progress 
+          }));
         }
       } else if (data.type === 'connected') {
         console.log(`Connection established for ${modelId}, connectionId: ${data.connectionId}`);
@@ -253,7 +284,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   
   return (
     <WebSocketContext.Provider value={{ 
-      trainingUpdates, 
       lastMessage, 
       imageGenerationUpdates,
       lastImageUpdate,
@@ -266,4 +296,4 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 };
 
 // Hook to use the WebSocket context
-export const useWebSocket = () => useContext(WebSocketContext); 
+export const useWebSocket = () => useContext(WebSocketContext);
