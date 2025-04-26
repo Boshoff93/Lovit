@@ -58,7 +58,8 @@ import {
   generateImages, 
   uploadClothingItem,
   selectIsUploadingClothing,
-  selectClothingKey
+  selectClothingKey,
+  selectGeneratingImages
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import axios from 'axios';
@@ -332,6 +333,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [storedClothingKey]);
 
+  // Add generatingImages from Redux store
+  const generatingImages = useSelector(selectGeneratingImages);
+  const isGeneratingImages = generatingImages.length > 0;
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -502,6 +507,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   // Submit handlers
   const handleCreateModel = useCallback(async () => {
+    // Check if images are currently being generated
+    if (isGeneratingImages) {
+      setNotification({
+        open: true,
+        message: 'Please wait for current image generation to complete before creating a model',
+        severity: 'info'
+      });
+      return;
+    }
+
     // Validate we have at least 10 images
     if (uploadedImages.length < MIN_REQUIRED_IMAGES) {
       setNotification({
@@ -738,7 +753,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setIsCompressing(false);
       setIsUploading(false);
     }
-  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch]);
+  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch, isGeneratingImages]);
   
   // Add this function for clothing upload
   const handleClothingFileChange = async (file: File | null) => {
@@ -760,6 +775,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleGenerateImages = async () => {
+    // Add a check to prevent generating images while others are in progress
+    if (isGeneratingImages) {
+      setNotification({
+        open: true,
+        message: 'Please wait for current image generation to complete',
+        severity: 'info'
+      });
+      return;
+    }
+
     if (!promptData.modelId) {
       setNotification({
         open: true,
@@ -1157,23 +1182,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         </Typography>
                       </Paper>
                       
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                      />
-                      
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<CloudUploadIcon />}
-                        onClick={handleFileButtonClick}
+                      <Button
+                        variant="contained"
+                        color="secondary"
                         fullWidth
-                        sx={{ height: 48 }}
+                        component="label"
+                        disabled={loading || isGeneratingImages}
+                        startIcon={<CloudUploadIcon />}
+                        sx={{ mb: 1 }}
                       >
-                        Upload Photos • {uploadedCount} of {MIN_REQUIRED_IMAGES}-{MAX_ALLOWED_IMAGES} Required
+                        {isGeneratingImages ? 'Please Wait...' : 'Upload Images'}
+                        <input
+                          type="file"
+                          multiple
+                          hidden
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
                       </Button>
                       
                       {uploadedImages.length > 0 && (
@@ -1228,10 +1253,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         sx={{ height: 48 }}
                         disabled={loading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
                                   !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-                                  !userProfile.eyeColor || !userProfile.bodyType}
+                                  !userProfile.eyeColor || !userProfile.bodyType || isGeneratingImages}
                         onClick={handleCreateModel}
                       >
-                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Model'}
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 
+                         isGeneratingImages ? 'Wait for Image Generation' : 'Create Model'}
                       </Button>
                     </Stack>
                   </Box>
@@ -1497,10 +1523,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0}
+                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0 || isGeneratingImages}
                         onClick={handleGenerateImages}
                       >
-                        {getMaxImagesForTier() === 0 ? 'Upgrade to Generate Images' : 
+                        {isGeneratingImages ? 'Images Currently Generating...' :
+                          getMaxImagesForTier() === 0 ? 'Upgrade to Generate Images' : 
                           `Generate ${promptData.numberOfImages} Image${promptData.numberOfImages > 1 ? 's' : ''}`}
                       </Button>
 
