@@ -317,7 +317,7 @@ const MainTabs: React.FC = () => {
       newSet.add(imageId);
       return newSet;
     });
-    return 'https://via.placeholder.com/320x320?text=Image+Unavailable';
+    return '/dress4.jpg';
   }, []);
 
   // Check for tab parameter in URL and set active tab
@@ -378,7 +378,7 @@ const MainTabs: React.FC = () => {
   // Fetch images when gallery tab is active
   useEffect(() => {
     const fetchImagesData = async () => {
-      if (!userId || !token) return;
+      if (hasLoadedImagesRef.current || !userId || !token) return;
       
       try {
         if (value === 0) { // Gallery tab is active
@@ -864,7 +864,6 @@ const MainTabs: React.FC = () => {
                             display: 'block',
                             boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                             borderRadius: '4px',
-                            padding: '8px',
                             backgroundColor: 'rgba(255,255,255,0.1)',
                           }}
                         />
@@ -1011,7 +1010,6 @@ const MainTabs: React.FC = () => {
                   
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                     {group.images.map((image) => {
-                      console.log(image);
                       return (
                       <Box 
                         key={image.id} 
