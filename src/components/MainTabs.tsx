@@ -13,13 +13,20 @@ import {
   LinearProgress,
   Chip,
   CircularProgress,
-  Skeleton
+  Skeleton,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Slide
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import FaceIcon from '@mui/icons-material/Face';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ImageIcon from '@mui/icons-material/Image';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import CloseIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/Download';
+import { TransitionProps } from '@mui/material/transitions';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -291,12 +298,26 @@ const mockImageGroups: ImageGroup[] = [
   }
 ];
 
+// Slide transition for dialog
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 0)
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
+  // State for selected image and modal
+  const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
@@ -481,6 +502,39 @@ const MainTabs: React.FC = () => {
     // Use the context function to open the images tab
     openImages();
   }, [openImages]);
+
+  // Function to handle opening the image modal
+  const handleOpenModal = useCallback((image: GeneratedImage) => {
+    setSelectedImage(image);
+    setModalOpen(true);
+  }, []);
+
+  // Function to handle closing the image modal
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    // Clear selected image after animation completes
+    setTimeout(() => setSelectedImage(null), 300);
+  }, []);
+
+  // Function to handle image download
+  const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
+    if (!imageUrl) return;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${title || 'lovit-image'}-${Date.now()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  }, []);
 
   return (
     <Box sx={{ width: '100%'}}>
@@ -853,9 +907,11 @@ const MainTabs: React.FC = () => {
                                     transition: 'transform 0.3s ease',
                                     '&:hover': {
                                       transform: 'scale(1.02)',
+                                      cursor: 'pointer'
                                     },
                                     overflow: 'hidden'
                                   }}
+                                  onClick={() => handleOpenModal(image)}
                                 >
                                   <CardMedia
                                     component="img"
@@ -1135,9 +1191,11 @@ const MainTabs: React.FC = () => {
                                         transition: 'transform 0.3s ease',
                                         '&:hover': {
                                           transform: 'scale(1.02)',
+                                          cursor: 'pointer'
                                         },
                                         overflow: 'hidden'
                                       }}
+                                      onClick={() => handleOpenModal(image)}
                                     >
                                       <CardMedia
                                         component="img"
@@ -1240,6 +1298,190 @@ const MainTabs: React.FC = () => {
           </>
         )}
       </TabPanel>
+
+      {/* Image Modal */}
+      <Dialog
+        fullScreen
+        open={modalOpen}
+        onClose={handleCloseModal}
+        TransitionComponent={Transition}
+        onClick={(e) => {
+          // This ensures clicks anywhere outside the content container will close the modal
+          const target = e.target as HTMLElement;
+          if (target.classList.contains('MuiDialog-container')) {
+            handleCloseModal();
+          }
+        }}
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            overflow: 'hidden' // Prevent scrolling in the dialog
+          }
+        }}
+      >
+        <DialogContent
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 0,
+            overflow: 'hidden',
+            height: '100vh',
+            position: 'relative'
+          }}
+        >
+          {selectedImage && (
+            <Box sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: { xs: 2, sm: 4 }
+            }}>
+              {/* Background blur effect */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundImage: `url(${selectedImage.imageUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  filter: 'blur(30px)',
+                  transform: 'scale(1.2)',
+                  opacity: 0.3,
+                }}
+              />
+              
+              {/* Clickable backdrop - this will close the modal when clicked */}
+              <Box
+                onClick={handleCloseModal}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 5,
+                  cursor: 'pointer'
+                }}
+              />
+              
+              {/* Main content container */}
+              <Box 
+                sx={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  maxWidth: '90%',
+                  maxHeight: '90%',
+                  position: 'relative',
+                  zIndex: 10,
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  p: 2,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                }}
+              >
+                {/* Image */}
+                <Box sx={{ 
+                  flexGrow: 1, 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  overflow: 'hidden',
+                  mb: 2,
+                  position: 'relative'
+                }}>
+                  <img
+                    src={selectedImage.imageUrl}
+                    alt={selectedImage.title || 'Full-size image'}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '70vh',
+                      objectFit: 'contain',
+                      display: 'block',
+                      borderRadius: '8px'
+                    }}
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      e.currentTarget.src = handleImageError();
+                    }}
+                  />
+                  {/* Download button on top right of image */}
+                  <IconButton
+                    onClick={() => handleDownloadImage(selectedImage.imageUrl, selectedImage.title)}
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                      color: '#F5F5DC',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                      }
+                    }}
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </Box>
+                
+                {/* Title and tags below the image */}
+                <Box sx={{ 
+                  width: '100%',
+                  p: 2,
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: 2
+                }}>
+                  <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
+                    {selectedImage.title}
+                  </Typography>
+                  
+                  {selectedImage.dripRating && selectedImage.dripRating.length > 0 && (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selectedImage.dripRating.map((tag, idx) => (
+                        <Chip
+                          key={idx}
+                          label={tag}
+                          size="small"
+                          sx={{
+                            backgroundColor: 'primary.main', // Gold color
+                            color: 'rgba(0, 0, 0, 0.87)',
+                            fontWeight: 500,
+                            fontSize: '0.7rem',
+                            height: 20
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+                
+                {/* Close button below */}
+                <Button
+                  variant="text"
+                  startIcon={<CloseIcon />}
+                  onClick={handleCloseModal}
+                  sx={{
+                    color: 'white',
+                    alignSelf: 'center',
+                    mt: 2,
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    }
+                  }}
+                >
+                  Close
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
