@@ -20,7 +20,10 @@ export interface ImageBase {
 
 // Image interface
 export interface GeneratedImage extends ImageBase {
+  imageUrl: string;
+  title?: string;
   createdAt?: string;
+  progress?: number;
 }
 
 // Image group interface for displaying in gallery

@@ -15,6 +15,7 @@ import {
   CircularProgress,
   Skeleton
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import FaceIcon from '@mui/icons-material/Face';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ImageIcon from '@mui/icons-material/Image';
@@ -35,6 +36,13 @@ import {
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
+
+// Define local interface for image groups
+interface ImageGroup {
+  date: string;
+  formattedDate: string;
+  images: GeneratedImage[];
+}
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -60,12 +68,6 @@ function TabPanel(props: TabPanelProps) {
       )}
     </div>
   );
-}
-
-interface ImageGroup {
-  date: string;
-  formattedDate: string;
-  images: GeneratedImage[];
 }
 
 // Mock data
@@ -181,6 +183,22 @@ const getFallbackImage = (modelId: string): string => {
   return `/dress${imageIndex + 1}.jpg`;
 };
 
+// Simplify the getGridSize function based on new requirements
+const getGridSize = (image: GeneratedImage, index: number, totalImages: number) => {
+  // Single image - make it prominently larger
+  if (totalImages === 1) {
+    return { xs: 12, sm: 10, md: 8 };
+  }
+  
+  // For portrait/square orientation or unknown orientation
+  if (image.orientation?.includes('portrait') || image.orientation?.includes('square') || !image.orientation) {
+    return { xs: 12, sm: 6, md: 4 }; // 4 columns (allows 3 per row on desktop)
+  } else {
+    // For landscape orientation
+    return { xs: 12, sm: 6, md: 6 }; // 6 columns (allows 2 per row on desktop)
+  }
+};
+
 // Mock image data grouped by date
 const mockImageGroups: ImageGroup[] = [
   {
@@ -191,25 +209,29 @@ const mockImageGroups: ImageGroup[] = [
         imageId: '1',
         imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&q=80',
         title: 'Elegant Formal Outfit',
-        createdAt: '2024-04-21T15:30:00Z'
+        createdAt: '2024-04-21T15:30:00Z',
+        orientation: 'portrait_4_3'
       },
       {
         imageId: '2',
         imageUrl: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80',
         title: 'Luxury Evening Wear',
-        createdAt: '2024-04-21T14:20:00Z'
+        createdAt: '2024-04-21T14:20:00Z',
+        orientation: 'portrait_16_9'
       },
       {
         imageId: '3',
         imageUrl: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=672&q=80',
         title: 'Bright Summer Collection',
-        createdAt: '2024-04-21T12:10:00Z'
+        createdAt: '2024-04-21T12:10:00Z',
+        orientation: 'landscape_16_9'
       },
       {
         imageId: '4',
         imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=673&q=80',
         title: 'City Street Fashion',
-        createdAt: '2024-04-21T10:15:00Z'
+        createdAt: '2024-04-21T10:15:00Z',
+        orientation: 'square_hd'
       }
     ]
   },
@@ -221,19 +243,22 @@ const mockImageGroups: ImageGroup[] = [
         imageId: '5',
         imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=688&q=80',
         title: 'Professional Business Look',
-        createdAt: '2024-04-20T19:45:00Z'
+        createdAt: '2024-04-20T19:45:00Z',
+        orientation: 'portrait_4_3'
       },
       {
         imageId: '6',
         imageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
         title: 'Evening Gown Collection',
-        createdAt: '2024-04-20T18:30:00Z'
+        createdAt: '2024-04-20T18:30:00Z',
+        orientation: 'landscape_4_3'
       },
       {
         imageId: '7',
         imageUrl: 'https://images.unsplash.com/photo-1632149877166-f75d49000351?ixlib=rb-4.0.3&auto=format&fit=crop&w=664&q=80',
         title: 'Urban Fashion Style',
-        createdAt: '2024-04-20T16:40:00Z'
+        createdAt: '2024-04-20T16:40:00Z',
+        orientation: 'portrait_16_9'
       }
     ]
   },
@@ -262,7 +287,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
@@ -676,28 +701,36 @@ const MainTabs: React.FC = () => {
         </Typography>
         
         {isLoadingImages && !useMockData ? (
-          // Loading state
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            {[1, 2, 3, 4].map(skeleton => (
-              <Box 
-                key={`skeleton-${skeleton}`}
-                sx={{ 
-                    flex: { 
-                      xs: '1 1 100%', 
-                      sm: '1 1 calc(50% - 8px)', 
-                      md: '1 1 calc(50% - 10px)', 
-                      lg: '1 1 calc(33% - 10px)' 
-                    } 
-                }}
-              >
-                <Skeleton variant="rectangular" height={320} />
-                <Skeleton variant="text" sx={{ mt: 1 }} />
-                <Skeleton variant="text" width="60%" />
-              </Box>
-            ))}
-          </Box>
+          // Loading state with gallery-like layout
+          <Grid container spacing={0} sx={{ width: '100%' }}>
+            {[1, 2, 3, 4, 5, 6].map((skeleton, index) => {
+              // Alternate between different sizes to create gallery effect
+              const size = index % 3 === 0 ? { xs: 12, sm: 6, md: 6, lg: 4 } : 
+                          index % 2 === 0 ? { xs: 6, sm: 6, md: 6, lg: 4 } : 
+                          { xs: 12, sm: 12, md: 8, lg: 4 };
+              
+              // Use consistent height for all images
+              const imageHeight = 320;
+              
+              return (
+                <Grid
+                  size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                  key={`skeleton-${skeleton}`} 
+                  sx={{ p: 0.5 }}
+                >
+                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 1, boxShadow: 'none' }}>
+                    <Skeleton variant="rectangular" height={imageHeight} />
+                    <Box sx={{ p: 1, bgcolor: 'background.paper' }}>
+                      <Skeleton variant="text" sx={{ mt: 0.5 }} />
+                      <Skeleton variant="text" width="60%" />
+                    </Box>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
         ) : useMockData ? (
-          // Show mock image data
+          // Show mock image data with dynamic Grid sizing
           mockImageGroups.map((group) => (
             <Box key={group.date} sx={{ mb: 4 }}>
               <Paper 
@@ -718,84 +751,137 @@ const MainTabs: React.FC = () => {
                 </Typography>
               </Paper>
               
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                {group.images.map((image) => (
-                  <Box 
-                    key={image.imageId} 
-                    sx={{ 
-                      flex: { 
-                        xs: '1 1 100%', 
-                        sm: '1 1 calc(50% - 8px)', 
-                        md: '1 1 calc(50% - 10px)', 
-                        lg: '1 1 calc(33% - 10px)' 
-                      } 
-                    }}
-                  >
-                    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundImage: `url(${image.imageUrl})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            filter: 'blur(18px)',
-                            transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
-                            opacity: 0.9,
-                          }}
-                          ref={(el: HTMLDivElement | null) => {
-                            if (el) {
-                              const img = new Image();
-                              img.onerror = () => {
-                                el.style.backgroundImage = 'url(/dress4.jpg)';
-                              };
-                              img.src = image.imageUrl ?? '';
-                            }
-                          }}
-                        />
-                        <CardMedia
-                          component="img"
-                          height={320}
-                          image={image.imageUrl ?? ''}
-                          alt={image.title}
-                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                            e.currentTarget.src = handleImageError();
-                          }}
-                          sx={{ 
-                            objectFit: 'contain',
+              <Grid 
+                container 
+                spacing={1} 
+                sx={{ 
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'flex-start' 
+                }}
+              >
+                {group.images.map((image, index) => {
+                  const gridSize = getGridSize(image, index, group.images.length);
+                  return (
+                    <Grid 
+                      size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                      key={image.imageId}
+                      sx={{ p: 0.5, display: 'flex' }}
+                    >
+                      <Card sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        overflow: 'hidden',
+                        borderRadius: 1,
+                        boxShadow: 'none',
+                        mx: 'auto', // Center the card horizontally
+                        width: '100%'
+                      }}>
+                        <Box sx={{ 
+                          position: 'relative', 
+                          height: group.images.length === 1 ? 450 : 320,
+                          overflow: 'hidden',
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}>
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              backgroundImage: `url(${image.imageUrl})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              filter: 'blur(15px)',
+                              transform: 'scale(1.1)', // Avoid blur edges showing
+                              opacity: 0.8,
+                            }}
+                          />
+                          <Box sx={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                            width: '100%',
                             position: 'relative',
                             zIndex: 1,
-                            height: '100%',
-                            width: 'auto',
-                            maxWidth: '100%',
-                            margin: '0 auto',
-                            display: 'block',
-                            boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                            borderRadius: '4px',
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                          }}
-                        />
-                      </Box>
-                      <CardContent sx={{ py: 1.5 }}>
-                        <Typography variant="subtitle1">
-                          {image.title}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Box>
-                ))}
-              </Box>
+                            padding: 2
+                          }}>
+                            <Box 
+                              sx={{ 
+                                position: 'relative', 
+                                height: group.images.length === 1 ? 450 : 320,
+                                overflow: 'hidden',
+                                display: 'flex',
+                                justifyContent: 'center'
+                              }}>
+                              <Box sx={{ 
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                width: '100%',
+                                position: 'relative',
+                                zIndex: 1,
+                                padding: 2
+                              }}>
+                                <Box 
+                                  sx={{ 
+                                    display: 'inline-block',
+                                    position: 'relative',
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+                                    borderRadius: '4px',
+                                    transition: 'transform 0.3s ease',
+                                    '&:hover': {
+                                      transform: 'scale(1.02)',
+                                    },
+                                    overflow: 'hidden'
+                                  }}
+                                >
+                                  <CardMedia
+                                    component="img"
+                                    image={image.imageUrl}
+                                    alt={image.title || 'Image'}
+                                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                      e.currentTarget.src = handleImageError();
+                                    }}
+                                    sx={{ 
+                                      objectFit: 'contain',
+                                      maxHeight: group.images.length === 1 ? 400 : 280,
+                                      maxWidth: '100%',
+                                      width: 'auto',
+                                      display: 'block',
+                                      backgroundColor: 'transparent',
+                                      borderRadius: '4px',
+                                    }}
+                                  />
+                                </Box>
+                              </Box>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                          <Typography variant="subtitle1" noWrap>
+                            {image.title}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
             </Box>
           ))
         ) : (
-          // Show real data (both generating and finished images)
+          // Show real data with dynamic Grid layout
           <>
             {/* Show generating images section */}
             {generatingImages.length > 0 && (
@@ -818,80 +904,92 @@ const MainTabs: React.FC = () => {
                   </Typography>
                 </Paper>
                 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                  {generatingImages.map((genImage) => (
-                    <Box 
-                      key={genImage.imageId} 
-                      sx={{ 
-                          flex: { 
-                            xs: '1 1 100%', 
-                            sm: '1 1 calc(50% - 8px)', 
-                            md: '1 1 calc(50% - 10px)', 
-                            lg: '1 1 calc(33% - 10px)' 
-                          } 
-                      }}
-                    >
-                      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <Box 
-                          sx={{ 
-                            height: 320, 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            flexDirection: 'column',
-                            bgcolor: 'action.hover',
-                            p: 2,
-                            position: 'relative'
-                          }}
-                        >
-                          {genImage.progress !== undefined ? (
-                            <>
-                              <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
-                                <CircularProgress 
+                <Grid container spacing={0} sx={{ width: '100%' }}>
+                  {generatingImages.map((genImage, index) => {
+                    // Alternate between different sizes for gallery effect
+                    const size = index % 3 === 0 ? { xs: 12, sm: 6, md: 6, lg: 4 } : 
+                                index % 2 === 0 ? { xs: 6, sm: 6, md: 6, lg: 4 } : 
+                                { xs: 12, sm: 12, md: 8, lg: 4 };
+                    
+                    // Use consistent height for all generating images
+                    const height = 320;
+                    
+                    return (
+                      <Grid
+                        size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                        key={genImage.imageId} 
+                        sx={{ p: 0.5 }}
+                      >
+                        <Card sx={{ 
+                          height: '100%', 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          overflow: 'hidden',
+                          borderRadius: 1,
+                          boxShadow: 'none'
+                        }}>
+                          <Box 
+                            sx={{ 
+                              height: height, 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              flexDirection: 'column',
+                              bgcolor: 'action.hover',
+                              p: 0,
+                              m: 0,
+                              position: 'relative'
+                            }}
+                          >
+                            {genImage.progress !== undefined ? (
+                              <>
+                                <Box sx={{ position: 'relative', display: 'inline-flex', mb: 1 }}>
+                                  <CircularProgress 
+                                    variant="determinate" 
+                                    value={genImage.progress} 
+                                    size={60} 
+                                    thickness={4}
+                                  />
+                                  <Box
+                                    sx={{
+                                      top: 0,
+                                      left: 0,
+                                      bottom: 0,
+                                      right: 0,
+                                      position: 'absolute',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}
+                                  >
+                                    <Typography variant="caption" component="div" color="text.secondary">
+                                      {`${Math.round(genImage.progress)}%`}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                                <LinearProgress 
                                   variant="determinate" 
                                   value={genImage.progress} 
-                                  size={60} 
-                                  thickness={4}
+                                  sx={{ width: '80%', height: 6, borderRadius: 3, mb: 1 }} 
                                 />
-                                <Box
-                                  sx={{
-                                    top: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                    right: 0,
-                                    position: 'absolute',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}
-                                >
-                                  <Typography variant="caption" component="div" color="text.secondary">
-                                    {`${Math.round(genImage.progress)}%`}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                              <LinearProgress 
-                                variant="determinate" 
-                                value={genImage.progress} 
-                                sx={{ width: '80%', height: 6, borderRadius: 3, mb: 2 }} 
-                              />
-                            </>
-                          ) : (
-                            <CircularProgress sx={{ mb: 2 }} />
-                          )}
-                          <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                            {genImage.progress !== undefined 
-                              ? `Generating Image (${Math.round(genImage.progress)}% complete)`
-                              : "Generating Image"}
-                          </Typography>
-                        </Box>
-                        <CardContent sx={{ py: 1.5 }}>
-                          <Typography variant="subtitle1">In Progress</Typography>
-                        </CardContent>
-                      </Card>
-                    </Box>
-                  ))}
-                </Box>
+                              </>
+                            ) : (
+                              <CircularProgress sx={{ mb: 1 }} />
+                            )}
+                            <Typography variant="body2" align="center" sx={{ mb: 0 }}>
+                              {genImage.progress !== undefined 
+                                ? `Generating Image (${Math.round(genImage.progress)}% complete)`
+                                : "Generating Image"}
+                            </Typography>
+                          </Box>
+                          <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                            <Typography variant="subtitle1" noWrap>In Progress</Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
               </Box>
             )}
 
@@ -917,73 +1015,133 @@ const MainTabs: React.FC = () => {
                     </Typography>
                   </Paper>
                   
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {group.images.map((image) => {
+                  <Grid 
+                    container 
+                    spacing={1} 
+                    sx={{ 
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'flex-start' 
+                    }}
+                  >
+                    {group.images.map((image, index) => {
+                      const gridSize = getGridSize(image, index, group.images.length);
                       return (
-                      <Box 
-                        key={image.imageId} 
-                        sx={{ 
-                          flex: { 
-                            xs: '1 1 100%', 
-                            sm: '1 1 calc(50% - 8px)', 
-                            md: '1 1 calc(50% - 10px)', 
-                            lg: '1 1 calc(33% - 10px)' 
-                          } 
-                        }}
-                      >
-                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                          <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundImage: `url(${image.imageUrl})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                filter: 'blur(15px)',
-                                transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
-                                opacity: 0.9,
-                              }}
-                            />
-                            <CardMedia
-                              component="img"
-                              height={320}
-                              image={image.imageUrl}
-                              alt={image.title}
-                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                e.currentTarget.src = handleImageError();
-                              }}
-                              sx={{ 
-                                objectFit: 'contain',
+                        <Grid 
+                          size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                          key={image.imageId}
+                          sx={{ p: 0.5, display: 'flex' }}
+                        >
+                          <Card sx={{ 
+                            height: '100%', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            overflow: 'hidden',
+                            borderRadius: 1,
+                            boxShadow: 'none',
+                            mx: 'auto',
+                            width: '100%'
+                          }}>
+                            <Box sx={{ 
+                              position: 'relative', 
+                              height: group.images.length === 1 ? 450 : 320,
+                              overflow: 'hidden',
+                              display: 'flex',
+                              justifyContent: 'center'
+                            }}>
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  backgroundImage: `url(${image.imageUrl})`,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                  filter: 'blur(15px)',
+                                  transform: 'scale(1.1)', // Avoid blur edges showing
+                                  opacity: 0.8,
+                                }}
+                              />
+                              <Box sx={{ 
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                width: '100%',
                                 position: 'relative',
                                 zIndex: 1,
-                                height: '100%',
-                                width: 'auto',
-                                maxWidth: '100%',
-                                margin: '0 auto',
-                                display: 'block',
-                                boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                                borderRadius: '4px',
-                                padding: '8px',
-                                backgroundColor: 'rgba(255,255,255,0.1)',
-                              }}
-                            />
-                          </Box>
-                          <CardContent sx={{ py: 1.5 }}>
-                            <Typography variant="subtitle1">
-                              {image.title}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Box>
-                    )})}
-                  </Box>
+                                padding: 2
+                              }}>
+                                <Box 
+                                  sx={{ 
+                                    position: 'relative', 
+                                    height: group.images.length === 1 ? 450 : 320,
+                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                  }}>
+                                  <Box sx={{ 
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: '100%',
+                                    width: '100%',
+                                    position: 'relative',
+                                    zIndex: 1,
+                                    padding: 2
+                                  }}>
+                                    <Box 
+                                      sx={{ 
+                                        display: 'inline-block',
+                                        position: 'relative',
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+                                        borderRadius: '4px',
+                                        transition: 'transform 0.3s ease',
+                                        '&:hover': {
+                                          transform: 'scale(1.02)',
+                                        },
+                                        overflow: 'hidden'
+                                      }}
+                                    >
+                                      <CardMedia
+                                        component="img"
+                                        image={image.imageUrl}
+                                        alt={image.title || 'Image'}
+                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                          e.currentTarget.src = handleImageError();
+                                        }}
+                                        sx={{ 
+                                          objectFit: 'contain',
+                                          maxHeight: group.images.length === 1 ? 400 : 280,
+                                          maxWidth: '100%',
+                                          width: 'auto',
+                                          display: 'block',
+                                          backgroundColor: 'transparent',
+                                          borderRadius: '4px',
+                                        }}
+                                      />
+                                    </Box>
+                                  </Box>
+                                </Box>
+                              </Box>
+                            </Box>
+                            <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                              <Typography variant="subtitle1" noWrap>
+                                {image.title}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
                 </Box>
               ))
             ) : generatingImages.length === 0 ? (
