@@ -379,7 +379,7 @@ const MainTabs: React.FC = () => {
           connectCallback: connectRef.current
         }));
         
-        console.log("Fetched images result:", result.payload);
+        console.log("Fetched images results:", result.payload);
         hasLoadedImagesRef.current = true;
       } catch (error) {
         console.error('Error fetching images:', error);
