@@ -361,13 +361,11 @@ const MainTabs: React.FC = () => {
       if (hasLoadedImagesRef.current || !userId || !token) return;
       
       try {
-        if (value === 0) { // Gallery tab is active
-          console.log("Fetching generated images from API");
-          await dispatch(clearGeneratingImages());
-          const result = await dispatch(fetchGeneratedImages());
-          console.log("Fetched images result:", result.payload);
-          hasLoadedImagesRef.current = true;
-        }
+        console.log("Fetching generated images from API");
+        await dispatch(clearGeneratingImages());
+        const result = await dispatch(fetchGeneratedImages());
+        console.log("Fetched images result:", result.payload);
+        hasLoadedImagesRef.current = true;
       } catch (error) {
         console.error('Error fetching images:', error);
         // Clear generating images on error as well
@@ -381,7 +379,7 @@ const MainTabs: React.FC = () => {
     return () => {
       hasLoadedImagesRef.current = false;
     };
-  }, [value, token, userId, dispatch]);
+  }, [token, userId, dispatch]);
   
   // Listen for image generation updates from WebSocket
   useEffect(() => {
@@ -446,7 +444,7 @@ const MainTabs: React.FC = () => {
     return () => {
       connectedImageIdsRef.current.clear();
     };
-  }, [token, connect]); // Remove generatingImages from dependency array to prevent infinite loop
+  }, [generatingImages, token, connect]); // Remove generatingImages from dependency array to prevent infinite loop
 
   // Update models when training updates are received
   useEffect(() => {
