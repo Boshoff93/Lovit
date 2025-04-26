@@ -774,7 +774,7 @@ const MainTabs: React.FC = () => {
                         flexDirection: 'column', 
                         overflow: 'hidden',
                         borderRadius: 1,
-                        boxShadow: 'none',
+                        boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                         mx: 'auto', // Center the card horizontally
                         width: '100%'
                       }}>
@@ -926,7 +926,7 @@ const MainTabs: React.FC = () => {
                           flexDirection: 'column', 
                           overflow: 'hidden',
                           borderRadius: 1,
-                          boxShadow: 'none'
+                          boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                         }}>
                           <Box 
                             sx={{ 
@@ -1038,7 +1038,7 @@ const MainTabs: React.FC = () => {
                             flexDirection: 'column', 
                             overflow: 'hidden',
                             borderRadius: 1,
-                            boxShadow: 'none',
+                            boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                             mx: 'auto',
                             width: '100%'
                           }}>
