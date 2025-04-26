@@ -824,6 +824,15 @@ const MainTabs: React.FC = () => {
                             transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
                             opacity: 0.9,
                           }}
+                          ref={(el: HTMLDivElement | null) => {
+                            if (el) {
+                              const img = new Image();
+                              img.onerror = () => {
+                                el.style.backgroundImage = 'url(/dress4.jpg)';
+                              };
+                              img.src = image.url;
+                            }
+                          }}
                         />
                         <CardMedia
                           component="img"
