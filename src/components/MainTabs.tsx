@@ -295,28 +295,8 @@ const MainTabs: React.FC = () => {
   // Get openModel function from Layout context
   const { openModel, openImages } = useLayout();
 
-  // Create a state to keep track of image load failures and timestamps
-  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
-  
-  // Refresh image URLs if they've failed to load (which might mean they've expired)
-  useEffect(() => {
-    if (failedImageIds.size > 0 && userId && token) {
-      console.log(`Refreshing ${failedImageIds.size} failed images`);
-      // Fetch images to get fresh URLs
-      dispatch(fetchGeneratedImages());
-      // Clear the failed image IDs
-      setFailedImageIds(new Set());
-    }
-  }, [failedImageIds, userId, token, dispatch]);
-  
   // Function to handle image errors
   const handleImageError = useCallback((imageId: string, url: string) => {
-    console.error(`Image failed to load: ${url}`);
-    setFailedImageIds(prev => {
-      const newSet = new Set(prev);
-      newSet.add(imageId);
-      return newSet;
-    });
     return '/dress4.jpg';
   }, []);
 
