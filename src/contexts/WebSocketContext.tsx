@@ -344,7 +344,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         }
       });
     };
-  }, [sockets]);
+  }, []); // Empty dependency array to only run on mount/unmount
   
   return (
     <WebSocketContext.Provider value={{ 
