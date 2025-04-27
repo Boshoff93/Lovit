@@ -1050,10 +1050,19 @@ const MainTabs: React.FC = () => {
                             ) : (
                               <CircularProgress sx={{ mb: 1 }} />
                             )}
-                            <Typography variant="body2" align="center" sx={{ mb: 0 }}>
+                            <Typography 
+                              variant="body2" 
+                              align="center" 
+                              sx={{ 
+                                mb: 0,
+                                fontWeight: 500,
+                                color: 'primary.main',
+                                textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                              }}
+                            >
                               {genImage.progress !== undefined 
-                                ? `Generating Image (${Math.round(genImage.progress)}% complete)`
-                                : "Generating Image"}
+                                ? `✨ Generating Image ${Math.round(genImage.progress)}%`
+                                : "✨ Generating Image"}
                             </Typography>
                           </Box>
                           <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
