@@ -844,8 +844,14 @@ const MainTabs: React.FC = () => {
                         borderRadius: 1,
                         boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                         mx: 'auto', // Center the card horizontally
-                        width: '100%'
-                      }}>
+                        width: '100%',
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.02)',
+                          cursor: 'pointer'
+                        },
+                      }}
+                      onClick={() => handleOpenModal(image)}>
                         <Box sx={{ 
                           position: 'relative', 
                           height: group.images.length === 1 ? 450 : 320,
@@ -904,14 +910,8 @@ const MainTabs: React.FC = () => {
                                     maxHeight: '100%',
                                     boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                                     borderRadius: '4px',
-                                    transition: 'transform 0.3s ease',
-                                    '&:hover': {
-                                      transform: 'scale(1.02)',
-                                      cursor: 'pointer'
-                                    },
                                     overflow: 'hidden'
                                   }}
-                                  onClick={() => handleOpenModal(image)}
                                 >
                                   <CardMedia
                                     component="img"
@@ -1116,7 +1116,7 @@ const MainTabs: React.FC = () => {
                       const gridSize = getGridSize(image, index, group.images.length);
                       return (
                         <Grid 
-                          size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                          size={gridSize}
                           key={image.imageId}
                           sx={{ p: 0.5, display: 'flex' }}
                         >
@@ -1128,8 +1128,14 @@ const MainTabs: React.FC = () => {
                             borderRadius: 1,
                             boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                             mx: 'auto',
-                            width: '100%'
-                          }}>
+                            width: '100%',
+                            transition: 'transform 0.3s ease',
+                            '&:hover': {
+                              transform: 'scale(1.02)',
+                              cursor: 'pointer'
+                            },
+                          }}
+                          onClick={() => handleOpenModal(image)}>
                             <Box sx={{ 
                               position: 'relative', 
                               height: group.images.length === 1 ? 450 : 320,
@@ -1188,14 +1194,8 @@ const MainTabs: React.FC = () => {
                                         maxHeight: '100%',
                                         boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                                         borderRadius: '4px',
-                                        transition: 'transform 0.3s ease',
-                                        '&:hover': {
-                                          transform: 'scale(1.02)',
-                                          cursor: 'pointer'
-                                        },
                                         overflow: 'hidden'
                                       }}
-                                      onClick={() => handleOpenModal(image)}
                                     >
                                       <CardMedia
                                         component="img"
@@ -1349,7 +1349,7 @@ const MainTabs: React.FC = () => {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  backgroundImage: `url(${selectedImage.imageUrl})`,
+                  backgroundImage: `url(${selectedImage?.imageUrl})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   filter: 'blur(30px)',
@@ -1399,8 +1399,8 @@ const MainTabs: React.FC = () => {
                   position: 'relative'
                 }}>
                   <img
-                    src={selectedImage.imageUrl}
-                    alt={selectedImage.title || 'Full-size image'}
+                    src={selectedImage?.imageUrl}
+                    alt={selectedImage?.title || 'Full-size image'}
                     style={{
                       maxWidth: '100%',
                       maxHeight: '70vh',
@@ -1414,7 +1414,7 @@ const MainTabs: React.FC = () => {
                   />
                   {/* Download button on top right of image */}
                   <IconButton
-                    onClick={() => handleDownloadImage(selectedImage.imageUrl, selectedImage.title)}
+                    onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
                     sx={{
                       position: 'absolute',
                       top: 8,
@@ -1438,10 +1438,10 @@ const MainTabs: React.FC = () => {
                   borderRadius: 2
                 }}>
                   <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                    {selectedImage.title}
+                    {selectedImage?.title}
                   </Typography>
                   
-                  {selectedImage.dripRating && selectedImage.dripRating.length > 0 && (
+                  {selectedImage?.dripRating && selectedImage.dripRating.length > 0 && (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selectedImage.dripRating.map((tag, idx) => (
                         <Chip

@@ -340,7 +340,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     } catch (error) {
       console.error(`Error connecting to WebSocket for ${id}:`, error);
     }
-  }, [sockets, token, handleMessage, user, imageToSocketMap]);
+  }, [sockets, token, handleMessage, user, imageToSocketMap, generatingImages]);
   
   // Clean up sockets on unmount
   useEffect(() => {
