@@ -52,12 +52,12 @@ const AppPage: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 2, px: { xs: 1, sm: 1, md: 1 } }}>
-      <Box sx={{ mb: 5 }}>
+      <Box sx={{ mb: 5, textAlign: 'center', mx: 'auto' }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome to Your Lovit Dashboard
+          My Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Create, customize and generate AI images of yourself in any outfit
+          Create AI images of yourself in any outfit
         </Typography>
       </Box>
       

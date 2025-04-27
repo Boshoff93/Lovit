@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -43,6 +43,64 @@ import {
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
+import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
+import { styled } from '@mui/material/styles';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+
+// Add keyframes for the pulsing effect
+const keyframes = `
+@keyframes pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1) rotate(20deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
+  }
+}
+`;
+
+// Create a styled component to inject the keyframes
+const StylesContainer = styled('div')({
+  '@global': {
+    '@keyframes pulse': {
+      '0%': {
+        transform: 'scale(1) rotate(0deg)',
+        opacity: 0.7,
+      },
+      '50%': {
+        transform: 'scale(1.1) rotate(20deg)',
+        opacity: 1,
+      },
+      '100%': {
+        transform: 'scale(1) rotate(0deg)',
+        opacity: 0.7,
+      }
+    },
+    '@keyframes sparkle': {
+      '0%, 100%': {
+        filter: 'drop-shadow(0 0 0 rgba(255, 215, 0, 0))',
+      },
+      '50%': {
+        filter: 'drop-shadow(0 0 5px rgba(255, 215, 0, 0.8))',
+      }
+    }
+  }
+});
 
 // Define local interface for image groups
 interface ImageGroup {
@@ -1031,35 +1089,32 @@ const MainTabs: React.FC = () => {
                           >
                             {genImage.progress !== undefined ? (
                               <>
-                                <Box sx={{ position: 'relative', display: 'inline-flex', mb: 1 }}>
-                                  <CircularProgress 
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 1 }}>
+                                  <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                                    <AutoFixHigh 
+                                      sx={{ 
+                                        fontSize: 40, 
+                                        color: 'primary.main', 
+                                        animation: 'pulse 1.5s infinite ease-in-out, sparkle 2s infinite ease-in-out' 
+                                      }} 
+                                    />
+                                  </Box>
+                                  <LinearProgress 
                                     variant="determinate" 
                                     value={genImage.progress} 
-                                    size={60} 
-                                    thickness={4}
+                                    sx={{ width: '80%', height: 6, borderRadius: 3, mb: 1 }} 
                                   />
-                                  <Box
-                                    sx={{
-                                      top: 0,
-                                      left: 0,
-                                      bottom: 0,
-                                      right: 0,
-                                      position: 'absolute',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
+                                  <Typography 
+                                    variant="caption" 
+                                    component="div" 
+                                    color="text.secondary"
+                                    sx={{ 
+                                      fontWeight: 'bold'
                                     }}
                                   >
-                                    <Typography variant="caption" component="div" color="text.secondary">
-                                      {`${Math.round(genImage.progress)}%`}
-                                    </Typography>
-                                  </Box>
+                                    {`${Math.round(genImage.progress)}%`}
+                                  </Typography>
                                 </Box>
-                                <LinearProgress 
-                                  variant="determinate" 
-                                  value={genImage.progress} 
-                                  sx={{ width: '80%', height: 6, borderRadius: 3, mb: 1 }} 
-                                />
                               </>
                             ) : (
                               <CircularProgress sx={{ mb: 1 }} />

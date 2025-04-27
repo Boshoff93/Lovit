@@ -989,7 +989,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Dashboard" />
+                  <ListItemText primary="My Dashboard" />
                 </ListItemButton>
               </ListItem>
               
