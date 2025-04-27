@@ -392,7 +392,7 @@ const MainTabs: React.FC = () => {
         if (result.payload && Array.isArray(result.payload)) {
           result.payload.forEach((model: Model) => {
             if ((model.status === 'in_progress' || model.status === 'queued') && model.modelId) {
-              connect(model.modelId);
+              connect(model.modelId, "MODEL");
             }
           });
         }

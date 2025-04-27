@@ -711,7 +711,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       // Connect to WebSocket for this specific model
       if (result.modelId) {
-        connect(result.modelId);
+        connect(result.modelId, "MODEL");
       }
 
       setNotification({

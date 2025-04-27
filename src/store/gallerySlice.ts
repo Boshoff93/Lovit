@@ -66,7 +66,7 @@ export const fetchGeneratedImages = createAsyncThunk(
   'gallery/fetchGeneratedImages',
   async (
     // Add an optional object parameter
-    options: { connectCallback?: ((imageId: string) => void) | undefined } = {},
+    options: { connectCallback?: ((imageId: string, type: "IMAGE" | "MODEL") => void) | undefined } = {},
     { getState, rejectWithValue }
   ) => {
     try {
@@ -96,7 +96,7 @@ export const fetchGeneratedImages = createAsyncThunk(
         generatingImages.forEach((img: any) => {
           if (img.imageId) {
             console.log(`Connecting to WebSocket for existing generating image ${img.imageId}`);
-            connectCallback(img.imageId);
+            connectCallback(img.imageId, "IMAGE");
           }
         });
       }
@@ -121,7 +121,7 @@ export const generateImages = createAsyncThunk(
       seedNumber?: string;
       inferenceSteps?: number;
       dripRating?: string[];
-      connectCallback?: (imageId: string) => void; // Add callback for connection
+      connectCallback?: (imageId: string, type: "IMAGE" | "MODEL") => void; // Add callback for connection
     },
     { getState, rejectWithValue }
   ) => {
@@ -170,7 +170,7 @@ export const generateImages = createAsyncThunk(
           images.forEach((image: any) => {
             if (image && image.imageId) {
               console.log(`Connecting to WebSocket for newly generated image ${image.imageId}`);
-              payload.connectCallback?.(image.imageId);
+              payload.connectCallback?.(image.imageId, "IMAGE");
             }
           });
         }

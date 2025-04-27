@@ -34,7 +34,7 @@ export interface ImageGenerationUpdate extends ImageBase {
 // WebSocket context interface
 interface WebSocketContextType {
   lastMessage: TrainingUpdate | ImageGenerationUpdate | null;
-  connect: (id: string) => void;
+  connect: (id: string, type: "IMAGE" | "MODEL") => void;
   disconnect: (id: string) => void;
 }
 
@@ -243,7 +243,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   }, [dispatch, generatingImages, disconnect]);
 
   // Connect to WebSocket for a model or image
-  const connect = useCallback((id: string) => {
+  const connect = useCallback((id: string, type: "IMAGE" | "MODEL") => {
     if (!id) {
       console.error('Cannot connect to WebSocket: ID is undefined');
       return;
@@ -271,13 +271,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       console.log("Current generating images:", generatingImages);
       
       // Determine if this is an image or model connection
-      // Get the generating image if it exists
-      const generatingImage = generatingImages.find(img => img.imageId === id);
-      const isImageConnection = !!generatingImage;
-      
-      console.log(`Checking if ${id} is an image:`, isImageConnection ? "YES" : "NO", 
-                  isImageConnection ? `for model ${generatingImage.modelId}` : "");
-      
+      const isImageConnection = type === "IMAGE"
       // Build WebSocket URL
       let wsUrl;
       
@@ -285,11 +279,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       if (isImageConnection) {
         // For image connections, pass imageId parameter
         wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
-        
-        if (generatingImage?.modelId) {
-          // If we know the model ID, include it as a parameter
-          wsUrl += `&modelId=${generatingImage.modelId}`;
-        }
       } else {
         // For model connections, pass modelId parameter
         wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
