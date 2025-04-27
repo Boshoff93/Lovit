@@ -60,10 +60,11 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-          
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
