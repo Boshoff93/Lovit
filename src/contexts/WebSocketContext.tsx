@@ -249,87 +249,91 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       return;
     }
     
-    // Check if we already have a socket for this ID
-    if (sockets[id]) {
-      console.log(`WebSocket already connected for ${id}`);
-      return; // Already connected
-    }
-    
-    // Check if this image is already getting updates through another socket
-    const existingSocketId = imageToSocketMap[id];
-    if (existingSocketId && sockets[existingSocketId]) {
-      console.log(`Image ${id} is already receiving updates through socket ${existingSocketId}`);
-      return; // Already receiving updates through another socket
-    }
-    
-    try {
-      if (!user?.userId) {
-        console.error('Cannot connect to WebSocket: userId is missing');
-        return;
+    // Use a function to get the current state of sockets
+    setSockets(prevSockets => {
+      // Check if we already have a socket for this ID
+      if (prevSockets[id]) {
+        console.log(`WebSocket already connected for ${id}`);
+        return prevSockets; // Already connected, return unchanged state
       }
+      
+      // Check if this image is already getting updates through another socket
+      const existingSocketId = imageToSocketMap[id];
+      if (existingSocketId && prevSockets[existingSocketId]) {
+        console.log(`Image ${id} is already receiving updates through socket ${existingSocketId}`);
+        return prevSockets; // Already receiving updates through another socket, return unchanged state
+      }
+      
+      try {
+        if (!user?.userId) {
+          console.error('Cannot connect to WebSocket: userId is missing');
+          return prevSockets; // Return unchanged state
+        }
 
-      console.log("Current generating images:", generatingImages);
-      
-      // Determine if this is an image or model connection
-      const isImageConnection = type === "IMAGE"
-      // Build WebSocket URL
-      let wsUrl;
-      
-      // If this is an image ID (either found in generating images or has a specific pattern)
-      if (isImageConnection) {
-        // For image connections, pass imageId parameter
-        wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
-      } else {
-        // For model connections, pass modelId parameter
-        wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
-      }
-      
-      console.log(`Connecting to WebSocket for ${isImageConnection ? 'image' : 'model'} ${id}`);
-      console.log(`WebSocket URL: ${wsUrl}`);
-      
-      const socket = new WebSocket(wsUrl);
-      
-      socket.onopen = () => {
-        console.log(`WebSocket connected for ${id}`);
-      };
-      
-      socket.onmessage = (event) => handleMessage(id, event);
-      
-      socket.onerror = (error) => {
-        console.error(`WebSocket error for ${id}:`, error);
-      };
-      
-      socket.onclose = (event) => {
-        console.log(`WebSocket closed for ${id}. Code: ${event.code}, Reason: ${event.reason || ''}`);
-        // Remove from sockets when closed
-        setSockets(prev => {
-          const newSockets = { ...prev };
-          delete newSockets[id];
-          return newSockets;
-        });
+        console.log("Current generating images:", generatingImages);
         
-        // Clean up any image mappings to this socket
-        setImageToSocketMap(prev => {
-          const newMap = { ...prev };
-          // Remove any entries where this socket ID was being used
-          Object.keys(newMap).forEach(imageId => {
-            if (newMap[imageId] === id) {
-              delete newMap[imageId];
-            }
+        // Determine if this is an image or model connection
+        const isImageConnection = type === "IMAGE"
+        // Build WebSocket URL
+        let wsUrl;
+        
+        // If this is an image ID (either found in generating images or has a specific pattern)
+        if (isImageConnection) {
+          // For image connections, pass imageId parameter
+          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
+        } else {
+          // For model connections, pass modelId parameter
+          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
+        }
+        
+        console.log(`Connecting to WebSocket for ${isImageConnection ? 'image' : 'model'} ${id}`);
+        console.log(`WebSocket URL: ${wsUrl}`);
+        
+        const socket = new WebSocket(wsUrl);
+        
+        socket.onopen = () => {
+          console.log(`WebSocket connected for ${id}`);
+        };
+        
+        socket.onmessage = (event) => handleMessage(id, event);
+        
+        socket.onerror = (error) => {
+          console.error(`WebSocket error for ${id}:`, error);
+        };
+        
+        socket.onclose = (event) => {
+          console.log(`WebSocket closed for ${id}. Code: ${event.code}, Reason: ${event.reason || ''}`);
+          // Remove from sockets when closed
+          setSockets(prev => {
+            const newSockets = { ...prev };
+            delete newSockets[id];
+            return newSockets;
           });
-          return newMap;
-        });
-      };
-      
-      // Store the socket
-      setSockets(prev => ({
-        ...prev,
-        [id]: socket
-      }));
-    } catch (error) {
-      console.error(`Error connecting to WebSocket for ${id}:`, error);
-    }
-  }, [sockets, token, handleMessage, user, imageToSocketMap, generatingImages]);
+          
+          // Clean up any image mappings to this socket
+          setImageToSocketMap(prev => {
+            const newMap = { ...prev };
+            // Remove any entries where this socket ID was being used
+            Object.keys(newMap).forEach(imageId => {
+              if (newMap[imageId] === id) {
+                delete newMap[imageId];
+              }
+            });
+            return newMap;
+          });
+        };
+        
+        // Return updated sockets with the new socket
+        return {
+          ...prevSockets,
+          [id]: socket
+        };
+      } catch (error) {
+        console.error(`Error connecting to WebSocket for ${id}:`, error);
+        return prevSockets; // Return unchanged state on error
+      }
+    });
+  }, [token, handleMessage, user, imageToSocketMap, generatingImages]);
   
   // Clean up sockets on unmount
   useEffect(() => {
