@@ -298,7 +298,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(true);
+  const [useMockData, setUseMockData] = useState(false);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -414,15 +414,13 @@ const MainTabs: React.FC = () => {
       if (hasLoadedImagesRef.current || !userId || !token) return;
       
       try {
-        console.log("Fetching generated images from API");
         await dispatch(clearGeneratingImages());
         
         // Pass the connect function as a callback via the ref
         const result = await dispatch(fetchGeneratedImages({
           connectCallback: connectRef.current
         }));
-        
-        console.log("Fetched images results:", result.payload);
+
         hasLoadedImagesRef.current = true;
       } catch (error) {
         console.error('Error fetching images:', error);
