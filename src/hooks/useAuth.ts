@@ -4,7 +4,7 @@ import {
   loginWithEmail, 
   signupWithEmail, 
   loginWithGoogle, 
-  logout, 
+  logout as logoutAction,
   setSubscription,
   setToken,
   setUser,
@@ -16,114 +16,116 @@ import {
   fetchSubscription,
   createCheckoutSession,
   createPortalSession,
-  Subscription
+  setAllowances,
+  Subscription,
+  Allowances
 } from '../store/authSlice';
 import { signInWithGoogle } from '../utils/googleAuth';
-import { getToken as getStoredToken, storeAuthData as storeData, AuthData, User } from '../utils/storage';
+import { getToken as getStoredToken, storeAuthData as storeData, clearAuthData, AuthData, User } from '../utils/storage';
 import { logoutAllState } from '../store/actions';
 import { useEffect, useState, useCallback } from 'react';
 
 // Authentication custom hook
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, token, subscription, isLoading, error } = useSelector(
+  const { user, token, subscription, allowances, isLoading, error } = useSelector(
     (state: RootState) => state.auth
   );
 
   // Login with email and password
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     return dispatch(loginWithEmail({ email, password }));
-  };
+  }, [dispatch]);
 
   // Sign up with email, password, and username
-  const signup = async (email: string, password: string, username: string) => {
+  const signup = useCallback(async (email: string, password: string, username: string) => {
     return dispatch(signupWithEmail({ email, password, username }));
-  };
+  }, [dispatch]);
 
   // Login with Google
-  const googleLogin = async (idToken: string) => {
+  const googleLogin = useCallback(async (idToken: string) => {
     return dispatch(loginWithGoogle(idToken));
-  };
+  }, [dispatch]);
 
   // Get Google ID token (does NOT make authentication API call)
-  const getGoogleIdToken = async () => {
+  const getGoogleIdToken = useCallback(async () => {
     return signInWithGoogle();
-  };
+  }, []);
 
   // Verify email with token and userId
-  const verifyUserEmail = async (token: string, userId: string) => {
+  const verifyUserEmail = useCallback((token: string, userId: string) => {
     return dispatch(verifyEmail({ token, userId }));
-  };
+  }, [dispatch]);
 
   // Resend verification email
-  const resendVerificationEmail = async (email: string) => {
+  const resendVerificationEmail = useCallback((email: string) => {
     return dispatch(resendVerification(email));
-  };
+  }, [dispatch]);
 
   // Request password reset email
-  const resetPassword = async (email: string) => {
+  const resetPassword = useCallback((email: string) => {
     return dispatch(requestPasswordReset(email));
-  };
+  }, [dispatch]);
 
   // Confirm password reset with token and new password
-  const confirmResetPassword = async (token: string, newPassword: string, userId?: string) => {
+  const confirmResetPassword = useCallback((token: string, newPassword: string, userId?: string) => {
     return dispatch(confirmPasswordReset({ token, newPassword, userId }));
-  };
+  }, [dispatch]);
 
   // Refresh auth token
-  const refreshAuthToken = async () => {
-    // First check if we have a token to refresh
-    const currentToken = token || getStoredToken();
-    if (!currentToken) {
-      throw new Error('No token available to refresh');
-    }
+  const refreshAuthToken = useCallback((currentToken: string) => {
     return dispatch(refreshToken(currentToken));
-  };
+  }, [dispatch]);
 
   // Sign out user
   const logout = useCallback(() => {
-    dispatch(logoutAllState());
+    dispatch(logoutAction());
   }, [dispatch]);
 
   // Get user subscription data
-  const getUserSubscription = () => {
+  const getUserSubscription = useCallback(() => {
     return dispatch(fetchSubscription());
-  };
+  }, [dispatch]);
 
   // Create checkout session
-  const createStripeCheckout = (priceId: string, productId: string) => {
+  const createStripeCheckout = useCallback((priceId: string, productId: string) => {
     return dispatch(createCheckoutSession({ priceId, productId }));
-  };
+  }, [dispatch]);
 
   // Create portal session
-  const createStripePortal = () => {
+  const createStripePortal = useCallback(() => {
     return dispatch(createPortalSession());
-  };
+  }, [dispatch]);
 
   // Update subscription data
-  const updateSubscription = (subscriptionData: Subscription) => {
+  const updateSubscription = useCallback((subscriptionData: Subscription) => {
     dispatch(setSubscription(subscriptionData));
-  };
+  }, [dispatch]);
+
+  // Update allowances data
+  const updateAllowances = useCallback((allowancesData: Allowances) => {
+    dispatch(setAllowances(allowancesData));
+  }, [dispatch]);
 
   // Set token manually (useful when retrieving from cookies)
-  const updateToken = (newToken: string) => {
+  const updateToken = useCallback((newToken: string) => {
     dispatch(setToken(newToken));
-  };
+  }, [dispatch]);
 
   // Set user manually
-  const updateUser = (newUser: User) => {
+  const updateUser = useCallback((newUser: User) => {
     dispatch(setUser(newUser));
-  };
+  }, [dispatch]);
 
   // Store auth data (token in cookies, user in Redux)
-  const storeAuthData = (data: AuthData) => {
+  const storeAuthData = useCallback((data: AuthData) => {
     // Store token in cookies
     storeData(data);
     
     // Update Redux state (will be persisted by redux-persist)
     dispatch(setToken(data.token));
     dispatch(setUser(data.user));
-  };
+  }, [dispatch]);
 
   // Check if user is authenticated
   const isAuthenticated = !!token;
@@ -132,6 +134,7 @@ export const useAuth = () => {
     user,
     token,
     subscription,
+    allowances,
     isLoading,
     error,
     isAuthenticated,
@@ -148,6 +151,7 @@ export const useAuth = () => {
     createStripeCheckout,
     createStripePortal,
     updateSubscription,
+    updateAllowances,
     logout,
     updateToken,
     updateUser,

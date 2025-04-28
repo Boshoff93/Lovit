@@ -16,11 +16,24 @@ export interface Subscription {
   currentPeriodEnd?: number;
 }
 
+// Define allowance interface
+export interface Allowance {
+  used: number;
+  max: number;
+}
+
+// Define allowances interface
+export interface Allowances {
+  aiPhotos: Allowance;
+  aiModels: Allowance;
+}
+
 // Auth state interface
 interface AuthState {
   user: User | null;
   token: string | null;
   subscription: Subscription;
+  allowances: Allowances | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -33,6 +46,7 @@ const initialState: AuthState = {
     tier: 'free',
     status: 'active'
   },
+  allowances: null,
   isLoading: false,
   error: null
 };
@@ -291,6 +305,7 @@ const authSlice = createSlice({
         tier: 'free',
         status: 'active'
       };
+      state.allowances = null;
       state.error = null;
     },
     // Set token manually (useful for restoring from storage)
@@ -304,6 +319,22 @@ const authSlice = createSlice({
     // Clear error
     clearError: (state) => {
       state.error = null;
+    },
+    // Add this action to set allowances
+    setAllowances: (state, action: PayloadAction<Allowances>) => {
+      state.allowances = action.payload;
+    },
+    // Update AI Photos allowance based on number of images generated
+    updateAiPhotoAllowance: (state, action: PayloadAction<number>) => {
+      if (state.allowances && state.allowances.aiPhotos) {
+        state.allowances.aiPhotos.used += action.payload;
+      }
+    },
+    // Update AI Models allowance when creating a new model
+    updateAiModelAllowance: (state, action: PayloadAction<number>) => {
+      if (state.allowances && state.allowances.aiModels) {
+        state.allowances.aiModels.used += action.payload;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -494,7 +525,10 @@ export const {
   logout, 
   setToken, 
   setUser,
-  clearError 
+  clearError,
+  setAllowances,
+  updateAiPhotoAllowance,
+  updateAiModelAllowance
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from './store';
+import { updateAiModelAllowance } from './authSlice';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -83,7 +84,8 @@ export const getModelUploadUrls = createAsyncThunk(
         {
           userId: auth.user.userId,
           fileCount: payload.fileCount,
-          fileTypes: payload.fileTypes
+          fileTypes: payload.fileTypes,
+          numberOfImages: payload.fileCount
         },
         {
           headers: {
@@ -111,7 +113,7 @@ export const trainModelWithS3 = createAsyncThunk(
       imageKeys: string[]; 
       profileData: any;
     },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue, dispatch }
   ) => {
     try {
       const state = getState() as RootState;
@@ -135,6 +137,9 @@ export const trainModelWithS3 = createAsyncThunk(
           }
         }
       );
+      
+      // Update model allowance counter - increment by 1 for each model creation
+      dispatch(updateAiModelAllowance(1));
       
       return response.data;
     } catch (error: any) {

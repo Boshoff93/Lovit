@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from './useAuth';
+import { Allowances } from '../store/authSlice';
 
 type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export const useAccountData = (shouldFetch: boolean = true) => {
-  const { user, subscription, token, updateUser, updateSubscription } = useAuth();
+  const { user, subscription, token, updateUser, updateSubscription, updateAllowances } = useAuth();
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const lastFetched = useRef<Date | null>(null);
@@ -34,7 +35,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         }
       );
       
-      const { user: fetchedUser } = response.data;
+      const { user: fetchedUser, allowances } = response.data;
       
       // Always update if we have fetched user data
       if (fetchedUser && 
@@ -59,13 +60,18 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         }
       }
       
+      // Update allowances if available
+      if (allowances) {
+        updateAllowances(allowances);
+      }
+      
       lastFetched.current = new Date();
       setStatus('success');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
     }
-  },[token, updateUser, updateSubscription]); // added updateSubscription to dependencies
+  },[token, user, updateUser, updateSubscription, updateAllowances, subscription]);
 
   // Initial fetch on mount
   useEffect(() => {

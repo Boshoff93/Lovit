@@ -11,20 +11,25 @@ import {
   Alert,
   CircularProgress,
   Card,
-  CardContent
+  CardContent,
+  LinearProgress,
+  Grid,
+  Paper
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
+import ImageIcon from '@mui/icons-material/Image';
+import PersonIcon from '@mui/icons-material/Person';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal } = useAuth();
+  const { user, subscription, allowances, createStripePortal } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
 
   useEffect(() => {
-      fetchAccountData(false);
-  }, []);
+    fetchAccountData(true);
+  }, [fetchAccountData]);
 
   const [portalLoading, setPortalLoading] = useState(false);
 
@@ -54,6 +59,12 @@ const AccountPage: React.FC = () => {
   const formatTier = useCallback((tier: string) => {
     return tier.charAt(0).toUpperCase() + tier.slice(1);
   },[]);
+
+  // Calculate remaining percentage for progress bar
+  const calculateAllowancePercentage = useCallback((used: number, max: number) => {
+    if (max === 0) return 0;
+    return Math.min((used / max) * 100, 100);
+  }, []);
 
   return (
     <Box sx={{ 
@@ -151,6 +162,108 @@ const AccountPage: React.FC = () => {
                 </Box>
               </Box>
             </Box>
+            
+            <Divider />
+
+            {/* Allowances Section */}
+            {allowances && (
+              <Box sx={{ p: 4 }}>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                  Your Allowances
+                </Typography>
+                <Grid container spacing={2}>
+                  {/* AI Photos Allowance */}
+                  <Grid size={12} key="photos">
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        borderRadius: 2, 
+                        border: '1px solid',
+                        borderColor: 'divider' 
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <ImageIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          AI Photos
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Used: {allowances.aiPhotos.used} / {allowances.aiPhotos.max}
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600} color={
+                          allowances.aiPhotos.used >= allowances.aiPhotos.max ? 'error.main' : 'primary.main'
+                        }>
+                          {allowances.aiPhotos.max - allowances.aiPhotos.used} remaining
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max)}
+                        sx={{ 
+                          height: 8, 
+                          borderRadius: 4,
+                          my: 1,
+                          backgroundColor: 'rgba(0,0,0,0.05)',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: allowances.aiPhotos.used >= allowances.aiPhotos.max 
+                              ? 'error.main' 
+                              : 'primary.main'
+                          }
+                        }}
+                      />
+                    </Paper>
+                  </Grid>
+                  
+                  {/* AI Models Allowance */}
+                  <Grid size={12} key="models">
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        borderRadius: 2, 
+                        border: '1px solid',
+                        borderColor: 'divider' 
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <PersonIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          AI Models
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Used: {allowances.aiModels.used} / {allowances.aiModels.max}
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600} color={
+                          allowances.aiModels.used >= allowances.aiModels.max ? 'error.main' : 'secondary.main'
+                        }>
+                          {allowances.aiModels.max - allowances.aiModels.used} remaining
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={calculateAllowancePercentage(allowances.aiModels.used, allowances.aiModels.max)}
+                        sx={{ 
+                          height: 8, 
+                          borderRadius: 4,
+                          my: 1,
+                          backgroundColor: 'rgba(0,0,0,0.05)',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: allowances.aiModels.used >= allowances.aiModels.max 
+                              ? 'error.main' 
+                              : 'secondary.main'
+                          }
+                        }}
+                      />
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
             
             <Divider />
             

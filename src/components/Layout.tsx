@@ -72,6 +72,8 @@ import {
 import { AppDispatch } from '../store/store';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import Person from '@mui/icons-material/Person';
 
 
 // Define UserProfile interface here to modify the age type
@@ -984,6 +986,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       : '/account?tab=subscription');
   };
 
+  const allowances = useSelector((state: RootState) => state.auth.allowances);
+  const aiPhotosRemaining = allowances?.aiPhotos ? (allowances.aiPhotos.max - allowances.aiPhotos.used) : null;
+  const aiModelsRemaining = allowances?.aiModels ? (allowances.aiModels.max - allowances.aiModels.used) : null;
+
   return (
     <LayoutContext.Provider value={{ 
       openModel, 
@@ -993,23 +999,73 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }}>
       <Box sx={{ display: 'flex' }}>
         <AppBarStyled position="fixed" open={open}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{ mr: 2, ...(open && { display: 'none' }) }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              Lovit
-            </Typography>
-            {token && (
-              <IconButton color="inherit" onClick={() => handleLogout()}>
-                <LogoutIcon />
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{ mr: 2, ...(open && { display: 'none' }) }}
+              >
+                <MenuIcon />
               </IconButton>
+              <Typography variant="h6" noWrap component="div">
+                Lovit
+              </Typography>
+            </Box>
+
+            {token && (
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                position: 'absolute',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                gap: 2
+              }}>
+                {/* AI Photos Allowance */}
+                {aiPhotosRemaining !== null && (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    borderRadius: 8,
+                    px: 1.5,
+                    py: 0.5
+                  }}>
+                    <PhotoCameraIcon sx={{ fontSize: 18, mr: 0.5 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      {aiPhotosRemaining}
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* AI Models Allowance */}
+                {aiModelsRemaining !== null && (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    borderRadius: 8,
+                    px: 1.5,
+                    py: 0.5
+                  }}>
+                    <Person sx={{ fontSize: 18, mr: 0.5 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      {aiModelsRemaining}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+
+            {token && (
+              <Box>
+                <IconButton color="inherit" onClick={() => handleLogout()}>
+                  <LogoutIcon />
+                </IconButton>
+              </Box>
             )}
           </Toolbar>
         </AppBarStyled>

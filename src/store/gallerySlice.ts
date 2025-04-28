@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from './store';
+import { updateAiPhotoAllowance } from './authSlice';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -123,7 +124,7 @@ export const generateImages = createAsyncThunk(
       dripRating?: string[];
       connectCallback?: (imageId: string, type: "IMAGE" | "MODEL") => void; // Add callback for connection
     },
-    { getState, rejectWithValue }
+    { getState, rejectWithValue, dispatch }
   ) => {
     try {
       const { auth } = getState() as RootState;
@@ -174,6 +175,9 @@ export const generateImages = createAsyncThunk(
             }
           });
         }
+        
+        // Update the AI photos allowance counter
+        dispatch(updateAiPhotoAllowance(payload.numberOfImages));
       }
       
       // Create generatingImages array for Redux store
