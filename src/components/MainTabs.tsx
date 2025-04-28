@@ -298,7 +298,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -685,25 +685,45 @@ const MainTabs: React.FC = () => {
                         opacity: 0.9,
                       }}
                     />
-                    <CardMedia
-                      component="img"
-                      height="320"
-                      image={model.imageUrl ?? getFallbackImage(model.modelId)}
-                      alt={model.name}
-                      sx={{ 
-                        objectFit: 'contain',
-                        position: 'relative',
-                        zIndex: 1,
-                        height: '100%',
-                        width: 'auto',
-                        maxWidth: '100%',
-                        margin: '0 auto',
-                        display: 'block',
-                        boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                        borderRadius: '4px',
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                      }}
-                    />
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      width: '100%',
+                      position: 'relative',
+                      zIndex: 1,
+                      padding: 2
+                    }}>
+                      <Box 
+                        sx={{ 
+                          display: 'inline-block',
+                          position: 'relative',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                          borderRadius: '8px',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          height="320"
+                          image={model.imageUrl ?? getFallbackImage(model.modelId)}
+                          alt={model.name}
+                          sx={{ 
+                            objectFit: 'contain',
+                            height: '100%',
+                            maxHeight: 280,
+                            maxWidth: '100%',
+                            width: 'auto',
+                            display: 'block',
+                            backgroundColor: 'transparent',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </Box>
+                    </Box>
                   </Box>
                   <CardContent sx={{ flexGrow: 1, p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -781,25 +801,45 @@ const MainTabs: React.FC = () => {
                         opacity: 0.9,
                       }}
                     />
-                    <CardMedia
-                      component="img"
-                      height="320"
-                      image={model.imageUrl ?? getFallbackImage(model.modelId)}
-                      alt={model.name}
-                      sx={{ 
-                        objectFit: 'contain',
-                        position: 'relative',
-                        zIndex: 1,
-                        height: '100%',
-                        width: 'auto',
-                        maxWidth: '100%',
-                        margin: '0 auto',
-                        display: 'block',
-                        boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                        borderRadius: '4px',
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                      }}
-                    />
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      width: '100%',
+                      position: 'relative',
+                      zIndex: 1,
+                      padding: 2
+                    }}>
+                      <Box 
+                        sx={{ 
+                          display: 'inline-block',
+                          position: 'relative',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                          borderRadius: '8px',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          height="320"
+                          image={model.imageUrl ?? getFallbackImage(model.modelId)}
+                          alt={model.name}
+                          sx={{ 
+                            objectFit: 'contain',
+                            height: '100%',
+                            maxHeight: 280,
+                            maxWidth: '100%',
+                            width: 'auto',
+                            display: 'block',
+                            backgroundColor: 'transparent',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </Box>
+                    </Box>
                   </Box>
                   <CardContent sx={{ flexGrow: 1, p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
