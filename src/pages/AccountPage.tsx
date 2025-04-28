@@ -73,7 +73,7 @@ const AccountPage: React.FC = () => {
       minHeight: '100vh',
       pt: 2,
       pb: 8,
-      px: { xs: 2, sm: 3, md: 4 }
+      px: { xs: 0, sm: 0, md: 0 }
     }}>
       <Container maxWidth="sm" sx={{ 
         display: 'flex', 

@@ -809,8 +809,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setOpen(false);
       }
     } catch (error: any) {
-      console.error('Error creating model:', error);
-      
       // Check if error is exactly 'Model limit reached'
       if (error === 'Model limit reached') {
         setUpgradePopup({
@@ -1064,9 +1062,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           variant={isMobile ? "temporary" : "persistent"}
           anchor="left"
           open={open}
-          onClose={handleDrawerClose}
-          ModalProps={{
+          onClose={isMobile ? handleDrawerClose : undefined}
+          ModalProps={isMobile ? {
             keepMounted: true,
+            disablePortal: true,
+            disableEnforceFocus: true,
+            disableAutoFocus: true
+          } : undefined}
+          SlideProps={{
+            timeout: {
+              enter: theme.transitions.duration.enteringScreen,
+              exit: theme.transitions.duration.leavingScreen
+            }
           }}
         >
           <DrawerHeader>
