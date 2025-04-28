@@ -143,7 +143,8 @@ export const trainModelWithS3 = createAsyncThunk(
       
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.error || 'Failed to generate model');
+      console.log('error recieved', error);
+      return rejectWithValue(error.response?.data?.error || 'Failed to generate images');
     }
   }
 );
