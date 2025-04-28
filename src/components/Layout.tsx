@@ -31,7 +31,11 @@ import {
   LinearProgress,
   Chip,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -45,6 +49,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import StyleIcon from '@mui/icons-material/Style';
+import CheckroomIcon from '@mui/icons-material/Checkroom';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import Face3Icon from '@mui/icons-material/Person';
 import StarIcon from '@mui/icons-material/Star';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import EditIcon from '@mui/icons-material/Edit';
@@ -93,6 +101,8 @@ const TIER_IMAGE_LIMITS = {
 interface LayoutContextType {
   openModel: () => void;
   openImages: () => void;
+  isDrawerOpen: boolean;  // Add drawer state to the context
+  drawerWidth: number;    // Share drawer width with components
 }
 
 export const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -279,6 +289,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Update drawer state when screen size changes
   useEffect(() => {
     setOpen(!isMobile);
+    // Dispatch a resize event to force components to re-calculate their layout
+    window.dispatchEvent(new Event('resize'));
   }, [isMobile]);
 
   
@@ -337,6 +349,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Add generatingImages from Redux store
   const generatingImages = useSelector(selectGeneratingImages);
   const isGeneratingImages = generatingImages.length > 0;
+
+  const [upgradePopup, setUpgradePopup] = useState<{
+    open: boolean;
+    type: 'photo' | 'model' | null;
+    message: string;
+  }>({
+    open: false,
+    type: null,
+    message: ''
+  });
+
+  // Check if user is on premium tier
+  const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -742,19 +767,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       if (isMobile) {
         setOpen(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating model:', error);
-      setNotification({
-        open: true,
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
-        severity: 'error'
-      });
+      
+      // Check for 403 errors related to limits
+      if (error.response?.status === 403) {
+        if (error.response?.data?.error === 'Model limit reached') {
+          setUpgradePopup({
+            open: true,
+            type: 'model',
+            message: 'You have reached your AI model limit. Upgrade your subscription or top up to create more models!'
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+            severity: 'error'
+          });
+        }
+      } else {
+        setNotification({
+          open: true,
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          severity: 'error'
+        });
+      }
     } finally {
       setIsModelUploading(false);
       setIsCompressing(false);
       setIsUploading(false);
     }
-  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch, isGeneratingImages]);
+  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch, isGeneratingImages, setUpgradePopup, isPremiumTier]);
   
   // Add this function for clothing upload
   const handleClothingFileChange = async (file: File | null) => {
@@ -851,19 +894,45 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         window.history.replaceState({}, '', url);
         window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'gallery' } }));
       } else {
+        if (result?.error === 'Photo limit reached') {
+          setUpgradePopup({
+            open: true,
+            type: 'photo',
+            message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: result?.error || 'Failed to generate images',
+            severity: 'error'
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error('Error generating images:', error);
+      
+      // Check for 403 errors related to limits
+      if (error.response?.status === 403) {
+        if (error.response?.data?.error === 'Photo limit reached') {
+          setUpgradePopup({
+            open: true,
+            type: 'photo',
+            message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+            severity: 'error'
+          });
+        }
+      } else {
         setNotification({
           open: true,
-          message: result?.error || 'Failed to generate images',
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
           severity: 'error'
         });
       }
-    } catch (error) {
-      console.error('Error generating images:', error);
-      setNotification({
-        open: true,
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
-        severity: 'error'
-      });
     } finally {
       setIsModelUploading(false);
       setIsCompressing(false);
@@ -888,15 +957,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [dispatch, navigate, isMobile, setOpen]);
 
-  // Add to handle checkbox change near the other prompt handlers
-  const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    setPromptData(prev => ({
-      ...prev,
-      [name]: checked
-    }));
-  }, []);
-
   // Add a new handler for the toggle button
   const handlePromptModeChange = useCallback((_event: React.MouseEvent<HTMLElement>, newValue: string | null) => {
     // Prevent null value (i.e., disable toggling off both buttons)
@@ -908,8 +968,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, []);
 
+  const handleUpgradePopupClose = () => {
+    setUpgradePopup({
+      open: false,
+      type: null,
+      message: ''
+    });
+  };
+  
+  const handleNavigateToUpgrade = () => {
+    handleUpgradePopupClose();
+    // Navigate to different tabs based on whether user is on premium tier
+    navigate(isPremiumTier 
+      ? '/account?tab=top-up' 
+      : '/account?tab=subscription');
+  };
+
   return (
-    <LayoutContext.Provider value={{ openModel, openImages: openImages }}>
+    <LayoutContext.Provider value={{ 
+      openModel, 
+      openImages: openImages, 
+      isDrawerOpen: open, 
+      drawerWidth 
+    }}>
       <Box sx={{ display: 'flex' }}>
         <AppBarStyled position="fixed" open={open}>
           <Toolbar>
@@ -976,7 +1057,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <ListItemIcon>
                     <AccountCircleIcon />
                   </ListItemIcon>
-                  <ListItemText primary="My Account" />
+                  <ListItemText primary="Account" />
                 </ListItemButton>
               </ListItem>
               
@@ -987,9 +1068,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   onClick={() => handleNavigate('/dashboard')}
                 >
                   <ListItemIcon>
-                    <DashboardIcon />
+                    <CheckroomIcon />
                   </ListItemIcon>
-                  <ListItemText primary="My Dashboard" />
+                  <ListItemText primary="Style Studio" />
                 </ListItemButton>
               </ListItem>
               
@@ -1000,7 +1081,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   onClick={handleModelClick}
                 >
                   <ListItemIcon>
-                    <FaceIcon />
+                    <Face3Icon />
                   </ListItemIcon>
                   <ListItemText primary="Create Model" />
                   {modelOpen ? <ExpandLess /> : <ExpandMore />}
@@ -1257,9 +1338,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={isModelUploading || uploadedImages.length < MIN_REQUIRED_IMAGES || !userProfile.name || !userProfile.gender || !userProfile.age || !userProfile.height || 
-                                  !userProfile.ethnicity || !userProfile.hairColor || !userProfile.hairStyle || 
-                                  !userProfile.eyeColor || !userProfile.bodyType || isGeneratingImages || isExecutingGenerating}
+                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0 || isGeneratingImages || isExecutingGenerating}
                         onClick={handleCreateModel}
                       >
                         {isModelUploading ? <CircularProgress size={24} color="inherit" /> : 
@@ -1816,6 +1895,94 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {notification.message}
           </Alert>
         </Snackbar>
+        
+        {/* Subscription Upgrade Popup */}
+        <Dialog
+          open={upgradePopup.open}
+          onClose={handleUpgradePopupClose}
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              maxWidth: 400,
+              px: 1
+            }
+          }}
+        >
+          <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
+            <Typography variant="h5" fontWeight={600}>
+              {upgradePopup.type === 'photo' ? 'Photo Limit Reached' : 'Model Limit Reached'}
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: 2,
+              py: 2
+            }}>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  backgroundColor: theme.palette.warning.light + '30',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 1
+                }}
+              >
+                {upgradePopup.type === 'photo' ? 
+                  <ImageIcon sx={{ fontSize: 40, color: theme.palette.warning.main }} /> : 
+                  <Face3Icon sx={{ fontSize: 40, color: theme.palette.warning.main }} />
+                }
+              </Box>
+              
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {upgradePopup.message}
+              </Typography>
+              
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  backgroundColor: theme.palette.primary.light + '15',
+                  width: '100%'
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {isPremiumTier
+                    ? (upgradePopup.type === 'photo' 
+                      ? 'Purchase additional photo credits to continue creating amazing content!' 
+                      : 'Purchase additional model credits to create more AI personas!')
+                    : (upgradePopup.type === 'photo' 
+                      ? 'Upgrade to generate more stunning images with your model!' 
+                      : 'Upgrade to create additional AI models of different looks!')}
+                </Typography>
+              </Paper>
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3 }}>
+            <Button 
+              variant="outlined" 
+              onClick={handleUpgradePopupClose}
+              sx={{ borderRadius: 2, minWidth: 120 }}
+            >
+              Later
+            </Button>
+            <Button 
+              variant="contained" 
+              onClick={handleNavigateToUpgrade}
+              sx={{ borderRadius: 2, minWidth: 120 }}
+              color="primary"
+            >
+              {isPremiumTier ? 'Top Up' : 'Upgrade Now'}
+            </Button>
+          </DialogActions>
+        </Dialog>
         
         {/* Training Progress Indicator */}
         {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'in_progress' && lastMessage.progress && (

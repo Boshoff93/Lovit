@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -20,7 +20,7 @@ import {
   Slide
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import FaceIcon from '@mui/icons-material/Face';
+import FaceIcon from '@mui/icons-material/Person';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ImageIcon from '@mui/icons-material/Image';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
@@ -178,35 +178,6 @@ const mockModels: Model[] = [
   }
 ];
 
-// Helper function to get fallback image based on model ID hash
-const getFallbackImage = (modelId: string): string => {
-  // Simple hash function
-  if(!modelId) return '/dress1.jpg';
-  const hash = modelId.split('').reduce((acc, char) => {
-    return acc + char.charCodeAt(0);
-  }, 0);
-  
-  // Use modulo 3 to get a number between 0-2
-  const imageIndex = hash % 3;
-  return `/dress${imageIndex + 1}.jpg`;
-};
-
-// Simplify the getGridSize function based on new requirements
-const getGridSize = (image: GeneratedImage, index: number, totalImages: number) => {
-  // Single image - make it prominently larger
-  if (totalImages === 1) {
-    return { xs: 12, sm: 10, md: 8 };
-  }
-  
-  // For portrait/square orientation or unknown orientation
-  if (image.orientation?.includes('portrait') || image.orientation?.includes('square') || !image.orientation) {
-    return { xs: 12, sm: 6, md: 4 }; // 4 columns (allows 3 per row on desktop)
-  } else {
-    // For landscape orientation
-    return { xs: 12, sm: 6, md: 6 }; // 6 columns (allows 2 per row on desktop)
-  }
-};
-
 // Mock image data grouped by date
 const mockImageGroups: ImageGroup[] = [
   {
@@ -299,7 +270,19 @@ const mockImageGroups: ImageGroup[] = [
   }
 ];
 
-// Slide transition for dialog
+// Helper function to get fallback image based on model ID hash
+const getFallbackImage = (modelId: string): string => {
+  // Simple hash function
+  if(!modelId) return '/dress1.jpg';
+  const hash = modelId.split('').reduce((acc, char) => {
+    return acc + char.charCodeAt(0);
+  }, 0);
+  
+  // Use modulo 3 to get a number between 0-2
+  const imageIndex = hash % 3;
+  return `/dress${imageIndex + 1}.jpg`;
+};
+
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement;
@@ -314,7 +297,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -341,8 +324,19 @@ const MainTabs: React.FC = () => {
   const { connect } = useWebSocket();
   const connectRef = useRef(connect);
   
-  // Get openModel function from Layout context
-  const { openModel, openImages } = useLayout();
+  // Get layout context
+  const { openModel, openImages, isDrawerOpen } = useLayout();
+  
+  // Simplify the getGridSize function based on new requirements
+  const getGridSize = useCallback(() => {
+    // Single image - make it prominently larger
+    return { 
+      xs: 12, 
+      sm: isDrawerOpen ? 12 : 6, 
+      md: isDrawerOpen ? 12 : 4,
+      lg: isDrawerOpen ? 4 : 3
+    };
+  }, [isDrawerOpen]);
 
   // Function to handle image errors
   const handleImageError = useCallback(() => {
@@ -537,8 +531,10 @@ const MainTabs: React.FC = () => {
     }
   }, []);
 
+  const gridSize = getGridSize();
+
   return (
-    <Box sx={{ width: '100%'}}>
+    <Box sx={{ width: '100%', backgroundColor: 'transparent' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs 
           value={value} 
@@ -768,18 +764,13 @@ const MainTabs: React.FC = () => {
           // Loading state with gallery-like layout
           <Grid container spacing={0} sx={{ width: '100%' }}>
             {[1, 2, 3, 4, 5, 6].map((skeleton, index) => {
-              // Alternate between different sizes to create gallery effect
-              const size = index % 3 === 0 ? { xs: 12, sm: 6, md: 6, lg: 4 } : 
-                          index % 2 === 0 ? { xs: 6, sm: 6, md: 6, lg: 4 } : 
-                          { xs: 12, sm: 12, md: 8, lg: 4 };
-              
               // Use consistent height for all images
               const imageHeight = 320;
               
               return (
                 <Grid
-                  size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
                   key={`skeleton-${skeleton}`} 
+                  size={{ xs: 12, sm: 6, md: isDrawerOpen ? 6 : 4, lg: isDrawerOpen ? 4 : 3 }}
                   sx={{ p: 0.5 }}
                 >
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 1, boxShadow: 'none' }}>
@@ -800,7 +791,7 @@ const MainTabs: React.FC = () => {
           </Grid>
         ) : useMockData ? (
           // Show mock image data with dynamic Grid sizing
-          mockImageGroups.map((group) => (
+          mockImageGroups.map((group: ImageGroup) => (
             <Box key={group.date} sx={{ mb: 4 }}>
               <Paper 
                 sx={{ 
@@ -829,12 +820,16 @@ const MainTabs: React.FC = () => {
                   justifyContent: 'flex-start' 
                 }}
               >
-                {group.images.map((image, index) => {
-                  const gridSize = getGridSize(image, index, group.images.length);
+                {group.images.map((image: GeneratedImage, index: number) => {
                   return (
                     <Grid 
-                      size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
                       key={image.imageId}
+                      size={{
+                        xs: gridSize.xs,
+                        sm: gridSize.sm,
+                        md: gridSize.md,
+                        lg: gridSize.lg
+                      }}
                       sx={{ p: 0.5, display: 'flex' }}
                     >
                       <Card sx={{ 
@@ -939,7 +934,7 @@ const MainTabs: React.FC = () => {
                         <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
                           {image.dripRating && image.dripRating.length > 0 && (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                              {image.dripRating.map((tag, idx) => (
+                              {image.dripRating.map((tag: string, idx: number) => (
                                 <Chip
                                   key={idx}
                                   label={tag}
@@ -995,18 +990,15 @@ const MainTabs: React.FC = () => {
                 
                 <Grid container spacing={0} sx={{ width: '100%' }}>
                   {generatingImages.map((genImage, index) => {
-                    // Alternate between different sizes for gallery effect
-                    const size = index % 3 === 0 ? { xs: 12, sm: 6, md: 6, lg: 4 } : 
-                                index % 2 === 0 ? { xs: 6, sm: 6, md: 6, lg: 4 } : 
-                                { xs: 12, sm: 12, md: 8, lg: 4 };
-                    
-                    // Use consistent height for all generating images
-                    const height = 320;
-                    
                     return (
                       <Grid
-                        size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
                         key={genImage.imageId} 
+                        size={{
+                          xs: gridSize.xs,
+                          sm: gridSize.sm,
+                          md: gridSize.md,
+                          lg: gridSize.lg
+                        }}
                         sx={{ p: 0.5 }}
                       >
                         <Card sx={{ 
@@ -1019,7 +1011,7 @@ const MainTabs: React.FC = () => {
                         }}>
                           <Box 
                             sx={{ 
-                              height: height, 
+                              height: 320, 
                               display: 'flex', 
                               alignItems: 'center', 
                               justifyContent: 'center',
@@ -1110,11 +1102,15 @@ const MainTabs: React.FC = () => {
                     }}
                   >
                     {group.images.map((image, index) => {
-                      const gridSize = getGridSize(image, index, group.images.length);
                       return (
                         <Grid 
-                          size={gridSize}
                           key={image.imageId}
+                          size={{
+                            xs: gridSize.xs,
+                            sm: gridSize.sm,
+                            md: gridSize.md,
+                            lg: gridSize.lg
+                          }}
                           sx={{ p: 0.5, display: 'flex' }}
                         >
                           <Card sx={{ 

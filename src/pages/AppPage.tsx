@@ -51,10 +51,10 @@ const AppPage: React.FC = () => {
   },[setNotification]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 2, px: { xs: 1, sm: 1, md: 1 } }}>
+    <Container maxWidth="xl" sx={{ py: 2, px: { xs: 0, sm: 0, md: 0 } }}>
       <Box sx={{ mb: 5, textAlign: 'center', mx: 'auto' }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          My Dashboard
+          ✨ My Style Studio ✨
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Create AI images of yourself in any outfit
@@ -68,7 +68,7 @@ const AppPage: React.FC = () => {
           overflow: 'hidden',
           boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
           bgcolor: 'background.paper',
-          p: { xs: 2, sm: 4 }
+          p: { xs: 1, sm: 4 }
         }}
       >
         <MainTabs />
