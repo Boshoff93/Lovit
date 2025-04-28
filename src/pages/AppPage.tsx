@@ -3,7 +3,6 @@ import {
   Box, 
   Container,
   Typography,
-  Paper,
   Snackbar,
   Alert
 } from '@mui/material';
@@ -51,8 +50,8 @@ const AppPage: React.FC = () => {
   },[setNotification]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 2, px: { xs: 0, sm: 0, md: 0 } }}>
-      <Box sx={{ mb: 5, textAlign: 'center', mx: 'auto' }}>
+    <Container maxWidth="xl" sx={{ py: 3, px: { xs: 1, sm: 2, md: 3 } }}>
+      <Box sx={{ mb: 4, textAlign: 'center', mx: 'auto' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           ✨ My Style Studio ✨
         </Typography>
@@ -61,18 +60,13 @@ const AppPage: React.FC = () => {
         </Typography>
       </Box>
       
-      <Paper 
-        elevation={0} 
+      <Box 
         sx={{ 
-          borderRadius: 3,
-          overflow: 'hidden',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-          bgcolor: 'background.paper',
-          p: { xs: 1, sm: 4 }
+          overflow: 'hidden'
         }}
       >
         <MainTabs />
-      </Paper>
+      </Box>
 
       {/* Subscription Success Notification */}
       <Snackbar

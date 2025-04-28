@@ -26,6 +26,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
+import InfoIcon from '@mui/icons-material/Info';
 import { TransitionProps } from '@mui/material/transitions';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector, useDispatch } from 'react-redux';
@@ -535,50 +536,108 @@ const MainTabs: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', backgroundColor: 'transparent' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs 
-          value={value} 
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
-          aria-label="Main navigation tabs"
-          sx={{ 
-            '& .MuiTab-root': { 
-              fontWeight: 600,
-              fontSize: { xs: '0.875rem', sm: '1rem' },
-              py: { xs: 1.5, sm: 2 },
-              minWidth: { xs: '50%', sm: 'auto' }
-            },
-            '& .MuiTabs-flexContainer': {
-              justifyContent: { xs: 'center', sm: 'flex-start' }
+      <Box sx={{ 
+        mb: 4,
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 2
+      }}>
+        <Button
+          variant={value === 0 ? "contained" : "outlined"}
+          onClick={(e) => handleChange(e, 0)}
+          startIcon={<PhotoLibraryIcon />}
+          sx={{
+            borderRadius: 8,
+            py: 1.2,
+            px: 3.5,
+            minWidth: '120px',
+            fontWeight: 600,
+            transition: 'all 0.2s ease',
+            borderColor: value === 0 ? 'primary.main' : 'divider',
+            '&:hover': {
+              borderColor: value === 0 ? 'primary.main' : 'primary.light',
             }
           }}
         >
-
-          <Tab icon={<PhotoLibraryIcon />} label="Gallery" iconPosition="start" />
-          <Tab icon={<FaceIcon />} label="Models" iconPosition="start" />
-        </Tabs>
+          Gallery
+        </Button>
+        <Button
+          variant={value === 1 ? "contained" : "outlined"}
+          onClick={(e) => handleChange(e, 1)}
+          startIcon={<FaceIcon />}
+          sx={{
+            borderRadius: 8,
+            py: 1.2,
+            px: 3.5,
+            minWidth: '120px',
+            fontWeight: 600,
+            transition: 'all 0.2s ease',
+            borderColor: value === 1 ? 'primary.main' : 'divider',
+            '&:hover': {
+              borderColor: value === 1 ? 'primary.main' : 'primary.light',
+            }
+          }}
+        >
+          Models
+        </Button>
       </Box>
       
       {/* Models Tab */}
       <TabPanel value={value} index={1}>
-        <Typography variant="h5" gutterBottom>
-          Your Models
-        </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {modelsLoading || loading && !useMockData ? (
             <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
               <CircularProgress />
             </Box>
           ) : models.length === 0 && !useMockData ? (
-            <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
-              <Typography variant="body1" color="text.secondary">
-                You haven't created any models yet.
+            <Box 
+              sx={{ 
+                width: '100%', 
+                textAlign: 'center', 
+                py: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Box 
+                sx={{ 
+                  bgcolor: 'rgba(25, 118, 210, 0.08)', 
+                  borderRadius: '50%', 
+                  width: 110, 
+                  height: 110, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  mb: 3,
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <FaceIcon sx={{ fontSize: 52, color: 'primary.main' }} />
+              </Box>
+              <Typography variant="h5" color="text.primary" fontWeight="500">
+                Your model collection is empty
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, mb: 4, maxWidth: 550 }}>
+                Create personalized AI models to generate custom fashion images
               </Typography>
               <Button 
                 variant="contained" 
-                sx={{ mt: 2 }}
+                size="large"
+                sx={{ 
+                  px: 4, 
+                  py: 1.5,
+                  borderRadius: 2,
+                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.25)',
+                  transition: 'all 0.3s ease',
+                  backgroundColor: 'primary.main',
+                  '&:hover': {
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 8px 16px rgba(25, 118, 210, 0.3)',
+                    backgroundColor: 'primary.dark'
+                  }
+                }}
                 onClick={openModel}
               >
                 Create Your First Model
@@ -598,7 +657,19 @@ const MainTabs: React.FC = () => {
                   } 
                 }}
               >
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ 
+                  height: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
+                    cursor: 'pointer'
+                  }
+                }}>
                   <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
                     <Box
                       sx={{
@@ -681,7 +752,19 @@ const MainTabs: React.FC = () => {
                     } 
                 }}
               >
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ 
+                  height: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
+                    cursor: 'pointer'
+                  }
+                }}>
                   <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
                     <Box
                       sx={{
@@ -756,10 +839,6 @@ const MainTabs: React.FC = () => {
       
       {/* Gallery Tab */}
       <TabPanel value={value} index={0}>
-        <Typography variant="h5" gutterBottom>
-          Your Gallery
-        </Typography>
-        
         {isLoadingImages && !useMockData ? (
           // Loading state with gallery-like layout
           <Grid container spacing={0} sx={{ width: '100%' }}>
@@ -793,23 +872,40 @@ const MainTabs: React.FC = () => {
           // Show mock image data with dynamic Grid sizing
           mockImageGroups.map((group: ImageGroup) => (
             <Box key={group.date} sx={{ mb: 4 }}>
-              <Paper 
+              <Box 
                 sx={{ 
-                  p: 2, 
-                  mb: 2, 
+                  mb: 4, 
+                  mt: 2,
                   display: 'flex',
                   alignItems: 'center',
-                  bgcolor: 'background.default',
-                  borderRadius: '12px 12px 0 0',
-                  boxShadow: 'none',
-                  borderBottom: 1,
-                  borderColor: 'divider'
+                  justifyContent: 'center',
+                  position: 'relative',
+                  py: 1,
+                  width: '100%'
                 }}
               >
-                <Typography variant="h6" component="div">
+                <Box sx={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '1px',
+                  backgroundColor: 'divider',
+                  left: 0,
+                  top: '50%'
+                }} />
+                <Typography 
+                  variant="subtitle1" 
+                  component="div" 
+                  sx={{
+                    backgroundColor: 'background.default',
+                    px: 4,
+                    position: 'relative',
+                    fontWeight: 500,
+                    color: 'text.secondary'
+                  }}
+                >
                   {group.formattedDate}
                 </Typography>
-              </Paper>
+              </Box>
               
               <Grid 
                 container 
@@ -837,13 +933,14 @@ const MainTabs: React.FC = () => {
                         display: 'flex', 
                         flexDirection: 'column', 
                         overflow: 'hidden',
-                        borderRadius: 1,
-                        boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                         mx: 'auto', // Center the card horizontally
                         width: '100%',
-                        transition: 'transform 0.3s ease',
+                        transition: 'all 0.2s ease-in-out',
                         '&:hover': {
-                          transform: 'scale(1.02)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                           cursor: 'pointer'
                         },
                       }}
@@ -931,7 +1028,7 @@ const MainTabs: React.FC = () => {
                             </Box>
                           </Box>
                         </Box>
-                        <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                        <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
                           {image.dripRating && image.dripRating.length > 0 && (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
                               {image.dripRating.map((tag: string, idx: number) => (
@@ -970,23 +1067,38 @@ const MainTabs: React.FC = () => {
             {/* Show generating images section */}
             {generatingImages.length > 0 && (
               <Box sx={{ mb: 4 }}>
-                <Paper 
+                <Box 
                   sx={{ 
-                    p: 2, 
                     mb: 2, 
                     display: 'flex',
                     alignItems: 'center',
-                    bgcolor: 'background.default',
-                    borderRadius: '12px 12px 0 0',
-                    boxShadow: 'none',
-                    borderBottom: 1,
-                    borderColor: 'divider'
+                    justifyContent: 'center',
+                    position: 'relative',
+                    py: 2,
+                    width: '100%'
                   }}
                 >
-                  <Typography variant="h6" component="div">
+                  <Box sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '1px',
+                    backgroundColor: 'divider',
+                    left: 0,
+                    top: '50%'
+                  }} />
+                  <Typography 
+                    variant="h6" 
+                    component="div" 
+                    sx={{
+                      backgroundColor: 'background.default',
+                      px: 3,
+                      position: 'relative',
+                      fontWeight: 500
+                    }}
+                  >
                     Currently Generating
                   </Typography>
-                </Paper>
+                </Box>
                 
                 <Grid container spacing={0} sx={{ width: '100%' }}>
                   {generatingImages.map((genImage, index) => {
@@ -1007,7 +1119,8 @@ const MainTabs: React.FC = () => {
                           flexDirection: 'column', 
                           overflow: 'hidden',
                           borderRadius: 1,
-                          boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                          bgcolor: 'action.hover',
                         }}>
                           <Box 
                             sx={{ 
@@ -1016,7 +1129,6 @@ const MainTabs: React.FC = () => {
                               alignItems: 'center', 
                               justifyContent: 'center',
                               flexDirection: 'column',
-                              bgcolor: 'action.hover',
                               p: 0,
                               m: 0,
                               position: 'relative'
@@ -1059,7 +1171,7 @@ const MainTabs: React.FC = () => {
                               <CircularProgress sx={{ mb: 1 }} />
                             )}
                           </Box>
-                          <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                          <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
                             <Typography variant="subtitle1" noWrap>In Progress</Typography>
                           </CardContent>
                         </Card>
@@ -1074,23 +1186,40 @@ const MainTabs: React.FC = () => {
             {imageGroups.length > 0 ? (
               imageGroups.map((group) => (
                 <Box key={group.date} sx={{ mb: 4 }}>
-                  <Paper 
+                  <Box 
                     sx={{ 
-                      p: 2, 
-                      mb: 2, 
+                      mb: 4, 
+                      mt: 2,
                       display: 'flex',
                       alignItems: 'center',
-                      bgcolor: 'background.default',
-                      borderRadius: '12px 12px 0 0',
-                      boxShadow: 'none',
-                      borderBottom: 1,
-                      borderColor: 'divider'
+                      justifyContent: 'center',
+                      position: 'relative',
+                      py: 1,
+                      width: '100%'
                     }}
                   >
-                    <Typography variant="h6" component="div">
+                    <Box sx={{
+                      position: 'absolute',
+                      width: '100%',
+                      height: '1px',
+                      backgroundColor: 'divider',
+                      left: 0,
+                      top: '50%'
+                    }} />
+                    <Typography 
+                      variant="subtitle1" 
+                      component="div" 
+                      sx={{
+                        backgroundColor: 'background.default',
+                        px: 4,
+                        position: 'relative',
+                        fontWeight: 500,
+                        color: 'text.secondary'
+                      }}
+                    >
                       {group.formattedDate}
                     </Typography>
-                  </Paper>
+                  </Box>
                   
                   <Grid 
                     container 
@@ -1118,13 +1247,14 @@ const MainTabs: React.FC = () => {
                             display: 'flex', 
                             flexDirection: 'column', 
                             overflow: 'hidden',
-                            borderRadius: 1,
-                            boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                            borderRadius: 2,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                             mx: 'auto',
                             width: '100%',
-                            transition: 'transform 0.3s ease',
+                            transition: 'all 0.2s ease-in-out',
                             '&:hover': {
-                              transform: 'scale(1.02)',
+                              transform: 'translateY(-4px)',
+                              boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                               cursor: 'pointer'
                             },
                           }}
@@ -1212,7 +1342,7 @@ const MainTabs: React.FC = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            <CardContent sx={{ py: 1, px: 1.5, flexGrow: 0, bgcolor: 'background.paper' }}>
+                            <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
                               {image.dripRating && image.dripRating.length > 0 && (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
                                   {image.dripRating.map((tag, idx) => (
@@ -1260,28 +1390,42 @@ const MainTabs: React.FC = () => {
               >
                 <Box 
                   sx={{ 
-                    bgcolor: 'action.hover', 
+                    bgcolor: 'rgba(25, 118, 210, 0.08)', 
                     borderRadius: '50%', 
-                    width: 80, 
-                    height: 80, 
+                    width: 110, 
+                    height: 110, 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    mb: 3
+                    mb: 3,
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.06)'
                   }}
                 >
-                  <ImageIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
+                  <ImageIcon sx={{ fontSize: 52, color: 'primary.main' }} />
                 </Box>
-                <Typography variant="h6" color="text.primary">
-                  No images yet
+                <Typography variant="h5" color="text.primary" fontWeight="500">
+                  Your gallery is empty
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
-                  Generate your first image with one of your models
+                <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, mb: 4, maxWidth: 550 }}>
+                  Generate stunning fashion images with your personalized AI models
                 </Typography>
                 <Button 
                   variant="contained" 
                   size="large"
                   startIcon={<AutoFixHighIcon />}
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    borderRadius: 2,
+                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.25)',
+                    transition: 'all 0.3s ease',
+                    backgroundColor: 'primary.main',
+                    '&:hover': {
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 8px 16px rgba(25, 118, 210, 0.3)',
+                      backgroundColor: 'primary.dark'
+                    }
+                  }}
                   onClick={handleCreateImageClick}
                 >
                   Create Your First Image
@@ -1442,7 +1586,7 @@ const MainTabs: React.FC = () => {
                           label={tag}
                           size="small"
                           sx={{
-                            backgroundColor: 'primary.main', // Gold color
+                            backgroundColor: 'primary.main', 
                             color: 'rgba(0, 0, 0, 0.87)',
                             fontWeight: 500,
                             fontSize: '0.7rem',
