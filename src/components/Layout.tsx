@@ -74,6 +74,7 @@ import axios from 'axios';
 import imageCompression from 'browser-image-compression';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import Person from '@mui/icons-material/Person';
+import { Allowances } from '../store/authSlice';
 
 
 // Define UserProfile interface here to modify the age type
@@ -214,6 +215,44 @@ interface PromptData {
   seedNumber?: number;
   inferenceSteps?: number;
 }
+
+const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowances }) => {
+  if (!allowances) return null;
+
+  return (
+    <Box sx={{ display: 'flex', gap: 2 }}>
+      {/* AI Photos Allowance */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        borderRadius: 8,
+        px: 1.5,
+        py: 0.5
+      }}>
+        <PhotoCameraIcon sx={{ fontSize: 18, mr: 0.5 }} />
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          {allowances.aiPhotos.used}/{allowances.aiPhotos.max}
+        </Typography>
+      </Box>
+
+      {/* AI Models Allowance */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        borderRadius: 8,
+        px: 1.5,
+        py: 0.5
+      }}>
+        <Person sx={{ fontSize: 18, mr: 0.5 }} />
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          {allowances.aiModels.used}/{allowances.aiModels.max}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
@@ -997,48 +1036,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Box>
 
             {token && (
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                gap: 2
-              }}>
-                {/* AI Photos Allowance */}
-                {aiPhotosRemaining !== null && (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.15)',
-                    borderRadius: 8,
-                    px: 1.5,
-                    py: 0.5
-                  }}>
-                    <PhotoCameraIcon sx={{ fontSize: 18, mr: 0.5 }} />
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {aiPhotosRemaining}
-                    </Typography>
-                  </Box>
-                )}
-
-                {/* AI Models Allowance */}
-                {aiModelsRemaining !== null && (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.15)',
-                    borderRadius: 8,
-                    px: 1.5,
-                    py: 0.5
-                  }}>
-                    <Person sx={{ fontSize: 18, mr: 0.5 }} />
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {aiModelsRemaining}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
+              <AllowanceDisplay allowances={allowances} />
             )}
 
             {token && (

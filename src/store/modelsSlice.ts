@@ -143,13 +143,7 @@ export const trainModelWithS3 = createAsyncThunk(
       
       return response.data;
     } catch (error: any) {
-      if (error.response) {
-        return rejectWithValue(error.response.data?.error || error.response.data?.message || `Server error: ${error.response.status}`);
-      } else if (error.request) {
-        return rejectWithValue('No response from server. Please check your connection.');
-      } else {
-        return rejectWithValue(`Error: ${error.message || 'Unknown error'}`);
-      }
+      return rejectWithValue(error.response?.data?.error || 'Failed to generate model');
     }
   }
 );
