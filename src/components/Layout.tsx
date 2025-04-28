@@ -1249,7 +1249,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         </Select>
                       </FormControl>
                       
-                      <FormControl fullWidth size="small">
+                      <FormControl fullWidth size="small" required>
                         <InputLabel>Breast Size</InputLabel>
                         <Select
                           name="breastSize"
@@ -1309,11 +1309,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         component="label"
-                        disabled={isExecutingGenerating || isGeneratingImages}
                         startIcon={<CloudUploadIcon />}
                         sx={{ mb: 1 }}
                       >
-                        {isExecutingGenerating || isGeneratingImages ? 'Please Wait...' : 'Upload Images'}
+                        {'Upload Images'}
                         <input
                           type="file"
                           multiple
@@ -1373,11 +1372,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         color="primary"
                         fullWidth
                         sx={{ height: 48 }}
-                        disabled={(!promptData.prompt && !promptData.useRandomPrompt) || !promptData.modelId || getMaxImagesForTier() === 0 || isGeneratingImages || isExecutingGenerating}
+                        disabled={
+                          isModelUploading || 
+                          !userProfile.name || 
+                          !userProfile.gender || 
+                          !userProfile.age || 
+                          !userProfile.height || 
+                          !userProfile.ethnicity || 
+                          !userProfile.hairColor || 
+                          !userProfile.hairStyle || 
+                          !userProfile.eyeColor ||
+                          !userProfile.bodyType ||
+                          !userProfile.breastSize ||
+                          uploadedImages.length < MIN_REQUIRED_IMAGES
+                        }
                         onClick={handleCreateModel}
                       >
-                        {isModelUploading ? <CircularProgress size={24} color="inherit" /> : 
-                         isGeneratingImages || isExecutingGenerating ? 'Wait for Image Generation' : 'Create Model'}
+                        {isModelUploading ? <CircularProgress size={24} color="inherit" /> : 'Create Model'}
                       </Button>
                     </Stack>
                   </Box>
