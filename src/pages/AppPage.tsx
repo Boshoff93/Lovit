@@ -82,7 +82,7 @@ const AppPage: React.FC = () => {
           onClose={handleCloseNotification} 
           severity={notification.severity}
           variant="filled"
-          sx={{ width: '100%', bgcolor: '#F5F5DC', color: 'text.primary' }}
+          sx={{ width: '100%',  bgcolor: 'primary.main', color: 'secondary'  }}
         >
           {notification.message}
         </Alert>

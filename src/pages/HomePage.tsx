@@ -295,7 +295,7 @@ const HomePage: React.FC = () => {
       <Box sx={{ 
         py: { xs: 8, md: 12 }, 
         textAlign: 'center',
-        background: 'linear-gradient(to right, rgba(147, 112, 219, 0.1), rgba(147, 112, 219, 0.2))',
+        background: 'linear-gradient(to right, rgba(43, 45, 66, 0.05), rgba(43, 45, 66, 0.1))',
         borderRadius: { xs: 0, md: '0 0 30px 30px' }
       }}>
         <Container maxWidth="md">
@@ -539,6 +539,7 @@ const HomePage: React.FC = () => {
           overflow: 'hidden',
           display: 'flex',
           flexWrap: 'wrap',
+          boxShadow: '0 4px 20px rgba(43, 45, 66, 0.1)'
         }}>
           {galleryImages.map((img, index) => (
             <Box 
@@ -585,7 +586,12 @@ const HomePage: React.FC = () => {
                   flex: { xs: '1 1 100%', md: '1 1 calc(33.333% - 16px)' }
                 }}
               >
-                <Card sx={{ height: '100%', borderRadius: 3, overflow: 'hidden' }}>
+                <Card sx={{ 
+                  height: '100%', 
+                  borderRadius: 3, 
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)'
+                }}>
                   <CardMedia
                     component="img"
                     height="200"
@@ -643,7 +649,9 @@ const HomePage: React.FC = () => {
                 sx={{ 
                   p: 3, 
                   flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' },
-                  borderRadius: 3
+                  borderRadius: 3,
+                  backgroundColor: '#F8F9FA',
+                  border: '1px solid rgba(141, 153, 174, 0.2)'
                 }}
               >
                 <Typography variant="body1" paragraph fontStyle="italic">
@@ -663,8 +671,9 @@ const HomePage: React.FC = () => {
             textAlign: 'center', 
             py: 6, 
             px: 3,
-            background: 'linear-gradient(to right, rgba(147, 112, 219, 0.1), rgba(147, 112, 219, 0.2))',
-            borderRadius: 4
+            background: 'linear-gradient(to right, rgba(43, 45, 66, 0.05), rgba(43, 45, 66, 0.1))',
+            borderRadius: 4,
+            border: '1px solid rgba(141, 153, 174, 0.2)'
           }}
         >
           <Typography variant="h4" gutterBottom>

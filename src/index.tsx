@@ -13,26 +13,25 @@ import { WebSocketProvider } from './contexts/WebSocketContext';
 // Initialize axios interceptors with the Redux store
 setupAxiosInterceptors(store);
 
-// Create theme with lilac colors
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#9370DB', // Medium purple/lilac
-      light: '#B19CD9', // Light lilac
-      dark: '#7B68EE', // Medium slate blue
+      main: '#2B2D42', // Navy blue
+      light: '#8D99AE', // Light navy
+      dark: '#14213D', // Dark navy
     },
     secondary: {
-      main: '#D8BFD8', // Thistle (lighter lilac)
-      light: '#E6E6FA', // Lavender
-      dark: '#7851A9', // Dark lilac/purple
+      main: '#EDF2F4', // Off-white
+      light: '#FFFFFF', // Pure white
+      dark: '#8D99AE', // Gray blue
     },
     background: {
-      default: '#F8F6FF', // Very light lilac
-      paper: '#FFFFFF',
+      default: '#F8F9FA', // White
+      paper: '#F8F9FA', // Very light gray
     },
     text: {
-      primary: '#37306B', // Dark purple for text
-      secondary: '#66647C', // Medium purple-gray for secondary text
+      primary: '#2B2D42', // Navy for text
+      secondary: '#8D99AE', // Medium gray for secondary text
     },
   },
   typography: {
@@ -79,6 +78,31 @@ const theme = createTheme({
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#EDF2F4', // Light background matching our secondary main
+          '&.MuiChip-sizeSmall': {
+            height: 24,
+            fontSize: '0.75rem',
+          },
+        },
+        label: {
+          fontWeight: 500,
+          color: '#2B2D42', // Navy text matching our primary main
+        },
+        filled: {
+          backgroundColor: '#EDF2F4',
+          '&:hover': {
+            backgroundColor: '#8D99AE', // Light navy on hover
+          },
+        },
+        outlined: {
+          borderColor: '#8D99AE',
+          color: '#2B2D42',
         },
       },
     },

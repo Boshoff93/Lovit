@@ -298,7 +298,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -1089,8 +1089,6 @@ const MainTabs: React.FC = () => {
                                   label={tag}
                                   size="small"
                                   sx={{
-                                    backgroundColor: '#F5F5DC', // Gold color
-                                    color: 'rgba(0, 0, 0, 0.87)', // Dark text for contrast
                                     fontWeight: 500,
                                     fontSize: '0.7rem',
                                     height: 20
@@ -1403,8 +1401,6 @@ const MainTabs: React.FC = () => {
                                       label={tag}
                                       size="small"
                                       sx={{
-                                        backgroundColor: '#F5F5DC', // Gold color
-                                        color: 'rgba(0, 0, 0, 0.87)', // Dark text for contrast
                                         fontWeight: 500,
                                         fontSize: '0.7rem',
                                         height: 20
@@ -1608,8 +1604,6 @@ const MainTabs: React.FC = () => {
                       position: 'absolute',
                       top: 8,
                       right: 8,
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      color: '#F5F5DC',
                       '&:hover': {
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                       }

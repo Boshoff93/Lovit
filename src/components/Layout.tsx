@@ -1563,8 +1563,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             label={`${(subscription?.tier || 'free').charAt(0).toUpperCase() + (subscription?.tier || 'free').slice(1)}: ${getMaxImagesForTier()} max`}
                             size="small"
                             sx={{ 
-                              backgroundColor: '#F5F5DC',
-                              color: 'text.primary',
                               fontWeight: 500
                             }}
                           />
