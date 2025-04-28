@@ -200,6 +200,9 @@ export const generateImages = createAsyncThunk(
         generatingImages
       };
     } catch (error: any) {
+      if (error.response?.status === 403) {
+        return rejectWithValue(error.response.data?.error || 'You have reached your photo limit');
+      }
       return rejectWithValue(error.response?.data?.error || 'Failed to generate images');
     }
   }

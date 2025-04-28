@@ -97,7 +97,7 @@ export const getModelUploadUrls = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 403) {
-        return rejectWithValue(error.response.data?.message || 'You have reached your model limit');
+        return rejectWithValue(error.response.data?.error || 'You have reached your model limit');
       }
       return rejectWithValue(error.response?.data?.error || 'Failed to get upload URLs');
     }
@@ -143,8 +143,10 @@ export const trainModelWithS3 = createAsyncThunk(
       
       return response.data;
     } catch (error: any) {
-      console.log('error recieved', error);
-      return rejectWithValue(error.response?.data?.error || 'Failed to generate images');
+      if (error.response?.status === 403) {
+        return rejectWithValue(error.response.data?.error || 'You have reached your model limit');
+      }
+      return rejectWithValue(error.response?.data?.error || 'Failed to train model');
     }
   }
 );

@@ -737,15 +737,21 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {model.status === 'in_progress' && model.progress && (
+                    {model.status === 'in_progress' && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
-                          variant="determinate" 
-                          value={model.progress} 
-                          sx={{ height: 6, borderRadius: 3 }} 
+                          variant={model.progress ? "determinate" : "indeterminate"}
+                          value={model.progress || 0}
+                          sx={{ 
+                            height: 6, 
+                            borderRadius: 3,
+                            '& .MuiLinearProgress-bar': {
+                              transition: 'transform 0.4s linear'
+                            }
+                          }} 
                         />
                         <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
-                          {model.progress}% Complete
+                          {model.progress ? `${model.progress}% Complete` : 'Processing...'}
                         </Typography>
                       </Box>
                     )}
@@ -853,15 +859,21 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {model.status === 'in_progress' && model.progress && (
+                    {model.status === 'in_progress' && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
-                          variant="determinate" 
-                          value={model.progress} 
-                          sx={{ height: 6, borderRadius: 3 }} 
+                          variant={model.progress ? "determinate" : "indeterminate"}
+                          value={model.progress || 0}
+                          sx={{ 
+                            height: 6, 
+                            borderRadius: 3,
+                            '& .MuiLinearProgress-bar': {
+                              transition: 'transform 0.4s linear'
+                            }
+                          }} 
                         />
                         <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
-                          {model.progress}% Complete
+                          {model.progress ? `${model.progress}% Complete` : 'Processing...'}
                         </Typography>
                       </Box>
                     )}
