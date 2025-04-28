@@ -35,7 +35,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         }
       );
       
-      const { user: fetchedUser, allowances } = response.data;
+      const { user: fetchedUser } = response.data;
       
       // Always update if we have fetched user data
       if (fetchedUser && 
@@ -61,8 +61,8 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       }
       
       // Update allowances if available
-      if (allowances) {
-        updateAllowances(allowances);
+      if (fetchedUser.allowances) {
+        updateAllowances(fetchedUser.allowances);
       }
       
       lastFetched.current = new Date();
