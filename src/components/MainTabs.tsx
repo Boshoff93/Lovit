@@ -744,12 +744,12 @@ const MainTabs: React.FC = () => {
               <Box 
                 key={model.modelId} 
                 sx={{ 
-                   flex: { 
-                      xs: '1 1 100%', 
-                      sm: '1 1 calc(50% - 8px)', 
-                      md: '1 1 calc(50% - 10px)', 
-                      lg: '1 1 calc(33% - 10px)' 
-                    } 
+                  flex: { 
+                    xs: '1 1 100%', 
+                    sm: '1 1 calc(50% - 8px)', 
+                    md: '1 1 calc(50% - 10px)', 
+                    lg: '1 1 calc(33% - 10px)' 
+                  } 
                 }}
               >
                 <Card sx={{ 
