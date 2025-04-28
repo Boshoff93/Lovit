@@ -112,16 +112,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           const modelUpdate = {
             modelId: trainingData.modelId,
             status: trainingData.status,
-            progress: trainingData.progress
+            progress: trainingData.progress,
+            name: trainingData.name,
+            profileData: trainingData.profileData,
+            timestamp: trainingData.timestamp
           };
-          
-          // If this is a completed update with additional model data, include it
-          if (trainingData.status === 'completed' && trainingData.name) {
-            Object.assign(modelUpdate, {
-              name: trainingData.name,
-              profileData: trainingData.profileData
-            });
-          }
           
           dispatch(updateModel(modelUpdate));
         }

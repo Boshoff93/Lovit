@@ -160,26 +160,20 @@ const modelsSlice = createSlice({
   initialState,
   reducers: {
     // Update a model (e.g., from WebSocket updates)
-    updateModel: (state, action: PayloadAction<{ 
-      modelId: string, 
-      status: string, 
-      progress?: number,
-      name?: string,
-      profileData?: any 
-    }>) => {
-      const { modelId, status, progress, name, profileData } = action.payload;
-      const model = state.models.find(model => model.modelId === modelId);
+    updateModel: (state, action: PayloadAction<Partial<Model> & { modelId: string }>) => {
+      const { modelId, ...updates } = action.payload;
+      const modelIndex = state.models.findIndex(model => model.modelId === modelId);
       
-      if (model) {
-        model.status = status;
-        if (progress !== undefined) {
-          model.progress = progress;
-        }
-        if (name !== undefined) {
-          model.name = name;
-        }
-        if (profileData !== undefined) {
-          model.profileData = profileData;
+      if (modelIndex >= 0) {
+        // Update all provided fields
+        state.models[modelIndex] = { 
+          ...state.models[modelIndex],
+          ...updates
+        };
+      } else {
+        // If model not found but we have enough data, add it as a new model
+        if (updates.status) {
+          state.models.push({ modelId, ...updates });
         }
       }
     },
