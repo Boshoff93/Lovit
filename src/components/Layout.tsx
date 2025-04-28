@@ -772,25 +772,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } catch (error: any) {
       console.error('Error creating model:', error);
       
-      // Check for 403 errors related to limits
-      if (error.response?.status === 403) {
-        if (error.response?.data?.error === 'Model limit reached') {
-          setUpgradePopup({
-            open: true,
-            type: 'model',
-            message: 'You have reached your AI model limit. Upgrade your subscription or top up to create more models!'
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-            severity: 'error'
-          });
-        }
+      // Check if error is exactly 'Model limit reached'
+      if (error === 'Model limit reached') {
+        setUpgradePopup({
+          open: true,
+          type: 'model',
+          message: 'You have reached your AI model limit. Upgrade your subscription or top up to create more models!'
+        });
       } else {
         setNotification({
           open: true,
-          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          message: error instanceof Error ? error.message : error || 'Unknown error occurred',
           severity: 'error'
         });
       }
@@ -799,7 +791,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setIsCompressing(false);
       setIsUploading(false);
     }
-  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch, isGeneratingImages, setUpgradePopup, isPremiumTier]);
+  }, [uploadedImages, userProfile, token, user, connect, navigate, isMobile, setOpen, setNotification, dispatch, isGeneratingImages, setUpgradePopup]);
   
   // Add this function for clothing upload
   const handleClothingFileChange = async (file: File | null) => {
@@ -911,27 +903,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }
       }
     } catch (error: any) {
-      console.error('Error generating images:', error);
-      
-      // Check for 403 errors related to limits
-      if (error.response?.status === 403) {
-        if (error.response?.data?.error === 'Photo limit reached') {
-          setUpgradePopup({
-            open: true,
-            type: 'photo',
-            message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-            severity: 'error'
-          });
-        }
+      if (error === 'Photo limit reached') {
+        setUpgradePopup({
+          open: true,
+          type: 'photo',
+          message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+        });
       } else {
         setNotification({
           open: true,
-          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          message: error instanceof Error ? error.message : error || 'Unknown error occurred',
           severity: 'error'
         });
       }

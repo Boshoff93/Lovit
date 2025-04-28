@@ -19,7 +19,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
-import ImageIcon from '@mui/icons-material/Image';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PersonIcon from '@mui/icons-material/Person';
 
 const AccountPage: React.FC = () => {
@@ -184,7 +184,7 @@ const AccountPage: React.FC = () => {
                       }}
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <ImageIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <PhotoCameraIcon sx={{ mr: 1, color: 'primary.main' }} />
                         <Typography variant="subtitle1" fontWeight={600}>
                           AI Photos
                         </Typography>
