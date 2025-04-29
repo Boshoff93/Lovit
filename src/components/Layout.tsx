@@ -367,7 +367,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [promptData, setPromptData] = useState<PromptData>({
     prompt: '',
     numberOfImages: 1,
-    orientation: 'portrait',
+    orientation: 'portrait_16_9',
     uploadedClothImage: null,
     modelId: '',
     useRandomPrompt: false,
