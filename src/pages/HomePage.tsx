@@ -312,12 +312,10 @@ const HomePage: React.FC = () => {
             src="/lovit.png" // Using existing image from public folder
             alt="Lovit Logo"
             sx={{
-              width: { xs: '300px', md: '300px' },
+              width: { xs: '200px', md: '200px' },
               p: "10px",
               height: 'auto',
               borderRadius: '50%',
-              border: `4px solid ${theme.palette.primary.main}`,
-              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)'
             }}
           />
           
