@@ -661,7 +661,6 @@ const MainTabs: React.FC = () => {
                   display: 'flex', 
                   flexDirection: 'column', 
                   borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                   transition: 'all 0.2s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-4px)',
@@ -783,7 +782,6 @@ const MainTabs: React.FC = () => {
                   display: 'flex', 
                   flexDirection: 'column', 
                   borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                   transition: 'all 0.2s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-4px)',
@@ -986,7 +984,6 @@ const MainTabs: React.FC = () => {
                         flexDirection: 'column', 
                         overflow: 'hidden',
                         borderRadius: 2,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                         mx: 'auto', // Center the card horizontally
                         width: '100%',
                         transition: 'all 0.2s ease-in-out',
@@ -1168,8 +1165,7 @@ const MainTabs: React.FC = () => {
                           display: 'flex', 
                           flexDirection: 'column', 
                           overflow: 'hidden',
-                          borderRadius: 1,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                          borderRadius: 2,
                           bgcolor: 'action.hover',
                         }}>
                           <Box 
@@ -1298,7 +1294,6 @@ const MainTabs: React.FC = () => {
                             flexDirection: 'column', 
                             overflow: 'hidden',
                             borderRadius: 2,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                             mx: 'auto',
                             width: '100%',
                             transition: 'all 0.2s ease-in-out',
@@ -1568,9 +1563,9 @@ const MainTabs: React.FC = () => {
                   zIndex: 10,
                   borderRadius: 3,
                   overflow: 'hidden',
-                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  backgroundColor: 'background.paper', // Soft cream with slight transparency
                   p: 2,
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                  boxShadow: '0 10px 20px rgba(238, 217, 182, 0.2)'
                 }}
               >
                 {/* Image */}
@@ -1617,10 +1612,10 @@ const MainTabs: React.FC = () => {
                 <Box sx={{ 
                   width: '100%',
                   p: 2,
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backgroundColor: 'primary.main',
                   borderRadius: 2
                 }}>
-                  <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
+                  <Typography variant="h5" sx={{ color: '#faf4e9', mb: 2 }}>
                     {selectedImage?.title}
                   </Typography>
                   
@@ -1646,7 +1641,6 @@ const MainTabs: React.FC = () => {
                 {/* Close button below */}
                 <Button
                   variant="contained"
-                  color="secondary"
                   startIcon={<CloseIcon />}
                   onClick={handleCloseModal}
                   sx={{

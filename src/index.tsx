@@ -25,6 +25,24 @@ const theme = createTheme({
       light: '#f7ecdb', // Light cream
       dark: '#e5c696', // Darker cream
     },
+    success: {
+      main: '#4CAF50', // Green
+      light: '#81C784', // Light green
+      dark: '#388E3C', // Dark green
+      contrastText: '#faf4e9', // Cream text
+    },
+    error: {
+      main: '#E57373', // Soft red
+      light: '#FFCDD2', // Light red
+      dark: '#D32F2F', // Dark red
+      contrastText: '#faf4e9', // Cream text
+    },
+    warning: {
+      main: '#FF8A65', // Soft coral
+      light: '#FFAB91', // Light coral
+      dark: '#E64A19', // Dark coral
+      contrastText: '#faf4e9', // Cream text
+    },
     background: {
       default: '#fdfbf8', // Lightest cream
       paper: '#faf4e9', // Light warm cream
@@ -192,7 +210,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)',
+          boxShadow: '0 4px 12px rgba(43, 45, 66, 0.2)',
           backgroundColor: '#faf4e9',
         },
       },
@@ -200,7 +218,7 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#fdfbf8',
         },
         rounded: {
           borderRadius: 12,

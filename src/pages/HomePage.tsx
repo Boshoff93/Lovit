@@ -29,6 +29,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '@mui/material/styles';
 
 const featureItems = [
   {
@@ -88,6 +89,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
+  const theme = useTheme();
 
   const handleClickOpen = () => {
     if (user) {
@@ -295,8 +297,13 @@ const HomePage: React.FC = () => {
       <Box sx={{ 
         py: { xs: 8, md: 12 }, 
         textAlign: 'center',
-        background: 'linear-gradient(to right, rgba(43, 45, 66, 0.05), rgba(43, 45, 66, 0.1))',
-        borderRadius: { xs: 0, md: '0 0 30px 30px' }
+        background: `linear-gradient(145deg, ${theme.palette.primary.main}10, ${theme.palette.primary.light}05)`,
+        position: 'relative',
+        zIndex: 1,
+        backdropFilter: 'blur(5px)',
+        boxShadow: '0 4px 30px rgba(43, 45, 66, 0.1)',
+        borderBottom: `1px solid ${theme.palette.primary.light}30`,
+        overflow: 'hidden',
       }}>
         <Container maxWidth="md">
           {/* Logo/Image above slogan */}
@@ -308,7 +315,8 @@ const HomePage: React.FC = () => {
               width: { xs: '180px', md: '220px' },
               height: 'auto',
               mb: 4,
-              borderRadius: '50%'
+              borderRadius: '50%',
+              boxShadow: '0 8px 16px rgba(43, 45, 66, 0.15)'
             }}
           />
           
@@ -318,7 +326,8 @@ const HomePage: React.FC = () => {
             sx={{ 
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontWeight: 800,
-              mb: 2
+              mb: 2,
+              color: theme.palette.primary.main
             }}
           >
             Try it, Love it, Buy it
@@ -355,8 +364,24 @@ const HomePage: React.FC = () => {
       </Box>
       
       {/* Auth Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-        <DialogTitle>
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth="xs" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 24px rgba(43, 45, 66, 0.2)',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+          color: 'white',
+          py: 2
+        }}>
           {authTab === 0 ? 'Login to Lovit' : 'Sign Up for Lovit'}
           <IconButton
             aria-label="close"
@@ -365,13 +390,30 @@ const HomePage: React.FC = () => {
               position: 'absolute',
               right: 8,
               top: 8,
+              color: 'white'
             }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <Tabs value={authTab} onChange={handleTabChange} variant="fullWidth" sx={{ mb: 2 }}>
+        <DialogContent sx={{ p: 3, pt: 3 }}>
+          <Tabs 
+            value={authTab} 
+            onChange={handleTabChange} 
+            variant="fullWidth" 
+            sx={{ 
+              mb: 3,
+              '& .MuiTab-root': {
+                fontWeight: 600
+              },
+              '& .Mui-selected': {
+                color: theme.palette.primary.main
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: theme.palette.primary.main
+              }
+            }}
+          >
             <Tab label="Login" />
             <Tab label="Sign Up" />
           </Tabs>
@@ -539,7 +581,7 @@ const HomePage: React.FC = () => {
           overflow: 'hidden',
           display: 'flex',
           flexWrap: 'wrap',
-          boxShadow: '0 4px 20px rgba(43, 45, 66, 0.1)'
+          boxShadow: '0 4px 20px rgba(43, 45, 66, 0.15)'
         }}>
           {galleryImages.map((img, index) => (
             <Box 
@@ -557,6 +599,10 @@ const HomePage: React.FC = () => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)'
+                  },
                 }}
               />
             </Box>
@@ -568,7 +614,7 @@ const HomePage: React.FC = () => {
       <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
         {/* Main Value Proposition */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" gutterBottom color="primary.main">
             Upload your selfies and start taking stunning AI photos now
           </Typography>
           <Typography variant="body1" sx={{ maxWidth: '800px', mx: 'auto' }}>
@@ -590,7 +636,12 @@ const HomePage: React.FC = () => {
                   height: '100%', 
                   borderRadius: 3, 
                   overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)'
+                  boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 20px rgba(43, 45, 66, 0.12)',
+                  }
                 }}>
                   <CardMedia
                     component="img"
@@ -599,7 +650,7 @@ const HomePage: React.FC = () => {
                     alt={feature.title}
                   />
                   <CardContent sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom fontWeight={600}>
+                    <Typography variant="h6" gutterBottom fontWeight={600} color="primary.main">
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -614,10 +665,10 @@ const HomePage: React.FC = () => {
         
         {/* How It Works */}
         <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" gutterBottom textAlign="center">
+          <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
             How It Works
           </Typography>
-          <Divider sx={{ mb: 4 }} />
+          <Divider sx={{ mb: 4, borderColor: theme.palette.primary.light }} />
           
           <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
             <Typography variant="body1" paragraph>
@@ -636,10 +687,10 @@ const HomePage: React.FC = () => {
         
         {/* Testimonials */}
         <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" gutterBottom textAlign="center">
+          <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
             What Our Users Say
           </Typography>
-          <Divider sx={{ mb: 4 }} />
+          <Divider sx={{ mb: 4, borderColor: theme.palette.primary.light }} />
           
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
             {testimonials.map((testimonial, index) => (
@@ -650,8 +701,13 @@ const HomePage: React.FC = () => {
                   p: 3, 
                   flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' },
                   borderRadius: 3,
-                  backgroundColor: '#F8F9FA',
-                  border: '1px solid rgba(141, 153, 174, 0.2)'
+                  backgroundColor: theme.palette.background.paper,
+                  border: `1px solid ${theme.palette.primary.light}20`,
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 16px rgba(43, 45, 66, 0.1)',
+                  }
                 }}
               >
                 <Typography variant="body1" paragraph fontStyle="italic">
@@ -671,12 +727,12 @@ const HomePage: React.FC = () => {
             textAlign: 'center', 
             py: 6, 
             px: 3,
-            background: 'linear-gradient(to right, rgba(43, 45, 66, 0.05), rgba(43, 45, 66, 0.1))',
+            background: `linear-gradient(145deg, ${theme.palette.primary.light}15, ${theme.palette.primary.main}25)`,
             borderRadius: 4,
-            border: '1px solid rgba(141, 153, 174, 0.2)'
+            border: `1px solid ${theme.palette.primary.light}30`
           }}
         >
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" gutterBottom color="primary.main">
             Ready to transform your shopping experience?
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>

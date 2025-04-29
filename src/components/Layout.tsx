@@ -1020,7 +1020,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <IconButton
-                color="inherit"
+                color="secondary"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
@@ -1039,7 +1039,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {token && (
               <Box>
-                <IconButton color="inherit" onClick={() => handleLogout()}>
+                <IconButton color="primary" onClick={() => handleLogout()}>
                   <LogoutIcon />
                 </IconButton>
               </Box>
@@ -1082,7 +1082,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 Lovit Hub
               </Typography>
             </Box>
-            <IconButton onClick={handleDrawerClose}>
+            <IconButton onClick={handleDrawerClose} color="primary">
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </DrawerHeader>
@@ -1096,7 +1096,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   sx={{ px: 2, borderRadius: 2, mb: 1 }}
                   onClick={() => handleNavigate('/account')}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
                     <AccountCircleIcon />
                   </ListItemIcon>
                   <ListItemText primary="Account" />
@@ -1109,7 +1109,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   sx={{ px: 2, borderRadius: 2, mb: 1 }}
                   onClick={() => handleNavigate('/dashboard')}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
                     <CheckroomIcon />
                   </ListItemIcon>
                   <ListItemText primary="Style Studio" />
@@ -1122,7 +1122,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   sx={{ px: 2, borderRadius: 2, mb: 1 }}
                   onClick={handleModelClick}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
                     <Face3Icon />
                   </ListItemIcon>
                   <ListItemText primary="Create Model" />
@@ -1281,11 +1281,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           p: 1.5, 
                           mb: 1.5,
                           borderRadius: 1,
-                          backgroundColor: `${theme.palette.success.light}10`, 
-                          borderColor: theme.palette.success.light
+                          backgroundColor: `${theme.palette.success.main}10`, 
+                          borderColor: theme.palette.success.main,
                         }}
                       >
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600, mb: 0.5 }}>
                           Good Photos:
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -1299,11 +1299,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           p: 1.5, 
                           mb: 1.5,
                           borderRadius: 1,
-                          backgroundColor: `${theme.palette.warning.light}10`, 
-                          borderColor: theme.palette.warning.light
+                          backgroundColor: `${theme.palette.warning.main}10`, 
+                          borderColor: theme.palette.warning.main
                         }}
                       >
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600, mb: 0.5 }}>
                           Bad Photos:
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -1407,7 +1407,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   sx={{ px: 2, borderRadius: 2, mb: 1 }}
                   onClick={handleImagesClick}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
                     <ImageIcon />
                   </ListItemIcon>
                   <ListItemText primary="Generate Images" />
@@ -1527,8 +1527,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             borderRadius: 1,
                             borderWidth: 2,
                             borderStyle: 'dashed',
-                            borderColor: theme.palette.primary.main,
-                            backgroundColor: theme.palette.primary.light + '10',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -1578,7 +1576,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         />
                         
                         {getMaxImagesForTier() === 0 && (
-                          <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+                          <Typography variant="caption" color="error.dark" sx={{ display: 'block', mt: 1 }}>
                             Upgrade your subscription to generate images
                           </Typography>
                         )}
@@ -1642,7 +1640,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                   onClick={() => handleClothingFileChange(null)}
                                   size="small"
                                   sx={{ 
-                                    color: 'black'
+                                    color: 'primary.main'
                                   }}
                                 >
                                   <DeleteIcon fontSize="small" />
@@ -1975,7 +1973,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
-                  backgroundColor: theme.palette.warning.light + '30',
+                  backgroundColor: `${theme.palette.warning.main}15`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

@@ -23,7 +23,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PersonIcon from '@mui/icons-material/Person';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, allowances, createStripePortal } = useAuth();
+  const { user, subscription, createStripePortal, allowances } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
 
@@ -82,7 +82,7 @@ const AccountPage: React.FC = () => {
         width: '100%'
       }}>
         <Box sx={{ mb: 12, textAlign: 'center', maxWidth: '600px' }}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography variant="h3" component="h1" gutterBottom>
             Account Settings
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -135,7 +135,12 @@ const AccountPage: React.FC = () => {
                   size="small"
                   sx={{ 
                     mb: 1,
-                    fontWeight: 500
+                    fontWeight: 500,
+                    backgroundColor: user?.isVerified ? 'success.light' : 'warning.light',
+                    color: 'black',
+                    '&:hover': {
+                      backgroundColor: user?.isVerified ? 'success.light' : 'warning.light'
+                    }
                   }}
                 />
 
@@ -229,7 +234,7 @@ const AccountPage: React.FC = () => {
                       }}
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <PersonIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                        <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
                         <Typography variant="subtitle1" fontWeight={600}>
                           AI Models
                         </Typography>
@@ -239,7 +244,7 @@ const AccountPage: React.FC = () => {
                           Used: {allowances.aiModels.used} / {allowances.aiModels.max}
                         </Typography>
                         <Typography variant="body2" fontWeight={600} color={
-                          allowances.aiModels.used >= allowances.aiModels.max ? 'error.main' : 'secondary.main'
+                          allowances.aiModels.used >= allowances.aiModels.max ? 'error.main' : 'primary.main'
                         }>
                           {allowances.aiModels.max - allowances.aiModels.used} remaining
                         </Typography>
@@ -255,7 +260,7 @@ const AccountPage: React.FC = () => {
                           '& .MuiLinearProgress-bar': {
                             backgroundColor: allowances.aiModels.used >= allowances.aiModels.max 
                               ? 'error.main' 
-                              : 'secondary.main'
+                              : 'primary.main'
                           }
                         }}
                       />
@@ -277,25 +282,43 @@ const AccountPage: React.FC = () => {
                   justifyContent: 'space-between', 
                   alignItems: 'center', 
                   mb: 3,
-                  p: 2,
+                  p: 3,
+                  borderRadius: 2,
+                  backgroundColor: 'background.default',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                 }}>
                   <Box>
-                    <Typography variant="subtitle2" fontWeight={600}>
+                    <Typography variant="subtitle2" fontWeight={700} color="primary.main">
                       {formatTier(subscription?.tier || 'free')} Plan
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, display: 'flex', alignItems: 'center' }}>
+                      <Box component="span" sx={{ 
+                        display: 'inline-block',
+                        width: 6, 
+                        height: 6, 
+                        borderRadius: '50%',
+                        bgcolor: subscription?.status === 'active' ? 'success.main' : 'warning.main',
+                        mr: 1 
+                      }} />
                       Status: {subscription?.status || 'Active'}
                     </Typography>
                   </Box>
                   <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     size="medium"
                     onClick={handleManageSubscription}
                     disabled={isLoading || portalLoading}
-                    startIcon={portalLoading ? <CircularProgress size={16} /> : undefined}
+                    startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
                     sx={{ 
                       borderRadius: 8,
-                      px: 2
+                      px: 3,
+                      fontWeight: 600,
+                      '&:hover': {
+                        backgroundColor: 'primary.main',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                      }
                     }}
                   >
                     {portalLoading ? 'Loading...' : 'Manage'}

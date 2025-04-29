@@ -438,33 +438,50 @@ const PaymentPage: React.FC = () => {
                     transform: 'translateY(-4px)',
                     boxShadow: theme.shadows[selectedPlan === plan.id ? 8 : 4],
                   },
-                  bgcolor: selectedPlan === plan.id ? 'rgba(147, 112, 219, 0.05)' : 'background.paper'
+                  bgcolor: selectedPlan === plan.id ? 'unset' : 'background.paper',
+                  background: selectedPlan === plan.id ? 
+                    `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : 
+                    'background.paper',
+                  color: selectedPlan === plan.id ? 'white' : 'inherit'
                 }}
               >
                 {plan.popular && (
                   <Box 
                     sx={{ 
                       position: 'absolute', 
-                      top: -15, 
+                      top: selectedPlan === plan.id ? -18 : -15, 
                       left: 0, 
                       right: 0,
-                      textAlign: 'center'
+                      textAlign: 'center',
+                      zIndex: 2,
                     }}
                   >
                     <Box 
                       sx={{ 
                         display: 'inline-flex',
                         alignItems: 'center',
-                        backgroundColor: theme.palette.primary.main,
-                        color: 'white',
+                        background: selectedPlan === plan.id 
+                          ? `linear-gradient(145deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`
+                          : `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                        color: selectedPlan === plan.id ? theme.palette.primary.main : 'white',
                         px: 2,
                         py: 0.5,
                         borderRadius: 2,
                         fontSize: '0.875rem',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
+                        boxShadow: selectedPlan === plan.id 
+                          ? '0 6px 12px rgba(0, 0, 0, 0.2)' 
+                          : '0 4px 8px rgba(0, 0, 0, 0.15)',
+                        border: selectedPlan === plan.id ? `2px solid ${theme.palette.primary.main}` : 'none'
                       }}
                     >
-                      <StarIcon fontSize="small" sx={{ mr: 0.5 }} />
+                      <StarIcon 
+                        fontSize="small" 
+                        sx={{ 
+                          mr: 0.5, 
+                          color: selectedPlan === plan.id ? theme.palette.primary.main : theme.palette.secondary.light 
+                        }} 
+                      />
                       Most Popular
                     </Box>
                   </Box>
@@ -479,51 +496,51 @@ const PaymentPage: React.FC = () => {
                     <Typography variant="h3" component="span" fontWeight="bold">
                       ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+                    <Typography variant="body1" color={selectedPlan === plan.id ? "white" : "text.secondary"} sx={{ ml: 1 }}>
                       /month
                     </Typography>
                   </Box>
                   
                   {isYearly && (
-                    <Typography variant="body2" color="success.main" sx={{ mb: 2 }}>
+                    <Typography variant="body2" color={selectedPlan === plan.id ? theme.palette.secondary.light : "success.main"} sx={{ mb: 2 }}>
                       Billed annually (${plan.yearlyPrice * 12}/year)
                     </Typography>
                   )}
                   
-                  <Divider sx={{ my: 2 }} />
+                  <Divider sx={{ my: 2, borderColor: selectedPlan === plan.id ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.12)' }} />
                   
                   <List dense disablePadding>
                     <ListItem disableGutters>
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
+                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
                       <ListItemText primary={plan.features.photoCount} />
                     </ListItem>
                     
                     <ListItem disableGutters>
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
+                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
                       <ListItemText primary={plan.features.modelCount} />
                     </ListItem>
                     
                     <ListItem disableGutters>
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
+                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
                       <ListItemText primary={plan.features.quality} />
                     </ListItem>
                     
                     <ListItem disableGutters>
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
+                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
                       <ListItemText primary={plan.features.likeness} />
                     </ListItem>
                     
                     <ListItem disableGutters>
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color="primary" />
+                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
                       <ListItemText primary={plan.features.parallel} />
                     </ListItem>
@@ -531,7 +548,7 @@ const PaymentPage: React.FC = () => {
                     {plan.features.other?.map((feature, index) => (
                       <ListItem disableGutters key={index}>
                         <ListItemIcon sx={{ minWidth: 36 }}>
-                          <CheckCircleIcon color="primary" />
+                          <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                         </ListItemIcon>
                         <ListItemText primary={feature} />
                       </ListItem>
@@ -543,7 +560,7 @@ const PaymentPage: React.FC = () => {
                   <Typography 
                     variant="body1" 
                     align="center"
-                    color={selectedPlan === plan.id ? "primary" : "text.secondary"}
+                    color={selectedPlan === plan.id ? theme.palette.secondary.light : "text.secondary"}
                     sx={{ 
                       width: '100%', 
                       fontWeight: selectedPlan === plan.id ? 'bold' : 'normal',

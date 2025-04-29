@@ -52,8 +52,8 @@ const AppPage: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 3, px: { xs: 1, sm: 2, md: 3 } }}>
       <Box sx={{ mb: 4, textAlign: 'center', mx: 'auto' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          ✨ My Style Studio ✨
+        <Typography variant="h3" component="h1" gutterBottom>
+          My Style Studio
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Create AI images of yourself in any outfit
