@@ -297,7 +297,7 @@ const HomePage: React.FC = () => {
       <Box sx={{ 
         py: { xs: 8, md: 12 }, 
         textAlign: 'center',
-        background: `linear-gradient(145deg, ${theme.palette.primary.main}10, ${theme.palette.primary.light}05)`,
+        background: `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
         position: 'relative',
         zIndex: 1,
         backdropFilter: 'blur(5px)',
@@ -326,7 +326,7 @@ const HomePage: React.FC = () => {
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontWeight: 800,
               mb: 2,
-              color: theme.palette.primary.main
+              color: theme.palette.secondary.dark
             }}
           >
             Try it, Love it, Buy it
@@ -334,8 +334,7 @@ const HomePage: React.FC = () => {
           
           <Typography 
             variant="h5" 
-            color="text.secondary" 
-            sx={{ mb: 4, maxWidth: '700px', mx: 'auto' }}
+            sx={{ mb: 4, maxWidth: '700px', mx: 'auto', color: theme.palette.secondary.light }}
           >
             See yourself in any outfit before you buy or rent it, using our lifelike AI technology
           </Typography>
@@ -356,7 +355,7 @@ const HomePage: React.FC = () => {
             Try it, Lovit!
           </Button>
           
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ mt: 2, color: theme.palette.secondary.light  }}>
             Setup in minutes
           </Typography>
         </Container>
