@@ -1,38 +1,28 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Box, 
-  Tabs, 
-  Tab, 
   Typography, 
-  Paper,
   Card,
   CardMedia,
   CardContent,
-  Divider,
   Button,
   LinearProgress,
   Chip,
   CircularProgress,
-  Skeleton,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Slide
+  Skeleton
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import FaceIcon from '@mui/icons-material/Person';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ImageIcon from '@mui/icons-material/Image';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import CloseIcon from '@mui/icons-material/Close';
-import DownloadIcon from '@mui/icons-material/Download';
-import InfoIcon from '@mui/icons-material/Info';
-import { TransitionProps } from '@mui/material/transitions';
+import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
+import { useTheme } from '@mui/material/styles';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { useLayout } from './Layout';
-import { fetchModels, updateModel, Model } from '../store/modelsSlice';
+import { fetchModels, Model } from '../store/modelsSlice';
 import { 
   fetchGeneratedImages, 
   selectImageGroups,
@@ -44,8 +34,8 @@ import {
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
-import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
-import { useTheme } from '@mui/material/styles';
+import ImageDetailModal from './ImageDetailModal';
+import { mockImageGroups, mockModels } from '../utils/mockData';
 
 // Define local interface for image groups
 interface ImageGroup {
@@ -80,198 +70,6 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-// Mock data
-const mockModels: Model[] = [
-  {
-    modelId: 'model_1',
-    name: 'Summer Casual',
-    gender: 'Female',
-    bodyType: 'Athletic',
-    createdAt: '2024-04-20T14:22:18Z',
-    status: 'completed',
-    progress: 100,
-    ethnicity: 'Asian',
-    hairColor: 'Black',
-    hairStyle: 'Long',
-    eyeColor: 'Brown',
-    height: 'Average (~170cm/5\'7")',
-    age: 24,
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=764&q=80'
-  },
-  {
-    modelId: 'model_2',
-    name: 'Business Professional',
-    gender: 'Male',
-    bodyType: 'Average',
-    createdAt: '2024-04-19T09:15:00Z',
-    status: 'in_progress',
-    progress: 67,
-    ethnicity: 'Caucasian',
-    hairColor: 'Brown',
-    hairStyle: 'Short',
-    eyeColor: 'Blue',
-    height: 'Tall (~180cm/5\'11")',
-    age: 32,
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
-  },
-  {
-    modelId: 'model_3',
-    name: 'Evening Elegance',
-    gender: 'Female',
-    bodyType: 'Slim',
-    createdAt: '2024-04-18T18:30:00Z',
-    status: 'queued',
-    progress: 0,
-    ethnicity: 'Hispanic/Latino',
-    hairColor: 'Brown',
-    hairStyle: 'Wavy',
-    eyeColor: 'Brown',
-    height: 'Short (~160cm/5\'3")',
-    age: 28,
-    imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
-  },
-  {
-    modelId: 'model_4',
-    name: 'Urban Streetwear',
-    gender: 'Non-binary',
-    bodyType: 'Athletic',
-    createdAt: '2024-04-17T11:45:00Z',
-    status: 'failed',
-    progress: 45,
-    ethnicity: 'Mixed',
-    hairColor: 'Black',
-    hairStyle: 'Medium',
-    eyeColor: 'Hazel',
-    height: 'Average (~170cm/5\'7")',
-    age: 26,
-    imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=764&q=80'
-  },
-  {
-    modelId: 'model_5',
-    name: 'Bohemian Style',
-    gender: 'Female',
-    bodyType: 'Curvy',
-    createdAt: '2024-04-16T16:20:00Z',
-    status: 'completed',
-    progress: 100,
-    ethnicity: 'Black',
-    hairColor: 'Black',
-    hairStyle: 'Curly',
-    eyeColor: 'Brown',
-    height: 'Average (~170cm/5\'7")',
-    age: 29,
-    imageUrl: 'https://images.unsplash.com/photo-1539701938214-0d9736e1c16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=691&q=80'
-  },
-  {
-    modelId: 'model_6',
-    name: 'Sporty Casual',
-    gender: 'Male',
-    bodyType: 'Athletic',
-    createdAt: '2024-04-15T13:40:00Z',
-    status: 'completed',
-    progress: 100,
-    ethnicity: 'East Asian',
-    hairColor: 'Black',
-    hairStyle: 'Medium',
-    eyeColor: 'Brown',
-    height: 'Average (~175cm/5\'9")',
-    age: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80'
-  }
-];
-
-// Mock image data grouped by date
-const mockImageGroups: ImageGroup[] = [
-  {
-    date: '2024-04-21',
-    formattedDate: 'Sun, 21st April, 2024',
-    images: [
-      {
-        imageId: '1',
-        imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&q=80',
-        title: 'Elegant Formal Outfit',
-        createdAt: '2024-04-21T15:30:00Z',
-        orientation: 'portrait_4_3',
-        dripRating: ['Chic', 'Elegant', 'Sophisticated', 'Glamorous', 'Formal']
-      },
-      {
-        imageId: '2',
-        imageUrl: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80',
-        title: 'Luxury Evening Wear',
-        createdAt: '2024-04-21T14:20:00Z',
-        orientation: 'portrait_16_9',
-        dripRating: ['Elegant', 'Glamorous', 'Luxurious', 'Sophisticated', 'Stylish']
-      },
-      {
-        imageId: '3',
-        imageUrl: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=672&q=80',
-        title: 'Bright Summer Collection',
-        createdAt: '2024-04-21T12:10:00Z',
-        orientation: 'landscape_16_9',
-        dripRating: ['Vibrant', 'Playful', 'Casual', 'Fun', 'Summery']
-      },
-      {
-        imageId: '4',
-        imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=673&q=80',
-        title: 'City Street Fashion',
-        createdAt: '2024-04-21T10:15:00Z',
-        orientation: 'square_hd',
-        dripRating: ['Urban', 'Stylish', 'Edgy', 'Modern', 'Trendy']
-      }
-    ]
-  },
-  {
-    date: '2024-04-20',
-    formattedDate: 'Sat, 20th April, 2024',
-    images: [
-      {
-        imageId: '5',
-        imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=688&q=80',
-        title: 'Professional Business Look',
-        createdAt: '2024-04-20T19:45:00Z',
-        orientation: 'portrait_4_3',
-        dripRating: ['Professional', 'Sophisticated', 'Polished', 'Formal', 'Elegant']
-      },
-      {
-        imageId: '6',
-        imageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
-        title: 'Evening Gown Collection',
-        createdAt: '2024-04-20T18:30:00Z',
-        orientation: 'landscape_4_3',
-        dripRating: ['Glamorous', 'Elegant', 'Sophisticated', 'Luxurious', 'Chic']
-      },
-      {
-        imageId: '7',
-        imageUrl: 'https://images.unsplash.com/photo-1632149877166-f75d49000351?ixlib=rb-4.0.3&auto=format&fit=crop&w=664&q=80',
-        title: 'Urban Fashion Style',
-        createdAt: '2024-04-20T16:40:00Z',
-        orientation: 'portrait_16_9',
-        dripRating: ['Urban', 'Edgy', 'Stylish', 'Modern', 'Trendy']
-      }
-    ]
-  },
-  {
-    date: '2024-04-19',
-    formattedDate: 'Fri, 19th April, 2024',
-    images: [
-      {
-        imageId: '8',
-        imageUrl: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80',
-        title: 'Casual Summer Outfit',
-        createdAt: '2024-04-19T16:20:00Z',
-        dripRating: ['Casual', 'Fun', 'Vibrant', 'Summery', 'Relaxed']
-      },
-      {
-        imageId: '9',
-        imageUrl: 'https://images.unsplash.com/photo-1576185850227-1f72b7f8d483?ixlib=rb-4.0.3&auto=format&fit=crop&w=725&q=80',
-        title: 'Winter Collection',
-        createdAt: '2024-04-19T14:10:00Z',
-        dripRating: ['Cozy', 'Elegant', 'Sophisticated', 'Warm', 'Seasonal']
-      }
-    ]
-  }
-];
-
 // Helper function to get fallback image based on model ID hash
 const getFallbackImage = (modelId: string): string => {
   // Simple hash function
@@ -285,21 +83,12 @@ const getFallbackImage = (modelId: string): string => {
   return `/dress${imageIndex + 1}.jpg`;
 };
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const MainTabs: React.FC = () => {
   // Set default tab to Gallery (index 0)
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(true);
+  const [useMockData, setUseMockData] = useState(false);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -509,26 +298,6 @@ const MainTabs: React.FC = () => {
     setModalOpen(false);
     // Clear selected image after animation completes
     setTimeout(() => setSelectedImage(null), 300);
-  }, []);
-
-  // Function to handle image download
-  const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
-    if (!imageUrl) return;
-
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${title || 'lovit-image'}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading image:', error);
-    }
   }, []);
 
   const gridSize = getGridSize();
@@ -1490,185 +1259,12 @@ const MainTabs: React.FC = () => {
       </TabPanel>
 
       {/* Image Modal */}
-      <Dialog
-        fullScreen
+      <ImageDetailModal 
         open={modalOpen}
         onClose={handleCloseModal}
-        TransitionComponent={Transition}
-        onClick={(e) => {
-          // This ensures clicks anywhere outside the content container will close the modal
-          const target = e.target as HTMLElement;
-          if (target.classList.contains('MuiDialog-container')) {
-            handleCloseModal();
-          }
-        }}
-        sx={{
-          '& .MuiDialog-paper': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-            overflow: 'hidden' // Prevent scrolling in the dialog
-          }
-        }}
-      >
-        <DialogContent
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 0,
-            overflow: 'hidden',
-            height: '100vh',
-            position: 'relative'
-          }}
-        >
-          {selectedImage && (
-            <Box sx={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: { xs: 2, sm: 4 }
-            }}>
-              {/* Background blur effect */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundImage: `url(${selectedImage?.imageUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  filter: 'blur(30px)',
-                  transform: 'scale(1.2)',
-                  opacity: 0.3,
-                }}
-              />
-              
-              {/* Clickable backdrop - this will close the modal when clicked */}
-              <Box
-                onClick={handleCloseModal}
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  zIndex: 5,
-                  cursor: 'pointer'
-                }}
-              />
-              
-              {/* Main content container */}
-              <Box 
-                sx={{ 
-                  display: 'flex',
-                  flexDirection: 'column',
-                  maxWidth: '90%',
-                  maxHeight: '90%',
-                  position: 'relative',
-                  zIndex: 10,
-                  borderRadius: 3,
-                  overflow: 'hidden',
-                  backgroundColor: 'background.paper', // Soft cream with slight transparency
-                  p: 2,
-                  boxShadow: '0 10px 20px rgba(238, 217, 182, 0.2)'
-                }}
-              >
-                {/* Image */}
-                <Box sx={{ 
-                  flexGrow: 1, 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'center',
-                  overflow: 'hidden',
-                  mb: 2,
-                  position: 'relative'
-                }}>
-                  <img
-                    src={selectedImage?.imageUrl}
-                    alt={selectedImage?.title || 'Full-size image'}
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '70vh',
-                      objectFit: 'contain',
-                      display: 'block',
-                      borderRadius: '8px'
-                    }}
-                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                      e.currentTarget.src = handleImageError();
-                    }}
-                  />
-                  {/* Download button on top right of image */}
-                  <IconButton
-                    onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                      }
-                    }}
-                  >
-                    <DownloadIcon />
-                  </IconButton>
-                </Box>
-                
-                {/* Title and tags below the image */}
-                <Box sx={{ 
-                  width: '100%',
-                  p: 2,
-                  backgroundColor: 'primary.main',
-                  borderRadius: 2
-                }}>
-                  <Typography variant="h5" sx={{ color: '#faf4e9', mb: 2 }}>
-                    {selectedImage?.title}
-                  </Typography>
-                  
-                  {selectedImage?.dripRating && selectedImage.dripRating.length > 0 && (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selectedImage.dripRating.map((tag, idx) => (
-                        <Chip
-                          key={idx}
-                          label={tag}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontWeight: 600,
-                            fontSize: '0.75rem',
-                            height: 24,
-                            ml: 0.5,
-                            mb: 0.5,
-                            color: theme.palette.primary.main,
-                            borderColor: theme.palette.secondary.light
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-                
-                {/* Close button below */}
-                <Button
-                  variant="contained"
-                  startIcon={<CloseIcon />}
-                  onClick={handleCloseModal}
-                  sx={{
-                    alignSelf: 'center',
-                    mt: 2,
-                  }}
-                >
-                  Close
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </DialogContent>
-      </Dialog>
+        selectedImage={selectedImage}
+        onImageError={handleImageError}
+      />
     </Box>
   );
 };
