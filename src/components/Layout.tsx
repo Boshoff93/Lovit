@@ -419,6 +419,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Function to open model section and focus on name field
   const openModel = useCallback(() => {
+    setOpen(true);
     setModelOpen(true);
     setTimeout(() => {
       if (modelNameRef.current) {
@@ -434,6 +435,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   // Function to open images section
   const openImages = useCallback(() => {
+    setOpen(true);
     setImagesOpen(true);
     if (modelOpen) setModelOpen(false);
   }, [modelOpen]);

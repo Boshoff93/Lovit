@@ -71,9 +71,9 @@ const AccountPage: React.FC = () => {
       display: 'flex', 
       justifyContent: 'center', 
       minHeight: '100vh',
-      pt: 2,
-      pb: 8,
-      px: { xs: 0, sm: 0, md: 0 }
+      pt: { xs: 1, sm: 2 },
+      pb: { xs: 4, sm: 8 },
+      px: { xs: 2, sm: 2, md: 0 }
     }}>
       <Container maxWidth="sm" sx={{ 
         display: 'flex', 
@@ -81,15 +81,6 @@ const AccountPage: React.FC = () => {
         alignItems: 'center',
         width: '100%'
       }}>
-        <Box sx={{ mb: 12, textAlign: 'center', maxWidth: '600px' }}>
-          <Typography variant="h3" component="h1" gutterBottom>
-            Account Settings
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Manage your profile and account preferences
-          </Typography>
-        </Box>
-        
         {(error || fetchError) && (
           <Alert severity="error" sx={{ mb: 4, width: '100%' }}>
             {error || fetchError}
@@ -98,29 +89,30 @@ const AccountPage: React.FC = () => {
         
         <Card sx={{ 
           width: '100%', 
-          borderRadius: 3,
+          borderRadius: { xs: 2, sm: 3 },
           boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
           overflow: 'visible',
           position: 'relative',
+          mt: 4
         }}>
           <CardContent sx={{ p: 0 }}>
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
-              pt: 6,
-              pb: 4,
+              pt: { xs: 5, sm: 6 },
+              pb: { xs: 3, sm: 4 },
               position: 'relative'
             }}>
               <Avatar 
                 sx={{ 
-                  width: 120, 
-                  height: 120, 
+                  width: { xs: 100, sm: 120 }, 
+                  height: { xs: 100, sm: 120 }, 
                   mb: 2,
                   boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                   position: 'absolute',
                   backgroundColor: 'secondary.light',
-                  top: -60
+                  top: { xs: -50, sm: -60 }
                 }}
                 alt={user?.username || 'User Profile'}
                 src="/lovit.png"
@@ -144,7 +136,7 @@ const AccountPage: React.FC = () => {
                   }}
                 />
 
-                <Box sx={{ mt: 3, mb: 1, display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ mt: 3, mb: 1, display: 'flex', justifyContent: 'center', gap: { xs: 3, sm: 2 }, flexWrap: 'wrap' }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Member Since
@@ -154,7 +146,7 @@ const AccountPage: React.FC = () => {
                     </Typography>
                   </Box>
                   
-                  <Divider orientation="vertical" flexItem />
+                  <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />
                   
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -172,7 +164,7 @@ const AccountPage: React.FC = () => {
 
             {/* Allowances Section */}
             {allowances && (
-              <Box sx={{ p: 4 }}>
+              <Box sx={{ p: { xs: 3, sm: 4 } }}>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
                   Your Allowances
                 </Typography>
@@ -182,7 +174,7 @@ const AccountPage: React.FC = () => {
                     <Paper 
                       elevation={0} 
                       sx={{ 
-                        p: 2, 
+                        p: { xs: 1.5, sm: 2 }, 
                         borderRadius: 2, 
                         border: '1px solid',
                         borderColor: 'divider' 
@@ -272,22 +264,24 @@ const AccountPage: React.FC = () => {
             
             <Divider />
             
-            <Box sx={{ p: 4 }}>
+            <Box sx={{ p: { xs: 3, sm: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
                   Subscription Details
                 </Typography>
                 <Paper sx={{ 
                   display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'row' },
                   justifyContent: 'space-between', 
-                  alignItems: 'center', 
+                  alignItems: { xs: 'flex-start', sm: 'center' }, 
                   mb: 3,
-                  p: 3,
+                  p: { xs: 2, sm: 3 },
                   borderRadius: 2,
                   backgroundColor: 'background.default',
                   border: '1px solid',
                   borderColor: 'divider',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                  gap: { xs: 2, sm: 0 }
                 }}>
                   <Box>
                     <Typography variant="subtitle2" fontWeight={700} color="primary.main">
@@ -315,6 +309,7 @@ const AccountPage: React.FC = () => {
                       borderRadius: 8,
                       px: 3,
                       fontWeight: 600,
+                      width: { xs: '100%', sm: 'auto' },
                       '&:hover': {
                         backgroundColor: 'primary.main',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
@@ -329,7 +324,7 @@ const AccountPage: React.FC = () => {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
                 Personal Information
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 }, mt: 1 }}>
                 <TextField 
                   fullWidth 
                   label="Username" 
