@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { saveAs } from 'file-saver';
 import { 
   Dialog, 
   DialogContent, 
@@ -63,6 +64,15 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     severity: 'success'
   });
 
+  // Function to show a snackbar notification
+  const showNotification = useCallback((message: string, severity: 'success' | 'info' | 'warning' | 'error' = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
+
   // Function to handle image download
   const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
     if (!imageUrl) return;
@@ -70,18 +80,17 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${title || 'lovit-image'}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
+      
+      // Use file-saver to handle download (works on all devices including Android)
+      saveAs(blob, filename);
+      
+      showNotification('Image download started');
     } catch (error) {
       console.error('Error downloading image:', error);
+      showNotification('Failed to download image', 'error');
     }
-  }, []);
+  }, [showNotification]);
 
   // Function to handle opening the share menu
   const handleShareClick = useCallback((event?: React.MouseEvent<HTMLButtonElement>) => {
@@ -111,15 +120,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
   // Handle closing the snackbar
   const handleCloseSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, open: false }));
-  }, []);
-
-  // Function to show a snackbar notification
-  const showNotification = useCallback((message: string, severity: 'success' | 'info' | 'warning' | 'error' = 'success') => {
-    setSnackbar({
-      open: true,
-      message,
-      severity
-    });
   }, []);
 
   // Function to copy image URL to clipboard
@@ -426,6 +426,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          mt: 4
+        }}
       >
         <Alert 
           onClose={handleCloseSnackbar} 

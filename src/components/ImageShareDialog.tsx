@@ -83,7 +83,8 @@ const ImageShareDialog: React.FC<ImageShareDialogProps> = ({
             </Box>
           </Box>
           
-          <Box sx={{ display: 'flex', 
+          <Box sx={{ 
+            display: 'flex', 
             flexDirection: { xs: 'column', sm: 'row' },
             gap: { xs: 1, sm: 2 }, 
             mt: 1, 
@@ -92,79 +93,41 @@ const ImageShareDialog: React.FC<ImageShareDialogProps> = ({
           }}>
             <Button 
               variant="outlined" 
-              startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}><ContentCopyIcon /></Box>}
+              startIcon={<ContentCopyIcon />}
               onClick={onCopyUrl}
               size="small"
               sx={{ 
-                borderRadius: { xs: '50%', sm: '50%', md: 8 },
-                minWidth: { xs: '40px', sm: '40px', md: 'auto' },
-                width: { xs: '40px', sm: '40px', md: 'auto' },
-                height: { xs: '40px', sm: '40px', md: 'auto' },
-                padding: { xs: 0, sm: 0, md: '6px 16px' },
-                fontSize: { xs: '0.75rem', sm: '0.75rem', md: '0.875rem' },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                lineHeight: 1,
-                '& .MuiButton-startIcon': {
-                  margin: { xs: 0, sm: 0, md: '0 8px 0 -4px' },
-                }
+                borderRadius: 2,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
               }}
             >
-              <ContentCopyIcon sx={{ display: { xs: 'inline', md: 'none' }, fontSize: '1.25rem' }} />
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }}>Copy URL</Box>
+              Copy URL
             </Button>
             
             <Button
               variant="outlined"
-              startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}><DownloadIcon /></Box>}
+              startIcon={<DownloadIcon />}
               onClick={() => onDownload(imageUrl, imageTitle)}
               size="small"
               sx={{ 
-                borderRadius: { xs: '50%', sm: '50%', md: 8 },
-                minWidth: { xs: '40px', sm: '40px', md: 'auto' },
-                width: { xs: '40px', sm: '40px', md: 'auto' },
-                height: { xs: '40px', sm: '40px', md: 'auto' },
-                padding: { xs: 0, sm: 0, md: '6px 16px' },
-                fontSize: { xs: '0.75rem', sm: '0.75rem', md: '0.875rem' },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                lineHeight: 1,
-                '& .MuiButton-startIcon': {
-                  margin: { xs: 0, sm: 0, md: '0 8px 0 -4px' },
-                }
+                borderRadius: 2,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
               }}
             >
-              <DownloadIcon sx={{ display: { xs: 'inline', md: 'none' }, fontSize: '1.25rem' }} />
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }}>Download</Box>
+              Download
             </Button>
             
             <Button 
               variant="contained" 
-              startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}><OpenInNewIcon /></Box>}
+              startIcon={<OpenInNewIcon />}
               onClick={() => onOpenPlatform(platform)}
               size="small"
               sx={{ 
-                borderRadius: { xs: '50%', sm: '50%', md: 8 },
-                minWidth: { xs: '40px', sm: '40px', md: 'auto' },
-                width: { xs: '40px', sm: '40px', md: 'auto' },
-                height: { xs: '40px', sm: '40px', md: 'auto' },
-                padding: { xs: 0, sm: 0, md: '6px 16px' },
-                fontSize: { xs: '0.75rem', sm: '0.75rem', md: '0.875rem' },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                lineHeight: 1,
-                '& .MuiButton-startIcon': {
-                  margin: { xs: 0, sm: 0, md: '0 8px 0 -4px' },
-                }
+                borderRadius: 2,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
               }}
             >
-              <OpenInNewIcon sx={{ display: { xs: 'inline', md: 'none' }, fontSize: '1.25rem' }} />
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }}>
-                Open {platform === 'instagram' ? 'Instagram' : 'TikTok'}
-              </Box>
+              Open {platform === 'instagram' ? 'Instagram' : 'TikTok'}
             </Button>
           </Box>
           
@@ -172,22 +135,14 @@ const ImageShareDialog: React.FC<ImageShareDialogProps> = ({
             onClick={onClose}
             variant="contained"
             size="small"
+            startIcon={<CloseIcon />}
             sx={{ 
               mt: 2, 
-              borderRadius: { xs: '50%', sm: '50%', md: 20 },
-              minWidth: { xs: '40px', sm: '40px', md: 'auto' },
-              width: { xs: '40px', sm: '40px', md: 'auto' },
-              height: { xs: '40px', sm: '40px', md: 'auto' },
-              padding: { xs: 0, sm: 0, md: '6px 16px' },
-              fontSize: { xs: '0.75rem', sm: '0.75rem', md: '0.875rem' },
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              lineHeight: 1
+              borderRadius: 2,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
             }}
           >
-            <CloseIcon sx={{ display: { xs: 'inline', md: 'none' }, fontSize: '1.25rem' }} />
-            <Box sx={{ display: { xs: 'none', md: 'inline' } }}>Cancel</Box>
+            Cancel
           </Button>
         </Box>
       </DialogContent>
