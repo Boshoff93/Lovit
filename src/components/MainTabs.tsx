@@ -45,6 +45,7 @@ import {
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
 import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
+import { useTheme } from '@mui/material/styles';
 
 // Define local interface for image groups
 interface ImageGroup {
@@ -531,6 +532,7 @@ const MainTabs: React.FC = () => {
   }, []);
 
   const gridSize = getGridSize();
+  const theme = useTheme();
 
   return (
     <Box sx={{ width: '100%', backgroundColor: 'transparent' }}>
@@ -1085,10 +1087,14 @@ const MainTabs: React.FC = () => {
                                   key={idx}
                                   label={tag}
                                   size="small"
+                                  variant="filled"
                                   sx={{
-                                    fontWeight: 500,
-                                    fontSize: '0.7rem',
-                                    height: 20
+                                    fontWeight: 600,
+                                    fontSize: '0.75rem',
+                                    height: 24,
+                                    color: theme.palette.secondary.light,
+                                    ml: 0.5,
+                                    mb: 0.5
                                   }}
                                 />
                               ))}
@@ -1395,10 +1401,14 @@ const MainTabs: React.FC = () => {
                                       key={idx}
                                       label={tag}
                                       size="small"
+                                      variant="filled"
                                       sx={{
-                                        fontWeight: 500,
-                                        fontSize: '0.7rem',
-                                        height: 20
+                                        fontWeight: 600,
+                                        fontSize: '0.75rem',
+                                        height: 24,
+                                        color: theme.palette.secondary.light,
+                                        ml: 0.5,
+                                        mb: 0.5
                                       }}
                                     />
                                   ))}
@@ -1628,9 +1638,13 @@ const MainTabs: React.FC = () => {
                           size="small"
                           variant="outlined"
                           sx={{
-                            fontWeight: 500,
-                            fontSize: '0.7rem',
-                            height: 20
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            height: 24,
+                            ml: 0.5,
+                            mb: 0.5,
+                            color: theme.palette.primary.main,
+                            borderColor: theme.palette.secondary.light
                           }}
                         />
                       ))}

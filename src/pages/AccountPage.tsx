@@ -118,12 +118,12 @@ const AccountPage: React.FC = () => {
                   height: 120, 
                   mb: 2,
                   boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  border: '4px solid white',
                   position: 'absolute',
+                  backgroundColor: 'secondary.light',
                   top: -60
                 }}
                 alt={user?.username || 'User Profile'}
-                src="/lovit.jpeg"
+                src="/lovit.png"
               />
               <Box sx={{ mt: 7, textAlign: 'center' }}>
                 <Typography variant="h5" gutterBottom>

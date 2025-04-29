@@ -1456,9 +1456,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           elevation={0}
                           variant="outlined" 
                           sx={{ 
-                            borderRadius: 6, 
-                            padding: 0.2,
                             backgroundColor: 'background.paper',
+                            borderColor: 'primary.main',
                           }}
                         >
                           <ToggleButtonGroup
@@ -1466,7 +1465,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             value={promptData.useRandomPrompt ? 'random' : 'custom'}
                             onChange={handlePromptModeChange}
                             aria-label="prompt type"
-                            size="small"
+                            size="medium"
                             sx={{ width: '100%' }}
                           >
                             <ToggleButton 
@@ -1474,9 +1473,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                               aria-label="custom prompt"
                               sx={{ 
                                 px: 2,
-                                borderRadius: 5,
+                                borderRadius: 1,
+                                backgroundColor: `${theme.palette.background.default}`,
                                 '&.Mui-selected': {
-                                  backgroundColor: `${theme.palette.primary.main}15`,
+                                  backgroundColor: `${theme.palette.secondary.main}`,
                                   color: theme.palette.primary.main,
                                   fontWeight: 'bold'
                                 }
@@ -1490,9 +1490,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                               aria-label="random prompt"
                               sx={{ 
                                 px: 2,
-                                borderRadius: 5,
+                                borderRadius: 1,
+                                backgroundColor: `${theme.palette.background.default}`,
                                 '&.Mui-selected': {
-                                  backgroundColor: `${theme.palette.primary.main}15`,
+                                  backgroundColor: `${theme.palette.secondary.main}`,
                                   color: theme.palette.primary.main,
                                   fontWeight: 'bold'
                                 }

@@ -302,7 +302,7 @@ const PaymentPage: React.FC = () => {
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src="/lovit.jpeg" 
+              src="/lovit.png" 
               alt="Lovit Logo" 
               style={{ 
                 height: '32px', 

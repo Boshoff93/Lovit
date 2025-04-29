@@ -3,12 +3,12 @@
   "name": "Lovit",
   "icons": [
     {
-      "src": "lovit.jpeg",
+      "src": "lovit.png",
       "type": "image/jpeg",
       "sizes": "192x192"
     },
     {
-      "src": "lovit.jpeg",
+      "src": "lovit.png",
       "type": "image/jpeg",
       "sizes": "512x512"
     }

@@ -309,14 +309,15 @@ const HomePage: React.FC = () => {
           {/* Logo/Image above slogan */}
           <Box 
             component="img"
-            src="/lovit.jpeg" // Using existing image from public folder
+            src="/lovit.png" // Using existing image from public folder
             alt="Lovit Logo"
             sx={{
-              width: { xs: '180px', md: '220px' },
+              width: { xs: '300px', md: '300px' },
+              p: "10px",
               height: 'auto',
-              mb: 4,
               borderRadius: '50%',
-              boxShadow: '0 8px 16px rgba(43, 45, 66, 0.15)'
+              border: `4px solid ${theme.palette.primary.main}`,
+              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)'
             }}
           />
           
