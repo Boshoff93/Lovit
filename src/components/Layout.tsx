@@ -1312,14 +1312,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </Paper>
                       
                       <Button
-                        variant="contained"
-                        color="primary"
+                        variant="outlined"
                         fullWidth
                         component="label"
                         startIcon={<CloudUploadIcon />}
-                        sx={{ mb: 1 }}
+                        sx={{ mb: 1, width: '100%' }}
                       >
-                        {'Upload Images'}
+                        Upload Images
                         <input
                           type="file"
                           multiple
@@ -1528,8 +1527,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             borderRadius: 1,
                             borderWidth: 2,
                             borderStyle: 'dashed',
-                            borderColor: theme.palette.secondary.main,
-                            backgroundColor: theme.palette.secondary.light + '10',
+                            borderColor: theme.palette.primary.main,
+                            backgroundColor: theme.palette.primary.light + '10',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -1539,12 +1538,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           }}
                         >
                           <AutoFixHighIcon 
-                            color="secondary" 
+                            color="primary" 
                             sx={{ fontSize: 28, mb: 1 }}
                           />
                           <Typography 
                             variant="body1" 
-                            color="secondary.main"
+                            color="primary.main"
                             sx={{ fontWeight: 500 }}
                           >
                             We'll create something for you with your model
@@ -1686,9 +1685,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 variant="outlined" 
                 sx={{ 
                   p: 2, 
-                  borderRadius: 2,
-                  backgroundColor: theme.palette.primary.light + '10', 
-                  borderColor: theme.palette.primary.light
+                  borderRadius: 2
                 }}
               >
                 <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>

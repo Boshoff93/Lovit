@@ -99,7 +99,7 @@ const AccountPage: React.FC = () => {
         <Card sx={{ 
           width: '100%', 
           borderRadius: 3,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
           overflow: 'visible',
           position: 'relative',
         }}>
@@ -272,14 +272,12 @@ const AccountPage: React.FC = () => {
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
                   Subscription Details
                 </Typography>
-                <Box sx={{ 
+                <Paper sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'center', 
                   mb: 3,
-                  backgroundColor: 'rgba(0,0,0,0.02)',
                   p: 2,
-                  borderRadius: 2
                 }}>
                   <Box>
                     <Typography variant="subtitle2" fontWeight={600}>
@@ -302,7 +300,7 @@ const AccountPage: React.FC = () => {
                   >
                     {portalLoading ? 'Loading...' : 'Manage'}
                   </Button>
-                </Box>
+                </Paper>
               </Box>
 
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>

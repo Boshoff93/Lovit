@@ -21,17 +21,17 @@ const theme = createTheme({
       dark: '#14213D', // Dark navy
     },
     secondary: {
-      main: '#EDF2F4', // Off-white
-      light: '#FFFFFF', // Pure white
-      dark: '#8D99AE', // Gray blue
+      main: '#eed9b6', // Warm cream
+      light: '#f7ecdb', // Light cream
+      dark: '#e5c696', // Darker cream
     },
     background: {
-      default: '#F8F9FA', // White
-      paper: '#F8F9FA', // Very light gray
+      default: '#fdfbf8', // Lightest cream
+      paper: '#faf4e9', // Light warm cream
     },
     text: {
       primary: '#2B2D42', // Navy for text
-      secondary: '#8D99AE', // Medium gray for secondary text
+      secondary: '#4B4D62', // Darker muted navy for better contrast
     },
   },
   typography: {
@@ -78,13 +78,79 @@ const theme = createTheme({
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
+          minHeight: '42px',
+          '&.Mui-disabled': {
+            backgroundColor: '#e0e0e0',
+            color: '#8d8d8d',
+            borderColor: '#bdbdbd',
+          },
+          '&.MuiButton-contained': {
+            background: 'linear-gradient(145deg, #2B2D42, #14213D)',
+            color: '#faf4e9',
+            '&:hover': {
+              background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
+              color: '#2B2D42',
+            },
+            '&.MuiButton-containedSecondary': {
+              background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
+              color: '#2B2D42',
+              '&:hover': {
+                background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
+              },
+            },
+            '&.Mui-disabled': {
+              background: '#e0e0e0',
+              color: '#8d8d8d',
+            },
+          },
+          '&.MuiButton-outlined': {
+            borderColor: '#2B2D42',
+            color: '#2B2D42',
+            borderWidth: '1.5px',
+            backgroundColor: '#fdfbf8',
+            '&:hover': {
+              background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
+              borderColor: '#2B2D42',
+              color: '#2B2D42',
+            },
+            '&.MuiButton-outlinedSecondary': {
+              borderColor: '#eed9b6',
+              color: '#2B2D42',
+              backgroundColor: '#fdfbf8',
+              '&:hover': {
+                background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
+                borderColor: '#e5c696',
+                color: '#2B2D42',
+              },
+            },
+            '&.Mui-disabled': {
+              backgroundColor: '#e0e0e0',
+              color: '#8d8d8d',
+              borderColor: '#bdbdbd',
+            },
+          },
+          '&.MuiButton-text': {
+            color: '#2B2D42',
+            '&:hover': {
+              backgroundColor: '#faf4e9',
+            },
+            '&.MuiButton-textSecondary': {
+              color: '#2B2D42',
+              '&:hover': {
+                backgroundColor: 'rgba(238, 217, 182, 0.08)',
+              },
+            },
+            '&.Mui-disabled': {
+              color: '#8d8d8d',
+              backgroundColor: '#e0e0e0',
+            },
+          },
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          backgroundColor: '#EDF2F4', // Light background matching our secondary main
           '&.MuiChip-sizeSmall': {
             height: 24,
             fontSize: '0.75rem',
@@ -92,17 +158,33 @@ const theme = createTheme({
         },
         label: {
           fontWeight: 500,
-          color: '#2B2D42', // Navy text matching our primary main
         },
         filled: {
-          backgroundColor: '#EDF2F4',
+          backgroundColor: '#2B2D42',
+          color: '#faf4e9',
           '&:hover': {
-            backgroundColor: '#8D99AE', // Light navy on hover
+            backgroundColor: '#3B3D52',
+          },
+          '& .MuiChip-deleteIcon': {
+            color: '#8D99AE',
+            '&:hover': {
+              color: '#faf4e9',
+            },
           },
         },
         outlined: {
-          borderColor: '#8D99AE',
+          backgroundColor: '#f7ecdb',
+          borderColor: '#eed9b6',
           color: '#2B2D42',
+          '&:hover': {
+            backgroundColor: '#f3e4cc',
+          },
+          '& .MuiChip-deleteIcon': {
+            color: '#2B2D42',
+            '&:hover': {
+              color: '#14213D',
+            },
+          },
         },
       },
     },
@@ -110,17 +192,152 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)',
+          backgroundColor: '#faf4e9',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
+        root: {
+          backgroundColor: '#f5f5f5',
+        },
         rounded: {
           borderRadius: 12,
         },
         elevation1: {
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)',
+          backgroundColor: '#f5f5f5',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#fdfbf8',
+            '&:hover': {
+              backgroundColor: '#fdfbf8',
+            },
+            '&.Mui-focused': {
+              backgroundColor: '#fdfbf8',
+            },
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fdfbf8',
+          '&:hover': {
+            backgroundColor: '#fdfbf8',
+          },
+          '&.Mui-focused': {
+            backgroundColor: '#fdfbf8',
+          },
+          '& fieldset': {
+            borderColor: '#2B2D42',
+            borderWidth: '1.5px',
+          },
+          '&:hover fieldset': {
+            borderColor: '#14213D',
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: '#14213D',
+            borderWidth: '2px',
+          },
+        },
+        input: {
+          '&::placeholder': {
+            color: '#757575',
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fdfbf8',
+        },
+        input: {
+          '&::placeholder': {
+            color: '#757575',
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fdfbf8',
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fdfbf8',
+          '&.Mui-disabled': {
+            opacity: 0.7,
+            color: '#757575',
+            backgroundColor: '#fdfbf8',
+          },
+          '&:hover': {
+            backgroundColor: '#faf4e9',
+          },
+          '&.Mui-selected': {
+            backgroundColor: '#f7ecdb',
+            '&:hover': {
+              backgroundColor: '#f3e4cc',
+            },
+          },
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#fdfbf8',
+          '& .MuiMenuItem-root': {
+            '&:hover': {
+              backgroundColor: '#faf4e9',
+            },
+            '&.Mui-selected': {
+              backgroundColor: '#f7ecdb',
+              '&:hover': {
+                backgroundColor: '#f3e4cc',
+              },
+            },
+            '&.Mui-disabled': {
+              opacity: 0.7,
+              color: '#757575',
+              backgroundColor: '#fdfbf8',
+            },
+          },
+        },
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#fdfbf8',
+        },
+        option: {
+          '&:hover': {
+            backgroundColor: '#faf4e9',
+          },
+          '&[aria-selected="true"]': {
+            backgroundColor: '#f7ecdb',
+            '&:hover': {
+              backgroundColor: '#f3e4cc',
+            },
+          },
+        },
+        listbox: {
+          backgroundColor: '#fdfbf8',
         },
       },
     },

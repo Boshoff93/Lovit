@@ -1631,9 +1631,8 @@ const MainTabs: React.FC = () => {
                           key={idx}
                           label={tag}
                           size="small"
+                          variant="outlined"
                           sx={{
-                            backgroundColor: 'primary.main', 
-                            color: 'rgba(0, 0, 0, 0.87)',
                             fontWeight: 500,
                             fontSize: '0.7rem',
                             height: 20
@@ -1646,16 +1645,13 @@ const MainTabs: React.FC = () => {
                 
                 {/* Close button below */}
                 <Button
-                  variant="text"
+                  variant="contained"
+                  color="secondary"
                   startIcon={<CloseIcon />}
                   onClick={handleCloseModal}
                   sx={{
-                    color: 'white',
                     alignSelf: 'center',
                     mt: 2,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    }
                   }}
                 >
                   Close
