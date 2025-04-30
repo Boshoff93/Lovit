@@ -74,18 +74,29 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
 
   // Function to handle image download
   const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
-    if (!imageUrl) return;
-
+    if (!imageUrl) {
+      showNotification('No image URL provided', 'error');
+      return;
+    }
     try {
       setIsDownloading(true);
-      const response = await fetch(imageUrl);
+      const response = await fetch(imageUrl, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Accept': 'image/*',
+        },
+        credentials: 'include'
+      });
+
       const blob = await response.blob();
+
       const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
       saveAs(blob, filename);
       showNotification('Image download started');
     } catch (error: any) {
-      showNotification('Failed to download image', 'error');
-      alert(error.toString());
+      showNotification(`Failed to download image`, 'error'
+      );
     } finally {
       setIsDownloading(false);
     }
