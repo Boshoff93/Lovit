@@ -17,6 +17,9 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 import ResendVerificationPage from './pages/ResendVerificationPage';
 import PasswordResetRequestPage from './pages/PasswordResetRequestPage';
 import PasswordResetPage from './pages/PasswordResetPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import SupportPage from './pages/SupportPage';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -69,11 +72,11 @@ function App() {
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-          <RequireAuth>
-            <Layout>
-              <AccountPage />
-            </Layout>
-          </RequireAuth>
+            <RequireAuth>
+              <Layout>
+                <AccountPage />
+              </Layout>
+            </RequireAuth>
         } />
         
         {/* Verify email page */}
@@ -87,6 +90,17 @@ function App() {
         
         {/* Password reset page */}
         <Route path="/reset-password" element={<PasswordResetPage />} />
+
+        {/* Terms, Privacy, and Support pages */}
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/support" element={
+          <RequireAuth>
+            <Layout>
+              <SupportPage />
+            </Layout>
+          </RequireAuth>
+        } />
       </Routes>
     </Router>
   );

@@ -15,7 +15,6 @@ import ShareIcon from '@mui/icons-material/Share';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CloseIcon from '@mui/icons-material/Close';
 import CircularIconButton from './CircularIconButton';
-import ImageShareMenu from './ImageShareMenu';
 import ImageShareDialog from './ImageShareDialog';
 import { GeneratedImage } from '../store/gallerySlice';
 import { TransitionProps } from '@mui/material/transitions';
@@ -45,14 +44,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
 }) => {
   const theme = useTheme();
   
-  // State for share menu
-  const [shareAnchorEl, setShareAnchorEl] = useState<null | HTMLElement>(null);
-  const shareMenuOpen = Boolean(shareAnchorEl);
+  // State for share dialog
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
-  // Add state for social sharing popup
-  const [socialShareOpen, setSocialShareOpen] = useState(false);
-  const [currentSocialPlatform, setCurrentSocialPlatform] = useState<string>('');
-
   // Add state for snackbar notifications
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -89,29 +83,14 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     }
   }, [showNotification]);
 
-  // Function to handle opening the share menu
-  const handleShareClick = useCallback((event?: React.MouseEvent<HTMLButtonElement>) => {
-    if (event) {
-      setShareAnchorEl(event.currentTarget);
-    }
+  // Function to handle opening the share dialog
+  const handleShareClick = useCallback(() => {
+    setShareDialogOpen(true);
   }, []);
 
-  // Function to handle closing the share menu
+  // Function to handle closing the share dialog
   const handleShareClose = useCallback(() => {
-    setShareAnchorEl(null);
-  }, []);
-
-  // Function to handle opening the social sharing popup
-  const handleOpenSocialShare = useCallback((platform: string) => {
-    setCurrentSocialPlatform(platform);
-    setSocialShareOpen(true);
-    handleShareClose();
-  }, [handleShareClose]);
-
-  // Function to handle closing the social sharing popup
-  const handleCloseSocialShare = useCallback(() => {
-    setSocialShareOpen(false);
-    setCurrentSocialPlatform('');
+    setShareDialogOpen(false);
   }, []);
 
   // Handle closing the snackbar
@@ -172,12 +151,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       case 'pinterest':
         shareLink = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(shareTitle)}`;
         break;
-      case 'instagram':
-        handleOpenSocialShare('instagram');
-        return;
-      case 'tiktok':
-        handleOpenSocialShare('tiktok');
-        return;
       case 'copy':
         navigator.clipboard.writeText(shareUrl)
           .then(() => {
@@ -187,7 +160,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
             console.error('Error copying link: ', err);
             showNotification('Failed to copy link', 'error');
           });
-        handleShareClose();
         return;
       default:
         break;
@@ -196,9 +168,14 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (shareLink) {
       window.open(shareLink, '_blank', 'noopener,noreferrer');
     }
-    
-    handleShareClose();
-  }, [selectedImage, handleOpenSocialShare, handleShareClose, showNotification]);
+  }, [selectedImage, showNotification]);
+
+  const handleShopTheLook = useCallback(() => {
+    if (selectedImage?.imageUrl) {
+      // Use Google Lens URL format that opens the side panel
+      window.location.assign(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(selectedImage.imageUrl)}&ep=gisbubu&hl=en`);
+    }
+  }, [selectedImage?.imageUrl]);
 
   return (
     <>
@@ -374,20 +351,12 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                       onClick={handleShareClick}
                     />
                     
-                    {/* Share Menu */}
-                    <ImageShareMenu
-                      anchorEl={shareAnchorEl}
-                      open={shareMenuOpen}
-                      onClose={handleShareClose}
-                      onShare={handleShare}
-                    />
-                    
                     {/* Shop the look button */}
                     <CircularIconButton
                       variant="outlined"
                       icon={<ShoppingBagIcon />}
                       textLabel="Shop the Look"
-                      onClick={() => {}}
+                      onClick={handleShopTheLook}
                     />
                   </Box>
                   
@@ -405,16 +374,16 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
         </DialogContent>
       </Dialog>
       
-      {/* Social Sharing Dialog */}
+      {/* Share Dialog */}
       <ImageShareDialog
-        open={socialShareOpen}
-        onClose={handleCloseSocialShare}
-        platform={currentSocialPlatform}
+        open={shareDialogOpen}
+        onClose={handleShareClose}
         imageUrl={selectedImage?.imageUrl}
         imageTitle={selectedImage?.title}
         onCopyUrl={handleCopyImageUrl}
         onDownload={handleDownloadImage}
         onOpenPlatform={handleOpenPlatform}
+        onShare={handleShare}
       />
 
       {/* Snackbar for notifications */}

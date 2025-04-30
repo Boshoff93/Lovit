@@ -123,9 +123,9 @@ const MainTabs: React.FC = () => {
     // Single image - make it prominently larger
     return { 
       xs: 12, 
-      sm: isDrawerOpen ? 12 : 6, 
-      md: isDrawerOpen ? 12 : 4,
-      lg: isDrawerOpen ? 4 : 3
+      sm: isDrawerOpen ? 12 : 12, 
+      md: isDrawerOpen ? 12 : 6,
+      lg: isDrawerOpen ? 6 : 4
     };
   }, [isDrawerOpen]);
 

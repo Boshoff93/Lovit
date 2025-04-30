@@ -56,6 +56,7 @@ import Face3Icon from '@mui/icons-material/Person';
 import StarIcon from '@mui/icons-material/Star';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import EditIcon from '@mui/icons-material/Edit';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -1117,6 +1118,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <AccountCircleIcon />
                   </ListItemIcon>
                   <ListItemText primary="Account" />
+                </ListItemButton>
+              </ListItem>
+
+              {/* Support Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={() => handleNavigate('/support')}
+                >
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
+                    <SupportAgentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Support" />
                 </ListItemButton>
               </ListItem>
               

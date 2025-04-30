@@ -292,7 +292,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Hero Section */}
       <Box sx={{ 
         py: { xs: 8, md: 12 }, 
@@ -371,7 +371,11 @@ const HomePage: React.FC = () => {
           sx: {
             borderRadius: 3,
             boxShadow: '0 8px 24px rgba(43, 45, 66, 0.2)',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            border: `1px solid ${theme.palette.primary.light}`,
+            '&::before': {
+              display: 'none'
+            }
           }
         }}
       >
@@ -541,6 +545,30 @@ const HomePage: React.FC = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
                 </Button>
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    By signing up, you agree to our{' '}
+                    <RouterLink 
+                      to="/terms" 
+                      style={{ 
+                        textDecoration: 'none', 
+                        color: theme.palette.primary.main 
+                      }}
+                    >
+                      Terms of Service
+                    </RouterLink>
+                    {' '}and{' '}
+                    <RouterLink 
+                      to="/privacy" 
+                      style={{ 
+                        textDecoration: 'none', 
+                        color: theme.palette.primary.main 
+                      }}
+                    >
+                      Privacy Policy
+                    </RouterLink>
+                  </Typography>
+                </Box>
                 {/* <Button 
                   fullWidth 
                   variant="outlined" 
@@ -756,6 +784,60 @@ const HomePage: React.FC = () => {
           </Typography>
         </Box>
       </Container>
+      
+      {/* Footer */}
+      <Box 
+        component="footer" 
+        sx={{ 
+          py: 3, 
+          px: 2, 
+          mt: 'auto',
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+          textAlign: 'center'
+        }}
+      >
+        <Container maxWidth="sm">
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+            <RouterLink 
+              to="/terms" 
+              style={{ 
+                textDecoration: 'none', 
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem'
+              }}
+            >
+              Terms of Service
+            </RouterLink>
+            <Typography 
+              component="span" 
+              sx={{ 
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem'
+              }}
+            >
+              •
+            </Typography>
+            <RouterLink 
+              to="/privacy" 
+              style={{ 
+                textDecoration: 'none', 
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem'
+              }}
+            >
+              Privacy Policy
+            </RouterLink>
+          </Box>
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
+            sx={{ mt: 1 }}
+          >
+            © {new Date().getFullYear()} Lovit. All rights reserved.
+          </Typography>
+        </Container>
+      </Box>
     </Box>
   );
 };
