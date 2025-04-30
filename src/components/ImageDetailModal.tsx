@@ -77,9 +77,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
       saveAs(blob, filename);
       showNotification('Image download started');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error downloading image:', error);
-      showNotification('Failed to download image', 'error');
+      showNotification(error.message, 'error');
     }
   }, [showNotification]);
 
