@@ -77,6 +77,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import Person from '@mui/icons-material/Person';
 import { Allowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
+import UpgradePopup from './UpgradePopup';
 
 
 // Define UserProfile interface here to modify the age type
@@ -1975,113 +1976,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Snackbar>
         
         {/* Subscription Upgrade Popup */}
-        <Dialog
+        <UpgradePopup
           open={upgradePopup.open}
+          type={upgradePopup.type}
+          message={upgradePopup.message}
+          isPremiumTier={isPremiumTier}
           onClose={handleUpgradePopupClose}
-          PaperProps={{
-            sx: {
-              borderRadius: 3,
-              maxWidth: 400,
-              px: 1
-            }
-          }}
-        >
-          <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
-            <Typography variant="h5" fontWeight={600}>
-              {upgradePopup.type === 'photo' ? 'Photo Limit Reached' : 'Model Limit Reached'}
-            </Typography>
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center',
-              textAlign: 'center',
-              gap: 2,
-              py: 2
-            }}>
-              <Box
-                sx={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: '50%',
-                  backgroundColor: `${theme.palette.warning.main}15`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 1
-                }}
-              >
-                {upgradePopup.type === 'photo' ? 
-                  <ImageIcon sx={{ fontSize: 40, color: theme.palette.warning.main }} /> : 
-                  <Face3Icon sx={{ fontSize: 40, color: theme.palette.warning.main }} />
-                }
-              </Box>
-              
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {upgradePopup.message}
-              </Typography>
-              
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  backgroundColor: theme.palette.primary.light + '15',
-                  width: '100%'
-                }}
-              >
-                <Typography variant="body2" color="text.secondary">
-                  {isPremiumTier
-                    ? (upgradePopup.type === 'photo' 
-                      ? 'Purchase additional photo credits to continue creating amazing content!' 
-                      : 'Purchase additional model credits to create more AI personas!')
-                    : (upgradePopup.type === 'photo' 
-                      ? 'Upgrade to generate more stunning images with your model!' 
-                      : 'Upgrade to create additional AI models of different looks!')}
-                </Typography>
-              </Paper>
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3 }}>
-            <Button 
-              variant="outlined" 
-              onClick={handleUpgradePopupClose}
-              sx={{ borderRadius: 2, minWidth: 120 }}
-            >
-              Later
-            </Button>
-            {isPremiumTier ? (
-              <>
-                <Button 
-                  variant="contained" 
-                  onClick={handleTopUp}
-                  sx={{ borderRadius: 2, minWidth: 120 }}
-                  color="primary"
-                >
-                  Top Up
-                </Button>
-                <Button 
-                  variant="contained" 
-                  onClick={handleUpgrade}
-                  sx={{ borderRadius: 2, minWidth: 120 }}
-                  color="secondary"
-                >
-                  Upgrade Now
-                </Button>
-              </>
-            ) : (
-              <Button 
-                variant="contained" 
-                onClick={handleTopUp}
-                sx={{ borderRadius: 2, minWidth: 120 }}
-                color="primary"
-              >
-                Top Up
-              </Button>
-            )}
-          </DialogActions>
-        </Dialog>
+          onTopUp={handleTopUp}
+          onUpgrade={handleUpgrade}
+        />
         
         {/* Training Progress Indicator */}
         {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'in_progress' && lastMessage.progress && (

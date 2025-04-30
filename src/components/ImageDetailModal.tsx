@@ -72,6 +72,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (!imageUrl) return;
 
     try {
+      alert(imageUrl);
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
@@ -79,7 +80,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       showNotification('Image download started');
     } catch (error: any) {
       console.error('Error downloading image:', error);
-      showNotification(error.message, 'error');
+      setTimeout(() => {
+        showNotification(error, 'error');
+      }, 2500);
     }
   }, [showNotification]);
 
