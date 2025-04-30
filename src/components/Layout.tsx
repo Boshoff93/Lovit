@@ -1108,7 +1108,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Divider />
           <Box sx={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
             <List sx={{ px: 1 }}>
-              
+              {/* Dashboard Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
+                  onClick={() => handleNavigate('/dashboard')}
+                >
+                  <ListItemIcon sx={{ color: 'primary.main' }}>
+                    <CheckroomIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Style Studio" />
+                </ListItemButton>
+              </ListItem>
+
               {/* Account Section */}
               <ListItem disablePadding>
                 <ListItemButton 
@@ -1132,19 +1144,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <SupportAgentIcon />
                   </ListItemIcon>
                   <ListItemText primary="Support" />
-                </ListItemButton>
-              </ListItem>
-              
-              {/* Dashboard Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ px: 2, borderRadius: 2, mb: 1 }}
-                  onClick={() => handleNavigate('/dashboard')}
-                >
-                  <ListItemIcon sx={{ color: 'primary.main' }}>
-                    <CheckroomIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Style Studio" />
                 </ListItemButton>
               </ListItem>
               

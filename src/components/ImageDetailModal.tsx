@@ -9,7 +9,6 @@ import {
   useTheme,
   Snackbar,
   Alert,
-  Button,
   CircularProgress
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -74,29 +73,18 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
 
   // Function to handle image download
   const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
-    if (!imageUrl) {
-      showNotification('No image URL provided', 'error');
-      return;
-    }
+    if (!imageUrl) return;
+
     try {
       setIsDownloading(true);
-      const response = await fetch(imageUrl, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Accept': 'image/*',
-        },
-        credentials: 'include'
-      });
-
+      const response = await fetch(imageUrl);
       const blob = await response.blob();
-
-      const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
+      const filename = `${title || 'lovit-image'}-${Date.now()}.jpeg`;
       saveAs(blob, filename);
       showNotification('Image download started');
     } catch (error: any) {
-      showNotification(`Failed to download image`, 'error'
-      );
+      showNotification('Failed to download image', 'error');
+      alert(error.toString());
     } finally {
       setIsDownloading(false);
     }
