@@ -8,8 +8,7 @@ import {
   Chip, 
   useTheme,
   Snackbar,
-  Alert,
-  CircularProgress
+  Alert
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
@@ -59,9 +58,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     severity: 'success'
   });
 
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
-  const [isShopping, setIsShopping] = useState<boolean>(false);
-
   // Function to show a snackbar notification
   const showNotification = useCallback((message: string, severity: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     setSnackbar({
@@ -76,17 +72,21 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (!imageUrl) return;
 
     try {
-      setIsDownloading(true);
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const filename = `${title || 'lovit-image'}-${Date.now()}.jpeg`;
-      saveAs(blob, filename);
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = `${title || 'lovit-image'}-${Date.now()}.jpg`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      
+      // Trigger the download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
       showNotification('Image download started');
-    } catch (error: any) {
-      showNotification('Failed to download image', 'error');
-      alert(error.toString());
-    } finally {
-      setIsDownloading(false);
+    } catch (error) {
+      showNotification('Failed to download image. Please try again.', 'error');
     }
   }, [showNotification]);
 
@@ -114,6 +114,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
         showNotification('Image URL copied to clipboard!');
       })
       .catch(err => {
+        console.error('Error copying URL: ', err);
         showNotification('Failed to copy URL', 'error');
       });
   }, [selectedImage, showNotification]);
@@ -175,20 +176,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       window.open(shareLink, '_blank', 'noopener,noreferrer');
     }
   }, [selectedImage, showNotification]);
-
-  const handleShopTheLook = useCallback(async (imageUrl: string | undefined) => {
-    if (!imageUrl) return;
-
-    try {
-      setIsShopping(true);
-      // Use Google Lens URL format that opens the side panel
-      window.location.assign(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}&ep=gisbubu&hl=en`);
-    } catch (error: any) {
-      showNotification("Failed to Shop the Look", 'error');
-    } finally {
-      setIsShopping(false);
-    }
-  }, [showNotification]);
 
   return (
     <>
@@ -351,9 +338,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     {/* Download button */}
                     <CircularIconButton
                       variant="outlined"
-                      icon={isDownloading ? <CircularProgress size={24} color="inherit" /> : <DownloadIcon />}
-                      textLabel={isDownloading ? "Downloading..." : "Download"}
-                      onClick={() => !isDownloading && handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
+                      icon={<DownloadIcon />}
+                      textLabel="Download"
+                      onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
                     />
                     
                     {/* Share button */}
@@ -367,9 +354,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     {/* Shop the look button */}
                     <CircularIconButton
                       variant="outlined"
-                      icon={isShopping ? <CircularProgress size={24} color="inherit" /> : <ShoppingBagIcon />}
-                      textLabel={isShopping ? "Shopping..." : "Shop the Look"}
-                      onClick={() => !isShopping && handleShopTheLook(selectedImage?.imageUrl)}
+                      icon={<ShoppingBagIcon />}
+                      textLabel="Shop the Look"
+                      onClick={() => {}}
                     />
                   </Box>
                   
