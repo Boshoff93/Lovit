@@ -350,24 +350,12 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                 }}>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     {/* Download button */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
-                      disabled={isDownloading}
-                      sx={{ 
-                        py: 1.5, 
-                        px: 6, 
-                        fontSize: '1.1rem',
-                        width: { xs: '100%', sm: 'auto', md: 'auto' }
-                      }}
-                    >
-                      {isDownloading ? (
-                        <CircularProgress size={24} color="inherit" />
-                      ) : (
-                        'Download Image'
-                      )}
-                    </Button>
+                    <CircularIconButton
+                      variant="outlined"
+                      icon={isDownloading ? <CircularProgress size={24} color="inherit" /> : <DownloadIcon />}
+                      textLabel={isDownloading ? "Downloading..." : "Download"}
+                      onClick={() => !isDownloading && handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
+                    />
                     
                     {/* Share button */}
                     <CircularIconButton
@@ -378,24 +366,12 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     />
                     
                     {/* Shop the look button */}
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => handleShopTheLook(selectedImage?.imageUrl)}
-                      disabled={isShopping}
-                      sx={{ 
-                        py: 1.5, 
-                        px: 6, 
-                        fontSize: '1.1rem',
-                        width: { xs: '100%', sm: 'auto', md: 'auto' }
-                      }}
-                    >
-                      {isShopping ? (
-                        <CircularProgress size={24} color="inherit" />
-                      ) : (
-                        'Shop the Look'
-                      )}
-                    </Button>
+                    <CircularIconButton
+                      variant="outlined"
+                      icon={isShopping ? <CircularProgress size={24} color="inherit" /> : <ShoppingBagIcon />}
+                      textLabel={isShopping ? "Shopping..." : "Shop the Look"}
+                      onClick={() => !isShopping && handleShopTheLook(selectedImage?.imageUrl)}
+                    />
                   </Box>
                   
                   {/* Close button */}

@@ -25,6 +25,7 @@ export interface GeneratedImage extends ImageBase {
   title?: string;
   createdAt?: string;
   progress?: number;
+  imageKey?: string;
 }
 
 // Image group interface for displaying in gallery
