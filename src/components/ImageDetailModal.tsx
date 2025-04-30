@@ -8,7 +8,9 @@ import {
   Chip, 
   useTheme,
   Snackbar,
-  Alert
+  Alert,
+  Button,
+  CircularProgress
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
@@ -58,6 +60,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     severity: 'success'
   });
 
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isShopping, setIsShopping] = useState<boolean>(false);
+
   // Function to show a snackbar notification
   const showNotification = useCallback((message: string, severity: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     setSnackbar({
@@ -72,17 +77,17 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (!imageUrl) return;
 
     try {
-      alert(imageUrl);
+      setIsDownloading(true);
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
       saveAs(blob, filename);
       showNotification('Image download started');
     } catch (error: any) {
-      console.error('Error downloading image:', error);
-      setTimeout(() => {
-        showNotification(error, 'error');
-      }, 2500);
+      showNotification('Failed to download image', 'error');
+      alert(error.toString());
+    } finally {
+      setIsDownloading(false);
     }
   }, [showNotification]);
 
@@ -110,7 +115,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
         showNotification('Image URL copied to clipboard!');
       })
       .catch(err => {
-        console.error('Error copying URL: ', err);
         showNotification('Failed to copy URL', 'error');
       });
   }, [selectedImage, showNotification]);
@@ -173,12 +177,19 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     }
   }, [selectedImage, showNotification]);
 
-  const handleShopTheLook = useCallback(() => {
-    if (selectedImage?.imageUrl) {
+  const handleShopTheLook = useCallback(async (imageUrl: string | undefined) => {
+    if (!imageUrl) return;
+
+    try {
+      setIsShopping(true);
       // Use Google Lens URL format that opens the side panel
-      window.location.assign(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(selectedImage.imageUrl)}&ep=gisbubu&hl=en`);
+      window.location.assign(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}&ep=gisbubu&hl=en`);
+    } catch (error: any) {
+      showNotification("Failed to Shop the Look", 'error');
+    } finally {
+      setIsShopping(false);
     }
-  }, [selectedImage?.imageUrl]);
+  }, [showNotification]);
 
   return (
     <>
@@ -339,12 +350,24 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                 }}>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     {/* Download button */}
-                    <CircularIconButton
-                      variant="outlined"
-                      icon={<DownloadIcon />}
-                      textLabel="Download"
+                    <Button
+                      variant="contained"
+                      color="primary"
                       onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
-                    />
+                      disabled={isDownloading}
+                      sx={{ 
+                        py: 1.5, 
+                        px: 6, 
+                        fontSize: '1.1rem',
+                        width: { xs: '100%', sm: 'auto', md: 'auto' }
+                      }}
+                    >
+                      {isDownloading ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        'Download Image'
+                      )}
+                    </Button>
                     
                     {/* Share button */}
                     <CircularIconButton
@@ -355,12 +378,24 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     />
                     
                     {/* Shop the look button */}
-                    <CircularIconButton
-                      variant="outlined"
-                      icon={<ShoppingBagIcon />}
-                      textLabel="Shop the Look"
-                      onClick={handleShopTheLook}
-                    />
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleShopTheLook(selectedImage?.imageUrl)}
+                      disabled={isShopping}
+                      sx={{ 
+                        py: 1.5, 
+                        px: 6, 
+                        fontSize: '1.1rem',
+                        width: { xs: '100%', sm: 'auto', md: 'auto' }
+                      }}
+                    >
+                      {isShopping ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        'Shop the Look'
+                      )}
+                    </Button>
                   </Box>
                   
                   {/* Close button */}

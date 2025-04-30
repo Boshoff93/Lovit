@@ -149,6 +149,7 @@ const PaymentPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
+  const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -253,6 +254,7 @@ const PaymentPage: React.FC = () => {
   const handleManageSubscription = useCallback(async () => {
     try {
       setError(null);
+      setIsManagingSubscription(true);
       
       // Use the Redux action to create a portal session
       const resultAction = await dispatch(createPortalSession());
@@ -267,6 +269,8 @@ const PaymentPage: React.FC = () => {
       }
     } catch (error: any) {
       setError(error.message || 'An error occurred');
+    } finally {
+      setIsManagingSubscription(false);
     }
   },[dispatch]);
 
@@ -607,6 +611,7 @@ const PaymentPage: React.FC = () => {
                 color="primary"
                 size="large"
                 onClick={handleManageSubscription}
+                disabled={isManagingSubscription}
                 sx={{ 
                   py: 1.5, 
                   px: 6, 
@@ -614,7 +619,11 @@ const PaymentPage: React.FC = () => {
                   width: { xs: '100%', sm: 'auto', md: 'auto' }
                 }}
               >
-                Manage Subscription
+                {isManagingSubscription ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  'Manage Subscription'
+                )}
               </Button>
             )}
 
