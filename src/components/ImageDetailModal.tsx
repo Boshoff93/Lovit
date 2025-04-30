@@ -81,10 +81,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
-      
-      // Use file-saver to handle download (works on all devices including Android)
       saveAs(blob, filename);
-      
       showNotification('Image download started');
     } catch (error) {
       console.error('Error downloading image:', error);

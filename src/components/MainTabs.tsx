@@ -62,7 +62,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ py: { xs: 2, sm: 3 }, px: { xs: 1, sm: 0 } }}>
+        <Box sx={{ py: { xs: 1, sm: 2 }, px: 0 }}>
           {children}
         </Box>
       )}
@@ -730,7 +730,7 @@ const MainTabs: React.FC = () => {
               
               <Grid 
                 container 
-                spacing={1} 
+                spacing={4} 
                 sx={{ 
                   width: '100%',
                   display: 'flex',
@@ -922,7 +922,7 @@ const MainTabs: React.FC = () => {
                   </Typography>
                 </Box>
                 
-                <Grid container spacing={0} sx={{ width: '100%' }}>
+                <Grid container spacing={4} sx={{ width: '100%' }}>
                   {generatingImages.map((genImage, index) => {
                     return (
                       <Grid
@@ -1044,7 +1044,7 @@ const MainTabs: React.FC = () => {
                   
                   <Grid 
                     container 
-                    spacing={1} 
+                    spacing={4} 
                     sx={{ 
                       width: '100%',
                       display: 'flex',

@@ -71,15 +71,16 @@ const AccountPage: React.FC = () => {
       display: 'flex', 
       justifyContent: 'center', 
       minHeight: '100vh',
-      pt: { xs: 1, sm: 2 },
+      pt: 4,
       pb: { xs: 4, sm: 8 },
-      px: { xs: 2, sm: 2, md: 0 }
+      px: 0
     }}>
       <Container maxWidth="sm" sx={{ 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        p:0
       }}>
         {(error || fetchError) && (
           <Alert severity="error" sx={{ mb: 4, width: '100%' }}>
@@ -93,7 +94,7 @@ const AccountPage: React.FC = () => {
           boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
           overflow: 'visible',
           position: 'relative',
-          mt: 4
+          mt: 4,
         }}>
           <CardContent sx={{ p: 0 }}>
             <Box sx={{ 

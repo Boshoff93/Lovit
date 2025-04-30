@@ -470,7 +470,7 @@ const HomePage: React.FC = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : 'Login with Email'}
                 </Button>
-                <Button 
+                {/* <Button 
                   fullWidth 
                   variant="outlined" 
                   startIcon={<GoogleIcon />}
@@ -479,7 +479,7 @@ const HomePage: React.FC = () => {
                   sx={{ py: 1.5 }}
                 >
                   Continue with Google
-                </Button>
+                </Button> */}
               </>
             ) : (
               // Sign Up Form
@@ -541,7 +541,7 @@ const HomePage: React.FC = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
                 </Button>
-                <Button 
+                {/* <Button 
                   fullWidth 
                   variant="outlined" 
                   startIcon={<GoogleIcon />}
@@ -550,7 +550,7 @@ const HomePage: React.FC = () => {
                   sx={{ py: 1.5 }}
                 >
                   Sign up with Google
-                </Button>
+                </Button> */}
               </>
             )}
           </Box>
@@ -752,7 +752,7 @@ const HomePage: React.FC = () => {
             Try it, Lovit!
           </Button>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            Sign up with email or Google Sign-in
+            Sign up with email
           </Typography>
         </Box>
       </Container>

@@ -75,6 +75,7 @@ import imageCompression from 'browser-image-compression';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import Person from '@mui/icons-material/Person';
 import { Allowances } from '../store/authSlice';
+import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 
 
 // Define UserProfile interface here to modify the age type
@@ -269,7 +270,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // WebSocket integration
   const { lastMessage, connect } = useWebSocket();
   
-  const [open, setOpen] = useState(true);
+  // Initialize open state based on screen size
+  const [open, setOpen] = useState(!useMediaQuery(theme.breakpoints.down('md')));
   const [modelOpen, setModelOpen] = useState(false);
   const [imagesOpen, setImagesOpen] = useState(false);
   const [isModelUploading, setIsModelUploading] = useState(false);
@@ -330,8 +332,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Update drawer state when screen size changes
   useEffect(() => {
     setOpen(!isMobile);
-    // Dispatch a resize event to force components to re-calculate their layout
-    window.dispatchEvent(new Event('resize'));
   }, [isMobile]);
 
   
@@ -997,18 +997,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       message: ''
     });
   };
-  
-  const handleNavigateToUpgrade = () => {
-    handleUpgradePopupClose();
-    // Navigate to different tabs based on whether user is on premium tier
-    navigate(isPremiumTier 
-      ? '/account?tab=top-up' 
-      : '/account?tab=subscription');
-  };
 
   const allowances = useSelector((state: RootState) => state.auth.allowances);
-  const aiPhotosRemaining = allowances?.aiPhotos ? (allowances.aiPhotos.max - allowances.aiPhotos.used) : null;
-  const aiModelsRemaining = allowances?.aiModels ? (allowances.aiModels.max - allowances.aiModels.used) : null;
+
+  const handleTopUp = useCallback(async () => {
+    try {
+      const resultAction = await dispatch(createCheckoutSession({ 
+        priceId: 'price_1RJSc0PU9E45VDzjai47qewH',
+        productId: 'prod_SDuQwcDcLNpFsl'
+      }));
+      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+        window.location.href = resultAction.payload.url;
+      }
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+    }
+  }, [dispatch]);
+
+  const handleUpgrade = useCallback(async () => {
+    try {
+      const resultAction = await dispatch(createPortalSession());
+      if (createPortalSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+        window.location.href = resultAction.payload.url;
+      }
+    } catch (error) {
+      console.error('Failed to access subscription management:', error);
+    }
+  }, [dispatch]);
 
   return (
     <LayoutContext.Provider value={{ 
@@ -2022,14 +2037,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               Later
             </Button>
-            <Button 
-              variant="contained" 
-              onClick={handleNavigateToUpgrade}
-              sx={{ borderRadius: 2, minWidth: 120 }}
-              color="primary"
-            >
-              {isPremiumTier ? 'Top Up' : 'Upgrade Now'}
-            </Button>
+            {isPremiumTier ? (
+              <>
+                <Button 
+                  variant="contained" 
+                  onClick={handleTopUp}
+                  sx={{ borderRadius: 2, minWidth: 120 }}
+                  color="primary"
+                >
+                  Top Up
+                </Button>
+                <Button 
+                  variant="contained" 
+                  onClick={handleUpgrade}
+                  sx={{ borderRadius: 2, minWidth: 120 }}
+                  color="secondary"
+                >
+                  Upgrade Now
+                </Button>
+              </>
+            ) : (
+              <Button 
+                variant="contained" 
+                onClick={handleTopUp}
+                sx={{ borderRadius: 2, minWidth: 120 }}
+                color="primary"
+              >
+                Top Up
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
         

@@ -50,7 +50,7 @@ const AppPage: React.FC = () => {
   },[setNotification]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3, px: { xs: 1, sm: 2, md: 3 } }}>
+    <Container maxWidth="xl" sx={{ py: 3, px: 0}}>
       <Box sx={{ mb: 4, textAlign: 'center', mx: 'auto' }}>
         <Typography variant="h3" component="h1" gutterBottom>
           My Style Studio

@@ -97,6 +97,7 @@ const theme = createTheme({
           textTransform: 'none',
           fontWeight: 600,
           minHeight: '42px',
+          WebkitTapHighlightColor: 'transparent',
           '&.Mui-disabled': {
             backgroundColor: '#e0e0e0',
             color: '#8d8d8d',
@@ -109,11 +110,20 @@ const theme = createTheme({
               background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
               color: '#2B2D42',
             },
+            '&:active': {
+              background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
+              color: '#2B2D42',
+              transition: 'none',
+            },
             '&.MuiButton-containedSecondary': {
               background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
               color: '#2B2D42',
               '&:hover': {
                 background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
+              },
+              '&:active': {
+                background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
+                transition: 'none',
               },
             },
             '&.Mui-disabled': {
@@ -131,6 +141,12 @@ const theme = createTheme({
               borderColor: '#2B2D42',
               color: '#2B2D42',
             },
+            '&:active': {
+              background: 'linear-gradient(145deg, #eed9b6, #e5c696)',
+              borderColor: '#2B2D42',
+              color: '#2B2D42',
+              transition: 'none',
+            },
             '&.MuiButton-outlinedSecondary': {
               borderColor: '#eed9b6',
               color: '#2B2D42',
@@ -139,6 +155,12 @@ const theme = createTheme({
                 background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
                 borderColor: '#e5c696',
                 color: '#2B2D42',
+              },
+              '&:active': {
+                background: 'linear-gradient(145deg, #f1e1c5, #eed9b6)',
+                borderColor: '#e5c696',
+                color: '#2B2D42',
+                transition: 'none',
               },
             },
             '&.Mui-disabled': {
@@ -152,10 +174,18 @@ const theme = createTheme({
             '&:hover': {
               backgroundColor: '#faf4e9',
             },
+            '&:active': {
+              backgroundColor: '#faf4e9',
+              transition: 'none',
+            },
             '&.MuiButton-textSecondary': {
               color: '#2B2D42',
               '&:hover': {
                 backgroundColor: 'rgba(238, 217, 182, 0.08)',
+              },
+              '&:active': {
+                backgroundColor: 'rgba(238, 217, 182, 0.08)',
+                transition: 'none',
               },
             },
             '&.Mui-disabled': {
