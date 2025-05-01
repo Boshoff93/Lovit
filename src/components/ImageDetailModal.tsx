@@ -341,7 +341,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                   }}>
                     {/* Download button */}
                     <CircularIconButton
-                      variant="outlined"
+                      variant="contained"
                       icon={<DownloadIcon />}
                       textLabel="Download"
                       onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
@@ -349,7 +349,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     
                     {/* Share button */}
                     <CircularIconButton
-                      variant="outlined"
+                      variant="contained"
                       icon={<ShareIcon />}
                       textLabel="Share"
                       onClick={handleShareClick}
@@ -357,7 +357,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     
                     {/* Shop the look button */}
                     <CircularIconButton
-                      variant="outlined"
+                      variant="contained"
                       icon={<ShoppingBagIcon />}
                       textLabel="Shop the Look"
                       onClick={() => handleOpenPlatform('google-lens')}
@@ -376,19 +376,13 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                 }}
               >
                 <Button
-                  variant="contained"
+                  variant="outlined"
+                  color="primary"
                   startIcon={<CloseIcon />}
                   onClick={onClose}
                   sx={{
-                    backgroundColor: 'primary.main',
-                    color: 'white',
-                    '&:hover': {
-                      backgroundColor: 'error.dark'
-                    },
                     borderRadius: 20,
                     padding: '6px 16px',
-                    textTransform: 'none',
-                    fontWeight: 'bold'
                   }}
                 >
                   Close

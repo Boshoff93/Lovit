@@ -38,14 +38,6 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
         '& .MuiButton-startIcon': {
           margin: { xs: 0, sm: 0, md: textLabel ? '0 8px 0 -4px' : 0 },
         },
-        '&:hover': {
-          transform: 'scale(1.05)',
-          transition: 'all 0.2s ease-in-out',
-          backgroundColor: variant === 'contained' ? 'error.main' : undefined,
-          '& .MuiButton-startIcon': {
-            transition: 'transform 0.2s ease-in-out'
-          }
-        },
         ...sx
       }}
     >
