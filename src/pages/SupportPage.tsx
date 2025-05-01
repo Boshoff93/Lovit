@@ -55,7 +55,7 @@ const SupportPage: React.FC = () => {
       pb: { xs: 4, sm: 8 },
       px: 0
     }}>
-      <Container maxWidth="sm" sx={{ 
+      <Container maxWidth="md" sx={{ 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
@@ -104,7 +104,7 @@ const SupportPage: React.FC = () => {
 
             <Divider />
 
-            <Box sx={{ p: { xs: 3, sm: 4 } }}>
+            <Box sx={{ p: { xs: 3, sm: 4 }}}>
               <Paper 
                 elevation={0}
                 sx={{ 
@@ -130,7 +130,11 @@ const SupportPage: React.FC = () => {
                     py: 1.5,
                     mb: 2,
                     borderRadius: 2,
-                    fontWeight: 600
+                    fontWeight: 600,
+                    maxWidth: '400px',
+                    mx: 'auto',
+                    display: 'flex',
+                    
                   }}
                 >
                   Email Support Team

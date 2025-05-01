@@ -32,11 +32,19 @@ const AppPage: React.FC = () => {
   useEffect(() => {
     // Check if user just subscribed
     const hasSubscribed = searchParams.get('subscription') === 'true';
-    
+    const hasTopup = searchParams.get('topup') === 'true';
     if (hasSubscribed) {
       setNotification({
         open: true,
         message: `Welcome to Lovit! Create a model and start trying on cloths!`,
+        severity: 'success'
+      });
+    }
+
+    if (hasTopup) {
+      setNotification({
+        open: true,
+        message: `Thank you for your purchase! Credits has been added to your account.`,
         severity: 'success'
       });
     }
@@ -82,7 +90,7 @@ const AppPage: React.FC = () => {
           onClose={handleCloseNotification} 
           severity={notification.severity}
           variant="filled"
-          sx={{ width: '100%',  bgcolor: 'primary.main', color: 'secondary'  }}
+          sx={{ width: '100%',  bgcolor: 'success.light', color: 'secondary', alignItems: 'center'  }}
         >
           {notification.message}
         </Alert>

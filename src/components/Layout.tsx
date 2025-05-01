@@ -1058,7 +1058,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {token && (
               <Box>
-                <IconButton color="primary" onClick={() => handleLogout()}>
+                <IconButton color="secondary" onClick={() => handleLogout()}>
                   <LogoutIcon />
                 </IconButton>
               </Box>

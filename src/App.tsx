@@ -63,19 +63,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-  
-            <Layout>
-              <AccountPage />
-            </Layout>
- 
+            <RequireAuth>
+              <Layout>
+                <AccountPage />
+              </Layout>
+            </RequireAuth>
         } />
         
         {/* Verify email page */}
@@ -94,9 +95,11 @@ function App() {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/support" element={
-          <Layout>
-            <SupportPage />
-          </Layout>
+          <RequireAuth>
+            <Layout>
+              <SupportPage />
+            </Layout>
+          </RequireAuth>
         } />
       </Routes>
     </Router>

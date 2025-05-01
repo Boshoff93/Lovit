@@ -23,7 +23,17 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PersonIcon from '@mui/icons-material/Person';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal, allowances } = useAuth();
+  const { user, subscription, createStripePortal } = useAuth();
+  const allowances = {
+    aiPhotos: {
+      used: 10,
+      max: 100
+    },
+    aiModels: {
+      used: 10,
+      max: 100
+    }
+  }
   const [error, setError] = useState<string | null>(null);
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
 
@@ -75,7 +85,7 @@ const AccountPage: React.FC = () => {
       pb: { xs: 4, sm: 8 },
       px: 0
     }}>
-      <Container maxWidth="sm" sx={{ 
+      <Container maxWidth="md" sx={{ 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
