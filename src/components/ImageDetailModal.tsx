@@ -8,7 +8,8 @@ import {
   Chip, 
   useTheme,
   Snackbar,
-  Alert
+  Alert,
+  Button
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
@@ -72,21 +73,13 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (!imageUrl) return;
 
     try {
-      // Create a temporary link element
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = `${title || 'lovit-image'}-${Date.now()}.jpg`;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      
-      // Trigger the download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
+      saveAs(blob, filename);
       showNotification('Image download started');
     } catch (error) {
-      showNotification('Failed to download image. Please try again.', 'error');
+      showNotification('Failed to download image', 'error');
     }
   }, [showNotification]);
 
@@ -130,6 +123,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
       case 'tiktok':
         platformUrl = 'https://www.tiktok.com/upload/';
         break;
+      case 'google-lens':
+        platformUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(selectedImage?.imageUrl || '')}`;
+        break;
       default:
         break;
     }
@@ -137,7 +133,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
     if (platformUrl) {
       window.open(platformUrl, '_blank', 'noopener,noreferrer');
     }
-  }, []);
+  }, [selectedImage?.imageUrl]);
 
   // Function to handle sharing to various platforms
   const handleShare = useCallback((platform: string) => {
@@ -256,7 +252,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                 sx={{ 
                   display: 'flex',
                   flexDirection: 'column',
-                  maxWidth: '90%',
+                  maxWidth: 'auto',
                   maxHeight: '90%',
                   position: 'relative',
                   zIndex: 10,
@@ -282,10 +278,10 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     alt={selectedImage?.title || 'Full-size image'}
                     style={{
                       maxWidth: '100%',
-                      maxHeight: '70vh',
+                      maxHeight: '60vh',
                       objectFit: 'contain',
                       display: 'block',
-                      borderRadius: '8px'
+                      borderRadius: '24px',
                     }}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       e.currentTarget.src = onImageError();
@@ -330,11 +326,19 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                 {/* Buttons row */}
                 <Box sx={{ 
                   display: 'flex', 
-                  justifyContent: 'space-between', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 2,
                   mt: 2,
                   width: '100%'
                 }}>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  {/* Action buttons */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    gap: 2,
+                    width: '100%'
+                  }}>
                     {/* Download button */}
                     <CircularIconButton
                       variant="outlined"
@@ -356,18 +360,39 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                       variant="outlined"
                       icon={<ShoppingBagIcon />}
                       textLabel="Shop the Look"
-                      onClick={() => {}}
+                      onClick={() => handleOpenPlatform('google-lens')}
                     />
                   </Box>
-                  
-                  {/* Close button */}
-                  <CircularIconButton
-                    variant="contained"
-                    icon={<CloseIcon />}
-                    textLabel="Close"
-                    onClick={onClose}
-                  />
                 </Box>
+              </Box>
+              
+              {/* Close button - outside and below the card */}
+              <Box
+                sx={{
+                  mt: 4,
+                  zIndex: 10,
+                  display: 'flex',
+                  justifyContent: 'center'
+                }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<CloseIcon />}
+                  onClick={onClose}
+                  sx={{
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'error.dark'
+                    },
+                    borderRadius: 20,
+                    padding: '6px 16px',
+                    textTransform: 'none',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Close
+                </Button>
               </Box>
             </Box>
           )}
