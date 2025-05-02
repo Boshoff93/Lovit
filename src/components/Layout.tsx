@@ -1616,11 +1616,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       
                       {/* Clothing Upload - Simplified */}
                       <Box sx={{ mt: 2, mb: 2 }}>
-                        <Typography variant="subtitle1">Upload Reference Clothing (Optional)</Typography>
+                        <Typography variant="subtitle1">Try On Item (Available Soon)</Typography>
                         <Button
                           variant="outlined"
                           component="label"
-                          disabled={isGeneratingImages || isExecutingGenerating}
+                          disabled={true}
                           startIcon={<CloudUploadIcon />}
                           sx={{ mt: 1, width: '100%' }}
                           fullWidth
