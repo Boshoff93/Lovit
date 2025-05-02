@@ -40,7 +40,7 @@ const featureItems = [
   {
     title: "Try on any clothes",
     description: "Upload screenshots from any online store and instantly see yourself wearing those outfits.",
-    image: "https://img.freepik.com/free-photo/joyful-european-lady-summer-hat-dancing-yellow-background-debonair-girl-long-skirt-laughing-while-posing-studio_197531-25996.jpg?t=st=1746211775~exp=1746215375~hmac=845fd878f9a3c6ec4cac14cfebfcdd979186d3cb30156edd39a4754c70c53211&w=1060g-while-posing-studio_23590742.htm#fromView=keyword&page=1&position=42&uuid=d994d165-96c1-488c-9819-d296cb75a1c2&query=Fashion",
+    image: "https://images.pexels.com/photos/2229490/pexels-photo-2229490.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
     title: "Generate amazing photos",
