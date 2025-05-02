@@ -35,17 +35,17 @@ const featureItems = [
   {
     title: "Create your own AI model",
     description: "Upload just 10-20 photos and create a lifelike AI model that captures your unique look in just 1-2 hours.",
-    image: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
+    image: "/woman.jpg",
   },
   {
     title: "Try on any clothes",
     description: "Upload screenshots from any online store and instantly see yourself wearing those outfits.",
-    image: "https://images.pexels.com/photos/2229490/pexels-photo-2229490.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: "/closet.jpg",
   },
   {
     title: "Generate amazing photos",
     description: "Create professional quality photoshoots in any style, setting or lighting with just a prompt.",
-    image: "https://images.pexels.com/photos/1144834/pexels-photo-1144834.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: "/red.jpg",
   },
 ];
 
