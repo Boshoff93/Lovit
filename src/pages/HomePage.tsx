@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+I'mimport React, { useMemo, useState } from 'react';
 import { 
   Typography, 
   Button, 
@@ -40,12 +40,12 @@ const featureItems = [
   {
     title: "Try on any clothes",
     description: "Upload screenshots from any online store and instantly see yourself wearing those outfits.",
-    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+    image: "https://www.freepik.com/free-photo/joyful-european-lady-summer-hat-dancing-yellow-background-debonair-girl-long-skirt-laughing-while-posing-studio_23590742.htm#fromView=keyword&page=1&position=42&uuid=d994d165-96c1-488c-9819-d296cb75a1c2&query=Fashion",
   },
   {
     title: "Generate amazing photos",
     description: "Create professional quality photoshoots in any style, setting or lighting with just a prompt.",
-    image: "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+    image: "https://images.pexels.com/photos/1144834/pexels-photo-1144834.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
