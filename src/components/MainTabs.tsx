@@ -123,6 +123,7 @@ const MainTabs: React.FC = () => {
   // Get layout context
   const { openModel, openImages, isDrawerOpen } = useLayout();
   
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Function to handle image errors
   const handleImageError = useCallback(() => {
@@ -237,6 +238,24 @@ const MainTabs: React.FC = () => {
       console.error('Error loading more images:', error);
     }
   }, [dispatch, isLoadingMore, hasMoreImages, connectRef]);
+
+  // Effect for infinite scroll observation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore && hasMoreImages) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, [isLoadingMore, hasMoreImages, handleLoadMore]);
 
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     const url = new URL(window.location.href);
@@ -1190,40 +1209,18 @@ const MainTabs: React.FC = () => {
                 
                 {/* Load More Button */}
                 {hasMoreImages && (
-                  <Box sx={{ 
-                    width: '100%', 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    mt: 4, 
-                    mb: 2 
-                  }}>
-                    <Button
-                      variant="outlined"
-                      onClick={handleLoadMore}
-                      disabled={isLoadingMore}
-                      sx={{
-                        borderRadius: 2,
-                        py: 1,
-                        px: 4,
-                        position: 'relative'
-                      }}
-                    >
-                      {isLoadingMore ? (
-                        <>
-                          <CircularProgress 
-                            size={24} 
-                            sx={{ 
-                              color: 'primary',
-                              position: 'absolute',
-                              left: 'calc(50% - 12px)',
-                            }} 
-                          />
-                          <span style={{ visibility: 'hidden' }}>Load More</span>
-                        </>
-                      ) : (
-                        'Load More'
-                      )}
-                    </Button>
+                  <Box 
+                    ref={loadMoreRef}
+                    sx={{ 
+                      width: '100%', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      py: 4
+                    }}
+                  >
+                    {isLoadingMore && (
+                      <CircularProgress size={24} sx={{ color: 'primary' }} />
+                    )}
                   </Box>
                 )}
               </>
