@@ -331,10 +331,10 @@ export const downloadImage = createAsyncThunk(
       let imageKey = payload.imageKey;
       const filename = `${payload.title || 'lovit-image'}-${Date.now()}.jpg`;
       
-      // Use fetch with the download endpoint
+      // Use the API to get the download URL
       const apiUrl = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
-      const response = await fetch(
-        `${apiUrl}/api/download-image?imageKey=${encodeURIComponent(imageKey)}&filename=${encodeURIComponent(filename)}`,
+      const urlResponse = await fetch(
+        `${apiUrl}/api/download-image?imageKey=${encodeURIComponent(imageKey)}`,
         {
           headers: {
             'Authorization': `Bearer ${auth.token}`
@@ -342,12 +342,26 @@ export const downloadImage = createAsyncThunk(
         }
       );
       
-      if (!response.ok) {
-        throw new Error(`API download failed with status: ${response.status}`);
+      if (!urlResponse.ok) {
+        throw new Error(`API download URL request failed with status: ${urlResponse.status}`);
+      }
+      
+      // Parse the JSON response to get the actual download URL
+      const jsonData = await urlResponse.json();
+      
+      if (!jsonData.downloadUrl) {
+        throw new Error('Download URL not found in API response');
+      }
+      
+      // Now use the obtained URL to fetch the actual image
+      const imageResponse = await fetch(jsonData.downloadUrl);
+      
+      if (!imageResponse.ok) {
+        throw new Error(`Image download failed with status: ${imageResponse.status}`);
       }
       
       // Get blob from response
-      const blob = await response.blob();
+      const blob = await imageResponse.blob();
       
       // Use saveAs to download the file
       saveAs(blob, filename);
