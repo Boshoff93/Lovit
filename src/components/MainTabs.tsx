@@ -9,7 +9,8 @@ import {
   LinearProgress,
   Chip,
   CircularProgress,
-  Skeleton
+  Skeleton,
+  IconButton
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import FaceIcon from '@mui/icons-material/Person';
@@ -17,12 +18,13 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ImageIcon from '@mui/icons-material/Image';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import AutoFixHigh from '@mui/icons-material/AutoFixHigh';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { useLayout } from './Layout';
-import { fetchModels, Model } from '../store/modelsSlice';
+import { fetchModels, Model, deleteModel } from '../store/modelsSlice';
 import { 
   fetchGeneratedImages, 
   selectImageGroups,
@@ -33,11 +35,13 @@ import {
   clearGeneratingImages,
   loadMoreImages,
   ImageGroup as GalleryImageGroup,
-  GeneratedImage
+  GeneratedImage,
+  deleteImage
 } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 import { useLocation } from 'react-router-dom';
 import ImageDetailModal from './ImageDetailModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { mockImageGroups, mockModels } from '../utils/mockData';
 
 // Define local interface for image groups
@@ -96,6 +100,13 @@ const MainTabs: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   
+  // Delete confirmation state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{id: string, type: 'model' | 'image', imageKey?: string}>(
+    {id: '', type: 'model'}
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
+  
   const hasFetchedRef = useRef(false);
   const hasLoadedImagesRef = useRef(false);
   const location = useLocation();
@@ -123,7 +134,6 @@ const MainTabs: React.FC = () => {
   // Get layout context
   const { openModel, openImages, isDrawerOpen } = useLayout();
   
-  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Function to handle image errors
   const handleImageError = useCallback(() => {
@@ -239,24 +249,6 @@ const MainTabs: React.FC = () => {
     }
   }, [dispatch, isLoadingMore, hasMoreImages, connectRef]);
 
-  // Effect for infinite scroll observation
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingMore && hasMoreImages) {
-          handleLoadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-    
-    return () => observer.disconnect();
-  }, [isLoadingMore, hasMoreImages, handleLoadMore]);
-
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     const url = new URL(window.location.href);
     setValue(newValue);
@@ -328,6 +320,40 @@ const MainTabs: React.FC = () => {
     setModalOpen(false);
     // Clear selected image after animation completes
     setTimeout(() => setSelectedImage(null), 300);
+  }, []);
+
+  // Function to handle delete confirmation modal
+  const handleDeleteClick = useCallback((event: React.MouseEvent, id: string, type: 'model' | 'image', imageKey?: string) => {
+    // Stop the click event from propagating to the parent (card)
+    event.stopPropagation();
+    
+    setItemToDelete({id, type, imageKey});
+    setDeleteModalOpen(true);
+  }, []);
+
+  // Function to handle delete confirmation
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!itemToDelete.id) return;
+    
+    setIsDeleting(true);
+    
+    try {
+      if (itemToDelete.type === 'model') {
+        await dispatch(deleteModel({ modelId: itemToDelete.id }));
+      } else if (itemToDelete.type === 'image' && itemToDelete.imageKey) {
+        await dispatch(deleteImage({ imageId: itemToDelete.id, imageKey: itemToDelete.imageKey }));
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModalOpen(false);
+    }
+  }, [dispatch, itemToDelete]);
+
+  // Function to handle delete modal close
+  const handleDeleteModalClose = useCallback(() => {
+    setDeleteModalOpen(false);
   }, []);
 
   const theme = useTheme();
@@ -464,8 +490,27 @@ const MainTabs: React.FC = () => {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                     cursor: 'pointer'
-                  }
+                  },
+                  position: 'relative'
                 }}>
+                  {/* Delete icon */}
+                  <IconButton 
+                    size="small" 
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 8, 
+                      right: 8, 
+                      zIndex: 2,
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'rgba(211, 47, 47, 0.8)',
+                      }
+                    }}
+                    onClick={(e) => handleDeleteClick(e, model.modelId, 'model')}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
                   <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
                     <Box
                       sx={{
@@ -583,8 +628,27 @@ const MainTabs: React.FC = () => {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                     cursor: 'pointer'
-                  }
+                  },
+                  position: 'relative'
                 }}>
+                  {/* Delete icon */}
+                  <IconButton 
+                    size="small" 
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 8, 
+                      right: 8, 
+                      zIndex: 2,
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'rgba(211, 47, 47, 0.8)',
+                      }
+                    }}
+                    onClick={(e) => handleDeleteClick(e, model.modelId, 'model')}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
                   <Box sx={{ position: 'relative', height: 320, overflow: 'hidden' }}>
                     <Box
                       sx={{
@@ -782,8 +846,27 @@ const MainTabs: React.FC = () => {
                           boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                           cursor: 'pointer'
                         },
+                        position: 'relative'
                       }}
                       onClick={() => handleOpenModal(image)}>
+                        {/* Delete icon */}
+                        <IconButton 
+                          size="small" 
+                          sx={{ 
+                            position: 'absolute', 
+                            top: 8, 
+                            right: 8, 
+                            zIndex: 2,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(211, 47, 47, 0.8)',
+                            }
+                          }}
+                          onClick={(e) => handleDeleteClick(e, image.imageId, 'image', image.imageKey)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                         <Box sx={{ 
                           position: 'relative', 
                           height: group.images.length === 1 ? 450 : 320,
@@ -961,6 +1044,7 @@ const MainTabs: React.FC = () => {
                           borderRadius: 2,
                           bgcolor: 'action.hover',
                         }}>
+                          {/* No delete button for generating images */}
                           <Box 
                             sx={{ 
                               height: 320, 
@@ -1086,8 +1170,27 @@ const MainTabs: React.FC = () => {
                                 boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
                                 cursor: 'pointer'
                               },
+                              position: 'relative'
                             }}
                             onClick={() => handleOpenModal(image)}>
+                              {/* Delete icon */}
+                              <IconButton 
+                                size="small" 
+                                sx={{ 
+                                  position: 'absolute', 
+                                  top: 8, 
+                                  right: 8, 
+                                  zIndex: 2,
+                                  backgroundColor: 'rgba(0,0,0,0.5)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(211, 47, 47, 0.8)',
+                                  }
+                                }}
+                                onClick={(e) => handleDeleteClick(e, image.imageId, 'image', image.imageKey)}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
                               <Box sx={{ 
                                 position: 'relative', 
                                 height: group.images.length === 1 ? 450 : 320,
@@ -1209,18 +1312,40 @@ const MainTabs: React.FC = () => {
                 
                 {/* Load More Button */}
                 {hasMoreImages && (
-                  <Box 
-                    ref={loadMoreRef}
-                    sx={{ 
-                      width: '100%', 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      py: 4
-                    }}
-                  >
-                    {isLoadingMore && (
-                      <CircularProgress size={24} sx={{ color: 'primary' }} />
-                    )}
+                  <Box sx={{ 
+                    width: '100%', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    mt: 4, 
+                    mb: 2 
+                  }}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      sx={{
+                        borderRadius: 2,
+                        py: 1,
+                        px: 4,
+                        position: 'relative'
+                      }}
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <CircularProgress 
+                            size={24} 
+                            sx={{ 
+                              color: 'primary',
+                              position: 'absolute',
+                              left: 'calc(50% - 12px)',
+                            }} 
+                          />
+                          <span style={{ visibility: 'hidden' }}>Load More</span>
+                        </>
+                      ) : (
+                        'Load More'
+                      )}
+                    </Button>
                   </Box>
                 )}
               </>
@@ -1293,6 +1418,16 @@ const MainTabs: React.FC = () => {
         onClose={handleCloseModal}
         selectedImage={selectedImage}
         onImageError={handleImageError}
+      />
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal 
+        open={deleteModalOpen}
+        title={`Delete ${itemToDelete.type === 'model' ? 'Model' : 'Image'}`}
+        message={`Are you sure you want to delete this ${itemToDelete.type}? This action cannot be undone.`}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
       />
     </Box>
   );

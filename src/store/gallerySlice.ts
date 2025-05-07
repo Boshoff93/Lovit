@@ -373,6 +373,37 @@ export const downloadImage = createAsyncThunk(
   }
 );
 
+// Add the delete image thunk near other thunks
+export const deleteImage = createAsyncThunk(
+  'gallery/deleteImage',
+  async (
+    { imageId, imageKey }: { imageId: string; imageKey: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState() as RootState;
+      
+      if (!auth.token || !auth.user?.userId) {
+        return rejectWithValue('Authentication required');
+      }
+      
+      await axios.delete(`${API_BASE_URL}/api/images/${imageId}`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        },
+        data: {
+          userId: auth.user.userId,
+          imageKey
+        }
+      });
+      
+      return { imageId, userId: auth.user.userId };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to delete image');
+    }
+  }
+);
+
 // Helper function to group images by date
 const groupImagesByDate = (images: GeneratedImage[]): ImageGroup[] => {
   // Sort images by date (newest first)
@@ -622,6 +653,28 @@ const gallerySlice = createSlice({
       .addCase(downloadImage.rejected, (state, action) => {
         state.isDownloading = false;
         state.downloadError = action.payload as string;
+      });
+
+    // Add reducer case for deleteImage in the extraReducers builder
+    builder
+      .addCase(deleteImage.pending, (state, action) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        
+        // Remove the deleted image from the images array
+        state.images = state.images.filter(
+          image => !(image.imageId === action.payload.imageId)
+        );
+        
+        // Rebuild the image groups
+        state.imageGroups = groupImagesByDate(state.images);
+      })
+      .addCase(deleteImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   }
 });

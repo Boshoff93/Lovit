@@ -151,6 +151,36 @@ export const trainModelWithS3 = createAsyncThunk(
   }
 );
 
+// Add the delete model thunk near other thunks
+export const deleteModel = createAsyncThunk(
+  'models/deleteModel',
+  async (
+    { modelId }: { modelId: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState() as RootState;
+      
+      if (!auth.token || !auth.user?.userId) {
+        return rejectWithValue('Authentication required');
+      }
+      
+      await axios.delete(`${API_BASE_URL}/api/models/${modelId}`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        },
+        data: {
+          userId: auth.user.userId
+        }
+      });
+      
+      return { modelId };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to delete model');
+    }
+  }
+);
+
 // Models slice
 const modelsSlice = createSlice({
   name: 'models',
@@ -227,6 +257,22 @@ const modelsSlice = createSlice({
         state.error = null;
       })
       .addCase(trainModelWithS3.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Add the delete model reducer cases to extraReducers
+    builder
+      .addCase(deleteModel.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteModel.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.models = state.models.filter(model => model.modelId !== action.payload.modelId);
+        state.error = null;
+      })
+      .addCase(deleteModel.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
