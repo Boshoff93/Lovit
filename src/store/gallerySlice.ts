@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from './store';
 import { updateAiPhotoAllowance } from './authSlice';
+import { saveAs } from 'file-saver';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -47,9 +48,14 @@ interface GalleryState {
   imageGroups: ImageGroup[];
   generatingImages: GeneratingImage[];
   isLoading: boolean;
+  isLoadingMore: boolean;
   isUploadingClothing: boolean;
+  isDownloading: boolean;
   clothingKey: string | null;
   error: string | null;
+  downloadError: string | null;
+  lastEvaluatedKey: string | null;
+  hasMore: boolean;
 }
 
 // Initial state
@@ -58,32 +64,49 @@ const initialState: GalleryState = {
   imageGroups: [],
   generatingImages: [],
   isLoading: false,
+  isLoadingMore: false,
   isUploadingClothing: false,
+  isDownloading: false,
   clothingKey: null,
-  error: null
+  error: null,
+  downloadError: null,
+  lastEvaluatedKey: null,
+  hasMore: false
 };
 
-// Async thunk for fetching all generated images
+// Async thunk for fetching generated images
 export const fetchGeneratedImages = createAsyncThunk(
   'gallery/fetchGeneratedImages',
   async (
     // Add an optional object parameter
-    options: { connectCallback?: ((imageId: string, type: "IMAGE" | "MODEL") => void) | undefined } = {},
+    options: { 
+      connectCallback?: ((imageId: string, type: "IMAGE" | "MODEL") => void) | undefined;
+      reset?: boolean;
+      limit?: number;
+    } = {},
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as { auth: { token: string | null, user: { userId: string } | null } };
+      const { auth, gallery } = getState() as { 
+        auth: { token: string | null, user: { userId: string } | null },
+        gallery: GalleryState
+      };
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
       }
+      
+      // Use lastEvaluatedKey from state if we're loading more and not resetting
+      const lastEvaluatedKey = (!options.reset && gallery.lastEvaluatedKey) || undefined;
       
       const response = await axios.get(`${API_BASE_URL}/api/generated-images`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
         },
         params: {
-          userId: auth.user.userId
+          userId: auth.user.userId,
+          limit: options.limit || 24,
+          lastEvaluatedKey
         }
       });
       
@@ -103,10 +126,32 @@ export const fetchGeneratedImages = createAsyncThunk(
         });
       }
       
-      return images;
+      return {
+        images,
+        lastEvaluatedKey: response.data.lastEvaluatedKey,
+        hasMore: response.data.hasMore,
+        reset: options.reset
+      };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch images');
     }
+  }
+);
+
+// New thunk for loading more images
+export const loadMoreImages = createAsyncThunk(
+  'gallery/loadMoreImages',
+  async (
+    options: { 
+      connectCallback?: ((imageId: string, type: "IMAGE" | "MODEL") => void) | undefined;
+      limit?: number;
+    } = {},
+    { dispatch }
+  ) => {
+    return dispatch(fetchGeneratedImages({
+      ...options,
+      reset: false
+    }));
   }
 );
 
@@ -260,6 +305,59 @@ export const uploadClothingItem = createAsyncThunk(
   }
 );
 
+// Async thunk for downloading an image
+export const downloadImage = createAsyncThunk(
+  'gallery/downloadImage',
+  async (
+    payload: { 
+      imageUrl: string; 
+      title?: string;
+      imageKey?: string; // Add optional imageKey parameter
+    },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState() as RootState;
+      
+      if (!auth.token) {
+        return rejectWithValue('Authentication Required');
+      }
+
+      if (!payload.imageKey) {
+        return rejectWithValue('Image Key Required');
+      }
+
+      let imageKey = payload.imageKey;
+      const filename = `${payload.title || 'lovit-image'}-${Date.now()}.jpg`;
+      
+      // Use fetch with the download endpoint
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
+      const response = await fetch(
+        `${apiUrl}/api/download-image?imageKey=${encodeURIComponent(imageKey)}&filename=${encodeURIComponent(filename)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`API download failed with status: ${response.status}`);
+      }
+      
+      // Get blob from response
+      const blob = await response.blob();
+      
+      // Use saveAs to download the file
+      saveAs(blob, filename);
+      
+      return { success: true, method: 'api', imageKey };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to download image');
+    }
+  }
+);
+
 // Helper function to group images by date
 const groupImagesByDate = (images: GeneratedImage[]): ImageGroup[] => {
   // Sort images by date (newest first)
@@ -373,6 +471,12 @@ const gallerySlice = createSlice({
       state.generatingImages = [];
     },
     
+    // Reset pagination
+    resetPagination: (state) => {
+      state.lastEvaluatedKey = null;
+      state.hasMore = false;
+    },
+    
     // Clear gallery data (e.g., on logout)
     clearGallery: (state) => {
       state.images = [];
@@ -380,23 +484,56 @@ const gallerySlice = createSlice({
       state.generatingImages = [];
       state.clothingKey = null;
       state.error = null;
+      state.lastEvaluatedKey = null;
+      state.hasMore = false;
     }
   },
   extraReducers: (builder) => {
     // Fetch generated images
     builder
-      .addCase(fetchGeneratedImages.pending, (state) => {
-        state.isLoading = true;
+      .addCase(fetchGeneratedImages.pending, (state, action) => {
+        const { arg } = action.meta;
+        if (arg?.reset !== false) {
+          state.isLoading = true;
+        } else {
+          state.isLoadingMore = true;
+        }
         state.error = null;
       })
       .addCase(fetchGeneratedImages.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.images = action.payload;
-        state.imageGroups = groupImagesByDate(action.payload);
+        const { reset = true } = action.payload;
+        
+        if (reset) {
+          state.isLoading = false;
+          state.images = action.payload.images;
+        } else {
+          state.isLoadingMore = false;
+          state.images = [...state.images, ...action.payload.images];
+        }
+        
+        state.imageGroups = groupImagesByDate(state.images);
+        state.lastEvaluatedKey = action.payload.lastEvaluatedKey;
+        state.hasMore = action.payload.hasMore;
         state.error = null;
       })
       .addCase(fetchGeneratedImages.rejected, (state, action) => {
-        state.isLoading = false;
+        const { arg } = action.meta;
+        if (arg?.reset !== false) {
+          state.isLoading = false;
+        } else {
+          state.isLoadingMore = false;
+        }
+        state.error = action.payload as string;
+      });
+
+    // Handle loadMoreImages thunk specifically
+    builder
+      .addCase(loadMoreImages.pending, (state) => {
+        state.isLoadingMore = true;
+        state.error = null;
+      })
+      .addCase(loadMoreImages.rejected, (state, action) => {
+        state.isLoadingMore = false;
         state.error = action.payload as string;
       });
 
@@ -451,6 +588,21 @@ const gallerySlice = createSlice({
         state.isUploadingClothing = false;
         state.error = action.payload as string;
       });
+
+    // Handle downloadImage states
+    builder
+      .addCase(downloadImage.pending, (state) => {
+        state.isDownloading = true;
+        state.downloadError = null;
+      })
+      .addCase(downloadImage.fulfilled, (state) => {
+        state.isDownloading = false;
+        state.downloadError = null;
+      })
+      .addCase(downloadImage.rejected, (state, action) => {
+        state.isDownloading = false;
+        state.downloadError = action.payload as string;
+      });
   }
 });
 
@@ -464,6 +616,7 @@ export const {
   addGeneratedImages,
   clearClothingKey,
   clearGeneratingImages,
+  resetPagination,
   clearGallery
 } = gallerySlice.actions;
 
@@ -474,6 +627,10 @@ export const selectAllImages = (state: RootState) => state.gallery.images;
 export const selectImageGroups = (state: RootState) => state.gallery.imageGroups;
 export const selectGeneratingImages = (state: RootState) => state.gallery.generatingImages;
 export const selectGalleryLoading = (state: RootState) => state.gallery.isLoading;
+export const selectGalleryLoadingMore = (state: RootState) => state.gallery.isLoadingMore;
 export const selectGalleryError = (state: RootState) => state.gallery.error;
 export const selectIsUploadingClothing = (state: RootState) => state.gallery.isUploadingClothing;
-export const selectClothingKey = (state: RootState) => state.gallery.clothingKey; 
+export const selectClothingKey = (state: RootState) => state.gallery.clothingKey;
+export const selectHasMoreImages = (state: RootState) => state.gallery.hasMore;
+export const selectIsDownloading = (state: RootState) => state.gallery.isDownloading;
+export const selectDownloadError = (state: RootState) => state.gallery.downloadError; 

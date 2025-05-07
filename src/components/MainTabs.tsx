@@ -28,7 +28,10 @@ import {
   selectImageGroups,
   selectGeneratingImages,
   selectGalleryLoading,
+  selectGalleryLoadingMore,
+  selectHasMoreImages,
   clearGeneratingImages,
+  loadMoreImages,
   ImageGroup as GalleryImageGroup,
   GeneratedImage
 } from '../store/gallerySlice';
@@ -110,6 +113,8 @@ const MainTabs: React.FC = () => {
   const imageGroups = useSelector(selectImageGroups);
   const generatingImages = useSelector(selectGeneratingImages);
   const isLoadingImages = useSelector(selectGalleryLoading);
+  const isLoadingMore = useSelector(selectGalleryLoadingMore);
+  const hasMoreImages = useSelector(selectHasMoreImages);
   
   // Get training updates from WebSocket context
   const { connect } = useWebSocket();
@@ -118,16 +123,6 @@ const MainTabs: React.FC = () => {
   // Get layout context
   const { openModel, openImages, isDrawerOpen } = useLayout();
   
-  // Simplify the getGridSize function based on new requirements
-  const getGridSize = useCallback(() => {
-    // Single image - make it prominently larger
-    return { 
-      xs: 12, 
-      sm: isDrawerOpen ? 12 : 12, 
-      md: isDrawerOpen ? 12 : 6,
-      lg: isDrawerOpen ? 6 : 4
-    };
-  }, [isDrawerOpen]);
 
   // Function to handle image errors
   const handleImageError = useCallback(() => {
@@ -207,8 +202,10 @@ const MainTabs: React.FC = () => {
         await dispatch(clearGeneratingImages());
         
         // Pass the connect function as a callback via the ref
-        const result = await dispatch(fetchGeneratedImages({
-          connectCallback: connectRef.current
+        await dispatch(fetchGeneratedImages({
+          connectCallback: connectRef.current,
+          reset: true,
+          limit: 24
         }));
 
         hasLoadedImagesRef.current = true;
@@ -226,6 +223,20 @@ const MainTabs: React.FC = () => {
       hasLoadedImagesRef.current = false;
     };
   }, [token, userId, dispatch]);
+
+  // Function to handle loading more images
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMoreImages) return;
+    
+    try {
+      await dispatch(loadMoreImages({
+        connectCallback: connectRef.current,
+        limit: 24
+      }));
+    } catch (error) {
+      console.error('Error loading more images:', error);
+    }
+  }, [dispatch, isLoadingMore, hasMoreImages, connectRef]);
 
   const handleChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     const url = new URL(window.location.href);
@@ -300,7 +311,6 @@ const MainTabs: React.FC = () => {
     setTimeout(() => setSelectedImage(null), 300);
   }, []);
 
-  const gridSize = getGridSize();
   const theme = useTheme();
 
   return (
@@ -353,15 +363,15 @@ const MainTabs: React.FC = () => {
       
       {/* Models Tab */}
       <TabPanel value={value} index={1}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+        <Grid container spacing={3}>
           {modelsLoading || loading && !useMockData ? (
-            <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+            <Grid size={12} sx={{ textAlign: 'center', py: 4 }}>
               <CircularProgress />
-            </Box>
+            </Grid>
           ) : models.length === 0 && !useMockData ? (
-            <Box 
+            <Grid 
+              size={12} 
               sx={{ 
-                width: '100%', 
                 textAlign: 'center', 
                 py: 8,
                 display: 'flex',
@@ -411,21 +421,19 @@ const MainTabs: React.FC = () => {
               >
                 Create Your First Model
               </Button>
-            </Box>
+            </Grid>
           ) : useMockData ? (
             // Show mock models
             mockModels.map((model) => (
-              <Box 
+              <Grid 
                 key={model.modelId} 
-                sx={{ 
-                  mt: 5,
-                  flex: { 
-                    xs: '1 1 100%', 
-                    sm: '1 1 calc(50% - 8px)', 
-                    md: '1 1 calc(50% - 10px)', 
-                    lg: '1 1 calc(33% - 10px)' 
-                  } 
+                size={{                               
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
+                  lg: 6 
                 }}
+                sx={{ mt: 5 }}
               >
                 <Card sx={{ 
                   height: '100%', 
@@ -531,22 +539,20 @@ const MainTabs: React.FC = () => {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Box>
+              </Grid>
             ))
           ) : (
             // Show API models
             models.map((model) => (
-              <Box 
+              <Grid 
                 key={model.modelId} 
-                sx={{ 
-                  mt: 5,
-                   flex: { 
-                      xs: '1 1 100%', 
-                      sm: '1 1 calc(50% - 8px)', 
-                      md: '1 1 calc(50% - 10px)', 
-                      lg: '1 1 calc(33% - 10px)' 
-                    } 
+                size={{                               
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
+                  lg: 6 
                 }}
+                sx={{ mt: 5 }}
               >
                 <Card sx={{ 
                   height: '100%', 
@@ -652,17 +658,17 @@ const MainTabs: React.FC = () => {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Box>
+              </Grid>
             ))
           )}
-        </Box>
+        </Grid>
       </TabPanel>
       
       {/* Gallery Tab */}
       <TabPanel value={value} index={0}>
         {isLoadingImages && !useMockData ? (
           // Loading state with gallery-like layout
-          <Grid container spacing={0} sx={{ width: '100%' }}>
+          <Grid container spacing={2}>
             {[1, 2, 3, 4, 5, 6].map((skeleton, index) => {
               // Use consistent height for all images
               const imageHeight = 320;
@@ -670,8 +676,12 @@ const MainTabs: React.FC = () => {
               return (
                 <Grid
                   key={`skeleton-${skeleton}`} 
-                  size={{ xs: 12, sm: 6, md: isDrawerOpen ? 6 : 4, lg: isDrawerOpen ? 4 : 3 }}
-                  sx={{ p: 0.5 }}
+                  size={{                   
+                    xs: 12,
+                    sm: 12,
+                    md: 12,
+                    lg: 6 
+                  }}
                 >
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 1, boxShadow: 'none' }}>
                     <Skeleton variant="rectangular" height={imageHeight} />
@@ -728,26 +738,17 @@ const MainTabs: React.FC = () => {
                 </Typography>
               </Box>
               
-              <Grid 
-                container 
-                spacing={4} 
-                sx={{ 
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'flex-start' 
-                }}
-              >
+              <Grid container spacing={4}>
                 {group.images.map((image: GeneratedImage, index: number) => {
                   return (
                     <Grid 
                       key={image.imageId}
                       size={{
-                        xs: gridSize.xs,
-                        sm: gridSize.sm,
-                        md: gridSize.md,
-                        lg: gridSize.lg
+                        xs: 12,
+                        sm: 12,
+                        md: 12,
+                        lg: 6 
                       }}
-                      sx={{ p: 0.5, display: 'flex' }}
                     >
                       <Card sx={{ 
                         height: '100%', 
@@ -755,7 +756,6 @@ const MainTabs: React.FC = () => {
                         flexDirection: 'column', 
                         overflow: 'hidden',
                         borderRadius: 2,
-                        mx: 'auto', // Center the card horizontally
                         width: '100%',
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -922,18 +922,17 @@ const MainTabs: React.FC = () => {
                   </Typography>
                 </Box>
                 
-                <Grid container spacing={4} sx={{ width: '100%' }}>
+                <Grid container spacing={4}>
                   {generatingImages.map((genImage, index) => {
                     return (
                       <Grid
                         key={genImage.imageId} 
                         size={{
-                          xs: gridSize.xs,
-                          sm: gridSize.sm,
-                          md: gridSize.md,
-                          lg: gridSize.lg
+                          xs: 12,
+                          sm: 12,
+                          md: 12,
+                          lg: 6 
                         }}
-                        sx={{ p: 0.5 }}
                       >
                         <Card sx={{ 
                           height: '100%', 
@@ -1005,254 +1004,287 @@ const MainTabs: React.FC = () => {
 
             {/* Show finished images grouped by date */}
             {imageGroups.length > 0 ? (
-              imageGroups.map((group) => (
-                <Box key={group.date} sx={{ mb: 4 }}>
-                  <Box 
-                    sx={{ 
-                      mb: 4, 
-                      mt: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      py: 1,
-                      width: '100%'
-                    }}
-                  >
-                    <Box sx={{
-                      position: 'absolute',
-                      width: '100%',
-                      height: '1px',
-                      backgroundColor: 'divider',
-                      left: 0,
-                      top: '50%'
-                    }} />
-                    <Typography 
-                      variant="subtitle1" 
-                      component="div" 
-                      sx={{
-                        backgroundColor: 'background.default',
-                        px: 4,
+              <>
+                {imageGroups.map((group) => (
+                  <Box key={group.date} sx={{ mb: 4 }}>
+                    <Box 
+                      sx={{ 
+                        mb: 4, 
+                        mt: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         position: 'relative',
-                        fontWeight: 500,
-                        color: 'text.secondary'
+                        py: 1,
+                        width: '100%'
                       }}
                     >
-                      {group.formattedDate}
-                    </Typography>
-                  </Box>
-                  
-                  <Grid 
-                    container 
-                    spacing={4} 
-                    sx={{ 
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'flex-start' 
-                    }}
-                  >
-                    {group.images.map((image, index) => {
-                      return (
-                        <Grid 
-                          key={image.imageId}
-                          size={{
-                            xs: gridSize.xs,
-                            sm: gridSize.sm,
-                            md: gridSize.md,
-                            lg: gridSize.lg
-                          }}
-                          sx={{ p: 0.5, display: 'flex' }}
-                        >
-                          <Card sx={{ 
-                            height: '100%', 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            overflow: 'hidden',
-                            borderRadius: 2,
-                            mx: 'auto',
-                            width: '100%',
-                            transition: 'all 0.2s ease-in-out',
-                            '&:hover': {
-                              transform: 'translateY(-4px)',
-                              boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
-                              cursor: 'pointer'
-                            },
-                          }}
-                          onClick={() => handleOpenModal(image)}>
-                            <Box sx={{ 
-                              position: 'relative', 
-                              height: group.images.length === 1 ? 450 : 320,
+                      <Box sx={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '1px',
+                        backgroundColor: 'divider',
+                        left: 0,
+                        top: '50%'
+                      }} />
+                      <Typography 
+                        variant="subtitle1" 
+                        component="div" 
+                        sx={{
+                          backgroundColor: 'background.default',
+                          px: 4,
+                          position: 'relative',
+                          fontWeight: 500,
+                          color: 'text.secondary'
+                        }}
+                      >
+                        {group.formattedDate}
+                      </Typography>
+                    </Box>
+                    
+                    <Grid container spacing={4}>
+                      {group.images.map((image, index) => {
+                        return (
+                          <Grid 
+                            key={image.imageId}
+                            size={{
+                              xs: 12,
+                              sm: 12,
+                              md: 12,
+                              lg: 6 
+                            }}
+                          >
+                            <Card sx={{ 
+                              height: '100%', 
+                              display: 'flex', 
+                              flexDirection: 'column', 
                               overflow: 'hidden',
-                              display: 'flex',
-                              justifyContent: 'center'
-                            }}>
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  backgroundImage: `url(${image.imageUrl})`,
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center',
-                                  filter: 'blur(15px)',
-                                  transform: 'scale(1.1)', // Avoid blur edges showing
-                                  opacity: 0.8,
-                                }}
-                              />
+                              borderRadius: 2,
+                              width: '100%',
+                              transition: 'all 0.2s ease-in-out',
+                              '&:hover': {
+                                transform: 'translateY(-4px)',
+                                boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
+                                cursor: 'pointer'
+                              },
+                            }}
+                            onClick={() => handleOpenModal(image)}>
                               <Box sx={{ 
+                                position: 'relative', 
+                                height: group.images.length === 1 ? 450 : 320,
+                                overflow: 'hidden',
                                 display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '100%',
-                                width: '100%',
-                                position: 'relative',
-                                zIndex: 1,
-                                padding: 2
+                                justifyContent: 'center'
                               }}>
-                                <Box 
-                                  sx={{ 
-                                    position: 'relative', 
-                                    height: group.images.length === 1 ? 450 : 320,
-                                    overflow: 'hidden',
-                                    display: 'flex',
-                                    justifyContent: 'center'
-                                  }}>
-                                  <Box sx={{ 
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    height: '100%',
-                                    width: '100%',
-                                    position: 'relative',
-                                    zIndex: 1,
-                                    padding: 2
-                                  }}>
-                                    <Box 
-                                      sx={{ 
-                                        display: 'inline-block',
-                                        position: 'relative',
-                                        maxWidth: '100%',
-                                        maxHeight: '100%',
-                                        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
-                                        borderRadius: '4px',
-                                        overflow: 'hidden'
-                                      }}
-                                    >
-                                      <CardMedia
-                                        component="img"
-                                        image={image.imageUrl}
-                                        alt={image.title || 'Image'}
-                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                          e.currentTarget.src = handleImageError();
-                                        }}
+                                <Box
+                                  sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundImage: `url(${image.imageUrl})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    filter: 'blur(15px)',
+                                    transform: 'scale(1.1)', // Avoid blur edges showing
+                                    opacity: 0.8,
+                                  }}
+                                />
+                                <Box sx={{ 
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%',
+                                  width: '100%',
+                                  position: 'relative',
+                                  zIndex: 1,
+                                  padding: 2
+                                }}>
+                                  <Box 
+                                    sx={{ 
+                                      position: 'relative', 
+                                      height: group.images.length === 1 ? 450 : 320,
+                                      overflow: 'hidden',
+                                      display: 'flex',
+                                      justifyContent: 'center'
+                                    }}>
+                                    <Box sx={{ 
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      height: '100%',
+                                      width: '100%',
+                                      position: 'relative',
+                                      zIndex: 1,
+                                      padding: 2
+                                    }}>
+                                      <Box 
                                         sx={{ 
-                                          objectFit: 'contain',
-                                          maxHeight: group.images.length === 1 ? 400 : 280,
+                                          display: 'inline-block',
+                                          position: 'relative',
                                           maxWidth: '100%',
-                                          width: 'auto',
-                                          display: 'block',
-                                          backgroundColor: 'transparent',
+                                          maxHeight: '100%',
+                                          boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                                           borderRadius: '4px',
+                                          overflow: 'hidden'
                                         }}
-                                      />
+                                      >
+                                        <CardMedia
+                                          component="img"
+                                          image={image.imageUrl}
+                                          alt={image.title || 'Image'}
+                                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                            e.currentTarget.src = handleImageError();
+                                          }}
+                                          sx={{ 
+                                            objectFit: 'contain',
+                                            maxHeight: group.images.length === 1 ? 400 : 280,
+                                            maxWidth: '100%',
+                                            width: 'auto',
+                                            display: 'block',
+                                            backgroundColor: 'transparent',
+                                            borderRadius: '4px',
+                                          }}
+                                        />
+                                      </Box>
                                     </Box>
                                   </Box>
                                 </Box>
                               </Box>
-                            </Box>
-                            <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
-                              {image.dripRating && image.dripRating.length > 0 && (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                                  {image.dripRating.map((tag, idx) => (
-                                    <Chip
-                                      key={idx}
-                                      label={tag}
-                                      size="small"
-                                      variant="filled"
-                                      sx={{
-                                        fontWeight: 600,
-                                        fontSize: '0.75rem',
-                                        height: 24,
-                                        color: theme.palette.secondary.light,
-                                        ml: 0.5,
-                                        mb: 0.5
-                                      }}
-                                    />
-                                  ))}
-                                </Box>
-                              )}
-                              <Typography variant="subtitle1" noWrap>
-                                {image.title}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </Typography>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                </Box>
-              ))
+                              <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
+                                {image.dripRating && image.dripRating.length > 0 && (
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
+                                    {image.dripRating.map((tag, idx) => (
+                                      <Chip
+                                        key={idx}
+                                        label={tag}
+                                        size="small"
+                                        variant="filled"
+                                        sx={{
+                                          fontWeight: 600,
+                                          fontSize: '0.75rem',
+                                          height: 24,
+                                          color: theme.palette.secondary.light,
+                                          ml: 0.5,
+                                          mb: 0.5
+                                        }}
+                                      />
+                                    ))}
+                                  </Box>
+                                )}
+                                <Typography variant="subtitle1" noWrap>
+                                  {image.title}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Box>
+                ))}
+                
+                {/* Load More Button */}
+                {hasMoreImages && (
+                  <Box sx={{ 
+                    width: '100%', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    mt: 4, 
+                    mb: 2 
+                  }}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      sx={{
+                        borderRadius: 2,
+                        py: 1,
+                        px: 4,
+                        position: 'relative'
+                      }}
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <CircularProgress 
+                            size={24} 
+                            sx={{ 
+                              color: 'primary',
+                              position: 'absolute',
+                              left: 'calc(50% - 12px)',
+                            }} 
+                          />
+                          <span style={{ visibility: 'hidden' }}>Load More</span>
+                        </>
+                      ) : (
+                        'Load More'
+                      )}
+                    </Button>
+                  </Box>
+                )}
+              </>
             ) : generatingImages.length === 0 ? (
               // Show empty state only when there are no images and nothing generating
-              <Box 
-                sx={{ 
-                  width: '100%', 
-                  textAlign: 'center', 
-                  py: 8,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <Box 
+              <Grid container justifyContent="center">
+                <Grid 
+                  size={12}
                   sx={{ 
-                    bgcolor: 'rgba(25, 118, 210, 0.08)', 
-                    borderRadius: '50%', 
-                    width: 110, 
-                    height: 110, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mb: 3,
-                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.06)'
+                    textAlign: 'center', 
+                    py: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
-                  <ImageIcon sx={{ fontSize: 52, color: 'primary.main' }} />
-                </Box>
-                <Typography variant="h5" color="text.primary" fontWeight="500">
-                  Your gallery is empty
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, mb: 4, maxWidth: 550 }}>
-                  Generate stunning fashion images with your personalized AI models
-                </Typography>
-                <Button 
-                  variant="contained" 
-                  size="large"
-                  startIcon={<AutoFixHighIcon />}
-                  sx={{ 
-                    px: 4, 
-                    py: 1.5,
-                    borderRadius: 2,
-                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.25)',
-                    transition: 'all 0.3s ease',
-                    backgroundColor: 'primary.main',
-                    '&:hover': {
-                      transform: 'translateY(-3px)',
-                      boxShadow: '0 8px 16px rgba(25, 118, 210, 0.3)',
-                      backgroundColor: 'primary.dark'
-                    }
-                  }}
-                  onClick={handleCreateImageClick}
-                >
-                  Create Your First Image
-                </Button>
-              </Box>
+                  <Box 
+                    sx={{ 
+                      bgcolor: 'rgba(25, 118, 210, 0.08)', 
+                      borderRadius: '50%', 
+                      width: 110, 
+                      height: 110, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      mb: 3,
+                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.06)'
+                    }}
+                  >
+                    <ImageIcon sx={{ fontSize: 52, color: 'primary.main' }} />
+                  </Box>
+                  <Typography variant="h5" color="text.primary" fontWeight="500">
+                    Your gallery is empty
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, mb: 4, maxWidth: 550 }}>
+                    Generate stunning fashion images with your personalized AI models
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    size="large"
+                    startIcon={<AutoFixHighIcon />}
+                    sx={{ 
+                      px: 4, 
+                      py: 1.5,
+                      borderRadius: 2,
+                      boxShadow: '0 4px 12px rgba(25, 118, 210, 0.25)',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: 'primary.main',
+                      '&:hover': {
+                        transform: 'translateY(-3px)',
+                        boxShadow: '0 8px 16px rgba(25, 118, 210, 0.3)',
+                        backgroundColor: 'primary.dark'
+                      }
+                    }}
+                    onClick={handleCreateImageClick}
+                  >
+                    Create Your First Image
+                  </Button>
+                </Grid>
+              </Grid>
             ) : null}
           </>
         )}

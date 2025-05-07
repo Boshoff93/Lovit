@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Button, Box, SxProps, Theme } from '@mui/material';
+import { Button, Box, SxProps, Theme, CircularProgress } from '@mui/material';
 
 interface CircularIconButtonProps {
   variant?: 'text' | 'outlined' | 'contained';
@@ -8,6 +8,8 @@ interface CircularIconButtonProps {
   onClick: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   sx?: SxProps<Theme>;
   size?: 'small' | 'medium' | 'large';
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 const CircularIconButton: React.FC<CircularIconButtonProps> = ({
@@ -16,7 +18,9 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
   textLabel,
   onClick,
   sx,
-  size = 'small'
+  size = 'small',
+  loading = false,
+  disabled = false
 }) => {
   return (
     <Button
@@ -24,6 +28,7 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
       startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}>{icon}</Box>}
       onClick={onClick}
       size={size}
+      disabled={disabled || loading}
       sx={{ 
         borderRadius: { xs: '50%', sm: '50%', md: textLabel ? 20 : '50%' },
         minWidth: { xs: '40px', sm: '40px', md: textLabel ? 'auto' : '40px' },
@@ -41,9 +46,25 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
         ...sx
       }}
     >
-      <Box sx={{ display: { xs: 'inline', md: textLabel ? 'none' : 'inline' }, fontSize: '1.25rem' }}>
-        {icon}
-      </Box>
+      <div style={{ 
+        width: '40px', 
+        height: '40px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'relative',
+        marginBottom: '5px',
+        borderRadius: '50%',
+        backgroundColor: variant === 'contained' ? 'transparent' : 'rgba(0, 0, 0, 0.04)'
+      }}>
+        {loading ? (
+          <CircularProgress size={24} color={variant === 'contained' ? 'inherit' : 'primary'} />
+        ) : (
+          <Box sx={{ display: { xs: 'inline', md: textLabel ? 'none' : 'inline' }, fontSize: '1.25rem' }}>
+            {icon}
+          </Box>
+        )}
+      </div>
       {textLabel && (
         <Box sx={{ display: { xs: 'none', md: 'inline' } }}>
           {textLabel}

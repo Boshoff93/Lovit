@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { saveAs } from 'file-saver';
 import { 
   Dialog, 
@@ -20,6 +20,9 @@ import ImageShareDialog from './ImageShareDialog';
 import { GeneratedImage } from '../store/gallerySlice';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
+import { useSelector, useDispatch } from 'react-redux';
+import { downloadImage, selectIsDownloading, selectDownloadError } from '../store/gallerySlice';
+import { AppDispatch } from '../store/store';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -44,6 +47,11 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
   onImageError
 }) => {
   const theme = useTheme();
+  const dispatch = useDispatch<AppDispatch>();
+  
+  // Get the download states from Redux
+  const isDownloading = useSelector(selectIsDownloading);
+  const downloadError = useSelector(selectDownloadError);
   
   // State for share dialog
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -69,19 +77,32 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
   }, []);
 
   // Function to handle image download
-  const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined) => {
+  const handleDownloadImage = useCallback(async (imageUrl: string | undefined, title: string | undefined, imageKey?: string) => {
     if (!imageUrl) return;
-
+    
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const filename = `${title || 'lovit-image'}-${Date.now()}.jpg`;
-      saveAs(blob, filename);
-      showNotification('Image download started');
+      // Dispatch the download thunk with all available data
+      const result = await dispatch(downloadImage({
+        imageUrl,
+        title,
+        imageKey // Pass imageKey directly when available
+      }));
+      
+      if (result.meta.requestStatus === 'fulfilled') {
+        showNotification('Image download started');
+      }
     } catch (error) {
       showNotification('Failed to download image', 'error');
+      console.error('Error downloading image:', error);
     }
-  }, [showNotification]);
+  }, [dispatch, showNotification]);
+
+  // Watch for download errors from Redux
+  useEffect(() => {
+    if (downloadError) {
+      showNotification(`Download failed: ${downloadError}`, 'error');
+    }
+  }, [downloadError, showNotification]);
 
   // Function to handle opening the share dialog
   const handleShareClick = useCallback(() => {
@@ -344,7 +365,12 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                       variant="contained"
                       icon={<DownloadIcon />}
                       textLabel="Download"
-                      onClick={() => handleDownloadImage(selectedImage?.imageUrl, selectedImage?.title)}
+                      loading={isDownloading}
+                      onClick={() => handleDownloadImage(
+                        selectedImage?.imageUrl, 
+                        selectedImage?.title,
+                        selectedImage?.imageKey
+                      )}
                     />
                     
                     {/* Share button */}
