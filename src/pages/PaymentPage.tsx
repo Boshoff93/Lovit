@@ -25,7 +25,6 @@ import {
   Toolbar
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/SpaceDashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -33,21 +32,13 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-  setSubscription, 
   createCheckoutSession, 
-  fetchSubscription,
   createPortalSession,
-  Subscription
 } from '../store/authSlice';
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAuth } from '../hooks/useAuth';
-
-interface PlanFeature {
-  title: string;
-  included: boolean;
-}
 
 interface PricePlan {
   id: string;

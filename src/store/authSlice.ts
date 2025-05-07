@@ -13,7 +13,7 @@ export interface Subscription {
   status: string;
   subscriptionId?: string;
   customerId?: string;
-  currentPeriodEnd?: number;
+  periodEnd: Date;
 }
 
 // Define allowance interface
@@ -44,7 +44,8 @@ const initialState: AuthState = {
   token: getToken(),
   subscription: {
     tier: 'free',
-    status: 'active'
+    status: 'active',
+    periodEnd: new Date()
   },
   allowances: null,
   isLoading: false,
@@ -303,7 +304,8 @@ const authSlice = createSlice({
       state.token = null;
       state.subscription = {
         tier: 'free',
-        status: 'active'
+        status: 'active',
+        periodEnd: new Date()
       };
       state.allowances = null;
       state.error = null;

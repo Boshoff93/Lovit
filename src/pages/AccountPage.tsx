@@ -299,6 +299,9 @@ const AccountPage: React.FC = () => {
                       }} />
                       Status: {subscription?.status || 'Active'}
                     </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      Period Ends: {subscription?.periodEnd ? new Date(subscription.periodEnd).toLocaleDateString() : 'N/A'}
+                    </Typography>
                   </Box>
                   <Button 
                     variant="contained" 
