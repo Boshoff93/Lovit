@@ -25,10 +25,12 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
   return (
     <Button
       variant={variant}
-      startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}>{icon}</Box>}
+      startIcon={<Box sx={{ display: { xs: 'none', md: 'inline' } }}>{ (loading && textLabel ==='Download') ? (
+        <CircularProgress size={24} color={variant === 'contained' ? 'inherit' : 'primary'} />
+      ) :icon}</Box>}
       onClick={onClick}
       size={size}
-      disabled={disabled || loading}
+      disabled={(disabled || loading) && textLabel === 'Download'}
       sx={{ 
         borderRadius: { xs: '50%', sm: '50%', md: textLabel ? 20 : '50%' },
         minWidth: { xs: '40px', sm: '40px', md: textLabel ? 'auto' : '40px' },
@@ -46,25 +48,11 @@ const CircularIconButton: React.FC<CircularIconButtonProps> = ({
         ...sx
       }}
     >
-      <div style={{ 
-        width: '40px', 
-        height: '40px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        position: 'relative',
-        marginBottom: '5px',
-        borderRadius: '50%',
-        backgroundColor: variant === 'contained' ? 'transparent' : 'rgba(0, 0, 0, 0.04)'
-      }}>
-        {loading ? (
+    <Box sx={{ display: { xs: 'inline', md: textLabel ? 'none' : 'inline' }, fontSize: '1.25rem' }}>
+        { (loading && textLabel ==='Download') ? (
           <CircularProgress size={24} color={variant === 'contained' ? 'inherit' : 'primary'} />
-        ) : (
-          <Box sx={{ display: { xs: 'inline', md: textLabel ? 'none' : 'inline' }, fontSize: '1.25rem' }}>
-            {icon}
-          </Box>
-        )}
-      </div>
+        ) : icon}
+    </Box>
       {textLabel && (
         <Box sx={{ display: { xs: 'none', md: 'inline' } }}>
           {textLabel}
