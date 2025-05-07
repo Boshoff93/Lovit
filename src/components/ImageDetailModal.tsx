@@ -21,7 +21,7 @@ import { GeneratedImage } from '../store/gallerySlice';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
 import { useSelector, useDispatch } from 'react-redux';
-import { downloadImage, selectIsDownloading, selectDownloadError } from '../store/gallerySlice';
+import { downloadImage, selectIsDownloading, selectDownloadError, clearDownloadError } from '../store/gallerySlice';
 import { AppDispatch } from '../store/store';
 
 const Transition = React.forwardRef(function Transition(
@@ -101,8 +101,9 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
   useEffect(() => {
     if (downloadError) {
       showNotification(`Download failed: ${downloadError}`, 'error');
+      dispatch(clearDownloadError());
     }
-  }, [downloadError, showNotification]);
+  }, [downloadError, showNotification, dispatch]);
 
   // Function to handle opening the share dialog
   const handleShareClick = useCallback(() => {

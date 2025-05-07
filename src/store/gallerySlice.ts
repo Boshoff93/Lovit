@@ -150,6 +150,7 @@ export const loadMoreImages = createAsyncThunk(
   ) => {
     return dispatch(fetchGeneratedImages({
       ...options,
+      limit: options.limit || 24,
       reset: false
     }));
   }
@@ -477,6 +478,11 @@ const gallerySlice = createSlice({
       state.hasMore = false;
     },
     
+    // Clear download error
+    clearDownloadError: (state) => {
+      state.downloadError = null;
+    },
+    
     // Clear gallery data (e.g., on logout)
     clearGallery: (state) => {
       state.images = [];
@@ -617,6 +623,7 @@ export const {
   clearClothingKey,
   clearGeneratingImages,
   resetPagination,
+  clearDownloadError,
   clearGallery
 } = gallerySlice.actions;
 
