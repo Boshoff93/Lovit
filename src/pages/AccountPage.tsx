@@ -17,15 +17,19 @@ import {
   Paper
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
-import { createPortalSession } from '../store/authSlice';
+import { createPortalSession, createCheckoutSession } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PersonIcon from '@mui/icons-material/Person';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   const [error, setError] = useState<string | null>(null);
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAccountData(true);
@@ -54,6 +58,25 @@ const AccountPage: React.FC = () => {
       setPortalLoading(false);
     }
   },[createStripePortal, setError, setPortalLoading]);
+
+  const handleTopUp = useCallback(async (type: 'photos' | 'models') => {
+    try {
+      setError(null);
+      setCheckoutLoading(type);
+      const resultAction = await dispatch(createCheckoutSession({ 
+        priceId: 'price_1RJSc0PU9E45VDzjai47qewH',
+        productId: 'prod_SDuQwcDcLNpFsl'
+      }));
+      
+      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+        window.location.href = resultAction.payload.url;
+      }
+    } catch (error: any) {
+      setError(error.message || 'Failed to create checkout session');
+    } finally {
+      setCheckoutLoading(null);
+    }
+  }, [dispatch]);
 
   // Format subscription tier for display
   const formatTier = useCallback((tier: string) => {
@@ -181,11 +204,32 @@ const AccountPage: React.FC = () => {
                         borderColor: 'divider' 
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <PhotoCameraIcon sx={{ mr: 1, color: 'primary.main' }} />
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          AI Photos
-                        </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <PhotoCameraIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            AI Photos
+                          </Typography>
+                        </Box>
+                        <Button
+                          variant="contained"
+                          size="medium"
+                          onClick={() => handleTopUp('photos')}
+                          disabled={!!checkoutLoading}
+                          startIcon={checkoutLoading === 'photos' ? <CircularProgress size={16} /> : undefined}
+                          sx={{ 
+                            borderRadius: 8,
+                            px: 3,
+                            fontWeight: 600,
+                            width: { xs: '100%', sm: 'auto' },
+                            '&:hover': {
+                              backgroundColor: 'primary.main',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }
+                          }}
+                        >
+                          {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up'}
+                        </Button>
                       </Box>
                       <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
@@ -228,11 +272,33 @@ const AccountPage: React.FC = () => {
                         borderColor: 'divider' 
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          AI Models
-                        </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            AI Models
+                          </Typography>
+                        </Box>
+                        <Button
+                          variant="contained"
+                          size="medium"
+                          onClick={() => handleTopUp('models')}
+                          disabled={!!checkoutLoading}
+                          startIcon={checkoutLoading === 'models' ? <CircularProgress size={16} /> : undefined}
+                          sx={{ 
+                            borderRadius: 8,
+                            px: 3,
+                            fontWeight: 600,
+                            width: { xs: '100%', sm: 'auto' },
+                            '&:hover': {
+                              backgroundColor: 'primary.main',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }
+                          }}
+                          
+                        >
+                          {checkoutLoading === 'models' ? 'Loading...' : 'Top Up'}
+                        </Button>
                       </Box>
                       <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
