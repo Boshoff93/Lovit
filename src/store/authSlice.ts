@@ -13,7 +13,8 @@ export interface Subscription {
   status: string;
   subscriptionId?: string;
   customerId?: string;
-  periodEnd: Date;
+  currentPeriodStart?: number;
+  currentPeriodEnd: number;
 }
 
 // Define allowance interface
@@ -45,7 +46,7 @@ const initialState: AuthState = {
   subscription: {
     tier: 'free',
     status: 'active',
-    periodEnd: new Date()
+    currentPeriodEnd: -1
   },
   allowances: null,
   isLoading: false,
@@ -292,7 +293,10 @@ const authSlice = createSlice({
   reducers: {
     // Set subscription data
     setSubscription: (state, action: PayloadAction<Subscription>) => {
-      state.subscription = action.payload;
+      state.subscription = {
+        ...action.payload,
+        currentPeriodEnd: action.payload.currentPeriodEnd || -1
+      };
     },
     // Logout action
     logout: (state) => {
@@ -305,7 +309,7 @@ const authSlice = createSlice({
       state.subscription = {
         tier: 'free',
         status: 'active',
-        periodEnd: new Date()
+        currentPeriodEnd: -1
       };
       state.allowances = null;
       state.error = null;
@@ -481,7 +485,10 @@ const authSlice = createSlice({
       })
       .addCase(fetchSubscription.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.subscription = action.payload;
+        state.subscription = {
+          ...action.payload,
+          currentPeriodEnd: action.payload.currentPeriodEnd || -1
+        };
         state.error = null;
       })
       .addCase(fetchSubscription.rejected, (state, action) => {

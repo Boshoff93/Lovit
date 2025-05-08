@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { store } from '../store/store';
+import { refreshToken, logout } from '../store/authSlice';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -30,14 +31,40 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for handling common errors
+// Response interceptor for handling common errors and token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Handle 401 Unauthorized errors
-    if (error.response && error.response.status === 401) {
-      // Dispatch logout action if needed
-      // store.dispatch(logout());
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // If the error is 401 and we haven't retried yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const state = store.getState();
+        const currentToken = state.auth.token;
+        
+        if (currentToken) {
+          // Use the refreshToken thunk directly since we can't use hooks outside of components
+          const result = await store.dispatch(refreshToken(currentToken));
+          
+          if (refreshToken.fulfilled.match(result)) {
+            // Get the new token from the store
+            const newToken = store.getState().auth.token;
+            
+            // Update the original request with the new token
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            
+            // Retry the original request
+            return api(originalRequest);
+          }
+        }
+      } catch (refreshError) {
+        // If token refresh fails, dispatch logout action
+        store.dispatch(logout());
+        return Promise.reject(refreshError);
+      }
     }
     
     return Promise.reject(error);

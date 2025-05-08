@@ -143,7 +143,7 @@ const AccountPage: React.FC = () => {
                       Member Since
                     </Typography>
                     <Typography variant="subtitle2" fontWeight="600">
-                      April 2024
+                      {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
                     </Typography>
                   </Box>
                   
@@ -300,7 +300,9 @@ const AccountPage: React.FC = () => {
                       Status: {subscription?.status || 'Active'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                      Period Ends: {subscription?.periodEnd ? new Date(subscription.periodEnd).toLocaleDateString() : 'N/A'}
+                      Period Ends: {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0 
+                        ? new Date(subscription.currentPeriodEnd).toLocaleDateString() 
+                        : 'No end date'}
                     </Typography>
                   </Box>
                   <Button 

@@ -391,8 +391,8 @@ const PaymentPage: React.FC = () => {
             {subscription && subscription.tier !== 'free' && (
               <Alert severity="info" sx={{ mt: 1, width: '100%', maxWidth: '500px', textAlign: 'center' }}>
                 You currently are subscribed to the {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} plan
-                {subscription.currentPeriodEnd && (
-                  <>. Next billing date: {new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}</>
+                {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
+                  <>. Next billing date: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}</>
                 )}
               </Alert>
             )}
