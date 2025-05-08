@@ -112,7 +112,11 @@ export const fetchGeneratedImages = createAsyncThunk(
       
       // Check if there are any generating images in the response and connect to their WebSockets
       const images = response.data.images || [];
-      const generatingImages = images.filter((img: any) => img.status === 'in_progress' || img.status === 'try_on');
+      
+      // Filter out generating images from the main images array
+      const completedImages = images.filter((img: any) => img.status !== 'in_progress' && img.status !== 'try_on' && img.status !== 'queued');
+      const generatingImages = images.filter((img: any) => img.status === 'in_progress' || img.status === 'try_on' || img.status === 'queued');
+      
       const connectCallback = options?.connectCallback;
       
       if (generatingImages.length > 0 && connectCallback && typeof connectCallback === 'function') {
@@ -127,7 +131,8 @@ export const fetchGeneratedImages = createAsyncThunk(
       }
       
       return {
-        images,
+        images: completedImages,
+        generatingImages,
         lastEvaluatedKey: response.data.lastEvaluatedKey,
         hasMore: response.data.hasMore,
         reset: options.reset
@@ -557,9 +562,16 @@ const gallerySlice = createSlice({
         if (reset) {
           state.isLoading = false;
           state.images = action.payload.images;
+          state.generatingImages = action.payload.generatingImages;
         } else {
           state.isLoadingMore = false;
           state.images = [...state.images, ...action.payload.images];
+          // Merge generating images without duplicates
+          const existingIds = new Set(state.generatingImages.map(img => img.imageId));
+          const newGeneratingImages = action.payload.generatingImages.filter(
+            (img: GeneratingImage) => !existingIds.has(img.imageId)
+          );
+          state.generatingImages = [...state.generatingImages, ...newGeneratingImages];
         }
         
         state.imageGroups = groupImagesByDate(state.images);
