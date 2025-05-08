@@ -219,20 +219,31 @@ interface PromptData {
   inferenceSteps?: number;
 }
 
-const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowances }) => {
+const AllowanceDisplay: React.FC<{ 
+  allowances: Allowances | null;
+  onUpgrade: (type: 'photo' | 'model') => void;
+}> = ({ allowances, onUpgrade }) => {
   if (!allowances) return null;
 
   return (
     <Box sx={{ display: 'flex', gap: 2 }}>
       {/* AI Photos Allowance */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.15)',
-        borderRadius: 8,
-        px: 1.5,
-        py: 0.5
-      }}>
+      <Box 
+        onClick={() => onUpgrade('photo')}
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          backgroundColor: 'rgba(255,255,255,0.15)',
+          borderRadius: 8,
+          px: 1.5,
+          py: 0.5,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.25)',
+          }
+        }}
+      >
         <PhotoCameraIcon sx={{ fontSize: 18, mr: 0.5 }} />
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {allowances.aiPhotos.used}/{allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)}
@@ -240,14 +251,22 @@ const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowan
       </Box>
 
       {/* AI Models Allowance */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.15)',
-        borderRadius: 8,
-        px: 1.5,
-        py: 0.5
-      }}>
+      <Box 
+        onClick={() => onUpgrade('model')}
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          backgroundColor: 'rgba(255,255,255,0.15)',
+          borderRadius: 8,
+          px: 1.5,
+          py: 0.5,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.25)',
+          }
+        }}
+      >
         <Person sx={{ fontSize: 18, mr: 0.5 }} />
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {allowances.aiModels.used}/{allowances.aiModels.max + (allowances.aiModels.topup || 0)}
@@ -1145,7 +1164,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Box>
 
             {token && (
-              <AllowanceDisplay allowances={allowances} />
+              <AllowanceDisplay 
+                allowances={allowances} 
+                onUpgrade={(type) => {
+                  setUpgradePopup({
+                    open: true,
+                    type,
+                    message: type === 'photo' 
+                      ? 'Upgrade your subscription or top up to generate more images!'
+                      : 'Upgrade your subscription or top up to create more models!'
+                  });
+                }}
+              />
             )}
 
             {token && (
