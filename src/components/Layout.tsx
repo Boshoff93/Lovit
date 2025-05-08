@@ -257,6 +257,82 @@ const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowan
   );
 };
 
+// Add these new interfaces after the existing interfaces
+interface DragDropAreaProps {
+  onDrop: (files: File[]) => void;
+  children: React.ReactNode;
+  isClothing?: boolean;
+}
+
+// Add the DragDropArea component before the Layout component
+const DragDropArea: React.FC<DragDropAreaProps> = ({ onDrop, children, isClothing }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const theme = useTheme();
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    if (files.length > 0) {
+      onDrop(files);
+    }
+  };
+
+  return (
+    <Box
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      sx={{
+        position: 'relative',
+        border: '2px dashed',
+        borderColor: isDragging ? 'primary.main' : 'divider',
+        borderRadius: 2,
+        backgroundColor: isDragging ? `${theme.palette.primary.main}10` : 'transparent',
+        transition: 'all 0.2s ease',
+        p: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: isClothing ? 200 : 120,
+        cursor: 'pointer',
+        '&:hover': {
+          borderColor: 'primary.main',
+          backgroundColor: `${theme.palette.primary.main}05`,
+        }
+      }}
+    >
+      {children}
+      <Typography 
+        variant="body2" 
+        color="text.secondary" 
+        sx={{ 
+          mt: 1,
+          textAlign: 'center',
+          pointerEvents: 'none'
+        }}
+      >
+        {isDragging ? 'Drop your images here' : 'Drag and drop images here'}
+      </Typography>
+    </Box>
+  );
+};
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -888,11 +964,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           uploadedClothingKey = result.key;
         } catch (error) {
           console.error('Error uploading clothing item:', error);
-          setNotification({
-            open: true,
-            message: 'Failed to upload clothing item',
-            severity: 'error'
-          });
+          if (error === 'Photo limit reached') {
+            setUpgradePopup({
+              open: true,
+              type: 'photo',
+              message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: 'Failed to upload clothing item',
+              severity: 'error'
+            });
+          }
           setIsModelUploading(false);
           return;
         } finally {
@@ -1342,22 +1426,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         </Typography>
                       </Paper>
                       
-                      <Button
-                        variant="outlined"
-                        fullWidth
-                        component="label"
-                        startIcon={<CloudUploadIcon />}
-                        sx={{ mb: 1, width: '100%' }}
-                      >
-                        Upload Images
-                        <input
-                          type="file"
-                          multiple
-                          hidden
-                          accept="image/*"
-                          onChange={handleFileChange}
-                        />
-                      </Button>
+                      <DragDropArea onDrop={(files) => {
+                        const newImages = Array.from(files);
+                        setUploadedImages(prev => {
+                          const combined = [...prev, ...newImages];
+                          if (combined.length > MAX_ALLOWED_IMAGES) {
+                            setNotification({
+                              open: true,
+                              message: `Maximum ${MAX_ALLOWED_IMAGES} images allowed. Only the first ${MAX_ALLOWED_IMAGES} images will be used.`,
+                              severity: 'info'
+                            });
+                          }
+                          return combined.slice(0, MAX_ALLOWED_IMAGES);
+                        });
+                        setUploadedCount(prev => {
+                          const newCount = prev + newImages.length;
+                          return Math.min(newCount, MAX_ALLOWED_IMAGES);
+                        });
+                      }}>
+                        <Button
+                          variant="outlined"
+                          component="label"
+                          startIcon={<CloudUploadIcon />}
+                          sx={{ mb: 1, width: '100%' }}
+                        >
+                          Upload Images
+                          <input
+                            type="file"
+                            multiple
+                            hidden
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+                        </Button>
+                      </DragDropArea>
                       
                       {uploadedImages.length > 0 && (
                         <Box 
@@ -1617,70 +1719,79 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       {/* Clothing Upload - Simplified */}
                       <Box sx={{ mt: 2, mb: 2 }}>
                         <Typography variant="subtitle1">Try On Item (Optional)</Typography>
-                        <Button
-                          variant="outlined"
-                          component="label"
-                          disabled={isGeneratingImages || isExecutingGenerating}
-                          startIcon={<CloudUploadIcon />}
-                          sx={{ mt: 1, width: '100%' }}
-                          fullWidth
+                        <DragDropArea 
+                          onDrop={(files) => {
+                            if (files.length > 0) {
+                              handleClothingFileChange(files[0]);
+                            }
+                          }}
+                          isClothing
                         >
-                          Upload Clothing
-                          <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            onChange={(e) => handleClothingFileChange(e.target.files ? e.target.files[0] : null)}
-                          />
-                        </Button>
-                        {clothingUrl && (
-                          <Box sx={{ mt: 2, width: '100%' }}>
-                            <Paper 
-                              elevation={0}
-                              sx={{ 
-                                p: 1, 
-                                borderRadius: 2,
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                position: 'relative',
-                                overflow: 'hidden'
-                              }}
+                          {clothingUrl ? (
+                            <Box sx={{ width: '100%' }}>
+                              <Paper 
+                                elevation={0}
+                                sx={{ 
+                                  p: 1, 
+                                  borderRadius: 2,
+                                  border: '1px solid',
+                                  borderColor: 'divider',
+                                  display: 'flex',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  position: 'relative',
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                <Box sx={{ p:1, position: 'relative', width: '100%', height: 200, display: 'flex', justifyContent: 'center' }}>
+                                  <img 
+                                    src={clothingUrl} 
+                                    alt="Clothing reference" 
+                                    style={{ 
+                                      maxWidth: '100%',
+                                      maxHeight: '100%',
+                                      objectFit: 'cover',
+                                      borderRadius: 8,
+                                    }} 
+                                  />
+                                </Box>
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}>
+                                  <IconButton 
+                                    onClick={() => handleClothingFileChange(null)}
+                                    size="small"
+                                    sx={{ 
+                                      color: 'primary.main'
+                                    }}
+                                  >
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                              </Paper>
+                            </Box>
+                          ) : (
+                            <Button
+                              variant="outlined"
+                              component="label"
+                              disabled={isGeneratingImages || isExecutingGenerating}
+                              startIcon={<CloudUploadIcon />}
+                              sx={{ mt: 1, width: '100%' }}
+                              fullWidth
                             >
-                              <Box sx={{ p:1, position: 'relative', width: '100%', height: 200, display: 'flex', justifyContent: 'center' }}>
-                                <img 
-                                  src={clothingUrl} 
-                                  alt="Clothing reference" 
-                                  style={{ 
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: 8,
-                                  }} 
-                                />
-                              </Box>
-                              <Box sx={{ 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                           
-                              }}>
-                                <IconButton 
-                                  onClick={() => handleClothingFileChange(null)}
-                                  size="small"
-                                  sx={{ 
-                                    color: 'primary.main'
-                                  }}
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
-                              </Box>
-                            </Paper>
-                          </Box>
-                        )}
+                              Upload Clothing
+                              <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={(e) => handleClothingFileChange(e.target.files ? e.target.files[0] : null)}
+                              />
+                            </Button>
+                          )}
+                        </DragDropArea>
                       </Box>
                       
                       <Button
