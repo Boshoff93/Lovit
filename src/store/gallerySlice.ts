@@ -112,7 +112,7 @@ export const fetchGeneratedImages = createAsyncThunk(
       
       // Check if there are any generating images in the response and connect to their WebSockets
       const images = response.data.images || [];
-      const generatingImages = images.filter((img: any) => img.status === 'in_progress');
+      const generatingImages = images.filter((img: any) => img.status === 'in_progress' || img.status === 'try_on');
       const connectCallback = options?.connectCallback;
       
       if (generatingImages.length > 0 && connectCallback && typeof connectCallback === 'function') {
