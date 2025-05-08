@@ -9,7 +9,8 @@ import {
   Paper,
   Button,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  CircularProgress
 } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import Face3Icon from '@mui/icons-material/Person';
@@ -22,6 +23,8 @@ interface UpgradePopupProps {
   onClose: () => void;
   onTopUp: () => void;
   onUpgrade: () => void;
+  isTopUpLoading?: boolean;
+  isUpgradeLoading?: boolean;
 }
 
 const UpgradePopup: React.FC<UpgradePopupProps> = ({
@@ -31,7 +34,9 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
   isPremiumTier,
   onClose,
   onTopUp,
-  onUpgrade
+  onUpgrade,
+  isTopUpLoading = false,
+  isUpgradeLoading = false
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -120,8 +125,13 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
               sx={{ borderRadius: 2, minWidth: 120 }}
               color="primary"
               fullWidth
+              disabled={isTopUpLoading}
             >
-              Top Up
+              {isTopUpLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Top Up'
+              )}
             </Button>
             {isPremiumTier === false && (
               <Button 
@@ -130,28 +140,18 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                 sx={{ borderRadius: 2, minWidth: 120 }}
                 color="secondary"
                 fullWidth
+                disabled={isUpgradeLoading}
               >
-                Upgrade Now
+                {isUpgradeLoading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  'Upgrade Now'
+                )}
               </Button>
             )}
-            <Button 
-              variant="outlined" 
-              onClick={onClose}
-              sx={{ borderRadius: 2, minWidth: 120 }}
-              fullWidth
-            >
-              Later
-            </Button>
           </>
         ) : (
           <>
-            <Button 
-              variant="outlined" 
-              onClick={onClose}
-              sx={{ borderRadius: 2, minWidth: 120 }}
-            >
-              Later
-            </Button>
             {isPremiumTier === false ? (
               <>
                 <Button 
@@ -159,16 +159,26 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                   onClick={onTopUp}
                   sx={{ borderRadius: 2, minWidth: 120 }}
                   color="primary"
+                  disabled={isTopUpLoading}
                 >
-                  Top Up
+                  {isTopUpLoading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    'Top Up'
+                  )}
                 </Button>
                 <Button 
                   variant="contained" 
                   onClick={onUpgrade}
                   sx={{ borderRadius: 2, minWidth: 120 }}
                   color="secondary"
+                  disabled={isUpgradeLoading}
                 >
-                  Upgrade Now
+                  {isUpgradeLoading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    'Upgrade Now'
+                  )}
                 </Button>
               </>
             ) : (
@@ -177,13 +187,31 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                 onClick={onTopUp}
                 sx={{ borderRadius: 2, minWidth: 120 }}
                 color="primary"
+                disabled={isTopUpLoading}
               >
-                Top Up
+                {isTopUpLoading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  'Top Up'
+                )}
               </Button>
             )}
           </>
         )}
       </DialogActions>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        pb: 2
+      }}>
+        <Button 
+          variant="outlined" 
+          onClick={onClose}
+          sx={{ borderRadius: 2, minWidth: 120 }}
+        >
+          Later
+        </Button>
+      </Box>
     </Dialog>
   );
 };
