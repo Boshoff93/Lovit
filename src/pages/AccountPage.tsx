@@ -194,7 +194,9 @@ const AccountPage: React.FC = () => {
                         <Typography variant="body2" fontWeight={600} color={
                           allowances.aiPhotos.used >= allowances.aiPhotos.max ? 'error.main' : 'primary.main'
                         }>
-                          {allowances.aiPhotos.max - allowances.aiPhotos.used} remaining
+                          {allowances.aiPhotos.max - allowances.aiPhotos.used <= 0 
+                            ? "Limit eached" 
+                            : `${allowances.aiPhotos.max - allowances.aiPhotos.used} remaining`}
                         </Typography>
                       </Box>
                       <LinearProgress
@@ -239,7 +241,9 @@ const AccountPage: React.FC = () => {
                         <Typography variant="body2" fontWeight={600} color={
                           allowances.aiModels.used >= allowances.aiModels.max ? 'error.main' : 'primary.main'
                         }>
-                          {allowances.aiModels.max - allowances.aiModels.used} remaining
+                          {allowances.aiModels.max - allowances.aiModels.used <= 0 
+                            ? "Limit reached" 
+                            : `${allowances.aiModels.max - allowances.aiModels.used} remaining`}
                         </Typography>
                       </Box>
                       <LinearProgress
