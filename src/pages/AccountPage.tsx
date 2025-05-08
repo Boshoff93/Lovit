@@ -189,26 +189,26 @@ const AccountPage: React.FC = () => {
                       </Box>
                       <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
-                          Used: {allowances.aiPhotos.used} / {allowances.aiPhotos.max}
+                          Used: {allowances.aiPhotos.used} / {allowances.aiPhotos.max + allowances.aiPhotos.topup}
                         </Typography>
                         <Typography variant="body2" fontWeight={600} color={
-                          allowances.aiPhotos.used >= allowances.aiPhotos.max ? 'error.main' : 'primary.main'
+                          allowances.aiPhotos.used >= (allowances.aiPhotos.max + allowances.aiPhotos.topup) ? 'error.main' : 'primary.main'
                         }>
-                          {allowances.aiPhotos.max - allowances.aiPhotos.used <= 0 
-                            ? "Limit eached" 
-                            : `${allowances.aiPhotos.max - allowances.aiPhotos.used} remaining`}
+                          {(allowances.aiPhotos.max + allowances.aiPhotos.topup) - allowances.aiPhotos.used <= 0 
+                            ? "Limit reached" 
+                            : `${(allowances.aiPhotos.max + allowances.aiPhotos.topup) - allowances.aiPhotos.used} remaining`}
                         </Typography>
                       </Box>
                       <LinearProgress
                         variant="determinate"
-                        value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max)}
+                        value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max + allowances.aiPhotos.topup)}
                         sx={{ 
                           height: 8, 
                           borderRadius: 4,
                           my: 1,
                           backgroundColor: 'rgba(0,0,0,0.05)',
                           '& .MuiLinearProgress-bar': {
-                            backgroundColor: allowances.aiPhotos.used >= allowances.aiPhotos.max 
+                            backgroundColor: allowances.aiPhotos.used >= (allowances.aiPhotos.max + allowances.aiPhotos.topup) 
                               ? 'error.main' 
                               : 'primary.main'
                           }
@@ -236,26 +236,26 @@ const AccountPage: React.FC = () => {
                       </Box>
                       <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
-                          Used: {allowances.aiModels.used} / {allowances.aiModels.max}
+                          Used: {allowances.aiModels.used} / {allowances.aiModels.max + allowances.aiModels.topup}
                         </Typography>
                         <Typography variant="body2" fontWeight={600} color={
-                          allowances.aiModels.used >= allowances.aiModels.max ? 'error.main' : 'primary.main'
+                          allowances.aiModels.used >= (allowances.aiModels.max + allowances.aiModels.topup) ? 'error.main' : 'primary.main'
                         }>
-                          {allowances.aiModels.max - allowances.aiModels.used <= 0 
+                          {(allowances.aiModels.max + allowances.aiModels.topup) - allowances.aiModels.used <= 0 
                             ? "Limit reached" 
-                            : `${allowances.aiModels.max - allowances.aiModels.used} remaining`}
+                            : `${(allowances.aiModels.max + allowances.aiModels.topup) - allowances.aiModels.used} remaining`}
                         </Typography>
                       </Box>
                       <LinearProgress
                         variant="determinate"
-                        value={calculateAllowancePercentage(allowances.aiModels.used, allowances.aiModels.max)}
+                        value={calculateAllowancePercentage(allowances.aiModels.used, allowances.aiModels.max + allowances.aiModels.topup)}
                         sx={{ 
                           height: 8, 
                           borderRadius: 4,
                           my: 1,
                           backgroundColor: 'rgba(0,0,0,0.05)',
                           '& .MuiLinearProgress-bar': {
-                            backgroundColor: allowances.aiModels.used >= allowances.aiModels.max 
+                            backgroundColor: allowances.aiModels.used >= (allowances.aiModels.max + allowances.aiModels.topup) 
                               ? 'error.main' 
                               : 'primary.main'
                           }

@@ -21,6 +21,7 @@ export interface Subscription {
 export interface Allowance {
   used: number;
   max: number;
+  topup: number;
 }
 
 // Define allowances interface
@@ -341,6 +342,13 @@ const authSlice = createSlice({
       if (state.allowances && state.allowances.aiModels) {
         state.allowances.aiModels.used += action.payload;
       }
+    },
+    // Add topup to allowances
+    addTopupToAllowance: (state, action: PayloadAction<{ type: 'aiPhotos' | 'aiModels', amount: number }>) => {
+      if (state.allowances) {
+        const { type, amount } = action.payload;
+        state.allowances[type].topup += amount;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -537,7 +545,8 @@ export const {
   clearError,
   setAllowances,
   updateAiPhotoAllowance,
-  updateAiModelAllowance
+  updateAiModelAllowance,
+  addTopupToAllowance
 } = authSlice.actions;
 
 export default authSlice.reducer;

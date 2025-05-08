@@ -235,7 +235,7 @@ const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowan
       }}>
         <PhotoCameraIcon sx={{ fontSize: 18, mr: 0.5 }} />
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {allowances.aiPhotos.used}/{allowances.aiPhotos.max}
+          {allowances.aiPhotos.used}/{allowances.aiPhotos.max + allowances.aiPhotos.topup}
         </Typography>
       </Box>
 
@@ -250,7 +250,7 @@ const AllowanceDisplay: React.FC<{ allowances: Allowances | null }> = ({ allowan
       }}>
         <Person sx={{ fontSize: 18, mr: 0.5 }} />
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {allowances.aiModels.used}/{allowances.aiModels.max}
+          {allowances.aiModels.used}/{allowances.aiModels.max + allowances.aiModels.topup}
         </Typography>
       </Box>
     </Box>
