@@ -506,6 +506,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     message: ''
   });
 
+  // Add loading states for upgrade popup
+  const [isTopUpLoading, setIsTopUpLoading] = useState(false);
+  const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
+
   // Check if user is on premium tier
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
 
@@ -1114,6 +1118,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleTopUp = useCallback(async () => {
     try {
+      setIsTopUpLoading(true);
       const resultAction = await dispatch(createCheckoutSession({ 
         priceId: 'price_1RJSc0PU9E45VDzjai47qewH',
         productId: 'prod_SDuQwcDcLNpFsl'
@@ -1123,17 +1128,32 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Failed to create checkout session:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to create checkout session. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsTopUpLoading(false);
     }
   }, [dispatch]);
 
   const handleUpgrade = useCallback(async () => {
     try {
+      setIsUpgradeLoading(true);
       const resultAction = await dispatch(createPortalSession());
       if (createPortalSession.fulfilled.match(resultAction) && resultAction.payload.url) {
         window.location.href = resultAction.payload.url;
       }
     } catch (error) {
       console.error('Failed to access subscription management:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to access subscription management. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsUpgradeLoading(false);
     }
   }, [dispatch]);
 
@@ -2131,6 +2151,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           onClose={handleUpgradePopupClose}
           onTopUp={handleTopUp}
           onUpgrade={handleUpgrade}
+          isTopUpLoading={isTopUpLoading}
+          isUpgradeLoading={isUpgradeLoading}
         />
         
         {/* Training Progress Indicator */}
