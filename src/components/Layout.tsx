@@ -1104,11 +1104,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   const handleUpgradePopupClose = () => {
-    setUpgradePopup({
+    setUpgradePopup(prev => ({
+      ...prev,
       open: false,
-      type: null,
-      message: ''
-    });
+    }));
   };
 
   const allowances = useSelector((state: RootState) => state.auth.allowances);
