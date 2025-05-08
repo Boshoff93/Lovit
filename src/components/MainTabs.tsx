@@ -717,10 +717,10 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {model.status === 'in_progress' && (
+                    {(model.status === 'in_progress' || model.status === 'try_on') && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
-                          variant={model.progress ? "determinate" : "indeterminate"}
+                          variant={model.status === 'try_on' ? "indeterminate" : model.progress ? "determinate" : "indeterminate"}
                           value={model.progress || 0}
                           sx={{ 
                             height: 6, 
@@ -731,7 +731,7 @@ const MainTabs: React.FC = () => {
                           }} 
                         />
                         <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
-                          {model.progress ? `${model.progress}% Complete` : 'Processing...'}
+                          {model.status === 'try_on' ? 'Trying on outfit...' : model.progress ? `${model.progress}% Complete` : 'Processing...'}
                         </Typography>
                       </Box>
                     )}

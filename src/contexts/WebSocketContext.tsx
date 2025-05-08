@@ -135,8 +135,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
             ...prev,
             [imageData.imageId]: id
           }));
-          
-          // Don't try to open a new connection for this image if we're already getting updates
         }
         
         // Find the original generating image to get prompt and modelId
@@ -219,12 +217,13 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           if (imageData.imageId === id) {
             disconnect(imageData.imageId);
           }
-        } else if (imageData.progress !== undefined) {
-          // Update progress for generating image
-          console.log(`Updating progress for image ${imageData.imageId}: ${imageData.progress}%`);
+        } else if (imageData.status === 'try_on' || imageData.progress !== undefined) {
+          // Update progress for generating image or try_on status
+          console.log(`Updating status for image ${imageData.imageId}: ${imageData.status}, progress: ${imageData.progress}%`);
           dispatch(updateGeneratingImage({
             imageId: imageData.imageId,
-            progress: imageData.progress
+            progress: imageData.progress,
+            status: imageData.status
           }));
         }
       } else if (data.type === 'connected') {
