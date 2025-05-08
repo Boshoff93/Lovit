@@ -138,7 +138,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                 variant="contained" 
                 onClick={onUpgrade}
                 sx={{ borderRadius: 2, minWidth: 120 }}
-                color="secondary"
+                color="primary"
                 fullWidth
                 disabled={isUpgradeLoading}
               >
@@ -171,7 +171,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                   variant="contained" 
                   onClick={onUpgrade}
                   sx={{ borderRadius: 2, minWidth: 120 }}
-                  color="secondary"
+                  color="primary"
                   disabled={isUpgradeLoading}
                 >
                   {isUpgradeLoading ? (
