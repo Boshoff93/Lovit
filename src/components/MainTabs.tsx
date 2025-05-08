@@ -717,10 +717,10 @@ const MainTabs: React.FC = () => {
                     </Typography>
                     
                     {/* Show progress bar for in-progress models */}
-                    {(model.status === 'in_progress' || model.status === 'try_on') && (
+                    {model.status === 'in_progress' && (
                       <Box sx={{ mt: 2, mb: 1 }}>
                         <LinearProgress 
-                          variant={model.status === 'try_on' ? "indeterminate" : model.progress ? "determinate" : "indeterminate"}
+                          variant={model.progress ? "determinate" : "indeterminate"}
                           value={model.progress || 0}
                           sx={{ 
                             height: 6, 
@@ -731,7 +731,7 @@ const MainTabs: React.FC = () => {
                           }} 
                         />
                         <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
-                          {model.status === 'try_on' ? 'Trying on outfit...' : model.progress ? `${model.progress}% Complete` : 'Processing...'}
+                          {model.progress ? `${model.progress}% Complete` : 'Processing...'}
                         </Typography>
                       </Box>
                     )}
@@ -1070,7 +1070,7 @@ const MainTabs: React.FC = () => {
                                     />
                                   </Box>
                                   <LinearProgress 
-                                    variant="determinate" 
+                                    variant={genImage.status === 'try_on' ? "indeterminate" : "determinate"} 
                                     value={genImage.progress} 
                                     sx={{ width: '80%', height: 6, borderRadius: 3, mb: 2 }} 
                                   />
@@ -1084,9 +1084,11 @@ const MainTabs: React.FC = () => {
                                       textShadow: '0 1px 2px rgba(0,0,0,0.1)'
                                     }}
                                   >
-                                    {genImage.progress !== undefined 
-                                      ? `Generating Image ${Math.round(genImage.progress)}%`
-                                      : "Generating Image"}
+                                    {genImage.status === 'try_on' 
+                                      ? "Trying on outfit..."
+                                      : genImage.progress !== undefined 
+                                        ? `Generating Image ${Math.round(genImage.progress)}%`
+                                        : "Generating Image"}
                                   </Typography>
                                 </Box>
                               </>
