@@ -41,7 +41,9 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       if (fetchedUser && 
         (fetchedUser.username !== user?.username || 
          fetchedUser.email !== user?.email || 
-         fetchedUser.isVerified !== user?.isVerified)) {
+         fetchedUser.isVerified !== user?.isVerified ||
+         fetchedUser.createdAt !== user?.createdAt ||
+         fetchedUser.userId !== user?.userId)) {
         updateUser(fetchedUser);
       }
       
