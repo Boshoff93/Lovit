@@ -370,8 +370,12 @@ const AccountPage: React.FC = () => {
                       Status: {subscription?.status || 'Active'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                      Period Ends: {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0 
-                        ? new Date(subscription.currentPeriodEnd).toLocaleDateString() 
+                      Subscription Renews: {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0 
+                        ? new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { 
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
                         : 'No end date'}
                     </Typography>
                   </Box>
