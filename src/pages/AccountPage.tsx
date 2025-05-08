@@ -29,7 +29,7 @@ const AccountPage: React.FC = () => {
 
   useEffect(() => {
     fetchAccountData(true);
-  }, [fetchAccountData]);
+  }, []);
 
   const [portalLoading, setPortalLoading] = useState(false);
 
