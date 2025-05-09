@@ -473,11 +473,12 @@ const MainTabs: React.FC = () => {
             mockModels.map((model) => (
               <Grid 
                 key={model.modelId} 
-                size={{                               
+                size={{
                   xs: 12,
                   sm: 12,
-                  md: 12,
-                  lg: 6 
+                  md: isDrawerOpen ? 12 : 6,
+                  lg: 6,
+                  xl: 4
                 }}
                 sx={{ mt: 5 }}
               >
@@ -523,9 +524,19 @@ const MainTabs: React.FC = () => {
                         backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.modelId)})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        filter: 'blur(15px)',
-                        transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
-                        opacity: 0.9,
+                        filter: 'blur(20px)',
+                        transform: 'scale(1.1)',
+                        opacity: 0.7,
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+                          pointerEvents: 'none'
+                        }
                       }}
                     />
                     <Box sx={{ 
@@ -611,11 +622,12 @@ const MainTabs: React.FC = () => {
             models.map((model) => (
               <Grid 
                 key={model.modelId} 
-                size={{                               
+                size={{
                   xs: 12,
                   sm: 12,
-                  md: 12,
-                  lg: 6 
+                  md: isDrawerOpen ? 12 : 6,
+                  lg: 6,
+                  xl: 4
                 }}
                 sx={{ mt: 5 }}
               >
@@ -661,9 +673,19 @@ const MainTabs: React.FC = () => {
                         backgroundImage: `url(${model.imageUrl ?? getFallbackImage(model.modelId)})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        filter: 'blur(15px)',
-                        transform: 'scale(1.1)', // Slightly scale up to avoid blur edges
-                        opacity: 0.9,
+                        filter: 'blur(20px)',
+                        transform: 'scale(1.1)',
+                        opacity: 0.7,
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+                          pointerEvents: 'none'
+                        }
                       }}
                     />
                     <Box sx={{ 
@@ -760,19 +782,15 @@ const MainTabs: React.FC = () => {
               return (
                 <Grid
                   key={`skeleton-${skeleton}`} 
-                  size={{                   
+                  size={{
                     xs: 12,
                     sm: 12,
-                    md: 12,
-                    lg: 6 
+                    md: isDrawerOpen ? 12 : 6,
+                    lg: 6,
+                    xl: 4
                   }}
                 >
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 1, boxShadow: 'none' }}>
-                    <Skeleton variant="rectangular" height={imageHeight} />
-                    <Box sx={{ p: 1, bgcolor: 'background.paper' }}>
-                      <Skeleton variant="text" sx={{ mt: 0.5 }} />
-                      <Skeleton variant="text" width="60%" />
-                    </Box>
                     <Skeleton variant="rectangular" height={imageHeight} />
                     <Box sx={{ p: 1, bgcolor: 'background.paper' }}>
                       <Skeleton variant="text" sx={{ mt: 0.5 }} />
@@ -796,7 +814,8 @@ const MainTabs: React.FC = () => {
                   justifyContent: 'center',
                   position: 'relative',
                   py: 1,
-                  width: '100%'
+                  width: '100%',
+                  alignContent: 'center'
                 }}
               >
                 <Box sx={{
@@ -830,12 +849,12 @@ const MainTabs: React.FC = () => {
                       size={{
                         xs: 12,
                         sm: 12,
-                        md: 12,
-                        lg: 6 
+                        md: isDrawerOpen ? 12 : 6,
+                        lg: 6,
+                        xl: 4
                       }}
                     >
                       <Card sx={{ 
-                        height: '100%', 
                         display: 'flex', 
                         flexDirection: 'column', 
                         overflow: 'hidden',
@@ -870,7 +889,7 @@ const MainTabs: React.FC = () => {
                         </IconButton>
                         <Box sx={{ 
                           position: 'relative', 
-                          height: group.images.length === 1 ? 450 : 320,
+                          height: 450,
                           overflow: 'hidden',
                           display: 'flex',
                           justifyContent: 'center'
@@ -885,9 +904,19 @@ const MainTabs: React.FC = () => {
                               backgroundImage: `url(${image.imageUrl})`,
                               backgroundSize: 'cover',
                               backgroundPosition: 'center',
-                              filter: 'blur(15px)',
-                              transform: 'scale(1.1)', // Avoid blur edges showing
-                              opacity: 0.8,
+                              filter: 'blur(20px)',
+                              transform: 'scale(1.1)',
+                              opacity: 0.7,
+                              '&::after': {
+                                content: '""',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+                                pointerEvents: 'none'
+                              }
                             }}
                           />
                           <Box sx={{ 
@@ -903,7 +932,7 @@ const MainTabs: React.FC = () => {
                             <Box 
                               sx={{ 
                                 position: 'relative', 
-                                height: group.images.length === 1 ? 450 : 320,
+                                height: 450,
                                 overflow: 'hidden',
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -938,7 +967,7 @@ const MainTabs: React.FC = () => {
                                     }}
                                     sx={{ 
                                       objectFit: 'contain',
-                                      maxHeight: group.images.length === 1 ? 400 : 280,
+                                      maxHeight: 400,
                                       maxWidth: '100%',
                                       width: 'auto',
                                       display: 'block',
@@ -1033,8 +1062,9 @@ const MainTabs: React.FC = () => {
                         size={{
                           xs: 12,
                           sm: 12,
-                          md: 12,
-                          lg: 6 
+                          md: isDrawerOpen ? 12 : 6,
+                          lg: 6,
+                          xl: 4
                         }}
                       >
                         <Card sx={{ 
@@ -1156,8 +1186,9 @@ const MainTabs: React.FC = () => {
                             size={{
                               xs: 12,
                               sm: 12,
-                              md: 12,
-                              lg: 6 
+                              md: isDrawerOpen ? 12 : 6,
+                              lg: 6,
+                              xl: 4
                             }}
                           >
                             <Card sx={{ 
@@ -1196,7 +1227,7 @@ const MainTabs: React.FC = () => {
                               </IconButton>
                               <Box sx={{ 
                                 position: 'relative', 
-                                height: group.images.length === 1 ? 450 : 320,
+                                height: 450,
                                 overflow: 'hidden',
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -1211,9 +1242,19 @@ const MainTabs: React.FC = () => {
                                     backgroundImage: `url(${image.imageUrl})`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    filter: 'blur(15px)',
-                                    transform: 'scale(1.1)', // Avoid blur edges showing
-                                    opacity: 0.8,
+                                    filter: 'blur(20px)',
+                                    transform: 'scale(1.1)',
+                                    opacity: 0.7,
+                                    '&::after': {
+                                      content: '""',
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+                                      pointerEvents: 'none'
+                                    }
                                   }}
                                 />
                                 <Box sx={{ 
@@ -1229,7 +1270,7 @@ const MainTabs: React.FC = () => {
                                   <Box 
                                     sx={{ 
                                       position: 'relative', 
-                                      height: group.images.length === 1 ? 450 : 320,
+                                      height: 450,
                                       overflow: 'hidden',
                                       display: 'flex',
                                       justifyContent: 'center'
@@ -1264,7 +1305,7 @@ const MainTabs: React.FC = () => {
                                           }}
                                           sx={{ 
                                             objectFit: 'contain',
-                                            maxHeight: group.images.length === 1 ? 400 : 280,
+                                            maxHeight: 400,
                                             maxWidth: '100%',
                                             width: 'auto',
                                             display: 'block',
