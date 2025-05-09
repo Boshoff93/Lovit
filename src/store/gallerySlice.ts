@@ -126,6 +126,8 @@ export const fetchGeneratedImages = createAsyncThunk(
           if (img.imageId) {
             console.log(`Connecting to WebSocket for existing generating image ${img.imageId}`);
             connectCallback(img.imageId, "IMAGE");
+          } else {
+            console.log(`No imageId found for generating image ${img}`);
           }
         });
       }
@@ -174,6 +176,7 @@ export const generateImages = createAsyncThunk(
       seedNumber?: string;
       inferenceSteps?: number;
       dripRating?: string[];
+      imageType: 'fullBody' | 'headshot';
       connectCallback?: (imageId: string, type: "IMAGE" | "MODEL") => void; // Add callback for connection
     },
     { getState, rejectWithValue, dispatch }
@@ -199,7 +202,8 @@ export const generateImages = createAsyncThunk(
           orientation: payload.orientation,
           clothingKey: payload.clothingKey,
           seedNumber: payload.seedNumber,
-          inferenceSteps
+          inferenceSteps,
+          imageType: payload.imageType
         },
         {
           headers: {

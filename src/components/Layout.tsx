@@ -217,6 +217,7 @@ interface PromptData {
   useRandomPrompt: boolean;
   seedNumber?: number;
   inferenceSteps?: number;
+  imageType: 'fullBody' | 'headshot';  // Add image type
 }
 
 const AllowanceDisplay: React.FC<{ 
@@ -477,7 +478,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     modelId: '',
     useRandomPrompt: false,
     seedNumber: undefined,
-    inferenceSteps: 50
+    inferenceSteps: 50,
+    imageType: 'fullBody'  // Set default to fullBody
   });
 
   // Add clothing item state
@@ -982,7 +984,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     try {
       let uploadedClothingKey = null;
-      if (clothingFile) {
+      if (clothingFile && promptData.imageType === 'fullBody') {  // Only upload clothing for full body shots
         setIsModelUploading(true);
         setIsUploading(false);
         setCompressionProgress(0);
@@ -1026,6 +1028,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         clothingKey: uploadedClothingKey || undefined,
         seedNumber: promptData.seedNumber !== undefined ? String(promptData.seedNumber) : undefined,
         inferenceSteps: promptData.inferenceSteps,
+        imageType: promptData.imageType,  // Add image type to the request
         connectCallback: connect
       })).unwrap();
       setIsExecutingGenerating(false);
@@ -1640,6 +1643,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           ))}
                         </Select>
                       </FormControl>
+
+                      {/* Clothing Upload - Simplified */}
+                      <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                        <InputLabel>Image Type</InputLabel>
+                        <Select
+                          name="imageType"
+                          value={promptData.imageType}
+                          label="Image Type"
+                          onChange={(e) => {
+                            setPromptData(prev => ({
+                              ...prev,
+                              imageType: e.target.value as 'fullBody' | 'headshot',
+                              uploadedClothImage: e.target.value === 'headshot' ? null : prev.uploadedClothImage
+                            }));
+                            // Clear clothing file if switching to headshot
+                            if (e.target.value === 'headshot') {
+                              handleClothingFileChange(null);
+                            }
+                          }}
+                        >
+                          <MenuItem value="fullBody">Full Body</MenuItem>
+                          <MenuItem value="headshot">Headshot</MenuItem>
+                        </Select>
+                      </FormControl>
                     
                       <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
                         <Paper 
@@ -1773,83 +1800,85 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         )}
                       </Box>
                       
-                      {/* Clothing Upload - Simplified */}
-                      <Box sx={{ mt: 2, mb: 2 }}>
-                        <Typography variant="subtitle1">Try On Item (Optional)</Typography>
-                        <DragDropArea 
-                          onDrop={(files) => {
-                            if (files.length > 0) {
-                              handleClothingFileChange(files[0]);
-                            }
-                          }}
-                          isClothing
-                        >
-                          {clothingUrl ? (
-                            <Box sx={{ width: '100%' }}>
-                              <Paper 
-                                elevation={0}
-                                sx={{ 
-                                  p: 1, 
-                                  borderRadius: 2,
-                                  border: '1px solid',
-                                  borderColor: 'divider',
-                                  display: 'flex',
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                  position: 'relative',
-                                  overflow: 'hidden'
-                                }}
+                      {/* Only show clothing upload for full body shots */}
+                      {promptData.imageType === 'fullBody' && (
+                        <Box sx={{ mt: 2, mb: 2 }}>
+                          <Typography variant="subtitle1">Try On Item (Optional)</Typography>
+                          <DragDropArea 
+                            onDrop={(files) => {
+                              if (files.length > 0) {
+                                handleClothingFileChange(files[0]);
+                              }
+                            }}
+                            isClothing
+                          >
+                            {clothingUrl ? (
+                              <Box sx={{ width: '100%' }}>
+                                <Paper 
+                                  elevation={0}
+                                  sx={{ 
+                                    p: 1, 
+                                    borderRadius: 2,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                  }}
+                                >
+                                  <Box sx={{ p:1, position: 'relative', width: '100%', height: 200, display: 'flex', justifyContent: 'center' }}>
+                                    <img 
+                                      src={clothingUrl} 
+                                      alt="Clothing reference" 
+                                      style={{ 
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                        objectFit: 'cover',
+                                        borderRadius: 8,
+                                      }} 
+                                    />
+                                  </Box>
+                                  <Box sx={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}>
+                                    <IconButton 
+                                      onClick={() => handleClothingFileChange(null)}
+                                      size="small"
+                                      sx={{ 
+                                        color: 'primary.main'
+                                      }}
+                                    >
+                                      <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                  </Box>
+                                </Paper>
+                              </Box>
+                            ) : (
+                              <Button
+                                variant="outlined"
+                                component="label"
+                                disabled={isGeneratingImages || isExecutingGenerating}
+                                startIcon={<CloudUploadIcon />}
+                                sx={{ mt: 1, width: '100%' }}
+                                fullWidth
                               >
-                                <Box sx={{ p:1, position: 'relative', width: '100%', height: 200, display: 'flex', justifyContent: 'center' }}>
-                                  <img 
-                                    src={clothingUrl} 
-                                    alt="Clothing reference" 
-                                    style={{ 
-                                      maxWidth: '100%',
-                                      maxHeight: '100%',
-                                      objectFit: 'cover',
-                                      borderRadius: 8,
-                                    }} 
-                                  />
-                                </Box>
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  flexDirection: 'column',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}>
-                                  <IconButton 
-                                    onClick={() => handleClothingFileChange(null)}
-                                    size="small"
-                                    sx={{ 
-                                      color: 'primary.main'
-                                    }}
-                                  >
-                                    <DeleteIcon fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              </Paper>
-                            </Box>
-                          ) : (
-                            <Button
-                              variant="outlined"
-                              component="label"
-                              disabled={isGeneratingImages || isExecutingGenerating}
-                              startIcon={<CloudUploadIcon />}
-                              sx={{ mt: 1, width: '100%' }}
-                              fullWidth
-                            >
-                              Upload Clothing
-                              <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                onChange={(e) => handleClothingFileChange(e.target.files ? e.target.files[0] : null)}
-                              />
-                            </Button>
-                          )}
-                        </DragDropArea>
-                      </Box>
+                                Upload Clothing
+                                <input
+                                  type="file"
+                                  hidden
+                                  accept="image/*"
+                                  onChange={(e) => handleClothingFileChange(e.target.files ? e.target.files[0] : null)}
+                                />
+                              </Button>
+                            )}
+                          </DragDropArea>
+                        </Box>
+                      )}
                       
                       <Button
                         variant="contained"
