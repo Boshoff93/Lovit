@@ -322,7 +322,7 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                     {selectedImage?.title}
                   </Typography>
                   
-                  {selectedImage?.dripRating && selectedImage.dripRating.length > 0 && (
+                  {selectedImage?.dripRating && selectedImage.dripRating.length > 0 && Array.isArray(selectedImage.dripRating) && (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selectedImage.dripRating.map((tag, idx) => (
                         <Chip
