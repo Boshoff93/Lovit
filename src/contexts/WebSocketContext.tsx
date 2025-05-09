@@ -219,7 +219,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
           if (imageData.imageId === id) {
             disconnect(imageData.imageId);
           }
-        } else if (imageData.status === 'try_on' || imageData.progress !== undefined) {
+        } else if (imageData.status === 'try_on' || imageData.progress !== undefined || imageData.status === 'processing') {
           // Update progress for generating image or try_on status
           console.log(`Updating status for image ${imageData.imageId}: ${imageData.status}, progress: ${imageData.progress}%`);
           dispatch(updateGeneratingImage({

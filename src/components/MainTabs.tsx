@@ -1088,7 +1088,7 @@ const MainTabs: React.FC = () => {
                               position: 'relative'
                             }}
                           >
-                            {genImage.progress !== undefined || genImage.status === 'try_on' ? (
+                            {genImage.progress !== undefined || genImage.status === 'try_on' || genImage.status === 'processing' ? (
                               <>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 1 }}>
                                   <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
@@ -1101,7 +1101,7 @@ const MainTabs: React.FC = () => {
                                     />
                                   </Box>
                                   <LinearProgress 
-                                    variant={genImage.status === 'try_on' ? "indeterminate" : "determinate"} 
+                                    variant={genImage.status === 'try_on' || genImage.status === 'processing' ? "indeterminate" : "determinate"} 
                                     value={genImage.progress ?? 100} 
                                     sx={{ width: '80%', height: 6, borderRadius: 3, mb: 2 }} 
                                   />
