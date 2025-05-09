@@ -378,7 +378,22 @@ const HomePage: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Hero Section */}
-      <Box style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150%', background: `linear-gradient(145deg, ${theme.palette.primary.dark}, ${theme.palette.background.default})` }}/>
+      <Box style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        height: '150%', 
+        background: `linear-gradient(180deg, 
+          ${theme.palette.primary.dark}CC,
+          ${theme.palette.background.default}99),
+          linear-gradient(to bottom,
+          ${theme.palette.background.default}00,
+          ${theme.palette.background.default}FF)`,
+        opacity: 0.9,
+        backdropFilter: 'blur(8px)',
+        transition: 'all 0.3s ease-in-out'
+      }}/>
       <Box sx={{ 
         position: 'relative',
         width: '100%',
