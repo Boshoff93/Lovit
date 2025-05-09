@@ -1072,7 +1072,7 @@ const MainTabs: React.FC = () => {
                                   </Box>
                                   <LinearProgress 
                                     variant={genImage.status === 'try_on' ? "indeterminate" : "determinate"} 
-                                    value={genImage.progress} 
+                                    value={genImage.progress ?? 100} 
                                     sx={{ width: '80%', height: 6, borderRadius: 3, mb: 2 }} 
                                   />
                                   <Typography 
@@ -1089,7 +1089,7 @@ const MainTabs: React.FC = () => {
                                       ? "Trying on outfit..."
                                       : genImage.progress !== undefined 
                                         ? `Generating Image ${Math.round(genImage.progress)}%`
-                                        : "Generating Image"}
+                                        : "Generating Image..."}
                                   </Typography>
                                 </Box>
                               </>
