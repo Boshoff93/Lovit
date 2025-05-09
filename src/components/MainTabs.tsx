@@ -95,7 +95,7 @@ const MainTabs: React.FC = () => {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   // State to toggle mock data display
-  const [useMockData, setUseMockData] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
   // State for selected image and modal
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -952,7 +952,7 @@ const MainTabs: React.FC = () => {
                           </Box>
                         </Box>
                         <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
-                          {image.dripRating && image.dripRating.length > 0 && (
+                          {image.dripRating && image.dripRating.length > 0 && Array.isArray(image.dripRating) && (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
                               {image.dripRating.map((tag: string, idx: number) => (
                                 <Chip
@@ -1278,7 +1278,7 @@ const MainTabs: React.FC = () => {
                                 </Box>
                               </Box>
                               <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
-                                {image.dripRating && image.dripRating.length > 0 && (
+                                {image.dripRating && image.dripRating.length > 0 && Array.isArray(image.dripRating) && (
                                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
                                     {image.dripRating.map((tag, idx) => (
                                       <Chip
