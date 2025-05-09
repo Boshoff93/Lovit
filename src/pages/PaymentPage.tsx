@@ -76,10 +76,10 @@ const plans: PricePlan[] = [
       other: ['Photorealistic images']
     },
     stripePrices: {
-      monthly: 'price_1RGUCfPU9E45VDzj0yy0rp9M',
-      yearly: 'price_1RGUAdPU9E45VDzjB0cxMIkA'
+      monthly: 'price_1RGTyPB6HvdZJCd5topN5CJx',
+      yearly: 'price_1RGTyrB6HvdZJCd5Ys0PcDHY'
     },
-    productId: 'prod_SApqHExCIJHZbN'
+    productId: 'prod_SApdzvErjotcRN'
   },
   {
     id: 'pro',
@@ -95,10 +95,10 @@ const plans: PricePlan[] = [
       other: ['Photorealistic models']
     },
     stripePrices: {
-      monthly: 'price_1RGUD3PU9E45VDzjCxaJWHm7',
-      yearly: 'price_1RGYP6PU9E45VDzjejMIqaWW'
+      monthly: 'price_1RGU0mB6HvdZJCd5dMxyC5Jh',
+      yearly: 'price_1RGU0mB6HvdZJCd5PJ7aniDg'
     },
-    productId: 'prod_SAprsgkM7ZjCXr'
+    productId: 'prod_SApgUFg3gLoB70'
   },
   {
     id: 'premium',
@@ -115,10 +115,10 @@ const plans: PricePlan[] = [
       other: ['Photorealistic models', 'Priority support']
     },
     stripePrices: {
-      monthly: 'price_1RGUDJPU9E45VDzjF6MoO9vT',
-      yearly: 'price_1RGUBzPU9E45VDzjANCpxjAB'
+      monthly: 'price_1RGU2PB6HvdZJCd5y7WnBhxJ',
+      yearly: 'price_1RGU2kB6HvdZJCd5PdbCpAMh'
     },
-    productId: 'prod_SAprvoCikmsgYW'
+    productId: 'prod_SAphmL67DhziEI'
   }
 ];
 

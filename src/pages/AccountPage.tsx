@@ -64,8 +64,8 @@ const AccountPage: React.FC = () => {
       setError(null);
       setCheckoutLoading(type);
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1RJSc0PU9E45VDzjai47qewH',
-        productId: 'prod_SDuQwcDcLNpFsl'
+        priceId: 'price_1RJSklB6HvdZJCd5L5hh2o0C',
+        productId: 'prod_SDuZQfG5jCbfwZ'
       }));
       
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
