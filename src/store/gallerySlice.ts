@@ -18,6 +18,7 @@ export interface ImageBase {
   seedNumber?: number;
   orientation?: string;
   dripRating?: string[];
+  imageKey?: string;
 }
 
 // Image interface
