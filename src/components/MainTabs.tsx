@@ -409,7 +409,7 @@ const MainTabs: React.FC = () => {
       
       {/* Models Tab */}
       <TabPanel value={value} index={1}>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ p: 1 }}>
           {modelsLoading || loading && !useMockData ? (
             <Grid size={12} sx={{ textAlign: 'center', py: 4 }}>
               <CircularProgress />
@@ -774,7 +774,7 @@ const MainTabs: React.FC = () => {
       <TabPanel value={value} index={0}>
         {isLoadingImages && !useMockData ? (
           // Loading state with gallery-like layout
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ p: 2 }}>
             {[1, 2, 3, 4, 5, 6].map((skeleton, index) => {
               // Use consistent height for all images
               const imageHeight = 320;
@@ -841,7 +841,7 @@ const MainTabs: React.FC = () => {
                 </Typography>
               </Box>
               
-              <Grid container spacing={4}>
+              <Grid container spacing={4} sx={{ p: 2 }}>
                 {group.images.map((image: GeneratedImage, index: number) => {
                   return (
                     <Grid 
@@ -1054,7 +1054,7 @@ const MainTabs: React.FC = () => {
                   </Typography>
                 </Box>
                 
-                <Grid container spacing={4}>
+                <Grid container spacing={4} sx={{ p: 2 }}>
                   {generatingImages.map((genImage, index) => {
                     return (
                       <Grid
@@ -1178,7 +1178,7 @@ const MainTabs: React.FC = () => {
                       </Typography>
                     </Box>
                     
-                    <Grid container spacing={4}>
+                    <Grid container spacing={4} sx={{ p: 2 }}>
                       {group.images.map((image, index) => {
                         return (
                           <Grid 
