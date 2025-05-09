@@ -204,7 +204,7 @@ const AccountPage: React.FC = () => {
                         borderColor: 'divider' 
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <PhotoCameraIcon sx={{ mr: 1, color: 'primary.main' }} />
                           <Typography variant="subtitle1" fontWeight={600}>
@@ -272,7 +272,7 @@ const AccountPage: React.FC = () => {
                         borderColor: 'divider' 
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
                           <Typography variant="subtitle1" fontWeight={600}>
@@ -295,7 +295,6 @@ const AccountPage: React.FC = () => {
                               boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                             }
                           }}
-                          
                         >
                           {checkoutLoading === 'models' ? 'Loading...' : 'Top Up'}
                         </Button>
