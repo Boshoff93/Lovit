@@ -368,7 +368,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { token, user } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
-  const models = useSelector(selectModels);
+  const models = useSelector((state: RootState) => state.models.models);
   
   // Selectors for clothing upload state
   const storedClothingKey = useSelector(selectClothingKey);
@@ -2183,37 +2183,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           isTopUpLoading={isTopUpLoading}
           isUpgradeLoading={isUpgradeLoading}
         />
-        
-        {/* Training Progress Indicator */}
-        {lastMessage && lastMessage.type === 'model_training_update' && lastMessage.status === 'in_progress' && lastMessage.progress && (
-          <Box
-            sx={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              padding: 2,
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              zIndex: 1000,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Typography variant="body2" gutterBottom>
-              Training Model: {(lastMessage as TrainingUpdate).modelId}
-            </Typography>
-            <Box sx={{ width: '100%', maxWidth: 400, mb: 1 }}>
-              <LinearProgress variant="determinate" value={lastMessage.progress} 
-                sx={{ height: 10, borderRadius: 5 }} 
-              />
-            </Box>
-            <Typography variant="caption">
-              Progress: {lastMessage.progress}%
-            </Typography>
-          </Box>
-        )}
       </Box>
     </LayoutContext.Provider>
   );

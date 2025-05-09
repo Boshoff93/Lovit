@@ -114,7 +114,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
             status: trainingData.status,
             progress: trainingData.progress,
             name: trainingData.name,
-            profileData: trainingData.profileData,
+            // Flatten profile data to match API format
+            ...(trainingData.profileData || {}),
             timestamp: trainingData.timestamp
           };
           
