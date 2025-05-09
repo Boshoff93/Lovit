@@ -33,19 +33,24 @@ import { useTheme } from '@mui/material/styles';
 
 const featureItems = [
   {
-    title: "Create your own AI model",
-    description: "Upload just 10-20 photos and create a lifelike AI model that captures your unique look in just 1-2 hours.",
-    image: "/woman.jpg",
+    title: "The Most Advanced AI Photo Studio",
+    description: "Say goodbye to AI image generators with distorted faces, poor resemblance, and inconsistent characters. With Lovit, you can instantly create high-quality AI photographs featuring consistent, realistic characters.",
+    image: "/28 Medium.jpeg",
   },
   {
-    title: "Try on any clothes",
-    description: "Upload screenshots from any online store and instantly see yourself wearing those outfits.",
-    image: "/closet.jpg",
+    title: "Create Your Own AI Model",
+    description: "Upload just 10–20 images of yourself (or an influencer you represent) to create a hyper-realistic AI model. Creating your model takes only 1–2 minutes with premium settings. After that, generate unlimited high-quality photos instantly!",
+    image: "/34 Medium.jpeg",
   },
   {
-    title: "Generate amazing photos",
-    description: "Create professional quality photoshoots in any style, setting or lighting with just a prompt.",
-    image: "/red.jpg",
+    title: "Try On Any Outfit",
+    description: "Find your perfect wedding dress without the hassle of multiple boutique visits. Try on any dress virtually - from designer gowns to casual wear. Simply upload a photo of any outfit, and see exactly how it looks on you before making a purchase.",
+    image: "/31 Medium.png",
+  },
+  {
+    title: "Professional Photoshoots Anywhere",
+    description: "With Lovit, you can create full-scale photoshoots from anywhere, just choose a model, upload clothing items, and describe your vision with prompts. Whether you need unique product photos for your Shopify store or polished, professional headshots, Lovit delivers high-quality results in minutes.",
+    image: "/32 Medium.jpeg",
   },
 ];
 
@@ -60,20 +65,99 @@ const testimonials = [
   },
 ];
 
-const benefitItems = [
-  "No more expensive photoshoots",
-  "Try before you buy or rent",
-  "Create content for social media",
-  "Perfect for e-commerce stores",
-  "Save time and money"
-];
+// 1. Define the image paths for the 30 images
+const gridImages = Array.from({ length: 24 }, (_, i) => `/public/${i + 1} Medium.jpeg`);
 
-const galleryImages = [
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-  "https://images.unsplash.com/photo-1496440737103-cd596325d314?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-  "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80"
-];
+// 2. Add a new component for the grid gallery with vertical fade
+const GalleryGrid: React.FC = () => {
+  const numColumns = {
+    xs: 3,
+    sm: 4,
+    md: 6
+  };
+  
+  const rows = useMemo(() => {
+    return gridImages.reduce((acc: string[][], img, i) => {
+      const rowIndex = Math.floor(i / numColumns.xs);
+      if (!acc[rowIndex]) {
+        acc[rowIndex] = [];
+      }
+      acc[rowIndex].push(img);
+      return acc;
+    }, []);
+  }, []);
+
+  return (
+    <Box sx={{
+      position: 'relative',
+      width: '100vw',
+      left: '50%',
+      right: '50%',
+      marginLeft: '-50vw',
+      marginRight: '-50vw',
+      px: { xs: 2, md: 2 },
+    }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'repeat(4, 1fr)',  // 3 columns on mobile
+            sm: 'repeat(4, 1fr)',  // 4 columns on tablet
+            md: 'repeat(4, 1fr)',   // 6 columns on desktop
+            lg: 'repeat(6, 1fr)'
+          },
+          columnGap: { xs: 2},
+          width: '100%',
+          position: 'relative',
+          px: { xs: 0, md: 4 },
+          zIndex: 1,
+        }}
+      >
+        {rows.flat().map((img, idx) => {
+          // Calculate offset based on position in row
+          const offset = {
+            xs: idx % 2 === 0 ? -1 : 1,
+            sm: idx % 2 === 0 ? -2 : 2,
+            md: idx % 2 === 0 ? -3 : 3
+          };
+          
+          return (
+            <Box
+              key={idx}
+              sx={{
+                width: '100%',
+                aspectRatio: '9/16',
+                overflow: 'hidden',
+                borderRadius: { xs: 1, sm: 2, md: 3 },
+                boxShadow: '0 2px 12px rgba(43, 45, 66, 0.10)',
+                opacity: 1,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  opacity: 0.7,
+                  transform: 'translateY(-4px)'
+                },
+                marginTop: offset,
+              }}
+            >
+              <Box
+                component="img"
+                src={img.replace('/public', '')}
+                alt={`Gallery ${idx + 1}`}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'top',
+                  display: 'block',
+                }}
+              />
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+};
 
 const HomePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -294,39 +378,51 @@ const HomePage: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Hero Section */}
+      <Box style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150%', background: `linear-gradient(145deg, ${theme.palette.primary.dark}, ${theme.palette.background.default})` }}/>
       <Box sx={{ 
-        py: { xs: 8, md: 12 }, 
-        textAlign: 'center',
-        background: `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
         position: 'relative',
-        zIndex: 1,
+        width: '100%',
+        py: { xs: 8, md: 12 }, 
+        px: { xs: 2, md: 2 },
+        textAlign: 'center',
+        zIndex: 2,
+        height: '100%',
         backdropFilter: 'blur(5px)',
-        boxShadow: '0 4px 30px rgba(43, 45, 66, 0.1)',
-        borderBottom: `1px solid ${theme.palette.primary.light}30`,
-        overflow: 'hidden',
+        overflow: 'hidden'
       }}>
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{ textAlign: 'left' }}>
           {/* Logo/Image above slogan */}
           <Box 
-            component="img"
-            src="/lovit.png" // Using existing image from public folder
-            alt="Lovit Logo"
             sx={{
-              width: { xs: '200px', md: '200px' },
-              p: "10px",
-              height: 'auto',
-              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+              mb: 4
             }}
-          />
+          >
+            <Box 
+              component="img"
+              src="/lovit.png"
+              alt="Lovit Logo"
+              sx={{
+                width: { xs: '200px', md: '200px' },
+                p: "10px",
+                height: 'auto',
+                borderRadius: '50%'
+              }}
+            />
+          </Box>
           
           <Typography 
             variant="h1" 
             component="h1" 
             sx={{ 
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
-              fontWeight: 800,
-              mb: 2,
-              color: theme.palette.secondary.dark
+              fontSize: { xs: '3rem', md: '4rem' },
+              fontWeight: 900,
+              mb: 3,
+              color: theme.palette.secondary.dark,
+              lineHeight: 1.1,
+              textAlign: 'center'
             }}
           >
             Try it, Love it, Buy it
@@ -334,30 +430,107 @@ const HomePage: React.FC = () => {
           
           <Typography 
             variant="h5" 
-            sx={{ mb: 4, maxWidth: '700px', mx: 'auto', color: theme.palette.secondary.light }}
-          >
-            See yourself in any outfit before you buy or rent it, using our lifelike AI technology
-          </Typography>
-          
-          <Button 
-            variant="contained" 
-            color="primary" 
-            size="large"
-            onClick={handleClickOpen}
-            endIcon={<ArrowForwardIcon />}
             sx={{ 
-              py: 1.5,
-              px: 4,
-              fontSize: '1.1rem',
-              borderRadius: 2
+              fontSize: { xs: '1.75rem', md: '2rem' },
+              mb: 4, 
+              maxWidth: '800px', 
+              mx: 'auto', 
+              color: theme.palette.secondary.light,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center'
             }}
           >
-            Try it, Lovit!
-          </Button>
-          
-          <Typography variant="body1" sx={{ mt: 2, color: theme.palette.secondary.light  }}>
-            Setup in minutes
+            Professional Photographer + Virtual Try-on Studio in Your Pocket
           </Typography>
+
+          <Box sx={{ 
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 4
+          }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              onClick={handleClickOpen}
+              endIcon={<ArrowForwardIcon />}
+              sx={{ 
+                py: 2,
+                px: 6,
+                fontSize: '1.2rem',
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600
+              }}
+            >
+              Try it, Lovit!
+            </Button>
+          </Box>
+
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 3,
+            maxWidth: '700px',
+            mx: 'auto',
+            mt: 6,
+            color: theme.palette.secondary.light,
+            '& > *': {
+              fontSize: { xs: '1.4rem', md: '1.6rem' },
+              fontWeight: 600,
+              lineHeight: 1.4
+            }
+          }}>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box component="span" sx={{ 
+                flexShrink: 0,
+                fontSize: { xs: '1.6rem', md: '1.8rem' },
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center'
+              }}>✨</Box>
+              <Typography variant="h6">
+                Generate ultra-realistic AI headshots and professional photos
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box component="span" sx={{ 
+                flexShrink: 0,
+                fontSize: { xs: '1.6rem', md: '1.8rem' },
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center'
+              }}>👗</Box>
+              <Typography variant="h6">
+                Try on any wedding dress or outfit before you rent or buy
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box component="span" sx={{ 
+                flexShrink: 0,
+                fontSize: { xs: '1.6rem', md: '1.8rem' },
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center'
+              }}>📸</Box>
+              <Typography variant="h6">
+                Create stunning content for social media in any style or setting
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box component="span" sx={{ 
+                flexShrink: 0,
+                fontSize: { xs: '1.6rem', md: '1.8rem' },
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center'
+              }}>💰</Box>
+              <Typography variant="h6">
+                Save thousands on professional photoshoots
+              </Typography>
+            </Box>
+          </Box>
         </Container>
       </Box>
       
@@ -600,190 +773,275 @@ const HomePage: React.FC = () => {
         </Alert>
       </Snackbar>
       
-      {/* Gallery Preview */}
-      <Container maxWidth="lg" sx={{ mt: -6, position: 'relative', zIndex: 1 }}>
-        <Paper elevation={6} sx={{ 
-          borderRadius: 3, 
-          overflow: 'hidden',
-          display: 'flex',
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 20px rgba(43, 45, 66, 0.15)'
-        }}>
-          {galleryImages.map((img, index) => (
-            <Box 
-              key={index} 
+      {/* Main Content */}
+      <Box>
+        {/* Gallery Preview */}
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
+          <GalleryGrid />
+        </Container>
+        
+        {/* Main Content */}
+        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8, } }}>
+          {/* Main Value Proposition */}
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography variant="h4" gutterBottom color="primary.main">
+              Your Personal AI Fashion Studio
+            </Typography>
+            <Typography variant="h6" sx={{ maxWidth: '800px', mx: 'auto', mb: 4 }}>
+              Experience the future of fashion with our revolutionary virtual try-on technology. Upload your photos to create your digital twin, then instantly see how any outfit looks on you. Perfect for wedding dress shopping, exploring new styles, or building your dream wardrobe! All from the comfort of your home.
+            </Typography>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              onClick={handleClickOpen}
+              endIcon={<ArrowForwardIcon />}
               sx={{ 
-                flex: { xs: '1 1 50%', md: '1 1 25%' }, 
-                height: { xs: 200, md: 280 }
+                py: 1.5,
+                px: 4,
+                fontSize: '1.1rem',
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600
               }}
             >
-              <Box
+              Try Lovit Now
+            </Button>
+          </Box>
+
+          {/* Features Section */}
+          <Box sx={{ 
+            width: '100vw',
+            position: 'relative',
+            left: '50%',
+            right: '50%',
+            marginLeft: '-50vw',
+            marginRight: '-50vw',
+            overflow: 'hidden',
+            mb: 4 
+          }}>
+            
+            {/* First feature - full width */}
+            <Box sx={{ 
+              width: { xs: '90%', sm: '85%', md: '80%' }, 
+              mb: 8,
+              mx: 'auto',
+              textAlign: 'center',
+              overflow: 'hidden'
+            }}>
+              <Box 
                 component="img"
-                src={img}
-                alt={`Example ${index + 1}`}
+                src={featureItems[2].image}
+                alt={featureItems[2].title}
                 sx={{
                   width: '100%',
-                  height: '100%',
+                  height: 'auto',
+                  maxHeight: { xs: '70vh', sm: '80vh', md: '90vh' },
+                  minHeight: { xs: '100px', sm: '100px', md: '500px' },
                   objectFit: 'cover',
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)'
-                  },
+                  objectPosition: 'top',
+                  display: 'block',
+                  borderRadius: { xs: 2, sm: 3, md: 4 },
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
                 }}
               />
+              <Container maxWidth="xl">
+                <Box sx={{ maxWidth: '1200px', mx: 'auto', mt: { xs: 4, sm: 6, md: 8 }, px: { xs: 2, md: 3 } }}>
+                  <Typography variant="h4" gutterBottom fontWeight={700} color="primary.main">
+                    {featureItems[2].title}
+                  </Typography>
+                  <Typography variant="h6" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                    {featureItems[2].description}
+                  </Typography>
+                </Box>
+              </Container>
             </Box>
-          ))}
-        </Paper>
-      </Container>
-      
-      {/* Main Content */}
-      <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
-        {/* Main Value Proposition */}
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h4" gutterBottom color="primary.main">
-            Upload your selfies and start taking stunning AI photos now
-          </Typography>
-          <Typography variant="body1" sx={{ maxWidth: '800px', mx: 'auto' }}>
-            Lovit helps you create an AI model of yourself that you can use to try on any clothing from any website before you buy or rent it. Perfect for shoppers, fashion lovers, and e-commerce store owners.
-          </Typography>
-        </Box>
 
-        {/* Features Section */}
-        <Box sx={{ mb: 8 }}>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {featureItems.map((feature, index) => (
-              <Box 
-                key={index} 
-                sx={{ 
-                  flex: { xs: '1 1 100%', md: '1 1 calc(33.333% - 16px)' }
-                }}
-              >
-                <Card sx={{ 
-                  height: '100%', 
-                  borderRadius: 3, 
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(43, 45, 66, 0.08)',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 20px rgba(43, 45, 66, 0.12)',
-                  }
-                }}>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={feature.image}
-                    alt={feature.title}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom fontWeight={600} color="primary.main">
-                      {feature.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {feature.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
+            {/* Remaining features grid */}
+            <Container maxWidth="xl">
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap',
+                gap: { xs: 2, sm: 3 },
+                width: '100%',
+                justifyContent: 'center',
+                '& > *': {
+                  width: '100%',
+                  maxWidth: {
+                    xs: '500px',
+                    xl: 'calc(33.333% - 16px)'
+                  },
+                  marginBottom: { xs: 3, sm: 4 }
+                }
+              }}>
+                {[0, 1, 3].map((index) => (
+                  <Box 
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src={featureItems[index].image}
+                      alt={featureItems[index].title}
+                      sx={{
+                        width: '100%',
+                        aspectRatio: '3/4',
+                        objectFit: 'cover',
+                        objectPosition: index === 0 ? 'center' : 'top',
+                        borderRadius: 3,
+                        mb: 3,
+                        display: 'block',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+                      }}
+                    />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography 
+                        variant="h5" 
+                        gutterBottom 
+                        fontWeight={700} 
+                        color="primary.main"
+                        sx={{
+                          fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.5rem' }
+                        }}
+                      >
+                        {featureItems[index].title}
+                      </Typography>
+                      <Typography 
+                        variant="body1" 
+                        color="text.secondary" 
+                        sx={{ 
+                          lineHeight: 1.6,
+                          fontSize: { xs: '1rem', sm: '1rem', md: '1.1rem' }
+                        }}
+                      >
+                        {featureItems[index].description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
               </Box>
-            ))}
+            </Container>
           </Box>
-        </Box>
-        
-        {/* How It Works */}
-        <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
-            How It Works
-          </Typography>
-          <Divider sx={{ mb: 4, borderColor: theme.palette.primary.light }} />
           
-          <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
-            <Typography variant="body1" paragraph>
-              <strong>Create your AI model</strong> in minutes - either of yourself or anyone else. Simply upload 10-20 photos and our advanced AI will learn to recognize and replicate unique features, expressions, and style.
+          {/* How It Works */}
+          <Box sx={{ mb: 8 }}>
+            <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
+              How It Works
             </Typography>
+            <Divider sx={{ mb: 5, borderColor: theme.palette.primary.light }} />
             
-            <Typography variant="body1" paragraph>
-              Once your model is ready, <strong>upload any outfit you want to try</strong> from any online store. Just take a screenshot or save the image of the clothing item you're interested in.
-            </Typography>
-            
-            <Typography variant="body1" paragraph>
-              <strong>Generate stunning images instantly</strong> of your model wearing those outfits in any setting of your choosing. From beach vacations to city streets or professional settings - see exactly how the clothes will look on you before making a purchase.
-            </Typography>
+                    {/* Main Image */}
+            <Box sx={{ 
+                width: '100%',
+                maxWidth: '800px',
+                mx: 'auto',
+                mb: 4,
+                px: { xs: 2, md: 0 }
+              }}>
+                <Box
+                  component="img"
+                  src="/woman.jpg"
+                  alt="Virtual Fashion Try-On"
+                  sx={{
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: { xs: 2, md: 3 },
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
+                  }}
+                />
+              </Box>
+            <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+              <Typography variant="body1" paragraph>
+                <strong>Create your AI model</strong> in minutes - either of yourself or anyone else. Simply upload 10-20 photos and our advanced AI will learn to recognize and replicate unique features, expressions, and style.
+              </Typography>
+              
+              <Typography variant="body1" paragraph>
+                Once your model is ready, <strong>upload any outfit you want to try</strong> from any online store. Just take a screenshot or save the image of the clothing item you're interested in.
+              </Typography>
+              
+              <Typography variant="body1" paragraph>
+                <strong>Generate stunning images instantly</strong> of your model wearing those outfits in any setting of your choosing. From beach vacations to city streets or professional settings - see exactly how the clothes will look on you before making a purchase.
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        
-        {/* Testimonials */}
-        <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
-            What Our Users Say
-          </Typography>
-          <Divider sx={{ mb: 4, borderColor: theme.palette.primary.light }} />
           
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {testimonials.map((testimonial, index) => (
-              <Paper 
-                key={index} 
-                elevation={2} 
-                sx={{ 
-                  p: 3, 
-                  flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' },
-                  borderRadius: 3,
-                  backgroundColor: theme.palette.background.paper,
-                  border: `1px solid ${theme.palette.primary.light}20`,
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 16px rgba(43, 45, 66, 0.1)',
-                  }
-                }}
-              >
-                <Typography variant="body1" paragraph fontStyle="italic">
-                  "{testimonial.quote}"
-                </Typography>
-                <Typography variant="subtitle2" color="text.secondary">
-                  {testimonial.author}
-                </Typography>
-              </Paper>
-            ))}
+          {/* Testimonials */}
+          <Box sx={{ mb: 8 }}>
+            <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
+              What Our Users Say
+            </Typography>
+            <Divider sx={{ mb: 5, borderColor: theme.palette.primary.light }} />
+            
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              {testimonials.map((testimonial, index) => (
+                <Paper 
+                  key={index} 
+                  elevation={2} 
+                  sx={{ 
+                    p: 3, 
+                    flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' },
+                    borderRadius: 3,
+                    backgroundColor: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.primary.light}20`,
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 16px rgba(43, 45, 66, 0.1)',
+                    }
+                  }}
+                >
+                  <Typography variant="body1" paragraph fontStyle="italic">
+                    "{testimonial.quote}"
+                  </Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {testimonial.author}
+                  </Typography>
+                </Paper>
+              ))}
+            </Box>
           </Box>
-        </Box>
-        
-        {/* CTA */}
-        <Box 
-          sx={{ 
-            textAlign: 'center', 
-            py: 6, 
-            px: 3,
-            background: `linear-gradient(145deg, ${theme.palette.primary.light}15, ${theme.palette.primary.main}25)`,
-            borderRadius: 4,
-            border: `1px solid ${theme.palette.primary.light}30`
-          }}
-        >
-          <Typography variant="h4" gutterBottom color="primary.main">
-            Ready to transform your shopping experience?
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
-            Join thousands of users who are already using Lovit to visualize themselves in any outfit before making a purchase.
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            size="large"
-            onClick={handleClickOpen}
-            endIcon={<ArrowForwardIcon />}
+          
+          {/* CTA */}
+          <Box 
             sx={{ 
-              py: 1.5,
-              px: 4,
-              fontSize: '1.1rem',
-              borderRadius: 2
+              textAlign: 'center', 
+              py: 6, 
+              px: 3,
+              background: `linear-gradient(145deg, ${theme.palette.primary.light}15, ${theme.palette.primary.main}25)`,
+              borderRadius: 4,
+              border: `1px solid ${theme.palette.primary.light}30`
             }}
           >
-            Try it, Lovit!
-          </Button>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            Sign up with email
-          </Typography>
-        </Box>
-      </Container>
+            <Typography variant="h4" gutterBottom color="primary.main">
+              Ready to transform your shopping experience?
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
+              Join thousands of users who are already using Lovit to visualize themselves in any outfit before making a purchase.
+            </Typography>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              onClick={handleClickOpen}
+              endIcon={<ArrowForwardIcon />}
+              sx={{ 
+                py: 1.5,
+                px: 4,
+                fontSize: '1.1rem',
+                borderRadius: 2
+              }}
+            >
+              Try it, Lovit!
+            </Button>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Sign up with email
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
       
       {/* Footer */}
       <Box 
