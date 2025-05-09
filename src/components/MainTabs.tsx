@@ -333,6 +333,7 @@ const MainTabs: React.FC = () => {
 
   // Function to handle delete confirmation
   const handleDeleteConfirm = useCallback(async () => {
+    console.log(itemToDelete)
     if (!itemToDelete.id) return;
     
     setIsDeleting(true);
