@@ -1516,7 +1516,7 @@ const HomePage: React.FC = () => {
                       p: 3,
                       borderRadius: 3,
                       border: `1px solid ${plan.popular ? theme.palette.primary.main : theme.palette.primary.light}30`,
-                      backgroundColor: plan.popular ? `${theme.palette.primary.main}08` : 'transparent',
+                      backgroundColor: plan.popular ? `${theme.palette.secondary.light}` : `${theme.palette.secondary.light}`,
                       position: 'relative',
                       transition: 'transform 0.2s',
                       overflow: 'visible',
