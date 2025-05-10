@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { 
   Typography, 
   Button, 
@@ -21,15 +21,24 @@ import {
   Snackbar,
   Tabs,
   Tab,
-  Link
+  Link,
+  AppBar,
+  Toolbar,
+  ToggleButtonGroup,
+  ToggleButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '@mui/material/styles';
+import DecorativeLine from '../components/DecorativeLine';
 
 const featureItems = [
   {
@@ -65,11 +74,115 @@ const testimonials = [
   },
 ];
 
-// 1. Define the image paths for the 30 images
-const gridImages = Array.from({ length: 24 }, (_, i) => `/public/${i + 1} Medium.jpeg`);
+interface GalleryImage {
+  src: string;
+  prompt: string;
+}
 
-// 2. Add a new component for the grid gallery with vertical fade
+const gridImages: GalleryImage[] = [
+  {
+    src: "/public/1 Medium.jpeg",
+    prompt: "Glamorous beauty portrait with bold red lipstick, dramatic eye makeup, and elegant black evening wear."
+  },
+  {
+    src: "/public/2 Medium.jpeg",
+    prompt: "New York City, woman black coat, jeans, boots chic street style."
+  },
+  {
+    src: "/public/3 Medium.jpeg",
+    prompt: "Close-up of a bride with natural makeup, soft veil, and captivating green eyes, wedding inspiration."
+  },
+  {
+    src: "/public/4 Medium.jpeg",
+    prompt: "High-fashion editorial, model in a sleek black dress, dramatic side lighting, minimalist studio."
+  },
+  {
+    src: "/public/5 Medium.jpeg",
+    prompt: "Chic urban style, woman in denim jacket and heels, sitting on stairs, confident night look."
+  },
+  {
+    src: "/public/6 Medium.jpeg",
+    prompt: "Beauty close-up, woman applying nude lipstick, glowing skin, soft natural makeup."
+  },
+  {
+    src: "/public/7 Medium.jpeg",
+    prompt: "Modern swimsuit look, white minimalist vibes, outdoor sunny setting, elegant pose, roses in background."
+  },
+  {
+    src: "/public/8 Medium.jpeg",
+    prompt: "Romantic bridal portrait, lace wedding gown, blooming rose garden, soft natural light."
+  },
+  {
+    src: "/public/9 Medium.jpeg",
+    prompt: "Vibrant fashion editorial, bold colorful makeup, high bun hairstyle, pink background."
+  },
+  {
+    src: "/public/10 Medium.jpeg",
+    prompt: "Nightlife fashion, woman in black leather outfit, neon city lights, cyberpunk style."
+  },
+  {
+    src: "/public/11 Medium.jpeg",
+    prompt: "Classic beauty portrait, red lipstick, soft curls, warm bokeh background, timeless glamour."
+  },
+  {
+    src: "/public/12 Medium.jpeg",
+    prompt: "Summer fashion, wide-brim hat, sunflower field, natural makeup, outdoor lifestyle."
+  },
+  {
+    src: "/public/13 Medium.jpeg",
+    prompt: "Natural light portrait, young woman with freckles, soft golden hour glow, casual style."
+  },
+  {
+    src: "/public/14 Medium.jpeg",
+    prompt: "Spring fashion, woman in a flowing yellow dress, walking in a blooming park, cheerful mood."
+  },
+  {
+    src: "/public/15 Medium.jpeg",
+    prompt: "Glamorous beauty shot, dark skin, gold glitter eyeshadow, glossy lips, dramatic lighting."
+  },
+  {
+    src: "/public/16 Medium.jpeg",
+    prompt: "Elegant evening gown, sparkling dress, bokeh lights, luxury event, confident pose."
+  },
+  {
+    src: "/public/17 Medium.jpeg",
+    prompt: "Beach lifestyle, woman in pink ruffle swimsuit, playful and smiling, ocean background."
+  },
+  {
+    src: "/public/18 Medium.jpeg",
+    prompt: "Classic glamour portrait, bold red lipstick, statement jewelry, flawless makeup."
+  },
+  {
+    src: "/public/19 Medium.jpeg",
+    prompt: "Chic city style, woman in camel coat, street fashion, urban background, confident walk."
+  },
+  {
+    src: "/public/20 Medium.jpeg",
+    prompt: "Sunset fitness, sporty woman in black tank top, city skyline, golden hour workout."
+  },
+  {
+    src: "/public/21 Medium.jpeg",
+    prompt: "Beauty close-up, glossy pink lips, applying lipstick, soft focus, feminine style."
+  },
+  {
+    src: "/public/22 Medium.jpeg",
+    prompt: "Romantic bridal portrait, lace wedding dress, rose garden, dreamy outdoor setting."
+  },
+  {
+    src: "/public/23 Medium.jpeg",
+    prompt: "Trendy street style, woman in crop top and joggers, graffiti wall, urban summer fashion."
+  },
+  {
+    src: "/public/24 Medium.jpeg",
+    prompt: "Beach fashion, woman in floral bikini and sun hat, sandy shore, summer vacation vibes."
+  }
+];
+
 const GalleryGrid: React.FC = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const numColumns = {
     xs: 3,
     sm: 4,
@@ -77,7 +190,7 @@ const GalleryGrid: React.FC = () => {
   };
   
   const rows = useMemo(() => {
-    return gridImages.reduce((acc: string[][], img, i) => {
+    return gridImages.reduce((acc: GalleryImage[][], img, i) => {
       const rowIndex = Math.floor(i / numColumns.xs);
       if (!acc[rowIndex]) {
         acc[rowIndex] = [];
@@ -86,6 +199,30 @@ const GalleryGrid: React.FC = () => {
       return acc;
     }, []);
   }, []);
+
+  const handleImageClick = (img: GalleryImage, idx: number) => {
+    setSelectedImage(img.src);
+    const imageName = `image${idx + 1}`;
+    navigate(`#${imageName}`, { replace: true });
+  };
+
+  const handleCloseOverlay = () => {
+    setSelectedImage(null);
+    navigate('#', { replace: true });
+  };
+
+  // Handle URL hash changes
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash.startsWith('image')) {
+      const imageIndex = parseInt(hash.replace('image', '')) - 1;
+      if (imageIndex >= 0 && imageIndex < gridImages.length) {
+        setSelectedImage(gridImages[imageIndex].src);
+      }
+    } else {
+      setSelectedImage(null);
+    }
+  }, [location.hash]);
 
   return (
     <Box sx={{
@@ -101,9 +238,9 @@ const GalleryGrid: React.FC = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'repeat(4, 1fr)',  // 3 columns on mobile
-            sm: 'repeat(4, 1fr)',  // 4 columns on tablet
-            md: 'repeat(4, 1fr)',   // 6 columns on desktop
+            xs: 'repeat(4, 1fr)',
+            sm: 'repeat(4, 1fr)',
+            md: 'repeat(4, 1fr)',
             lg: 'repeat(6, 1fr)'
           },
           columnGap: { xs: 2},
@@ -114,7 +251,6 @@ const GalleryGrid: React.FC = () => {
         }}
       >
         {rows.flat().map((img, idx) => {
-          // Calculate offset based on position in row
           const offset = {
             xs: idx % 2 === 0 ? -1 : 1,
             sm: idx % 2 === 0 ? -2 : 2,
@@ -124,6 +260,7 @@ const GalleryGrid: React.FC = () => {
           return (
             <Box
               key={idx}
+              onClick={() => handleImageClick(img, idx)}
               sx={{
                 width: '100%',
                 aspectRatio: '9/16',
@@ -132,17 +269,22 @@ const GalleryGrid: React.FC = () => {
                 boxShadow: '0 2px 12px rgba(43, 45, 66, 0.10)',
                 opacity: 1,
                 transition: 'all 0.3s ease',
+                cursor: 'pointer',
+                position: 'relative',
                 '&:hover': {
                   opacity: 0.7,
-                  transform: 'translateY(-4px)'
+                  transform: 'translateY(-4px)',
+                  '& .overlay-text': {
+                    opacity: 1,
+                  }
                 },
                 marginTop: offset,
               }}
             >
               <Box
                 component="img"
-                src={img.replace('/public', '')}
-                alt={`Gallery ${idx + 1}`}
+                src={img.src.replace('/public', '')}
+                alt={img.prompt}
                 sx={{
                   width: '100%',
                   height: '100%',
@@ -151,10 +293,136 @@ const GalleryGrid: React.FC = () => {
                   display: 'block',
                 }}
               />
+              <Box
+                className="overlay-text"
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0))',
+                  color: 'white',
+                  p: 2,
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease',
+                }}
+              >
+                <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                  {img.prompt}
+                </Typography>
+              </Box>
             </Box>
           );
         })}
       </Box>
+
+      {/* Image Overlay Modal */}
+      <Dialog
+        open={!!selectedImage}
+        onClose={handleCloseOverlay}
+        PaperProps={{
+          sx: {
+            boxShadow: 'none',
+            overflow: 'hidden',
+            bgcolor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: { xs: '100%', sm: 'auto' },
+            maxWidth: { xs: '100%', sm: 'none' },
+          },
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(4px)'
+          }
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'transparent',
+            p: 0,
+            m: 0,
+            cursor: 'pointer',
+            width: '100%',
+            height: '100%'
+          }}
+          onClick={handleCloseOverlay}
+        >
+          {selectedImage && (
+            <Box
+              onClick={(e) => e.stopPropagation()}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: { xs: 0, sm: 3 },
+                p: { xs: 0, sm: 2 },
+                width: { xs: 'auto', sm: 'auto' },
+                maxWidth: { xs: '100%', sm: '80vw', md: '60vw' },
+                maxHeight: { xs: '90vh', sm: '90vh' },
+                height: 'auto',
+                overflow: 'visible',
+                gap: 2
+              }}
+            >
+              <Box
+                component="img"
+                src={selectedImage.replace('/public', '')}
+                alt={gridImages.find(img => img.src === selectedImage)?.prompt || 'Gallery Image'}
+                sx={{
+                  width: 'auto',
+                  height: 'auto',
+                  maxHeight: { xs: '70vh', sm: '75vh' },
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  borderRadius: { xs: 0, sm: 2 },
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                  display: 'block',
+                }}
+              />
+              <Typography
+                variant="body1"
+                sx={{
+                  mt: 1,
+                  mb: 1,
+                  textAlign: 'center',
+                  color: 'secondary.dark',
+                  maxWidth: '700px',
+                  fontSize: '1.2rem',
+                  px: { xs: 2, sm: 2 },
+                }}
+              >
+                {gridImages.find(img => img.src === selectedImage)?.prompt}
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={handleCloseOverlay}
+                color="secondary"
+                sx={{
+                  mt: 1,
+                  mb: { xs: 2, sm: 1 },
+                  bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  color: 'text.primary',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 1)',
+                  },
+                  position: 'relative',
+                  zIndex: 2
+                }}
+              >
+                Close
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Dialog>
     </Box>
   );
 };
@@ -170,10 +438,21 @@ const HomePage: React.FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
+
+  const handleSectionClick = useCallback((section: string) => {
+    const element = document.getElementById(section);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      // Update URL with hash
+      navigate(`#${section}`, { replace: true });
+    }
+  }, [navigate]);
 
   const handleClickOpen = () => {
     if (user) {
@@ -375,15 +654,125 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const plans = [
+    {
+      id: 'starter',
+      title: 'Starter',
+      monthlyPrice: 19,
+      yearlyPrice: 9,
+      features: {
+        photoCount: '50 AI photos',
+        modelCount: '1 AI Model',
+        quality: 'Lower quality photos',
+        likeness: 'Low Likeness',
+        parallel: '1 photo at a time',
+        other: ['Photorealistic images']
+      }
+    },
+    {
+      id: 'pro',
+      title: 'Pro',
+      monthlyPrice: 49,
+      yearlyPrice: 21,
+      features: {
+        photoCount: '200 photos',
+        modelCount: '2 AI models',
+        quality: 'Medium quality photos',
+        likeness: 'Medium likeness',
+        parallel: '2 photos in parallel',
+        other: ['Photorealistic models']
+      }
+    },
+    {
+      id: 'premium',
+      title: 'Premium',
+      monthlyPrice: 99,
+      yearlyPrice: 42,
+      popular: true,
+      features: {
+        photoCount: '500 AI photos',
+        modelCount: '3 AI models',
+        quality: 'High quality photos',
+        likeness: 'High likeness',
+        parallel: '4 photos in parallel',
+        other: ['Photorealistic models', 'Priority support']
+      }
+    }
+  ];
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      overflowX: 'hidden',
+      position: 'relative',
+      width: '100%'
+    }}>
+      {/* Transparent Header */}
+      <AppBar position="fixed" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(4px)' }}>
+        <Toolbar sx={{ display: {xs: 'none', sm: 'flex'}, justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box 
+              component="img"
+              src="/lovit.png"
+              alt="Lovit Logo"
+              sx={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.palette.secondary.main,
+                p: '5px',
+                mr: 1
+              }}
+            />
+            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.4rem' }}>
+              Lovit
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button 
+              color="inherit" 
+              onClick={useCallback(() => handleSectionClick('pricing'), [handleSectionClick])}
+              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+            >
+              Pricing
+            </Button>
+            <Button 
+              color="inherit" 
+              component={RouterLink} 
+              to="/faq"
+              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+            >
+              FAQ
+            </Button>
+            <Button 
+              color="inherit" 
+              onClick={useCallback(() => handleSectionClick('gallery'), [handleSectionClick])}
+              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+            >
+              Gallery
+            </Button>
+            <Button 
+              variant="contained" 
+              color="primary"
+              onClick={handleClickOpen}
+              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+            >
+              Try it
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Toolbar /> {/* Spacer for fixed header */}
+
       {/* Hero Section */}
       <Box style={{ 
         position: 'absolute', 
         top: 0, 
         left: 0, 
         right: 0, 
-        height: '150%', 
+        height: '20%', 
         background: `linear-gradient(180deg, 
           ${theme.palette.primary.dark}CC,
           ${theme.palette.background.default}99),
@@ -392,20 +781,30 @@ const HomePage: React.FC = () => {
           ${theme.palette.background.default}FF)`,
         opacity: 0.9,
         backdropFilter: 'blur(8px)',
-        transition: 'all 0.3s ease-in-out'
+        transition: 'all 0.3s ease-in-out',
+        zIndex: -2
       }}/>
       <Box sx={{ 
         position: 'relative',
         width: '100%',
-        py: { xs: 8, md: 12 }, 
+        py: { xs: 4, md: 12 }, 
         px: { xs: 2, md: 2 },
         textAlign: 'center',
         zIndex: 2,
-        height: '100%',
-        backdropFilter: 'blur(5px)',
+        height: { xs: 'auto', md: '100%' },
+        minHeight: { xs: '100vh', md: 'auto' },
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         overflow: 'hidden'
       }}>
-        <Container maxWidth="md" sx={{ textAlign: 'left' }}>
+        <Container maxWidth="xl" sx={{ 
+          textAlign: 'left',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
           {/* Logo/Image above slogan */}
           <Box 
             sx={{
@@ -482,72 +881,143 @@ const HomePage: React.FC = () => {
               Try it, Lovit!
             </Button>
           </Box>
-
+          </Container>
+          <DecorativeLine 
+            src="/line_secondary_reverse.png"
+          />
+          <Container maxWidth="xl" sx={{ textAlign: 'left' }}>
           <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: 3,
-            maxWidth: '700px',
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 4,
             mx: 'auto',
-            mt: 6,
-            color: theme.palette.secondary.light,
-            '& > *': {
-              fontSize: { xs: '1.4rem', md: '1.6rem' },
-              fontWeight: 600,
-              lineHeight: 1.4
-            }
+            mt: 12,
+            mb: 0,
+            alignItems: 'center'
           }}>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Box component="span" sx={{ 
-                flexShrink: 0,
-                fontSize: { xs: '1.6rem', md: '1.8rem' },
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center'
-              }}>✨</Box>
-              <Typography variant="h6">
-                Generate ultra-realistic AI headshots and professional photos
-              </Typography>
+            {/* Image Section */}
+            <Box sx={{
+              width: { xs: '100%', md: '90%' },
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'relative',
+              mb: { xs: 4, md: 0 }
+            }}>
+              <Box
+                component="img"
+                src="/group1.png"
+                alt="User Group"
+                sx={{
+                  width: '90%',
+                  height: 'auto',
+                  borderRadius: 3,
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+                  position: 'relative',
+                  zIndex: 1
+                }}
+              />
+              <Box
+                component="img"
+                src="/group2.png"
+                alt="User Group Overlay"
+                sx={{
+                  width: { xs: '40%', sm: '30%', md: '35%' },
+                  height: 'auto',
+                  borderRadius: 3,
+                  position: 'absolute',
+                  top: { xs: -50, sm: -60, md: -50, lg: -80 },
+                  left: { xs: -15, sm: -10, md: -20, lg: -20 },
+                  zIndex: 2
+                }}
+              />
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Box component="span" sx={{ 
-                flexShrink: 0,
-                fontSize: { xs: '1.6rem', md: '1.8rem' },
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center'
-              }}>👗</Box>
-              <Typography variant="h6">
-                Try on any wedding dress or outfit before you rent or buy
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Box component="span" sx={{ 
-                flexShrink: 0,
-                fontSize: { xs: '1.6rem', md: '1.8rem' },
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center'
-              }}>📸</Box>
-              <Typography variant="h6">
-                Create stunning content for social media in any style or setting
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Box component="span" sx={{ 
-                flexShrink: 0,
-                fontSize: { xs: '1.6rem', md: '1.8rem' },
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center'
-              }}>💰</Box>
-              <Typography variant="h6">
-                Save thousands on professional photoshoots
-              </Typography>
+
+            {/* Bullet Points Section */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 3,
+              width: { xs: '100%', md: '100%' },
+              color: theme.palette.secondary.light,
+              '& > *': {
+                fontSize: { xs: '1.6rem', md: '1.6rem' },
+                fontWeight: 600,
+                lineHeight: 1.4
+              }
+            }}>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box component="span" sx={{ 
+                  flexShrink: 0,
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>✨</Box>
+                <Typography sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  color: { xs: 'primary.main', md: 'primary.main' }
+                }}>
+                  Generate ultra-realistic AI headshots and professional photos
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box component="span" sx={{ 
+                  flexShrink: 0,
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>👗</Box>
+                <Typography sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  color: { xs: 'primary.main', md: 'primary.main' }
+                }}>
+                  Try on any wedding dress or outfit before you rent or buy
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box component="span" sx={{ 
+                  flexShrink: 0,
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>📸</Box>
+                <Typography sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  color: { xs: 'primary.main', md: 'primary.main' }
+                }}>
+                  Create stunning content for social media in any style or setting
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box component="span" sx={{ 
+                  flexShrink: 0,
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>💰</Box>
+                <Typography sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  color: { xs: 'primary.main', md: 'primary.main' }
+                }}>
+                  Save thousands on professional photoshoots
+                </Typography>
+              </Box>
             </Box>
           </Box>
+
         </Container>
       </Box>
+               {/* Full Width Line Image */}
+      <DecorativeLine 
+        src="/line_secondary.png"
+      />
       
       {/* Auth Dialog */}
       <Dialog 
@@ -788,15 +1258,27 @@ const HomePage: React.FC = () => {
         </Alert>
       </Snackbar>
       
-      {/* Main Content */}
-      <Box>
-        {/* Gallery Preview */}
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
+              {/* Gallery Preview */}
+        <Container id="gallery" maxWidth="lg" sx={{ position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
           <GalleryGrid />
         </Container>
         
+        <DecorativeLine 
+        src="/line_primary.png"
+      />
+      {/* Main Content */}
+      <Box sx={{ 
+        width: '100%',
+        overflowX: 'hidden',
+        position: 'relative'
+      }}>
         {/* Main Content */}
-        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8, } }}>
+        <Container maxWidth="lg" sx={{ 
+          py: { xs: 4, md: 8 },
+          px: { xs: 2, md: 3 },
+          width: '100%',
+          maxWidth: '100%'
+        }}>
           {/* Main Value Proposition */}
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Typography variant="h4" gutterBottom color="primary.main">
@@ -833,7 +1315,7 @@ const HomePage: React.FC = () => {
             marginLeft: '-50vw',
             marginRight: '-50vw',
             overflow: 'hidden',
-            mb: 4 
+            mb: 4 ,
           }}>
             
             {/* First feature - full width */}
@@ -861,7 +1343,7 @@ const HomePage: React.FC = () => {
                 }}
               />
               <Container maxWidth="xl">
-                <Box sx={{ maxWidth: '1200px', mx: 'auto', mt: { xs: 4, sm: 6, md: 8 }, px: { xs: 2, md: 3 } }}>
+                <Box sx={{ maxWidth: '1200px', mx: 'auto', mt: { xs: 12, sm: 12, md: 12 }, px: { xs: 2, md: 3 } }}>
                   <Typography variant="h4" gutterBottom fontWeight={700} color="primary.main">
                     {featureItems[2].title}
                   </Typography>
@@ -940,7 +1422,6 @@ const HomePage: React.FC = () => {
               </Box>
             </Container>
           </Box>
-          
           {/* How It Works */}
           <Box sx={{ mb: 8 }}>
             <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
@@ -982,9 +1463,193 @@ const HomePage: React.FC = () => {
               </Typography>
             </Box>
           </Box>
+          {/* Pricing Section */}
+          <Box id="pricing" sx={{ py: 4}}>
+            <Container maxWidth="lg">
+              <Typography variant="h4" align="center" gutterBottom color="primary.main">
+                Choose Your Plan
+              </Typography>
+              <Typography variant="h6" align="center" sx={{ mb: 4, color: 'text.secondary' }}>
+                Select the perfect plan for your needs
+              </Typography>
+
+              {/* Billing Cycle Toggle */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
+                <ToggleButtonGroup
+                  value={billingCycle}
+                  exclusive
+                  onChange={(e, value) => value && setBillingCycle(value)}
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      textTransform: 'none',
+                      px: 3,
+                      py: 1,
+                      minWidth: '180px', // Increased width to prevent wrapping
+                      whiteSpace: 'nowrap', // Prevent text wrapping
+                      border: `1px solid ${theme.palette.primary.main}`,
+                      '&.Mui-selected': {
+                        backgroundColor: theme.palette.primary.main,
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: theme.palette.primary.dark,
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <ToggleButton value="monthly">Monthly</ToggleButton>
+                  <ToggleButton value="yearly">Yearly (Save 20%)</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+
+              {/* Pricing Cards */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', sm: '1fr', lg: 'repeat(3, 1fr)' },
+                gap: 4,
+                mt: 4
+              }}>
+                {plans.map((plan) => (
+                  <Card 
+                    key={plan.id}
+                    sx={{ 
+                      p: 3,
+                      borderRadius: 3,
+                      border: `1px solid ${plan.popular ? theme.palette.primary.main : theme.palette.primary.light}30`,
+                      backgroundColor: plan.popular ? `${theme.palette.primary.main}08` : 'transparent',
+                      position: 'relative',
+                      transition: 'transform 0.2s',
+                      overflow: 'visible',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        cursor: 'pointer',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+                      }
+                    }}
+                    onClick={handleClickOpen}
+                  >
+                    {plan.popular && (
+                      <Box sx={{ 
+                        position: 'absolute',
+                        top: -12,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: theme.palette.primary.main,
+                        color: 'white',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 2,
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        zIndex: 3,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        overflow: 'hidden',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          background: 'linear-gradient(115deg, transparent, rgba(255,255,255,0.2), transparent)',
+                          animation: 'shimmer 2s infinite',
+                          transform: 'translateX(-100%)',
+                        },
+                        '@keyframes shimmer': {
+                          '100%': {
+                            transform: 'translateX(100%)',
+                          },
+                        },
+                      }}>
+                        Most Popular
+                      </Box>
+                    )}
+                    <CardContent sx={{ 
+                      p: 0, 
+                      position: 'relative', 
+                      zIndex: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      flex: 1
+                    }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h5" gutterBottom color="primary.main">
+                          {plan.title}
+                        </Typography>
+                        <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
+                          ${billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                          {billingCycle === 'monthly' ? 'per month' : 'per year'}
+                        </Typography>
+                        <List>
+                          <ListItem>
+                            <ListItemIcon>
+                              <CheckCircleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={plan.features.modelCount} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <CheckCircleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={plan.features.photoCount} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <CheckCircleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={plan.features.quality} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <CheckCircleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={plan.features.likeness} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <CheckCircleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={plan.features.parallel} />
+                          </ListItem>
+                          {plan.features.other?.map((feature, index) => (
+                            <ListItem key={index}>
+                              <ListItemIcon>
+                                <CheckCircleIcon color="primary" />
+                              </ListItemIcon>
+                              <ListItemText primary={feature} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                      <Button 
+                        fullWidth 
+                        variant={plan.popular ? "contained" : "outlined"}
+                        color="primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClickOpen();
+                        }}
+                        sx={{ 
+                          mt: 3,
+                          position: 'relative',
+                          zIndex: 2
+                        }}
+                      >
+                        Get Started
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Container>
+          </Box>
           
           {/* Testimonials */}
-          <Box sx={{ mb: 8 }}>
+          <Box sx={{ mb: 8, mt: 8 }}>
             <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
               What Our Users Say
             </Typography>
@@ -1018,7 +1683,8 @@ const HomePage: React.FC = () => {
               ))}
             </Box>
           </Box>
-          
+
+                    
           {/* CTA */}
           <Box 
             sx={{ 
@@ -1116,3 +1782,5 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage; 
+
+
