@@ -2,6 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Google Analytics Consent Configuration -->
+    <script data-cookieconsent="ignore">
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("consent", "default", {
+        ad_personalization: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        analytics_storage: "denied",
+        functionality_storage: "denied",
+        personalization_storage: "denied",
+        security_storage: "granted",
+        wait_for_update: 500,
+      });
+      gtag("set", "ads_data_redaction", true);
+      gtag("set", "url_passthrough", false);
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-H9QPFW9HYQ"></script>
     <script>
@@ -11,6 +30,7 @@
 
       gtag('config', 'G-H9QPFW9HYQ');
     </script>
+    
     <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="dda8b08f-8ac2-49e8-8d4f-e51adb1e5976" type="text/javascript" async></script>
     <link rel="icon" href="%PUBLIC_URL%/lovit.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -66,8 +86,4 @@
       You can add webfonts, meta tags, or analytics to this file.
       The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
-</html>
+      To begin the development, run `npm start`
