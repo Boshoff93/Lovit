@@ -36,9 +36,12 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
+import StarIcon from '@mui/icons-material/Star';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '@mui/material/styles';
 import DecorativeLine from '../components/DecorativeLine';
+import InfiniteScroll from '../components/InfiniteScroll';
+import BrandShowcase from '../components/BrandShowcase';
 
 const featureItems = [
   {
@@ -67,10 +70,12 @@ const testimonials = [
   {
     quote: "Lovit saved us thousands on professional photoshoots for our online store. Our conversion rates are up 23%!",
     author: "Sarah J., Shopify Store Owner",
+    rating: 5
   },
   {
     quote: "I can see exactly how clothes will look on me before renting them. No more surprises or returns!",
     author: "Michael T., Fashion Enthusiast",
+    rating: 5
   },
 ];
 
@@ -330,6 +335,7 @@ const GalleryGrid: React.FC = () => {
             justifyContent: 'center',
             width: { xs: '100%', sm: 'auto' },
             maxWidth: { xs: '100%', sm: 'none' },
+            maxHeight: '100vh',
           },
         }}
         sx={{
@@ -350,7 +356,9 @@ const GalleryGrid: React.FC = () => {
             m: 0,
             cursor: 'pointer',
             width: '100%',
-            height: '100%'
+            height: '100%',
+            maxHeight: '100vh',
+            overflow: 'auto'
           }}
           onClick={handleCloseOverlay}
         >
@@ -363,13 +371,13 @@ const GalleryGrid: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: { xs: 0, sm: 3 },
-                p: { xs: 0, sm: 2 },
+                p: { xs: 1, sm: 2 },
                 width: { xs: 'auto', sm: 'auto' },
                 maxWidth: { xs: '100%', sm: '80vw', md: '60vw' },
-                maxHeight: { xs: '90vh', sm: '90vh' },
+                maxHeight: { xs: '100vh', sm: '100vh' },
                 height: 'auto',
                 overflow: 'visible',
-                gap: 2
+                gap: 1
               }}
             >
               <Box
@@ -379,7 +387,7 @@ const GalleryGrid: React.FC = () => {
                 sx={{
                   width: 'auto',
                   height: 'auto',
-                  maxHeight: { xs: '70vh', sm: '75vh' },
+                  maxHeight: { xs: '50vh', sm: '60vh', md: '65vh' },
                   objectFit: 'contain',
                   objectPosition: 'center',
                   borderRadius: { xs: 0, sm: 2 },
@@ -390,13 +398,13 @@ const GalleryGrid: React.FC = () => {
               <Typography
                 variant="body1"
                 sx={{
-                  mt: 1,
-                  mb: 1,
+                  mt: 0.5,
+                  mb: 0.5,
                   textAlign: 'center',
                   color: 'secondary.dark',
                   maxWidth: '700px',
-                  fontSize: '1.2rem',
-                  px: { xs: 2, sm: 2 },
+                  fontSize: { xs: '1rem', sm: '1.2rem' },
+                  px: { xs: 1, sm: 2 },
                 }}
               >
                 {gridImages.find(img => img.src === selectedImage)?.prompt}
@@ -406,15 +414,16 @@ const GalleryGrid: React.FC = () => {
                 onClick={handleCloseOverlay}
                 color="secondary"
                 sx={{
-                  mt: 1,
-                  mb: { xs: 2, sm: 1 },
+                  mt: 0.5,
+                  mb: { xs: 1, sm: 1 },
                   bgcolor: 'rgba(255, 255, 255, 0.9)',
                   color: 'text.primary',
                   '&:hover': {
                     bgcolor: 'rgba(255, 255, 255, 1)',
                   },
                   position: 'relative',
-                  zIndex: 2
+                  zIndex: 2,
+                  py: 0.5
                 }}
               >
                 Close
@@ -438,7 +447,7 @@ const HomePage: React.FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [authTab, setAuthTab] = useState<number>(0);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const navigate = useNavigate();
   const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
@@ -775,11 +784,11 @@ const HomePage: React.FC = () => {
         height: '20%', 
         background: `linear-gradient(180deg, 
           ${theme.palette.primary.dark}CC,
+          ${theme.palette.primary.dark}99,
           ${theme.palette.background.default}99),
           linear-gradient(to bottom,
           ${theme.palette.background.default}00,
           ${theme.palette.background.default}FF)`,
-        opacity: 0.9,
         backdropFilter: 'blur(8px)',
         transition: 'all 0.3s ease-in-out',
         zIndex: -2
@@ -787,7 +796,7 @@ const HomePage: React.FC = () => {
       <Box sx={{ 
         position: 'relative',
         width: '100%',
-        py: { xs: 4, md: 12 }, 
+        py: { xs: 0, md: 0 }, 
         px: { xs: 2, md: 2 },
         textAlign: 'center',
         zIndex: 2,
@@ -811,7 +820,6 @@ const HomePage: React.FC = () => {
               display: 'flex',
               justifyContent: 'center',
               width: '100%',
-              mb: 4
             }}
           >
             <Box 
@@ -819,8 +827,8 @@ const HomePage: React.FC = () => {
               src="/lovit.png"
               alt="Lovit Logo"
               sx={{
-                width: { xs: '200px', md: '200px' },
-                p: "10px",
+                width: { xs: '140px', md: '200px' },
+                p: "5px",
                 height: 'auto',
                 borderRadius: '50%'
               }}
@@ -831,7 +839,7 @@ const HomePage: React.FC = () => {
             variant="h1" 
             component="h1" 
             sx={{ 
-              fontSize: { xs: '3rem', md: '4rem' },
+              fontSize: { xs: '2rem', md: '4rem' },
               fontWeight: 900,
               mb: 3,
               color: theme.palette.secondary.dark,
@@ -845,7 +853,7 @@ const HomePage: React.FC = () => {
           <Typography 
             variant="h5" 
             sx={{ 
-              fontSize: { xs: '1.75rem', md: '2rem' },
+              fontSize: { xs: '1.3rem', md: '2rem' },
               mb: 4, 
               maxWidth: '800px', 
               mx: 'auto', 
@@ -860,9 +868,22 @@ const HomePage: React.FC = () => {
 
           <Box sx={{ 
             display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
             justifyContent: 'center',
+            alignItems: 'center',
+            gap: { xs: 2, sm: 4 },
             mb: 4
           }}>
+            <Box
+              component="img"
+              src="/fashion.png"
+              alt="#1 AI Fashion App"
+              sx={{
+                width: { xs: '120px', sm: '200px', md: '200px' },
+                height: 'auto',
+                display:'block'
+              }}
+            />
             <Button 
               variant="contained" 
               color="primary" 
@@ -870,31 +891,50 @@ const HomePage: React.FC = () => {
               onClick={handleClickOpen}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
-                py: 2,
-                px: 6,
-                fontSize: '1.2rem',
+                py: { xs: 1, sm: 2, md: 2 },
+                px: { xs: 4, sm: 6, md: 6 },
+                mt: { xs: 2, sm: 0 },
+                fontSize: { xs: '1rem', sm: '1.2rem' },
                 borderRadius: 3,
                 textTransform: 'none',
-                fontWeight: 600
+                fontWeight: 600,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  animation: 'shimmer 3s infinite',
+                  transform: 'translateX(-100%)',
+                },
+                '@keyframes shimmer': {
+                  '0%': {
+                    transform: 'translateX(-100%)',
+                  },
+                  '100%': {
+                    transform: 'translateX(50%)',
+                  },
+                },
               }}
             >
               Try it, Lovit!
             </Button>
           </Box>
           </Container>
-          <DecorativeLine 
-            src="/line_secondary_reverse.png"
-          />
-          <Container maxWidth="xl" sx={{ textAlign: 'left' }}>
-          <Box sx={{ 
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 4,
-            mx: 'auto',
-            mt: 12,
-            mb: 0,
-            alignItems: 'center'
-          }}>
+          <Container maxWidth="xl" sx={{ textAlign: 'left', mb:8 }}>
+            <Box sx={{ 
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              gap: 4,
+              mx: 'auto',
+              mt: 6,
+              mb: 0,
+              alignItems: 'center'
+            }}>
             {/* Image Section */}
             <Box sx={{
               width: { xs: '100%', md: '90%' },
@@ -932,11 +972,11 @@ const HomePage: React.FC = () => {
               />
             </Box>
 
-            {/* Bullet Points Section */}
+
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
-              gap: 3,
+              gap: 2,
               width: { xs: '100%', md: '100%' },
               color: theme.palette.secondary.light,
               '& > *': {
@@ -945,34 +985,19 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.4
               }
             }}>
+
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Box component="span" sx={{ 
                   flexShrink: 0,
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
-                  lineHeight: 1,
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>✨</Box>
-                <Typography sx={{ 
-                  fontWeight: 700, 
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
-                }}>
-                  Generate ultra-realistic AI headshots and professional photos
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <Box component="span" sx={{ 
-                  flexShrink: 0,
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
                 }}>👗</Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Try on any wedding dress or outfit before you rent or buy
                 </Typography>
@@ -980,15 +1005,31 @@ const HomePage: React.FC = () => {
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Box component="span" sx={{ 
                   flexShrink: 0,
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>✨</Box>
+                <Typography sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
+                }}>
+                  Generate ultra-realistic AI headshots and professional photos
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box component="span" sx={{ 
+                  flexShrink: 0,
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
                 }}>📸</Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Create stunning content for social media in any style or setting
                 </Typography>
@@ -996,15 +1037,15 @@ const HomePage: React.FC = () => {
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Box component="span" sx={{ 
                   flexShrink: 0,
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
                 }}>💰</Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
-                  fontSize: { xs: '1.6rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Save thousands on professional photoshoots
                 </Typography>
@@ -1259,12 +1300,42 @@ const HomePage: React.FC = () => {
       </Snackbar>
       
               {/* Gallery Preview */}
-        <Container id="gallery" maxWidth="lg" sx={{ position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
+        <Container id="gallery" maxWidth="lg" sx={{ mb: 12, position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
+          <Typography 
+            variant="h3"
+            sx={{ 
+              fontSize: { xs: '2rem', md: '4rem' },
+              mb: 2, 
+              maxWidth: '800px', 
+              mx: 'auto', 
+              color: theme.palette.primary.main,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center',
+            }}
+          >
+            Your Online Fitting Room
+          </Typography>
+          <Typography 
+            sx={{ 
+              mb: 8, 
+              maxWidth: '800px', 
+              mx: 'auto',
+              fontSize: { xs: '1.2rem', md: '1.4rem' },
+              color: theme.palette.primary.main,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center',
+            }}
+          >
+            Try on 1000s of brands + designers
+          </Typography>
+          <BrandShowcase />
           <GalleryGrid />
         </Container>
         
         <DecorativeLine 
-        src="/line_primary.png"
+        src="/line_primary_reverse.png"
       />
       {/* Main Content */}
       <Box sx={{ 
@@ -1281,10 +1352,10 @@ const HomePage: React.FC = () => {
         }}>
           {/* Main Value Proposition */}
           <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography variant="h4" gutterBottom color="primary.main">
-              Your Personal AI Fashion Studio
+            <Typography variant="h3" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
+              Personal AI Fashion Studio
             </Typography>
-            <Typography variant="h6" sx={{ maxWidth: '800px', mx: 'auto', mb: 4 }}>
+            <Typography variant="h6" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' }, maxWidth: '800px', mx: 'auto', mb: 4 }}>
               Experience the future of fashion with our revolutionary virtual try-on technology. Upload your photos to create your digital twin, then instantly see how any outfit looks on you. Perfect for wedding dress shopping, exploring new styles, or building your dream wardrobe! All from the comfort of your home.
             </Typography>
             <Button 
@@ -1294,15 +1365,36 @@ const HomePage: React.FC = () => {
               onClick={handleClickOpen}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
-                py: 1.5,
-                px: 4,
-                fontSize: '1.1rem',
+                py: { xs: 1, sm: 2, md: 2 },
+                px: { xs: 4, sm: 6, md: 6 },
+                fontSize: { xs: '1rem', sm: '1.2rem' },
                 borderRadius: 3,
                 textTransform: 'none',
-                fontWeight: 600
+                fontWeight: 600,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  animation: 'shimmer 3s infinite',
+                  transform: 'translateX(-100%)',
+                },
+                '@keyframes shimmer': {
+                  '0%': {
+                    transform: 'translateX(-100%)',
+                  },
+                  '100%': {
+                    transform: 'translateX(50%)',
+                  },
+                },
               }}
             >
-              Try Lovit Now
+              Try it, Lovit!
             </Button>
           </Box>
 
@@ -1315,7 +1407,7 @@ const HomePage: React.FC = () => {
             marginLeft: '-50vw',
             marginRight: '-50vw',
             overflow: 'hidden',
-            mb: 4 ,
+            mb: 8 ,
           }}>
             
             {/* First feature - full width */}
@@ -1324,7 +1416,8 @@ const HomePage: React.FC = () => {
               mb: 8,
               mx: 'auto',
               textAlign: 'center',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              p: 2
             }}>
               <Box 
                 component="img"
@@ -1339,15 +1432,15 @@ const HomePage: React.FC = () => {
                   objectPosition: 'top',
                   display: 'block',
                   borderRadius: { xs: 2, sm: 3, md: 4 },
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
                 }}
               />
               <Container maxWidth="xl">
                 <Box sx={{ maxWidth: '1200px', mx: 'auto', mt: { xs: 12, sm: 12, md: 12 }, px: { xs: 2, md: 3 } }}>
-                  <Typography variant="h4" gutterBottom fontWeight={700} color="primary.main">
+                  <Typography variant="h3" gutterBottom fontWeight={700} color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
                     {featureItems[2].title}
                   </Typography>
-                  <Typography variant="h6" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                  <Typography variant="h6" color="text.secondary" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' }, lineHeight: 1.8 }}>
                     {featureItems[2].description}
                   </Typography>
                 </Box>
@@ -1377,6 +1470,7 @@ const HomePage: React.FC = () => {
                     sx={{
                       display: 'flex',
                       flexDirection: 'column',
+                      p: 2
                     }}
                   >
                     <Box
@@ -1391,7 +1485,7 @@ const HomePage: React.FC = () => {
                         borderRadius: 3,
                         mb: 3,
                         display: 'block',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
                       }}
                     />
                     <Box sx={{ flex: 1 }}>
@@ -1423,8 +1517,9 @@ const HomePage: React.FC = () => {
             </Container>
           </Box>
           {/* How It Works */}
+
           <Box sx={{ mb: 8 }}>
-            <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
+            <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               How It Works
             </Typography>
             <Divider sx={{ mb: 5, borderColor: theme.palette.primary.light }} />
@@ -1445,20 +1540,20 @@ const HomePage: React.FC = () => {
                     width: '100%',
                     height: 'auto',
                     borderRadius: { xs: 2, md: 3 },
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
                   }}
                 />
               </Box>
             <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                 <strong>Create your AI model</strong> in minutes - either of yourself or anyone else. Simply upload 10-20 photos and our advanced AI will learn to recognize and replicate unique features, expressions, and style.
               </Typography>
               
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                 Once your model is ready, <strong>upload any outfit you want to try</strong> from any online store. Just take a screenshot or save the image of the clothing item you're interested in.
               </Typography>
               
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                 <strong>Generate stunning images instantly</strong> of your model wearing those outfits in any setting of your choosing. From beach vacations to city streets or professional settings - see exactly how the clothes will look on you before making a purchase.
               </Typography>
             </Box>
@@ -1466,10 +1561,10 @@ const HomePage: React.FC = () => {
           {/* Pricing Section */}
           <Box id="pricing" sx={{ py: 4}}>
             <Container maxWidth="lg">
-              <Typography variant="h4" align="center" gutterBottom color="primary.main">
+              <Typography variant="h3" align="center" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
                 Choose Your Plan
               </Typography>
-              <Typography variant="h6" align="center" sx={{ mb: 4, color: 'text.secondary' }}>
+              <Typography variant="h6" align="center" sx={{ mb: 4, color: 'text.secondary', fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                 Select the perfect plan for your needs
               </Typography>
 
@@ -1484,7 +1579,7 @@ const HomePage: React.FC = () => {
                       textTransform: 'none',
                       px: 3,
                       py: 1,
-                      minWidth: '180px', // Increased width to prevent wrapping
+                      minWidth: '200px', // Increased width to prevent wrapping
                       whiteSpace: 'nowrap', // Prevent text wrapping
                       border: `1px solid ${theme.palette.primary.main}`,
                       '&.Mui-selected': {
@@ -1497,8 +1592,8 @@ const HomePage: React.FC = () => {
                     },
                   }}
                 >
-                  <ToggleButton value="monthly">Monthly</ToggleButton>
-                  <ToggleButton value="yearly">Yearly (Save 20%)</ToggleButton>
+                  <ToggleButton value="monthly"><Typography variant="h6" align="center" sx={{ fontSize: { xs: '1rem', md: '1.2rem' } }}>Monthly</Typography></ToggleButton>
+                  <ToggleButton value="yearly"><Typography variant="h6" align="center" sx={{ fontSize: { xs: '1rem', md: '1.2rem' } }}>Yearly (Save 50%+)</Typography></ToggleButton>
                 </ToggleButtonGroup>
               </Box>
 
@@ -1582,7 +1677,7 @@ const HomePage: React.FC = () => {
                           ${billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                          {billingCycle === 'monthly' ? 'per month' : 'per year'}
+                          {billingCycle === 'monthly' ? 'per month' : 'per month'}
                         </Typography>
                         <List>
                           <ListItem>
@@ -1649,8 +1744,8 @@ const HomePage: React.FC = () => {
           </Box>
           
           {/* Testimonials */}
-          <Box sx={{ mb: 8, mt: 8 }}>
-            <Typography variant="h4" gutterBottom textAlign="center" color="primary.main">
+          <Box sx={{ mb: 8, mt: 12 }}>
+            <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               What Our Users Say
             </Typography>
             <Divider sx={{ mb: 5, borderColor: theme.palette.primary.light }} />
@@ -1673,10 +1768,22 @@ const HomePage: React.FC = () => {
                     }
                   }}
                 >
-                  <Typography variant="body1" paragraph fontStyle="italic">
+                  <Box sx={{ display: 'flex', gap: 0.5, mb: 2 }}>
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <StarIcon 
+                        key={i} 
+                        sx={{ 
+                          color: '#FFD700', // Gold color
+                          fontSize: { xs: '2rem', md: '2.5rem' }, // Bigger stars
+                          filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' // Add subtle shadow
+                        }} 
+                      />
+                    ))}
+                  </Box>
+                  <Typography variant="body1" paragraph fontStyle="italic" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                     "{testimonial.quote}"
                   </Typography>
-                  <Typography variant="subtitle2" color="text.secondary">
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
                     {testimonial.author}
                   </Typography>
                 </Paper>
@@ -1696,10 +1803,10 @@ const HomePage: React.FC = () => {
               border: `1px solid ${theme.palette.primary.light}30`
             }}
           >
-            <Typography variant="h4" gutterBottom color="primary.main">
+            <Typography variant="h4" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               Ready to transform your shopping experience?
             </Typography>
-            <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
+            <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', fontSize: { xs: '1.1rem', md: '1.2rem' } }}>
               Join thousands of users who are already using Lovit to visualize themselves in any outfit before making a purchase.
             </Typography>
             <Button 
@@ -1709,10 +1816,33 @@ const HomePage: React.FC = () => {
               onClick={handleClickOpen}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
-                py: 1.5,
-                px: 4,
-                fontSize: '1.1rem',
-                borderRadius: 3
+                py: { xs: 1, sm: 2, md: 2 },
+                px: { xs: 4, sm: 6, md: 6 },
+                fontSize: { xs: '1rem', sm: '1.2rem' },
+                borderRadius: 3,
+                textTransform: 'none',
+                fontWeight: 600,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  animation: 'shimmer 3s infinite',
+                  transform: 'translateX(-100%)',
+                },
+                '@keyframes shimmer': {
+                  '0%': {
+                    transform: 'translateX(-100%)',
+                  },
+                  '100%': {
+                    transform: 'translateX(50%)',
+                  },
+                },
               }}
             >
               Try it, Lovit!
