@@ -19,6 +19,7 @@ interface UpgradePopupProps {
   open: boolean;
   type: 'photo' | 'model' | null;
   message: string;
+  title?: string;
   isPremiumTier: boolean;
   onClose: () => void;
   onTopUp: () => void;
@@ -31,6 +32,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
   open,
   type,
   message,
+  title,
   isPremiumTier,
   onClose,
   onTopUp,
@@ -55,7 +57,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
     >
       <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
         <Typography variant="h5" fontWeight={600}>
-          {type === 'photo' ? 'Photo Limit Reached' : 'Model Limit Reached'}
+          {title || (type === 'photo' ? 'Photo Limit Reached' : 'Model Limit Reached')}
         </Typography>
       </DialogTitle>
       <DialogContent>

@@ -502,10 +502,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     open: boolean;
     type: 'photo' | 'model' | null;
     message: string;
+    title: string;
   }>({
     open: false,
     type: null,
-    message: ''
+    message: '',
+    title: ''
   });
 
   // Add loading states for upgrade popup
@@ -927,7 +929,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setUpgradePopup({
           open: true,
           type: 'model',
-          message: 'You have reached your AI model limit. Upgrade your subscription or top up to create more models!'
+          message: 'You have reached your AI model limit. Upgrade your subscription or top up to create more models!',
+          title: 'Model Limit Reached'
         });
       } else {
         setNotification({
@@ -1001,7 +1004,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             setUpgradePopup({
               open: true,
               type: 'photo',
-              message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+              message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!',
+              title: 'Photo Limit Reached'
             });
           } else {
             setNotification({
@@ -1051,7 +1055,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           setUpgradePopup({
             open: true,
             type: 'photo',
-            message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+            message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!',
+            title: 'Photo Limit Reached'
           });
         } else {
           setNotification({
@@ -1066,7 +1071,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setUpgradePopup({
           open: true,
           type: 'photo',
-          message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!'
+          message: 'You have reached your AI photo limit. Upgrade your subscription or top up to generate more images!',
+          title: 'Photo Limit Reached'
         });
       } else {
         setNotification({
@@ -1185,7 +1191,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Typography>
             </Box>
 
-            {token && (
+            {token && allowances && (
               <AllowanceDisplay 
                 allowances={allowances} 
                 onUpgrade={(type) => {
@@ -1194,7 +1200,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     type,
                     message: type === 'photo' 
                       ? 'Upgrade your subscription or top up to generate more images!'
-                      : 'Upgrade your subscription or top up to create more models!'
+                      : 'Upgrade your subscription or top up to create more models!',
+                    title: type === 'photo' ? 'AI Photo Credits' : 'AI Model Credits'
                   });
                 }}
               />
@@ -2176,6 +2183,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           open={upgradePopup.open}
           type={upgradePopup.type}
           message={upgradePopup.message}
+          title={upgradePopup.title}
           isPremiumTier={isPremiumTier}
           onClose={handleUpgradePopupClose}
           onTopUp={handleTopUp}
