@@ -734,7 +734,7 @@ const HomePage: React.FC = () => {
             <Button 
               color="inherit" 
               onClick={useCallback(() => handleSectionClick('pricing'), [handleSectionClick])}
-              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+              sx={{ fontWeight: 700,  borderRadius: 2,textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               Pricing
             </Button>
@@ -742,14 +742,14 @@ const HomePage: React.FC = () => {
               color="inherit" 
               component={RouterLink} 
               to="/faq"
-              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+              sx={{ fontWeight: 700,  borderRadius: 2,textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               FAQ
             </Button>
             <Button 
               color="inherit" 
               onClick={useCallback(() => handleSectionClick('gallery'), [handleSectionClick])}
-              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+              sx={{ fontWeight: 700,  borderRadius: 2, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               Gallery
             </Button>
@@ -757,7 +757,7 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary"
               onClick={handleClickOpen}
-              sx={{ fontWeight: 700, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
+              sx={{ fontWeight: 700,  borderRadius: 2, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               Try it
             </Button>
@@ -873,7 +873,7 @@ const HomePage: React.FC = () => {
                 py: 2,
                 px: 6,
                 fontSize: '1.2rem',
-                borderRadius: 2,
+                borderRadius: 3,
                 textTransform: 'none',
                 fontWeight: 600
               }}
@@ -1297,7 +1297,7 @@ const HomePage: React.FC = () => {
                 py: 1.5,
                 px: 4,
                 fontSize: '1.1rem',
-                borderRadius: 2,
+                borderRadius: 3,
                 textTransform: 'none',
                 fontWeight: 600
               }}
@@ -1712,7 +1712,7 @@ const HomePage: React.FC = () => {
                 py: 1.5,
                 px: 4,
                 fontSize: '1.1rem',
-                borderRadius: 2
+                borderRadius: 3
               }}
             >
               Try it, Lovit!

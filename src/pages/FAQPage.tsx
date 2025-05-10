@@ -79,6 +79,7 @@ const FAQPage: React.FC = () => {
             position: 'absolute',
             left: { xs: 16, sm: 24 },
             top: 24,
+            borderRadius: 2,
             color: theme.palette.primary.main,
             '&:hover': {
               backgroundColor: 'rgba(0, 0, 0, 0.04)'
