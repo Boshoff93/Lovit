@@ -1407,7 +1407,7 @@ const HomePage: React.FC = () => {
             marginLeft: '-50vw',
             marginRight: '-50vw',
             overflow: 'hidden',
-            mb: 8 ,
+            mb: 0 ,
           }}>
             
             {/* First feature - full width */}
@@ -1517,7 +1517,46 @@ const HomePage: React.FC = () => {
             </Container>
           </Box>
           {/* How It Works */}
-
+          <Box sx={{ mb: 8, display: 'flex', justifyContent: 'center' }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              onClick={handleClickOpen}
+              endIcon={<ArrowForwardIcon />}
+              sx={{ 
+                py: { xs: 1, sm: 2, md: 2 },
+                px: { xs: 4, sm: 6, md: 6 },
+                fontSize: { xs: '1rem', sm: '1.2rem' },
+                borderRadius: 3,
+                textTransform: 'none',
+                fontWeight: 600,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  animation: 'shimmer 3s infinite',
+                  transform: 'translateX(-100%)',
+                },
+                '@keyframes shimmer': {
+                  '0%': {
+                    transform: 'translateX(-100%)',
+                  },
+                  '100%': {
+                    transform: 'translateX(50%)',
+                  },
+                },
+              }}
+            >
+              Try it, Lovit!
+            </Button>
+          </Box>
           <Box sx={{ mb: 8 }}>
             <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               How It Works
