@@ -78,6 +78,9 @@ import Person from '@mui/icons-material/Person';
 import { Allowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
+import { 
+  reportPurchaseConversion
+} from '../utils/googleAds';
 
 
 // Define UserProfile interface here to modify the age type
@@ -1128,6 +1131,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleTopUp = useCallback(async () => {
     try {
       setIsTopUpLoading(true);
+      // Track conversion for top-up
+      await reportPurchaseConversion();
+      
       const resultAction = await dispatch(createCheckoutSession({ 
         priceId: 'price_1RJSklB6HvdZJCd5L5hh2o0C',
         productId: 'prod_SDuZQfG5jCbfwZ'

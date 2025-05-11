@@ -23,6 +23,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PersonIcon from '@mui/icons-material/Person';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
+import { reportPurchaseConversion } from '../utils/googleAds';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
@@ -41,6 +42,7 @@ const AccountPage: React.FC = () => {
     try {
       setError(null);
       setPortalLoading(true);
+      
       // Use the Redux action to create a portal session
       const resultAction = await createStripePortal()
       
@@ -63,6 +65,9 @@ const AccountPage: React.FC = () => {
     try {
       setError(null);
       setCheckoutLoading(type);
+      // Track purchase conversion
+      await reportPurchaseConversion();
+      
       const resultAction = await dispatch(createCheckoutSession({ 
         priceId: 'price_1RJSklB6HvdZJCd5L5hh2o0C',
         productId: 'prod_SDuZQfG5jCbfwZ'

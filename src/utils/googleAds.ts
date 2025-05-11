@@ -14,6 +14,7 @@ export const CONVERSION_EVENTS = {
   SIGN_UP_BUTTON_CLICK: 'AW-17071071515/Xb-mCLj31sUaEJvCj8w_',
   SIGN_UP_SUBMIT: 'AW-17071071515/CGPLCLv31sUaEJvCj8w_',
   SIGN_UP_CARDS_CLICK: 'AW-17071071515/g5ROCL731sUaEJvCj8w_',
+  PURCHASE: 'AW-17071071515/conversion_event_purchase'
 } as const;
 
 /**
@@ -142,6 +143,33 @@ export const reportSignUpCardsClickConversion = (url?: string): Promise<void> =>
   });
 };
 
+/**
+ * Reports a purchase conversion with delayed navigation
+ * @param url - URL to navigate to after conversion is reported
+ * @returns Promise that resolves when the conversion is reported
+ */
+export const reportPurchaseConversion = (url?: string): Promise<void> => {
+  return new Promise((resolve) => {
+    const callback = () => {
+      if (url) {
+        window.location.href = url;
+      }
+      resolve();
+    };
+
+    // Check if gtag is available
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion_event_purchase', {
+        'event_callback': callback,
+        'event_timeout': 2000
+      });
+    } else {
+      console.warn('Google Analytics gtag not found');
+      callback();
+    }
+  });
+};
+
 // Add TypeScript declaration for gtag
 declare global {
   interface Window {
@@ -149,8 +177,10 @@ declare global {
       command: string,
       action: string,
       params: {
-        send_to: string;
+        send_to?: string;
         event_callback?: () => void;
+        event_timeout?: number;
+        [key: string]: any;
       }
     ) => void;
   }
