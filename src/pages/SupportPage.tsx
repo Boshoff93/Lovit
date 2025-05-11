@@ -15,12 +15,18 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import FAQIcon from '@mui/icons-material/QuestionAnswer';
+import { useNavigate } from 'react-router-dom';
 
 const SupportPage: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleEmailClick = () => {
     window.location.href = 'mailto:admin@trylovit.com';
+  };
+
+  const handleFAQClick = () => {
+    navigate('/faq');
   };
 
   const faqItems = [
@@ -96,9 +102,21 @@ const SupportPage: React.FC = () => {
                 <Typography variant="h5" gutterBottom>
                   Support Center
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto' }}>
+                <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mb: 2 }}>
                   We're here to help! Get in touch with our support team or browse our FAQ section.
                 </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<FAQIcon />}
+                  onClick={handleFAQClick}
+                  sx={{ 
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    px: 3
+                  }}
+                >
+                  View All FAQs
+                </Button>
               </Box>
             </Box>
 
@@ -173,6 +191,21 @@ const SupportPage: React.FC = () => {
                   </Grid>
                 ))}
               </Grid>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<FAQIcon />}
+                  onClick={handleFAQClick}
+                  sx={{ 
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    px: 4,
+                    py: 1.5
+                  }}
+                >
+                  View All FAQs
+                </Button>
+              </Box>
             </Box>
           </CardContent>
         </Card>
