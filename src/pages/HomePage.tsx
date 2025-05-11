@@ -45,7 +45,8 @@ import BrandShowcase from '../components/BrandShowcase';
 import { 
   reportSignUpButtonClickConversion,
   reportSignUpCardsClickConversion,
-  reportSignUpSubmitConversion
+  reportSignUpSubmitConversion,
+  reportPageViewConversion
 } from '../utils/googleAds';
 
 const featureItems = [
@@ -458,6 +459,11 @@ const HomePage: React.FC = () => {
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
+
+  // Add page view conversion tracking
+  useEffect(() => {
+    reportPageViewConversion();
+  }, []);
 
   const handleSectionClick = useCallback((section: string) => {
     const element = document.getElementById(section);

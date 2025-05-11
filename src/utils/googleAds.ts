@@ -14,7 +14,8 @@ export const CONVERSION_EVENTS = {
   SIGN_UP_BUTTON_CLICK: 'AW-17071071515/Xb-mCLj31sUaEJvCj8w_',
   SIGN_UP_SUBMIT: 'AW-17071071515/CGPLCLv31sUaEJvCj8w_',
   SIGN_UP_CARDS_CLICK: 'AW-17071071515/g5ROCL731sUaEJvCj8w_',
-  PURCHASE: 'AW-17071071515/conversion_event_purchase'
+  PURCHASE: 'AW-17071071515/conversion_event_purchase',
+  PAGE_VIEW: 'AW-17071071515/vglOCN7E1sUaEJvCj8w_'
 } as const;
 
 /**
@@ -167,6 +168,26 @@ export const reportPurchaseConversion = (url?: string): Promise<void> => {
       console.warn('Google Analytics gtag not found');
       callback();
     }
+  });
+};
+
+/**
+ * Reports a page view conversion to Google Ads
+ * @returns Promise that resolves when the conversion is reported
+ */
+export const reportPageViewConversion = async (): Promise<void> => {
+  if (typeof window === 'undefined' || !window.gtag) {
+    console.warn('gtag not available');
+    return;
+  }
+
+  return new Promise((resolve) => {
+    window.gtag('event', 'conversion', {
+      'send_to': CONVERSION_EVENTS.PAGE_VIEW,
+      'value': 1.0,
+      'currency': 'USD'
+    });
+    resolve();
   });
 };
 
