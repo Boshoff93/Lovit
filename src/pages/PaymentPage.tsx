@@ -39,6 +39,14 @@ import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAuth } from '../hooks/useAuth';
+import { 
+  reportSubscribeStarterMonthlyConversion,
+  reportSubscribeStarterYearlyConversion,
+  reportSubscribeProMonthlyConversion,
+  reportSubscribeProYearlyConversion,
+  reportSubscribePremiumMonthlyConversion,
+  reportSubscribePremiumYearlyConversion
+} from '../utils/googleAds';
 
 interface PricePlan {
   id: string;
@@ -225,6 +233,31 @@ const PaymentPage: React.FC = () => {
     
     try {
       setError(null);
+      
+      // Track conversion based on plan and billing cycle
+      switch (plan.id) {
+        case 'starter':
+          if (isYearly) {
+            await reportSubscribeStarterYearlyConversion();
+          } else {
+            await reportSubscribeStarterMonthlyConversion();
+          }
+          break;
+        case 'pro':
+          if (isYearly) {
+            await reportSubscribeProYearlyConversion();
+          } else {
+            await reportSubscribeProMonthlyConversion();
+          }
+          break;
+        case 'premium':
+          if (isYearly) {
+            await reportSubscribePremiumYearlyConversion();
+          } else {
+            await reportSubscribePremiumMonthlyConversion();
+          }
+          break;
+      }
       
       // Use the Redux action to create a checkout session
       const resultAction = await dispatch(createCheckoutSession({ priceId, productId }));

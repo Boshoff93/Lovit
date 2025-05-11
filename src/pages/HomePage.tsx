@@ -42,6 +42,11 @@ import { useTheme } from '@mui/material/styles';
 import DecorativeLine from '../components/DecorativeLine';
 import InfiniteScroll from '../components/InfiniteScroll';
 import BrandShowcase from '../components/BrandShowcase';
+import { 
+  reportSignUpButtonClickConversion,
+  reportSignUpCardsClickConversion,
+  reportSignUpSubmitConversion
+} from '../utils/googleAds';
 
 const featureItems = [
   {
@@ -463,7 +468,7 @@ const HomePage: React.FC = () => {
     }
   }, [navigate]);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async (event?: React.MouseEvent) => {
     if (user) {
       if (isPremiumMember) {
         navigate('/dashboard');
@@ -474,6 +479,10 @@ const HomePage: React.FC = () => {
       }
     }
     
+    // Only track button click if not coming from a card click
+    if (!event?.currentTarget?.closest('.pricing-card')) {
+      await reportSignUpButtonClickConversion();
+    }
     setOpen(true);
     // Reset form state when opening the dialog
     setEmail('');
@@ -532,6 +541,7 @@ const HomePage: React.FC = () => {
         return;
       }
 
+      await reportSignUpSubmitConversion();
       // Call signup using useAuth hook
       const result = await signup(email, password, username);
       
@@ -557,6 +567,7 @@ const HomePage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
+      await reportSignUpSubmitConversion();
       // Get Google ID token using the auth hook utility
       const idToken = await getGoogleIdToken();
       
@@ -1646,6 +1657,7 @@ const HomePage: React.FC = () => {
                 {plans.map((plan) => (
                   <Card 
                     key={plan.id}
+                    className="pricing-card"
                     sx={{ 
                       p: 3,
                       borderRadius: 3,
@@ -1662,7 +1674,10 @@ const HomePage: React.FC = () => {
                         boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
                       }
                     }}
-                    onClick={handleClickOpen}
+                    onClick={async (event) => {
+                      await reportSignUpCardsClickConversion();
+                      handleClickOpen(event);
+                    }}
                   >
                     {plan.popular && (
                       <Box sx={{ 
