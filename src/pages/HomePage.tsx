@@ -673,11 +673,11 @@ const HomePage: React.FC = () => {
       setError(null);
       
       await reportSignUpSubmitConversion();
-      // Get Google ID token using the auth hook utility
-      const idToken = await getGoogleIdToken();
+      // Get Google access token using the auth hook utility
+      const accessToken = await getGoogleIdToken();
       
       // Use our Redux action through the useAuth hook and store the result
-      const result = await googleLogin(idToken);
+      const result = await googleLogin(accessToken);
       
       setIsLoading(false);
       handleClose();

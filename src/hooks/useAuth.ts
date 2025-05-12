@@ -43,11 +43,11 @@ export const useAuth = () => {
   }, [dispatch]);
 
   // Login with Google
-  const googleLogin = useCallback(async (idToken: string) => {
-    return dispatch(loginWithGoogle(idToken));
+  const googleLogin = useCallback(async (accessToken: string) => {
+    return dispatch(loginWithGoogle(accessToken));
   }, [dispatch]);
 
-  // Get Google ID token (does NOT make authentication API call)
+  // Get Google access token (does NOT make authentication API call)
   const getGoogleIdToken = useCallback(async () => {
     return signInWithGoogle();
   }, []);
