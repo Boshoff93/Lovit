@@ -20,6 +20,8 @@ import PasswordResetPage from './pages/PasswordResetPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
+import FAQPage from './pages/FAQPage';
+import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -72,11 +74,11 @@ function App() {
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-            <RequireAuth>
-              <Layout>
-                <AccountPage />
-              </Layout>
-            </RequireAuth>
+          <RequireAuth>
+            <Layout>
+              <AccountPage />
+            </Layout>
+          </RequireAuth>
         } />
         
         {/* Verify email page */}
@@ -101,6 +103,10 @@ function App() {
             </Layout>
           </RequireAuth>
         } />
+        <Route path="/faq" element={<FAQPage />} />
+
+        {/* Blog routes */}
+        <Route path="/blog/transform-fashion-experience" element={<TransformFashionExperience />} />
       </Routes>
     </Router>
   );

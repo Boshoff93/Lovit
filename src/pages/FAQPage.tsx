@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { SEO, createFAQStructuredData } from '../utils/seoHelper';
 
 const faqItems = [
   {
@@ -64,55 +65,87 @@ const faqItems = [
 const FAQPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const accordionRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  // Function to create a URL-friendly slug from a question
+  const createSlug = useCallback((question: string): string => {
+    return question
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }, []);
+
+  // Handle hash changes and expand the corresponding accordion
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      const index = faqItems.findIndex(item => createSlug(item.question) === hash);
+      if (index !== -1 && accordionRefs.current[index]) {
+        const element = accordionRefs.current[index];
+        element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Add a small delay to ensure the element is in view before expanding
+        setTimeout(() => {
+          const accordion = element?.querySelector('.MuiAccordion-root');
+          if (accordion) {
+            (accordion as HTMLElement).click();
+          }
+        }, 100);
+      }
+    }
+  }, [location.hash, createSlug]);
+
+  // Function to handle accordion click and update URL
+  const handleAccordionClick = useCallback((question: string) => {
+    const slug = createSlug(question);
+    navigate(`/faq#${slug}`, { replace: true });
+  }, [navigate, createSlug]);
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      py: 8,
-      background: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`
-    }}>
-      <Container maxWidth="md">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <SEO
+        title="Frequently Asked Questions - Lovit AI Fashion Platform"
+        description="Get answers to all your questions about Lovit's AI fashion platform. Learn about virtual try-on, AI model creation, pricing plans, and how to get started with our revolutionary fashion technology."
+        keywords="Lovit FAQ, AI fashion, virtual try-on, AI model creation, fashion technology, virtual fitting room, wedding dress try-on, AI headshots, fashion app"
+        ogTitle="Frequently Asked Questions - Lovit AI Fashion Platform"
+        ogDescription="Get answers to all your questions about Lovit's AI fashion platform. Learn about virtual try-on, AI model creation, pricing plans, and how to get started."
+        ogType="website"
+        ogUrl="https://trylovit.com/faq"
+        twitterTitle="Frequently Asked Questions - Lovit AI Fashion Platform"
+        twitterDescription="Get answers to all your questions about Lovit's AI fashion platform. Learn about virtual try-on, AI model creation, pricing plans, and how to get started."
+        structuredData={createFAQStructuredData(faqItems)}
+      />
+      
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{
-            position: 'absolute',
-            left: { xs: 16, sm: 24 },
-            top: 24,
-            borderRadius: 2,
-            color: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)'
-            }
-          }}
+          sx={{ mb: 4 }}
         >
           Back
         </Button>
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          gutterBottom 
-          align="center"
-          sx={{ 
-            fontWeight: 700,
-            color: theme.palette.primary.main,
-            mb: 6
-          }}
-        >
-          Frequently Asked Questions
-        </Typography>
 
         <Paper 
           elevation={0} 
+          component="section"
           sx={{ 
             p: 3, 
             borderRadius: 3,
             backgroundColor: 'transparent'
           }}
         >
+          <Typography variant="h2" component="h1" gutterBottom sx={{fontSize: { xs: '2rem', md: '2.5rem' }, mb: 4 }}>
+            Frequently Asked Questions
+          </Typography>
           {faqItems.map((item, index) => (
             <Accordion 
               key={index}
+              component="article"
+              ref={(el: HTMLDivElement | null) => {
+                accordionRefs.current[index] = el;
+              }}
+              id={createSlug(item.question)}
+              onChange={() => handleAccordionClick(item.question)}
               sx={{ 
                 mb: 2,
                 borderRadius: '8px !important',
@@ -128,6 +161,7 @@ const FAQPage: React.FC = () => {
             >
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
+                aria-label={`Toggle answer for ${item.question}`}
                 sx={{
                   '& .MuiAccordionSummary-content': {
                     my: 1,
@@ -135,10 +169,12 @@ const FAQPage: React.FC = () => {
                 }}
               >
                 <Typography 
-                  variant="h6" 
+                  variant="h2" 
+                  component="h2"
                   sx={{ 
                     fontWeight: 600,
-                    color: theme.palette.text.primary
+                    color: theme.palette.text.primary,
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
                   }}
                 >
                   {item.question}
@@ -147,6 +183,7 @@ const FAQPage: React.FC = () => {
               <AccordionDetails>
                 <Typography 
                   variant="body1" 
+                  component="p"
                   sx={{ 
                     color: theme.palette.text.secondary,
                     lineHeight: 1.7

@@ -48,6 +48,13 @@ import {
   reportSignUpSubmitConversion,
   reportPageViewConversion
 } from '../utils/googleAds';
+import { 
+  SEO, 
+  createHomePageStructuredData, 
+  createBreadcrumbStructuredData,
+  createVideoStructuredData,
+  createArticleStructuredData 
+} from '../utils/seoHelper';
 
 const featureItems = [
   {
@@ -92,99 +99,99 @@ interface GalleryImage {
 
 const gridImages: GalleryImage[] = [
   {
-    src: "/public/1 Medium.jpeg",
+    src: "/glamorous-beauty-portrait.jpeg",
     prompt: "Glamorous beauty portrait with bold red lipstick, dramatic eye makeup, and elegant black evening wear."
   },
   {
-    src: "/public/2 Medium.jpeg",
+    src: "/nyc-street-style.jpeg",
     prompt: "New York City, woman black coat, jeans, boots chic street style."
   },
   {
-    src: "/public/3 Medium.jpeg",
+    src: "/bridal-portrait.jpeg",
     prompt: "Close-up of a bride with natural makeup, soft veil, and captivating green eyes, wedding inspiration."
   },
   {
-    src: "/public/4 Medium.jpeg",
+    src: "/high-fashion-editorial.jpeg",
     prompt: "High-fashion editorial, model in a sleek black dress, dramatic side lighting, minimalist studio."
   },
   {
-    src: "/public/5 Medium.jpeg",
+    src: "/urban-chic-style.jpeg",
     prompt: "Chic urban style, woman in denim jacket and heels, sitting on stairs, confident night look."
   },
   {
-    src: "/public/6 Medium.jpeg",
+    src: "/beauty-closeup.jpeg",
     prompt: "Beauty close-up, woman applying nude lipstick, glowing skin, soft natural makeup."
   },
   {
-    src: "/public/7 Medium.jpeg",
+    src: "/modern-swimsuit.jpeg",
     prompt: "Modern swimsuit look, white minimalist vibes, outdoor sunny setting, elegant pose, roses in background."
   },
   {
-    src: "/public/8 Medium.jpeg",
+    src: "/romantic-bridal.jpeg",
     prompt: "Romantic bridal portrait, lace wedding gown, blooming rose garden, soft natural light."
   },
   {
-    src: "/public/9 Medium.jpeg",
+    src: "/vibrant-fashion.jpeg",
     prompt: "Vibrant fashion editorial, bold colorful makeup, high bun hairstyle, pink background."
   },
   {
-    src: "/public/10 Medium.jpeg",
+    src: "/nightlife-fashion.jpeg",
     prompt: "Nightlife fashion, woman in black leather outfit, neon city lights, cyberpunk style."
   },
   {
-    src: "/public/11 Medium.jpeg",
+    src: "/classic-beauty.jpeg",
     prompt: "Classic beauty portrait, red lipstick, soft curls, warm bokeh background, timeless glamour."
   },
   {
-    src: "/public/12 Medium.jpeg",
+    src: "/summer-fashion.jpeg",
     prompt: "Summer fashion, wide-brim hat, sunflower field, natural makeup, outdoor lifestyle."
   },
   {
-    src: "/public/13 Medium.jpeg",
+    src: "/natural-light-portrait.jpeg",
     prompt: "Natural light portrait, young woman with freckles, soft golden hour glow, casual style."
   },
   {
-    src: "/public/14 Medium.jpeg",
+    src: "/spring-fashion.jpeg",
     prompt: "Spring fashion, woman in a flowing yellow dress, walking in a blooming park, cheerful mood."
   },
   {
-    src: "/public/15 Medium.jpeg",
+    src: "/glamorous-beauty-dark.jpeg",
     prompt: "Glamorous beauty shot, dark skin, gold glitter eyeshadow, glossy lips, dramatic lighting."
   },
   {
-    src: "/public/16 Medium.jpeg",
+    src: "/elegant-evening-gown.jpeg",
     prompt: "Elegant evening gown, sparkling dress, bokeh lights, luxury event, confident pose."
   },
   {
-    src: "/public/17 Medium.jpeg",
+    src: "/beach-lifestyle.jpeg",
     prompt: "Beach lifestyle, woman in pink ruffle swimsuit, playful and smiling, ocean background."
   },
   {
-    src: "/public/18 Medium.jpeg",
+    src: "/classic-glamour.jpeg",
     prompt: "Classic glamour portrait, bold red lipstick, statement jewelry, flawless makeup."
   },
   {
-    src: "/public/19 Medium.jpeg",
+    src: "/chic-city-style.jpeg",
     prompt: "Chic city style, woman in camel coat, street fashion, urban background, confident walk."
   },
   {
-    src: "/public/20 Medium.jpeg",
+    src: "/sunset-fitness.jpeg",
     prompt: "Sunset fitness, sporty woman in black tank top, city skyline, golden hour workout."
   },
   {
-    src: "/public/21 Medium.jpeg",
+    src: "/beauty-lipstick.jpeg",
     prompt: "Beauty close-up, glossy pink lips, applying lipstick, soft focus, feminine style."
   },
   {
-    src: "/public/22 Medium.jpeg",
+    src: "/romantic-bridal-garden.jpeg",
     prompt: "Romantic bridal portrait, lace wedding dress, rose garden, dreamy outdoor setting."
   },
   {
-    src: "/public/23 Medium.jpeg",
+    src: "/trendy-street-style.jpeg",
     prompt: "Trendy street style, woman in crop top and joggers, graffiti wall, urban summer fashion."
   },
   {
-    src: "/public/24 Medium.jpeg",
+    src: "/beach-fashion.jpeg",
     prompt: "Beach fashion, woman in floral bikini and sun hat, sandy shore, summer vacation vibes."
   }
 ];
@@ -726,6 +733,36 @@ const HomePage: React.FC = () => {
     }
   ];
 
+  // Create breadcrumb data
+  const breadcrumbData = [
+    { name: 'Home', url: 'https://trylovit.com/' },
+    { name: 'AI Fashion Platform', url: 'https://trylovit.com/' }
+  ];
+
+  // Create video data for demo video
+  const videoData = {
+    name: "Lovit - AI Fashion Platform Demo",
+    description: "See how Lovit's AI-powered fashion platform helps you try on clothes virtually and create professional photos instantly.",
+    thumbnailUrl: "/lovit.png",
+    uploadDate: "2025-05-11",
+    duration: "PT2M30S",
+    url: "https://trylovit.com"
+  };
+
+  // Create article data for featured content
+  const articleData = {
+    headline: "Transform Your Fashion Experience with AI",
+    description: "Discover how Lovit's AI technology is revolutionizing the way we shop for clothes and create professional photos.",
+    image: "/lovit.png",
+    datePublished: "2025-05-11T08:00:00Z",
+    dateModified: "2025-05-11T08:00:00Z",
+    author: {
+      name: "Lovit Team",
+      url: "https://trylovit.com"
+    },
+    url: "https://trylovit.com/blog/transform-fashion-experience"
+  };
+
   return (
     <Box sx={{ 
       display: 'flex', 
@@ -735,6 +772,24 @@ const HomePage: React.FC = () => {
       position: 'relative',
       width: '100%'
     }}>
+      <SEO
+        title="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
+        description="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform. Perfect for wedding dress shopping, social media content, and professional headshots."
+        keywords="AI fashion, virtual try-on, AI model creation, fashion technology, virtual fitting room, wedding dress try-on, professional photos, AI headshots, fashion AI, virtual wardrobe, digital fashion, AI photography"
+        ogTitle="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
+        ogDescription="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform."
+        ogType="website"
+        ogUrl="https://trylovit.com"
+        twitterTitle="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
+        twitterDescription="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform."
+        structuredData={[
+          createHomePageStructuredData(featureItems),
+          createBreadcrumbStructuredData(breadcrumbData),
+          createVideoStructuredData(videoData),
+          createArticleStructuredData(articleData)
+        ]}
+      />
+
       {/* Transparent Header */}
       <AppBar position="fixed" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(4px)' }}>
         <Toolbar sx={{ display: {xs: 'none', sm: 'flex'}, justifyContent: 'space-between' }}>
@@ -742,7 +797,8 @@ const HomePage: React.FC = () => {
             <Box 
               component="img"
               src="/lovit.png"
-              alt="Lovit Logo"
+              alt="Lovit - AI Fashion Platform Logo"
+              loading="lazy"
               sx={{
                 width: '40px',
                 height: '40px',
@@ -842,7 +898,8 @@ const HomePage: React.FC = () => {
             <Box 
               component="img"
               src="/lovit.png"
-              alt="Lovit Logo"
+              alt="Lovit - AI Fashion Platform Logo"
+              loading="lazy"
               sx={{
                 width: { xs: '140px', md: '200px' },
                 p: "5px",
@@ -894,7 +951,8 @@ const HomePage: React.FC = () => {
             <Box
               component="img"
               src="/fashion.png"
-              alt="#1 AI Fashion App"
+              alt="Lovit - #1 AI Fashion App for Virtual Try-On"
+              loading="lazy"
               sx={{
                 width: { xs: '120px', sm: '200px', md: '200px' },
                 height: 'auto',
@@ -962,8 +1020,8 @@ const HomePage: React.FC = () => {
             }}>
               <Box
                 component="img"
-                src="/group1.png"
-                alt="User Group"
+                src="/personalized-photos.png"
+                alt="Personalize your AI model"
                 sx={{
                   width: '90%',
                   height: 'auto',
@@ -975,8 +1033,8 @@ const HomePage: React.FC = () => {
               />
               <Box
                 component="img"
-                src="/group2.png"
-                alt="User Group Overlay"
+                src="/real-person.png"
+                alt="Real Personalized Photos"
                 sx={{
                   width: { xs: '40%', sm: '30%', md: '35%' },
                   height: 'auto',
@@ -1439,7 +1497,8 @@ const HomePage: React.FC = () => {
               <Box 
                 component="img"
                 src={featureItems[2].image}
-                alt={featureItems[2].title}
+                alt={`${featureItems[2].title} - Virtual Try-On Feature`}
+                loading="lazy"
                 sx={{
                   width: '100%',
                   height: 'auto',
@@ -1682,7 +1741,7 @@ const HomePage: React.FC = () => {
                     }}
                     onClick={async (event) => {
                       await reportSignUpCardsClickConversion();
-                      handleClickOpen(event);
+                      handleClickOpen();
                     }}
                   >
                     {plan.popular && (
