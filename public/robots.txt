@@ -2,6 +2,12 @@
 User-agent: *
 Allow: /
 
+# Allow Google tracking domains
+Allow: /pagead/
+Allow: /pagead2/
+Allow: /googleadservices/
+Allow: /doubleclick.net/
+
 # Sitemap location
 Sitemap: https://api.trylovit.com/sitemap.xml
 
