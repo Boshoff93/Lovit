@@ -903,7 +903,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         message: `Model training started successfully! Model name: ${result.modelId}`,
         severity: 'success'
       });
-
+      
       // Reset form
       setUserProfile({
         name: '',
@@ -926,6 +926,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       if (isMobile) {
         setOpen(false);
       }
+      // Scroll to top of page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       // Check if error is exactly 'Model limit reached'
       if (error === 'Model limit reached') {
@@ -1053,6 +1055,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         url.searchParams.set('tab', 'gallery');
         window.history.replaceState({}, '', url);
         window.dispatchEvent(new CustomEvent('tabChange', { detail: { tab: 'gallery' } }));
+
+        navigate('/dashboard');
+        if (isMobile) {
+          setOpen(false);
+        }
+        // Scroll to top of page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         if (result?.error === 'Photo limit reached') {
           setUpgradePopup({
