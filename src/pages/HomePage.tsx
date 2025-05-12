@@ -898,7 +898,6 @@ const HomePage: React.FC = () => {
               component="img"
               src="/lovit.png"
               alt="Lovit - AI Fashion Platform Logo"
-              loading="lazy"
               sx={{
                 width: { xs: '140px', md: '200px' },
                 p: "5px",
@@ -1496,7 +1495,6 @@ const HomePage: React.FC = () => {
                 component="img"
                 src={featureItems[2].image}
                 alt={`${featureItems[2].title} - Virtual Try-On Feature`}
-                loading="lazy"
                 sx={{
                   width: '100%',
                   height: 'auto',
