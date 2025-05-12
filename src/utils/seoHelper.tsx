@@ -84,11 +84,6 @@ export const createHomePageStructuredData = (featureItems: Array<{ title: string
     },
     "featureList": featureItems.map(item => item.title).join(", "),
     "screenshot": featureItems.map(item => item.image),
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "1000"
-    },
     "author": {
       "@type": "Organization",
       "name": "Lovit",
