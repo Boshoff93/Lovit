@@ -196,16 +196,93 @@ const gridImages: GalleryImage[] = [
   }
 ];
 
+
+const plans = [
+  {
+    id: 'starter',
+    title: 'Starter',
+    monthlyPrice: 19,
+    yearlyPrice: 9,
+    features: {
+      photoCount: '50 AI photos',
+      modelCount: '1 AI Model',
+      quality: 'Lower quality photos',
+      likeness: 'Low Likeness',
+      parallel: '1 photo at a time',
+      other: ['Photorealistic images']
+    }
+  },
+  {
+    id: 'pro',
+    title: 'Pro',
+    monthlyPrice: 49,
+    yearlyPrice: 21,
+    features: {
+      photoCount: '200 photos',
+      modelCount: '2 AI models',
+      quality: 'Medium quality photos',
+      likeness: 'Medium likeness',
+      parallel: '2 photos in parallel',
+      other: ['Photorealistic models']
+    }
+  },
+  {
+    id: 'premium',
+    title: 'Premium',
+    monthlyPrice: 99,
+    yearlyPrice: 42,
+    popular: true,
+    features: {
+      photoCount: '500 AI photos',
+      modelCount: '3 AI models',
+      quality: 'High quality photos',
+      likeness: 'High likeness',
+      parallel: '4 photos in parallel',
+      other: ['Photorealistic models', 'Priority support']
+    }
+  }
+];
+
+// Create breadcrumb data
+const breadcrumbData = [
+  { name: 'Home', url: 'https://trylovit.com/' },
+  { name: 'AI Fashion Platform', url: 'https://trylovit.com/' }
+];
+
+// Create video data for demo video
+const videoData = {
+  name: "Lovit - AI Fashion Platform Demo",
+  description: "See how Lovit's AI-powered fashion platform helps you try on clothes virtually and create professional photos instantly.",
+  thumbnailUrl: "/lovit.png",
+  uploadDate: "2025-05-11",
+  duration: "PT2M30S",
+  url: "https://trylovit.com"
+};
+
+// Create article data for featured content
+const articleData = {
+  headline: "Transform Your Fashion Experience with AI",
+  description: "Discover how Lovit's AI technology is revolutionizing the way we shop for clothes and create professional photos.",
+  image: "/lovit.png",
+  datePublished: "2025-05-11T08:00:00Z",
+  dateModified: "2025-05-11T08:00:00Z",
+  author: {
+    name: "Lovit Team",
+    url: "https://trylovit.com"
+  },
+  url: "https://trylovit.com/blog/transform-fashion-experience"
+};
+
+const numColumns = {
+  xs: 3,
+  sm: 4,
+  md: 6
+};
+
 const GalleryGrid: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const numColumns = {
-    xs: 3,
-    sm: 4,
-    md: 6
-  };
   
   const rows = useMemo(() => {
     return gridImages.reduce((acc: GalleryImage[][], img, i) => {
@@ -218,16 +295,16 @@ const GalleryGrid: React.FC = () => {
     }, []);
   }, []);
 
-  const handleImageClick = (img: GalleryImage, idx: number) => {
+  const handleImageClick = useCallback((img: GalleryImage, idx: number) => {
     setSelectedImage(img.src);
-    const imageName = `image${idx + 1}`;
+    const imageName = img.src.replace(/^\/|\.(jpeg|jpg|png)$/g, '');
     navigate(`#${imageName}`, { replace: true });
-  };
+  }, [navigate]);
 
-  const handleCloseOverlay = () => {
+  const handleCloseOverlay = useCallback(() => {
     setSelectedImage(null);
     navigate('#', { replace: true });
-  };
+  }, [navigate]);
 
   // Handle URL hash changes
   useEffect(() => {
@@ -462,7 +539,6 @@ const HomePage: React.FC = () => {
   const [authTab, setAuthTab] = useState<number>(0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const navigate = useNavigate();
-  const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
@@ -481,7 +557,7 @@ const HomePage: React.FC = () => {
     }
   }, [navigate]);
 
-  const handleClickOpen = async (event?: React.MouseEvent) => {
+  const handleClickOpen = useCallback(async (event?: React.MouseEvent) => {
     if (user) {
       if (isPremiumMember) {
         navigate('/dashboard');
@@ -503,16 +579,16 @@ const HomePage: React.FC = () => {
     setConfirmPassword('');
     setUsername('');
     setError(null);
-  };
+  }, [user, isPremiumMember, navigate]);
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setAuthTab(newValue);
     setError(null);
-  };
+  }, []);
 
   const showSnackbar = (message: string) => {
     setSnackbarMessage(message);
@@ -523,7 +599,7 @@ const HomePage: React.FC = () => {
     setSnackbarOpen(false);
   };
 
-  const handleEmailSignup = async () => {
+  const handleEmailSignup = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -573,9 +649,9 @@ const HomePage: React.FC = () => {
       // Use authError from useAuth hook if available
       setError(authError || 'Signup failed. Please try again.');
     }
-  };
+  }, [signup, authError, email, password, confirmPassword, username]);
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleSignup = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -626,9 +702,9 @@ const HomePage: React.FC = () => {
         setError(authError || 'Google sign-in failed. Please try again or use email signup.');
       }
     }
-  };
+  }, [googleLogin, authError, getGoogleIdToken, resendVerificationEmail, navigate]);
 
-  const handleEmailLogin = async () => {
+  const handleEmailLogin = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -673,95 +749,19 @@ const HomePage: React.FC = () => {
       // Use authError from useAuth hook if available
       setError(authError || 'Login failed. Please check your credentials.');
     }
-  };
+  }, [login, authError, email, password, navigate, resendVerificationEmail]);
 
-  const handleKeyPressLogin = (e: React.KeyboardEvent) => {
+  const handleKeyPressLogin = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !isLoading) {
       handleEmailLogin();
     }
-  };
+  }, [handleEmailLogin, isLoading]);
 
-  const handleKeyPressSignup = (e: React.KeyboardEvent) => {
+  const handleKeyPressSignup = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !isLoading) {
       handleEmailSignup();
     }
-  };
-
-  const plans = [
-    {
-      id: 'starter',
-      title: 'Starter',
-      monthlyPrice: 19,
-      yearlyPrice: 9,
-      features: {
-        photoCount: '50 AI photos',
-        modelCount: '1 AI Model',
-        quality: 'Lower quality photos',
-        likeness: 'Low Likeness',
-        parallel: '1 photo at a time',
-        other: ['Photorealistic images']
-      }
-    },
-    {
-      id: 'pro',
-      title: 'Pro',
-      monthlyPrice: 49,
-      yearlyPrice: 21,
-      features: {
-        photoCount: '200 photos',
-        modelCount: '2 AI models',
-        quality: 'Medium quality photos',
-        likeness: 'Medium likeness',
-        parallel: '2 photos in parallel',
-        other: ['Photorealistic models']
-      }
-    },
-    {
-      id: 'premium',
-      title: 'Premium',
-      monthlyPrice: 99,
-      yearlyPrice: 42,
-      popular: true,
-      features: {
-        photoCount: '500 AI photos',
-        modelCount: '3 AI models',
-        quality: 'High quality photos',
-        likeness: 'High likeness',
-        parallel: '4 photos in parallel',
-        other: ['Photorealistic models', 'Priority support']
-      }
-    }
-  ];
-
-  // Create breadcrumb data
-  const breadcrumbData = [
-    { name: 'Home', url: 'https://trylovit.com/' },
-    { name: 'AI Fashion Platform', url: 'https://trylovit.com/' }
-  ];
-
-  // Create video data for demo video
-  const videoData = {
-    name: "Lovit - AI Fashion Platform Demo",
-    description: "See how Lovit's AI-powered fashion platform helps you try on clothes virtually and create professional photos instantly.",
-    thumbnailUrl: "/lovit.png",
-    uploadDate: "2025-05-11",
-    duration: "PT2M30S",
-    url: "https://trylovit.com"
-  };
-
-  // Create article data for featured content
-  const articleData = {
-    headline: "Transform Your Fashion Experience with AI",
-    description: "Discover how Lovit's AI technology is revolutionizing the way we shop for clothes and create professional photos.",
-    image: "/lovit.png",
-    datePublished: "2025-05-11T08:00:00Z",
-    dateModified: "2025-05-11T08:00:00Z",
-    author: {
-      name: "Lovit Team",
-      url: "https://trylovit.com"
-    },
-    url: "https://trylovit.com/blog/transform-fashion-experience"
-  };
+  }, [handleEmailSignup, isLoading]);
 
   return (
     <Box sx={{ 
