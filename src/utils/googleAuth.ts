@@ -1,6 +1,7 @@
 // Google Auth utility functions
 // Separated for cleaner code organization, since this isn't directly Redux-related
 
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '187159025302-73fkd561r5bfpgpjjdvo7ncb7p8fk0rd.apps.googleusercontent.com';
 // Load Google Auth API
 export const loadGoogleAuth = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -9,7 +10,7 @@ export const loadGoogleAuth = (): Promise<void> => {
       window.gapi.load('auth2', () => {
         window.gapi.auth2
           .init({
-            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '',
+            client_id: GOOGLE_CLIENT_ID,
           })
           .then(() => resolve())
           .catch((error: any) => reject(error));
@@ -24,7 +25,7 @@ export const loadGoogleAuth = (): Promise<void> => {
         window.gapi.load('auth2', () => {
           window.gapi.auth2
             .init({
-              client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '',
+              client_id: GOOGLE_CLIENT_ID,
             })
             .then(() => resolve())
             .catch((error: any) => reject(error));
