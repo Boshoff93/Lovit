@@ -34,7 +34,6 @@ import {
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import GoogleIcon from '@mui/icons-material/Google';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import { useAuth } from '../hooks/useAuth';
@@ -1262,16 +1261,27 @@ const HomePage: React.FC = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : 'Login with Email'}
                 </Button>
-                {/* <Button 
+                <Button 
                   fullWidth 
                   variant="outlined" 
-                  startIcon={<GoogleIcon />}
+                  startIcon={
+                    <Box
+                      component="img"
+                      src="/google-color.svg"
+                      alt="Google"
+                      sx={{
+                        width: 18,
+                        height: 18,
+                        marginRight: 1
+                      }}
+                    />
+                  }
                   onClick={handleGoogleSignup}
                   disabled={isLoading}
                   sx={{ py: 1.5 }}
                 >
-                  Continue with Google
-                </Button> */}
+                  Sign in with Google
+                </Button>
               </>
             ) : (
               // Sign Up Form
@@ -1333,6 +1343,27 @@ const HomePage: React.FC = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : 'Sign up with Email'}
                 </Button>
+                <Button 
+                  fullWidth 
+                  variant="outlined" 
+                  startIcon={
+                    <Box
+                      component="img"
+                      src="/google-color.svg"
+                      alt="Google"
+                      sx={{
+                        width: 18,
+                        height: 18,
+                        marginRight: 1
+                      }}
+                    />
+                  }
+                  onClick={handleGoogleSignup}
+                  disabled={isLoading}
+                  sx={{ py: 1.5 }}
+                >
+                  Sign in with Google
+                </Button>
                 <Box sx={{ mt: 2, textAlign: 'center' }}>
                   <Typography variant="body2" color="text.secondary">
                     By signing up, you agree to our{' '}
@@ -1357,16 +1388,6 @@ const HomePage: React.FC = () => {
                     </RouterLink>
                   </Typography>
                 </Box>
-                {/* <Button 
-                  fullWidth 
-                  variant="outlined" 
-                  startIcon={<GoogleIcon />}
-                  onClick={handleGoogleSignup}
-                  disabled={isLoading}
-                  sx={{ py: 1.5 }}
-                >
-                  Sign up with Google
-                </Button> */}
               </>
             )}
           </Box>
