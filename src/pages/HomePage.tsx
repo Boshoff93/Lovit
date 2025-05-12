@@ -245,8 +245,13 @@ const plans = [
 
 // Create breadcrumb data
 const breadcrumbData = [
-  { name: 'Home', url: 'https://trylovit.com/' },
-  { name: 'AI Fashion Platform', url: 'https://trylovit.com/' }
+  { name: 'Lovit', url: 'https://trylovit.com/' },
+  { name: 'Your Online Fitting Room', url: 'https://trylovit.com/#gallery' },
+  { name: 'Personal AI Fashion Studio', url: 'https://trylovit.com/#ai-studio' },
+  { name: 'Try On Any Outfit', url: 'https://trylovit.com/#any-outfit' },
+  { name: 'How It Works', url: 'https://trylovit.com/#how-it-works' },
+  { name: 'Choose Your Plan', url: 'https://trylovit.com/#pricing' },
+  { name: 'What Our Users Say', url: 'https://trylovit.com/#what-our-users-say' }
 ];
 
 // Create video data for demo video
@@ -539,6 +544,7 @@ const HomePage: React.FC = () => {
   const [authTab, setAuthTab] = useState<number>(0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
@@ -556,6 +562,17 @@ const HomePage: React.FC = () => {
       navigate(`#${section}`, { replace: true });
     }
   }, [navigate]);
+
+  // Handle URL hash changes
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location]);
 
   const handleClickOpen = useCallback(async (event?: React.MouseEvent) => {
     if (user) {
@@ -1423,7 +1440,7 @@ const HomePage: React.FC = () => {
           maxWidth: '100%'
         }}>
           {/* Main Value Proposition */}
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
+          <Box id="ai-studio" sx={{ textAlign: 'center', mb: 8 }}>
             <Typography variant="h3" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               Personal AI Fashion Studio
             </Typography>
@@ -1483,7 +1500,7 @@ const HomePage: React.FC = () => {
           }}>
             
             {/* First feature - full width */}
-            <Box sx={{ 
+            <Box id="any-outfit" sx={{ 
               width: { xs: '90%', sm: '85%', md: '80%' }, 
               mb: 8,
               mx: 'auto',
@@ -1589,7 +1606,7 @@ const HomePage: React.FC = () => {
             </Container>
           </Box>
           {/* How It Works */}
-          <Box sx={{ mb: 8, display: 'flex', justifyContent: 'center' }}>
+          <Box id="how-it-works" sx={{ mb: 8, display: 'flex', justifyContent: 'center' }}>
             <Button 
               variant="contained" 
               color="primary" 
@@ -1859,7 +1876,7 @@ const HomePage: React.FC = () => {
           </Box>
           
           {/* Testimonials */}
-          <Box sx={{ mb: 8, mt: 12 }}>
+          <Box id="what-our-users-say" sx={{ mb: 8, mt: 12 }}>
             <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               What Our Users Say
             </Typography>
