@@ -679,9 +679,6 @@ const HomePage: React.FC = () => {
       // Use our Redux action through the useAuth hook and store the result
       const result = await googleLogin(accessToken);
       
-      setIsLoading(false);
-      handleClose();
-      
       // Check if the login was successful
       if (result.type === 'auth/loginWithGoogle/fulfilled') {
         showSnackbar('Signed in with Google successfully!');
@@ -708,7 +705,6 @@ const HomePage: React.FC = () => {
         setError(result.payload || 'Google login failed.');
       }
     } catch (error: any) {
-      setIsLoading(false);
       console.error('Google sign-in error:', error);
       
       // Use authError from useAuth hook if available
@@ -717,6 +713,10 @@ const HomePage: React.FC = () => {
       } else {
         setError(authError || 'Google sign-in failed. Please try again or use email signup.');
       }
+    } finally {
+      // Always reset loading state and close dialog
+      setIsLoading(false);
+      handleClose();
     }
   }, [googleLogin, authError, getGoogleIdToken, resendVerificationEmail, navigate]);
 
@@ -1265,16 +1265,20 @@ const HomePage: React.FC = () => {
                   fullWidth 
                   variant="outlined" 
                   startIcon={
-                    <Box
-                      component="img"
-                      src="/google-color.svg"
-                      alt="Google"
-                      sx={{
-                        width: 18,
-                        height: 18,
-                        marginRight: 1
-                      }}
-                    />
+                    isLoading ? (
+                      <CircularProgress size={18} />
+                    ) : (
+                      <Box
+                        component="img"
+                        src="/google-color.svg"
+                        alt="Google"
+                        sx={{
+                          width: 18,
+                          height: 18,
+                          marginRight: 1
+                        }}
+                      />
+                    )
                   }
                   onClick={handleGoogleSignup}
                   disabled={isLoading}
@@ -1347,16 +1351,20 @@ const HomePage: React.FC = () => {
                   fullWidth 
                   variant="outlined" 
                   startIcon={
-                    <Box
-                      component="img"
-                      src="/google-color.svg"
-                      alt="Google"
-                      sx={{
-                        width: 18,
-                        height: 18,
-                        marginRight: 1
-                      }}
-                    />
+                    isLoading ? (
+                      <CircularProgress size={18} />
+                    ) : (
+                      <Box
+                        component="img"
+                        src="/google-color.svg"
+                        alt="Google"
+                        sx={{
+                          width: 18,
+                          height: 18,
+                          marginRight: 1
+                        }}
+                      />
+                    )
                   }
                   onClick={handleGoogleSignup}
                   disabled={isLoading}
