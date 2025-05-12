@@ -115,7 +115,7 @@ export const fetchGeneratedImages = createAsyncThunk(
       const images = response.data.images || [];
       
       // Filter out generating images from the main images array
-      const completedImages = images.filter((img: any) => img.status !== 'completed');
+      const completedImages = images.filter((img: any) => img.status === 'completed');
       const generatingImages = images.filter((img: any) => img.status === 'processing' || img.status === 'in_progress' || img.status === 'try_on' || img.status === 'queued');
       
       const connectCallback = options?.connectCallback;
