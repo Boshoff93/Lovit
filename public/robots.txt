@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://trylovit.com/sitemap.xml
+Sitemap: https://api.trylovit.com/sitemap.xml
 
 # Disallow admin and API routes
 Disallow: /admin/
