@@ -597,9 +597,10 @@ const HomePage: React.FC = () => {
     setError(null);
   }, [user, isPremiumMember, navigate]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
+    setIsLoading(false);
+  }, []);
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setAuthTab(newValue);
@@ -665,7 +666,7 @@ const HomePage: React.FC = () => {
       // Use authError from useAuth hook if available
       setError(authError || 'Signup failed. Please try again.');
     }
-  }, [signup, authError, email, password, confirmPassword, username]);
+  }, [signup, authError, email, password, confirmPassword, username, handleClose]);
 
   const handleGoogleSignup = useCallback(async () => {
     try {
@@ -718,7 +719,7 @@ const HomePage: React.FC = () => {
       setIsLoading(false);
       handleClose();
     }
-  }, [googleLogin, authError, getGoogleIdToken, resendVerificationEmail, navigate]);
+  }, [googleLogin, authError, getGoogleIdToken, resendVerificationEmail, navigate, handleClose]);
 
   const handleEmailLogin = useCallback(async () => {
     try {
@@ -765,7 +766,7 @@ const HomePage: React.FC = () => {
       // Use authError from useAuth hook if available
       setError(authError || 'Login failed. Please check your credentials.');
     }
-  }, [login, authError, email, password, navigate, resendVerificationEmail]);
+  }, [login, authError, email, password, navigate, resendVerificationEmail, handleClose]);
 
   const handleKeyPressLogin = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !isLoading) {

@@ -33,7 +33,11 @@ export const signInWithGoogle = async (): Promise<string> => {
         scope: 'email profile',
         callback: (response: any) => {
           if (response.error) {
-            reject(response.error);
+            if (response.error === 'popup_closed_by_user') {
+              reject('Google sign-in was cancelled. Please try again.');
+            } else {
+              reject(response.error);
+            }
           } else {
             resolve(response.access_token);
           }
