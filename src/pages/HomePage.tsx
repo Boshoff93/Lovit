@@ -798,7 +798,6 @@ const HomePage: React.FC = () => {
               component="img"
               src="/lovit.png"
               alt="Lovit - AI Fashion Platform Logo"
-              loading="lazy"
               sx={{
                 width: '40px',
                 height: '40px',
@@ -952,7 +951,6 @@ const HomePage: React.FC = () => {
               component="img"
               src="/fashion.png"
               alt="Lovit - #1 AI Fashion App for Virtual Try-On"
-              loading="lazy"
               sx={{
                 width: { xs: '120px', sm: '200px', md: '200px' },
                 height: 'auto',
