@@ -537,6 +537,7 @@ const HomePage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
@@ -600,6 +601,7 @@ const HomePage: React.FC = () => {
   const handleClose = useCallback(() => {
     setOpen(false);
     setIsLoading(false);
+    setIsGoogleLoading(false);
   }, []);
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
@@ -670,7 +672,7 @@ const HomePage: React.FC = () => {
 
   const handleGoogleSignup = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsGoogleLoading(true);
       setError(null);
       
       await reportSignUpSubmitConversion();
@@ -716,7 +718,7 @@ const HomePage: React.FC = () => {
       }
     } finally {
       // Always reset loading state and close dialog
-      setIsLoading(false);
+      setIsGoogleLoading(false);
       handleClose();
     }
   }, [googleLogin, authError, getGoogleIdToken, resendVerificationEmail, navigate, handleClose]);
@@ -1266,7 +1268,7 @@ const HomePage: React.FC = () => {
                   fullWidth 
                   variant="outlined" 
                   startIcon={
-                    isLoading ? (
+                    isGoogleLoading ? (
                       <CircularProgress size={18} />
                     ) : (
                       <Box
@@ -1282,7 +1284,7 @@ const HomePage: React.FC = () => {
                     )
                   }
                   onClick={handleGoogleSignup}
-                  disabled={isLoading}
+                  disabled={isGoogleLoading}
                   sx={{ py: 1.5 }}
                 >
                   Sign in with Google
@@ -1352,7 +1354,7 @@ const HomePage: React.FC = () => {
                   fullWidth 
                   variant="outlined" 
                   startIcon={
-                    isLoading ? (
+                    isGoogleLoading ? (
                       <CircularProgress size={18} />
                     ) : (
                       <Box
@@ -1368,7 +1370,7 @@ const HomePage: React.FC = () => {
                     )
                   }
                   onClick={handleGoogleSignup}
-                  disabled={isLoading}
+                  disabled={isGoogleLoading}
                   sx={{ py: 1.5 }}
                 >
                   Sign in with Google
