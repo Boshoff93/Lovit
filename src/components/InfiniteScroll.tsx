@@ -27,7 +27,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   
   // Adjust speed for different screen sizes
-  const adjustedSpeed = isXs ? speed * 0.4 : isSm ? speed * 0.4 : speed * 1.7;
+  const adjustedSpeed = isXs ? speed * 0.8 : isSm ? speed * 0.4 : speed * 1.7;
   
   // Adjust spacing for different screen sizes
   const adjustedSpacing = isXs ? spacing * -.5 : isSm ? spacing * -.1 : spacing;

@@ -34,16 +34,16 @@ interface BrandShowcaseProps {
 const BrandShowcase: React.FC<BrandShowcaseProps> = ({
   title = "Your Online Fitting Room",
   speed = 20,
-  spacing = 6,
+  spacing = 3,
   itemWidth = { xs: 250, sm: 300, md: 350 },
-  itemHeight = { xs: 100, sm: 120, md: 140 }
+  itemHeight = { xs: 80, sm: 80, md: 80 }
 }) => {
   const theme = useTheme();
 
   return (
     <Box 
       sx={{ 
-        mb: 4,
+        mb: { xs: 4, sm: 4, md: 8 },
         width: '100vw',
         position: 'relative',
         left: '50%',

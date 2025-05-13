@@ -54,6 +54,11 @@ import {
   createVideoStructuredData,
   createArticleStructuredData 
 } from '../utils/seoHelper';
+import Lottie from 'react-lottie';
+import camera from '../assets/animations/camera.json'
+import dress from '../assets/animations/dress.json'
+import piggy from '../assets/animations/piggy.json'
+import social from '../assets/animations/social.json'
 
 const featureItems = [
   {
@@ -1136,7 +1141,6 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.4
               }
             }}>
-
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Box component="span" sx={{ 
                   flexShrink: 0,
@@ -1144,7 +1148,18 @@ const HomePage: React.FC = () => {
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
-                }}>👗</Box>
+                }}>
+                <Lottie options={{
+                  loop: true,
+                  autoplay: true, 
+                  animationData: dress,
+                  rendererSettings: {
+                    preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={100}
+                  width={100}/>  
+                </Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
@@ -1160,7 +1175,16 @@ const HomePage: React.FC = () => {
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
-                }}>✨</Box>
+                }}><Lottie options={{
+                  loop: true,
+                  autoplay: true, 
+                  animationData: camera,
+                  rendererSettings: {
+                    preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={100}
+                  width={100}/>  </Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
@@ -1176,7 +1200,16 @@ const HomePage: React.FC = () => {
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
-                }}>📸</Box>
+                }}><Lottie options={{
+                  loop: true,
+                  autoplay: true, 
+                  animationData: social,
+                  rendererSettings: {
+                    preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={100}
+                  width={100}/>  </Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
@@ -1192,7 +1225,16 @@ const HomePage: React.FC = () => {
                   lineHeight: 1,
                   display: 'flex',
                   alignItems: 'center'
-                }}>💰</Box>
+                }}><Lottie options={{
+                  loop: true,
+                  autoplay: true, 
+                  animationData: piggy,
+                  rendererSettings: {
+                    preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={100}
+                  width={100}/></Box>
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
