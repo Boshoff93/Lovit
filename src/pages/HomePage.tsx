@@ -260,12 +260,14 @@ const breadcrumbData = [
 
 // Create video data for demo video
 const videoData = {
-  name: "Lovit - AI Fashion Platform Demo",
+  name: "Lovit - Your AI Fashion Studio",
   description: "See how Lovit's AI-powered fashion platform helps you try on clothes virtually and create professional photos instantly.",
-  thumbnailUrl: "/lovit.png",
-  uploadDate: "2025-05-11",
+  thumbnailUrl: "https://img.youtube.com/vi/h3DZNpx1JqI/maxresdefault.jpg",
+  uploadDate: "2025-05-12",
   duration: "PT2M30S",
-  url: "https://trylovit.com"
+  url: "https://www.youtube.com/watch?v=h3DZNpx1JqI",
+  embedUrl: "https://www.youtube.com/embed/h3DZNpx1JqI",
+  contentUrl: "https://www.youtube.com/watch?v=h3DZNpx1JqI"
 };
 
 // Create article data for featured content
