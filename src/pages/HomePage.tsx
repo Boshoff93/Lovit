@@ -302,21 +302,24 @@ const GalleryGrid: React.FC = () => {
   const handleImageClick = useCallback((img: GalleryImage, idx: number) => {
     setSelectedImage(img.src);
     const imageName = img.src.replace(/^\/|\.(jpeg|jpg|png)$/g, '');
-    navigate(`#${imageName}`, { replace: true });
+    navigate(`#${imageName}`);
   }, [navigate]);
 
   const handleCloseOverlay = useCallback(() => {
     setSelectedImage(null);
-    navigate('#', { replace: true });
+    navigate('#');
   }, [navigate]);
 
   // Handle URL hash changes
   useEffect(() => {
     const hash = location.hash.replace('#', '');
-    if (hash.startsWith('image')) {
-      const imageIndex = parseInt(hash.replace('image', '')) - 1;
-      if (imageIndex >= 0 && imageIndex < gridImages.length) {
-        setSelectedImage(gridImages[imageIndex].src);
+    if (hash) {
+      const matchingImage = gridImages.find(img => {
+        const imageName = img.src.replace(/^\/|\.(jpeg|jpg|png)$/g, '');
+        return imageName === hash;
+      });
+      if (matchingImage) {
+        setSelectedImage(matchingImage.src);
       }
     } else {
       setSelectedImage(null);
@@ -337,10 +340,11 @@ const GalleryGrid: React.FC = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'repeat(4, 1fr)',
+            xs: 'repeat(3, 1fr)',
             sm: 'repeat(4, 1fr)',
             md: 'repeat(4, 1fr)',
-            lg: 'repeat(6, 1fr)'
+            lg: 'repeat(6, 1fr)',
+            xl: 'repeat(8, 1fr)'
           },
           columnGap: { xs: 2},
           width: '100%',
@@ -351,7 +355,7 @@ const GalleryGrid: React.FC = () => {
       >
         {rows.flat().map((img, idx) => {
           const offset = {
-            xs: idx % 2 === 0 ? -1 : 1,
+            xs: idx % 3 === 1 ? 1 : -1,
             sm: idx % 2 === 0 ? -2 : 2,
             md: idx % 2 === 0 ? -3 : 3
           };
@@ -458,7 +462,7 @@ const GalleryGrid: React.FC = () => {
         >
           {selectedImage && (
             <Box
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleCloseOverlay}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -471,6 +475,7 @@ const GalleryGrid: React.FC = () => {
                 maxHeight: { xs: '100vh', sm: '100vh' },
                 height: 'auto',
                 overflow: 'visible',
+                cursor: 'default',
                 gap: 1
               }}
             >
@@ -1015,7 +1020,61 @@ const HomePage: React.FC = () => {
               Try it, Lovit!
             </Button>
           </Box>
-          </Container>
+          <Typography 
+            sx={{ 
+              mb: 4, 
+              maxWidth: '800px', 
+              mx: 'auto',
+              fontSize: { xs: '1.2rem', md: '1.4rem' },
+              color: theme.palette.secondary.light,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center',
+            }}
+          >
+            Try on 1000s of brands + designers
+          </Typography>
+        </Container>
+              {/* Gallery Preview */}
+        <Container id="gallery" maxWidth="lg" sx={{ mb: 12, position: 'relative', zIndex: 2}}>
+          <BrandShowcase />
+          <GalleryGrid />
+        </Container>
+
+                       {/* Full Width Line Image */}
+      <DecorativeLine 
+        src="/line_primary.png"
+      />
+        <Typography 
+            variant="h3"
+            sx={{ 
+              fontSize: { xs: '2rem', md: '4rem' },
+              mt: 4,
+              mb: 2, 
+              maxWidth: '800px', 
+              mx: 'auto', 
+              color: theme.palette.primary.main,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center',
+            }}
+          >
+            Your Online Fitting Room
+          </Typography>
+          <Typography 
+            sx={{ 
+              mb: 8, 
+              maxWidth: '600px', 
+              mx: 'auto',
+              fontSize: { xs: '1.2rem', md: '1.4rem' },
+              color: theme.palette.primary.main,
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'center',
+            }}
+          >
+            Create your own digital twin and see exactly what you look like in any outfit
+          </Typography>
           <Container maxWidth="xl" sx={{ textAlign: 'left', mb:8 }}>
             <Box sx={{ 
               display: 'flex',
@@ -1068,6 +1127,7 @@ const HomePage: React.FC = () => {
               display: 'flex', 
               flexDirection: 'column', 
               gap: 2,
+              mb: 4,
               width: { xs: '100%', md: '100%' },
               color: theme.palette.secondary.light,
               '& > *': {
@@ -1088,7 +1148,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'secondary.main', md: 'secondary.main' }
+                  color: { xs: 'primary.main', md: 'primary.main' }
                 }}>
                   Try on any wedding dress or outfit before you rent or buy
                 </Typography>
@@ -1104,7 +1164,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'secondary.main', md: 'secondary.main' }
+                  color: { xs: 'primary.main', md: 'primary.main' }
                 }}>
                   Generate ultra-realistic AI headshots and professional photos
                 </Typography>
@@ -1120,7 +1180,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'secondary.main', md: 'secondary.main' }
+                  color: { xs: 'primary.main', md: 'primary.main' }
                 }}>
                   Create stunning content for social media in any style or setting
                 </Typography>
@@ -1136,7 +1196,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'secondary.main', md: 'secondary.main' }
+                  color: { xs: 'primary.main', md: 'primary.main' }
                 }}>
                   Save thousands on professional photoshoots
                 </Typography>
@@ -1146,11 +1206,6 @@ const HomePage: React.FC = () => {
 
         </Container>
       </Box>
-               {/* Full Width Line Image */}
-      <DecorativeLine 
-        src="/line_secondary.png"
-      />
-      
       {/* Auth Dialog */}
       <Dialog 
         open={open} 
@@ -1419,41 +1474,6 @@ const HomePage: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      
-              {/* Gallery Preview */}
-        <Container id="gallery" maxWidth="lg" sx={{ mb: 12, position: 'relative', zIndex: 2, py: { xs: 4, md: 6 } }}>
-          <Typography 
-            variant="h3"
-            sx={{ 
-              fontSize: { xs: '2rem', md: '4rem' },
-              mb: 2, 
-              maxWidth: '800px', 
-              mx: 'auto', 
-              color: theme.palette.primary.main,
-              fontWeight: 700,
-              lineHeight: 1.3,
-              textAlign: 'center',
-            }}
-          >
-            Your Online Fitting Room
-          </Typography>
-          <Typography 
-            sx={{ 
-              mb: 8, 
-              maxWidth: '800px', 
-              mx: 'auto',
-              fontSize: { xs: '1.2rem', md: '1.4rem' },
-              color: theme.palette.primary.main,
-              fontWeight: 700,
-              lineHeight: 1.3,
-              textAlign: 'center',
-            }}
-          >
-            Try on 1000s of brands + designers
-          </Typography>
-          <BrandShowcase />
-          <GalleryGrid />
-        </Container>
         
         <DecorativeLine 
         src="/line_primary_reverse.png"

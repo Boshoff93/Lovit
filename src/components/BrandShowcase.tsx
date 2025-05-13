@@ -43,7 +43,7 @@ const BrandShowcase: React.FC<BrandShowcaseProps> = ({
   return (
     <Box 
       sx={{ 
-        mb: 12,
+        mb: 4,
         width: '100vw',
         position: 'relative',
         left: '50%',
@@ -85,7 +85,7 @@ const BrandShowcase: React.FC<BrandShowcaseProps> = ({
         itemWidth={itemWidth}
         itemHeight={itemHeight}
       />
-      <Box sx={{ mt: 4 }}>
+      <Box>
         <InfiniteScroll 
           items={[...brands].reverse()}
           direction="right"
