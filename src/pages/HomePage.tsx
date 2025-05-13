@@ -1602,22 +1602,96 @@ const HomePage: React.FC = () => {
               overflow: 'hidden',
               p: 2
             }}>
-              <Box 
-                component="img"
-                src={featureItems[2].image}
-                alt={`${featureItems[2].title} - Virtual Try-On Feature`}
+              <Box
                 sx={{
                   width: '100%',
-                  height: 'auto',
-                  maxHeight: { xs: '70vh', sm: '80vh', md: '90vh' },
-                  minHeight: { xs: '100px', sm: '100px', md: '500px' },
-                  objectFit: 'cover',
-                  objectPosition: 'top',
-                  display: 'block',
+                  position: 'relative',
+                  paddingTop: '56.25%', // 16:9 Aspect Ratio
                   borderRadius: { xs: 2, sm: 3, md: 4 },
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                  cursor: 'pointer'
                 }}
-              />
+                onClick={(e) => {
+                  const iframe = e.currentTarget.querySelector('iframe');
+                  const thumbnail = e.currentTarget.querySelector('img');
+                  const playButton = e.currentTarget.querySelector('.play-button');
+                  if (iframe && thumbnail && playButton) {
+                    iframe.style.opacity = '1';
+                    iframe.style.pointerEvents = 'auto';
+                    thumbnail.style.display = 'none';
+                    iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1');
+                  }
+                }}
+              >
+                <Box
+                  component="img"
+                  src={featureItems[2].image}
+                  alt={`${featureItems[2].title} - Virtual Try-On Feature`}
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                    transition: 'opacity 0.3s ease',
+                    '&:hover': {
+                      opacity: 0.9
+                    }
+                  }}
+                />
+                <Box
+                  className="play-button"
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      transform: 'translate(-50%, -50%) scale(1.1)'
+                    }
+                  }}
+                >
+                  <Box
+                    component="span"
+                    sx={{
+                      width: 0,
+                      height: 0,
+                      borderTop: '20px solid transparent',
+                      borderBottom: '20px solid transparent',
+                      borderLeft: '30px solid white',
+                      marginLeft: '5px'
+                    }}
+                  />
+                </Box>
+                <iframe
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    opacity: 0,
+                    pointerEvents: 'none'
+                  }}
+                  src="https://www.youtube.com/embed/h3DZNpx1JqI?autoplay=0&mute=1&loop=1&playlist=h3DZNpx1JqI"
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </Box>
               <Container maxWidth="xl">
                 <Box sx={{ maxWidth: '1200px', mx: 'auto', mt: { xs: 12, sm: 12, md: 12 }, px: { xs: 2, md: 3 } }}>
                   <Typography variant="h3" gutterBottom fontWeight={700} color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
