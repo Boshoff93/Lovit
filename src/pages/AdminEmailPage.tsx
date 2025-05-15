@@ -15,7 +15,8 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { API_BASE_URL } from '../config';
+
+const apiUrl = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
 const AdminEmailPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
@@ -32,7 +33,7 @@ const AdminEmailPage: React.FC = () => {
     try {
       const userIdList = userIds.split(',').map(id => id.trim());
       
-      const response = await fetch(`${API_BASE_URL}/api/send-retargeting-email`, {
+      const response = await fetch(`${apiUrl}/api/send-retargeting-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

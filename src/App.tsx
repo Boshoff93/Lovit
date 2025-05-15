@@ -4,7 +4,6 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { useAuth } from './hooks/useAuth';
-import { API_BASE_URL } from './config';
 
 // Layout
 import Layout from './components/Layout';
@@ -24,6 +23,8 @@ import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
 import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 import AdminEmailPage from './pages/AdminEmailPage';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
