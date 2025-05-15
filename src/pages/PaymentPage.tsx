@@ -58,7 +58,7 @@ interface PricePlan {
     photoCount: string;
     modelCount: string;
     quality: string;
-    likeness: string;
+    resemblance: string;
     parallel: string;
     other?: string[];
   };
@@ -78,8 +78,8 @@ const plans: PricePlan[] = [
     features: {
       photoCount: '100 AI photos',
       modelCount: '1 AI Model',
-      quality: 'Lower quality photos',
-      likeness: 'Low Likeness',
+      quality: 'Standard quality photos',
+      resemblance: 'Standard model resemblance',
       parallel: '1 photo at a time',
       other: ['Photorealistic images']
     },
@@ -97,8 +97,8 @@ const plans: PricePlan[] = [
     features: {
       photoCount: '250 photos',
       modelCount: '2 AI models',
-      quality: 'Medium quality photos',
-      likeness: 'Medium likeness',
+      quality: 'Enhanced quality photos',
+      resemblance: 'Better model resemblance',
       parallel: '2 photos in parallel',
       other: ['Photorealistic models']
     },
@@ -117,8 +117,8 @@ const plans: PricePlan[] = [
     features: {
       photoCount: '1000 AI photos',
       modelCount: '2 AI models',
-      quality: 'High quality photos',
-      likeness: 'High likeness',
+      quality: 'Premium quality photos',
+      resemblance: 'Best model resemblance',
       parallel: '4 photos in parallel',
       other: ['Photorealistic models', 'Priority support']
     },
@@ -563,7 +563,7 @@ const PaymentPage: React.FC = () => {
                       <ListItemIcon sx={{ minWidth: 36 }}>
                         <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
                       </ListItemIcon>
-                      <ListItemText primary={plan.features.likeness} />
+                      <ListItemText primary={plan.features.resemblance} />
                     </ListItem>
                     
                     <ListItem disableGutters>
