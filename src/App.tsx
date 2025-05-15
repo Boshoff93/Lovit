@@ -23,6 +23,7 @@ import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
 import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 import AdminEmailPage from './pages/AdminEmailPage';
+import UnsubscribePage from './pages/UnsubscribePage';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -117,6 +118,9 @@ function App() {
       <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
+        
+        {/* Unsubscribe page */}
+        <Route path="/unsubscribe" element={<UnsubscribePage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={
