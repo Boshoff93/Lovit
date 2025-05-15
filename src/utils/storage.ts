@@ -6,6 +6,11 @@ export interface User {
   email: string;
   isVerified: boolean;
   createdAt?: string;
+  emailPreferences?: {
+    notifications?: boolean;
+    subscribedAt?: string;
+    unsubscribedAt?: string;
+  };
 }
 
 export interface AuthData {

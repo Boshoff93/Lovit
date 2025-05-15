@@ -287,6 +287,34 @@ export const createPortalSession = createAsyncThunk(
   }
 );
 
+// Add thunk for updating email preferences
+export const updateEmailPreferences = createAsyncThunk(
+  'auth/updateEmailPreferences',
+  async ({ notifications }: { notifications: boolean }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState() as { auth: AuthState };
+      
+      if (!auth.token) {
+        return rejectWithValue('No auth token available');
+      }
+      
+      const response = await axios.post(
+        `${API_BASE_URL}/api/user/email-preferences`,
+        { notifications },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to update email preferences');
+    }
+  }
+);
+
 // Auth slice
 const authSlice = createSlice({
   name: 'auth',
@@ -530,6 +558,27 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(createPortalSession.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Update email preferences
+    builder
+      .addCase(updateEmailPreferences.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateEmailPreferences.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (state.user) {
+          state.user.emailPreferences = {
+            ...state.user.emailPreferences,
+            notifications: action.payload.notifications
+          };
+        }
+        state.error = null;
+      })
+      .addCase(updateEmailPreferences.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

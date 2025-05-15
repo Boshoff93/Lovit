@@ -14,7 +14,9 @@ import {
   CardContent,
   LinearProgress,
   Grid,
-  Paper
+  Paper,
+  Switch,
+  FormControlLabel
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession, createCheckoutSession } from '../store/authSlice';
@@ -24,6 +26,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
+import { updateEmailPreferences } from '../store/authSlice';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
@@ -93,6 +96,25 @@ const AccountPage: React.FC = () => {
     if (max === 0) return 0;
     return Math.min((used / max) * 100, 100);
   }, []);
+
+  const handleToggleNotifications = useCallback(async (enabled: boolean) => {
+    try {
+      setError(null);
+      setPortalLoading(true);
+      
+      const resultAction = await dispatch(updateEmailPreferences({ notifications: enabled }));
+      
+      if (updateEmailPreferences.fulfilled.match(resultAction)) {
+        // Successfully updated
+      } else if (updateEmailPreferences.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to update email notifications');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred');
+    } finally {
+      setPortalLoading(false);
+    }
+  }, [dispatch]);
 
   return (
     <Box sx={{ 
@@ -429,6 +451,37 @@ const AccountPage: React.FC = () => {
                     sx: { borderRadius: 2 }
                   }}
                 />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Email Notifications:
+                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={user?.emailPreferences?.notifications ?? false}
+                        onChange={(e) => handleToggleNotifications(e.target.checked)}
+                        disabled={isLoading}
+                        color="primary"
+                      />
+                    }
+                    label={
+                      <Chip 
+                        label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'} 
+                        color={user?.emailPreferences?.notifications ? 'success' : 'default'}
+                        size="small"
+                        sx={{ 
+                          fontWeight: 500,
+                          backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200',
+                          color: user?.emailPreferences?.notifications ? 'black' : 'text.secondary',
+                          '&:hover': {
+                            backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200'
+                          }
+                        }}
+                      />
+                    }
+                    sx={{ m: 0 }}
+                  />
+                </Box>
               </Box>
             </Box>
           </CardContent>
