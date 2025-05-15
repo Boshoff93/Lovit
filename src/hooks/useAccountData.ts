@@ -44,7 +44,8 @@ export const useAccountData = (shouldFetch: boolean = true) => {
          fetchedUser.isVerified !== user?.isVerified ||
          fetchedUser.createdAt !== user?.createdAt ||
          fetchedUser.userId !== user?.userId ||
-         fetchedUser.emailPreferences?.notifications !== user?.emailPreferences?.notifications)) {
+         fetchedUser.emailPreferences?.notifications !== user?.emailPreferences?.notifications ||
+         fetchedUser.isAdmin !== user?.isAdmin)) {
         updateUser(fetchedUser);
       }
       

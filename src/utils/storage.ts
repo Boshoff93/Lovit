@@ -11,6 +11,7 @@ export interface User {
     subscribedAt?: string;
     unsubscribedAt?: string;
   };
+  isAdmin?: boolean;
 }
 
 export interface AuthData {
