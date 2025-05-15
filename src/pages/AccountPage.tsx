@@ -40,6 +40,7 @@ const AccountPage: React.FC = () => {
   }, []);
 
   const [portalLoading, setPortalLoading] = useState(false);
+  const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
 
   const handleManageSubscription = useCallback(async () => {
     try {
@@ -100,7 +101,7 @@ const AccountPage: React.FC = () => {
   const handleToggleNotifications = useCallback(async (enabled: boolean) => {
     try {
       setError(null);
-      setPortalLoading(true);
+      setEmailPreferencesLoading(true);
       
       const resultAction = await dispatch(updateEmailPreferences({ notifications: enabled }));
       
@@ -112,7 +113,7 @@ const AccountPage: React.FC = () => {
     } catch (error: any) {
       setError(error.message || 'An error occurred');
     } finally {
-      setPortalLoading(false);
+      setEmailPreferencesLoading(false);
     }
   }, [dispatch]);
 
@@ -465,19 +466,23 @@ const AccountPage: React.FC = () => {
                       />
                     }
                     label={
-                      <Chip 
-                        label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'} 
-                        color={user?.emailPreferences?.notifications ? 'success' : 'default'}
-                        size="small"
-                        sx={{ 
-                          fontWeight: 500,
-                          backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200',
-                          color: user?.emailPreferences?.notifications ? 'black' : 'text.secondary',
-                          '&:hover': {
-                            backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200'
-                          }
-                        }}
-                      />
+                      emailPreferencesLoading ? (
+                        <CircularProgress size={16} color="inherit" />
+                      ) : (
+                        <Chip 
+                          label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'} 
+                          color={user?.emailPreferences?.notifications ? 'success' : 'default'}
+                          size="small"
+                          sx={{ 
+                            fontWeight: 500,
+                            backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200',
+                            color: user?.emailPreferences?.notifications ? 'black' : 'text.secondary',
+                            '&:hover': {
+                              backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200'
+                            }
+                          }}
+                        />
+                      )
                     }
                     sx={{ m: 0 }}
                   />
