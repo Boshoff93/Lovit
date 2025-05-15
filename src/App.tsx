@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { useAuth } from './hooks/useAuth';
+import { API_BASE_URL } from './config';
 
 // Layout
 import Layout from './components/Layout';
@@ -22,6 +23,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
 import TransformFashionExperience from './pages/blog/transform-fashion-experience';
+import AdminEmailPage from './pages/AdminEmailPage';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -53,12 +55,76 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Route guard to check authentication and admin status
+const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
+  const { token } = useSelector((state: RootState) => state.auth);
+  const location = useLocation();
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const validateAdmin = async () => {
+      if (!token) {
+        setIsAuthorized(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/validate-admin`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.isAdmin) {
+          setIsAuthorized(false);
+          setError(data.error || 'Unauthorized access');
+          return;
+        }
+
+        setIsAuthorized(true);
+      } catch (error) {
+        setIsAuthorized(false);
+        setError('Error validating admin access');
+      }
+    };
+
+    validateAdmin();
+  }, [token]);
+
+  if (isAuthorized === null) {
+    // Still loading
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!isAuthorized) {
+    return <Navigate to="/" state={{ from: location, error }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
+        
+        {/* Admin email management - protected admin route */}
+        <Route path="/admin/email" element={
+          <RequireAdmin>
+            <Layout>
+              <AdminEmailPage />
+            </Layout>
+          </RequireAdmin>
+        } />
         
         {/* Payment page */}
         <Route path="/payment" element={<PaymentPage />} />
