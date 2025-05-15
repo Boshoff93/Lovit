@@ -23,7 +23,6 @@ const AdminEmailPage: React.FC = () => {
   const [userIds, setUserIds] = useState('');
   const [productId, setProductId] = useState('');
   const [priceId, setPriceId] = useState('');
-  const [emailHtml, setEmailHtml] = useState('');
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
@@ -42,8 +41,7 @@ const AdminEmailPage: React.FC = () => {
         body: JSON.stringify({
           userIds: userIdList,
           productId,
-          priceId,
-          emailHtml
+          priceId
         })
       });
 
@@ -63,7 +61,6 @@ const AdminEmailPage: React.FC = () => {
       setUserIds('');
       setProductId('');
       setPriceId('');
-      setEmailHtml('');
     } catch (error) {
       setSnackbar({
         open: true,
@@ -116,18 +113,6 @@ const AdminEmailPage: React.FC = () => {
                 placeholder="e.g., price_xyz123"
               />
             </Box>
-          </Box>
-
-          <Box>
-            <TextField
-              fullWidth
-              label="Email HTML Template"
-              value={emailHtml}
-              onChange={(e) => setEmailHtml(e.target.value)}
-              multiline
-              rows={10}
-              placeholder="Enter email HTML template"
-            />
           </Box>
 
           <Box>
