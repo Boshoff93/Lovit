@@ -76,7 +76,7 @@ const plans: PricePlan[] = [
     monthlyPrice: 19,
     yearlyPrice: 9,
     features: {
-      photoCount: '50 AI photos',
+      photoCount: '100 AI photos',
       modelCount: '1 AI Model',
       quality: 'Lower quality photos',
       likeness: 'Low Likeness',
@@ -95,7 +95,7 @@ const plans: PricePlan[] = [
     monthlyPrice: 49,
     yearlyPrice: 21,
     features: {
-      photoCount: '200 photos',
+      photoCount: '250 photos',
       modelCount: '2 AI models',
       quality: 'Medium quality photos',
       likeness: 'Medium likeness',
@@ -115,8 +115,8 @@ const plans: PricePlan[] = [
     yearlyPrice: 42,
     popular: true,
     features: {
-      photoCount: '500 AI photos',
-      modelCount: '3 AI models',
+      photoCount: '1000 AI photos',
+      modelCount: '2 AI models',
       quality: 'High quality photos',
       likeness: 'High likeness',
       parallel: '4 photos in parallel',
