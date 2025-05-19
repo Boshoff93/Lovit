@@ -111,8 +111,8 @@ const plans: PricePlan[] = [
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 99,
-    yearlyPrice: 42,
+    monthlyPrice: 59.99,
+    yearlyPrice: 44.99,
     popular: true,
     features: {
       photoCount: '1000 AI photos',
