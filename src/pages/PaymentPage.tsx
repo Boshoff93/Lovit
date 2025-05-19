@@ -412,7 +412,7 @@ const PaymentPage: React.FC = () => {
                     }}
                   >
                     Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
-                      (Save up to 57%)
+                      (Save up to 40%)
                     </Box>
                   </Typography>
                 </Box>
