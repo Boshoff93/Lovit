@@ -73,38 +73,38 @@ const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 19,
-    yearlyPrice: 9,
+    monthlyPrice: 14.99,
+    yearlyPrice: 8.99,
     features: {
       photoCount: '100 AI photos',
       modelCount: '1 AI Model',
       quality: 'Standard quality photos',
       resemblance: 'Standard model resemblance',
-      parallel: '1 photo at a time',
+      parallel: '2 photo at a time',
       other: ['Photorealistic images']
     },
     stripePrices: {
-      monthly: 'price_1ROuHkB6HvdZJCd5drapEugb',
-      yearly: 'price_1RGTyrB6HvdZJCd5Ys0PcDHY'
+      monthly: 'price_1RQOjAB6HvdZJCd5zQoxXdLw',
+      yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
     },
     productId: 'prod_SApdzvErjotcRN'
   },
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 49,
-    yearlyPrice: 21,
+    monthlyPrice: 29.99,
+    yearlyPrice: 19.99,
     features: {
       photoCount: '250 photos',
       modelCount: '2 AI models',
       quality: 'Enhanced quality photos',
       resemblance: 'Better model resemblance',
-      parallel: '2 photos in parallel',
+      parallel: '4 photos in parallel',
       other: ['Photorealistic models']
     },
     stripePrices: {
-      monthly: 'price_1ROuEnB6HvdZJCd5kMG0GCXk',
-      yearly: 'price_1RGU0mB6HvdZJCd5PJ7aniDg'
+      monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
+      yearly: 'price_1RQOoXB6HvdZJCd5v8SgG1OB'
     },
     productId: 'prod_SApgUFg3gLoB70'
   },
@@ -116,15 +116,15 @@ const plans: PricePlan[] = [
     popular: true,
     features: {
       photoCount: '1000 AI photos',
-      modelCount: '2 AI models',
-      quality: 'Premium quality photos',
+      modelCount: '2 Premium AI models',
+      quality: 'Exceptional quality photos',
       resemblance: 'Best model resemblance',
-      parallel: '4 photos in parallel',
+      parallel: '8 photos in parallel',
       other: ['Photorealistic models', 'Priority support']
     },
     stripePrices: {
-      monthly: 'price_1ROuGoB6HvdZJCd5BVKUxnLl',
-      yearly: 'price_1RGU2kB6HvdZJCd5PdbCpAMh'
+      monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',
+      yearly: 'price_1RQOrJB6HvdZJCd5hw8d3dsZ'
     },
     productId: 'prod_SAphmL67DhziEI'
   }

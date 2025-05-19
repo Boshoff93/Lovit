@@ -102,9 +102,9 @@ interface UserProfile {
 // Define the maximum number of images per tier
 const TIER_IMAGE_LIMITS = {
   free: 0,
-  starter: 1,
-  pro: 2,
-  premium: 4
+  starter: 2,
+  pro: 4,
+  premium: 8
 };
 
 // Create a context for the Layout functions
@@ -1826,7 +1826,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           step={1}
                           marks
                           min={1}
-                          max={4}
+                          max={8}
                           size="medium"
                           disabled={getMaxImagesForTier() === 0}
                         />
@@ -1931,11 +1931,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           `Generate ${promptData.numberOfImages} Image${promptData.numberOfImages > 1 ? 's' : ''}`}
                       </Button>
 
-                      {getMaxImagesForTier() < 4 && (
+                      {getMaxImagesForTier() < 8 && (
                         <Box sx={{ mt: 1 }}>
                           <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
                             <StarIcon sx={{ fontSize: 16, mr: 1.5, color: 'gold' }} />
-                            Upgrade to Premium to generate up to 4 images at a time
+                            Upgrade to Premium to generate up to 8 images at a time
                           </Typography>
                         </Box>
                       )}
