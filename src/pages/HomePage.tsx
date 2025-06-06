@@ -227,7 +227,7 @@ const plans = [
       quality: 'Medium quality photos',
       likeness: 'Medium likeness',
       parallel: '2 photos in parallel',
-      other: ['Photorealistic models']
+      other: ['Photorealistic images']
     }
   },
   {
@@ -242,7 +242,7 @@ const plans = [
       quality: 'High quality photos',
       likeness: 'High likeness',
       parallel: '4 photos in parallel',
-      other: ['Photorealistic models', 'Priority support']
+      other: ['Photorealistic images', 'Priority support']
     }
   }
 ];
