@@ -100,7 +100,7 @@ const plans: PricePlan[] = [
       quality: 'Enhanced quality photos',
       resemblance: 'Better model resemblance',
       parallel: '4 photos in parallel',
-      other: ['Photorealistic models']
+      other: ['Photorealistic images']
     },
     stripePrices: {
       monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
@@ -120,7 +120,7 @@ const plans: PricePlan[] = [
       quality: 'Exceptional quality photos',
       resemblance: 'Best model resemblance',
       parallel: '8 photos in parallel',
-      other: ['Photorealistic models', 'Priority support']
+      other: ['Photorealistic images', 'Priority support']
     },
     stripePrices: {
       monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',
