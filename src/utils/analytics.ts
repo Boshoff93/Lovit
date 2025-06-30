@@ -49,9 +49,8 @@ const logAnalyticsEvent = (eventName: string, parameters?: Record<string, any>) 
         ...parameters,
         timestamp: new Date().toISOString(),
       });
-      console.log(`Analytics Event: ${eventName}`, parameters);
     } catch (error) {
-      console.warn('Failed to log analytics event:', error);
+
     }
   }
 };
@@ -62,7 +61,7 @@ export const setAnalyticsUserProperties = (properties: Record<string, string>) =
     try {
       setUserProperties(analytics, properties);
     } catch (error) {
-      console.warn('Failed to set user properties:', error);
+
     }
   }
 };

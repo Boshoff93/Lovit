@@ -72,12 +72,12 @@ const featureItems = [
   {
     title: "The Most Advanced AI Photo Studio",
     description: "Say goodbye to AI image generators with distorted faces, poor resemblance, and inconsistent characters. With Lovit, you can instantly create high-quality AI photographs featuring consistent, realistic characters.",
-    image: "/28 Medium.jpeg",
+    image: "/28 Medium.jpg",
   },
   {
     title: "Create Your Own AI Model",
     description: "Upload just 10–20 images of yourself (or an influencer you represent) to create a hyper-realistic AI model. Creating your model takes only 1–2 minutes with premium settings. After that, generate unlimited high-quality photos instantly!",
-    image: "/34 Medium.jpeg",
+    image: "/34 Medium.jpg",
   },
   {
     title: "Try On Any Outfit",
@@ -100,6 +100,66 @@ const testimonials = [
   {
     quote: "I can see exactly how clothes will look on me before renting them. No more surprises or returns!",
     author: "Michael T., Fashion Enthusiast",
+    rating: 4.5
+  },
+  {
+    quote: "Finally found my perfect wedding dress without visiting 20 different boutiques! Lovit made dress shopping so much easier.",
+    author: "Emily R., Bride-to-be",
+    rating: 5
+  },
+  {
+    quote: "As a fashion blogger, I use Lovit to create content for multiple outfits daily. It's a game-changer for my workflow!",
+    author: "Jessica M., Fashion Blogger",
+    rating: 4.5
+  },
+  {
+    quote: "I was skeptical at first, but the AI quality is incredible. The photos look so realistic, my friends thought I hired a professional photographer!",
+    author: "David L., Social Media Manager",
+    rating: 5
+  },
+  {
+    quote: "Lovit helped me build confidence in my style choices. I can experiment with bold looks before committing to buying anything.",
+    author: "Maria S., Teacher",
+    rating: 4
+  },
+  {
+    quote: "Perfect for my modeling portfolio! I can showcase different styles and outfits without expensive photoshoots.",
+    author: "Alex K., Model",
+    rating: 4.5
+  },
+  {
+    quote: "My daughter loves trying on prom dresses virtually. We saved so much time and money finding the perfect one!",
+    author: "Linda M., Parent",
+    rating: 5
+  },
+  {
+    quote: "I use Lovit for my Instagram content. The quality is amazing and I can create posts in minutes instead of hours.",
+    author: "Sophia T., Influencer",
+    rating: 4
+  },
+  {
+    quote: "The AI is so accurate! I can see exactly how formal wear looks on me for business events.",
+    author: "Rachel W., Executive",
+    rating: 4.5
+  },
+  {
+    quote: "As a plus-size woman, finding clothes that fit well is hard. Lovit helps me see what works before I buy!",
+    author: "Natasha B., Fashion Lover",
+    rating: 5
+  },
+  {
+    quote: "I'm a fashion designer and use Lovit to showcase my collections on different body types. It's incredibly useful!",
+    author: "Marcus D., Fashion Designer",
+    rating: 4
+  },
+  {
+    quote: "My teenage daughter can try on trendy outfits safely at home. As a parent, I love the peace of mind!",
+    author: "Jennifer L., Mother",
+    rating: 4.5
+  },
+  {
+    quote: "My modeling agency uses Lovit to create diverse portfolios. It's opened up so many opportunities for our talent!",
+    author: "Victoria E., Talent Agent",
     rating: 5
   },
 ];
@@ -258,12 +318,12 @@ const plans = [
 // Create breadcrumb data
 const breadcrumbData = [
   { name: 'Lovit', url: 'https://trylovit.com/' },
-  { name: 'Your Online Fitting Room', url: 'https://trylovit.com/#gallery' },
+  { name: 'What Our Users Say', url: 'https://trylovit.com/#what-our-users-say' },
   { name: 'Personal AI Fashion Studio', url: 'https://trylovit.com/#ai-studio' },
   { name: 'Try On Any Outfit', url: 'https://trylovit.com/#any-outfit' },
   { name: 'How It Works', url: 'https://trylovit.com/#how-it-works' },
   { name: 'Choose Your Plan', url: 'https://trylovit.com/#pricing' },
-  { name: 'What Our Users Say', url: 'https://trylovit.com/#what-our-users-say' }
+  { name: 'Gallery', url: 'https://trylovit.com/#gallery-showcase' }
 ];
 
 // Create video data for demo video
@@ -883,7 +943,7 @@ const HomePage: React.FC = () => {
             </Button>
             <Button 
               color="inherit" 
-              onClick={useCallback(() => handleSectionClick('gallery'), [handleSectionClick])}
+              onClick={useCallback(() => handleSectionClick('gallery-showcase'), [handleSectionClick])}
               sx={{ fontWeight: 700,  borderRadius: 2, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               Gallery
@@ -907,7 +967,7 @@ const HomePage: React.FC = () => {
         top: 0, 
         left: 0, 
         right: 0, 
-        height: '20%', 
+        height: '32%', 
         background: `linear-gradient(180deg, 
           ${theme.palette.primary.dark}CC,
           ${theme.palette.primary.dark}99,
@@ -1053,40 +1113,21 @@ const HomePage: React.FC = () => {
               Try it, Lovit!
             </Button>
           </Box>
-          <Typography 
-            sx={{ 
-              mb: 4, 
-              maxWidth: '800px', 
-              mx: 'auto',
-              fontSize: { xs: '1.2rem', md: '1.4rem' },
-              color: theme.palette.secondary.light,
-              fontWeight: 700,
-              lineHeight: 1.3,
-              textAlign: 'center',
-            }}
-          >
-            Try on 1000s of brands + designers
-          </Typography>
         </Container>
-              {/* Gallery Preview */}
-        <Container id="gallery" maxWidth="lg" sx={{ mb: 12, position: 'relative', zIndex: 2}}>
+        {/* <Container id="gallery" maxWidth="lg" sx={{ mb: 0, position: 'relative', zIndex: 2}}>
           <BrandShowcase />
-          <GalleryGrid />
-        </Container>
+        </Container> */}
 
-                       {/* Full Width Line Image */}
-      <DecorativeLine 
-        src="/line_primary.png"
-      />
-        <Typography 
+              {/* Gallery Preview */}
+        {/* <Typography 
             variant="h3"
             sx={{ 
               fontSize: { xs: '2rem', md: '4rem' },
-              mt: 4,
+              mt: 0,
               mb: 2, 
               maxWidth: '800px', 
               mx: 'auto', 
-              color: theme.palette.primary.main,
+              color: theme.palette.secondary.dark,
               fontWeight: 700,
               lineHeight: 1.3,
               textAlign: 'center',
@@ -1100,14 +1141,14 @@ const HomePage: React.FC = () => {
               maxWidth: '600px', 
               mx: 'auto',
               fontSize: { xs: '1.2rem', md: '1.4rem' },
-              color: theme.palette.primary.main,
+              color: theme.palette.secondary.light,
               fontWeight: 700,
               lineHeight: 1.3,
               textAlign: 'center',
             }}
           >
             Create your own digital twin and see exactly what you look like in any outfit
-          </Typography>
+          </Typography> */}
           <Container maxWidth="xl" sx={{ textAlign: 'left', mb:8 }}>
             <Box sx={{ 
               display: 'flex',
@@ -1191,7 +1232,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Try on any wedding dress or outfit before you rent or buy
                 </Typography>
@@ -1216,7 +1257,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Generate ultra-realistic AI headshots and professional photos
                 </Typography>
@@ -1241,7 +1282,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Create stunning content for social media in any style or setting
                 </Typography>
@@ -1266,7 +1307,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontWeight: 700, 
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
-                  color: { xs: 'primary.main', md: 'primary.main' }
+                  color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
                   Save thousands on professional photoshoots
                 </Typography>
@@ -1544,9 +1585,206 @@ const HomePage: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      <DecorativeLine 
+        src="/line_secondary.png"
+      />
+      <Container id="testimonials" maxWidth="lg" sx={{ mb: 12, mt: 0 , position: 'relative', zIndex: 2}}>
+          {/* Testimonials */}
+          <Box id="what-our-users-say" sx={{ mb: 8, mt: 4 }}>
+            <Typography variant="h3" gutterBottom textAlign="center" color="secondary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
+              What Our Users Say
+            </Typography>
+            <Divider sx={{ mb: 5, borderColor: theme.palette.secondary.light }} />
+            
+                         {/* Testimonials Carousel - Like BrandShowcase */}
+             <Box 
+               sx={{ 
+                 position: 'relative', 
+                 overflow: 'hidden',
+                 width: '100vw',
+                 left: '50%',
+                 right: '50%',
+                 marginLeft: '-50vw',
+                 marginRight: '-50vw',
+                 '&::before, &::after': {
+                   content: '""',
+                   position: 'absolute',
+                   top: 0,
+                   width: '100px',
+                   height: '100%',
+                   zIndex: 2,
+                   pointerEvents: 'none',
+                 },
+
+               }}
+             >
+               {/* Top Row - Scrolls Left */}
+               <Box sx={{ 
+                 display: 'flex',
+                 gap: 2,
+                 mb: 2,
+                 animation: 'scrollLeft 60s linear infinite',
+                 '&:hover': {
+                   animationPlayState: 'paused'
+                 },
+                 '@keyframes scrollLeft': {
+                   '0%': { transform: 'translateX(0)' },
+                   '100%': { transform: 'translateX(-50%)' }
+                 }
+               }}>
+                 {[...testimonials.slice(0, 7), ...testimonials.slice(0, 7)].map((testimonial, index) => (
+                   <Paper 
+                     key={`top-${index}`}
+                     elevation={1} 
+                     sx={{ 
+                       p: 2, 
+                       minWidth: { xs: '280px', sm: '320px', md: '300px' },
+                       maxWidth: { xs: '280px', sm: '320px', md: '300px' },
+                       borderRadius: 2,
+                       backgroundColor: theme.palette.background.paper,
+                       border: `1px solid ${theme.palette.primary.light}20`,
+                       transition: 'all 0.2s ease-in-out',
+                       flexShrink: 0,
+                       '&:hover': {
+                         transform: 'translateY(-2px)',
+                         boxShadow: '0 4px 12px rgba(43, 45, 66, 0.1)',
+                       }
+                     }}
+                   >
+                     <Box sx={{ display: 'flex', gap: 0.3, mb: 1 }}>
+                       {Array.from({ length: 5 }, (_, i) => {
+                         const fillLevel = Math.min(Math.max(testimonial.rating - i, 0), 1);
+                         return (
+                           <Box key={i} sx={{ position: 'relative', display: 'inline-flex' }}>
+                             <StarIcon 
+                               sx={{ 
+                                 color: '#E0E0E0',
+                                 fontSize: '1rem',
+                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.1))'
+                               }} 
+                             />
+                             <StarIcon 
+                               sx={{ 
+                                 color: '#FFD700',
+                                 fontSize: '1rem',
+                                 position: 'absolute',
+                                 top: 0,
+                                 left: 0,
+                                 clipPath: `inset(0 ${(1 - fillLevel) * 100}% 0 0)`,
+                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
+                               }} 
+                             />
+                           </Box>
+                         );
+                       })}
+                     </Box>
+                     <Typography variant="body2" paragraph fontStyle="italic" sx={{ 
+                       fontSize: '0.875rem',
+                       lineHeight: 1.4,
+                       mb: 1.5,
+                       display: '-webkit-box',
+                       WebkitLineClamp: 3,
+                       WebkitBoxOrient: 'vertical',
+                       overflow: 'hidden'
+                     }}>
+                       "{testimonial.quote}"
+                     </Typography>
+                     <Typography variant="caption" color="text.secondary" sx={{ 
+                       fontSize: '0.75rem',
+                       fontWeight: 600
+                     }}>
+                       {testimonial.author}
+                     </Typography>
+                   </Paper>
+                 ))}
+               </Box>
+
+               {/* Bottom Row - Scrolls Right */}
+               <Box sx={{ 
+                 display: 'flex',
+                 gap: 2,
+                 animation: 'scrollRight 60s linear infinite',
+                 '&:hover': {
+                   animationPlayState: 'paused'
+                 },
+                 '@keyframes scrollRight': {
+                   '0%': { transform: 'translateX(-50%)' },
+                   '100%': { transform: 'translateX(0)' }
+                 }
+               }}>
+                 {[...testimonials.slice(7, 14).reverse(), ...testimonials.slice(7, 14).reverse()].map((testimonial, index) => (
+                   <Paper 
+                     key={`bottom-${index}`}
+                     elevation={1} 
+                     sx={{ 
+                       p: 2, 
+                       minWidth: { xs: '280px', sm: '320px', md: '300px' },
+                       maxWidth: { xs: '280px', sm: '320px', md: '300px' },
+                       borderRadius: 2,
+                       backgroundColor: theme.palette.background.paper,
+                       border: `1px solid ${theme.palette.primary.light}20`,
+                       transition: 'all 0.2s ease-in-out',
+                       flexShrink: 0,
+                       '&:hover': {
+                         transform: 'translateY(-2px)',
+                         boxShadow: '0 4px 12px rgba(43, 45, 66, 0.1)',
+                       }
+                     }}
+                   >
+                     <Box sx={{ display: 'flex', gap: 0.3, mb: 1 }}>
+                       {Array.from({ length: 5 }, (_, i) => {
+                         const fillLevel = Math.min(Math.max(testimonial.rating - i, 0), 1);
+                         return (
+                           <Box key={i} sx={{ position: 'relative', display: 'inline-flex' }}>
+                             <StarIcon 
+                               sx={{ 
+                                 color: '#E0E0E0',
+                                 fontSize: '1rem',
+                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.1))'
+                               }} 
+                             />
+                             <StarIcon 
+                               sx={{ 
+                                 color: '#FFD700',
+                                 fontSize: '1rem',
+                                 position: 'absolute',
+                                 top: 0,
+                                 left: 0,
+                                 clipPath: `inset(0 ${(1 - fillLevel) * 100}% 0 0)`,
+                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
+                               }} 
+                             />
+                           </Box>
+                         );
+                       })}
+                     </Box>
+                     <Typography variant="body2" paragraph fontStyle="italic" sx={{ 
+                       fontSize: '0.875rem',
+                       lineHeight: 1.4,
+                       mb: 1.5,
+                       display: '-webkit-box',
+                       WebkitLineClamp: 3,
+                       WebkitBoxOrient: 'vertical',
+                       overflow: 'hidden'
+                     }}>
+                       "{testimonial.quote}"
+                     </Typography>
+                     <Typography variant="caption" color="text.secondary" sx={{ 
+                       fontSize: '0.75rem',
+                       fontWeight: 600
+                     }}>
+                       {testimonial.author}
+                     </Typography>
+                   </Paper>
+                 ))}
+               </Box>
+             </Box>
+          </Box>
+
+        </Container>
         
         <DecorativeLine 
-        src="/line_primary_reverse.png"
+        src="/line_secondary_reverse.png"
       />
       {/* Main Content */}
       <Box sx={{ 
@@ -1564,7 +1802,7 @@ const HomePage: React.FC = () => {
           {/* Main Value Proposition */}
           <Box id="ai-studio" sx={{ textAlign: 'center', mb: 8 }}>
             <Typography variant="h3" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
-              Personal AI Fashion Studio
+              Your Own Personal AI Fashion Studio
             </Typography>
             <Typography variant="h6" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' }, maxWidth: '800px', mx: 'auto', mb: 4 }}>
               Experience the future of fashion with our revolutionary virtual try-on technology. Upload your photos to create your digital twin, then instantly see how any outfit looks on you. Perfect for wedding dress shopping, exploring new styles, or building your dream wardrobe! All from the comfort of your home.
@@ -1751,7 +1989,7 @@ const HomePage: React.FC = () => {
                   marginBottom: { xs: 3, sm: 4 }
                 }
               }}>
-                {[0, 1, 3].map((index) => (
+                {[0, 3, 1].map((index) => (
                   <Box 
                     key={index}
                     sx={{
@@ -1766,9 +2004,9 @@ const HomePage: React.FC = () => {
                       alt={featureItems[index].title}
                       sx={{
                         width: '100%',
-                        aspectRatio: '3/4',
+                        aspectRatio: '9/16',
                         objectFit: 'cover',
-                        objectPosition: index === 0 ? 'center' : 'top',
+                        objectPosition: index === 1 ? 'center' : 'top',
                         borderRadius: 3,
                         mb: 3,
                         display: 'block',
@@ -1844,6 +2082,11 @@ const HomePage: React.FC = () => {
               Try it, Lovit!
             </Button>
           </Box>
+          </Container>
+          <DecorativeLine 
+            src="/line_primary.png"
+          />
+          <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
           <Box sx={{ mb: 8 }}>
             <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
               How It Works
@@ -1884,6 +2127,11 @@ const HomePage: React.FC = () => {
               </Typography>
             </Box>
           </Box>
+          </Container>
+          <DecorativeLine 
+            src="/line_primary_reverse.png"
+          />
+          <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
           {/* Pricing Section */}
           <Box id="pricing" sx={{ py: 4}}>
             <Container maxWidth="lg">
@@ -2073,55 +2321,33 @@ const HomePage: React.FC = () => {
               </Box>
             </Container>
           </Box>
-          
-          {/* Testimonials */}
-          <Box id="what-our-users-say" sx={{ mb: 8, mt: 12 }}>
-            <Typography variant="h3" gutterBottom textAlign="center" color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
-              What Our Users Say
+          </Container>
+          <DecorativeLine 
+            src="/line_primary.png"
+          />
+          <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
+          <Container id="gallery-showcase" maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
+            <Typography 
+              variant="h1" 
+              component="h1" 
+              sx={{ 
+                mb: 4, 
+                maxWidth: '800px', 
+                mx: 'auto',
+                  fontSize: { xs: '1.6rem', md: '4rem' },
+                color: theme.palette.primary.main,
+                fontWeight: 700,
+                lineHeight: 1.3,
+                textAlign: 'center',
+              }}
+            >
+              Try on 1000s of brands + designers
             </Typography>
-            <Divider sx={{ mb: 5, borderColor: theme.palette.primary.light }} />
-            
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-              {testimonials.map((testimonial, index) => (
-                <Paper 
-                  key={index} 
-                  elevation={2} 
-                  sx={{ 
-                    p: 3, 
-                    flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' },
-                    borderRadius: 3,
-                    backgroundColor: theme.palette.background.paper,
-                    border: `1px solid ${theme.palette.primary.light}20`,
-                    transition: 'all 0.2s ease-in-out',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 16px rgba(43, 45, 66, 0.1)',
-                    }
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 0.5, mb: 2 }}>
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <StarIcon 
-                        key={i} 
-                        sx={{ 
-                          color: '#FFD700', // Gold color
-                          fontSize: { xs: '2rem', md: '2.5rem' }, // Bigger stars
-                          filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' // Add subtle shadow
-                        }} 
-                      />
-                    ))}
-                  </Box>
-                  <Typography variant="body1" paragraph fontStyle="italic" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
-                    "{testimonial.quote}"
-                  </Typography>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
-                    {testimonial.author}
-                  </Typography>
-                </Paper>
-              ))}
-            </Box>
-          </Box>
-
+            <Container maxWidth="lg" sx={{ mb: 0, position: 'relative', zIndex: 2}}>
+            <BrandShowcase />
+          </Container>
+            <GalleryGrid />
+          </Container>
                     
           {/* CTA */}
           <Box 
