@@ -52,7 +52,8 @@ import {
   trackVideoPlay,
   trackSignupFormOpen,
   getFunnelStep,
-  trackCustomerJourneyMilestone
+  trackCustomerJourneyMilestone,
+  trackBillingCycleChanged
 } from '../utils/analytics';
 import { 
   SEO, 
@@ -66,7 +67,6 @@ import camera from '../assets/animations/camera.json'
 import dress from '../assets/animations/dress.json'
 import piggy from '../assets/animations/piggy.json'
 import social from '../assets/animations/social.json'
-import { reportPageViewConversion, reportSignUpButtonClickConversion, reportSignUpSubmitConversion } from '../utils/googleAds';
 
 const featureItems = [
   {
@@ -376,7 +376,6 @@ const GalleryGrid: React.FC = () => {
 
   const handleImageClick = useCallback((img: GalleryImage, idx: number) => {
     trackGalleryImageClick(img.src, idx);
-    getFunnelStep('gallery_image_clicked', { image_index: idx, image_src: img.src });
     setSelectedImage(img.src);
     const imageName = img.src.replace(/^\/|\.(jpeg|jpg|png)$/g, '');
     navigate(`#${imageName}`);
@@ -633,9 +632,7 @@ const HomePage: React.FC = () => {
 
   // Add page view tracking
   useEffect(() => {
-    reportPageViewConversion();
     trackHomePageView();
-    getFunnelStep('home_page_loaded');
   }, []);
 
   const handleSectionClick = useCallback((section: string) => {
@@ -671,9 +668,7 @@ const HomePage: React.FC = () => {
     
     // Track button click with section info
     const clickSection = section || 'unknown';
-    await reportSignUpButtonClickConversion();
     trackSignupButtonClick(clickSection, 'Try it, Lovit!');
-    getFunnelStep('signup_button_clicked', { section: clickSection });
     
     setOpen(true);
     // Reset form state when opening the dialog
@@ -736,7 +731,6 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      await reportSignUpSubmitConversion();
       trackSignupStart('email');
       // Call signup using useAuth hook
       const result = await signup(email, password, username);
@@ -765,7 +759,6 @@ const HomePage: React.FC = () => {
       setIsGoogleLoading(true);
       setError(null);
       
-      await reportSignUpSubmitConversion();
       trackSignupStart('google');
       // Get Google access token using the auth hook utility
       const accessToken = await getGoogleIdToken();
@@ -1883,7 +1876,6 @@ const HomePage: React.FC = () => {
                 }}
                 onClick={(e: any) => {
                   trackVideoPlay('h3DZNpx1JqI', 'Lovit Demo Video');
-                  getFunnelStep('demo_video_played');
                   const iframe = e.currentTarget.querySelector('iframe');
                   const thumbnail = e.currentTarget.querySelector('img');
                   const playButton = e.currentTarget.querySelector('.play-button');
@@ -2150,7 +2142,13 @@ const HomePage: React.FC = () => {
                 <ToggleButtonGroup
                   value={billingCycle}
                   exclusive
-                  onChange={(e: any, value: any) => value && setBillingCycle(value)}
+                  onChange={useCallback((e: any, value: any) => {
+                    if (value) {
+                      setBillingCycle(value);
+                      // Emit analytics event for billing cycle change
+                      trackBillingCycleChanged(value);
+                    }
+                  }, [setBillingCycle])}
                   sx={{
                     '& .MuiToggleButton-root': {
                       textTransform: 'none',
@@ -2202,9 +2200,8 @@ const HomePage: React.FC = () => {
                       }
                     }}
                     onClick={(event: any) => {
-                      trackSignupCardsClick(plan.id);
-                      getFunnelStep('pricing_card_clicked', { plan_id: plan.id });
                       handleClickOpen('pricing_cards');
+                      trackSignupCardsClick(plan.id);
                     }}
                   >
                     {plan.popular && (

@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { initializeApp, setLogLevel } from "firebase/app";
 import { getAnalytics, Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "lovit-c8d66.firebasestorage.app",
   messagingSenderId: "218606485885",
   appId: "1:218606485885:web:463b2d5bdf3f3d30c0cc14",
-  measurementId: "G-S4M0PM3S4W"
+  measurementId: "G-S4M0PM3S4W",
 };
 
 // Initialize Firebase

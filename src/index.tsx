@@ -9,6 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
 import { setupAxiosInterceptors } from './store/authSlice';
 import { WebSocketProvider } from './contexts/WebSocketContext';
+import './utils/firebase';
 
 // Initialize axios interceptors with the Redux store
 setupAxiosInterceptors(store);

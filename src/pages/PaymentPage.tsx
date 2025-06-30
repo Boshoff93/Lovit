@@ -48,7 +48,6 @@ import {
   getFunnelStep,
   trackCustomerJourneyMilestone
 } from '../utils/analytics';
-import { reportSubscribePremiumMonthlyConversion, reportSubscribePremiumYearlyConversion, reportSubscribeProMonthlyConversion, reportSubscribeProYearlyConversion, reportSubscribeStarterMonthlyConversion, reportSubscribeStarterYearlyConversion } from '../utils/googleAds';
 
 interface PricePlan {
   id: string;
@@ -177,7 +176,6 @@ const PaymentPage: React.FC = () => {
   // Fetch subscription data directly on component mount and track page view
   useEffect(() => {
     trackPaymentPageView();
-    getFunnelStep('payment_page_loaded');
     fetchAccountData(true);
   }, [fetchAccountData]);
 
@@ -228,12 +226,6 @@ const PaymentPage: React.FC = () => {
       const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
       const billing_cycle = isYearly ? 'yearly' : 'monthly';
       trackPlanSelected(planId, plan.title, price, billing_cycle);
-      getFunnelStep('plan_selected', { 
-        plan_id: planId, 
-        plan_name: plan.title,
-        price: price,
-        billing_cycle: billing_cycle 
-      });
     }
     setSelectedPlan(planId);
   },[setSelectedPlan, isYearly]);
@@ -251,31 +243,7 @@ const PaymentPage: React.FC = () => {
     
     try {
       setError(null);
-      
-      // Track conversion based on plan and billing cycle
-      switch (plan.id) {
-        case 'starter':
-          if (isYearly) {
-            await reportSubscribeStarterYearlyConversion();
-          } else {
-            await reportSubscribeStarterMonthlyConversion();
-          }
-          break;
-        case 'pro':
-          if (isYearly) {
-            await reportSubscribeProYearlyConversion();
-          } else {
-            await reportSubscribeProMonthlyConversion();
-          }
-          break;
-        case 'premium':
-          if (isYearly) {
-            await reportSubscribePremiumYearlyConversion();
-          } else {
-            await reportSubscribePremiumMonthlyConversion();
-          }
-          break;
-      }
+    
       // Track checkout started
       const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
       const billing_cycle = isYearly ? 'yearly' : 'monthly';
@@ -310,7 +278,6 @@ const PaymentPage: React.FC = () => {
       setIsManagingSubscription(true);
       
       trackSubscriptionManagement();
-      getFunnelStep('subscription_management_clicked');
       
       // Use the Redux action to create a portal session
       const resultAction = await dispatch(createPortalSession());
