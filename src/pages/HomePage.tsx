@@ -1581,20 +1581,19 @@ const HomePage: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <DecorativeLine 
-        src="/line_secondary.png"
-      />
+
       <Container id="testimonials" maxWidth="lg" sx={{ mb: 12, mt: 0 , position: 'relative', zIndex: 2}}>
           {/* Testimonials */}
           <Box id="what-our-users-say" sx={{ mb: 8, mt: 4 }}>
-            <Typography variant="h3" gutterBottom textAlign="center" color="secondary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
+            <Typography variant="h3" gutterBottom textAlign="center" color="secondary.dark" sx={{ fontSize: { xs: '2rem',sm: '2.4rem', md: '2.8rem' }}}>
               What Our Users Say
             </Typography>
-            <Divider sx={{ mb: 5, borderColor: theme.palette.secondary.light }} />
+           
             
                          {/* Testimonials Carousel - Like BrandShowcase */}
              <Box 
                sx={{ 
+                mt: 4,
                  position: 'relative', 
                  overflow: 'hidden',
                  width: '100vw',
@@ -1842,7 +1841,6 @@ const HomePage: React.FC = () => {
               Try it, Lovit!
             </Button>
           </Box>
-
           {/* Features Section */}
           <Box sx={{ 
             width: '100vw',
@@ -2123,10 +2121,33 @@ const HomePage: React.FC = () => {
             </Box>
           </Box>
           </Container>
+          <Container id="gallery-showcase" maxWidth="lg" sx={{ mb: 12, mt: 0 , position: 'relative', zIndex: 2}}>
+            <Typography 
+              variant="h1" 
+              component="h1" 
+              sx={{ 
+                mb: 4, 
+                maxWidth: '800px', 
+                mx: 'auto',
+                  fontSize: { xs: '2rem',sm: '2.4rem', md: '2.8rem' },
+                color: theme.palette.primary.main,
+                fontWeight: 700,
+                lineHeight: 1.3,
+                textAlign: 'center',
+              }}
+            >
+              Try on 1000s of brands + designers
+            </Typography>
+            <Container maxWidth="lg" sx={{ mb: 0, position: 'relative', zIndex: 2}}>
+            <BrandShowcase />
+          </Container>
+            <GalleryGrid />
+          </Container>
+
           <DecorativeLine 
             src="/line_primary_reverse.png"
           />
-          <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
+        <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
           {/* Pricing Section */}
           <Box id="pricing" sx={{ py: 4}}>
             <Container maxWidth="lg">
@@ -2321,33 +2342,10 @@ const HomePage: React.FC = () => {
               </Box>
             </Container>
           </Box>
-          </Container>
-          <DecorativeLine 
-            src="/line_primary.png"
-          />
-          <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
-          <Container id="gallery-showcase" maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
-            <Typography 
-              variant="h1" 
-              component="h1" 
-              sx={{ 
-                mb: 4, 
-                maxWidth: '800px', 
-                mx: 'auto',
-                  fontSize: { xs: '1.6rem', md: '4rem' },
-                color: theme.palette.primary.main,
-                fontWeight: 700,
-                lineHeight: 1.3,
-                textAlign: 'center',
-              }}
-            >
-              Try on 1000s of brands + designers
-            </Typography>
-            <Container maxWidth="lg" sx={{ mb: 0, position: 'relative', zIndex: 2}}>
-            <BrandShowcase />
-          </Container>
-            <GalleryGrid />
-          </Container>
+        </Container>
+ 
+        <Container maxWidth="lg" sx={{ mb: 12, mt: 12 , position: 'relative', zIndex: 2}}>
+          
                     
           {/* CTA */}
           <Box 
@@ -2360,7 +2358,7 @@ const HomePage: React.FC = () => {
               border: `1px solid ${theme.palette.primary.light}30`
             }}
           >
-            <Typography variant="h4" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2rem', md: '4rem' } }}>
+            <Typography variant="h4" gutterBottom color="primary.main" sx={{ fontSize: { xs: '2.0rem', md: '2.4rem', lg: '2.8rem' } }}>
               Ready to transform your shopping experience?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', fontSize: { xs: '1.1rem', md: '1.2rem' } }}>
