@@ -927,6 +927,7 @@ const HomePage: React.FC = () => {
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Button 
+              variant="contained" 
               color="inherit" 
               onClick={useCallback(() => handleSectionClick('pricing'), [handleSectionClick])}
               sx={{ fontWeight: 700,  borderRadius: 2,textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
@@ -934,6 +935,7 @@ const HomePage: React.FC = () => {
               Pricing
             </Button>
             <Button 
+              variant="contained" 
               color="inherit" 
               component={RouterLink} 
               to="/faq"
@@ -942,6 +944,7 @@ const HomePage: React.FC = () => {
               FAQ
             </Button>
             <Button 
+              variant="contained" 
               color="inherit" 
               onClick={useCallback(() => handleSectionClick('gallery-showcase'), [handleSectionClick])}
               sx={{ fontWeight: 700,  borderRadius: 2, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
