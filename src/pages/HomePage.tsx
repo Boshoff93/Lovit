@@ -39,14 +39,21 @@ import StarIcon from '@mui/icons-material/Star';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '@mui/material/styles';
 import DecorativeLine from '../components/DecorativeLine';
-import InfiniteScroll from '../components/InfiniteScroll';
 import BrandShowcase from '../components/BrandShowcase';
 import { 
-  reportSignUpButtonClickConversion,
-  reportSignUpCardsClickConversion,
-  reportSignUpSubmitConversion,
-  reportPageViewConversion
-} from '../utils/googleAds';
+  trackHomePageView,
+  trackSignupButtonClick,
+  trackSignupCardsClick,
+  trackSignupStart,
+  trackSignupSuccess,
+  trackLoginSuccess,
+  trackHeroCTAClick,
+  trackGalleryImageClick,
+  trackVideoPlay,
+  trackSignupFormOpen,
+  getFunnelStep,
+  trackCustomerJourneyMilestone
+} from '../utils/analytics';
 import { 
   SEO, 
   createHomePageStructuredData, 
@@ -59,6 +66,7 @@ import camera from '../assets/animations/camera.json'
 import dress from '../assets/animations/dress.json'
 import piggy from '../assets/animations/piggy.json'
 import social from '../assets/animations/social.json'
+import { reportPageViewConversion, reportSignUpButtonClickConversion, reportSignUpSubmitConversion } from '../utils/googleAds';
 
 const featureItems = [
   {
@@ -307,6 +315,8 @@ const GalleryGrid: React.FC = () => {
   }, []);
 
   const handleImageClick = useCallback((img: GalleryImage, idx: number) => {
+    trackGalleryImageClick(img.src, idx);
+    getFunnelStep('gallery_image_clicked', { image_index: idx, image_src: img.src });
     setSelectedImage(img.src);
     const imageName = img.src.replace(/^\/|\.(jpeg|jpg|png)$/g, '');
     navigate(`#${imageName}`);
@@ -561,9 +571,11 @@ const HomePage: React.FC = () => {
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
 
-  // Add page view conversion tracking
+  // Add page view tracking
   useEffect(() => {
     reportPageViewConversion();
+    trackHomePageView();
+    getFunnelStep('home_page_loaded');
   }, []);
 
   const handleSectionClick = useCallback((section: string) => {
@@ -586,7 +598,7 @@ const HomePage: React.FC = () => {
     }
   }, [location]);
 
-  const handleClickOpen = useCallback(async (event?: React.MouseEvent) => {
+  const handleClickOpen = useCallback(async (section?: string, event?: React.MouseEvent) => {
     if (user) {
       if (isPremiumMember) {
         navigate('/dashboard');
@@ -597,10 +609,12 @@ const HomePage: React.FC = () => {
       }
     }
     
-    // Only track button click if not coming from a card click
-    if (!event?.currentTarget?.closest('.pricing-card')) {
-      await reportSignUpButtonClickConversion();
-    }
+    // Track button click with section info
+    const clickSection = section || 'unknown';
+    await reportSignUpButtonClickConversion();
+    trackSignupButtonClick(clickSection, 'Try it, Lovit!');
+    getFunnelStep('signup_button_clicked', { section: clickSection });
+    
     setOpen(true);
     // Reset form state when opening the dialog
     setEmail('');
@@ -619,6 +633,7 @@ const HomePage: React.FC = () => {
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setAuthTab(newValue);
     setError(null);
+    trackSignupFormOpen(newValue === 0 ? 'login' : 'signup');
   }, []);
 
   const showSnackbar = (message: string) => {
@@ -662,11 +677,14 @@ const HomePage: React.FC = () => {
       }
 
       await reportSignUpSubmitConversion();
+      trackSignupStart('email');
       // Call signup using useAuth hook
       const result = await signup(email, password, username);
       
       // Check if the signup was successful by looking at the fulfilled action
       if (result.type.endsWith('/fulfilled')) {
+        trackSignupSuccess('email', result.payload?.user?.id);
+        trackCustomerJourneyMilestone('signup_completed', { method: 'email' });
         setIsLoading(false);
         handleClose();
         showSnackbar('Account created successfully! Please check your email to verify your account.');
@@ -688,6 +706,7 @@ const HomePage: React.FC = () => {
       setError(null);
       
       await reportSignUpSubmitConversion();
+      trackSignupStart('google');
       // Get Google access token using the auth hook utility
       const accessToken = await getGoogleIdToken();
       
@@ -696,6 +715,8 @@ const HomePage: React.FC = () => {
       
       // Check if the login was successful
       if (result.type === 'auth/loginWithGoogle/fulfilled') {
+        trackSignupSuccess('google', result.payload?.user?.id);
+        trackCustomerJourneyMilestone('signup_completed', { method: 'google' });
         showSnackbar('Signed in with Google successfully!');
         
         // Get user data from the response
@@ -753,6 +774,8 @@ const HomePage: React.FC = () => {
 
       // Check if the login was successful
       if (result.type === 'auth/loginWithEmail/fulfilled') {
+        trackLoginSuccess('email', result.payload?.user?.id);
+        trackCustomerJourneyMilestone('login_completed', { method: 'email' });
         handleClose();
         const userData = result.payload.user;
         
@@ -868,7 +891,7 @@ const HomePage: React.FC = () => {
             <Button 
               variant="contained" 
               color="primary"
-              onClick={handleClickOpen}
+              onClick={useCallback(() => handleClickOpen('header'), [handleClickOpen])}
               sx={{ fontWeight: 700,  borderRadius: 2, textTransform: 'none', fontSize: '1.2rem', display: { xs: 'none', sm: 'inline-flex' } }}
             >
               Try it
@@ -991,7 +1014,10 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary" 
               size="large"
-              onClick={handleClickOpen}
+              onClick={useCallback(() => {
+                trackHeroCTAClick();
+                handleClickOpen('hero');
+              }, [handleClickOpen])}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
                 py: { xs: 1, sm: 2, md: 2 },
@@ -1328,7 +1354,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e: any) => setEmail(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <TextField
@@ -1339,7 +1365,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: any) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPressLogin}
                   sx={{ mb: 3 }}
                 />
@@ -1401,7 +1427,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e: any) => setUsername(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <TextField
@@ -1412,7 +1438,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e: any) => setEmail(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <TextField
@@ -1423,7 +1449,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: any) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPressSignup}
                   sx={{ mb: 3 }}
                 />
@@ -1435,7 +1461,7 @@ const HomePage: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e: any) => setConfirmPassword(e.target.value)}
                   onKeyPress={handleKeyPressSignup}
                   sx={{ mb: 3 }}
                 />
@@ -1547,7 +1573,7 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary" 
               size="large"
-              onClick={handleClickOpen}
+              onClick={useCallback(() => handleClickOpen('ai_studio'), [handleClickOpen])}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
                 py: { xs: 1, sm: 2, md: 2 },
@@ -1614,7 +1640,9 @@ const HomePage: React.FC = () => {
                   boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
                   cursor: 'pointer'
                 }}
-                onClick={(e) => {
+                onClick={(e: any) => {
+                  trackVideoPlay('h3DZNpx1JqI', 'Lovit Demo Video');
+                  getFunnelStep('demo_video_played');
                   const iframe = e.currentTarget.querySelector('iframe');
                   const thumbnail = e.currentTarget.querySelector('img');
                   const playButton = e.currentTarget.querySelector('.play-button');
@@ -1781,7 +1809,7 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary" 
               size="large"
-              onClick={handleClickOpen}
+              onClick={useCallback(() => handleClickOpen('how_it_works'), [handleClickOpen])}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
                 py: { xs: 1, sm: 2, md: 2 },
@@ -1871,7 +1899,7 @@ const HomePage: React.FC = () => {
                 <ToggleButtonGroup
                   value={billingCycle}
                   exclusive
-                  onChange={(e, value) => value && setBillingCycle(value)}
+                  onChange={(e: any, value: any) => value && setBillingCycle(value)}
                   sx={{
                     '& .MuiToggleButton-root': {
                       textTransform: 'none',
@@ -1922,9 +1950,10 @@ const HomePage: React.FC = () => {
                         boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
                       }
                     }}
-                    onClick={async (event) => {
-                      await reportSignUpCardsClickConversion();
-                      handleClickOpen();
+                    onClick={(event: any) => {
+                      trackSignupCardsClick(plan.id);
+                      getFunnelStep('pricing_card_clicked', { plan_id: plan.id });
+                      handleClickOpen('pricing_cards');
                     }}
                   >
                     {plan.popular && (
@@ -2026,9 +2055,9 @@ const HomePage: React.FC = () => {
                         fullWidth 
                         variant={plan.popular ? "contained" : "outlined"}
                         color="primary"
-                        onClick={(e) => {
+                        onClick={(e: any) => {
                           e.stopPropagation();
-                          handleClickOpen();
+                          handleClickOpen('pricing_plan_button');
                         }}
                         sx={{ 
                           mt: 3,
@@ -2115,7 +2144,7 @@ const HomePage: React.FC = () => {
               variant="contained" 
               color="primary" 
               size="large"
-              onClick={handleClickOpen}
+              onClick={() => handleClickOpen('final_cta')}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
                 py: { xs: 1, sm: 2, md: 2 },

@@ -39,14 +39,16 @@ import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAuth } from '../hooks/useAuth';
-import { 
-  reportSubscribeStarterMonthlyConversion,
-  reportSubscribeStarterYearlyConversion,
-  reportSubscribeProMonthlyConversion,
-  reportSubscribeProYearlyConversion,
-  reportSubscribePremiumMonthlyConversion,
-  reportSubscribePremiumYearlyConversion
-} from '../utils/googleAds';
+import {
+  trackPaymentPageView,
+  trackPlanSelected,
+  trackBillingCycleChanged,
+  trackCheckoutStarted,
+  trackSubscriptionManagement,
+  getFunnelStep,
+  trackCustomerJourneyMilestone
+} from '../utils/analytics';
+import { reportSubscribePremiumMonthlyConversion, reportSubscribePremiumYearlyConversion, reportSubscribeProMonthlyConversion, reportSubscribeProYearlyConversion, reportSubscribeStarterMonthlyConversion, reportSubscribeStarterYearlyConversion } from '../utils/googleAds';
 
 interface PricePlan {
   id: string;
@@ -172,10 +174,12 @@ const PaymentPage: React.FC = () => {
     }
   }, [subscription]);
   
-  // Fetch subscription data directly on component mount
+  // Fetch subscription data directly on component mount and track page view
   useEffect(() => {
+    trackPaymentPageView();
+    getFunnelStep('payment_page_loaded');
     fetchAccountData(true);
-  }, []);
+  }, [fetchAccountData]);
 
   // Check for success query param (for Stripe redirect)
   useEffect(() => {
@@ -213,12 +217,26 @@ const PaymentPage: React.FC = () => {
   }, [selectedPlan, isMobile]);
 
   const handleToggleInterval = useCallback(() => {
+    const newCycle = !isYearly ? 'yearly' : 'monthly';
+    trackBillingCycleChanged(newCycle, selectedPlan || undefined);
     setIsYearly(!isYearly);
-  },[setIsYearly, isYearly]);
+  },[setIsYearly, isYearly, selectedPlan]);
 
   const handleSelectPlan = useCallback((planId: string) => {
+    const plan = plans.find(p => p.id === planId);
+    if (plan) {
+      const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+      const billing_cycle = isYearly ? 'yearly' : 'monthly';
+      trackPlanSelected(planId, plan.title, price, billing_cycle);
+      getFunnelStep('plan_selected', { 
+        plan_id: planId, 
+        plan_name: plan.title,
+        price: price,
+        billing_cycle: billing_cycle 
+      });
+    }
     setSelectedPlan(planId);
-  },[setSelectedPlan]);
+  },[setSelectedPlan, isYearly]);
 
   const handleProceedToPayment = useCallback(async () => {
     if (!selectedPlan) return;
@@ -258,6 +276,17 @@ const PaymentPage: React.FC = () => {
           }
           break;
       }
+      // Track checkout started
+      const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+      const billing_cycle = isYearly ? 'yearly' : 'monthly';
+      
+      trackCheckoutStarted(plan.id, plan.title, price, billing_cycle);
+      trackCustomerJourneyMilestone('checkout_started', {
+        plan_id: plan.id,
+        plan_name: plan.title,
+        price: price,
+        billing_cycle: billing_cycle
+      });
       
       // Use the Redux action to create a checkout session
       const resultAction = await dispatch(createCheckoutSession({ priceId, productId }));
@@ -279,6 +308,9 @@ const PaymentPage: React.FC = () => {
     try {
       setError(null);
       setIsManagingSubscription(true);
+      
+      trackSubscriptionManagement();
+      getFunnelStep('subscription_management_clicked');
       
       // Use the Redux action to create a portal session
       const resultAction = await dispatch(createPortalSession());
