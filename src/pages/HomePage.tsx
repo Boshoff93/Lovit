@@ -273,8 +273,8 @@ const plans = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 19,
-    yearlyPrice: 9,
+    monthlyPrice: 14.99,
+    yearlyPrice: 8.99,
     features: {
       photoCount: '100 AI photos',
       modelCount: '1 AI Model',
@@ -287,8 +287,8 @@ const plans = [
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 49,
-    yearlyPrice: 21,
+    monthlyPrice: 29.99,
+    yearlyPrice: 19.99,
     features: {
       photoCount: '250 photos',
       modelCount: '2 AI models',
@@ -301,8 +301,8 @@ const plans = [
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 99,
-    yearlyPrice: 42,
+    monthlyPrice: 59.99,
+    yearlyPrice: 44.99,
     popular: true,
     features: {
       photoCount: '1000 AI photos',
