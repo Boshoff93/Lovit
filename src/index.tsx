@@ -7,12 +7,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
-import { setupAxiosInterceptors } from './store/authSlice';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import './utils/firebase';
 
-// Initialize axios interceptors with the Redux store
-setupAxiosInterceptors(store);
+// Initialize the app
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 
 const theme = createTheme({
   palette: {
@@ -393,26 +394,17 @@ const theme = createTheme({
   },
 });
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+root.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <WebSocketProvider>
+            <App />
+          </WebSocketProvider>
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
+  </React.StrictMode>
 );
-
-// The React 19 update requires ensuring hooks are called only in component functions
-const AppRoot = () => {
-  return (
-    <React.StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider theme={theme}>
-            <WebSocketProvider>
-              <CssBaseline />
-              <App />
-            </WebSocketProvider>
-          </ThemeProvider>
-        </PersistGate>
-      </Provider>
-    </React.StrictMode>
-  );
-};
-
-root.render(<AppRoot />);

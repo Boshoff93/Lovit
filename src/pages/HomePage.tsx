@@ -29,13 +29,17 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '@mui/material/styles';
 import DecorativeLine from '../components/DecorativeLine';
@@ -67,6 +71,7 @@ import camera from '../assets/animations/camera.json'
 import dress from '../assets/animations/dress.json'
 import piggy from '../assets/animations/piggy.json'
 import social from '../assets/animations/social.json'
+import { getRouteConfig, getDefaultRouteConfig, routeConfigs } from '../config/routeConfig';
 
 const featureItems = [
   {
@@ -91,77 +96,51 @@ const featureItems = [
   },
 ];
 
-const testimonials = [
+const faqItems = [
   {
-    quote: "Lovit saved us thousands on professional photoshoots for our online store. Our conversion rates are up 23%!",
-    author: "Sarah J., Shopify Store Owner",
-    rating: 5
+    question: "What is Lovit?",
+    answer: "Lovit is an AI-powered virtual try-on platform that allows you to create realistic AI models of yourself and try on any outfit virtually. You can generate professional-quality photos in any setting, perfect for fashion shopping, social media content, or professional headshots."
   },
   {
-    quote: "I can see exactly how clothes will look on me before renting them. No more surprises or returns!",
-    author: "Michael T., Fashion Enthusiast",
-    rating: 4.5
+    question: "How does Lovit work?",
+    answer: "Simply upload 10-20 photos of yourself (or anyone else), and our AI will create a hyper-realistic model. Once your model is ready, you can upload any outfit you want to try on, and our AI will generate realistic photos of you wearing those clothes in any setting you choose."
   },
   {
-    quote: "Finally found my perfect wedding dress without visiting 20 different boutiques! Lovit made dress shopping so much easier.",
-    author: "Emily R., Bride-to-be",
-    rating: 5
+    question: "How many photos do I need to create my AI model?",
+    answer: "We recommend uploading 10-20 photos for the best results. The photos should be clear, well-lit, and show different angles of your face. The more variety in your photos, the better your AI model will be."
   },
   {
-    quote: "As a fashion blogger, I use Lovit to create content for multiple outfits daily. It's a game-changer for my workflow!",
-    author: "Jessica M., Fashion Blogger",
-    rating: 4.5
+    question: "Can I try on any outfit?",
+    answer: "Yes! You can try on any outfit by uploading a photo of the clothing item. This works for everything from wedding dresses to casual wear, and you can see exactly how it looks on you before making a purchase."
   },
   {
-    quote: "I was skeptical at first, but the AI quality is incredible. The photos look so realistic, my friends thought I hired a professional photographer!",
-    author: "David L., Social Media Manager",
-    rating: 5
+    question: "How long does it take to create my AI model?",
+    answer: "Creating your AI model takes only 1-2 minutes with premium settings. After that, you can generate unlimited high-quality photos instantly!"
   },
   {
-    quote: "Lovit helped me build confidence in my style choices. I can experiment with bold looks before committing to buying anything.",
-    author: "Maria S., Teacher",
-    rating: 4
+    question: "What's the difference between the plans?",
+    answer: "We offer three plans: Starter, Pro, and Premium. The main differences are in the number of AI photos you can generate, the number of AI models you can create, the quality of the photos, and the number of parallel generations you can run. Check our pricing page for detailed comparisons."
   },
   {
-    quote: "Perfect for my modeling portfolio! I can showcase different styles and outfits without expensive photoshoots.",
-    author: "Alex K., Model",
-    rating: 4.5
+    question: "Can I download the generated images?",
+    answer: "Yes! All generated images can be downloaded in high resolution. Once downloaded, you have full rights to use them for personal or commercial purposes."
   },
   {
-    quote: "My daughter loves trying on prom dresses virtually. We saved so much time and money finding the perfect one!",
-    author: "Linda M., Parent",
-    rating: 5
+    question: "Can I share my generated images on social media?",
+    answer: "Absolutely! You can share your generated images on any social media platform. The images are yours to use and share as you wish."
   },
   {
-    quote: "I use Lovit for my Instagram content. The quality is amazing and I can create posts in minutes instead of hours.",
-    author: "Sophia T., Influencer",
-    rating: 4
+    question: "What are the licensing terms for the generated images?",
+    answer: "Once you download an image, it's free to use for both personal and commercial purposes. You own the rights to the generated images and can use them however you like."
   },
   {
-    quote: "The AI is so accurate! I can see exactly how formal wear looks on me for business events.",
-    author: "Rachel W., Executive",
-    rating: 4.5
+    question: "What should I do if I get a missing token error?",
+    answer: "If you encounter a missing token error, try logging out of your account and logging back in. If the issue persists, please contact our support team at admin@trylovit.com for assistance."
   },
   {
-    quote: "As a plus-size woman, finding clothes that fit well is hard. Lovit helps me see what works before I buy!",
-    author: "Natasha B., Fashion Lover",
-    rating: 5
-  },
-  {
-    quote: "I'm a fashion designer and use Lovit to showcase my collections on different body types. It's incredibly useful!",
-    author: "Marcus D., Fashion Designer",
-    rating: 4
-  },
-  {
-    quote: "My teenage daughter can try on trendy outfits safely at home. As a parent, I love the peace of mind!",
-    author: "Jennifer L., Mother",
-    rating: 4.5
-  },
-  {
-    quote: "My modeling agency uses Lovit to create diverse portfolios. It's opened up so many opportunities for our talent!",
-    author: "Victoria E., Talent Agent",
-    rating: 5
-  },
+    question: "How can I get more help or support?",
+    answer: "For any additional questions or support, please email us at admin@trylovit.com. Our team is here to help you get the most out of your Lovit experience."
+  }
 ];
 
 interface GalleryImage {
@@ -630,6 +609,9 @@ const HomePage: React.FC = () => {
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   const theme = useTheme();
 
+  // Get route configuration based on current path
+  const routeConfig = getRouteConfig(location.pathname) || getDefaultRouteConfig();
+
   // Add page view tracking
   useEffect(() => {
     trackHomePageView();
@@ -880,15 +862,15 @@ const HomePage: React.FC = () => {
       width: '100%'
     }}>
       <SEO
-        title="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
-        description="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform. Perfect for wedding dress shopping, social media content, and professional headshots."
-        keywords="AI fashion, virtual try-on, AI model creation, fashion technology, virtual fitting room, wedding dress try-on, professional photos, AI headshots, fashion AI, virtual wardrobe, digital fashion, AI photography"
-        ogTitle="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
-        ogDescription="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform."
+        title={routeConfig.title}
+        description={routeConfig.description}
+        keywords={routeConfig.keywords.join(', ')}
+        ogTitle={routeConfig.title}
+        ogDescription={routeConfig.description}
         ogType="website"
-        ogUrl="https://trylovit.com"
-        twitterTitle="Lovit - AI Fashion Platform | Virtual Try-On & Professional Photos"
-        twitterDescription="Create your AI model and try on any outfit virtually. Generate professional photos instantly with Lovit's AI-powered fashion platform."
+        ogUrl={`https://trylovit.com${location.pathname}`}
+        twitterTitle={routeConfig.title}
+        twitterDescription={routeConfig.description}
         structuredData={[
           createHomePageStructuredData(featureItems),
           createBreadcrumbStructuredData(breadcrumbData),
@@ -987,7 +969,8 @@ const HomePage: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        mb: 8
       }}>
         <Container maxWidth="xl" sx={{ 
           textAlign: 'left',
@@ -1036,7 +1019,7 @@ const HomePage: React.FC = () => {
             variant="h5" 
             sx={{ 
               fontSize: { xs: '1.3rem', md: '2rem' },
-              mb: 4, 
+              mb: 2, 
               maxWidth: '800px', 
               mx: 'auto', 
               color: theme.palette.secondary.light,
@@ -1045,7 +1028,22 @@ const HomePage: React.FC = () => {
               textAlign: 'center'
             }}
           >
-            Professional Photographer + Virtual Try-on Studio in Your Pocket
+            {routeConfig.hook}
+          </Typography>
+
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontSize: { xs: '1rem', md: '1.2rem' },
+              mb: 2, 
+              maxWidth: '800px', 
+              mx: 'auto', 
+              color: theme.palette.secondary.light,
+              lineHeight: 1.3,
+              textAlign: 'center'
+            }}
+          >
+            {routeConfig.description}
           </Typography>
 
           <Box sx={{ 
@@ -1230,7 +1228,7 @@ const HomePage: React.FC = () => {
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
-                  Try on any wedding dress or outfit before you rent or buy
+                  {routeConfig.features.tryOn}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -1255,7 +1253,7 @@ const HomePage: React.FC = () => {
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
-                  Generate ultra-realistic AI headshots and professional photos
+                  {routeConfig.features.headshots}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -1280,7 +1278,7 @@ const HomePage: React.FC = () => {
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
-                  Create stunning content for social media in any style or setting
+                  {routeConfig.features.socialMedia}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -1305,7 +1303,7 @@ const HomePage: React.FC = () => {
                   fontSize: { xs: '1.2rem',sm: '1.4rem', md: '1.8rem' },
                   color: { xs: 'secondary.main', md: 'secondary.main' }
                 }}>
-                  Save thousands on professional photoshoots
+                  {routeConfig.features.savings}
                 </Typography>
               </Box>
             </Box>
@@ -1574,209 +1572,13 @@ const HomePage: React.FC = () => {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{
-          mt: 7
+          mt: 7,
         }}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
           {snackbarMessage}
         </Alert>
       </Snackbar>
-
-      <Container id="testimonials" maxWidth="lg" sx={{ mb: 12, mt: 0 , position: 'relative', zIndex: 2}}>
-          {/* Testimonials */}
-          <Box id="what-our-users-say" sx={{ mb: 8, mt: 4 }}>
-            <Typography variant="h3" gutterBottom textAlign="center" color="secondary.dark" sx={{ fontSize: { xs: '2rem',sm: '2.4rem', md: '2.8rem' }}}>
-              What Our Users Say
-            </Typography>
-           
-            
-                         {/* Testimonials Carousel - Like BrandShowcase */}
-             <Box 
-               sx={{ 
-                mt: 4,
-                 position: 'relative', 
-                 overflow: 'hidden',
-                 width: '100vw',
-                 left: '50%',
-                 right: '50%',
-                 marginLeft: '-50vw',
-                 marginRight: '-50vw',
-                 '&::before, &::after': {
-                   content: '""',
-                   position: 'absolute',
-                   top: 0,
-                   width: '100px',
-                   height: '100%',
-                   zIndex: 2,
-                   pointerEvents: 'none',
-                 },
-
-               }}
-             >
-               {/* Top Row - Scrolls Left */}
-               <Box sx={{ 
-                 display: 'flex',
-                 gap: 2,
-                 mb: 2,
-                 animation: 'scrollLeft 60s linear infinite',
-                 '&:hover': {
-                   animationPlayState: 'paused'
-                 },
-                 '@keyframes scrollLeft': {
-                   '0%': { transform: 'translateX(0)' },
-                   '100%': { transform: 'translateX(-50%)' }
-                 }
-               }}>
-                 {[...testimonials.slice(0, 7), ...testimonials.slice(0, 7)].map((testimonial, index) => (
-                   <Paper 
-                     key={`top-${index}`}
-                     elevation={1} 
-                     sx={{ 
-                       p: 2, 
-                       minWidth: { xs: '280px', sm: '320px', md: '300px' },
-                       maxWidth: { xs: '280px', sm: '320px', md: '300px' },
-                       borderRadius: 2,
-                       backgroundColor: theme.palette.background.paper,
-                       border: `1px solid ${theme.palette.primary.light}20`,
-                       transition: 'all 0.2s ease-in-out',
-                       flexShrink: 0,
-                       '&:hover': {
-                         transform: 'translateY(-2px)',
-                         boxShadow: '0 4px 12px rgba(43, 45, 66, 0.1)',
-                       }
-                     }}
-                   >
-                     <Box sx={{ display: 'flex', gap: 0.3, mb: 1 }}>
-                       {Array.from({ length: 5 }, (_, i) => {
-                         const fillLevel = Math.min(Math.max(testimonial.rating - i, 0), 1);
-                         return (
-                           <Box key={i} sx={{ position: 'relative', display: 'inline-flex' }}>
-                             <StarIcon 
-                               sx={{ 
-                                 color: '#E0E0E0',
-                                 fontSize: '1rem',
-                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.1))'
-                               }} 
-                             />
-                             <StarIcon 
-                               sx={{ 
-                                 color: '#FFD700',
-                                 fontSize: '1rem',
-                                 position: 'absolute',
-                                 top: 0,
-                                 left: 0,
-                                 clipPath: `inset(0 ${(1 - fillLevel) * 100}% 0 0)`,
-                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
-                               }} 
-                             />
-                           </Box>
-                         );
-                       })}
-                     </Box>
-                     <Typography variant="body2" paragraph fontStyle="italic" sx={{ 
-                       fontSize: '0.875rem',
-                       lineHeight: 1.4,
-                       mb: 1.5,
-                       display: '-webkit-box',
-                       WebkitLineClamp: 3,
-                       WebkitBoxOrient: 'vertical',
-                       overflow: 'hidden'
-                     }}>
-                       "{testimonial.quote}"
-                     </Typography>
-                     <Typography variant="caption" color="text.secondary" sx={{ 
-                       fontSize: '0.75rem',
-                       fontWeight: 600
-                     }}>
-                       {testimonial.author}
-                     </Typography>
-                   </Paper>
-                 ))}
-               </Box>
-
-               {/* Bottom Row - Scrolls Right */}
-               <Box sx={{ 
-                 display: 'flex',
-                 gap: 2,
-                 animation: 'scrollRight 60s linear infinite',
-                 '&:hover': {
-                   animationPlayState: 'paused'
-                 },
-                 '@keyframes scrollRight': {
-                   '0%': { transform: 'translateX(-50%)' },
-                   '100%': { transform: 'translateX(0)' }
-                 }
-               }}>
-                 {[...testimonials.slice(7, 14).reverse(), ...testimonials.slice(7, 14).reverse()].map((testimonial, index) => (
-                   <Paper 
-                     key={`bottom-${index}`}
-                     elevation={1} 
-                     sx={{ 
-                       p: 2, 
-                       minWidth: { xs: '280px', sm: '320px', md: '300px' },
-                       maxWidth: { xs: '280px', sm: '320px', md: '300px' },
-                       borderRadius: 2,
-                       backgroundColor: theme.palette.background.paper,
-                       border: `1px solid ${theme.palette.primary.light}20`,
-                       transition: 'all 0.2s ease-in-out',
-                       flexShrink: 0,
-                       '&:hover': {
-                         transform: 'translateY(-2px)',
-                         boxShadow: '0 4px 12px rgba(43, 45, 66, 0.1)',
-                       }
-                     }}
-                   >
-                     <Box sx={{ display: 'flex', gap: 0.3, mb: 1 }}>
-                       {Array.from({ length: 5 }, (_, i) => {
-                         const fillLevel = Math.min(Math.max(testimonial.rating - i, 0), 1);
-                         return (
-                           <Box key={i} sx={{ position: 'relative', display: 'inline-flex' }}>
-                             <StarIcon 
-                               sx={{ 
-                                 color: '#E0E0E0',
-                                 fontSize: '1rem',
-                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.1))'
-                               }} 
-                             />
-                             <StarIcon 
-                               sx={{ 
-                                 color: '#FFD700',
-                                 fontSize: '1rem',
-                                 position: 'absolute',
-                                 top: 0,
-                                 left: 0,
-                                 clipPath: `inset(0 ${(1 - fillLevel) * 100}% 0 0)`,
-                                 filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
-                               }} 
-                             />
-                           </Box>
-                         );
-                       })}
-                     </Box>
-                     <Typography variant="body2" paragraph fontStyle="italic" sx={{ 
-                       fontSize: '0.875rem',
-                       lineHeight: 1.4,
-                       mb: 1.5,
-                       display: '-webkit-box',
-                       WebkitLineClamp: 3,
-                       WebkitBoxOrient: 'vertical',
-                       overflow: 'hidden'
-                     }}>
-                       "{testimonial.quote}"
-                     </Typography>
-                     <Typography variant="caption" color="text.secondary" sx={{ 
-                       fontSize: '0.75rem',
-                       fontWeight: 600
-                     }}>
-                       {testimonial.author}
-                     </Typography>
-                   </Paper>
-                 ))}
-               </Box>
-             </Box>
-          </Box>
-
-        </Container>
         
         <DecorativeLine 
         src="/line_secondary_reverse.png"
@@ -2408,6 +2210,93 @@ const HomePage: React.FC = () => {
           </Box>
         </Container>
       </Box>
+
+      {/* FAQ and Niche Route Simple Lists */}
+      <Container maxWidth="lg" sx={{ mb: 8, mt: 2, position: 'relative', zIndex: 2 }}>
+        {/* FAQ List - visually identical to FAQPage */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, color: 'text.secondary', letterSpacing: 1 }}>
+            Frequently Asked Questions
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {faqItems.map((item, index) => (
+              <Paper
+                key={index}
+                elevation={0}
+                sx={{
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                  bgcolor: 'background.paper',
+                  p: 0,
+                  mb: 0,
+                  transition: 'box-shadow 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
+                  },
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  minHeight: 56,
+                }}
+                onClick={() => window.location.href = `/faq/${item.question.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
+              >
+                <Box sx={{ flex: 1, px: 3, py: 2, fontWeight: 600, color: 'text.primary', fontSize: { xs: '1rem', md: '1.1rem' } }}>
+                  {item.question}
+                </Box>
+                <ArrowForwardIcon sx={{ color: 'text.secondary', mr: 2 }} />
+              </Paper>
+            ))}
+          </Box>
+        </Box>
+        {/* Niche Routes List - columns of basic text links */}
+        <Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: 'text.secondary', letterSpacing: 1 }}>
+            Explore More
+          </Typography>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
+              gap: 0.5,
+              pl: 1,
+            }}
+          >
+            {routeConfigs.slice(1).map((route, index) => (
+              <Box
+                key={index}
+                component="button"
+                onClick={() => {
+                  navigate(route.path);
+                  window.scrollTo(0, 0);
+                }}
+                sx={{
+                  display: 'block',
+                  fontSize: { xs: '0.8rem', md: '0.8rem' },
+                  fontWeight: 500,
+                  py: 1,
+                  px: 0,
+                  width: '100%',
+                  textAlign: 'left',
+                  transition: 'color 0.2s',
+                  color: 'text.primary',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: 'primary.main',
+                    textDecoration: 'underline',
+                  },
+                  '&:focus': {
+                    outline: 'none',
+                  },
+                }}
+              >
+                {route.title.split('|')[0].trim()}
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Container>
       
       {/* Footer */}
       <Box 

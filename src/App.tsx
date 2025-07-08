@@ -21,6 +21,7 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
+import FAQQuestionPage from './pages/FAQQuestionPage';
 import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 import AdminEmailPage from './pages/AdminEmailPage';
 import UnsubscribePage from './pages/UnsubscribePage';
@@ -119,6 +120,37 @@ function App() {
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
         
+        {/* Dynamic fashion routes */}
+        <Route path="/try-on-fashion-for-plus-size-figures" element={<HomePage />} />
+        <Route path="/bachelorette-party-outfits" element={<HomePage />} />
+        <Route path="/wedding-dress-virtual-try-on" element={<HomePage />} />
+        <Route path="/weekend-going-out-outfits" element={<HomePage />} />
+        <Route path="/shopping-outfit-ideas" element={<HomePage />} />
+        <Route path="/halloween-costume-virtual-try-on" element={<HomePage />} />
+        <Route path="/formal-event-outfits" element={<HomePage />} />
+        <Route path="/christmas-party-outfits" element={<HomePage />} />
+        <Route path="/summer-fashion-try-on" element={<HomePage />} />
+        <Route path="/winter-fashion-virtual-try-on" element={<HomePage />} />
+        <Route path="/fall-fashion-try-on" element={<HomePage />} />
+        <Route path="/spring-fashion-virtual-try-on" element={<HomePage />} />
+        <Route path="/fashion-trends-virtual-try-on" element={<HomePage />} />
+        <Route path="/social-media-fashion-content" element={<HomePage />} />
+        <Route path="/professional-headshots-virtual-try-on" element={<HomePage />} />
+        <Route path="/streetwear-virtual-try-on" element={<HomePage />} />
+        <Route path="/cute-dresses-virtual-try-on" element={<HomePage />} />
+        <Route path="/budget-shopping-virtual-try-on" element={<HomePage />} />
+        <Route path="/future-of-online-shopping" element={<HomePage />} />
+        <Route path="/workout-clothes-virtual-try-on" element={<HomePage />} />
+        <Route path="/business-casual-virtual-try-on" element={<HomePage />} />
+        <Route path="/date-night-outfits" element={<HomePage />} />
+        <Route path="/travel-outfits-virtual-try-on" element={<HomePage />} />
+        <Route path="/beach-vacation-outfits" element={<HomePage />} />
+        <Route path="/cozy-loungewear-virtual-try-on" element={<HomePage />} />
+        <Route path="/instagram-fashion-content" element={<HomePage />} />
+        <Route path="/facebook-fashion-content" element={<HomePage />} />
+        <Route path="/tiktok-fashion-content" element={<HomePage />} />
+        <Route path="/youtube-fashion-content" element={<HomePage />} />
+        
         {/* Unsubscribe page */}
         <Route path="/unsubscribe" element={<UnsubscribePage />} />
         
@@ -175,6 +207,7 @@ function App() {
           </RequireAuth>
         } />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/faq/:question" element={<FAQQuestionPage />} />
 
         {/* Blog routes */}
         <Route path="/blog/transform-fashion-experience" element={<TransformFashionExperience />} />

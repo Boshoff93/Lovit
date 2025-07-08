@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { User, storeAuthData, getToken, clearAuthData } from '../utils/storage';
+import { User, storeAuthData, getToken, clearAuthData, storeToken } from '../utils/storage';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -185,9 +185,9 @@ export const refreshToken = createAsyncThunk(
         token: currentToken
       });
       
-      // Store the new token
+      // Store the new token in cookie
       if (response.data.token) {
-        storeAuthData(response.data);
+        storeToken(response.data.token);
       }
       
       return response.data;
@@ -598,32 +598,4 @@ export const {
   addTopupToAllowance
 } = authSlice.actions;
 
-export default authSlice.reducer;
-
-// Setup axios interceptors to handle token refresh
-export const setupAxiosInterceptors = (appStore: any) => {
-  axios.interceptors.response.use(
-    response => response,
-    async error => {
-      const originalRequest = error.config;
-      
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        
-        try {
-          const state = appStore.getState();
-          const currentToken = state.auth.token;
-          
-          if (currentToken) {
-            await appStore.dispatch(refreshToken(currentToken));
-            return axios(originalRequest);
-          }
-        } catch (refreshError) {
-          return Promise.reject(refreshError);
-        }
-      }
-      
-      return Promise.reject(error);
-    }
-  );
-}; 
+export default authSlice.reducer; 

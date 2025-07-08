@@ -27,6 +27,11 @@ export const storeAuthData = (data: AuthData): void => {
   // User data is now handled by redux-persist, no need to manually store in localStorage
 };
 
+// Store just the token (for refresh scenarios)
+export const storeToken = (token: string): void => {
+  document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Strict; Secure`;
+};
+
 // Get token from cookies
 export const getToken = (): string | null => {
   const match = document.cookie.match(/token=([^;]+)/);
