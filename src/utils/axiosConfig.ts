@@ -10,6 +10,22 @@ const api = axios.create({
   withCredentials: true // Enable sending cookies across domains
 });
 
+// Track if we're currently refreshing the token to prevent multiple refresh calls
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: Function; reject: Function }> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   (config) => {
@@ -39,8 +55,21 @@ api.interceptors.response.use(
     
     // If the error is 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If we're already refreshing, queue this request
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        }).catch(err => {
+          return Promise.reject(err);
+        });
+      }
+
       originalRequest._retry = true;
-      
+      isRefreshing = true;
+
       try {
         const state = store.getState();
         const currentToken = state.auth.token;
@@ -53,17 +82,32 @@ api.interceptors.response.use(
             // Get the new token from the store
             const newToken = store.getState().auth.token;
             
+            // Process any queued requests
+            processQueue(null, newToken);
+            
             // Update the original request with the new token
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             
             // Retry the original request
             return api(originalRequest);
+          } else {
+            // Refresh failed
+            processQueue(new Error('Token refresh failed'));
+            store.dispatch(logout());
+            return Promise.reject(error);
           }
+        } else {
+          processQueue(new Error('No token available'));
+          store.dispatch(logout());
+          return Promise.reject(error);
         }
       } catch (refreshError) {
         // If token refresh fails, dispatch logout action
+        processQueue(refreshError);
         store.dispatch(logout());
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
     

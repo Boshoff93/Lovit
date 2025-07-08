@@ -1,25 +1,6 @@
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { store } from '../store/store';
 import { createAuthenticatedRequest } from '../store/authSlice';
-
-// Create axios instance with base URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add request interceptor to include auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 // User and authentication API
 export const authApi = {
