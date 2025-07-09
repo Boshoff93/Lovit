@@ -151,6 +151,53 @@ function App() {
         <Route path="/tiktok-fashion-content" element={<HomePage />} />
         <Route path="/youtube-fashion-content" element={<HomePage />} />
         
+        {/* Popular Brand Routes */}
+        <Route path="/adidas-virtual-try-on" element={<HomePage />} />
+        <Route path="/nike-virtual-try-on" element={<HomePage />} />
+        <Route path="/gucci-virtual-try-on" element={<HomePage />} />
+        <Route path="/prada-virtual-try-on" element={<HomePage />} />
+        <Route path="/skims-virtual-try-on" element={<HomePage />} />
+        <Route path="/alice-olivia-virtual-try-on" element={<HomePage />} />
+        <Route path="/vuori-virtual-try-on" element={<HomePage />} />
+        <Route path="/lululemon-virtual-try-on" element={<HomePage />} />
+        <Route path="/louis-vuitton-virtual-try-on" element={<HomePage />} />
+        <Route path="/chanel-virtual-try-on" element={<HomePage />} />
+        <Route path="/hermes-virtual-try-on" element={<HomePage />} />
+        <Route path="/balenciaga-virtual-try-on" element={<HomePage />} />
+        <Route path="/yves-saint-laurent-virtual-try-on" element={<HomePage />} />
+        <Route path="/dior-virtual-try-on" element={<HomePage />} />
+        <Route path="/fendi-virtual-try-on" element={<HomePage />} />
+        <Route path="/bottega-veneta-virtual-try-on" element={<HomePage />} />
+        <Route path="/saint-laurent-virtual-try-on" element={<HomePage />} />
+        <Route path="/givenchy-virtual-try-on" element={<HomePage />} />
+        <Route path="/valentino-virtual-try-on" element={<HomePage />} />
+        <Route path="/versace-virtual-try-on" element={<HomePage />} />
+        <Route path="/dolce-gabbana-virtual-try-on" element={<HomePage />} />
+        <Route path="/michael-kors-virtual-try-on" element={<HomePage />} />
+        <Route path="/kate-spade-virtual-try-on" element={<HomePage />} />
+        <Route path="/coach-virtual-try-on" element={<HomePage />} />
+        <Route path="/tory-burch-virtual-try-on" element={<HomePage />} />
+        <Route path="/reformation-virtual-try-on" element={<HomePage />} />
+        <Route path="/anthropologie-virtual-try-on" element={<HomePage />} />
+        <Route path="/free-people-virtual-try-on" element={<HomePage />} />
+        <Route path="/urban-outfitters-virtual-try-on" element={<HomePage />} />
+        <Route path="/madewell-virtual-try-on" element={<HomePage />} />
+        <Route path="/levis-virtual-try-on" element={<HomePage />} />
+        <Route path="/good-american-virtual-try-on" element={<HomePage />} />
+        <Route path="/citizens-of-humanity-virtual-try-on" element={<HomePage />} />
+        <Route path="/farm-rio-virtual-try-on" element={<HomePage />} />
+        <Route path="/eloquii-virtual-try-on" element={<HomePage />} />
+        <Route path="/favoritedaughter-virtual-try-on" element={<HomePage />} />
+        <Route path="/rollas-virtual-try-on" element={<HomePage />} />
+        <Route path="/selkie-virtual-try-on" element={<HomePage />} />
+        <Route path="/agolde-virtual-try-on" element={<HomePage />} />
+        <Route path="/astr-the-label-virtual-try-on" element={<HomePage />} />
+        
+        {/* Rental Website Routes */}
+        <Route path="/rent-the-runway-virtual-try-on" element={<HomePage />} />
+        <Route path="/fashion-pass-virtual-try-on" element={<HomePage />} />
+        <Route path="/nuuly-virtual-try-on" element={<HomePage />} />
+        
         {/* Unsubscribe page */}
         <Route path="/unsubscribe" element={<UnsubscribePage />} />
         

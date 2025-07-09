@@ -433,6 +433,610 @@ export const routeConfigs: RouteConfig[] = [
       socialMedia: 'Create professional YouTube content for your channel',
       savings: 'Save thousands on professional YouTube content production'
     }
+  },
+  // Popular Brand Routes
+  {
+    path: '/adidas-virtual-try-on',
+    title: 'Adidas Virtual Try-On | Lovit',
+    hook: 'Sportswear Excellence with Virtual Try-On',
+    description: 'Try on Adidas sportswear and athletic wear virtually. See how Adidas clothing looks on you before making your purchase with AI-powered virtual try-on technology.',
+    keywords: ['adidas', 'sportswear', 'athletic wear', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Experience Adidas sportswear and athletic clothing virtually',
+      headshots: 'Capture dynamic athletic photos in Adidas sportswear',
+      socialMedia: 'Build your sporty brand with Adidas fashion content',
+      savings: 'Avoid costly returns by testing Adidas styles first'
+    }
+  },
+  {
+    path: '/nike-virtual-try-on',
+    title: 'Nike Virtual Try-On | Lovit',
+    hook: 'Just Do It with Virtual Try-On Technology',
+    description: 'Experience Nike sportswear with AI-powered virtual try-on. See how Nike clothing and athletic wear looks on your body type before purchasing.',
+    keywords: ['nike', 'sportswear', 'athletic wear', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Visualize Nike sportswear and athletic clothing on your body',
+      headshots: 'Showcase your athletic prowess in Nike sportswear',
+      socialMedia: 'Elevate your fitness content with Nike fashion',
+      savings: 'Make confident purchases by previewing Nike styles'
+    }
+  },
+  {
+    path: '/gucci-virtual-try-on',
+    title: 'Gucci Virtual Try-On | Lovit',
+    hook: 'Luxury Fashion with AI Technology',
+    description: 'Experience Gucci luxury fashion with virtual try-on. See how Gucci clothing and accessories look on you before making your luxury purchase.',
+    keywords: ['gucci', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Explore Gucci luxury clothing and accessories on your frame',
+      headshots: 'Portray sophistication in Gucci luxury fashion',
+      socialMedia: 'Cultivate your luxury aesthetic with Gucci style',
+      savings: 'Make confident luxury purchases by previewing Gucci pieces first'
+    }
+  },
+  {
+    path: '/prada-virtual-try-on',
+    title: 'Prada Virtual Try-On | Lovit',
+    hook: 'Sophisticated Luxury with Virtual Try-On',
+    description: 'Try on Prada luxury fashion virtually. See how Prada clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['prada', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Discover how Prada luxury clothing fits your silhouette',
+      headshots: 'Exhibit refined elegance in Prada fashion',
+      socialMedia: 'Develop your sophisticated brand with Prada style',
+      savings: 'Choose luxury pieces confidently by testing Prada first'
+    }
+  },
+  {
+    path: '/skims-virtual-try-on',
+    title: 'Skims Virtual Try-On | Lovit',
+    hook: 'Shapewear and Loungewear with Virtual Try-On',
+    description: 'Try on Skims shapewear and loungewear virtually. See how Skims clothing fits your body type with AI-powered virtual try-on technology.',
+    keywords: ['skims', 'shapewear', 'loungewear', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'See how Skims shapewear and loungewear enhances your figure',
+      headshots: 'Highlight your best features in Skims clothing',
+      socialMedia: 'Share your comfort journey with Skims style',
+      savings: 'Eliminate guesswork by previewing Skims fits'
+    }
+  },
+  {
+    path: '/alice-olivia-virtual-try-on',
+    title: 'Alice + Olivia Virtual Try-On | Lovit',
+    hook: 'Feminine Fashion with Virtual Try-On',
+    description: 'Try on Alice + Olivia feminine fashion virtually. See how Alice + Olivia clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['alice olivia', 'feminine fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Alice + Olivia feminine clothing virtually',
+      headshots: 'Generate feminine photos in Alice + Olivia fashion',
+      socialMedia: 'Create elegant content with Alice + Olivia style',
+      savings: 'Save money by trying on Alice + Olivia clothes before buying'
+    }
+  },
+  {
+    path: '/vuori-virtual-try-on',
+    title: 'Vuori Virtual Try-On | Lovit',
+    hook: 'Performance Apparel with Virtual Try-On',
+    description: 'Try on Vuori performance apparel virtually. See how Vuori activewear fits your body type with AI-powered virtual try-on technology.',
+    keywords: ['vuori', 'performance apparel', 'activewear', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Vuori performance apparel and activewear virtually',
+      headshots: 'Generate athletic photos in Vuori clothing',
+      socialMedia: 'Create active content with Vuori style',
+      savings: 'Save money by trying on Vuori clothes before buying'
+    }
+  },
+  {
+    path: '/lululemon-virtual-try-on',
+    title: 'Lululemon Virtual Try-On | Lovit',
+    hook: 'Athleisure Excellence with Virtual Try-On',
+    description: 'Try on Lululemon athleisure and activewear virtually. See how Lululemon clothing fits your body type with AI-powered virtual try-on technology.',
+    keywords: ['lululemon', 'athleisure', 'activewear', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Test Lululemon athleisure and activewear on your body',
+      headshots: 'Demonstrate your fitness journey in Lululemon clothing',
+      socialMedia: 'Inspire others with your Lululemon lifestyle',
+      savings: 'Choose the perfect fit by testing Lululemon first'
+    }
+  },
+  {
+    path: '/louis-vuitton-virtual-try-on',
+    title: 'Louis Vuitton Virtual Try-On | Lovit',
+    hook: 'Luxury Fashion with Virtual Try-On',
+    description: 'Try on Louis Vuitton luxury fashion virtually. See how Louis Vuitton clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['louis vuitton', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Preview Louis Vuitton luxury clothing on your frame',
+      headshots: 'Embody luxury sophistication in Louis Vuitton fashion',
+      socialMedia: 'Establish your luxury presence with Louis Vuitton style',
+      savings: 'Ensure perfect luxury fits by testing Louis Vuitton first'
+    }
+  },
+  {
+    path: '/chanel-virtual-try-on',
+    title: 'Chanel Virtual Try-On | Lovit',
+    hook: 'Timeless Elegance with Virtual Try-On',
+    description: 'Try on Chanel luxury fashion virtually. See how Chanel clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['chanel', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Experience Chanel luxury clothing on your silhouette',
+      headshots: 'Radiate timeless elegance in Chanel fashion',
+      socialMedia: 'Craft your legacy with Chanel style content',
+      savings: 'Shop luxury confidently by previewing Chanel pieces'
+    }
+  },
+  {
+    path: '/hermes-virtual-try-on',
+    title: 'Hermès Virtual Try-On | Lovit',
+    hook: 'Ultimate Luxury with Virtual Try-On',
+    description: 'Try on Hermès luxury fashion virtually. See how Hermès clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['hermes', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Visualize Hermès luxury clothing on your frame',
+      headshots: 'Personify ultimate luxury in Hermès fashion',
+      socialMedia: 'Define your luxury identity with Hermès style',
+      savings: 'Shop luxury wisely by testing Hermès first'
+    }
+  },
+  {
+    path: '/balenciaga-virtual-try-on',
+    title: 'Balenciaga Virtual Try-On | Lovit',
+    hook: 'Avant-Garde Fashion with Virtual Try-On',
+    description: 'Try on Balenciaga avant-garde fashion virtually. See how Balenciaga clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['balenciaga', 'avant-garde fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Balenciaga avant-garde clothing virtually',
+      headshots: 'Generate edgy photos in Balenciaga fashion',
+      socialMedia: 'Create bold content with Balenciaga style',
+      savings: 'Save money by trying on Balenciaga clothes before buying'
+    }
+  },
+  {
+    path: '/yves-saint-laurent-virtual-try-on',
+    title: 'Yves Saint Laurent Virtual Try-On | Lovit',
+    hook: 'Sophisticated Elegance with Virtual Try-On',
+    description: 'Try on Yves Saint Laurent luxury fashion virtually. See how YSL clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['yves saint laurent', 'ysl', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Yves Saint Laurent luxury clothing and accessories virtually',
+      headshots: 'Generate sophisticated photos in YSL fashion',
+      socialMedia: 'Create elegant content with YSL style',
+      savings: 'Save money by trying on YSL clothes before buying'
+    }
+  },
+  {
+    path: '/dior-virtual-try-on',
+    title: 'Dior Virtual Try-On | Lovit',
+    hook: 'Parisian Elegance with Virtual Try-On',
+    description: 'Try on Dior luxury fashion virtually. See how Dior clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['dior', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Discover Dior luxury clothing on your silhouette',
+      headshots: 'Channel Parisian elegance in Dior fashion',
+      socialMedia: 'Build your sophisticated brand with Dior style',
+      savings: 'Ensure perfect fit by previewing Dior pieces'
+    }
+  },
+  {
+    path: '/fendi-virtual-try-on',
+    title: 'Fendi Virtual Try-On | Lovit',
+    hook: 'Italian Luxury with Virtual Try-On',
+    description: 'Try on Fendi luxury fashion virtually. See how Fendi clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['fendi', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Fendi luxury clothing and accessories virtually',
+      headshots: 'Generate luxury photos in Fendi fashion',
+      socialMedia: 'Create high-end content with Fendi style',
+      savings: 'Save money by trying on Fendi clothes before buying'
+    }
+  },
+  {
+    path: '/bottega-veneta-virtual-try-on',
+    title: 'Bottega Veneta Virtual Try-On | Lovit',
+    hook: 'Quiet Luxury with Virtual Try-On',
+    description: 'Try on Bottega Veneta luxury fashion virtually. See how Bottega Veneta clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['bottega veneta', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Bottega Veneta luxury clothing and accessories virtually',
+      headshots: 'Generate sophisticated photos in Bottega Veneta fashion',
+      socialMedia: 'Create elegant content with Bottega Veneta style',
+      savings: 'Save money by trying on Bottega Veneta clothes before buying'
+    }
+  },
+  {
+    path: '/saint-laurent-virtual-try-on',
+    title: 'Saint Laurent Virtual Try-On | Lovit',
+    hook: 'Parisian Chic with Virtual Try-On',
+    description: 'Try on Saint Laurent luxury fashion virtually. See how Saint Laurent clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['saint laurent', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Saint Laurent luxury clothing and accessories virtually',
+      headshots: 'Generate chic photos in Saint Laurent fashion',
+      socialMedia: 'Create sophisticated content with Saint Laurent style',
+      savings: 'Save money by trying on Saint Laurent clothes before buying'
+    }
+  },
+  {
+    path: '/givenchy-virtual-try-on',
+    title: 'Givenchy Virtual Try-On | Lovit',
+    hook: 'French Elegance with Virtual Try-On',
+    description: 'Try on Givenchy luxury fashion virtually. See how Givenchy clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['givenchy', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Givenchy luxury clothing and accessories virtually',
+      headshots: 'Generate elegant photos in Givenchy fashion',
+      socialMedia: 'Create sophisticated content with Givenchy style',
+      savings: 'Save money by trying on Givenchy clothes before buying'
+    }
+  },
+  {
+    path: '/valentino-virtual-try-on',
+    title: 'Valentino Virtual Try-On | Lovit',
+    hook: 'Italian Romance with Virtual Try-On',
+    description: 'Try on Valentino luxury fashion virtually. See how Valentino clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['valentino', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Valentino luxury clothing and accessories virtually',
+      headshots: 'Generate romantic photos in Valentino fashion',
+      socialMedia: 'Create elegant content with Valentino style',
+      savings: 'Save money by trying on Valentino clothes before buying'
+    }
+  },
+  {
+    path: '/versace-virtual-try-on',
+    title: 'Versace Virtual Try-On | Lovit',
+    hook: 'Bold Italian Style with Virtual Try-On',
+    description: 'Try on Versace luxury fashion virtually. See how Versace clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['versace', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Versace luxury clothing and accessories virtually',
+      headshots: 'Generate bold photos in Versace fashion',
+      socialMedia: 'Create dramatic content with Versace style',
+      savings: 'Save money by trying on Versace clothes before buying'
+    }
+  },
+  {
+    path: '/dolce-gabbana-virtual-try-on',
+    title: 'Dolce & Gabbana Virtual Try-On | Lovit',
+    hook: 'Sicilian Glamour with Virtual Try-On',
+    description: 'Try on Dolce & Gabbana luxury fashion virtually. See how Dolce & Gabbana clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['dolce gabbana', 'luxury fashion', 'designer clothes', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Dolce & Gabbana luxury clothing and accessories virtually',
+      headshots: 'Generate glamorous photos in Dolce & Gabbana fashion',
+      socialMedia: 'Create bold content with Dolce & Gabbana style',
+      savings: 'Save money by trying on Dolce & Gabbana clothes before buying'
+    }
+  },
+  {
+    path: '/michael-kors-virtual-try-on',
+    title: 'Michael Kors Virtual Try-On | Lovit',
+    hook: 'Jet Set Style with Virtual Try-On',
+    description: 'Try on Michael Kors fashion virtually. See how Michael Kors clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['michael kors', 'designer fashion', 'accessible luxury', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Michael Kors clothing and accessories virtually',
+      headshots: 'Generate sophisticated photos in Michael Kors fashion',
+      socialMedia: 'Create elegant content with Michael Kors style',
+      savings: 'Save money by trying on Michael Kors clothes before buying'
+    }
+  },
+  {
+    path: '/kate-spade-virtual-try-on',
+    title: 'Kate Spade Virtual Try-On | Lovit',
+    hook: 'Playful Elegance with Virtual Try-On',
+    description: 'Try on Kate Spade fashion virtually. See how Kate Spade clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['kate spade', 'designer fashion', 'playful style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Kate Spade clothing and accessories virtually',
+      headshots: 'Generate playful photos in Kate Spade fashion',
+      socialMedia: 'Create cheerful content with Kate Spade style',
+      savings: 'Save money by trying on Kate Spade clothes before buying'
+    }
+  },
+  {
+    path: '/coach-virtual-try-on',
+    title: 'Coach Virtual Try-On | Lovit',
+    hook: 'American Heritage with Virtual Try-On',
+    description: 'Try on Coach fashion virtually. See how Coach clothing and accessories look on you with AI-powered virtual try-on technology.',
+    keywords: ['coach', 'designer fashion', 'american heritage', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Coach clothing and accessories virtually',
+      headshots: 'Generate classic photos in Coach fashion',
+      socialMedia: 'Create timeless content with Coach style',
+      savings: 'Save money by trying on Coach clothes before buying'
+    }
+  },
+  {
+    path: '/tory-burch-virtual-try-on',
+    title: 'Tory Burch Virtual Try-On | Lovit',
+    hook: 'Preppy Chic with Virtual Try-On',
+    description: 'Try on Tory Burch fashion virtually. See how Tory Burch clothing and accessories complement your style with AI-powered virtual try-on technology.',
+    keywords: ['tory burch', 'designer fashion', 'preppy style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Tory Burch clothing and accessories virtually',
+      headshots: 'Generate preppy photos in Tory Burch fashion',
+      socialMedia: 'Create sophisticated content with Tory Burch style',
+      savings: 'Save money by trying on Tory Burch clothes before buying'
+    }
+  },
+  {
+    path: '/reformation-virtual-try-on',
+    title: 'Reformation Virtual Try-On | Lovit',
+    hook: 'Sustainable Fashion with Virtual Try-On',
+    description: 'Try on Reformation sustainable fashion virtually. See how Reformation clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['reformation', 'sustainable fashion', 'eco-friendly', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Reformation sustainable clothing virtually',
+      headshots: 'Generate eco-friendly photos in Reformation fashion',
+      socialMedia: 'Create sustainable content with Reformation style',
+      savings: 'Save money by trying on Reformation clothes before buying'
+    }
+  },
+  {
+    path: '/anthropologie-virtual-try-on',
+    title: 'Anthropologie Virtual Try-On | Lovit',
+    hook: 'Bohemian Chic with Virtual Try-On',
+    description: 'Try on Anthropologie bohemian fashion virtually. See how Anthropologie clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['anthropologie', 'bohemian fashion', 'boho chic', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Anthropologie bohemian clothing virtually',
+      headshots: 'Generate boho photos in Anthropologie fashion',
+      socialMedia: 'Create bohemian content with Anthropologie style',
+      savings: 'Save money by trying on Anthropologie clothes before buying'
+    }
+  },
+  {
+    path: '/free-people-virtual-try-on',
+    title: 'Free People Virtual Try-On | Lovit',
+    hook: 'Free-Spirited Fashion with Virtual Try-On',
+    description: 'Try on Free People bohemian fashion virtually. See how Free People clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['free people', 'bohemian fashion', 'free-spirited', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Free People bohemian clothing virtually',
+      headshots: 'Generate free-spirited photos in Free People fashion',
+      socialMedia: 'Create bohemian content with Free People style',
+      savings: 'Save money by trying on Free People clothes before buying'
+    }
+  },
+  {
+    path: '/urban-outfitters-virtual-try-on',
+    title: 'Urban Outfitters Virtual Try-On | Lovit',
+    hook: 'Urban Style with Virtual Try-On',
+    description: 'Try on Urban Outfitters trendy fashion virtually. See how Urban Outfitters clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['urban outfitters', 'trendy fashion', 'urban style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Urban Outfitters trendy clothing virtually',
+      headshots: 'Generate urban photos in Urban Outfitters fashion',
+      socialMedia: 'Create trendy content with Urban Outfitters style',
+      savings: 'Save money by trying on Urban Outfitters clothes before buying'
+    }
+  },
+  {
+    path: '/madewell-virtual-try-on',
+    title: 'Madewell Virtual Try-On | Lovit',
+    hook: 'Effortless Style with Virtual Try-On',
+    description: 'Try on Madewell casual fashion virtually. See how Madewell clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['madewell', 'casual fashion', 'effortless style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Madewell casual clothing virtually',
+      headshots: 'Generate effortless photos in Madewell fashion',
+      socialMedia: 'Create casual content with Madewell style',
+      savings: 'Save money by trying on Madewell clothes before buying'
+    }
+  },
+  {
+    path: '/levis-virtual-try-on',
+    title: 'Levi\'s Virtual Try-On | Lovit',
+    hook: 'Denim Heritage with Virtual Try-On',
+    description: 'Try on Levi\'s denim and casual fashion virtually. See how Levi\'s clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['levis', 'denim', 'casual fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Levi\'s denim and casual clothing virtually',
+      headshots: 'Generate casual photos in Levi\'s fashion',
+      socialMedia: 'Create denim content with Levi\'s style',
+      savings: 'Save money by trying on Levi\'s clothes before buying'
+    }
+  },
+  {
+    path: '/good-american-virtual-try-on',
+    title: 'Good American Virtual Try-On | Lovit',
+    hook: 'Inclusive Denim with Virtual Try-On',
+    description: 'Try on Good American inclusive denim virtually. See how Good American clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['good american', 'inclusive denim', 'body positive', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Good American inclusive denim virtually',
+      headshots: 'Generate inclusive photos in Good American fashion',
+      socialMedia: 'Create body-positive content with Good American style',
+      savings: 'Save money by trying on Good American clothes before buying'
+    }
+  },
+  {
+    path: '/citizens-of-humanity-virtual-try-on',
+    title: 'Citizens of Humanity Virtual Try-On | Lovit',
+    hook: 'Premium Denim with Virtual Try-On',
+    description: 'Try on Citizens of Humanity premium denim virtually. See how Citizens of Humanity clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['citizens of humanity', 'premium denim', 'designer jeans', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Citizens of Humanity premium denim virtually',
+      headshots: 'Generate premium photos in Citizens of Humanity fashion',
+      socialMedia: 'Create denim content with Citizens of Humanity style',
+      savings: 'Save money by trying on Citizens of Humanity clothes before buying'
+    }
+  },
+  {
+    path: '/farm-rio-virtual-try-on',
+    title: 'Farm Rio Virtual Try-On | Lovit',
+    hook: 'Brazilian Vibrancy with Virtual Try-On',
+    description: 'Try on Farm Rio vibrant fashion virtually. See how Farm Rio clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['farm rio', 'brazilian fashion', 'vibrant style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Farm Rio vibrant clothing virtually',
+      headshots: 'Generate vibrant photos in Farm Rio fashion',
+      socialMedia: 'Create colorful content with Farm Rio style',
+      savings: 'Save money by trying on Farm Rio clothes before buying'
+    }
+  },
+  {
+    path: '/eloquii-virtual-try-on',
+    title: 'Eloquii Virtual Try-On | Lovit',
+    hook: 'Plus Size Fashion with Virtual Try-On',
+    description: 'Try on Eloquii plus-size fashion virtually. See how Eloquii clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['eloquii', 'plus size fashion', 'inclusive fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Eloquii plus-size clothing virtually',
+      headshots: 'Generate inclusive photos in Eloquii fashion',
+      socialMedia: 'Create plus-size content with Eloquii style',
+      savings: 'Save money by trying on Eloquii clothes before buying'
+    }
+  },
+  {
+    path: '/favoritedaughter-virtual-try-on',
+    title: 'Favorite Daughter Virtual Try-On | Lovit',
+    hook: 'Feminine Fashion with Virtual Try-On',
+    description: 'Try on Favorite Daughter feminine fashion virtually. See how Favorite Daughter clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['favoritedaughter', 'feminine fashion', 'romantic style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Favorite Daughter feminine clothing virtually',
+      headshots: 'Generate feminine photos in Favorite Daughter fashion',
+      socialMedia: 'Create romantic content with Favorite Daughter style',
+      savings: 'Save money by trying on Favorite Daughter clothes before buying'
+    }
+  },
+  {
+    path: '/rollas-virtual-try-on',
+    title: 'Rolla\'s Virtual Try-On | Lovit',
+    hook: 'Australian Fashion with Virtual Try-On',
+    description: 'Try on Rolla\'s Australian fashion virtually. See how Rolla\'s clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['rollas', 'australian fashion', 'casual style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Rolla\'s Australian clothing virtually',
+      headshots: 'Generate casual photos in Rolla\'s fashion',
+      socialMedia: 'Create Australian content with Rolla\'s style',
+      savings: 'Save money by trying on Rolla\'s clothes before buying'
+    }
+  },
+  {
+    path: '/selkie-virtual-try-on',
+    title: 'Selkie Virtual Try-On | Lovit',
+    hook: 'Whimsical Fashion with Virtual Try-On',
+    description: 'Try on Selkie whimsical fashion virtually. See how Selkie clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['selkie', 'whimsical fashion', 'fantasy style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Selkie whimsical clothing virtually',
+      headshots: 'Generate whimsical photos in Selkie fashion',
+      socialMedia: 'Create fantasy content with Selkie style',
+      savings: 'Save money by trying on Selkie clothes before buying'
+    }
+  },
+  {
+    path: '/agolde-virtual-try-on',
+    title: 'Agolde Virtual Try-On | Lovit',
+    hook: 'Premium Denim with Virtual Try-On',
+    description: 'Try on Agolde premium denim virtually. See how Agolde clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['agolde', 'premium denim', 'designer jeans', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on Agolde premium denim virtually',
+      headshots: 'Generate premium photos in Agolde fashion',
+      socialMedia: 'Create denim content with Agolde style',
+      savings: 'Save money by trying on Agolde clothes before buying'
+    }
+  },
+  {
+    path: '/astr-the-label-virtual-try-on',
+    title: 'ASTR the Label Virtual Try-On | Lovit',
+    hook: 'Contemporary Fashion with Virtual Try-On',
+    description: 'Try on ASTR the Label contemporary fashion virtually. See how ASTR clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['astr the label', 'contemporary fashion', 'modern style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on ASTR the Label contemporary clothing virtually',
+      headshots: 'Generate modern photos in ASTR fashion',
+      socialMedia: 'Create contemporary content with ASTR style',
+      savings: 'Save money by trying on ASTR clothes before buying'
+    }
+  },
+  // Rental Website Routes
+  {
+    path: '/rent-the-runway-virtual-try-on',
+    title: 'Rent the Runway Virtual Try-On | Lovit',
+    hook: 'Luxury Rental with Virtual Try-On',
+    description: 'Try on Rent the Runway luxury fashion virtually. See how Rent the Runway clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['rent the runway', 'luxury rental', 'designer rental', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Preview Rent the Runway luxury clothing on your frame',
+      headshots: 'Showcase luxury rental fashion in stunning photos',
+      socialMedia: 'Elevate your rental experience with Rent the Runway style',
+      savings: 'Maximize your rental value by testing styles first'
+    }
+  },
+  {
+    path: '/fashion-pass-virtual-try-on',
+    title: 'Fashion Pass Virtual Try-On | Lovit',
+    hook: 'Subscription Fashion with Virtual Try-On',
+    description: 'Try on Fashion Pass subscription fashion virtually. See how Fashion Pass clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['fashion pass', 'subscription fashion', 'rental fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Explore Fashion Pass subscription clothing on your body',
+      headshots: 'Document your subscription journey with Fashion Pass style',
+      socialMedia: 'Share your subscription lifestyle with Fashion Pass content',
+      savings: 'Optimize your subscription by previewing styles first'
+    }
+  },
+  {
+    path: '/nuuly-virtual-try-on',
+    title: 'Nuuly Virtual Try-On | Lovit',
+    hook: 'Sustainable Rental with Virtual Try-On',
+    description: 'Try on Nuuly sustainable rental fashion virtually. See how Nuuly clothing looks on you with AI-powered virtual try-on technology.',
+    keywords: ['nuuly', 'sustainable rental', 'eco-friendly fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Experience Nuuly sustainable rental clothing on your frame',
+      headshots: 'Capture your sustainable fashion journey with Nuuly style',
+      socialMedia: 'Inspire eco-conscious living with Nuuly content',
+      savings: 'Support sustainability by testing Nuuly styles first'
+    }
   }
 ];
 
