@@ -44,6 +44,11 @@ api.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Request with token:', {
+        url: config.url,
+        tokenPrefix: token.substring(0, 20) + '...',
+        tokenLength: token.length
+      });
     }
     
     // For multipart/form-data requests, don't manually set Content-Type
@@ -62,6 +67,13 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    
+    // Log all error responses for debugging
+    console.log('API Error:', {
+      status: error.response?.status,
+      url: originalRequest?.url,
+      data: error.response?.data
+    });
     
     // If the error is 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -125,6 +137,12 @@ api.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+    
+    // Handle 403 Forbidden errors (permission/subscription issues)
+    if (error.response?.status === 403) {
+      console.log('403 Forbidden - Permission denied:', error.response?.data);
+      // You might want to redirect to payment page or show subscription error
     }
     
     return Promise.reject(error);
