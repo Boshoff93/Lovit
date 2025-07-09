@@ -8,7 +8,11 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
 import { WebSocketProvider } from './contexts/WebSocketContext';
+import { setStoreGetter } from './utils/axiosConfig';
 import './utils/firebase';
+
+// Set up store access for axios config
+setStoreGetter(() => store);
 
 // Initialize the app
 const root = ReactDOM.createRoot(

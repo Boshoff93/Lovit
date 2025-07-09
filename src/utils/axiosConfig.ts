@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { store } from '../store/store';
 import { refreshToken, logout } from '../store/authSlice';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
@@ -26,9 +25,20 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+// We'll set this up after the store is created
+let getStore: () => any = () => null;
+
+// Function to set the store getter (called from store.ts after store creation)
+export const setStoreGetter = (storeGetter: () => any) => {
+  getStore = storeGetter;
+};
+
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   (config) => {
+    const store = getStore();
+    if (!store) return config;
+    
     const state = store.getState();
     const token = state.auth.token;
     
@@ -71,6 +81,11 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const store = getStore();
+        if (!store) {
+          throw new Error('Store not available');
+        }
+        
         const state = store.getState();
         const currentToken = state.auth.token;
         
@@ -101,7 +116,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // If token refresh fails, dispatch logout action
         processQueue(refreshError);
-        store.dispatch(logout());
+        const store = getStore();
+        if (store) {
+          store.dispatch(logout());
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

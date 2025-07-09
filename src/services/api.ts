@@ -1,5 +1,4 @@
 import api from '../utils/axiosConfig';
-import { store } from '../store/store';
 import { createAuthenticatedRequest } from '../store/authSlice';
 
 // User and authentication API
@@ -64,80 +63,4 @@ export const modelsApi = {
   },
 };
 
-// API service with methods for different endpoints
-export const apiService = {
-  // Function to get authenticated API instance
-  getAuthInstance: () => {
-    const state = store.getState();
-    const token = state.auth.token;
-    
-    if (!token) {
-      throw new Error('Authentication required');
-    }
-    
-    return createAuthenticatedRequest(token);
-  },
-  
-  // Models
-  models: {
-    // Get all models for a user
-    getAll: async () => {
-      try {
-        const authApi = apiService.getAuthInstance();
-        const state = store.getState();
-        const userId = state.auth.user?.userId;
-        
-        if (!userId) {
-          throw new Error('User ID not found');
-        }
-        
-        const response = await authApi.get(`/api/users/${userId}/models`);
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
-    
-    // Get a specific model
-    getById: async (modelId: string) => {
-      try {
-        const authApi = apiService.getAuthInstance();
-        const state = store.getState();
-        const userId = state.auth.user?.userId;
-        
-        if (!userId) {
-          throw new Error('User ID not found');
-        }
-        
-        const response = await authApi.get(`/api/users/${userId}/models/${modelId}`);
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
-    
-    // Train a new model (using FormData)
-    train: async (formData: FormData) => {
-      try {
-        const authApi = apiService.getAuthInstance();
-        const response = await authApi.post('/api/train-model', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.error('Model training error:', error);
-        throw error;
-      }
-    },
-  },
-  
-  // Other API endpoints can be added here
-  // For example:
-  // - user profile management
-  // - payment processing
-  // - image generation
-};
-
-export default apiService; 
+export default api; 
