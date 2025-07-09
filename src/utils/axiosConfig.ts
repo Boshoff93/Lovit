@@ -44,11 +44,6 @@ api.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Request with token:', {
-        url: config.url,
-        tokenPrefix: token.substring(0, 20) + '...',
-        tokenLength: token.length
-      });
     }
     
     // For multipart/form-data requests, don't manually set Content-Type
@@ -85,7 +80,6 @@ api.interceptors.response.use(
     
     // Handle invalid token (403) - log out immediately
     if (error.response?.status === 403 && error.response?.data?.error === 'Invalid token') {
-      console.log('Invalid token detected, logging out immediately...');
       const store = getStore();
       if (store) {
         store.dispatch(logout());
@@ -97,7 +91,6 @@ api.interceptors.response.use(
     const isExpiredTokenError = error.response?.status === 401;
     
     if (isExpiredTokenError && !originalRequest._retry) {
-      console.log('Token expired or unauthorized, attempting refresh...');
       
       if (isRefreshing) {
         // If we're already refreshing, queue this request
@@ -125,13 +118,11 @@ api.interceptors.response.use(
         
         if (currentToken) {
           // Use the refreshToken thunk directly since we can't use hooks outside of components
-          console.log('Attempting to refresh token...');
           const result = await store.dispatch(refreshToken(currentToken));
           
           if (refreshToken.fulfilled.match(result)) {
             // Get the new token from the thunk result
             const newToken = result.payload;
-            console.log('Token refresh successful, retrying request...');
             // Process any queued requests
             processQueue(null, newToken);
             // Update the original request with the new token
@@ -140,7 +131,6 @@ api.interceptors.response.use(
             return api(originalRequest);
           } else {
             // Refresh failed
-            console.log('Token refresh failed, logging out...');
             processQueue(new Error('Token refresh failed'));
             store.dispatch(logout());
             return Promise.reject(error);
