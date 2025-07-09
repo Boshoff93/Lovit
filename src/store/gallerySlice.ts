@@ -1,6 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { RootState } from './store';
 import { updateAiPhotoAllowance } from './authSlice';
 import { saveAs } from 'file-saver';
 import api from '../utils/axiosConfig';
@@ -184,7 +182,7 @@ export const generateImages = createAsyncThunk(
     { getState, rejectWithValue, dispatch }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
@@ -276,7 +274,7 @@ export const uploadClothingItem = createAsyncThunk(
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
@@ -329,7 +327,7 @@ export const downloadImage = createAsyncThunk(
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token) {
         return rejectWithValue('Authentication Required');
@@ -392,7 +390,7 @@ export const deleteImage = createAsyncThunk(
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
@@ -715,14 +713,14 @@ export const {
 export default gallerySlice.reducer;
 
 // Selectors
-export const selectAllImages = (state: RootState) => state.gallery.images;
-export const selectImageGroups = (state: RootState) => state.gallery.imageGroups;
-export const selectGeneratingImages = (state: RootState) => state.gallery.generatingImages;
-export const selectGalleryLoading = (state: RootState) => state.gallery.isLoading;
-export const selectGalleryLoadingMore = (state: RootState) => state.gallery.isLoadingMore;
-export const selectGalleryError = (state: RootState) => state.gallery.error;
-export const selectIsUploadingClothing = (state: RootState) => state.gallery.isUploadingClothing;
-export const selectClothingKey = (state: RootState) => state.gallery.clothingKey;
-export const selectHasMoreImages = (state: RootState) => state.gallery.hasMore;
-export const selectIsDownloading = (state: RootState) => state.gallery.isDownloading;
-export const selectDownloadError = (state: RootState) => state.gallery.downloadError; 
+export const selectAllImages = (state: any) => state.gallery.images;
+export const selectImageGroups = (state: any) => state.gallery.imageGroups;
+export const selectGeneratingImages = (state: any) => state.gallery.generatingImages;
+export const selectGalleryLoading = (state: any) => state.gallery.isLoading;
+export const selectGalleryLoadingMore = (state: any) => state.gallery.isLoadingMore;
+export const selectGalleryError = (state: any) => state.gallery.error;
+export const selectIsUploadingClothing = (state: any) => state.gallery.isUploadingClothing;
+export const selectClothingKey = (state: any) => state.gallery.clothingKey;
+export const selectHasMoreImages = (state: any) => state.gallery.hasMore;
+export const selectIsDownloading = (state: any) => state.gallery.isDownloading;
+export const selectDownloadError = (state: any) => state.gallery.downloadError; 

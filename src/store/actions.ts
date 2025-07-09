@@ -1,4 +1,3 @@
-import { createAction } from '@reduxjs/toolkit';
 import { AppDispatch } from './store';
 import { logout as authLogout } from './authSlice';
 import { clearModels } from './modelsSlice';

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from './store';
 import { updateAiModelAllowance } from './authSlice';
 import api from '../utils/axiosConfig';
 
@@ -73,7 +72,7 @@ export const getModelUploadUrls = createAsyncThunk(
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
@@ -116,7 +115,7 @@ export const trainModelWithS3 = createAsyncThunk(
     { getState, rejectWithValue, dispatch }
   ) => {
     try {
-      const state = getState() as RootState;
+      const state = getState() as any;
       const { auth } = state;
       
       if (!auth.token || !auth.user?.userId) {
@@ -159,7 +158,7 @@ export const deleteModel = createAsyncThunk(
     { getState, rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      const { auth } = getState() as any;
       
       if (!auth.token || !auth.user?.userId) {
         return rejectWithValue('Authentication required');
@@ -285,6 +284,6 @@ export const { updateModel, clearModels } = modelsSlice.actions;
 export default modelsSlice.reducer;
 
 // Selector to get models from state
-export const selectModels = (state: RootState) => state.models.models;
-export const selectModelsLoading = (state: RootState) => state.models.isLoading;
-export const selectModelsError = (state: RootState) => state.models.error; 
+export const selectModels = (state: any) => state.models.models;
+export const selectModelsLoading = (state: any) => state.models.isLoading;
+export const selectModelsError = (state: any) => state.models.error; 
