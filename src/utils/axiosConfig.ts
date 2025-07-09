@@ -75,8 +75,13 @@ api.interceptors.response.use(
       data: error.response?.data
     });
     
-    // If the error is 401 and we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Handle both 401 and 403 "Invalid token" errors
+    const isTokenError = (error.response?.status === 401) || 
+                        (error.response?.status === 403 && 
+                         error.response?.data?.error === 'Invalid token');
+    
+    if (isTokenError && !originalRequest._retry) {
+      console.log('Token error detected, attempting refresh...');
       
       if (isRefreshing) {
         // If we're already refreshing, queue this request
@@ -104,11 +109,13 @@ api.interceptors.response.use(
         
         if (currentToken) {
           // Use the refreshToken thunk directly since we can't use hooks outside of components
+          console.log('Attempting to refresh token...');
           const result = await store.dispatch(refreshToken(currentToken));
           
           if (refreshToken.fulfilled.match(result)) {
             // Get the new token from the thunk result
             const newToken = result.payload;
+            console.log('Token refresh successful, retrying request...');
             // Process any queued requests
             processQueue(null, newToken);
             // Update the original request with the new token
@@ -117,6 +124,7 @@ api.interceptors.response.use(
             return api(originalRequest);
           } else {
             // Refresh failed
+            console.log('Token refresh failed, logging out...');
             processQueue(new Error('Token refresh failed'));
             store.dispatch(logout());
             return Promise.reject(error);
@@ -127,6 +135,7 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
       } catch (refreshError) {
+        console.error('Token refresh error:', refreshError);
         // If token refresh fails, dispatch logout action
         processQueue(refreshError);
         const store = getStore();
@@ -139,8 +148,8 @@ api.interceptors.response.use(
       }
     }
     
-    // Handle 403 Forbidden errors (permission/subscription issues)
-    if (error.response?.status === 403) {
+    // Handle other 403 Forbidden errors (permission/subscription issues)
+    if (error.response?.status === 403 && error.response?.data?.error !== 'Invalid token') {
       console.log('403 Forbidden - Permission denied:', error.response?.data);
       // You might want to redirect to payment page or show subscription error
     }
