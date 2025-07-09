@@ -100,9 +100,6 @@ export const fetchGeneratedImages = createAsyncThunk(
       const lastEvaluatedKey = (!options.reset && gallery.lastEvaluatedKey) || undefined;
       
       const response = await api.get(`${API_BASE_URL}/api/generated-images`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        },
         params: {
           userId: auth.user.userId,
           limit: options.limit || 24,
@@ -204,11 +201,6 @@ export const generateImages = createAsyncThunk(
           seedNumber: payload.seedNumber,
           inferenceSteps,
           imageType: payload.imageType
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`
-          }
         }
       );
       
@@ -287,11 +279,6 @@ export const uploadClothingItem = createAsyncThunk(
         {
           userId: auth.user.userId,
           fileType
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`
-          }
         }
       );
       
@@ -341,22 +328,12 @@ export const downloadImage = createAsyncThunk(
       const filename = `${payload.title || 'lovit-image'}-${Date.now()}.jpg`;
       
       // Use the API to get the download URL
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
-      const urlResponse = await fetch(
-        `${apiUrl}/api/download-image?imageKey=${encodeURIComponent(imageKey)}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`
-          }
-        }
+      const urlResponse = await api.get(
+        `/api/download-image?imageKey=${encodeURIComponent(imageKey)}`
       );
       
-      if (!urlResponse.ok) {
-        throw new Error(`API download URL request failed with status: ${urlResponse.status}`);
-      }
-      
-      // Parse the JSON response to get the actual download URL
-      const jsonData = await urlResponse.json();
+      // Get the actual download URL from the response
+      const jsonData = urlResponse.data;
       
       if (!jsonData.downloadUrl) {
         throw new Error('Download URL not found in API response');
@@ -397,9 +374,6 @@ export const deleteImage = createAsyncThunk(
       }
       
       await api.delete(`${API_BASE_URL}/api/images/${imageId}`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        },
         data: {
           userId: auth.user.userId,
           imageKey

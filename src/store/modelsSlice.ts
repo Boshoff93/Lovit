@@ -49,9 +49,6 @@ export const fetchModels = createAsyncThunk(
       }
       
       const response = await api.get(`${API_BASE_URL}/api/models`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        },
         params: {
           userId: auth.user.userId
         }
@@ -85,11 +82,6 @@ export const getModelUploadUrls = createAsyncThunk(
           fileCount: payload.fileCount,
           fileTypes: payload.fileTypes,
           numberOfImages: payload.fileCount
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`
-          }
         }
       );
       
@@ -129,11 +121,6 @@ export const trainModelWithS3 = createAsyncThunk(
           modelId: payload.modelId,
           imageKeys: payload.imageKeys,
           profileData: payload.profileData
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`
-          }
         }
       );
       
@@ -165,9 +152,6 @@ export const deleteModel = createAsyncThunk(
       }
       
       await api.delete(`${API_BASE_URL}/api/models/${modelId}`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        },
         data: {
           userId: auth.user.userId
         }

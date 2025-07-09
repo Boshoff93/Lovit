@@ -15,8 +15,7 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-
-const apiUrl = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
+import api from '../utils/axiosConfig';
 
 const AdminEmailPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
@@ -32,24 +31,11 @@ const AdminEmailPage: React.FC = () => {
     try {
       const userIdList = userIds.split(',').map(id => id.trim());
       
-      const response = await fetch(`${apiUrl}/api/send-retargeting-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          userIds: userIdList,
-          productId,
-          priceId
-        })
+      const response = await api.post('/api/send-retargeting-email', {
+        userIds: userIdList,
+        productId,
+        priceId
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send emails');
-      }
 
       setSnackbar({
         open: true,

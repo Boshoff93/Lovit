@@ -4,6 +4,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { useAuth } from './hooks/useAuth';
+import api from './utils/axiosConfig';
 
 // Layout
 import Layout from './components/Layout';
@@ -25,8 +26,6 @@ import FAQQuestionPage from './pages/FAQQuestionPage';
 import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 import AdminEmailPage from './pages/AdminEmailPage';
 import UnsubscribePage from './pages/UnsubscribePage';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -73,15 +72,10 @@ const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/validate-admin`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await api.get('/api/validate-admin');
+        const data = response.data;
 
-        const data = await response.json();
-
-        if (!response.ok || !data.isAdmin) {
+        if (!data.isAdmin) {
           setIsAuthorized(false);
           setError(data.error || 'Unauthorized access');
           return;

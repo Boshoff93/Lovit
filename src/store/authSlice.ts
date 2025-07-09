@@ -200,9 +200,6 @@ export const refreshToken = createAsyncThunk(
 export const createAuthenticatedRequest = (token: string) => {
   return axios.create({
     baseURL: API_BASE_URL,
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
   });
 };
 

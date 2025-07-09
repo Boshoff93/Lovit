@@ -25,11 +25,8 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setError(null);
       
       const response = await api.get(
-        `${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/user/account`, 
+        '/api/user/account', 
         {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
           params: {
             userId: user?.userId
           }
