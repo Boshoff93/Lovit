@@ -79,15 +79,12 @@ api.interceptors.response.use(
           const result = await store.dispatch(refreshToken(currentToken));
           
           if (refreshToken.fulfilled.match(result)) {
-            // Get the new token from the store
-            const newToken = store.getState().auth.token;
-            
+            // Get the new token from the thunk result
+            const newToken = result.payload;
             // Process any queued requests
             processQueue(null, newToken);
-            
             // Update the original request with the new token
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            
             // Retry the original request
             return api(originalRequest);
           } else {

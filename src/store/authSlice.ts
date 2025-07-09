@@ -184,13 +184,11 @@ export const refreshToken = createAsyncThunk(
       const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
         token: currentToken
       });
-      
-      // Store the new token in cookie
       if (response.data.token) {
         storeToken(response.data.token);
+        return response.data.token; // <-- Only return the token
       }
-      
-      return response.data;
+      throw new Error('No token in response');
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Token refresh failed');
     }
@@ -505,7 +503,7 @@ const authSlice = createSlice({
       })
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.token;
+        state.token = action.payload; // <-- Use the token directly
         state.error = null;
       })
       .addCase(refreshToken.rejected, (state, action) => {
