@@ -1055,7 +1055,7 @@ const MainTabs: React.FC = () => {
                 </Box>
                 
                 <Grid container spacing={4} sx={{ p: 2 }}>
-                  {generatingImages.map((genImage, index) => {
+                  {generatingImages.map((genImage: any, index: any) => {
                     return (
                       <Grid
                         key={genImage.imageId} 
@@ -1141,7 +1141,7 @@ const MainTabs: React.FC = () => {
             {/* Show finished images grouped by date */}
             {imageGroups.length > 0 ? (
               <>
-                {imageGroups.map((group) => (
+                {imageGroups.map((group: any) => (
                   <Box key={group.date} sx={{ mb: 4 }}>
                     <Box 
                       sx={{ 
@@ -1179,7 +1179,7 @@ const MainTabs: React.FC = () => {
                     </Box>
                     
                     <Grid container spacing={4} sx={{ p: 2 }}>
-                      {group.images.map((image, index) => {
+                      {group.images.map((image: any, index: any) => {
                         return (
                           <Grid 
                             key={image.imageId}
@@ -1321,7 +1321,7 @@ const MainTabs: React.FC = () => {
                               <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
                                 {image.dripRating && image.dripRating.length > 0 && Array.isArray(image.dripRating) && (
                                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                                    {image.dripRating.map((tag, idx) => (
+                                    {image.dripRating.map((tag: any, idx: any) => (
                                       <Chip
                                         key={idx}
                                         label={tag}
