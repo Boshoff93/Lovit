@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from './useAuth';
 import { Allowances } from '../store/authSlice';
+import api from '../utils/axiosConfig';
 
 type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -23,7 +24,7 @@ export const useAccountData = (shouldFetch: boolean = true) => {
       setStatus('loading');
       setError(null);
       
-      const response = await axios.get(
+      const response = await api.get(
         `${process.env.REACT_APP_API_URL || 'https://api.trylovit.com'}/api/user/account`, 
         {
           headers: {

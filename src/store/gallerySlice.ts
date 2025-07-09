@@ -3,6 +3,7 @@ import axios from 'axios';
 import { RootState } from './store';
 import { updateAiPhotoAllowance } from './authSlice';
 import { saveAs } from 'file-saver';
+import api from '../utils/axiosConfig';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -100,7 +101,7 @@ export const fetchGeneratedImages = createAsyncThunk(
       // Use lastEvaluatedKey from state if we're loading more and not resetting
       const lastEvaluatedKey = (!options.reset && gallery.lastEvaluatedKey) || undefined;
       
-      const response = await axios.get(`${API_BASE_URL}/api/generated-images`, {
+      const response = await api.get(`${API_BASE_URL}/api/generated-images`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
         },
@@ -193,7 +194,7 @@ export const generateImages = createAsyncThunk(
       const tier = (auth.subscription?.tier || 'free').toLowerCase();
       const inferenceSteps = payload.inferenceSteps || (tier === 'starter' ? 1000 : 2000);
       
-      const response = await axios.post(
+      const response = await api.post(
         `${API_BASE_URL}/api/generate-photo`,
         {
           userId: auth.user.userId,
@@ -283,7 +284,7 @@ export const uploadClothingItem = createAsyncThunk(
       
       // Get a presigned URL for the upload
       const fileType = payload.file.type;
-      const presignedResponse = await axios.post(
+      const presignedResponse = await api.post(
         `${API_BASE_URL}/api/get-clothing-upload-url`,
         {
           userId: auth.user.userId,
@@ -303,7 +304,7 @@ export const uploadClothingItem = createAsyncThunk(
       }
       
       // Upload the file to the presigned URL
-      await axios.put(url, payload.file, {
+      await api.put(url, payload.file, {
         headers: {
           'Content-Type': fileType,
         },
@@ -397,7 +398,7 @@ export const deleteImage = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      await axios.delete(`${API_BASE_URL}/api/images/${imageId}`, {
+      await api.delete(`${API_BASE_URL}/api/images/${imageId}`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
         },

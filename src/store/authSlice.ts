@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { User, storeAuthData, getToken, clearAuthData, storeToken } from '../utils/storage';
+import api from '../utils/axiosConfig';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -59,7 +60,7 @@ export const verifyEmail = createAsyncThunk(
   'auth/verifyEmail',
   async ({ token, userId }: { token: string; userId: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/verify-email`, {
+      const response = await api.get(`/auth/verify-email`, {
         params: { token, userId }
       });
       return response.data;
@@ -73,7 +74,7 @@ export const resendVerification = createAsyncThunk(
   'auth/resendVerification',
   async (email: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/resend-verification`, {
+      const response = await api.post(`/auth/resend-verification`, {
         email
       });
       return response.data;
@@ -87,7 +88,7 @@ export const requestPasswordReset = createAsyncThunk(
   'auth/requestPasswordReset',
   async (email: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/password-reset`, {
+      const response = await api.post(`/auth/password-reset`, {
         email
       });
       return response.data;
@@ -101,7 +102,7 @@ export const confirmPasswordReset = createAsyncThunk(
   'auth/confirmPasswordReset',
   async ({ token, newPassword, userId }: { token: string; newPassword: string; userId?: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/reset-password-confirm`, {
+      const response = await api.post(`/auth/reset-password-confirm`, {
         token,
         newPassword,
         userId
@@ -123,7 +124,7 @@ export const loginWithEmail = createAsyncThunk(
   'auth/loginWithEmail',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+      const response = await api.post(`/auth/login`, {
         email,
         password
       });
@@ -142,7 +143,7 @@ export const signupWithEmail = createAsyncThunk(
   'auth/signupWithEmail',
   async ({ email, password, username }: { email: string; password: string; username: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/signup`, {
+      const response = await api.post(`/auth/signup`, {
         email,
         password,
         username
@@ -162,7 +163,7 @@ export const loginWithGoogle = createAsyncThunk(
   'auth/loginWithGoogle',
   async (idToken: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/google`, {
+      const response = await api.post(`/auth/google`, {
         token: idToken
       });
       
@@ -181,7 +182,7 @@ export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async (currentToken: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+      const response = await api.post(`/auth/refresh-token`, {
         token: currentToken
       });
       if (response.data.token) {
@@ -216,11 +217,7 @@ export const fetchSubscription = createAsyncThunk(
         return rejectWithValue('No auth token available');
       }
       
-      const response = await axios.get(`${API_BASE_URL}/api/user/subscription`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`
-        }
-      });
+      const response = await api.get(`/api/user/subscription`);
       
       return response.data.subscription;
     } catch (error: any) {
@@ -240,14 +237,9 @@ export const createCheckoutSession = createAsyncThunk(
         return rejectWithValue('No auth token available');
       }
       
-      const response = await axios.post(
-        `${API_BASE_URL}/api/create-checkout-session`,
-        { priceId, productId },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`
-          }
-        }
+      const response = await api.post(
+        `/api/create-checkout-session`,
+        { priceId, productId }
       );
       
       return response.data;
@@ -268,14 +260,9 @@ export const createPortalSession = createAsyncThunk(
         return rejectWithValue('No auth token available');
       }
       
-      const response = await axios.post(
-        `${API_BASE_URL}/api/create-portal-session`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`
-          }
-        }
+      const response = await api.post(
+        `/api/create-portal-session`,
+        {}
       );
       
       return response.data;
@@ -296,14 +283,9 @@ export const updateEmailPreferences = createAsyncThunk(
         return rejectWithValue('No auth token available');
       }
       
-      const response = await axios.post(
-        `${API_BASE_URL}/api/user/email-preferences`,
-        { notifications },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`
-          }
-        }
+      const response = await api.post(
+        `/api/user/email-preferences`,
+        { notifications }
       );
       
       return response.data;

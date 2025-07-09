@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { RootState } from './store';
 import { updateAiModelAllowance } from './authSlice';
+import api from '../utils/axiosConfig';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -49,7 +49,7 @@ export const fetchModels = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      const response = await axios.get(`${API_BASE_URL}/api/models`, {
+      const response = await api.get(`${API_BASE_URL}/api/models`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
         },
@@ -79,7 +79,7 @@ export const getModelUploadUrls = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      const response = await axios.post(
+      const response = await api.post(
         `${API_BASE_URL}/api/get-model-upload-urls`,
         {
           userId: auth.user.userId,
@@ -123,7 +123,7 @@ export const trainModelWithS3 = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
 
-      const response = await axios.post(
+      const response = await api.post(
         `${API_BASE_URL}/api/train-model`,
         {
           userId: auth.user.userId,
@@ -165,7 +165,7 @@ export const deleteModel = createAsyncThunk(
         return rejectWithValue('Authentication required');
       }
       
-      await axios.delete(`${API_BASE_URL}/api/models/${modelId}`, {
+      await api.delete(`${API_BASE_URL}/api/models/${modelId}`, {
         headers: {
           'Authorization': `Bearer ${auth.token}`
         },
