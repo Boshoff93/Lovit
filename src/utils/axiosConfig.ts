@@ -75,13 +75,29 @@ api.interceptors.response.use(
       data: error.response?.data
     });
     
-    // Handle both 401 and 403 "Invalid token" errors
-    const isTokenError = (error.response?.status === 401) || 
-                        (error.response?.status === 403 && 
-                         error.response?.data?.error === 'Invalid token');
+    /*
+     * Token Error Handling Strategy:
+     * - 403 "Invalid token" -> Log out immediately (malformed/invalid token)
+     * - 401 "Token expired" -> Attempt refresh (expired but valid token)
+     * - 401 other -> Attempt refresh (missing auth header, etc.)
+     * - 403 other -> Don't log out (subscription/permission issues)
+     */
     
-    if (isTokenError && !originalRequest._retry) {
-      console.log('Token error detected, attempting refresh...');
+    // Handle invalid token (403) - log out immediately
+    if (error.response?.status === 403 && error.response?.data?.error === 'Invalid token') {
+      console.log('Invalid token detected, logging out immediately...');
+      const store = getStore();
+      if (store) {
+        store.dispatch(logout());
+      }
+      return Promise.reject(error);
+    }
+    
+    // Handle expired token (401) or other 401 errors - attempt refresh
+    const isExpiredTokenError = error.response?.status === 401;
+    
+    if (isExpiredTokenError && !originalRequest._retry) {
+      console.log('Token expired or unauthorized, attempting refresh...');
       
       if (isRefreshing) {
         // If we're already refreshing, queue this request
@@ -151,6 +167,7 @@ api.interceptors.response.use(
     // Handle other 403 Forbidden errors (permission/subscription issues)
     if (error.response?.status === 403 && error.response?.data?.error !== 'Invalid token') {
       console.log('403 Forbidden - Permission denied:', error.response?.data);
+      // These are subscription/permission issues, not token issues - don't log out
       // You might want to redirect to payment page or show subscription error
     }
     
