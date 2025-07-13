@@ -288,6 +288,7 @@ export const uploadClothingItem = createAsyncThunk(
         return rejectWithValue('Failed to get upload URL');
       }
       
+      console.log(`Uploading clothing item to ${url}`, fileType);
       // Upload the file to the presigned URL
       await api.put(url, payload.file, {
         headers: {
