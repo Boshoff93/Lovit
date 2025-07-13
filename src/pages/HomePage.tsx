@@ -259,7 +259,7 @@ const plans = [
       modelCount: '1 AI Model',
       quality: 'Lower quality photos',
       likeness: 'Low Likeness',
-      parallel: '1 photo at a time',
+      parallel: '2 photo at a time',
       other: ['Photorealistic images']
     }
   },
@@ -273,7 +273,7 @@ const plans = [
       modelCount: '2 AI models',
       quality: 'Medium quality photos',
       likeness: 'Medium likeness',
-      parallel: '2 photos in parallel',
+      parallel: '4 photos in parallel',
       other: ['Photorealistic images']
     }
   },
@@ -288,7 +288,7 @@ const plans = [
       modelCount: '2 AI models',
       quality: 'High quality photos',
       likeness: 'High likeness',
-      parallel: '4 photos in parallel',
+      parallel: '8 photos in parallel',
       other: ['Photorealistic images', 'Priority support']
     }
   }
