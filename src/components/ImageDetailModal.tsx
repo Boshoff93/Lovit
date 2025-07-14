@@ -311,40 +311,6 @@ const ImageDetailModal: React.FC<ImageDetailModalProps> = ({
                   />
                 </Box>
                 
-                {/* Title and tags below the image */}
-                <Box sx={{ 
-                  width: '100%',
-                  p: 2,
-                  backgroundColor: 'primary.main',
-                  borderRadius: 2
-                }}>
-                  <Typography variant="h5" sx={{ color: '#faf4e9', mb: 2 }}>
-                    {selectedImage?.title}
-                  </Typography>
-                  
-                  {selectedImage?.dripRating && selectedImage.dripRating.length > 0 && Array.isArray(selectedImage.dripRating) && (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selectedImage.dripRating.map((tag, idx) => (
-                        <Chip
-                          key={idx}
-                          label={tag}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontWeight: 600,
-                            fontSize: '0.75rem',
-                            height: 24,
-                            ml: 0.5,
-                            mb: 0.5,
-                            color: theme.palette.primary.main,
-                            borderColor: theme.palette.secondary.light
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-                
                 {/* Buttons row */}
                 <Box sx={{ 
                   display: 'flex', 

@@ -1265,7 +1265,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <DrawerHeader>
             <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'left', width: '100%' }}>
-                Lovit Hub
+                Menu
               </Typography>
             </Box>
             <IconButton onClick={handleDrawerClose} color="primary">

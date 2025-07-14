@@ -980,34 +980,6 @@ const MainTabs: React.FC = () => {
                             </Box>
                           </Box>
                         </Box>
-                        <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
-                          {image.dripRating && image.dripRating.length > 0 && Array.isArray(image.dripRating) && (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                              {image.dripRating.map((tag: string, idx: number) => (
-                                <Chip
-                                  key={idx}
-                                  label={tag}
-                                  size="small"
-                                  variant="filled"
-                                  sx={{
-                                    fontWeight: 600,
-                                    fontSize: '0.75rem',
-                                    height: 24,
-                                    color: theme.palette.secondary.light,
-                                    ml: 0.5,
-                                    mb: 0.5
-                                  }}
-                                />
-                              ))}
-                            </Box>
-                          )}
-                          <Typography variant="subtitle1" noWrap>
-                            {image.title}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </Typography>
-                        </CardContent>
                       </Card>
                     </Grid>
                   );
@@ -1318,34 +1290,6 @@ const MainTabs: React.FC = () => {
                                   </Box>
                                 </Box>
                               </Box>
-                              <CardContent sx={{ py: 1.5, px: 2, flexGrow: 0 }}>
-                                {image.dripRating && image.dripRating.length > 0 && Array.isArray(image.dripRating) && (
-                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                                    {image.dripRating.map((tag: any, idx: any) => (
-                                      <Chip
-                                        key={idx}
-                                        label={tag}
-                                        size="small"
-                                        variant="filled"
-                                        sx={{
-                                          fontWeight: 600,
-                                          fontSize: '0.75rem',
-                                          height: 24,
-                                          color: theme.palette.secondary.light,
-                                          ml: 0.5,
-                                          mb: 0.5
-                                        }}
-                                      />
-                                    ))}
-                                  </Box>
-                                )}
-                                <Typography variant="subtitle1" noWrap>
-                                  {image.title}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {new Date(image.createdAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </Typography>
-                              </CardContent>
                             </Card>
                           </Grid>
                         );
