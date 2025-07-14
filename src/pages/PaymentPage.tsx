@@ -166,12 +166,12 @@ const PaymentPage: React.FC = () => {
 
   const proceedRef = useRef<HTMLDivElement>(null);
 
-  // Auto-select current plan if user has one
+  // Auto-select current plan if user has one (only if no plan is currently selected)
   useEffect(() => {
-    if (subscription?.tier &&  subscription.tier !== 'free') {
+    if (subscription?.tier && subscription.tier !== 'free' && !selectedPlan) {
       setSelectedPlan(subscription.tier);
     }
-  }, [subscription]);
+  }, [subscription, selectedPlan]);
   
   // Fetch subscription data directly on component mount and track page view
   useEffect(() => {
@@ -449,7 +449,12 @@ const PaymentPage: React.FC = () => {
             >
               <Card 
                 elevation={plan.popular ? 6 : 2} 
-                onClick={() => handleSelectPlan(plan.id)}
+                onClick={() => {
+                  // Only allow plan selection if user is not already subscribed
+                  if (!subscription || subscription.tier === 'free') {
+                    handleSelectPlan(plan.id);
+                  }
+                }}
                 sx={{ 
                   height: '100%',
                   border: selectedPlan === plan.id 
@@ -459,17 +464,18 @@ const PaymentPage: React.FC = () => {
                   overflow: 'visible',
                   display: 'flex',
                   flexDirection: 'column',
-                  cursor: 'pointer',
+                  cursor: (!subscription || subscription.tier === 'free') ? 'pointer' : 'default',
                   transition: 'all 0.2s ease-in-out',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
+                    transform: (!subscription || subscription.tier === 'free') ? 'translateY(-4px)' : 'none',
                     boxShadow: theme.shadows[selectedPlan === plan.id ? 8 : 4],
                   },
                   bgcolor: selectedPlan === plan.id ? 'unset' : 'background.paper',
                   background: selectedPlan === plan.id ? 
                     `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : 
                     'background.paper',
-                  color: selectedPlan === plan.id ? 'white' : 'inherit'
+                  color: selectedPlan === plan.id ? 'white' : 'inherit',
+                  opacity: (subscription && subscription.tier !== 'free') ? 0.7 : 1
                 }}
               >
                 {plan.popular && (
@@ -594,7 +600,8 @@ const PaymentPage: React.FC = () => {
                       py: 1
                     }}
                   >
-                    {selectedPlan === plan.id ? "✓ Selected" : "Select"}
+                    {selectedPlan === plan.id ? "✓ Selected" : 
+                     (subscription && subscription.tier !== 'free') ? "Current Plan" : "Select"}
                   </Typography>
                 </CardActions>
               </Card>
