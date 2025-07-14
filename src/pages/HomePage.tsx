@@ -1163,8 +1163,20 @@ const HomePage: React.FC = () => {
             }}>
               <Box
                 component="img"
-                src="/personalized-photos.png"
-                alt="Personalize your AI model"
+                src={
+                  location.pathname === '/halloween-costume-virtual-try-on' 
+                    ? '/halloween.jpg' 
+                    : location.pathname === '/wedding-dress-virtual-try-on'
+                    ? '/wedding.jpg'
+                    : '/personalized-photos.png'
+                }
+                alt={
+                  location.pathname === '/halloween-costume-virtual-try-on'
+                    ? 'Halloween costume virtual try-on'
+                    : location.pathname === '/wedding-dress-virtual-try-on'
+                    ? 'Wedding dress virtual try-on'
+                    : 'Personalize your AI model'
+                }
                 sx={{
                   width: '90%',
                   height: 'auto',

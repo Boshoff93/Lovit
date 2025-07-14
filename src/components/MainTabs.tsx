@@ -610,9 +610,11 @@ const MainTabs: React.FC = () => {
                       </Box>
                     )}
                     
-                    <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
-                      Created on {new Date(model.createdAt ?? '').toLocaleDateString()}
-                    </Typography>
+                    {model.createdAt && (
+                      <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
+                        Created on {new Date(model.createdAt).toLocaleDateString()}
+                      </Typography>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
@@ -759,9 +761,11 @@ const MainTabs: React.FC = () => {
                       </Box>
                     )}
                     
-                    <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
-                      Created on {new Date(model.createdAt ?? '').toLocaleDateString()}
-                    </Typography>
+                    {model.createdAt && (
+                      <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
+                        Created on {new Date(model.createdAt).toLocaleDateString()}
+                      </Typography>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
