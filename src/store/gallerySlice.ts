@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { updateAiPhotoAllowance } from './authSlice';
 import { saveAs } from 'file-saver';
 import api from '../utils/axiosConfig';
+import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
 
@@ -290,7 +291,7 @@ export const uploadClothingItem = createAsyncThunk(
       
       console.log(`Uploading clothing item to ${url}`, fileType);
       // Upload the file to the presigned URL
-      await api.put(url, payload.file, {
+      await axios.put(url, payload.file, {
         headers: {
           'Content-Type': fileType,
         },
