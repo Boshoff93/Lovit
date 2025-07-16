@@ -1066,7 +1066,6 @@ export const routeConfigs: RouteConfig[] = [
       savings: 'Save money by avoiding expensive anime K-Pop fashion'
     }
   },
-  }
 ];
 
 export const getRouteConfig = (path: string): RouteConfig | undefined => {
