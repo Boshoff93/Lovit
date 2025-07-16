@@ -475,7 +475,7 @@ const PaymentPage: React.FC = () => {
                     `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : 
                     'background.paper',
                   color: selectedPlan === plan.id ? 'white' : 'inherit',
-                  opacity: (subscription && subscription.tier !== 'free') ? 0.7 : 1
+                  opacity: (subscription && subscription.tier !== 'free') ? 0.85 : 1
                 }}
               >
                 {plan.popular && (
@@ -600,8 +600,7 @@ const PaymentPage: React.FC = () => {
                       py: 1
                     }}
                   >
-                    {selectedPlan === plan.id ? "✓ Selected" : 
-                     (subscription && subscription.tier !== 'free') ? "Current Plan" : "Select"}
+                    {selectedPlan === plan.id ? "✓ Selected" : "Select"}
                   </Typography>
                 </CardActions>
               </Card>

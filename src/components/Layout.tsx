@@ -1737,7 +1737,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 }
                               }}
                             >
-                              <EditIcon sx={{ mr: 1, fontSize: '1rem' }} />
+                              <EditIcon sx={{ mr: 1, fontSize: '0.8rem' }} />
                               Write My Own
                             </ToggleButton>
                             <ToggleButton 
@@ -1754,7 +1754,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 }
                               }}
                             >
-                              <AutoFixHighIcon sx={{ mr: 1, fontSize: '1rem' }} />
+                              <AutoFixHighIcon sx={{ mr: 1, fontSize: '0.8rem' }} />
                               Pick For Me
                             </ToggleButton>
                           </ToggleButtonGroup>

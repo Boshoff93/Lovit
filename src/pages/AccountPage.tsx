@@ -170,7 +170,17 @@ const AccountPage: React.FC = () => {
                 src="/lovit.png"
               />
               <Box sx={{ mt: 7, textAlign: 'center' }}>
-                <Typography variant="h5" gutterBottom>
+                <Typography 
+                  variant="subtitle2"
+                  fontWeight="600"
+                  gutterBottom
+                  sx={{
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
+                    maxWidth: '100%',
+                    textAlign: 'center'
+                  }}
+                >
                   {user?.username || 'Loading...'}
                 </Typography>
                 <Chip 

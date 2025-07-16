@@ -1037,6 +1037,35 @@ export const routeConfigs: RouteConfig[] = [
       socialMedia: 'Inspire eco-conscious living with Nuuly content',
       savings: 'Support sustainability by testing Nuuly styles first'
     }
+  },
+  {
+    path: '/dress-k-pop-star',
+    title: 'Dress as K-Pop Star Virtual Try-On | Lovit',
+    hook: 'Channel Your Inner K-Pop Idol',
+    description: 'Transform into your favorite K-Pop star with AI-powered virtual try-on. Try on K-Pop fashion styles and create stunning idol-worthy photos.',
+    keywords: ['k-pop fashion', 'k-pop star', 'korean fashion', 'idol style', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on K-Pop star outfits and idol fashion styles',
+      headshots: 'Generate K-Pop idol-worthy photos and performances',
+      socialMedia: 'Create K-Pop inspired content for social media',
+      savings: 'Save money by avoiding expensive K-Pop fashion purchases'
+    }
+  },
+  {
+    path: '/dress-anime-k-pop',
+    title: 'Anime K-Pop Fashion Virtual Try-On | Lovit',
+    hook: 'Anime Meets K-Pop Style',
+    description: 'Combine anime aesthetics with K-Pop fashion using AI virtual try-on. Create unique anime-inspired K-Pop looks and generate stunning crossover content.',
+    keywords: ['anime k-pop', 'anime fashion', 'k-pop anime', 'japanese korean fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on anime-inspired K-Pop outfits and crossover styles',
+      headshots: 'Generate anime K-Pop fusion photos and character looks',
+      socialMedia: 'Create unique anime K-Pop content for social media',
+      savings: 'Save money by avoiding expensive anime K-Pop fashion'
+    }
+  },
   }
 ];
 
