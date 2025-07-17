@@ -6,9 +6,22 @@ interface SEOProps {
   ogDescription?: string;
   ogType?: string;
   ogUrl?: string;
+  ogImage?: string;
+  ogImageWidth?: string;
+  ogImageHeight?: string;
+  ogImageAlt?: string;
+  ogSiteName?: string;
+  ogLocale?: string;
   twitterCard?: string;
   twitterTitle?: string;
   twitterDescription?: string;
+  twitterImage?: string;
+  twitterSite?: string;
+  twitterCreator?: string;
+  canonicalUrl?: string;
+  robots?: string;
+  author?: string;
+  language?: string;
   structuredData?: any;
 }
 
@@ -20,27 +33,71 @@ export const SEO: React.FC<SEOProps> = ({
   ogDescription,
   ogType = 'website',
   ogUrl,
-  twitterCard = 'summary',
+  ogImage,
+  ogImageWidth = '1200',
+  ogImageHeight = '630',
+  ogImageAlt = 'Lovit AI Fashion Platform',
+  ogSiteName = 'Lovit',
+  ogLocale = 'en_US',
+  twitterCard = 'summary_large_image',
   twitterTitle,
   twitterDescription,
+  twitterImage,
+  twitterSite = '@trylovit',
+  twitterCreator,
+  canonicalUrl,
+  robots = 'index, follow',
+  author,
+  language = 'en',
   structuredData
 }) => {
+  // Use default image if not provided
+  const defaultImage = '/lovit.png';
+  const imageUrl = ogImage || defaultImage;
+  const twitterImg = twitterImage || imageUrl;
+
   return (
     <>
+      {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
+      <meta name="robots" content={robots} />
+      <meta name="language" content={language} />
+      {author && <meta name="author" content={author} />}
+      
+      {/* Viewport */}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      
+      {/* Canonical URL */}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       
       {/* Open Graph / Facebook */}
       <meta property="og:title" content={ogTitle || title} />
       <meta property="og:description" content={ogDescription || description} />
       <meta property="og:type" content={ogType} />
+      <meta property="og:site_name" content={"Lovit: Your Virtual Fashion Studio"} />
+      <meta property="og:locale" content={ogLocale} />
       {ogUrl && <meta property="og:url" content={ogUrl} />}
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:width" content={ogImageWidth} />
+      <meta property="og:image:height" content={ogImageHeight} />
+      <meta property="og:image:alt" content={ogImageAlt} />
       
       {/* Twitter */}
       <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:title" content={twitterTitle || title} />
       <meta name="twitter:description" content={twitterDescription || description} />
+      <meta name="twitter:image" content={twitterImg} />
+      {twitterSite && <meta name="twitter:site" content={twitterSite} />}
+      {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
+      
+      {/* Additional Social Media */}
+      <meta name="theme-color" content="#000000" />
+      <meta name="msapplication-TileColor" content="#000000" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      <meta name="apple-mobile-web-app-title" content={title} />
       
       {/* Structured Data */}
       {structuredData && (

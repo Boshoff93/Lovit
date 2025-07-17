@@ -1066,6 +1066,34 @@ export const routeConfigs: RouteConfig[] = [
       savings: 'Save money by avoiding expensive anime K-Pop fashion'
     }
   },
+  {
+    path: '/indian-wedding-outfits',
+    title: 'Indian Wedding Outfits Virtual Try-On | Lovit',
+    hook: 'Find the Perfect Outfit for Any Indian Wedding Event',
+    description: 'Attending an Indian wedding? Instantly try on lehengas, sarees, sherwanis, and more with AI-powered virtual try-on. Discover the perfect look for every ceremony—whether you’re a guest, family member, or part of the wedding party.',
+    keywords: ['indian wedding', 'wedding guest outfits', 'lehenga', 'saree', 'sherwani', 'indian fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Try on Indian wedding guest outfits, lehengas, sarees, sherwanis, and more for any event',
+      headshots: 'Generate stunning photos in traditional and contemporary Indian styles',
+      socialMedia: 'Create vibrant content for any Indian wedding celebration',
+      savings: 'Save money by previewing your Indian wedding looks before you buy or rent'
+    }
+  },
+  {
+    path: '/cocktail-hour-outfits',
+    title: 'Cocktail Hour Outfits Virtual Try-On | Lovit',
+    hook: 'Sophisticated Style for Evening Elegance',
+    description: 'Dress to impress for cocktail hour with AI-powered virtual try-on. Try on elegant cocktail dresses and sophisticated evening wear perfect for special occasions.',
+    keywords: ['cocktail hour', 'cocktail dresses', 'evening wear', 'sophisticated fashion', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on cocktail hour dresses and sophisticated evening outfits',
+      headshots: 'Generate elegant photos perfect for cocktail hour events',
+      socialMedia: 'Create sophisticated content for your evening events',
+      savings: 'Save money by avoiding expensive cocktail dress purchases'
+    }
+  },
 ];
 
 export const getRouteConfig = (path: string): RouteConfig | undefined => {
