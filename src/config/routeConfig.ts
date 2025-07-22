@@ -1094,6 +1094,132 @@ export const routeConfigs: RouteConfig[] = [
       savings: 'Save money by avoiding expensive cocktail dress purchases'
     }
   },
+  {
+    path: '/bridesmaid-dresses',
+    title: 'Bridesmaid Dresses Virtual Try-On | Lovit',
+    hook: 'Find the Perfect Bridesmaid Look Instantly',
+    description: 'Try on a variety of bridesmaid dresses virtually and discover the perfect style and color for your wedding party. Make confident choices with AI-powered try-on technology.',
+    keywords: ['bridesmaid dresses', 'wedding party', 'virtual try-on', 'AI fashion', 'wedding planning'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Try on bridesmaid dresses in different styles and colors',
+      headshots: 'Generate beautiful group photos for your bridal party',
+      socialMedia: 'Create memorable content for your wedding journey',
+      savings: 'Save money by previewing bridesmaid looks before buying'
+    }
+  },
+  {
+    path: '/dresses-for-wedding-near-me',
+    title: 'Dresses for Wedding Near Me | Lovit',
+    hook: 'Find Local Wedding Dress Styles Instantly',
+    description: 'Explore and try on wedding dresses available near you with AI-powered virtual try-on. Discover local styles and make shopping easier than ever.',
+    keywords: ['wedding dresses', 'near me', 'local wedding', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on wedding dresses from local boutiques virtually',
+      headshots: 'Generate bridal photos in local styles',
+      socialMedia: 'Share your local wedding dress journey online',
+      savings: 'Save time and money by previewing local options first'
+    }
+  },
+  {
+    path: '/bridal-styles',
+    title: 'Bridal Styles Virtual Try-On | Lovit',
+    hook: 'Explore Every Bridal Style Instantly',
+    description: 'Discover and try on a wide range of bridal styles virtually. From classic to modern, find the perfect look for your big day with AI-powered technology.',
+    keywords: ['bridal styles', 'wedding fashion', 'virtual try-on', 'AI bridal', 'wedding trends'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Try on classic, modern, boho, and more bridal styles',
+      headshots: 'Generate stunning bridal portraits in any style',
+      socialMedia: 'Create content showcasing your bridal style journey',
+      savings: 'Save money by previewing styles before committing'
+    }
+  },
+  {
+    path: '/what-to-wear-wedding-dress-shopping',
+    title: 'What to Wear Wedding Dress Shopping | Lovit',
+    hook: 'Dress Smart for Your Bridal Appointment',
+    description: 'Get tips and virtually try on outfits perfect for wedding dress shopping. See what to wear for comfort and style during your bridal appointment.',
+    keywords: ['wedding dress shopping', 'what to wear', 'bridal appointment', 'virtual try-on', 'AI fashion'],
+    priority: 0.7,
+    features: {
+      tryOn: 'Try on comfortable and stylish outfits for dress shopping',
+      headshots: 'Generate photos to inspire your shopping day',
+      socialMedia: 'Share your wedding dress shopping experience',
+      savings: 'Avoid outfit regrets by previewing your look first'
+    }
+  },
+  {
+    path: '/what-to-wear-bridal-dress-shopping',
+    title: 'What to Wear Bridal Dress Shopping | Lovit',
+    hook: 'Look and Feel Your Best at Bridal Appointments',
+    description: 'Virtually try on the best outfits for bridal dress shopping. Discover what to wear for confidence and ease while finding your dream dress.',
+    keywords: ['bridal dress shopping', 'what to wear', 'wedding shopping', 'virtual try-on', 'AI fashion'],
+    priority: 0.7,
+    features: {
+      tryOn: 'Try on ideal outfits for bridal dress shopping',
+      headshots: 'Generate photos to capture your shopping day',
+      socialMedia: 'Create content about your bridal shopping journey',
+      savings: 'Save money by choosing the right shopping outfit'
+    }
+  },
+  {
+    path: '/formal-wedding-guest-dresses',
+    title: 'Formal Wedding Guest Dresses Virtual Try-On | Lovit',
+    hook: 'Elegant Looks for Every Formal Wedding',
+    description: 'Find and try on formal wedding guest dresses virtually. Discover elegant styles and make a statement at any formal wedding event.',
+    keywords: ['formal wedding guest', 'guest dresses', 'virtual try-on', 'AI fashion', 'wedding outfits'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on formal dresses for wedding guest occasions',
+      headshots: 'Generate elegant photos for your next wedding',
+      socialMedia: 'Share your formal wedding guest look online',
+      savings: 'Save money by previewing guest dresses before buying'
+    }
+  },
+  {
+    path: '/dresses-for-wedding-on-the-beach',
+    title: 'Dresses for Wedding on the Beach Virtual Try-On | Lovit',
+    hook: 'Beach Wedding Styles for Every Guest',
+    description: 'Virtually try on dresses perfect for beach weddings. Find breezy, beautiful styles for your next seaside celebration.',
+    keywords: ['beach wedding', 'wedding guest', 'beach dresses', 'virtual try-on', 'AI fashion'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on dresses ideal for beach wedding settings',
+      headshots: 'Generate stunning beach wedding guest photos',
+      socialMedia: 'Create content for your beach wedding experience',
+      savings: 'Save money by previewing beach wedding looks first'
+    }
+  },
+  {
+    path: '/bridal-dress-online',
+    title: 'Bridal Dress Online Virtual Try-On | Lovit',
+    hook: 'Shop Bridal Dresses Online with Confidence',
+    description: 'Try on bridal dresses online virtually before you buy. Experience the convenience of online shopping with the confidence of seeing your look first.',
+    keywords: ['bridal dress online', 'online wedding dress', 'virtual try-on', 'AI bridal', 'wedding shopping'],
+    priority: 0.8,
+    features: {
+      tryOn: 'Try on bridal dresses from online stores virtually',
+      headshots: 'Generate bridal portraits in online styles',
+      socialMedia: 'Share your online bridal dress shopping journey',
+      savings: 'Avoid costly returns by previewing online dresses first'
+    }
+  },
+  {
+    path: '/designer-dresses-for-wedding',
+    title: 'Designer Dresses for Wedding Virtual Try-On | Lovit',
+    hook: 'Luxury Designer Looks for Your Wedding',
+    description: 'Virtually try on designer dresses for weddings. Explore luxury styles and find the perfect designer look for your special day.',
+    keywords: ['designer dresses', 'wedding fashion', 'luxury wedding', 'virtual try-on', 'AI fashion'],
+    priority: 0.9,
+    features: {
+      tryOn: 'Try on luxury designer dresses for weddings',
+      headshots: 'Generate high-fashion wedding photos',
+      socialMedia: 'Create luxury wedding content for social media',
+      savings: 'Save money by previewing designer looks before buying'
+    }
+  },
 ];
 
 export const getRouteConfig = (path: string): RouteConfig | undefined => {

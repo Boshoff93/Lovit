@@ -1166,15 +1166,37 @@ const HomePage: React.FC = () => {
                 src={
                   location.pathname === '/halloween-costume-virtual-try-on' 
                     ? '/halloween.jpg' 
-                    : location.pathname === '/wedding-dress-virtual-try-on'
+                    : [
+                        '/wedding-dress-virtual-try-on',
+                        '/bridesmaid-dresses',
+                        '/dresses-for-wedding-near-me',
+                        '/bridal-styles',
+                        '/what-to-wear-wedding-dress-shopping',
+                        '/what-to-wear-bridal-dress-shopping',
+                        '/formal-wedding-guest-dresses',
+                        '/dresses-for-wedding-on-the-beach',
+                        '/bridal-dress-online',
+                        '/designer-dresses-for-wedding'
+                      ].includes(location.pathname)
                     ? '/wedding.jpg'
                     : '/personalized-photos.png'
                 }
                 alt={
                   location.pathname === '/halloween-costume-virtual-try-on'
                     ? 'Halloween costume virtual try-on'
-                    : location.pathname === '/wedding-dress-virtual-try-on'
-                    ? 'Wedding dress virtual try-on'
+                    : [
+                        '/wedding-dress-virtual-try-on',
+                        '/bridesmaid-dresses',
+                        '/dresses-for-wedding-near-me',
+                        '/bridal-styles',
+                        '/what-to-wear-wedding-dress-shopping',
+                        '/what-to-wear-bridal-dress-shopping',
+                        '/formal-wedding-guest-dresses',
+                        '/dresses-for-wedding-on-the-beach',
+                        '/bridal-dress-online',
+                        '/designer-dresses-for-wedding'
+                      ].includes(location.pathname)
+                    ? 'Wedding and bridal virtual try-on'
                     : 'Personalize your AI model'
                 }
                 sx={{
