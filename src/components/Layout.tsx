@@ -23,9 +23,9 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
@@ -144,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   
   // Helper to check if path is active
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '?');
@@ -152,7 +152,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { token, user } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
   
-  const [open, setOpen] = useState(!useMediaQuery(theme.breakpoints.down('md')));
+  const [open, setOpen] = useState(!useMediaQuery(theme.breakpoints.down('lg')));
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -373,7 +373,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Button>
                   <Button
                     onClick={() => handleNavigate('/account')}
-                    startIcon={<AccountCircleIcon />}
+                    startIcon={<PersonOutlineIcon />}
                     sx={{
                       borderRadius: '20px',
                       px: 2,
@@ -395,7 +395,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Button>
                   <Button
                     onClick={() => handleNavigate('/support')}
-                    startIcon={<SupportAgentIcon />}
+                    startIcon={<HeadsetMicIcon />}
                     sx={{
                       borderRadius: '20px',
                       px: 2,
@@ -471,7 +471,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               )}
 
               {!isMobile && token && (
-                <IconButton color="secondary" onClick={() => handleLogout()}>
+                <IconButton onClick={() => handleLogout()} sx={{ color: '#007AFF' }}>
                   <LogoutIcon />
                 </IconButton>
               )}
@@ -596,7 +596,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   onClick={() => handleNavigate('/account')}
                 >
                   <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <AccountCircleIcon />
+                    <PersonOutlineIcon />
                   </ListItemIcon>
                   <ListItemText 
                     primary="Account" 
@@ -624,7 +624,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   onClick={() => handleNavigate('/support')}
                 >
                   <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <SupportAgentIcon />
+                    <HeadsetMicIcon />
                   </ListItemIcon>
                   <ListItemText 
                     primary="Support" 
