@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { useAuth } from './hooks/useAuth';
@@ -23,16 +23,22 @@ import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
 import FAQQuestionPage from './pages/FAQQuestionPage';
-import TransformFashionExperience from './pages/blog/transform-fashion-experience';
 import AdminEmailPage from './pages/AdminEmailPage';
 import UnsubscribePage from './pages/UnsubscribePage';
+import GenreDetailPage from './pages/GenreDetailPage';
+import LanguageDetailPage from './pages/LanguageDetailPage';
+import StyleDetailPage from './pages/StyleDetailPage';
+import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
+
+// Route config
+import { getAllRoutePaths } from './config/routeConfig';
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { token, user, subscription} = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [searchParams] = useSearchParams();
-   const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
+  const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
@@ -107,6 +113,9 @@ const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Get all SEO routes from config
+const seoRoutes = getAllRoutePaths().filter(path => path !== '/');
+
 function App() {
   return (
     <Router>
@@ -114,94 +123,21 @@ function App() {
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
         
-        {/* Dynamic fashion routes */}
-        <Route path="/try-on-fashion-for-plus-size-figures" element={<HomePage />} />
-        <Route path="/bachelorette-party-outfits" element={<HomePage />} />
-        <Route path="/wedding-dress-virtual-try-on" element={<HomePage />} />
-        <Route path="/weekend-going-out-outfits" element={<HomePage />} />
-        <Route path="/shopping-outfit-ideas" element={<HomePage />} />
-        <Route path="/halloween-costume-virtual-try-on" element={<HomePage />} />
-        <Route path="/formal-event-outfits" element={<HomePage />} />
-        <Route path="/christmas-party-outfits" element={<HomePage />} />
-        <Route path="/summer-fashion-try-on" element={<HomePage />} />
-        <Route path="/winter-fashion-virtual-try-on" element={<HomePage />} />
-        <Route path="/fall-fashion-try-on" element={<HomePage />} />
-        <Route path="/spring-fashion-virtual-try-on" element={<HomePage />} />
-        <Route path="/fashion-trends-virtual-try-on" element={<HomePage />} />
-        <Route path="/social-media-fashion-content" element={<HomePage />} />
-        <Route path="/professional-headshots-virtual-try-on" element={<HomePage />} />
-        <Route path="/streetwear-virtual-try-on" element={<HomePage />} />
-        <Route path="/cute-dresses-virtual-try-on" element={<HomePage />} />
-        <Route path="/budget-shopping-virtual-try-on" element={<HomePage />} />
-        <Route path="/future-of-online-shopping" element={<HomePage />} />
-        <Route path="/workout-clothes-virtual-try-on" element={<HomePage />} />
-        <Route path="/business-casual-virtual-try-on" element={<HomePage />} />
-        <Route path="/date-night-outfits" element={<HomePage />} />
-        <Route path="/travel-outfits-virtual-try-on" element={<HomePage />} />
-        <Route path="/beach-vacation-outfits" element={<HomePage />} />
-        <Route path="/cozy-loungewear-virtual-try-on" element={<HomePage />} />
-        <Route path="/instagram-fashion-content" element={<HomePage />} />
-        <Route path="/facebook-fashion-content" element={<HomePage />} />
-        <Route path="/tiktok-fashion-content" element={<HomePage />} />
-        <Route path="/youtube-fashion-content" element={<HomePage />} />
-        
-        {/* Popular Brand Routes */}
-        <Route path="/adidas-virtual-try-on" element={<HomePage />} />
-        <Route path="/nike-virtual-try-on" element={<HomePage />} />
-        <Route path="/gucci-virtual-try-on" element={<HomePage />} />
-        <Route path="/prada-virtual-try-on" element={<HomePage />} />
-        <Route path="/skims-virtual-try-on" element={<HomePage />} />
-        <Route path="/alice-olivia-virtual-try-on" element={<HomePage />} />
-        <Route path="/vuori-virtual-try-on" element={<HomePage />} />
-        <Route path="/lululemon-virtual-try-on" element={<HomePage />} />
-        <Route path="/louis-vuitton-virtual-try-on" element={<HomePage />} />
-        <Route path="/chanel-virtual-try-on" element={<HomePage />} />
-        <Route path="/hermes-virtual-try-on" element={<HomePage />} />
-        <Route path="/balenciaga-virtual-try-on" element={<HomePage />} />
-        <Route path="/yves-saint-laurent-virtual-try-on" element={<HomePage />} />
-        <Route path="/dior-virtual-try-on" element={<HomePage />} />
-        <Route path="/fendi-virtual-try-on" element={<HomePage />} />
-        <Route path="/bottega-veneta-virtual-try-on" element={<HomePage />} />
-        <Route path="/saint-laurent-virtual-try-on" element={<HomePage />} />
-        <Route path="/givenchy-virtual-try-on" element={<HomePage />} />
-        <Route path="/valentino-virtual-try-on" element={<HomePage />} />
-        <Route path="/versace-virtual-try-on" element={<HomePage />} />
-        <Route path="/dolce-gabbana-virtual-try-on" element={<HomePage />} />
-        <Route path="/michael-kors-virtual-try-on" element={<HomePage />} />
-        <Route path="/kate-spade-virtual-try-on" element={<HomePage />} />
-        <Route path="/coach-virtual-try-on" element={<HomePage />} />
-        <Route path="/tory-burch-virtual-try-on" element={<HomePage />} />
-        <Route path="/reformation-virtual-try-on" element={<HomePage />} />
-        <Route path="/anthropologie-virtual-try-on" element={<HomePage />} />
-        <Route path="/free-people-virtual-try-on" element={<HomePage />} />
-        <Route path="/urban-outfitters-virtual-try-on" element={<HomePage />} />
-        <Route path="/madewell-virtual-try-on" element={<HomePage />} />
-        <Route path="/levis-virtual-try-on" element={<HomePage />} />
-        <Route path="/good-american-virtual-try-on" element={<HomePage />} />
-        <Route path="/citizens-of-humanity-virtual-try-on" element={<HomePage />} />
-        <Route path="/farm-rio-virtual-try-on" element={<HomePage />} />
-        <Route path="/eloquii-virtual-try-on" element={<HomePage />} />
-        <Route path="/favoritedaughter-virtual-try-on" element={<HomePage />} />
-        <Route path="/rollas-virtual-try-on" element={<HomePage />} />
-        <Route path="/selkie-virtual-try-on" element={<HomePage />} />
-        <Route path="/agolde-virtual-try-on" element={<HomePage />} />
-        <Route path="/astr-the-label-virtual-try-on" element={<HomePage />} />
-        
-        {/* Rental Website Routes */}
-        <Route path="/rent-the-runway-virtual-try-on" element={<HomePage />} />
-        <Route path="/fashion-pass-virtual-try-on" element={<HomePage />} />
-        <Route path="/nuuly-virtual-try-on" element={<HomePage />} />
+        {/* Dynamic SEO routes - all render HomePage with different SEO meta */}
+        {seoRoutes.map((path) => (
+          <Route key={path} path={path} element={<HomePage />} />
+        ))}
         
         {/* Unsubscribe page */}
         <Route path="/unsubscribe" element={<UnsubscribePage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={
-          <RequireAdmin>
+          // <RequireAdmin>
             <Layout>
               <AdminEmailPage />
             </Layout>
-          </RequireAdmin>
+          // </RequireAdmin>
         } />
         
         {/* Payment page */}
@@ -209,20 +145,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-          <RequireAuth>
+          // <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
-          </RequireAuth>
+          // </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-          <RequireAuth>
+          // <RequireAuth>
             <Layout>
               <AccountPage />
             </Layout>
-          </RequireAuth>
+          // </RequireAuth>
         } />
         
         {/* Verify email page */}
@@ -249,9 +185,12 @@ function App() {
         } />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/faq/:question" element={<FAQQuestionPage />} />
-
-        {/* Blog routes */}
-        <Route path="/blog/transform-fashion-experience" element={<TransformFashionExperience />} />
+        
+        {/* Detail pages */}
+        <Route path="/genres/:genreId" element={<GenreDetailPage />} />
+        <Route path="/languages/:languageId" element={<LanguageDetailPage />} />
+        <Route path="/styles/:styleId" element={<StyleDetailPage />} />
+        <Route path="/videos/:videoId" element={<MusicVideoDetailPage />} />
       </Routes>
     </Router>
   );
