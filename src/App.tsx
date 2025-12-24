@@ -29,6 +29,8 @@ import GenreDetailPage from './pages/GenreDetailPage';
 import LanguageDetailPage from './pages/LanguageDetailPage';
 import StyleDetailPage from './pages/StyleDetailPage';
 import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
+import CreateVideoPage from './pages/CreateVideoPage';
+import CreatePage from './pages/CreatePage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -191,6 +193,24 @@ function App() {
         <Route path="/languages/:languageId" element={<LanguageDetailPage />} />
         <Route path="/styles/:styleId" element={<StyleDetailPage />} />
         <Route path="/videos/:videoId" element={<MusicVideoDetailPage />} />
+        
+        {/* Create page - protected route */}
+        <Route path="/create" element={
+          // <RequireAuth>
+            <Layout>
+              <CreatePage />
+            </Layout>
+          // </RequireAuth>
+        } />
+        
+        {/* Create video page (legacy) - protected route */}
+        <Route path="/create-video/:songId" element={
+          // <RequireAuth>
+            <Layout>
+              <CreateVideoPage />
+            </Layout>
+          // </RequireAuth>
+        } />
       </Routes>
     </Router>
   );

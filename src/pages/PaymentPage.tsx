@@ -70,19 +70,24 @@ interface PricePlan {
   productId: string;
 }
 
+// Credit costs:
+// 1 Song = 25 credits
+// 1 Still Image Video = 100 credits
+// 1 Animated Video = 500 credits
+
 const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 14.99,
-    yearlyPrice: 8.99,
+    monthlyPrice: 6.99,
+    yearlyPrice: 4.99,
     features: {
-      photoCount: '100 AI photos',
-      modelCount: '1 AI Model',
-      quality: 'Standard quality photos',
-      resemblance: 'Standard model resemblance',
-      parallel: '2 photo at a time',
-      other: ['Photorealistic images']
+      photoCount: '500 credits/month',
+      modelCount: '~20 songs or 5 still videos',
+      quality: '1 character slot',
+      resemblance: 'Standard quality',
+      parallel: '2 generations at a time',
+      other: ['All visual styles', 'All genres & moods']
     },
     stripePrices: {
       monthly: 'price_1RQOjAB6HvdZJCd5zQoxXdLw',
@@ -93,15 +98,15 @@ const plans: PricePlan[] = [
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 29.99,
-    yearlyPrice: 19.99,
+    monthlyPrice: 14.99,
+    yearlyPrice: 9.99,
     features: {
-      photoCount: '250 photos',
-      modelCount: '2 AI models',
-      quality: 'Enhanced quality photos',
-      resemblance: 'Better model resemblance',
-      parallel: '4 photos in parallel',
-      other: ['Photorealistic images']
+      photoCount: '1,500 credits/month',
+      modelCount: '~60 songs or 15 still videos',
+      quality: '3 character slots',
+      resemblance: 'Enhanced quality',
+      parallel: '4 generations at a time',
+      other: ['All visual styles', 'Priority queue']
     },
     stripePrices: {
       monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
@@ -112,16 +117,16 @@ const plans: PricePlan[] = [
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 59.99,
-    yearlyPrice: 44.99,
+    monthlyPrice: 29.99,
+    yearlyPrice: 19.99,
     popular: true,
     features: {
-      photoCount: '1000 AI photos',
-      modelCount: '2 Premium AI models',
-      quality: 'Exceptional quality photos',
-      resemblance: 'Best model resemblance',
-      parallel: '8 photos in parallel',
-      other: ['Photorealistic images', 'Priority support']
+      photoCount: '5,000 credits/month',
+      modelCount: '~200 songs or 10 animated videos',
+      quality: '10 character slots',
+      resemblance: 'Best quality',
+      parallel: '8 generations at a time',
+      other: ['All visual styles', 'Priority support', 'Commercial license']
     },
     stripePrices: {
       monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',

@@ -29,7 +29,14 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Drawer,
+  ListItemButton,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { getRouteConfig } from '../config/routeConfig';
 import CloseIcon from '@mui/icons-material/Close';
@@ -516,6 +523,7 @@ const SectionDivider: React.FC = () => (
 
 const HomePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -531,6 +539,8 @@ const HomePage: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [expandedFAQ, setExpandedFAQ] = useState<string | false>(false);
   const promptInputRef = useRef<HTMLInputElement>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
@@ -816,58 +826,204 @@ const HomePage: React.FC = () => {
             >
               Gruvi
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Button 
-                variant="text"
-                sx={{ 
-                  color: '#86868B',
-                  fontWeight: 500,
-                  display: { xs: 'none', sm: 'inline-flex' },
-                  '&:hover': { color: '#1D1D1F' },
-                }}
-              component={RouterLink} 
-              to="/faq"
-            >
-              FAQ
-            </Button>
-            <Button 
-                variant="outlined"
-                onClick={handleClickOpen}
+            
+            {/* Desktop Navigation */}
+            {!isMobile && (
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Button 
+                  variant="text"
+                  component={RouterLink}
+                  to="/"
+                  sx={{ 
+                    color: location.pathname === '/' ? '#007AFF' : '#86868B',
+                    fontWeight: 500,
+                    '&:hover': { color: '#1D1D1F' },
+                  }}
+                >
+                  Home
+                </Button>
+                <Button 
+                  variant="text"
+                  component={RouterLink} 
+                  to="/faq"
+                  sx={{ 
+                    color: location.pathname === '/faq' ? '#007AFF' : '#86868B',
+                    fontWeight: 500,
+                    '&:hover': { color: '#1D1D1F' },
+                  }}
+                >
+                  FAQ
+                </Button>
+                <Button 
+                  variant="outlined"
+                  onClick={handleClickOpen}
+                  sx={{
+                    borderColor: 'rgba(0,0,0,0.15)',
+                    color: '#1D1D1F',
+                    px: 3,
+                    borderRadius: '100px',
+                    '&:hover': {
+                      borderColor: 'rgba(0,0,0,0.3)',
+                      background: 'rgba(0,0,0,0.03)',
+                    },
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="contained" 
+                  onClick={handleClickOpen}
+                  sx={{
+                    background: '#1D1D1F',
+                    color: '#fff',
+                    px: 3,
+                    borderRadius: '100px',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    '&:hover': {
+                      background: '#000',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    },
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </Box>
+            )}
+
+            {/* Mobile Hamburger Menu */}
+            {isMobile && (
+              <IconButton
+                onClick={() => setMobileMenuOpen(true)}
                 sx={{
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
-                  px: 3,
-                  borderRadius: '100px',
+                  color: '#007AFF',
+                  border: '2px solid #007AFF',
+                  borderRadius: '12px',
+                  p: 1,
                   '&:hover': {
-                    borderColor: 'rgba(0,0,0,0.3)',
-                    background: 'rgba(0,0,0,0.03)',
+                    background: 'rgba(0,122,255,0.1)',
                   },
                 }}
               >
-                Sign In
-            </Button>
-            <Button 
-              variant="contained" 
-                onClick={handleClickOpen}
-                sx={{
-                  background: '#1D1D1F',
-                  color: '#fff',
-                  px: 3,
-                  borderRadius: '100px',
-                  fontWeight: 600,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  '&:hover': {
-                    background: '#000',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  },
-                }}
-              >
-                Sign Up
-            </Button>
-          </Box>
+                <MenuIcon />
+              </IconButton>
+            )}
           </Box>
         </Container>
       </Box>
+
+      {/* Mobile Navigation Drawer */}
+      <Drawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 280,
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+          },
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+              Menu
+            </Typography>
+            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#86868B' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          
+          <List sx={{ mb: 2 }}>
+            <ListItemButton
+              component={RouterLink}
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              sx={{
+                borderRadius: '12px',
+                mb: 1,
+                ...(location.pathname === '/' && {
+                  background: 'rgba(0,122,255,0.1)',
+                  '& .MuiListItemIcon-root': { color: '#007AFF' },
+                  '& .MuiListItemText-primary': { color: '#007AFF', fontWeight: 600 },
+                }),
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Home" />
+            </ListItemButton>
+            
+            <ListItemButton
+              component={RouterLink}
+              to="/faq"
+              onClick={() => setMobileMenuOpen(false)}
+              sx={{
+                borderRadius: '12px',
+                mb: 1,
+                ...(location.pathname === '/faq' && {
+                  background: 'rgba(0,122,255,0.1)',
+                  '& .MuiListItemIcon-root': { color: '#007AFF' },
+                  '& .MuiListItemText-primary': { color: '#007AFF', fontWeight: 600 },
+                }),
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <HelpOutlineIcon />
+              </ListItemIcon>
+              <ListItemText primary="FAQ" />
+            </ListItemButton>
+          </List>
+          
+          <Divider sx={{ my: 2 }} />
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleClickOpen();
+              }}
+              sx={{
+                borderColor: 'rgba(0,0,0,0.15)',
+                color: '#1D1D1F',
+                borderRadius: '12px',
+                py: 1.5,
+                '&:hover': {
+                  borderColor: 'rgba(0,0,0,0.3)',
+                  background: 'rgba(0,0,0,0.03)',
+                },
+              }}
+            >
+              Sign In
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleClickOpen();
+              }}
+              sx={{
+                background: '#007AFF',
+                color: '#fff',
+                borderRadius: '12px',
+                py: 1.5,
+                fontWeight: 600,
+                boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                },
+              }}
+            >
+              Sign Up
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{ 

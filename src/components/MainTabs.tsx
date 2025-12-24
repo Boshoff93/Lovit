@@ -132,7 +132,7 @@ const MainTabs: React.FC = () => {
   const connectRef = useRef(connect);
   
   // Get layout context
-  const { openModel, openImages, isDrawerOpen } = useLayout();
+  const { openCharacter, isDrawerOpen } = useLayout();
   
 
   // Function to handle image errors
@@ -303,11 +303,11 @@ const MainTabs: React.FC = () => {
     );
   }, []);
 
-  // Function to handle create image button
-  const handleCreateImageClick = useCallback(() => {
-    // Use the context function to open the images tab
-    openImages();
-  }, [openImages]);
+  // Function to handle create character button
+  const handleCreateCharacterClick = useCallback(() => {
+    // Use the context function to open the character creation tab
+    openCharacter();
+  }, [openCharacter]);
 
   // Function to handle opening the image modal
   const handleOpenModal = useCallback((image: GeneratedImage) => {
@@ -463,7 +463,7 @@ const MainTabs: React.FC = () => {
                     backgroundColor: 'primary.dark'
                   }
                 }}
-                onClick={openModel}
+                onClick={openCharacter}
               >
                 Create Your First Model
               </Button>
@@ -1393,7 +1393,7 @@ const MainTabs: React.FC = () => {
                         backgroundColor: 'primary.dark'
                       }
                     }}
-                    onClick={handleCreateImageClick}
+                    onClick={handleCreateCharacterClick}
                   >
                     Create Your First Image
                   </Button>
