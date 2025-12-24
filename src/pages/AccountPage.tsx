@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Divider,
-  Avatar,
   Chip,
   Alert,
   CircularProgress,
@@ -153,18 +152,28 @@ const AccountPage: React.FC = () => {
               pb: { xs: 3, sm: 4 },
               position: 'relative'
             }}>
-              <Avatar 
+              <Box 
                 sx={{ 
                   width: { xs: 100, sm: 120 }, 
                   height: { xs: 100, sm: 120 }, 
                   mb: 2,
                   position: 'absolute',
-                  backgroundColor: 'transparent',
-                  top: { xs: -50, sm: -60 }
+                  top: { xs: -50, sm: -60 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
-                alt={user?.username || 'User Profile'}
-                src="/gruvi.png"
-              />
+              >
+                <img 
+                  src="/gruvi.png" 
+                  alt={user?.username || 'User Profile'}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain',
+                  }}
+                />
+              </Box>
               <Box sx={{ mt: 7, textAlign: 'center' }}>
                 <Typography 
                   variant="subtitle2"
