@@ -530,7 +530,7 @@ const CreatePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 0, pb: 3, px: { xs: 2, sm: 3 } }}>
+    <Container maxWidth="lg" sx={{ pt: 0, pb: 3, px: { xs: 2, sm: 3 }, minHeight: 0, overflow: 'visible' }}>
       {/* Toggle Buttons */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
         <ToggleButtonGroup

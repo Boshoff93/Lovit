@@ -29,14 +29,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Drawer,
-  ListItemButton,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { getRouteConfig } from '../config/routeConfig';
 import CloseIcon from '@mui/icons-material/Close';
@@ -59,37 +52,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { faqItems } from './FAQPage';
-
-// Reviews data
-const reviews = [
-  { id: 1, name: 'Alex M.', rating: 5, text: 'Mind-blowing! Created a full song in seconds. This is the future of music.', avatar: '🎵' },
-  { id: 2, name: 'Sarah K.', rating: 5, text: 'As a content creator, this saves me hours. The quality is incredible.', avatar: '🎤' },
-  { id: 3, name: 'David L.', rating: 4.5, text: 'Love the variety of genres. Made K-Pop and lo-fi beats in one session!', avatar: '🎧' },
-  { id: 4, name: 'Emma R.', rating: 5, text: 'The music videos are stunning. My YouTube channel has never looked better.', avatar: '🎬' },
-  { id: 5, name: 'James T.', rating: 4, text: 'Great for quick inspiration. Some gems, some misses, but always creative.', avatar: '🎹' },
-  { id: 6, name: 'Mia C.', rating: 5, text: 'Made a birthday song for my mom. She cried happy tears!', avatar: '💖' },
-  { id: 7, name: 'Chris P.', rating: 5, text: 'Professional quality output. Using it for all my podcast intros now.', avatar: '🎙️' },
-  { id: 8, name: 'Nina S.', rating: 4.5, text: 'The anime style music videos are exactly what I was looking for!', avatar: '✨' },
-  { id: 9, name: 'Ryan B.', rating: 5, text: 'Created 50+ songs last month. Best investment for my content business.', avatar: '🚀' },
-  { id: 10, name: 'Olivia H.', rating: 4, text: 'Easy to use and the results keep getting better. Love this tool!', avatar: '🌟' },
-  { id: 11, name: 'Marcus W.', rating: 5, text: 'The Spanish songs are so authentic! Native speakers loved them.', avatar: '🌎' },
-  { id: 12, name: 'Luna Z.', rating: 4.5, text: 'Finally, AI music that actually sounds like real music. Impressed!', avatar: '🎶' },
-];
-
-// Star rating component
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (rating >= i) {
-      stars.push(<StarIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    } else if (rating >= i - 0.5) {
-      stars.push(<StarHalfIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    } else {
-      stars.push(<StarBorderIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    }
-  }
-  return <Box sx={{ display: 'flex', gap: 0.25 }}>{stars}</Box>;
-};
 
 // Sample tracks data (for showcase)
 const sampleTracks = [
@@ -297,14 +259,11 @@ const languages = [
 ];
 
 // Subscription plans
-// Token-based pricing system (reference constants for pricing logic)
-// A song costs $0.03 to generate, selling at $0.20 (17 cents profit)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TOKENS_PER_SONG = 20; // 20 tokens = $0.20
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TOKENS_PER_STILL_VIDEO = 40; // Still image music video = $0.40
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TOKENS_PER_ANIMATED_VIDEO = 200; // Full animation = $2.00
+// Credit-based pricing system
+// Credit costs:
+// 1 Song = 25 credits
+// 1 Still Image Video = 100 credits
+// 1 Animated Video = 500 credits
 
 interface PricePlan {
   id: string;
@@ -313,7 +272,7 @@ interface PricePlan {
   yearlyPrice: number;
   popular?: boolean;
   features: string[];
-  tokens: number;
+  credits: number;
   musicVideos: boolean;
   stripePrices: {
     monthly: string;
@@ -326,74 +285,128 @@ const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 6.99,
-    yearlyPrice: 4.99,
-    tokens: 500, // ~25 songs
-    musicVideos: false,
+    monthlyPrice: 8.99,
+    yearlyPrice: 7.19,
+    credits: 500,
+    musicVideos: true,
     features: [
-      '500 tokens/month',
-      '~25 songs',
+      '500 credits/month',
+      '20 songs',
+      '5 still image videos',
+      '1 animated video',
       'Standard quality audio',
-      'All 60+ genres',
-      'All 24 languages',
-      'Download MP3 files',
+      'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_starter_monthly',
-      yearly: 'price_starter_yearly'
+      monthly: 'price_1RQOjAB6HvdZJCd5zQoxXdLw',
+      yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
     },
-    productId: 'prod_starter'
+    productId: 'prod_SApdzvErjotcRN'
   },
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 12.99,
-    yearlyPrice: 9.99,
+    monthlyPrice: 16.99,
+    yearlyPrice: 13.59,
     popular: true,
-    tokens: 1200, // ~60 songs OR ~30 still videos OR ~6 animated
+    credits: 1000,
     musicVideos: true,
     features: [
-      '1,200 tokens/month',
-      '~60 songs or ~30 still videos',
+      '1,000 credits/month',
+      '40 songs',
+      '10 still image videos',
+      '2 animated videos',
       'High quality audio',
-      'Music video creation',
-      'All 16 art styles',
-      'Add anyone to videos',
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_pro_monthly',
-      yearly: 'price_pro_yearly'
+      monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
+      yearly: 'price_1RQOoXB6HvdZJCd5v8SgG1OB'
     },
-    productId: 'prod_pro'
+    productId: 'prod_SApgUFg3gLoB70'
   },
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 24.99,
-    yearlyPrice: 19.99,
-    tokens: 2500, // ~125 songs OR ~62 still videos OR ~12 animated
+    monthlyPrice: 29.99,
+    yearlyPrice: 23.99,
+    credits: 2500,
     musicVideos: true,
     features: [
-      '2,500 tokens/month',
-      '~125 songs or ~12 animated videos',
+      '2,500 credits/month',
+      '100 songs',
+      '25 still image videos',
+      '5 animated videos',
       'Highest quality audio',
-      'Full animation music videos',
-      'All art styles + exclusive',
-      'Add anyone to videos',
       'Priority generation',
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_premium_monthly',
-      yearly: 'price_premium_yearly'
+      monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',
+      yearly: 'price_1RQOrJB6HvdZJCd5hw8d3dsZ'
     },
-    productId: 'prod_premium'
+    productId: 'prod_SAphmL67DhziEI'
   }
 ];
 
 // FAQ data for homepage
 // FAQ data is now imported from FAQPage as faqItems
+
+// Reviews data
+const reviews = [
+  { id: 1, name: 'Alex M.', rating: 5, text: 'Mind-blowing! Created a full song in seconds. This is the future of music.', avatar: '🎵' },
+  { id: 2, name: 'Sarah K.', rating: 5, text: 'As a content creator, this saves me hours. The quality is incredible.', avatar: '🎤' },
+  { id: 3, name: 'David L.', rating: 4.5, text: 'Love the variety of genres. Made K-Pop and lo-fi beats in one session!', avatar: '🎧' },
+  { id: 4, name: 'Emma R.', rating: 5, text: 'The music videos are stunning. My YouTube channel has never looked better.', avatar: '🎬' },
+  { id: 5, name: 'James T.', rating: 4, text: 'Great for quick inspiration. Some gems, some misses, but always creative.', avatar: '🎹' },
+  { id: 6, name: 'Mia C.', rating: 5, text: 'Made a birthday song for my mom. She cried happy tears!', avatar: '💖' },
+  { id: 7, name: 'Chris P.', rating: 5, text: 'Professional quality output. Using it for all my podcast intros now.', avatar: '🎙️' },
+  { id: 8, name: 'Nina S.', rating: 4.5, text: 'The anime style music videos are exactly what I was looking for!', avatar: '✨' },
+  { id: 9, name: 'Ryan B.', rating: 5, text: 'Created 50+ songs last month. Best investment for my content business.', avatar: '🚀' },
+  { id: 10, name: 'Olivia H.', rating: 4, text: 'Easy to use and the results keep getting better. Love this tool!', avatar: '🌟' },
+  { id: 11, name: 'Marcus W.', rating: 5, text: 'The Spanish songs are so authentic! Native speakers loved them.', avatar: '🌎' },
+  { id: 12, name: 'Luna Z.', rating: 4.5, text: 'Finally, AI music that actually sounds like real music. Impressed!', avatar: '🎶' },
+];
+
+// Star rating component
+const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (rating >= i) {
+      stars.push(<StarIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
+    } else if (rating >= i - 0.5) {
+      stars.push(<StarHalfIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
+    } else {
+      stars.push(<StarBorderIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
+    }
+  }
+  return <Box sx={{ display: 'flex', gap: 0.25 }}>{stars}</Box>;
+};
+
+// Section Divider Component
+const SectionDivider: React.FC = () => (
+  <Container maxWidth="md">
+    <Box
+      sx={{
+        height: '1.5px',
+        background: 'linear-gradient(90deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,0,0,0.12) 50%, rgba(0,122,255,0.15) 80%, transparent 100%)',
+        my: { xs: 2, md: 4 },
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '120px',
+          height: '20px',
+          background: 'radial-gradient(ellipse at center, rgba(0,122,255,0.08) 0%, transparent 70%)',
+          filter: 'blur(8px)',
+        },
+      }}
+    />
+  </Container>
+);
 
 // Quick links / routes for footer SEO - using valid routes from routeConfig
 const quickRoutes = [
@@ -496,34 +509,8 @@ const quickRoutes = [
   { path: '/create-uplifting-music', label: 'Uplifting Music' },
 ];
 
-// Section Divider Component
-const SectionDivider: React.FC = () => (
-  <Container maxWidth="md">
-    <Box
-      sx={{
-        height: '1.5px',
-        background: 'linear-gradient(90deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,0,0,0.12) 50%, rgba(0,122,255,0.15) 80%, transparent 100%)',
-        my: { xs: 2, md: 4 },
-        position: 'relative',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: '-10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '20px',
-          background: 'radial-gradient(ellipse at center, rgba(0,122,255,0.08) 0%, transparent 70%)',
-          filter: 'blur(8px)',
-        },
-      }}
-    />
-  </Container>
-);
-
 const HomePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -539,8 +526,6 @@ const HomePage: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [expandedFAQ, setExpandedFAQ] = useState<string | false>(false);
   const promptInputRef = useRef<HTMLInputElement>(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
@@ -826,204 +811,58 @@ const HomePage: React.FC = () => {
             >
               Gruvi
             </Typography>
-            
-            {/* Desktop Navigation */}
-            {!isMobile && (
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <Button 
-                  variant="text"
-                  component={RouterLink}
-                  to="/"
-                  sx={{ 
-                    color: location.pathname === '/' ? '#007AFF' : '#86868B',
-                    fontWeight: 500,
-                    '&:hover': { color: '#1D1D1F' },
-                  }}
-                >
-                  Home
-                </Button>
-                <Button 
-                  variant="text"
-                  component={RouterLink} 
-                  to="/faq"
-                  sx={{ 
-                    color: location.pathname === '/faq' ? '#007AFF' : '#86868B',
-                    fontWeight: 500,
-                    '&:hover': { color: '#1D1D1F' },
-                  }}
-                >
-                  FAQ
-                </Button>
-                <Button 
-                  variant="outlined"
-                  onClick={handleClickOpen}
-                  sx={{
-                    borderColor: 'rgba(0,0,0,0.15)',
-                    color: '#1D1D1F',
-                    px: 3,
-                    borderRadius: '100px',
-                    '&:hover': {
-                      borderColor: 'rgba(0,0,0,0.3)',
-                      background: 'rgba(0,0,0,0.03)',
-                    },
-                  }}
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  variant="contained" 
-                  onClick={handleClickOpen}
-                  sx={{
-                    background: '#1D1D1F',
-                    color: '#fff',
-                    px: 3,
-                    borderRadius: '100px',
-                    fontWeight: 600,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    '&:hover': {
-                      background: '#000',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    },
-                  }}
-                >
-                  Sign Up
-                </Button>
-              </Box>
-            )}
-
-            {/* Mobile Hamburger Menu */}
-            {isMobile && (
-              <IconButton
-                onClick={() => setMobileMenuOpen(true)}
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Button 
+                variant="text"
+                sx={{ 
+                  color: '#86868B',
+                  fontWeight: 500,
+                  display: { xs: 'none', sm: 'inline-flex' },
+                  '&:hover': { color: '#1D1D1F' },
+                }}
+              component={RouterLink} 
+              to="/faq"
+            >
+              FAQ
+            </Button>
+            <Button 
+                variant="outlined"
+                onClick={handleClickOpen}
                 sx={{
-                  color: '#007AFF',
-                  border: '2px solid #007AFF',
-                  borderRadius: '12px',
-                  p: 1,
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  color: '#1D1D1F',
+                  px: 3,
+                  borderRadius: '100px',
                   '&:hover': {
-                    background: 'rgba(0,122,255,0.1)',
+                    borderColor: 'rgba(0,0,0,0.3)',
+                    background: 'rgba(0,0,0,0.03)',
                   },
                 }}
               >
-                <MenuIcon />
-              </IconButton>
-            )}
+                Sign In
+            </Button>
+            <Button 
+              variant="contained" 
+                onClick={handleClickOpen}
+                sx={{
+                  background: '#1D1D1F',
+                  color: '#fff',
+                  px: 3,
+                  borderRadius: '100px',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  '&:hover': {
+                    background: '#000',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  },
+                }}
+              >
+                Sign Up
+            </Button>
+          </Box>
           </Box>
         </Container>
       </Box>
-
-      {/* Mobile Navigation Drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        PaperProps={{
-          sx: {
-            width: 280,
-            background: 'rgba(255,255,255,0.98)',
-            backdropFilter: 'blur(20px)',
-          },
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
-              Menu
-            </Typography>
-            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#86868B' }}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          
-          <List sx={{ mb: 2 }}>
-            <ListItemButton
-              component={RouterLink}
-              to="/"
-              onClick={() => setMobileMenuOpen(false)}
-              sx={{
-                borderRadius: '12px',
-                mb: 1,
-                ...(location.pathname === '/' && {
-                  background: 'rgba(0,122,255,0.1)',
-                  '& .MuiListItemIcon-root': { color: '#007AFF' },
-                  '& .MuiListItemText-primary': { color: '#007AFF', fontWeight: 600 },
-                }),
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItemButton>
-            
-            <ListItemButton
-              component={RouterLink}
-              to="/faq"
-              onClick={() => setMobileMenuOpen(false)}
-              sx={{
-                borderRadius: '12px',
-                mb: 1,
-                ...(location.pathname === '/faq' && {
-                  background: 'rgba(0,122,255,0.1)',
-                  '& .MuiListItemIcon-root': { color: '#007AFF' },
-                  '& .MuiListItemText-primary': { color: '#007AFF', fontWeight: 600 },
-                }),
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <HelpOutlineIcon />
-              </ListItemIcon>
-              <ListItemText primary="FAQ" />
-            </ListItemButton>
-          </List>
-          
-          <Divider sx={{ my: 2 }} />
-          
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleClickOpen();
-              }}
-              sx={{
-                borderColor: 'rgba(0,0,0,0.15)',
-                color: '#1D1D1F',
-                borderRadius: '12px',
-                py: 1.5,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  background: 'rgba(0,0,0,0.03)',
-                },
-              }}
-            >
-              Sign In
-            </Button>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleClickOpen();
-              }}
-              sx={{
-                background: '#007AFF',
-                color: '#fff',
-                borderRadius: '12px',
-                py: 1.5,
-                fontWeight: 600,
-                boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: '#0066CC',
-                },
-              }}
-            >
-              Sign Up
-            </Button>
-          </Box>
-        </Box>
-      </Drawer>
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{ 
@@ -1062,6 +901,7 @@ const HomePage: React.FC = () => {
             {/* Tagline */}
           <Typography 
             sx={{ 
+                fontFamily: '"Fredoka", "Inter", sans-serif',
                 fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
                 fontWeight: 600,
                 color: '#1D1D1F',
@@ -1256,15 +1096,15 @@ const HomePage: React.FC = () => {
                 </Typography>
               </Box>
             ))}
-            </Box>
           </Box>
         </Box>
+      </Box>
 
       <SectionDivider />
 
       {/* Featured Tracks Section */}
       <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg" style={{ marginBottom: '20px' }}>
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -1620,7 +1460,7 @@ const HomePage: React.FC = () => {
 
       {/* Value Proposition - Genres */}
       <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg" style={{ marginBottom: '20px' }}>
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -1685,7 +1525,7 @@ const HomePage: React.FC = () => {
 
       {/* Value Proposition - Art Styles */}
       <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg" style={{ marginBottom: '20px' }}>
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -1828,7 +1668,7 @@ const HomePage: React.FC = () => {
 
       {/* Features Grid */}
       <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg" style={{ marginBottom: '20px' }}>
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -2124,19 +1964,6 @@ const HomePage: React.FC = () => {
                         />
                       </ListItem>
                     ))}
-                    {!plan.musicVideos && (
-                      <ListItem disableGutters sx={{ py: 0.5 }}>
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <CloseIcon sx={{ color: '#86868B', fontSize: 18 }} />
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary="Music video creation" 
-                          primaryTypographyProps={{ 
-                            sx: { color: '#86868B', fontSize: '0.9rem' } 
-                          }}
-                        />
-                      </ListItem>
-                    )}
                   </List>
                     </CardContent>
                   </Card>
@@ -2299,7 +2126,7 @@ const HomePage: React.FC = () => {
 
       {/* Explore Routes Section */}
       <Box sx={{ py: { xs: 6, md: 8 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg" style={{ marginBottom: '20px' }}>
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 5 }}>
             <Typography
               variant="h3"

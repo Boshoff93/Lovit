@@ -161,13 +161,12 @@ const AccountPage: React.FC = () => {
                   width: { xs: 100, sm: 120 }, 
                   height: { xs: 100, sm: 120 }, 
                   mb: 2,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                   position: 'absolute',
-                  backgroundColor: 'secondary.light',
+                  backgroundColor: 'transparent',
                   top: { xs: -50, sm: -60 }
                 }}
                 alt={user?.username || 'User Profile'}
-                src="/lovit.png"
+                src="/gruvi.png"
               />
               <Box sx={{ mt: 7, textAlign: 'center' }}>
                 <Typography 

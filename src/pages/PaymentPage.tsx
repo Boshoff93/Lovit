@@ -4,7 +4,6 @@ import {
   Container,
   Typography,
   Button,
-  Paper,
   Switch,
   FormControlLabel,
   List,
@@ -14,7 +13,6 @@ import {
   Divider,
   Card,
   CardContent,
-  CardActions,
   useTheme,
   useMediaQuery,
   CircularProgress,
@@ -22,14 +20,16 @@ import {
   Snackbar,
   keyframes,
   AppBar,
-  Toolbar
+  Toolbar,
+  Chip,
+  Link
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/SpaceDashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   createCheckoutSession, 
@@ -45,7 +45,6 @@ import {
   trackBillingCycleChanged,
   trackCheckoutStarted,
   trackSubscriptionManagement,
-  getFunnelStep,
   trackCustomerJourneyMilestone
 } from '../utils/analytics';
 
@@ -55,14 +54,9 @@ interface PricePlan {
   monthlyPrice: number;
   yearlyPrice: number;
   popular?: boolean;
-  features: {
-    photoCount: string;
-    modelCount: string;
-    quality: string;
-    resemblance: string;
-    parallel: string;
-    other?: string[];
-  };
+  features: string[];
+  credits: number;
+  musicVideos: boolean;
   stripePrices: {
     monthly: string;
     yearly: string;
@@ -79,16 +73,18 @@ const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 6.99,
-    yearlyPrice: 4.99,
-    features: {
-      photoCount: '500 credits/month',
-      modelCount: '~20 songs or 5 still videos',
-      quality: '1 character slot',
-      resemblance: 'Standard quality',
-      parallel: '2 generations at a time',
-      other: ['All visual styles', 'All genres & moods']
-    },
+    monthlyPrice: 8.99,
+    yearlyPrice: 7.19,
+    credits: 500,
+    musicVideos: true,
+    features: [
+      '500 credits/month',
+      '20 songs',
+      '5 still image videos',
+      '1 animated video',
+      'Standard quality audio',
+      'Commercial license',
+    ],
     stripePrices: {
       monthly: 'price_1RQOjAB6HvdZJCd5zQoxXdLw',
       yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
@@ -98,16 +94,19 @@ const plans: PricePlan[] = [
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 14.99,
-    yearlyPrice: 9.99,
-    features: {
-      photoCount: '1,500 credits/month',
-      modelCount: '~60 songs or 15 still videos',
-      quality: '3 character slots',
-      resemblance: 'Enhanced quality',
-      parallel: '4 generations at a time',
-      other: ['All visual styles', 'Priority queue']
-    },
+    monthlyPrice: 16.99,
+    yearlyPrice: 13.59,
+    popular: true,
+    credits: 1000,
+    musicVideos: true,
+    features: [
+      '1,000 credits/month',
+      '40 songs',
+      '10 still image videos',
+      '2 animated videos',
+      'High quality audio',
+      'Commercial license',
+    ],
     stripePrices: {
       monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
       yearly: 'price_1RQOoXB6HvdZJCd5v8SgG1OB'
@@ -118,16 +117,18 @@ const plans: PricePlan[] = [
     id: 'premium',
     title: 'Premium',
     monthlyPrice: 29.99,
-    yearlyPrice: 19.99,
-    popular: true,
-    features: {
-      photoCount: '5,000 credits/month',
-      modelCount: '~200 songs or 10 animated videos',
-      quality: '10 character slots',
-      resemblance: 'Best quality',
-      parallel: '8 generations at a time',
-      other: ['All visual styles', 'Priority support', 'Commercial license']
-    },
+    yearlyPrice: 23.99,
+    credits: 2500,
+    musicVideos: true,
+    features: [
+      '2,500 credits/month',
+      '100 songs',
+      '25 still image videos',
+      '5 animated videos',
+      'Highest quality audio',
+      'Priority generation',
+      'Commercial license',
+    ],
     stripePrices: {
       monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',
       yearly: 'price_1RQOrJB6HvdZJCd5hw8d3dsZ'
@@ -187,15 +188,15 @@ const PaymentPage: React.FC = () => {
   // Check for success query param (for Stripe redirect)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const success = params.get('success');
+    const successParam = params.get('success');
     
-    if (success === 'true') {
+    if (successParam === 'true') {
       setSuccess('Payment successful! Your subscription has been updated.');
       // Clear the URL parameters after reading them
       window.history.replaceState({}, document.title, window.location.pathname);
       // Refresh account data
       fetchAccountData(true);
-    } else if (success === 'false') {
+    } else if (successParam === 'false') {
       setError('Payment was not completed. Please try again.');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -272,8 +273,8 @@ const PaymentPage: React.FC = () => {
       } else if (createCheckoutSession.rejected.match(resultAction)) {
         setError(resultAction.payload as string || 'Failed to create checkout session');
       }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
     }
   },[dispatch, selectedPlan, isYearly]);
 
@@ -295,8 +296,8 @@ const PaymentPage: React.FC = () => {
       } else if (createPortalSession.rejected.match(resultAction)) {
         setError(resultAction.payload as string || 'Failed to access subscription management');
       }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
     } finally {
       setIsManagingSubscription(false);
     }
@@ -329,47 +330,129 @@ const PaymentPage: React.FC = () => {
   },[proceedRef]);
 
   return (
-    <>
-      <AppBar position="static" color="transparent" elevation={0} sx={{ mb: 2 }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <img 
-              src="/lovit.png" 
-              alt="Lovit Logo" 
-              style={{ 
-                height: '32px', 
-                width: '32px', 
-                marginRight: '10px',
-                borderRadius: '50%'
-              }} 
-            />
-            <Typography variant="h6" component="div">
-              Lovit
-            </Typography>
+    <Box sx={{ 
+      minHeight: '100vh',
+      background: '#FFFFFF',
+      color: '#1D1D1F',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Subtle gradient background - Apple-style clean blue */}
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(ellipse at top center, rgba(0, 122, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at bottom right, rgba(90, 200, 250, 0.05) 0%, transparent 40%)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }} />
+
+      {/* Header - Glassy White */}
+      <Box
+        component="header"
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            py: 2,
+          }}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5,
+                cursor: 'pointer',
+              }}
+              onClick={() => navigate('/')}
+            >
+              <Box
+                component="img"
+                src="/gruvi.png"
+                alt="Gruvi"
+                sx={{
+                  height: 40,
+                  width: 40,
+                  objectFit: 'contain',
+                }}
+              />
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontFamily: '"Fredoka", "Inter", sans-serif',
+                  fontWeight: 600,
+                  fontSize: '1.5rem',
+                  letterSpacing: '-0.01em',
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Gruvi
+              </Typography>
+            </Box>
+            
+            <Button 
+              variant="text"
+              startIcon={<LogoutIcon />} 
+              onClick={handleLogout}
+              sx={{
+                color: '#86868B',
+                fontWeight: 500,
+                '&:hover': { color: '#1D1D1F' },
+              }}
+            >
+              Logout
+            </Button>
           </Box>
-          <Button 
-            color="primary" 
-            startIcon={<LogoutIcon />} 
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+        </Container>
+      </Box>
       
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ pt: 14, pb: 8, position: 'relative', zIndex: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+          <Typography 
+            variant="h2"
+            sx={{ 
+              fontSize: { xs: '2rem', md: '2.5rem' },
+              fontWeight: 600,
+              color: '#1D1D1F',
+              mb: 2,
+            }}
+          >
             Choose Your Plan
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-            Select the perfect plan for your needs
+          <Typography sx={{ color: '#86868B', fontSize: '1rem', mb: 4 }}>
+            Select the plan that best fits your needs
           </Typography>
           
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 4 }}>
             
             {error && (
-              <Alert severity="error" sx={{ width: '100%', maxWidth: '500px' }}>
+              <Alert 
+                severity="error" 
+                sx={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 59, 48, 0.1)',
+                  border: '1px solid rgba(255, 59, 48, 0.2)',
+                  color: '#D70015',
+                }}
+              >
                 {error}
               </Alert>
             )}
@@ -379,46 +462,70 @@ const PaymentPage: React.FC = () => {
               autoHideDuration={6000} 
               onClose={() => setSuccess(null)}
               anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              sx={{
-                mt: 7
-              }}
+              sx={{ mt: 7 }}
             >
-              <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+              <Alert 
+                onClose={() => setSuccess(null)} 
+                severity="success" 
+                sx={{ 
+                  borderRadius: '12px',
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  border: '1px solid rgba(34, 197, 94, 0.2)',
+                  color: '#22C55E',
+                }}
+              >
                 {success}
               </Alert>
             </Snackbar>
             
+            {/* Billing Toggle */}
             <FormControlLabel
               control={
                 <Switch 
                   checked={isYearly}
                   onChange={handleToggleInterval}
-                  color="primary"
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#007AFF',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#007AFF',
+                    },
+                  }}
                 />
               }
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography 
-                    variant="body1" 
                     sx={{ 
                       fontWeight: isYearly ? 'normal' : 'bold', 
-                      color: isYearly ? 'text.secondary' : 'primary.main'
+                      color: isYearly ? '#86868B' : '#1D1D1F'
                     }}
                   >
                     Monthly
                   </Typography>
-                  <Box sx={{ mx: 1 }}>|</Box>
+                  <Box sx={{ mx: 1, color: '#86868B' }}>|</Box>
                   <Typography 
-                    variant="body1" 
                     sx={{ 
                       fontWeight: isYearly ? 'bold' : 'normal', 
-                      color: isYearly ? 'primary.main' : 'text.secondary'
+                      color: isYearly ? '#1D1D1F' : '#86868B'
                     }}
                   >
-                    Yearly <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
-                      (Save up to 40%)
-                    </Box>
+                    Yearly
                   </Typography>
+                  {isYearly && (
+                    <Chip 
+                      label="SAVE 20%" 
+                      size="small" 
+                      sx={{ 
+                        ml: 1, 
+                        background: 'rgba(52, 199, 89, 0.15)', 
+                        color: '#248A3D',
+                        fontSize: '0.7rem',
+                        height: 20,
+                      }} 
+                    />
+                  )}
                 </Box>
               }
               labelPlacement="end"
@@ -426,7 +533,18 @@ const PaymentPage: React.FC = () => {
             
             {/* Subscription info alert */}
             {subscription && subscription.tier !== 'free' && (
-              <Alert severity="info" sx={{ mt: 1, width: '100%', maxWidth: '500px', textAlign: 'center' }}>
+              <Alert 
+                severity="info" 
+                sx={{ 
+                  mt: 1, 
+                  width: '100%', 
+                  maxWidth: '500px', 
+                  textAlign: 'center',
+                  borderRadius: '12px',
+                  background: 'rgba(0, 122, 255, 0.1)',
+                  border: '1px solid rgba(0, 122, 255, 0.2)',
+                }}
+              >
                 You currently are subscribed to the {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} plan
                 {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
                   <>. Next billing date: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}</>
@@ -436,180 +554,157 @@ const PaymentPage: React.FC = () => {
           </Box>
         </Box>
 
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 3,
-          justifyContent: 'center'
-        }}>
+        {/* Pricing Cards */}
+        <Box
+          sx={{
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+            gap: 3,
+            maxWidth: '1000px',
+            mx: 'auto',
+          }}
+        >
           {plans.map((plan) => (
-            <Box 
+            <Card 
               key={plan.id}
+              onClick={() => {
+                // Only allow plan selection if user is not already subscribed
+                if (!subscription || subscription.tier === 'free') {
+                  handleSelectPlan(plan.id);
+                }
+              }}
               sx={{ 
-                flex: { xs: '1 1 100%', md: '1 1 calc(33% - 24px)' }, 
-                maxWidth: { xs: '100%', md: 'calc(33% - 24px)' },
-                minWidth: { xs: '100%', md: '300px' },
-                position: 'relative'
+                background: selectedPlan === plan.id 
+                  ? 'rgba(0, 122, 255, 0.06)'
+                  : 'rgba(255,255,255,0.7)',
+                backdropFilter: 'blur(40px)',
+                WebkitBackdropFilter: 'blur(40px)',
+                border: selectedPlan === plan.id 
+                  ? '2px solid #007AFF'
+                  : '1px solid rgba(0,0,0,0.08)',
+                borderRadius: '28px',
+                position: 'relative',
+                overflow: 'visible',
+                cursor: (!subscription || subscription.tier === 'free') ? 'pointer' : 'default',
+                boxShadow: selectedPlan === plan.id
+                  ? '0 12px 48px rgba(0,122,255,0.2), 0 4px 16px rgba(0,122,255,0.1), inset 0 1px 0 rgba(255,255,255,0.8)'
+                  : '0 8px 40px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
+                transition: 'all 0.3s ease',
+                opacity: (subscription && subscription.tier !== 'free') ? 0.85 : 1,
+                '&:hover': {
+                  transform: (!subscription || subscription.tier === 'free') ? 'translateY(-6px)' : 'none',
+                  boxShadow: selectedPlan === plan.id
+                    ? '0 20px 60px rgba(0,122,255,0.25), 0 8px 24px rgba(0,122,255,0.15)'
+                    : '0 16px 56px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
+                },
               }}
             >
-              <Card 
-                elevation={plan.popular ? 6 : 2} 
-                onClick={() => {
-                  // Only allow plan selection if user is not already subscribed
-                  if (!subscription || subscription.tier === 'free') {
-                    handleSelectPlan(plan.id);
-                  }
-                }}
-                sx={{ 
-                  height: '100%',
-                  border: selectedPlan === plan.id 
-                    ? `2px solid ${theme.palette.primary.main}` 
-                    : plan.popular ? `2px solid ${theme.palette.primary.main}` : 'none',
-                  position: 'relative',
-                  overflow: 'visible',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  cursor: (!subscription || subscription.tier === 'free') ? 'pointer' : 'default',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: (!subscription || subscription.tier === 'free') ? 'translateY(-4px)' : 'none',
-                    boxShadow: theme.shadows[selectedPlan === plan.id ? 8 : 4],
-                  },
-                  bgcolor: selectedPlan === plan.id ? 'unset' : 'background.paper',
-                  background: selectedPlan === plan.id ? 
-                    `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : 
-                    'background.paper',
-                  color: selectedPlan === plan.id ? 'white' : 'inherit',
-                  opacity: (subscription && subscription.tier !== 'free') ? 0.85 : 1
-                }}
-              >
-                {plan.popular && (
-                  <Box 
-                    sx={{ 
-                      position: 'absolute', 
-                      top: selectedPlan === plan.id ? -18 : -15, 
-                      left: 0, 
-                      right: 0,
-                      textAlign: 'center',
-                      zIndex: 2,
-                    }}
-                  >
-                    <Box 
-                      sx={{ 
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        background: selectedPlan === plan.id 
-                          ? `linear-gradient(145deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`
-                          : `linear-gradient(145deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-                        color: selectedPlan === plan.id ? theme.palette.primary.main : 'white',
-                        px: 2,
-                        py: 0.5,
-                        borderRadius: 2,
-                        fontSize: '0.875rem',
-                        fontWeight: 'bold',
-                        boxShadow: selectedPlan === plan.id 
-                          ? '0 6px 12px rgba(0, 0, 0, 0.2)' 
-                          : '0 4px 8px rgba(0, 0, 0, 0.15)',
-                        border: selectedPlan === plan.id ? `2px solid ${theme.palette.primary.main}` : 'none'
-                      }}
-                    >
-                      <StarIcon 
-                        fontSize="small" 
-                        sx={{ 
-                          mr: 0.5, 
-                          color: selectedPlan === plan.id ? theme.palette.primary.main : theme.palette.secondary.light 
-                        }} 
-                      />
-                      Most Popular
-                    </Box>
-                  </Box>
+              {plan.popular && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -12,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#007AFF',
+                    color: '#fff',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '100px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    boxShadow: '0 2px 8px rgba(0, 122, 255, 0.3)',
+                  }}
+                >
+                  <StarIcon sx={{ fontSize: 14 }} />
+                  MOST POPULAR
+                </Box>
+              )}
+              <CardContent sx={{ p: 4 }}>
+                <Typography sx={{ fontSize: '0.9rem', color: '#86868B', mb: 1, fontStyle: 'italic' }}>
+                  {plan.id === 'starter' ? 'Our starter plan.' : 
+                   plan.id === 'pro' ? 'Access to music videos and more.' : 
+                   'Maximum credits and every feature unlocked.'}
+                </Typography>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+                  {plan.title}
+                </Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 2, fontStyle: 'italic' }}>
+                  {plan.id === 'starter' ? 'Perfect for trying it out' : 
+                   plan.id === 'pro' ? 'Great for content creators' : 
+                   'Best for power users'}
+                </Typography>
+                
+                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+                    ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                  </Typography>
+                  <Typography sx={{ color: '#86868B', ml: 1 }}>
+                    /month
+                  </Typography>
+                </Box>
+                
+                {isYearly && (
+                  <Typography sx={{ fontSize: '0.85rem', color: '#007AFF', mb: 3 }}>
+                    Saves ${((plan.monthlyPrice - plan.yearlyPrice) * 12).toFixed(0)} by billing yearly!
+                  </Typography>
                 )}
-                
-                <CardContent sx={{ p: 3, flex: '1 1 auto' }}>
-                  <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
-                    {plan.title}
-                  </Typography>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
-                    <Typography variant="h3" component="span" fontWeight="bold">
-                      ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
-                    </Typography>
-                    <Typography variant="body1" color={selectedPlan === plan.id ? "white" : "text.secondary"} sx={{ ml: 1 }}>
-                      /month
-                    </Typography>
-                  </Box>
-                  
-                  {isYearly && (
-                    <Typography variant="body2" color={selectedPlan === plan.id ? theme.palette.secondary.light : "success.main"} sx={{ mb: 2 }}>
-                      Billed annually (${plan.yearlyPrice * 12}/year)
-                    </Typography>
-                  )}
-                  
-                  <Divider sx={{ my: 2, borderColor: selectedPlan === plan.id ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.12)' }} />
-                  
-                  <List dense disablePadding>
-                    <ListItem disableGutters>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
+
+                <Button 
+                  fullWidth 
+                  variant={selectedPlan === plan.id ? 'contained' : 'outlined'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!subscription || subscription.tier === 'free') {
+                      handleSelectPlan(plan.id);
+                    }
+                  }}
+                  disabled={subscription && subscription.tier !== 'free'}
+                  sx={{ 
+                    py: 1.5,
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    mb: 3,
+                    ...(selectedPlan === plan.id ? {
+                      background: '#1D1D1F',
+                      color: '#fff',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      '&:hover': { background: '#000' },
+                    } : {
+                      borderColor: 'rgba(0,0,0,0.15)',
+                      color: '#1D1D1F',
+                      '&:hover': { 
+                        borderColor: 'rgba(0,0,0,0.3)',
+                        background: 'rgba(0,0,0,0.03)',
+                      },
+                    }),
+                  }}
+                >
+                  {selectedPlan === plan.id ? '✓ Selected' : 'Select Plan'}
+                </Button>
+
+                <Divider sx={{ borderColor: 'rgba(0,0,0,0.08)', mb: 3 }} />
+
+                <List dense disablePadding>
+                  {plan.features.map((feature, index) => (
+                    <ListItem key={index} disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 32 }}>
+                        <CheckCircleIcon sx={{ color: '#007AFF', fontSize: 18 }} />
                       </ListItemIcon>
-                      <ListItemText primary={plan.features.photoCount} />
+                      <ListItemText 
+                        primary={feature} 
+                        primaryTypographyProps={{ 
+                          sx: { color: '#1D1D1F', fontSize: '0.9rem' } 
+                        }}
+                      />
                     </ListItem>
-                    
-                    <ListItem disableGutters>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
-                      </ListItemIcon>
-                      <ListItemText primary={plan.features.modelCount} />
-                    </ListItem>
-                    
-                    <ListItem disableGutters>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
-                      </ListItemIcon>
-                      <ListItemText primary={plan.features.quality} />
-                    </ListItem>
-                    
-                    <ListItem disableGutters>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
-                      </ListItemIcon>
-                      <ListItemText primary={plan.features.resemblance} />
-                    </ListItem>
-                    
-                    <ListItem disableGutters>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
-                      </ListItemIcon>
-                      <ListItemText primary={plan.features.parallel} />
-                    </ListItem>
-                    
-                    {plan.features.other?.map((feature, index) => (
-                      <ListItem disableGutters key={index}>
-                        <ListItemIcon sx={{ minWidth: 36 }}>
-                          <CheckCircleIcon color={selectedPlan === plan.id ? "inherit" : "primary"} sx={{ color: selectedPlan === plan.id ? theme.palette.secondary.light : undefined }} />
-                        </ListItemIcon>
-                        <ListItemText primary={feature} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-                
-                <CardActions sx={{ p: 3, pt: 0, mt: 'auto' }}>
-                  <Typography 
-                    variant="body1" 
-                    align="center"
-                    color={selectedPlan === plan.id ? theme.palette.secondary.light : "text.secondary"}
-                    sx={{ 
-                      width: '100%', 
-                      fontWeight: selectedPlan === plan.id ? 'bold' : 'normal',
-                      py: 1
-                    }}
-                  >
-                    {selectedPlan === plan.id ? "✓ Selected" : "Select"}
-                  </Typography>
-                </CardActions>
-              </Card>
-            </Box>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
           ))}
         </Box>
         
@@ -624,7 +719,6 @@ const PaymentPage: React.FC = () => {
             {(!subscription || subscription.tier === 'free') && (
               <Button 
                 variant="contained" 
-                color="primary" 
                 size="large" 
                 disabled={!selectedPlan || isLoading}
                 onClick={handleButtonClick}
@@ -632,7 +726,21 @@ const PaymentPage: React.FC = () => {
                   py: 1.5,
                   px: 6,
                   fontSize: '1.1rem',
-                  width: { xs: '100%', sm: 'auto', md: 'auto' }
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  background: '#007AFF',
+                  boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                  transition: 'all 0.2s ease',
+                  width: { xs: '100%', sm: 'auto', md: 'auto' },
+                  '&:hover': {
+                    background: '#0066DD',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0,122,255,0.4)',
+                  },
+                  '&.Mui-disabled': {
+                    background: 'rgba(0,0,0,0.1)',
+                    color: 'rgba(0,0,0,0.3)',
+                  },
                 }}
               >
                 {getButtonText()}
@@ -642,7 +750,6 @@ const PaymentPage: React.FC = () => {
             {subscription && subscription.tier !== 'free' && (
               <Button
                 variant="contained"
-                color="primary"
                 size="large"
                 onClick={handleManageSubscription}
                 disabled={isManagingSubscription}
@@ -650,7 +757,14 @@ const PaymentPage: React.FC = () => {
                   py: 1.5, 
                   px: 6, 
                   fontSize: '1.1rem',
-                  width: { xs: '100%', sm: 'auto', md: 'auto' }
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  background: '#007AFF',
+                  boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                  width: { xs: '100%', sm: 'auto', md: 'auto' },
+                  '&:hover': {
+                    background: '#0066DD',
+                  },
                 }}
               >
                 {isManagingSubscription ? (
@@ -661,36 +775,92 @@ const PaymentPage: React.FC = () => {
               </Button>
             )}
 
-            {subscription && subscription.tier !== 'free' && (<Button
-              variant="outlined"
-              color="primary"
-              size="large"
-              startIcon={<DashboardIcon />}
-              onClick={handleNavigateToDashboard}
-              sx={{ 
-                py: 1.5, 
-                px: 6, 
-                fontSize: '1.1rem',
-                width: { xs: '100%', sm: 'auto', md: 'auto' }
-              }}
-            >
-              Back to Dashboard
-            </Button>)}
+            {subscription && subscription.tier !== 'free' && (
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<DashboardIcon />}
+                onClick={handleNavigateToDashboard}
+                sx={{ 
+                  py: 1.5, 
+                  px: 6, 
+                  fontSize: '1.1rem',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  color: '#1D1D1F',
+                  width: { xs: '100%', sm: 'auto', md: 'auto' },
+                  '&:hover': { 
+                    borderColor: 'rgba(0,0,0,0.3)',
+                    background: 'rgba(0,0,0,0.03)',
+                  },
+                }}
+              >
+                Back to Dashboard
+              </Button>
+            )}
           </Box>
           
+          {/* Credit Top-ups */}
+          <Typography sx={{ color: '#86868B', fontSize: '0.9rem', mt: 4 }}>
+            Need more credits? Purchase additional credit packs anytime. 
+            <Link href="#" sx={{ color: '#007AFF', ml: 0.5 }}>Learn more</Link>
+          </Typography>
+
           <Typography 
-            variant="body2" 
-            color="text.secondary" 
             sx={{ 
-              mt: 2,
+              mt: 3,
               maxWidth: '600px',
-              mx: 'auto'  // Centers the text block
+              mx: 'auto',
+              color: '#86868B',
+              fontSize: '0.85rem',
             }}
           >
             If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
           </Typography>
         </Box>
       </Container>
+
+      {/* Footer */}
+      <Box 
+        component="footer" 
+        sx={{ 
+          py: 4,
+          borderTop: '1px solid rgba(0,0,0,0.06)',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+          }}>
+            <Typography sx={{ color: '#86868B', fontSize: '0.875rem' }}>
+              © {new Date().getFullYear()} Gruvi. All rights reserved.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <Link
+                component={RouterLink}
+                to="/terms" 
+                sx={{ color: '#86868B', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#1D1D1F' } }}
+              >
+                Terms
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/privacy"
+                sx={{ color: '#86868B', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#1D1D1F' } }}
+              >
+                Privacy
+              </Link>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Only show arrow when "Proceed to Payment" button is not visible */}
       {isMobile && selectedPlan && !isButtonVisible && (
@@ -710,23 +880,22 @@ const PaymentPage: React.FC = () => {
         >
           <Box
             sx={{
-              bgcolor: theme.palette.primary.main,
+              bgcolor: '#007AFF',
               color: 'white',
               borderRadius: '50%',
-              boxShadow: 4,
+              boxShadow: '0 4px 16px rgba(0,122,255,0.4)',
               p: 1.5,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              filter: 'drop-shadow(0 4px 12px rgba(103, 58, 183, 0.5))'
             }}
           >
             <KeyboardArrowDownIcon fontSize="medium" />
           </Box>
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 
-export default PaymentPage; 
+export default PaymentPage;

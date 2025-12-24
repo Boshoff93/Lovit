@@ -1,20 +1,20 @@
 {
-  "short_name": "Lovit",
-  "name": "Lovit",
+  "short_name": "Gruvi",
+  "name": "Gruvi",
   "icons": [
     {
-      "src": "lovit.png",
-      "type": "image/jpeg",
+      "src": "gruvi.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "lovit.png",
-      "type": "image/jpeg",
+      "src": "gruvi.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#007AFF",
   "background_color": "#ffffff"
 }

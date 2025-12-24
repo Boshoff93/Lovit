@@ -135,11 +135,11 @@ function App() {
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={
-          // <RequireAdmin>
+          <RequireAdmin>
             <Layout>
               <AdminEmailPage />
             </Layout>
-          // </RequireAdmin>
+          </RequireAdmin>
         } />
         
         {/* Payment page */}
@@ -147,20 +147,20 @@ function App() {
         
         {/* App dashboard with layout and tabs - protected route */}
         <Route path="/dashboard" element={
-          // <RequireAuth>
+          <RequireAuth>
             <Layout>
               <AppPage />
             </Layout>
-          // </RequireAuth>
+          </RequireAuth>
         } />
         
         {/* Account page - protected route */}
         <Route path="/account" element={
-          // <RequireAuth>
+          <RequireAuth>
             <Layout>
               <AccountPage />
             </Layout>
-          // </RequireAuth>
+          </RequireAuth>
         } />
         
         {/* Verify email page */}
@@ -196,20 +196,20 @@ function App() {
         
         {/* Create page - protected route */}
         <Route path="/create" element={
-          // <RequireAuth>
+           <RequireAuth>
             <Layout>
               <CreatePage />
             </Layout>
-          // </RequireAuth>
+          </RequireAuth>
         } />
         
         {/* Create video page (legacy) - protected route */}
         <Route path="/create-video/:songId" element={
-          // <RequireAuth>
+           <RequireAuth>
             <Layout>
               <CreateVideoPage />
             </Layout>
-          // </RequireAuth>
+           </RequireAuth>
         } />
       </Routes>
     </Router>

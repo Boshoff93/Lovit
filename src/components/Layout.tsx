@@ -275,20 +275,42 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <AppBarStyled position="fixed" open={isMobile ? false : open}>
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }}>
             {/* Logo on left */}
-            <Typography 
-              variant="h6" 
-              noWrap 
-              component="div" 
+            <Box 
               sx={{ 
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '1.5rem',
-                letterSpacing: '-0.02em',
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5, 
+                cursor: 'pointer' 
               }}
               onClick={() => navigate('/')}
             >
-              Gruvi
-            </Typography>
+              <Box
+                component="img"
+                src="/gruvi.png"
+                alt="Gruvi"
+                sx={{
+                  height: 40,
+                  width: 40,
+                  objectFit: 'contain',
+                }}
+              />
+              <Typography 
+                variant="h6" 
+                noWrap 
+                component="div" 
+                sx={{ 
+                  fontFamily: '"Fredoka", "Inter", sans-serif',
+                  fontWeight: 600,
+                  fontSize: '1.5rem',
+                  letterSpacing: '-0.01em',
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Gruvi
+              </Typography>
+            </Box>
 
             {/* Right side - navigation and actions */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -465,8 +487,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           open={open}
           onClose={handleDrawerClose}
           ModalProps={{
-            keepMounted: true,
-            disablePortal: true,
+            keepMounted: false,
+            disableScrollLock: true,
             disableEnforceFocus: true,
             disableAutoFocus: true
           }}

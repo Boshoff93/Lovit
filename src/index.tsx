@@ -61,52 +61,63 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Arial", sans-serif',
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", "Arial", sans-serif',
     h1: {
-      fontWeight: 700,
-      letterSpacing: '-0.025em',
-      color: '#1D1D1F',
-    },
-    h2: {
-      fontWeight: 700,
-      letterSpacing: '-0.025em',
-      color: '#1D1D1F',
-    },
-    h3: {
-      fontWeight: 600,
-      letterSpacing: '-0.02em',
-      color: '#1D1D1F',
-    },
-    h4: {
-      fontWeight: 600,
-      letterSpacing: '-0.02em',
-      color: '#1D1D1F',
-    },
-    h5: {
+      fontFamily: '"Fredoka", "Inter", sans-serif',
       fontWeight: 600,
       letterSpacing: '-0.01em',
       color: '#1D1D1F',
     },
+    h2: {
+      fontFamily: '"Fredoka", "Inter", sans-serif',
+      fontWeight: 600,
+      letterSpacing: '-0.01em',
+      color: '#1D1D1F',
+    },
+    h3: {
+      fontFamily: '"Fredoka", "Inter", sans-serif',
+      fontWeight: 600,
+      letterSpacing: '-0.01em',
+      color: '#1D1D1F',
+    },
+    h4: {
+      fontFamily: '"Inter", sans-serif',
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
+      color: '#1D1D1F',
+    },
+    h5: {
+      fontFamily: '"Inter", sans-serif',
+      fontWeight: 700,
+      letterSpacing: '-0.01em',
+      color: '#1D1D1F',
+    },
     h6: {
+      fontFamily: '"Inter", sans-serif',
       fontWeight: 600,
       letterSpacing: '-0.01em',
       color: '#1D1D1F',
     },
     button: {
-      fontWeight: 500,
+      fontFamily: '"Inter", sans-serif',
+      fontWeight: 600,
       letterSpacing: '0',
     },
     subtitle1: {
+      fontFamily: '"Inter", sans-serif',
       fontWeight: 500,
     },
     subtitle2: {
+      fontFamily: '"Inter", sans-serif',
       fontWeight: 500,
     },
     body1: {
+      fontFamily: '"Inter", sans-serif',
       letterSpacing: '-0.01em',
       color: '#1D1D1F',
     },
     body2: {
+      fontFamily: '"Inter", sans-serif',
       letterSpacing: '-0.01em',
       color: '#86868B',
     },
