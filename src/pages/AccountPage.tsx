@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { 
   Box, 
   Container,
@@ -13,7 +13,6 @@ import {
   Card,
   CardContent,
   LinearProgress,
-  Grid,
   Paper,
   Switch,
   FormControlLabel
@@ -21,8 +20,6 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession, createCheckoutSession } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import PersonIcon from '@mui/icons-material/Person';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
@@ -223,149 +220,97 @@ const AccountPage: React.FC = () => {
             
             <Divider />
 
-            {/* Allowances Section */}
+            {/* Credits Section */}
             {allowances && (
               <Box sx={{ p: { xs: 3, sm: 4 } }}>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                  Your Allowances
+                  Your Credits
                 </Typography>
-                <Grid container spacing={2}>
-                  {/* AI Photos Allowance */}
-                  <Grid size={12} key="photos">
-                    <Paper 
-                      elevation={0} 
-                      sx={{ 
-                        p: { xs: 1.5, sm: 2 }, 
+                <Paper 
+                  elevation={0} 
+                  sx={{ 
+                    p: { xs: 2, sm: 3 }, 
+                    borderRadius: 3, 
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    background: 'linear-gradient(135deg, rgba(0,122,255,0.02) 0%, rgba(0,122,255,0.05) 100%)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ 
+                        width: 40, 
+                        height: 40, 
                         borderRadius: 2, 
-                        border: '1px solid',
-                        borderColor: 'divider' 
+                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mr: 1.5
+                      }}>
+                        <Typography sx={{ fontSize: '1.25rem' }}>🎵</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          Song Credits
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Use credits to generate songs and videos
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      size="medium"
+                      onClick={() => handleTopUp('photos')}
+                      disabled={!!checkoutLoading}
+                      startIcon={checkoutLoading === 'photos' ? <CircularProgress size={16} /> : undefined}
+                      sx={{ 
+                        borderRadius: '100px',
+                        px: 4,
+                        py: 1,
+                        fontWeight: 600,
+                        width: { xs: '100%', sm: 'auto' },
+                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                        boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
+                          boxShadow: '0 6px 20px rgba(0,122,255,0.4)',
+                          transform: 'translateY(-1px)',
+                        }
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <PhotoCameraIcon sx={{ mr: 1, color: 'primary.main' }} />
-                          <Typography variant="subtitle1" fontWeight={600}>
-                            AI Photos
-                          </Typography>
-                        </Box>
-                        <Button
-                          variant="contained"
-                          size="medium"
-                          onClick={() => handleTopUp('photos')}
-                          disabled={!!checkoutLoading}
-                          startIcon={checkoutLoading === 'photos' ? <CircularProgress size={16} /> : undefined}
-                          sx={{ 
-                            borderRadius: 8,
-                            px: 3,
-                            fontWeight: 600,
-                            width: { xs: '100%', sm: 'auto' },
-                            '&:hover': {
-                              backgroundColor: 'primary.main',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                            }
-                          }}
-                        >
-                          {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up'}
-                        </Button>
-                      </Box>
-                      <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Used: {allowances.aiPhotos.used} / {allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)}
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600} color={
-                          allowances.aiPhotos.used >= (allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) ? 'error.main' : 'primary.main'
-                        }>
-                          {(allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) - allowances.aiPhotos.used <= 0 
-                            ? "Limit reached" 
-                            : `${(allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) - allowances.aiPhotos.used} remaining`}
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0))}
-                        sx={{ 
-                          height: 8, 
-                          borderRadius: 4,
-                          my: 1,
-                          backgroundColor: 'rgba(0,0,0,0.05)',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: allowances.aiPhotos.used >= (allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) 
-                              ? 'error.main' 
-                              : 'primary.main'
-                          }
-                        }}
-                      />
-                    </Paper>
-                  </Grid>
-                  
-                  {/* AI Models Allowance */}
-                  <Grid size={12} key="models">
-                    <Paper 
-                      elevation={0} 
-                      sx={{ 
-                        p: 2, 
-                        borderRadius: 2, 
-                        border: '1px solid',
-                        borderColor: 'divider' 
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                          <Typography variant="subtitle1" fontWeight={600}>
-                            AI Models
-                          </Typography>
-                        </Box>
-                        <Button
-                          variant="contained"
-                          size="medium"
-                          onClick={() => handleTopUp('models')}
-                          disabled={!!checkoutLoading}
-                          startIcon={checkoutLoading === 'models' ? <CircularProgress size={16} /> : undefined}
-                          sx={{ 
-                            borderRadius: 8,
-                            px: 3,
-                            fontWeight: 600,
-                            width: { xs: '100%', sm: 'auto' },
-                            '&:hover': {
-                              backgroundColor: 'primary.main',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                            }
-                          }}
-                        >
-                          {checkoutLoading === 'models' ? 'Loading...' : 'Top Up'}
-                        </Button>
-                      </Box>
-                      <Box sx={{ mt: 1, mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Used: {allowances.aiModels.used} / {allowances.aiModels.max + (allowances.aiModels.topup || 0)}
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600} color={
-                          allowances.aiModels.used >= (allowances.aiModels.max + (allowances.aiModels.topup || 0)) ? 'error.main' : 'primary.main'
-                        }>
-                          {(allowances.aiModels.max + (allowances.aiModels.topup || 0)) - allowances.aiModels.used <= 0 
-                            ? "Limit reached" 
-                            : `${(allowances.aiModels.max + (allowances.aiModels.topup || 0)) - allowances.aiModels.used} remaining`}
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={calculateAllowancePercentage(allowances.aiModels.used, allowances.aiModels.max + (allowances.aiModels.topup || 0))}
-                        sx={{ 
-                          height: 8, 
-                          borderRadius: 4,
-                          my: 1,
-                          backgroundColor: 'rgba(0,0,0,0.05)',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: allowances.aiModels.used >= (allowances.aiModels.max + (allowances.aiModels.topup || 0)) 
-                              ? 'error.main' 
-                              : 'primary.main'
-                          }
-                        }}
-                      />
-                    </Paper>
-                  </Grid>
-                </Grid>
+                      {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up Credits'}
+                    </Button>
+                  </Box>
+                  <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <Typography variant="h4" fontWeight={700} color="primary.main">
+                      {(allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) - allowances.aiPhotos.used}
+                      <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+                        credits remaining
+                      </Typography>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {allowances.aiPhotos.used} / {allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)} used
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0))}
+                    sx={{ 
+                      height: 10, 
+                      borderRadius: 5,
+                      my: 1,
+                      backgroundColor: 'rgba(0,122,255,0.1)',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 5,
+                        background: allowances.aiPhotos.used >= (allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) 
+                          ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
+                          : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                      }
+                    }}
+                  />
+                </Paper>
               </Box>
             )}
             

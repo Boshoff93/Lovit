@@ -102,31 +102,41 @@ const AllowanceDisplay: React.FC<{
   onUpgrade: (type: 'credits') => void;
 }> = ({ allowances, onUpgrade }) => {
   if (!allowances) return null;
+  
+  const totalCredits = (allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0);
+  const usedCredits = allowances.aiPhotos?.used || 0;
+  const remainingCredits = totalCredits - usedCredits;
 
   return (
-    <Box sx={{ display: 'flex', gap: 2 }}>
-      <Box 
-        onClick={() => onUpgrade('credits')}
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          backgroundColor: 'rgba(255,255,255,0.15)',
-          borderRadius: 8,
-          px: 1.5,
-          py: 0.5,
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            backgroundColor: 'rgba(255,255,255,0.25)',
-          }
-        }}
-      >
-        <MusicNoteIcon sx={{ fontSize: 18, mr: 0.5 }} />
-        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {allowances.aiPhotos?.used || 0}/{(allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0)} credits
-        </Typography>
-      </Box>
-    </Box>
+    <Button
+      onClick={() => onUpgrade('credits')}
+      startIcon={<MusicNoteIcon sx={{ fontSize: 18 }} />}
+      sx={{
+        borderRadius: '100px',
+        textTransform: 'none',
+        px: 2.5,
+        py: 0.75,
+        fontWeight: 500,
+        fontSize: '0.875rem',
+        minWidth: 'auto',
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0,0,0,0.08)',
+        color: '#1D1D1F',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          background: '#fff',
+          borderColor: 'rgba(0,122,255,0.3)',
+          color: '#007AFF',
+          transform: 'translateY(-1px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
+        }
+      }}
+    >
+      {remainingCredits} credits left
+    </Button>
   );
 };
 
@@ -445,7 +455,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </IconButton>
               )}
               
-              {token && allowances && (
+              {/* Credits display - only on desktop */}
+              {!isMobile && token && allowances && (
                 <AllowanceDisplay 
                   allowances={allowances} 
                   onUpgrade={(type) => {
@@ -459,7 +470,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
               )}
 
-              {token && (
+              {!isMobile && token && (
                 <IconButton color="secondary" onClick={() => handleLogout()}>
                   <LogoutIcon />
                 </IconButton>
@@ -656,6 +667,76 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               )}
             </List>
             
+            {/* Credits display in drawer for mobile */}
+            {token && allowances && (
+              <Box sx={{ px: 2, py: 1.5 }}>
+                <Paper
+                  onClick={() => {
+                    handleDrawerClose();
+                    setUpgradePopup({
+                      open: true,
+                      type: 'credits',
+                      message: 'Upgrade your subscription or top up to generate more songs!',
+                      title: 'Song Credits'
+                    });
+                  }}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    background: 'linear-gradient(135deg, rgba(0,122,255,0.05) 0%, rgba(0,122,255,0.1) 100%)',
+                    border: '1px solid rgba(0,122,255,0.15)',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(0,122,255,0.15) 100%)',
+                    }
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <MusicNoteIcon sx={{ color: '#007AFF', fontSize: 20 }} />
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                        {((allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0)) - (allowances.aiPhotos?.used || 0)} credits left
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#86868B' }}>
+                        Tap to top up
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
+            )}
+            
+            {/* Logout button in drawer for mobile */}
+            {token && (
+              <Box sx={{ px: 2, pb: 2 }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => {
+                    handleDrawerClose();
+                    handleLogout();
+                  }}
+                  startIcon={<LogoutIcon />}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    color: '#86868B',
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    '&:hover': {
+                      borderColor: '#FF3B30',
+                      color: '#FF3B30',
+                      backgroundColor: 'rgba(255,59,48,0.05)',
+                    }
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </Box>
+            )}
+
             <Box sx={{ mt: 'auto', p: 2 }}>
               <Paper 
                 variant="outlined" 

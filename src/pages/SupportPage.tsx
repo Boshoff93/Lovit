@@ -13,7 +13,6 @@ import {
   Avatar
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import FAQIcon from '@mui/icons-material/QuestionAnswer';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,16 +30,20 @@ const SupportPage: React.FC = () => {
 
   const faqItems = [
     {
-      question: 'How do I create an AI model?',
-      answer: 'Click "Create New Model" in the left drawers. Follow the step-by-step guide to set up your model.'
+      question: 'How do I create a character for my music video?',
+      answer: 'Go to Create, select "Character", and upload a reference photo. You can customize their name and details before adding them to your videos.'
+    },
+    {
+      question: 'How do credits work?',
+      answer: 'Credits are used to generate songs and music videos. Each song costs credits, and your credits refresh monthly based on your subscription tier.'
     },
     {
       question: 'What are the subscription tiers?',
-      answer: 'We offer Starter, Pro, and Premium tiers. Each tier comes with different features and usage limits.'
+      answer: 'We offer Starter, Pro, and Premium tiers. Each tier comes with different monthly credit allowances and features.'
     },
     {
       question: 'How do I cancel my subscription?',
-      answer: 'Go to your Account Settings, and select Manage Subscription. You will be able to cancel your subscription through stripe portal.'
+      answer: 'Go to your Account Settings, and select Manage Subscription. You will be able to cancel your subscription through the Stripe portal.'
     },
     {
       question: 'How do I reset my password?',
@@ -90,14 +93,13 @@ const SupportPage: React.FC = () => {
                   width: { xs: 100, sm: 120 }, 
                   height: { xs: 100, sm: 120 }, 
                   mb: 2,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                   position: 'absolute',
-                  backgroundColor: 'secondary.light',
+                  backgroundColor: 'transparent',
                   top: { xs: -50, sm: -60 }
                 }}
-              >
-                <SupportAgentIcon sx={{ fontSize: 60, color: 'primary.main' }} />
-              </Avatar>
+                alt="Support"
+                src="/gruvi-support.png"
+              />
               <Box sx={{ mt: 7, textAlign: 'center' }}>
                 <Typography variant="h5" gutterBottom>
                   Support Center

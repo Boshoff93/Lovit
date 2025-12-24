@@ -26,6 +26,9 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { songsApi } from '../services/api';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
@@ -294,6 +297,9 @@ const CreatePage: React.FC = () => {
   const initialTab = (searchParams.get('tab') as TabType) || 'song';
   const songIdFromUrl = searchParams.get('song');
   
+  // Get user from Redux store
+  const { user } = useSelector((state: RootState) => state.auth);
+  
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   
   // Song creation state
@@ -392,24 +398,44 @@ const CreatePage: React.FC = () => {
       return;
     }
     
+    if (!user?.userId) {
+      setNotification({
+        open: true,
+        message: 'Please log in to generate songs.',
+        severity: 'error'
+      });
+      return;
+    }
+    
     setIsGeneratingSong(true);
     try {
-      // TODO: Implement actual song generation API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call the actual song generation API
+      const response = await songsApi.generateSong({
+        userId: user.userId,
+        songPrompt: songPrompt.trim(),
+        genre: selectedGenre,
+        mood: selectedMood,
+        language: selectedLanguage,
+      });
+      
+      console.log('Song generation response:', response.data);
       
       setNotification({
         open: true,
-        message: 'Song generation started! It will appear in your library when ready.',
+        message: 'Song generated successfully! Check your library.',
         severity: 'success'
       });
       setSongPrompt('');
       setShowSongPromptError(false);
       
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (error) {
+      // Navigate to dashboard after a short delay
+      setTimeout(() => navigate('/dashboard'), 1500);
+    } catch (error: any) {
+      console.error('Song generation error:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to generate song. Please try again.';
       setNotification({
         open: true,
-        message: 'Failed to generate song. Please try again.',
+        message: errorMessage,
         severity: 'error'
       });
     } finally {

@@ -800,17 +800,34 @@ const HomePage: React.FC = () => {
             alignItems: 'center',
             py: 2,
           }}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 700, 
-                fontSize: '1.5rem',
-                color: '#1D1D1F',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              Gruvi
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box
+                component="img"
+                src="/gruvi.png"
+                alt="Gruvi"
+                sx={{
+                  height: 40,
+                  width: 40,
+                  objectFit: 'contain',
+                }}
+              />
+              <Typography 
+                variant="h6" 
+                noWrap
+                component="div"
+                sx={{ 
+                  fontFamily: '"Fredoka", "Inter", sans-serif',
+                  fontWeight: 600,
+                  fontSize: '1.5rem',
+                  letterSpacing: '-0.01em',
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Gruvi
+              </Typography>
+            </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Button 
                 variant="text"

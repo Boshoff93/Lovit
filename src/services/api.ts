@@ -63,4 +63,20 @@ export const modelsApi = {
   },
 };
 
+// Songs API
+export const songsApi = {
+  generateSong: (data: {
+    userId: string;
+    songPrompt: string;
+    genre: string;
+    mood: string;
+    language?: string;
+    characterIds?: string[];
+    customInstructions?: string;
+  }) => api.post('/api/gruvi/songs/generate', data),
+  
+  getUserSongs: (userId: string) => 
+    api.get(`/api/gruvi/songs/${userId}`),
+};
+
 export default api; 
