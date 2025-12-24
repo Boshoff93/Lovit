@@ -79,4 +79,35 @@ export const songsApi = {
     api.get(`/api/gruvi/songs/${userId}`),
 };
 
+// Videos API
+export const videosApi = {
+  generateVideo: (data: {
+    userId: string;
+    songId: string;
+    videoType: 'still' | 'animated';
+    style?: string;
+  }) => api.post('/api/gruvi/videos/generate', data),
+  
+  getUserVideos: (userId: string) => 
+    api.get(`/api/gruvi/videos/${userId}`),
+};
+
+// Characters API
+export const charactersApi = {
+  createCharacter: (data: {
+    userId: string;
+    characterName: string;
+    gender?: string;
+    age?: string;
+    description?: string;
+    imageBase64Array: string[];
+  }) => api.post('/api/gruvi/characters', data),
+  
+  getUserCharacters: (userId: string) => 
+    api.get(`/api/gruvi/characters/${userId}`),
+  
+  deleteCharacter: (userId: string, characterId: string) => 
+    api.delete(`/api/gruvi/characters/${userId}/${characterId}`),
+};
+
 export default api; 

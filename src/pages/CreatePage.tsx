@@ -28,7 +28,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { songsApi } from '../services/api';
+import { songsApi, videosApi, charactersApi } from '../services/api';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
@@ -456,25 +456,44 @@ const CreatePage: React.FC = () => {
     }
     if (hasError) return;
     
+    if (!user?.userId) {
+      setNotification({
+        open: true,
+        message: 'Please log in to generate videos.',
+        severity: 'error'
+      });
+      return;
+    }
+    
     setIsGeneratingVideo(true);
     try {
-      // TODO: Implement actual video generation API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call the actual video generation API
+      const response = await videosApi.generateVideo({
+        userId: user.userId,
+        songId: selectedSong,
+        videoType: videoType as 'still' | 'animated',
+        style: selectedStyle,
+      });
+      
+      console.log('Video generation response:', response.data);
       
       setNotification({
         open: true,
-        message: 'Music video generation started! It will appear in your library when ready.',
+        message: 'Music video generated successfully! Check your library.',
         severity: 'success'
       });
       setVideoPrompt('');
       setShowVideoPromptError(false);
       setShowSongSelectionError(false);
       
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (error) {
+      // Navigate to dashboard after a short delay
+      setTimeout(() => navigate('/dashboard'), 1500);
+    } catch (error: any) {
+      console.error('Video generation error:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to generate video. Please try again.';
       setNotification({
         open: true,
-        message: 'Failed to generate video. Please try again.',
+        message: errorMessage,
         severity: 'error'
       });
     } finally {
@@ -494,10 +513,57 @@ const CreatePage: React.FC = () => {
       return;
     }
 
+    if (uploadedImages.length === 0) {
+      setNotification({
+        open: true,
+        message: 'Please upload at least one reference image',
+        severity: 'error'
+      });
+      return;
+    }
+
+    if (!user?.userId) {
+      setNotification({
+        open: true,
+        message: 'Please log in to create characters.',
+        severity: 'error'
+      });
+      return;
+    }
+
     setIsCreatingCharacter(true);
     try {
-      // TODO: Implement actual character creation API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Convert uploaded images to base64
+      const imageBase64Array: string[] = await Promise.all(
+        uploadedImages.map((file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+
+      // Build description from character attributes
+      const fullDescription = [
+        characterDescription,
+        `${characterKind}, ${characterGender}, ${characterAge}`,
+        `Hair: ${characterHairColor}, ${characterHairLength}`,
+        `Eyes: ${characterEyeColor}`,
+      ].filter(Boolean).join('. ');
+
+      // Call the actual character creation API
+      const response = await charactersApi.createCharacter({
+        userId: user.userId,
+        characterName: characterName.trim(),
+        gender: characterGender,
+        age: characterAge,
+        description: fullDescription,
+        imageBase64Array,
+      });
+      
+      console.log('Character creation response:', response.data);
       
       setNotification({
         open: true,
@@ -511,17 +577,20 @@ const CreatePage: React.FC = () => {
       setCharacterKind('Human');
       setCharacterGender('Male');
       setCharacterAge('Child');
-      setCharacterHairColor('Brown');
+      setCharacterHairColor('Dark Brown');
       setCharacterHairLength('Medium');
       setCharacterEyeColor('Brown');
       setUploadedImages([]);
       setShowCharacterNameError(false);
       
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (error) {
+      // Navigate to dashboard after a short delay
+      setTimeout(() => navigate('/dashboard'), 1500);
+    } catch (error: any) {
+      console.error('Character creation error:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to create character. Please try again.';
       setNotification({
         open: true,
-        message: 'Failed to create character. Please try again.',
+        message: errorMessage,
         severity: 'error'
       });
     } finally {
