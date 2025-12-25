@@ -31,6 +31,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
 import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
+import { stripeConfig } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
@@ -361,8 +362,8 @@ const CreatePage: React.FC = () => {
       await reportPurchaseConversion();
       
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
-        productId: 'prod_SDuZQfG5jCbfwZ'
+        priceId: stripeConfig.topUp.priceId,
+        productId: stripeConfig.topUp.productId
       }));
       
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {

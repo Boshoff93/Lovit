@@ -27,7 +27,7 @@ import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import BoltIcon from '@mui/icons-material/Bolt';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -36,6 +36,7 @@ import { AppDispatch } from '../store/store';
 import { Allowances, getTokensFromAllowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
+import { stripeConfig } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 
 // Create a context for the Layout functions
@@ -107,32 +108,25 @@ const AllowanceDisplay: React.FC<{
   return (
     <Button
       onClick={() => onUpgrade('credits')}
-      startIcon={<MusicNoteIcon sx={{ fontSize: 18 }} />}
+      startIcon={<BoltIcon />}
       sx={{
-        borderRadius: '100px',
+        borderRadius: '20px',
+        px: 2,
+        py: 1,
         textTransform: 'none',
-        px: 2.5,
-        py: 0.75,
-        fontWeight: 500,
-        fontSize: '0.875rem',
-        minWidth: 'auto',
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(0,0,0,0.08)',
+        fontWeight: 600,
         color: '#1D1D1F',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
-        transition: 'all 0.2s ease',
+        backgroundColor: 'transparent',
+        border: '1px solid',
+        borderColor: 'rgba(0,0,0,0.1)',
+        boxShadow: 'none',
         '&:hover': {
-          background: '#fff',
-          borderColor: 'rgba(0,122,255,0.3)',
-          color: '#007AFF',
-          transform: 'translateY(-1px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
+          backgroundColor: 'rgba(0,122,255,0.08)',
+          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
         }
       }}
     >
-      {remainingCredits} tokens left
+      {remainingCredits} tokens
     </Button>
   );
 };
@@ -240,8 +234,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       await reportPurchaseConversion();
       
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
-        productId: 'prod_SDuZQfG5jCbfwZ'
+        priceId: stripeConfig.topUp.priceId,
+        productId: stripeConfig.topUp.productId
       }));
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
         window.location.href = resultAction.payload.url;
@@ -259,6 +253,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [dispatch]);
 
   const handleUpgrade = useCallback(async () => {
+    // For free tier users, navigate to payment page instead of Stripe portal
+    if (isPremiumTier === false) {
+      setIsUpgradeLoading(true);
+      navigate('/payment');
+      return;
+    }
+    
     try {
       setIsUpgradeLoading(true);
       const resultAction = await dispatch(createPortalSession());
@@ -275,7 +276,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } finally {
       setIsUpgradeLoading(false);
     }
-  }, [dispatch]);
+  }, [dispatch, isPremiumTier, navigate]);
 
   return (
     <LayoutContext.Provider value={{ 
@@ -374,28 +375,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     My Library
                   </Button>
                   <Button
-                    onClick={() => handleNavigate('/account')}
-                    startIcon={<PersonOutlineIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/account') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/account') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/account') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/account') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    Account
-                  </Button>
-                  <Button
                     onClick={() => handleNavigate('/support')}
                     startIcon={<HeadsetMicIcon />}
                     sx={{
@@ -438,6 +417,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     }}
                   >
                     FAQ
+                  </Button>
+                  <Button
+                    onClick={() => handleNavigate('/account')}
+                    startIcon={<PersonOutlineIcon />}
+                    sx={{
+                      borderRadius: '20px',
+                      px: 2,
+                      py: 1,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      color: isActive('/account') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/account') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      border: '1px solid',
+                      borderColor: isActive('/account') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/account') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,122,255,0.08)',
+                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                      }
+                    }}
+                  >
+                    Account
                   </Button>
                 </>
               )}
@@ -552,13 +553,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     }}
                   >
                     <ListItemIcon sx={{ color: '#007AFF' }}>
-                      <MusicNoteIcon />
+                      <BoltIcon />
                     </ListItemIcon>
                     <ListItemText 
                       primary={`${(() => {
                         const tokens = getTokensFromAllowances(allowances);
                         return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
-                      })()} tokens left`}
+                      })()} Tokens`}
                       primaryTypographyProps={{ 
                         fontWeight: 600,
                         color: '#007AFF'

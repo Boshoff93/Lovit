@@ -113,6 +113,7 @@ const GlobalAudioPlayer: React.FC = () => {
             display: { xs: 'none', sm: 'flex' }, 
             alignItems: 'center', 
             gap: 1.5,
+            height: 48, // Match the height of the song icon for consistent alignment
           }}
         >
           <Typography 
@@ -122,49 +123,55 @@ const GlobalAudioPlayer: React.FC = () => {
               minWidth: 36,
               fontVariantNumeric: 'tabular-nums',
               textAlign: 'right',
+              lineHeight: 1,
             }}
           >
             {formatTime(displayProgress)}
           </Typography>
-          <Slider
-            value={displayProgress}
-            min={0}
-            max={duration || 100}
-            onChange={handleSliderChange}
-            onChangeCommitted={handleSliderChangeCommitted}
-            sx={{
-              color: '#007AFF',
-              height: 4,
-              padding: '13px 0',
-              '& .MuiSlider-track': {
-                border: 'none',
-                background: 'linear-gradient(90deg, #007AFF, #5AC8FA)',
-              },
-              '& .MuiSlider-rail': {
-                opacity: 1,
-                backgroundColor: 'rgba(0,0,0,0.08)',
-              },
-              '& .MuiSlider-thumb': {
-                width: 16,
-                height: 16,
-                backgroundColor: '#fff',
-                border: '2px solid #007AFF',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                '&:before': {
-                  display: 'none',
+          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <Slider
+              value={displayProgress}
+              min={0}
+              max={duration || 100}
+              onChange={handleSliderChange}
+              onChangeCommitted={handleSliderChangeCommitted}
+              sx={{
+                color: '#007AFF',
+                height: 4,
+                padding: '0 !important',
+                '& .MuiSlider-track': {
+                  border: 'none',
+                  background: 'linear-gradient(90deg, #007AFF, #5AC8FA)',
                 },
-                '&:hover, &.Mui-focusVisible, &.Mui-active': {
-                  boxShadow: '0 2px 10px rgba(0,122,255,0.25)',
+                '& .MuiSlider-rail': {
+                  opacity: 1,
+                  backgroundColor: 'rgba(0,0,0,0.08)',
                 },
-              },
-            }}
-          />
+                '& .MuiSlider-thumb': {
+                  width: 16,
+                  height: 16,
+                  backgroundColor: '#fff',
+                  border: '2px solid #007AFF',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  marginTop: 0,
+                  marginLeft: -8,
+                  '&:before': {
+                    display: 'none',
+                  },
+                  '&:hover, &.Mui-focusVisible, &.Mui-active': {
+                    boxShadow: '0 2px 10px rgba(0,122,255,0.25)',
+                  },
+                },
+              }}
+            />
+          </Box>
           <Typography 
             variant="caption" 
             sx={{ 
               color: '#86868B', 
               minWidth: 36,
               fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1,
             }}
           >
             {formatTime(duration)}

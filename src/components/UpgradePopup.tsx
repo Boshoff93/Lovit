@@ -10,7 +10,7 @@ import {
   Button,
   CircularProgress
 } from '@mui/material';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import BoltIcon from '@mui/icons-material/Bolt';
 
 interface UpgradePopupProps {
   open: boolean;
@@ -76,7 +76,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
               mb: 1
             }}
           >
-            <MusicNoteIcon sx={{ fontSize: 40, color: '#007AFF' }} />
+            <BoltIcon sx={{ fontSize: 40, color: '#007AFF' }} />
           </Box>
           
           <Typography variant="body1" sx={{ mb: 1 }}>

@@ -7,7 +7,6 @@ import {
   AccordionSummary,
   AccordionDetails,
   Paper,
-  useTheme,
   Button,
   Breadcrumbs,
   Link
@@ -308,7 +307,6 @@ export const faqItems = [
 ];
 
 const FAQPage: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const accordionRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -359,8 +357,8 @@ const FAQPage: React.FC = () => {
 
   // Create breadcrumb data for structured data
   const breadcrumbData = [
-    { name: 'Gruvi', url: 'https://gruvi.ai/' },
-    { name: 'FAQ', url: 'https://gruvi.ai/faq' }
+    { name: 'Gruvi', url: 'https://gruvimusic.com/' },
+    { name: 'FAQ', url: 'https://gruvimusic.com/faq' }
   ];
 
   // Filter FAQs by category
@@ -396,7 +394,8 @@ const FAQPage: React.FC = () => {
         ogTitle="Frequently Asked Questions - Gruvi AI Music Generator"
         ogDescription="Everything you need to know about creating AI-generated music and music videos with Gruvi. Pricing, licensing, features, and more."
         ogType="website"
-        ogUrl="https://gruvi.ai/faq"
+        ogUrl="https://gruvimusic.com/faq"
+        canonicalUrl="https://gruvimusic.com/faq"
         twitterTitle="FAQ - Gruvi AI Music Generator"
         twitterDescription="Get answers to all your questions about Gruvi's AI music generator and music video creator."
         structuredData={[

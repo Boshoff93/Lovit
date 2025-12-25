@@ -43,9 +43,9 @@ const FAQQuestionPage: React.FC = () => {
 
   // Create breadcrumb data for structured data
   const breadcrumbData = [
-    { name: 'Gruvi', url: 'https://gruvi.ai/' },
-    { name: 'FAQ', url: 'https://gruvi.ai/faq' },
-    { name: faqItem.question, url: `https://gruvi.ai/faq/${question}` }
+    { name: 'Gruvi', url: 'https://gruvimusic.com/' },
+    { name: 'FAQ', url: 'https://gruvimusic.com/faq' },
+    { name: faqItem.question, url: `https://gruvimusic.com/faq/${question}` }
   ];
 
   return (
@@ -53,14 +53,29 @@ const FAQQuestionPage: React.FC = () => {
       <SEO
         title={`${faqItem.question} - Gruvi FAQ`}
         description={faqItem.answer}
-        keywords="Gruvi FAQ, AI music generator, music video creator, AI music, music creation"
+        keywords={`Gruvi FAQ, AI music generator, music video creator, AI music, ${faqItem.category.toLowerCase()}`}
         ogTitle={`${faqItem.question} - Gruvi FAQ`}
         ogDescription={faqItem.answer}
         ogType="article"
-        ogUrl={`https://gruvi.ai/faq/${question}`}
+        ogUrl={`https://gruvimusic.com/faq/${question}`}
+        canonicalUrl={`https://gruvimusic.com/faq/${question}`}
         twitterTitle={`${faqItem.question} - Gruvi FAQ`}
         twitterDescription={faqItem.answer}
-        structuredData={createBreadcrumbStructuredData(breadcrumbData)}
+        structuredData={[
+          createBreadcrumbStructuredData(breadcrumbData),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [{
+              "@type": "Question",
+              "name": faqItem.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faqItem.detailedAnswer || faqItem.answer
+              }
+            }]
+          }
+        ]}
       />
       
       <Container maxWidth="lg" sx={{ py: 4 }}>

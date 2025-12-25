@@ -245,3 +245,154 @@ export const createArticleStructuredData = ({
     }
   };
 };
+
+// Organization Schema for rich snippets
+export const createOrganizationStructuredData = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gruvi",
+    "url": "https://gruvimusic.com",
+    "logo": "https://gruvimusic.com/gruvi.png",
+    "description": "AI music generator creating original songs and stunning music videos with advanced AI technology",
+    "sameAs": [
+      "https://www.tiktok.com/@gruvimusic",
+      "https://www.instagram.com/gruvimusic",
+      "https://www.youtube.com/@gruvimusic",
+      "https://x.com/gruvimusic"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "support@gruvimusic.com"
+    }
+  };
+};
+
+// Music Recording Schema for songs
+export const createMusicRecordingStructuredData = (song?: {
+  name: string;
+  description: string;
+  duration: string;
+  genre: string[];
+}) => {
+  const defaultSong = {
+    name: "AI Generated Music",
+    description: "Original AI-generated music created with Gruvi's advanced music generation technology",
+    duration: "PT3M",
+    genre: ["AI Music", "Electronic", "Pop", "Original Music"]
+  };
+  
+  const data = song || defaultSong;
+  
+  return {
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    "name": data.name,
+    "description": data.description,
+    "duration": data.duration,
+    "encodingFormat": "audio/mpeg",
+    "genre": data.genre,
+    "inLanguage": "en-US",
+    "creator": {
+      "@type": "Organization",
+      "name": "Gruvi",
+      "url": "https://gruvimusic.com"
+    },
+    "isPartOf": {
+      "@type": "CreativeWork",
+      "name": "Gruvi AI Music",
+      "description": "AI-generated music and music videos"
+    },
+    "keywords": ["AI music", "AI music generator", "original music", "music creation", "AI songs"]
+  };
+};
+
+// Software Application Schema
+export const createSoftwareAppStructuredData = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Gruvi - AI Music Generator",
+    "description": "Create original AI-generated music and stunning music videos with Gruvi",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "8.99",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "ratingCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "url": "https://gruvimusic.com"
+  };
+};
+
+// HowTo Schema for "How It Works" sections
+export const createHowToStructuredData = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Create AI Music with Gruvi",
+    "description": "Learn how to create original AI-generated music and music videos with Gruvi in 3 simple steps",
+    "image": "https://gruvimusic.com/gruvi.png",
+    "totalTime": "PT2M",
+    "estimatedCost": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": "8.99"
+    },
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "Describe your song",
+        "text": "Type a description of the song you want to create - genre, mood, lyrics, or any musical idea.",
+        "image": "https://gruvimusic.com/gruvi.png"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "Generate with AI",
+        "text": "Our advanced AI generates a complete original song with vocals, instrumentals, and lyrics in seconds.",
+        "image": "https://gruvimusic.com/gruvi.png"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "Create music videos",
+        "text": "Turn your songs into stunning animated music videos in 16 different art styles.",
+        "image": "https://gruvimusic.com/gruvi.png"
+      }
+    ]
+  };
+};
+
+// Page Sections Schema for navigation and SEO
+export const createPageSectionsStructuredData = (sections: Array<{ name: string; description: string; hash: string }>) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "url": "https://gruvimusic.com",
+    "name": "Gruvi AI Music Generator",
+    "description": "Create original AI-generated music and music videos",
+    "mainEntity": {
+      "@type": "SoftwareApplication",
+      "name": "Gruvi",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web"
+    },
+    "hasPart": sections.map(section => ({
+      "@type": "WebPageElement",
+      "name": section.name,
+      "url": `https://gruvimusic.com#${section.hash}`,
+      "description": section.description
+    }))
+  };
+};

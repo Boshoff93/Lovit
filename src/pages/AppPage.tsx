@@ -434,20 +434,41 @@ const AppPage: React.FC = () => {
     } catch (error) {
       console.error('Download error:', error);
       
-      // Fallback: Open in new tab for direct download
+      // Fallback: Use an iframe to trigger download without opening new tab
       try {
-        const link = document.createElement('a');
-        link.href = song.audioUrl;
-        link.download = `${song.songTitle || 'song'}.mp3`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Create a hidden iframe to trigger download
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        // Create a link inside the iframe document to force download
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (iframeDoc) {
+          const link = iframeDoc.createElement('a');
+          link.href = song.audioUrl;
+          link.download = `${song.songTitle || 'song'}.mp3`;
+          link.setAttribute('download', `${song.songTitle || 'song'}.mp3`);
+          iframeDoc.body.appendChild(link);
+          link.click();
+          
+          // Remove iframe after a delay
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 1000);
+        } else {
+          // Last resort: direct link click without target="_blank"
+          const link = document.createElement('a');
+          link.href = song.audioUrl;
+          link.download = `${song.songTitle || 'song'}.mp3`;
+          link.setAttribute('download', `${song.songTitle || 'song'}.mp3`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
         
         setNotification({
           open: true,
-          message: `Opening download for "${song.songTitle}"`,
+          message: `Downloading "${song.songTitle}"...`,
           severity: 'info'
         });
       } catch (fallbackError) {

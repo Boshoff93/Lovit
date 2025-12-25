@@ -16,6 +16,7 @@ import {
   Switch,
   FormControlLabel
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { createPortalSession, createCheckoutSession } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
@@ -23,11 +24,16 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
+import BoltIcon from '@mui/icons-material/Bolt';
+import { stripeConfig } from '../config/stripe';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  
+  const isFreeTier = !subscription?.tier || subscription.tier === 'free';
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
@@ -70,8 +76,8 @@ const AccountPage: React.FC = () => {
       await reportPurchaseConversion();
       
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
-        productId: 'prod_SDuZQfG5jCbfwZ'
+        priceId: stripeConfig.topUp.priceId,
+        productId: stripeConfig.topUp.productId
       }));
       
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
@@ -258,7 +264,7 @@ const AccountPage: React.FC = () => {
                         justifyContent: 'center',
                         mr: 1.5
                       }}>
-                        <Typography sx={{ fontSize: '1.25rem' }}>🎵</Typography>
+                        <BoltIcon sx={{ fontSize: '1.5rem', color: '#fff' }} />
                       </Box>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -383,7 +389,7 @@ const AccountPage: React.FC = () => {
                   <Button 
                     variant="contained" 
                     size="medium"
-                    onClick={handleManageSubscription}
+                    onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
                     disabled={isLoading || portalLoading}
                     startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
                     sx={{ 
@@ -391,13 +397,23 @@ const AccountPage: React.FC = () => {
                       px: 3,
                       fontWeight: 600,
                       width: { xs: '100%', sm: 'auto' },
+                      background: isFreeTier 
+                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
+                        : undefined,
+                      boxShadow: isFreeTier 
+                        ? '0 4px 12px rgba(0,122,255,0.3)' 
+                        : undefined,
                       '&:hover': {
-                        backgroundColor: 'primary.main',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                        background: isFreeTier 
+                          ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)' 
+                          : undefined,
+                        boxShadow: isFreeTier 
+                          ? '0 6px 16px rgba(0,122,255,0.4)' 
+                          : '0 2px 8px rgba(0,0,0,0.05)',
                       }
                     }}
                   >
-                    {portalLoading ? 'Loading...' : 'Manage'}
+                    {portalLoading ? 'Loading...' : (isFreeTier ? 'Upgrade' : 'Manage')}
                   </Button>
                 </Paper>
               </Box>

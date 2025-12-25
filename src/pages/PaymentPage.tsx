@@ -45,6 +45,7 @@ import {
   trackSubscriptionManagement,
   trackCustomerJourneyMilestone
 } from '../utils/analytics';
+import { stripeConfig } from '../config/stripe';
 
 interface PricePlan {
   id: string;
@@ -84,10 +85,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFU4B6HvdZJCd5ZyiydCYp',
-      yearly: 'price_1SiFU4B6HvdZJCd5puG59PPq'
+      monthly: stripeConfig.starter.monthly,
+      yearly: stripeConfig.starter.yearly
     },
-    productId: 'prod_SApdzvErjotcRN'
+    productId: stripeConfig.starter.productId
   },
   {
     id: 'pro',
@@ -106,10 +107,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFb1B6HvdZJCd5bwT7Gc7x',
-      yearly: 'price_1SiFbyB6HvdZJCd5t8FyyaEO'
+      monthly: stripeConfig.pro.monthly,
+      yearly: stripeConfig.pro.yearly
     },
-    productId: 'prod_SApgUFg3gLoB70'
+    productId: stripeConfig.pro.productId
   },
   {
     id: 'premium',
@@ -128,10 +129,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFiBB6HvdZJCd5Rpoh13hd',
-      yearly: 'price_1SiFiBB6HvdZJCd5KdRTbrco'
+      monthly: stripeConfig.premium.monthly,
+      yearly: stripeConfig.premium.yearly
     },
-    productId: 'prod_SAphmL67DhziEI'
+    productId: stripeConfig.premium.productId
   }
 ];
 

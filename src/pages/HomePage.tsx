@@ -36,6 +36,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { getRouteConfig } from '../config/routeConfig';
+import { stripeConfig } from '../config/stripe';
 import CloseIcon from '@mui/icons-material/Close';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
@@ -58,8 +59,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useAuth } from '../hooks/useAuth';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
 
 // Sample tracks data (for showcase)
@@ -307,10 +309,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFU4B6HvdZJCd5ZyiydCYp',
-      yearly: 'price_1SiFU4B6HvdZJCd5puG59PPq'
+      monthly: stripeConfig.starter.monthly,
+      yearly: stripeConfig.starter.yearly
     },
-    productId: 'prod_SApdzvErjotcRN'
+    productId: stripeConfig.starter.productId
   },
   {
     id: 'pro',
@@ -329,10 +331,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFb1B6HvdZJCd5bwT7Gc7x',
-      yearly: 'price_1SiFbyB6HvdZJCd5t8FyyaEO'
+      monthly: stripeConfig.pro.monthly,
+      yearly: stripeConfig.pro.yearly
     },
-    productId: 'prod_SApgUFg3gLoB70'
+    productId: stripeConfig.pro.productId
   },
   {
     id: 'premium',
@@ -351,10 +353,10 @@ const plans: PricePlan[] = [
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1SiFiBB6HvdZJCd5Rpoh13hd',
-      yearly: 'price_1SiFiBB6HvdZJCd5KdRTbrco'
+      monthly: stripeConfig.premium.monthly,
+      yearly: stripeConfig.premium.yearly
     },
-    productId: 'prod_SAphmL67DhziEI'
+    productId: stripeConfig.premium.productId
   }
 ];
 
@@ -521,6 +523,7 @@ const quickRoutes = [
 const HomePage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
@@ -529,18 +532,21 @@ const HomePage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
   const [authTab, setAuthTab] = useState<number>(0);
   const [prompt, setPrompt] = useState<string>('');
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
   const [expandedFAQ, setExpandedFAQ] = useState<string | false>(false);
   const promptInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, logout } = useAuth();
+  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, logout, subscription } = useAuth();
   const { token } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = !!token;
 
@@ -611,8 +617,9 @@ const HomePage: React.FC = () => {
     setError(null);
   }, []);
 
-  const showSnackbar = (message: string) => {
+  const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
 
@@ -762,9 +769,55 @@ const HomePage: React.FC = () => {
     setIsYearly(!isYearly);
   }, [isYearly]);
 
-  const handleSelectPlan = useCallback((planId: string) => {
-    setSelectedPlan(planId);
-  }, []);
+  // Handle subscription button click - direct to Stripe checkout if logged in
+  const handleSubscribeClick = useCallback(async (planId: string) => {
+    // Find the plan
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+
+    // If user is logged in
+    if (isLoggedIn) {
+      // If already subscribed (not free tier), go to dashboard
+      if (subscription && subscription.tier !== 'free') {
+        navigate('/dashboard');
+        return;
+      }
+
+      // Otherwise, go directly to Stripe checkout
+      setIsCheckoutLoading(planId);
+      try {
+        const priceId = isYearly ? plan.stripePrices.yearly : plan.stripePrices.monthly;
+        const productId = plan.productId;
+        
+        const resultAction = await dispatch(createCheckoutSession({ priceId, productId }));
+        
+        if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        } else {
+          showSnackbar('Failed to create checkout session. Please try again.', 'error');
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+        showSnackbar('Something went wrong. Please try again.', 'error');
+      } finally {
+        setIsCheckoutLoading(null);
+      }
+    } else {
+      // Not logged in - save pending plan and show auth dialog
+      setPendingPlanId(planId);
+      setSelectedPlan(planId);
+      setOpen(true);
+    }
+  }, [isLoggedIn, subscription, isYearly, dispatch, navigate]);
+
+  // After successful login/signup, check if there's a pending plan
+  useEffect(() => {
+    if (isLoggedIn && pendingPlanId && !open) {
+      // User just logged in and had a pending plan - trigger checkout
+      handleSubscribeClick(pendingPlanId);
+      setPendingPlanId(null);
+    }
+  }, [isLoggedIn, pendingPlanId, open, handleSubscribeClick]);
 
   return (
     <Box sx={{ 
@@ -2142,7 +2195,7 @@ const HomePage: React.FC = () => {
                 {plans.map((plan) => (
                   <Card 
                     key={plan.id}
-                onClick={() => handleSelectPlan(plan.id)}
+                onClick={() => handleSubscribeClick(plan.id)}
                     sx={{ 
                   background: selectedPlan === plan.id 
                     ? 'rgba(0, 122, 255, 0.06)'
@@ -2239,10 +2292,10 @@ const HomePage: React.FC = () => {
                       <Button 
                         fullWidth 
                     variant="contained"
+                    disabled={isCheckoutLoading === plan.id}
                     onClick={(e) => {
                           e.stopPropagation();
-                      handleSelectPlan(plan.id);
-                      handleClickOpen();
+                      handleSubscribeClick(plan.id);
                         }}
                         sx={{ 
                       py: 1.5,
@@ -2258,7 +2311,11 @@ const HomePage: React.FC = () => {
                       },
                     }}
                   >
-                    {plan.id === 'starter' ? 'Sign Up' : 'Subscribe'}
+                    {isCheckoutLoading === plan.id ? (
+                      <CircularProgress size={24} sx={{ color: '#fff' }} />
+                    ) : (
+                      plan.id === 'starter' ? 'Sign Up' : 'Subscribe'
+                    )}
                       </Button>
 
                   <Divider sx={{ borderColor: 'rgba(0,0,0,0.08)', mb: 3 }} />
@@ -2921,14 +2978,21 @@ const HomePage: React.FC = () => {
       >
         <Alert 
           onClose={handleSnackbarClose} 
-          severity="success"
+          severity={snackbarSeverity}
           sx={{ 
             borderRadius: '12px',
-            background: 'rgba(34, 197, 94, 0.1)',
-            border: '1px solid rgba(34, 197, 94, 0.2)',
-            color: '#22C55E',
+            background: snackbarSeverity === 'error' 
+              ? 'rgba(255, 59, 48, 0.1)' 
+              : 'rgba(34, 197, 94, 0.1)',
+            border: snackbarSeverity === 'error'
+              ? '1px solid rgba(255, 59, 48, 0.2)'
+              : '1px solid rgba(34, 197, 94, 0.2)',
+            color: snackbarSeverity === 'error' ? '#D70015' : '#22C55E',
             backdropFilter: 'blur(20px)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            '& .MuiAlert-icon': { 
+              color: snackbarSeverity === 'error' ? '#D70015' : '#22C55E' 
+            },
           }}
         >
           {snackbarMessage}
