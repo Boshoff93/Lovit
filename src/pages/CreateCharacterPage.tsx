@@ -214,14 +214,7 @@ const CreateCharacterPage: React.FC = () => {
       return;
     }
 
-    if (uploadedImages.length === 0) {
-      setNotification({
-        open: true,
-        message: 'Please upload at least one reference image',
-        severity: 'error'
-      });
-      return;
-    }
+    // Reference images are now optional - removed the check
 
     if (!user?.userId) {
       setNotification({
@@ -234,17 +227,19 @@ const CreateCharacterPage: React.FC = () => {
 
     setIsCreatingCharacter(true);
     try {
-      // Convert uploaded images to base64
-      const imageBase64Array: string[] = await Promise.all(
-        uploadedImages.map((file) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        })
-      );
+      // Convert uploaded images to base64 (if any)
+      const imageBase64Array: string[] = uploadedImages.length > 0 
+        ? await Promise.all(
+            uploadedImages.map((file) => {
+              return new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+              });
+            })
+          )
+        : [];
 
       // Build description from character attributes
       const fullDescription = [
