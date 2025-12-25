@@ -656,14 +656,7 @@ const CreatePage: React.FC = () => {
       return;
     }
 
-    if (uploadedImages.length === 0) {
-      setNotification({
-        open: true,
-        message: 'Please upload at least one reference image',
-        severity: 'error'
-      });
-      return;
-    }
+    // Reference images are optional - removed the check
 
     if (!user?.userId) {
       setNotification({
