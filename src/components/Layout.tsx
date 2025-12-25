@@ -749,7 +749,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               gap: 3, 
               width: '100%', 
               px: { xs: 2, sm: 3, md: 4 },
-              py: { xs: 3, sm: 4 }
+              py: 2,
             }}
           >
             <Box sx={{ flexGrow: 1, width: '100%' }}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { 
   Box, 
   Container,
@@ -17,7 +18,15 @@ import {
   Tooltip,
   CircularProgress,
   LinearProgress,
-  Skeleton
+  Skeleton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -34,10 +43,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import CloseIcon from '@mui/icons-material/Close';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LyricsIcon from '@mui/icons-material/Lyrics';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { videosApi } from '../services/api';
 
 interface Song {
@@ -50,6 +58,8 @@ interface Song {
   progress?: number;
   progressMessage?: string;
   audioUrl?: string;
+  lyrics?: string;
+  lyricsWithTags?: string;
 }
 
 interface Video {
@@ -85,12 +95,23 @@ const AppPage: React.FC = () => {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Audio player state
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [audioProgress, setAudioProgress] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(0);
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  // Global audio player
+  const { 
+    currentSong, 
+    isPlaying: isAudioPlaying, 
+    progress: audioProgress, 
+    duration: audioDuration,
+    playSong,
+    setSongsList,
+  } = useAudioPlayer();
+  
+  const [lyricsDialogOpen, setLyricsDialogOpen] = useState(false);
+  const [selectedSongForLyrics, setSelectedSongForLyrics] = useState<Song | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuSong, setMenuSong] = useState<Song | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [songToDelete, setSongToDelete] = useState<Song | null>(null);
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -184,7 +205,7 @@ const AppPage: React.FC = () => {
       // Show notification and start polling
       setNotification({
         open: true,
-        message: 'Your song is being created... This usually takes about a minute.',
+        message: 'Your song is being created... This usually takes about a minute or two.',
         severity: 'info'
       });
       startPolling();
@@ -300,92 +321,55 @@ const AppPage: React.FC = () => {
       return;
     }
     
-    if (currentSong?.songId === song.songId && isAudioPlaying) {
-      // Pause current song
-      audioRef.current?.pause();
-      setIsAudioPlaying(false);
-    } else if (currentSong?.songId === song.songId && !isAudioPlaying) {
-      // Resume current song
-      audioRef.current?.play();
-      setIsAudioPlaying(true);
-    } else {
-      // Play new song
-      setCurrentSong(song);
-      setPlayingId(song.songId);
-      setAudioProgress(0);
-      
-      if (audioRef.current) {
-        audioRef.current.src = song.audioUrl;
-        audioRef.current.load();
-        audioRef.current.play();
-        setIsAudioPlaying(true);
-      }
-    }
-  }, [currentSong, isAudioPlaying]);
-
-  const handleAudioTimeUpdate = useCallback(() => {
-    if (audioRef.current) {
-      setAudioProgress(audioRef.current.currentTime);
-    }
-  }, []);
-
-  const handleAudioLoadedMetadata = useCallback(() => {
-    if (audioRef.current) {
-      setAudioDuration(audioRef.current.duration);
-    }
-  }, []);
-
-  const handleAudioEnded = useCallback(() => {
-    setIsAudioPlaying(false);
-    setAudioProgress(0);
-    setPlayingId(null);
+    // Convert Song to AudioPlayer Song format
+    const audioSong = {
+      songId: song.songId,
+      songTitle: song.songTitle,
+      genre: song.genre,
+      audioUrl: song.audioUrl,
+      status: song.status,
+      createdAt: song.createdAt,
+      duration: song.actualDuration,
+      lyrics: song.lyrics,
+      lyricsWithTags: song.lyricsWithTags,
+    };
     
-    // Auto-play next song if available
-    const currentIndex = songs.findIndex(s => s.songId === currentSong?.songId);
-    const nextSong = songs[currentIndex + 1];
-    if (nextSong && nextSong.status === 'completed' && nextSong.audioUrl) {
-      handlePlaySong(nextSong);
-    }
-  }, [songs, currentSong, handlePlaySong]);
-
-  const handleSeekAudio = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !audioDuration) return;
+    // Get all completed songs for the playlist
+    const completedSongs = songs
+      .filter(s => s.status === 'completed' && s.audioUrl)
+      .map(s => ({
+        songId: s.songId,
+        songTitle: s.songTitle,
+        genre: s.genre,
+        audioUrl: s.audioUrl,
+        status: s.status,
+        createdAt: s.createdAt,
+        duration: s.actualDuration,
+        lyrics: s.lyrics,
+        lyricsWithTags: s.lyricsWithTags,
+      }));
     
-    const bar = event.currentTarget;
-    const rect = bar.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const percentage = clickX / rect.width;
-    const newTime = percentage * audioDuration;
-    
-    audioRef.current.currentTime = newTime;
-    setAudioProgress(newTime);
-  }, [audioDuration]);
+    playSong(audioSong, completedSongs);
+    setPlayingId(song.songId);
+  }, [songs, playSong]);
 
-  const handleClosePlayer = useCallback(() => {
-    audioRef.current?.pause();
-    setCurrentSong(null);
-    setIsAudioPlaying(false);
-    setPlayingId(null);
-    setAudioProgress(0);
-  }, []);
-
-  const handlePreviousSong = useCallback(() => {
-    const completedSongs = songs.filter(s => s.status === 'completed' && s.audioUrl);
-    const currentInCompleted = completedSongs.findIndex(s => s.songId === currentSong?.songId);
-    const prevSong = completedSongs[currentInCompleted - 1];
-    if (prevSong) {
-      handlePlaySong(prevSong);
-    }
-  }, [songs, currentSong, handlePlaySong]);
-
-  const handleNextSong = useCallback(() => {
-    const completedSongs = songs.filter(s => s.status === 'completed' && s.audioUrl);
-    const currentInCompleted = completedSongs.findIndex(s => s.songId === currentSong?.songId);
-    const nextSong = completedSongs[currentInCompleted + 1];
-    if (nextSong) {
-      handlePlaySong(nextSong);
-    }
-  }, [songs, currentSong, handlePlaySong]);
+  // Update songs list in global player when songs change
+  useEffect(() => {
+    const completedSongs = songs
+      .filter(s => s.status === 'completed' && s.audioUrl)
+      .map(s => ({
+        songId: s.songId,
+        songTitle: s.songTitle,
+        genre: s.genre,
+        audioUrl: s.audioUrl,
+        status: s.status,
+        createdAt: s.createdAt,
+        duration: s.actualDuration,
+        lyrics: s.lyrics,
+        lyricsWithTags: s.lyricsWithTags,
+      }));
+    setSongsList(completedSongs);
+  }, [songs, setSongsList]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -407,29 +391,80 @@ const AppPage: React.FC = () => {
     }
   };
 
-  const handleDownload = (song: Song) => {
-    if (song.audioUrl) {
-      // Create a link element and trigger download
-      const link = document.createElement('a');
-      link.href = song.audioUrl;
-      link.download = `${song.songTitle || 'song'}.mp3`;
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      setNotification({
-        open: true,
-        message: `Downloading "${song.songTitle}"...`,
-        severity: 'info'
-      });
-    } else {
+  const handleDownload = async (song: Song) => {
+    if (!song.audioUrl) {
       setNotification({
         open: true,
         message: 'Audio not available for download',
         severity: 'warning'
       });
+      return;
     }
+
+    setIsDownloading(song.songId);
+    
+    try {
+      // Try fetching with CORS mode first
+      const response = await fetch(song.audioUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch audio');
+      
+      const blob = await response.blob();
+      
+      // Create a download link with the blob
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${song.songTitle || 'song'}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup after a short delay
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      setNotification({
+        open: true,
+        message: `Downloaded "${song.songTitle}"`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      
+      // Fallback: Open in new tab for direct download
+      try {
+        const link = document.createElement('a');
+        link.href = song.audioUrl;
+        link.download = `${song.songTitle || 'song'}.mp3`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setNotification({
+          open: true,
+          message: `Opening download for "${song.songTitle}"`,
+          severity: 'info'
+        });
+      } catch (fallbackError) {
+        setNotification({
+          open: true,
+          message: 'Failed to download. Try right-clicking and "Save as..."',
+          severity: 'error'
+        });
+      }
+    } finally {
+      setIsDownloading(null);
+    }
+  };
+
+  const handleViewLyrics = (song: Song) => {
+    setSelectedSongForLyrics(song);
+    setLyricsDialogOpen(true);
   };
 
   const handleCreateVideo = (song: Song) => {
@@ -437,20 +472,26 @@ const AppPage: React.FC = () => {
     navigate(`/create?tab=video&song=${song.songId}`);
   };
 
-  const handleDeleteSong = async (song: Song) => {
-    if (!user?.userId) return;
+  const handleDeleteSong = (song: Song) => {
+    setSongToDelete(song);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteSong = async () => {
+    if (!user?.userId || !songToDelete) return;
     
-    setDeletingSongId(song.songId);
+    setDeleteConfirmOpen(false);
+    setDeletingSongId(songToDelete.songId);
     
     try {
-      await songsApi.deleteSong(user.userId, song.songId);
+      await songsApi.deleteSong(user.userId, songToDelete.songId);
       
       // Remove from local state
-      setSongs(prev => prev.filter(s => s.songId !== song.songId));
+      setSongs(prev => prev.filter(s => s.songId !== songToDelete.songId));
       
       setNotification({
         open: true,
-        message: `"${song.songTitle}" deleted`,
+        message: `"${songToDelete.songTitle}" deleted`,
         severity: 'success'
       });
     } catch (error) {
@@ -462,6 +503,7 @@ const AppPage: React.FC = () => {
       });
     } finally {
       setDeletingSongId(null);
+      setSongToDelete(null);
     }
   };
 
@@ -490,7 +532,7 @@ const AppPage: React.FC = () => {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ pt: { xs: 0, sm: 0 }, pb: 3, px: { xs: 2, sm: 3 } }}>
+    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
       {/* Toggle Buttons - Equal width pill style */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, width: '100%' }}>
         <ToggleButtonGroup
@@ -741,6 +783,8 @@ const AppPage: React.FC = () => {
                           },
                         }} 
                       />
+                    ) : currentSong?.songId === song.songId && isAudioPlaying ? (
+                      <VolumeUpIcon sx={{ color: '#fff', fontSize: 24 }} />
                     ) : (
                       <MusicNoteIcon sx={{ color: '#fff', fontSize: 24 }} />
                     )}
@@ -783,92 +827,176 @@ const AppPage: React.FC = () => {
                       </Box>
                     ) : (
                       <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                        {song.genre} • {song.actualDuration ? `${Math.floor(song.actualDuration / 60)}:${String(Math.floor(song.actualDuration % 60)).padStart(2, '0')}` : '--:--'}
+                        {song.genre} • {song.actualDuration ? `${Math.floor(song.actualDuration / 60)}:${String(Math.floor(song.actualDuration % 60)).padStart(2, '0')}` : '--:--'} • {new Date(song.createdAt).toLocaleDateString()}
                       </Typography>
                     )}
                   </Box>
 
-                  {/* Date */}
-                  <Typography
-                    sx={{
-                      color: '#86868B',
-                      fontSize: '0.85rem',
-                      display: { xs: 'none', sm: 'block' },
-                    }}
-                  >
-                    {new Date(song.createdAt).toLocaleDateString()}
-                  </Typography>
-
                   {/* Action Buttons - Only show for completed songs */}
                   {!isProcessing && !isFailed && (
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      {/* Play Button */}
-                      <Tooltip title={playingId === song.songId ? "Pause" : "Play"} arrow>
+                    <>
+                      {/* Desktop: Full buttons */}
+                      <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+                        {/* Play Button */}
+                        <Tooltip title={playingId === song.songId ? "Pause" : "Play"} arrow>
+                          <IconButton
+                            onClick={() => handlePlayPause(song.songId)}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: '#fff',
+                              border: '1px solid rgba(0,0,0,0.08)',
+                              color: '#007AFF',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                              '&:hover': {
+                                background: '#fff',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              },
+                            }}
+                          >
+                            {playingId === song.songId ? (
+                              <PauseIcon sx={{ fontSize: 20 }} />
+                            ) : (
+                              <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+
+                        {/* View Lyrics Button */}
+                        <Tooltip title="View Lyrics" arrow>
+                          <IconButton
+                            onClick={() => handleViewLyrics(song)}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: '#fff',
+                              border: '1px solid rgba(0,0,0,0.08)',
+                              color: '#007AFF',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                              '&:hover': {
+                                background: '#fff',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              },
+                            }}
+                          >
+                            <LyricsIcon sx={{ fontSize: 20 }} />
+                          </IconButton>
+                        </Tooltip>
+
+                        {/* Download Button */}
+                        <Tooltip title="Download" arrow>
+                          <IconButton
+                            onClick={() => handleDownload(song)}
+                            disabled={isDownloading === song.songId}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: '#fff',
+                              border: '1px solid rgba(0,0,0,0.08)',
+                              color: '#007AFF',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                              '&:hover': {
+                                background: '#fff',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              },
+                            }}
+                          >
+                            {isDownloading === song.songId ? (
+                              <CircularProgress size={20} sx={{ color: '#007AFF' }} />
+                            ) : (
+                              <DownloadIcon sx={{ fontSize: 20 }} />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+
+                        {/* Delete Button */}
+                        <Tooltip title="Delete" arrow>
+                          <IconButton
+                            onClick={() => handleDeleteSong(song)}
+                            disabled={deletingSongId === song.songId}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: '#fff',
+                              border: '1px solid rgba(0,0,0,0.08)',
+                              color: '#FF3B30',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                              '&:hover': {
+                                background: '#fff',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              },
+                            }}
+                          >
+                            {deletingSongId === song.songId ? (
+                              <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
+                            ) : (
+                              <DeleteIcon sx={{ fontSize: 20 }} />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+
+                        {/* Create Video Button - Gradient matching "The AI Music Generator" */}
+                        <Tooltip title="Create Music Video" arrow>
+                          <IconButton
+                            onClick={() => handleCreateVideo(song)}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
+                              color: '#fff',
+                              boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+                                transform: 'scale(1.05)',
+                              },
+                            }}
+                          >
+                            <MovieIcon sx={{ fontSize: 20 }} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+
+                      {/* Mobile: Play button + More menu */}
+                      <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+                        {/* Play Button */}
                         <IconButton
                           onClick={() => handlePlayPause(song.songId)}
                           sx={{
-                            width: 40,
-                            height: 40,
+                            width: 36,
+                            height: 36,
                             background: '#fff',
                             border: '1px solid rgba(0,0,0,0.08)',
                             color: '#007AFF',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            '&:hover': {
-                              background: '#fff',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            },
                           }}
                         >
                           {playingId === song.songId ? (
-                            <PauseIcon sx={{ fontSize: 20 }} />
+                            <PauseIcon sx={{ fontSize: 18 }} />
                           ) : (
-                            <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
+                            <PlayArrowRoundedIcon sx={{ fontSize: 18 }} />
                           )}
                         </IconButton>
-                      </Tooltip>
 
-                      {/* Download Button */}
-                      <Tooltip title="Download" arrow>
+                        {/* More Menu Button */}
                         <IconButton
-                          onClick={() => handleDownload(song)}
+                          onClick={(e) => {
+                            setMenuAnchorEl(e.currentTarget);
+                            setMenuSong(song);
+                          }}
                           sx={{
-                            width: 40,
-                            height: 40,
+                            width: 36,
+                            height: 36,
                             background: '#fff',
                             border: '1px solid rgba(0,0,0,0.08)',
-                            color: '#007AFF',
+                            color: '#86868B',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            '&:hover': {
-                              background: '#fff',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            },
                           }}
                         >
-                          <DownloadIcon sx={{ fontSize: 20 }} />
+                          <MoreVertIcon sx={{ fontSize: 18 }} />
                         </IconButton>
-                      </Tooltip>
-
-                      {/* Create Video Button - Gradient matching "The AI Music Generator" */}
-                      <Tooltip title="Create Music Video" arrow>
-                        <IconButton
-                          onClick={() => handleCreateVideo(song)}
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
-                            color: '#fff',
-                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                            transition: 'all 0.2s ease',
-                            '&:hover': {
-                              boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
-                              transform: 'scale(1.05)',
-                            },
-                          }}
-                        >
-                          <MovieIcon sx={{ fontSize: 20 }} />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
+                      </Box>
+                    </>
                   )}
                   
                   {/* Processing indicator for action button area */}
@@ -1352,157 +1480,221 @@ const AppPage: React.FC = () => {
         </Alert>
       </Snackbar>
 
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioRef}
-        onTimeUpdate={handleAudioTimeUpdate}
-        onLoadedMetadata={handleAudioLoadedMetadata}
-        onEnded={handleAudioEnded}
-        onPlay={() => setIsAudioPlaying(true)}
-        onPause={() => setIsAudioPlaying(false)}
-        preload="metadata"
-      />
-
-      {/* Fixed Bottom Audio Player */}
-      {currentSong && (
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1300,
-            background: 'rgba(255,255,255,0.98)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(0,0,0,0.1)',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
-            px: { xs: 2, sm: 3 },
-            py: 1.5,
-          }}
-        >
-          <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
-            {/* Song Icon */}
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <VolumeUpIcon sx={{ color: '#fff', fontSize: 24 }} />
-            </Box>
-
-            {/* Song Info */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 600,
-                  color: '#1D1D1F',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {currentSong.songTitle}
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: '#86868B' }}
-              >
-                {currentSong.genre}
-              </Typography>
-            </Box>
-
-            {/* Progress Bar */}
-            <Box 
-              onClick={handleSeekAudio}
-              sx={{ 
-                flex: 2, 
-                display: { xs: 'none', sm: 'flex' }, 
-                alignItems: 'center', 
-                gap: 1,
-                cursor: 'pointer',
-              }}
-            >
-              <Typography variant="caption" sx={{ color: '#86868B', minWidth: 32 }}>
-                {formatTime(audioProgress)}
-              </Typography>
-              <Box
-                sx={{
-                  flex: 1,
-                  height: 4,
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: 2,
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: `${audioDuration > 0 ? (audioProgress / audioDuration) * 100 : 0}%`,
-                    background: 'linear-gradient(90deg, #007AFF, #5856D6)',
-                    borderRadius: 2,
-                    transition: 'width 0.1s linear',
-                  }}
-                />
-              </Box>
-              <Typography variant="caption" sx={{ color: '#86868B', minWidth: 32 }}>
-                {formatTime(audioDuration)}
-              </Typography>
-            </Box>
-
-            {/* Controls */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <IconButton
-                onClick={handlePreviousSong}
-                size="small"
-                sx={{ color: '#1D1D1F' }}
-              >
-                <SkipPreviousIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => handlePlaySong(currentSong)}
-                sx={{
-                  width: 44,
-                  height: 44,
-                  background: '#007AFF',
-                  color: '#fff',
-                  '&:hover': {
-                    background: '#0066CC',
-                  },
-                }}
-              >
-                {isAudioPlaying ? <PauseIcon /> : <PlayArrowRoundedIcon />}
-              </IconButton>
-              <IconButton
-                onClick={handleNextSong}
-                size="small"
-                sx={{ color: '#1D1D1F' }}
-              >
-                <SkipNextIcon />
-              </IconButton>
-              <IconButton
-                onClick={handleClosePlayer}
-                size="small"
-                sx={{ color: '#86868B', ml: 1 }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
+      {/* Lyrics Dialog */}
+      <Dialog
+        open={lyricsDialogOpen}
+        onClose={() => setLyricsDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: 'linear-gradient(180deg, #fff 0%, #f8f9fa 100%)',
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+        }}>
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <LyricsIcon sx={{ color: '#fff', fontSize: 22 }} />
           </Box>
-        </Box>
-      )}
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+              {selectedSongForLyrics?.songTitle || 'Lyrics'}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B' }}>
+              {selectedSongForLyrics?.genre}
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          {selectedSongForLyrics?.lyrics ? (
+            <Typography
+              sx={{
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'Georgia, serif',
+                fontSize: '1rem',
+                lineHeight: 1.8,
+                color: '#1D1D1F',
+              }}
+            >
+              {selectedSongForLyrics.lyrics}
+            </Typography>
+          ) : (
+            <Typography sx={{ color: '#86868B', textAlign: 'center', py: 4 }}>
+              Lyrics not available for this song
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button 
+            onClick={() => setLyricsDialogOpen(false)}
+            variant="contained"
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Song Actions Menu (Mobile) */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={() => {
+          setMenuAnchorEl(null);
+          setMenuSong(null);
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: 180,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          }
+        }}
+      >
+        <MenuItem onClick={() => {
+          if (menuSong) handleViewLyrics(menuSong);
+          setMenuAnchorEl(null);
+          setMenuSong(null);
+        }}>
+          <ListItemIcon>
+            <LyricsIcon sx={{ color: '#007AFF' }} />
+          </ListItemIcon>
+          <ListItemText>View Lyrics</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => {
+          if (menuSong) handleDownload(menuSong);
+          setMenuAnchorEl(null);
+          setMenuSong(null);
+        }}>
+          <ListItemIcon>
+            <DownloadIcon sx={{ color: '#007AFF' }} />
+          </ListItemIcon>
+          <ListItemText>Download</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => {
+          if (menuSong) handleCreateVideo(menuSong);
+          setMenuAnchorEl(null);
+          setMenuSong(null);
+        }}>
+          <ListItemIcon>
+            <MovieIcon sx={{ color: '#007AFF' }} />
+          </ListItemIcon>
+          <ListItemText>Create Video</ListItemText>
+        </MenuItem>
+        <MenuItem 
+          onClick={() => {
+            if (menuSong) handleDeleteSong(menuSong);
+            setMenuAnchorEl(null);
+            setMenuSong(null);
+          }}
+          sx={{ color: '#FF3B30' }}
+        >
+          <ListItemIcon>
+            <DeleteIcon sx={{ color: '#FF3B30' }} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setSongToDelete(null);
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            minWidth: 340,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1, 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1.5,
+        }}>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              background: 'rgba(255,59,48,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <DeleteIcon sx={{ color: '#FF3B30', fontSize: 24 }} />
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Delete Song?
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#86868B' }}>
+            Are you sure you want to delete "<strong>{songToDelete?.songTitle}</strong>"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => {
+              setDeleteConfirmOpen(false);
+              setSongToDelete(null);
+            }}
+            variant="outlined"
+            sx={{
+              flex: 1,
+              borderRadius: 2,
+              textTransform: 'none',
+              borderColor: 'rgba(0,0,0,0.15)',
+              color: '#1D1D1F',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDeleteSong}
+            variant="contained"
+            sx={{
+              flex: 1,
+              borderRadius: 2,
+              textTransform: 'none',
+              background: '#FF3B30',
+              '&:hover': {
+                background: '#E53528',
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Audio player is now global - see GlobalAudioPlayer component */}
     </Container>
   );
 };

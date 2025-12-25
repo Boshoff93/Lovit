@@ -689,13 +689,14 @@ const CreatePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 0, pb: 3, px: { xs: 2, sm: 3 }, minHeight: 0, overflow: 'visible' }}>
+    <Container maxWidth="lg" sx={{ pt: 0, pb: 3, px: { xs: 1, sm: 2, md: 3 }, minHeight: 0, overflow: 'visible' }}>
       {/* Toggle Buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, width: '100%' }}>
         <ToggleButtonGroup
           value={activeTab}
           exclusive
           onChange={handleTabChange}
+          fullWidth
           sx={{
             background: 'rgba(255,255,255,0.95)',
             backdropFilter: 'blur(20px)',
@@ -703,16 +704,17 @@ const CreatePage: React.FC = () => {
             border: '1px solid rgba(0,0,0,0.08)',
             boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
             p: 0.5,
+            maxWidth: { xs: '100%', sm: 500 },
             '& .MuiToggleButton-root': {
               border: 'none',
               borderRadius: '100px !important',
               flex: 1,
-              minWidth: 140,
-              px: 3,
+              minWidth: { xs: 'auto', sm: 140 },
+              px: { xs: 1.5, sm: 3 },
               py: 1.25,
               textTransform: 'none',
               fontWeight: 600,
-              fontSize: '0.875rem',
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
               color: '#86868B',
               gap: 0.75,
               whiteSpace: 'nowrap',

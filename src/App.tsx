@@ -8,6 +8,8 @@ import api from './utils/axiosConfig';
 
 // Layout
 import Layout from './components/Layout';
+import GlobalAudioPlayer from './components/GlobalAudioPlayer';
+import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -144,8 +146,9 @@ const seoRoutes = getAllRoutePaths().filter(path => path !== '/');
 
 function App() {
   return (
-    <Router>
-      <Routes>
+    <AudioPlayerProvider>
+      <Router>
+        <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
         
@@ -235,8 +238,10 @@ function App() {
             </Layout>
            </RequireAuth>
         } />
-      </Routes>
-    </Router>
+        </Routes>
+        <GlobalAudioPlayer />
+      </Router>
+    </AudioPlayerProvider>
   );
 }
 
