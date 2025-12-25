@@ -240,7 +240,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       await reportPurchaseConversion();
       
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1RJSklB6HvdZJCd5L5hh2o0C',
+        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
         productId: 'prod_SDuZQfG5jCbfwZ'
       }));
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {

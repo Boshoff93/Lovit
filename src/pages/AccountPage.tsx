@@ -70,7 +70,7 @@ const AccountPage: React.FC = () => {
       await reportPurchaseConversion();
       
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: 'price_1RJSklB6HvdZJCd5L5hh2o0C',
+        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
         productId: 'prod_SDuZQfG5jCbfwZ'
       }));
       
@@ -230,7 +230,7 @@ const AccountPage: React.FC = () => {
             
             <Divider />
 
-            {/* Credits Section */}
+            {/* Tokens Section */}
             {allowances && (
               <Box sx={{ p: { xs: 3, sm: 4 } }}>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>

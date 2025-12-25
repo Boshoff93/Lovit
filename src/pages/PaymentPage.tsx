@@ -53,7 +53,7 @@ interface PricePlan {
   yearlyPrice: number;
   popular?: boolean;
   features: string[];
-  credits: number;
+  tokens: number;
   musicVideos: boolean;
   stripePrices: {
     monthly: string;
@@ -62,30 +62,30 @@ interface PricePlan {
   productId: string;
 }
 
-// Credit costs:
+// Token costs:
 // 1 Song = 20 tokens
-// 1 Still Image Video = 100 credits
-// 1 Animated Video = 500 credits
+// 1 Still Image Video = 40 tokens
+// 1 Animated Video = 200 tokens
 
 const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
     monthlyPrice: 8.99,
-    yearlyPrice: 7.19,
-    credits: 500,
+    yearlyPrice: 85.99,
+    tokens: 500,
     musicVideos: true,
     features: [
-      '500 credits/month',
-      '20 songs',
-      '5 still image videos',
-      '1 animated video',
+      '500 tokens/month',
+      '25 songs',
+      '12 still image videos',
+      '2 animated videos',
       'Standard quality audio',
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1RQOjAB6HvdZJCd5zQoxXdLw',
-      yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
+      monthly: 'price_1SiFU4B6HvdZJCd5ZyiydCYp',
+      yearly: 'price_1SiFU4B6HvdZJCd5puG59PPq'
     },
     productId: 'prod_SApdzvErjotcRN'
   },
@@ -93,21 +93,21 @@ const plans: PricePlan[] = [
     id: 'pro',
     title: 'Pro',
     monthlyPrice: 16.99,
-    yearlyPrice: 13.59,
+    yearlyPrice: 162.99,
     popular: true,
-    credits: 1000,
+    tokens: 1000,
     musicVideos: true,
     features: [
-      '1,000 credits/month',
-      '40 songs',
-      '10 still image videos',
-      '2 animated videos',
+      '1,000 tokens/month',
+      '50 songs',
+      '25 still image videos',
+      '5 animated videos',
       'High quality audio',
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1RQOniB6HvdZJCd5s4ByVBwl',
-      yearly: 'price_1RQOoXB6HvdZJCd5v8SgG1OB'
+      monthly: 'price_1SiFb1B6HvdZJCd5bwT7Gc7x',
+      yearly: 'price_1SiFbyB6HvdZJCd5t8FyyaEO'
     },
     productId: 'prod_SApgUFg3gLoB70'
   },
@@ -115,21 +115,21 @@ const plans: PricePlan[] = [
     id: 'premium',
     title: 'Premium',
     monthlyPrice: 29.99,
-    yearlyPrice: 23.99,
-    credits: 2500,
+    yearlyPrice: 287.88,
+    tokens: 2500,
     musicVideos: true,
     features: [
-      '2,500 credits/month',
-      '100 songs',
-      '25 still image videos',
-      '5 animated videos',
+      '2,500 tokens/month',
+      '125 songs',
+      '62 still image videos',
+      '12 animated videos',
       'Highest quality audio',
       'Priority generation',
       'Commercial license',
     ],
     stripePrices: {
-      monthly: 'price_1RQOqeB6HvdZJCd57Mq2AnFi',
-      yearly: 'price_1RQOrJB6HvdZJCd5hw8d3dsZ'
+      monthly: 'price_1SiFiBB6HvdZJCd5Rpoh13hd',
+      yearly: 'price_1SiFiBB6HvdZJCd5KdRTbrco'
     },
     productId: 'prod_SAphmL67DhziEI'
   }
@@ -624,18 +624,13 @@ const PaymentPage: React.FC = () => {
                 </Box>
               )}
               <CardContent sx={{ p: 4 }}>
-                <Typography sx={{ fontSize: '0.9rem', color: '#86868B', mb: 1, fontStyle: 'italic' }}>
-                  {plan.id === 'starter' ? 'Our starter plan.' : 
-                   plan.id === 'pro' ? 'Access to music videos and more.' : 
-                   'Maximum credits and every feature unlocked.'}
-                </Typography>
                 <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
                   {plan.title}
                 </Typography>
                 <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 2, fontStyle: 'italic' }}>
-                  {plan.id === 'starter' ? 'Perfect for trying it out' : 
-                   plan.id === 'pro' ? 'Great for content creators' : 
-                   'Best for power users'}
+                  {plan.id === 'starter' ? 'Ideal for beginners and hobbyists' : 
+                   plan.id === 'pro' ? 'Best value for regular creators' : 
+                   'Unlimited potential for power users'}
                 </Typography>
                 
                 <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
@@ -801,9 +796,9 @@ const PaymentPage: React.FC = () => {
             )}
           </Box>
           
-          {/* Credit Top-ups */}
+          {/* Token Top-ups */}
           <Typography sx={{ color: '#86868B', fontSize: '0.9rem', mt: 4 }}>
-            Need more credits? Purchase additional credit packs anytime. 
+            Need more tokens? Purchase a 100 token top-up pack anytime. Tokens never expire and can be used for songs, videos, or any generation.
             <Link href="#" sx={{ color: '#007AFF', ml: 0.5 }}>Learn more</Link>
           </Typography>
 

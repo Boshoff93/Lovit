@@ -234,7 +234,7 @@ const videoTypes = [
   { 
     id: 'professional', 
     label: 'Professional', 
-    credits: 200, 
+    credits: 2000, 
     description: 'Premium AI animated video',
     tooltip: 'Powered by Kling 1.0 AI. Cinema-quality animations with the most realistic motion and detail.',
     icon: MovieIcon,
