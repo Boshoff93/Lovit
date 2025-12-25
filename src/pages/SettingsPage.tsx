@@ -116,7 +116,7 @@ const SettingsPage: React.FC = () => {
       loading: isPortalLoading,
     },
     {
-      icon: <BoltIcon sx={{ color: '#FF9500' }} />,
+      icon: <BoltIcon sx={{ color: '#34C759' }} />,
       title: 'Top Up Tokens',
       description: `${remainingTokens} tokens remaining`,
       onClick: handleTopUp,

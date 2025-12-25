@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { updateAiModelAllowance } from './authSlice';
+import { updateTokensUsed } from './authSlice';
 import api from '../utils/axiosConfig';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
@@ -124,8 +124,8 @@ export const trainModelWithS3 = createAsyncThunk(
         }
       );
       
-      // Update model allowance counter - increment by 1 for each model creation
-      dispatch(updateAiModelAllowance(1));
+      // Update tokens used counter - increment by 1 for each model creation
+      dispatch(updateTokensUsed(1));
       
       return response.data;
     } catch (error: any) {

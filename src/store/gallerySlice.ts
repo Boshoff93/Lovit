@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { updateAiPhotoAllowance } from './authSlice';
+import { updateTokensUsed } from './authSlice';
 import { saveAs } from 'file-saver';
 import api from '../utils/axiosConfig';
 import axios from 'axios';
@@ -225,8 +225,8 @@ export const generateImages = createAsyncThunk(
           });
         }
         
-        // Update the AI photos allowance counter
-        dispatch(updateAiPhotoAllowance(payload.numberOfImages));
+        // Update the tokens used counter
+        dispatch(updateTokensUsed(payload.numberOfImages));
       }
       
       // Create generatingImages array for Redux store
