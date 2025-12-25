@@ -406,18 +406,47 @@ const PaymentPage: React.FC = () => {
               </Typography>
             </Box>
             
-            <Button 
-              variant="text"
-              startIcon={<LogoutIcon />} 
-              onClick={handleLogout}
-              sx={{
-                color: '#86868B',
-                fontWeight: 500,
-                '&:hover': { color: '#1D1D1F' },
-              }}
-            >
-              Logout
-            </Button>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Button 
+                variant="contained" 
+                component={RouterLink}
+                to="/dashboard"
+                startIcon={<DashboardIcon />}
+                sx={{
+                  background: '#007AFF',
+                  color: '#fff',
+                  px: 3,
+                  borderRadius: '100px',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': {
+                    background: '#0066DD',
+                    boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                  },
+                }}
+              >
+                Dashboard
+              </Button>
+              <Button 
+                variant="outlined"
+                onClick={handleLogout}
+                startIcon={<LogoutIcon />}
+                sx={{
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  color: '#1D1D1F',
+                  px: 3,
+                  borderRadius: '100px',
+                  fontWeight: 500,
+                  '&:hover': {
+                    borderColor: '#FF3B30',
+                    color: '#FF3B30',
+                    background: 'rgba(255,59,48,0.05)',
+                  },
+                }}
+              >
+                Sign Out
+              </Button>
+            </Box>
           </Box>
         </Container>
       </Box>
@@ -624,18 +653,33 @@ const PaymentPage: React.FC = () => {
                 </Box>
               )}
               <CardContent sx={{ p: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                  {plan.title}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    {plan.title}
+                  </Typography>
+                  {isYearly && (
+                    <Chip 
+                      label={`Save $${((plan.monthlyPrice * 12) - plan.yearlyPrice).toFixed(0)}`}
+                      size="small"
+                      sx={{ 
+                        background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
+                        color: '#fff',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                        height: 24,
+                      }}
+                    />
+                  )}
+                </Box>
                 <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 2, fontStyle: 'italic' }}>
                   {plan.id === 'starter' ? 'Ideal for beginners and hobbyists' : 
                    plan.id === 'pro' ? 'Best value for regular creators' : 
                    'Unlimited potential for power users'}
                 </Typography>
                 
-                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 0.5 }}>
                   <Typography variant="h3" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
-                    ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                    ${isYearly ? (plan.yearlyPrice / 12).toFixed(2) : plan.monthlyPrice}
                   </Typography>
                   <Typography sx={{ color: '#86868B', ml: 1 }}>
                     /month
@@ -643,14 +687,18 @@ const PaymentPage: React.FC = () => {
                 </Box>
                 
                 {isYearly && (
-                  <Typography sx={{ fontSize: '0.85rem', color: '#007AFF', mb: 3 }}>
-                    Saves ${((plan.monthlyPrice - plan.yearlyPrice) * 12).toFixed(0)} by billing yearly!
+                  <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 3 }}>
+                    ${plan.yearlyPrice}/year
                   </Typography>
+                )}
+                
+                {!isYearly && (
+                  <Box sx={{ mb: 3 }} />
                 )}
 
                 <Button 
                   fullWidth 
-                  variant={selectedPlan === plan.id ? 'contained' : 'outlined'}
+                  variant="contained"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!subscription || subscription.tier === 'free') {
@@ -663,19 +711,25 @@ const PaymentPage: React.FC = () => {
                     borderRadius: '12px',
                     fontWeight: 600,
                     mb: 3,
-                    ...(selectedPlan === plan.id ? {
-                      background: '#1D1D1F',
-                      color: '#fff',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                      '&:hover': { background: '#000' },
-                    } : {
-                      borderColor: 'rgba(0,0,0,0.15)',
-                      color: '#1D1D1F',
-                      '&:hover': { 
-                        borderColor: 'rgba(0,0,0,0.3)',
-                        background: 'rgba(0,0,0,0.03)',
-                      },
-                    }),
+                    background: selectedPlan === plan.id 
+                      ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)' 
+                      : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                    color: '#fff',
+                    boxShadow: selectedPlan === plan.id 
+                      ? '0 4px 12px rgba(52,199,89,0.3)' 
+                      : '0 4px 12px rgba(0,122,255,0.3)',
+                    '&:hover': { 
+                      background: selectedPlan === plan.id 
+                        ? 'linear-gradient(135deg, #2DB84E 0%, #28C050 100%)' 
+                        : 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                      boxShadow: selectedPlan === plan.id 
+                        ? '0 6px 16px rgba(52,199,89,0.4)' 
+                        : '0 6px 16px rgba(0,122,255,0.4)',
+                    },
+                    '&.Mui-disabled': {
+                      background: 'rgba(0,0,0,0.1)',
+                      color: 'rgba(0,0,0,0.3)',
+                    },
                   }}
                 >
                   {selectedPlan === plan.id ? '✓ Selected' : 'Select Plan'}

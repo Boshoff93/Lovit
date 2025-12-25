@@ -41,15 +41,14 @@ import { getAllRoutePaths } from './config/routeConfig';
 
 // FAQ page wrapper - shows Dashboard-style in Layout when accessed from dashboard, standalone otherwise
 const FAQWithOptionalLayout = () => {
-  const { token, subscription } = useSelector((state: RootState) => state.auth);
+  const { token } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
-  const isPremiumMember = subscription?.tier && subscription.tier !== 'free';
   
-  // Check if coming from dashboard (via state or referrer)
+  // Check if coming from dashboard (via state)
   const fromDashboard = location.state?.fromDashboard === true;
   
-  // If logged in, premium, and coming from dashboard, show Dashboard-style FAQ
-  if (token && isPremiumMember && fromDashboard) {
+  // If logged in and coming from dashboard, show Dashboard-style FAQ
+  if (token && fromDashboard) {
     return (
       <Layout>
         <DashboardFAQPage />
@@ -61,12 +60,11 @@ const FAQWithOptionalLayout = () => {
   return <FAQPage />;
 };
 
-// Route guard to check authentication and premium membership
+// Route guard to check authentication (no subscription requirement - upsell happens when user tries to generate)
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  const { token, user, subscription} = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const isPremiumMember = subscription?.tier && subscription.tier !== 'free'
   
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
@@ -77,15 +75,6 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   // Check if user is verified
   if (user && !user.isVerified && !redirectVerified) {
     return <Navigate to="/resend-verification" state={{ from: location }} replace />;
-  }
-
-  // Check for subscription in URL params (user just subscribed)
-  const hasNewSubscription = searchParams.get('subscription') === 'true';
-  
-  // Use isPremiumMember instead of checking subscription tier
-  // Allow user through if they have just successfully subscribed
-  if (!isPremiumMember && !hasNewSubscription) {
-    return <Navigate to="/payment" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

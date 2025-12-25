@@ -540,9 +540,8 @@ const HomePage: React.FC = () => {
   const promptInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription, logout } = useAuth();
+  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, logout } = useAuth();
   const { token } = useSelector((state: RootState) => state.auth);
-  const isPremiumMember = subscription?.tier && subscription.tier !== 'free';
   const isLoggedIn = !!token;
 
   const handleDrawerToggle = useCallback(() => {
@@ -566,15 +565,12 @@ const HomePage: React.FC = () => {
       localStorage.setItem('pendingPrompt', prompt.trim());
     }
     if (user) {
-      if (isPremiumMember) {
-        navigate('/dashboard');
-      } else {
-        navigate('/payment');
-      }
+      // Navigate to dashboard - token check happens when user tries to generate
+      navigate('/dashboard');
     } else {
       setOpen(true);
     }
-  }, [user, isPremiumMember, navigate, prompt]);
+  }, [user, navigate, prompt]);
 
   // Restore prompt from localStorage on auth success
   useEffect(() => {
@@ -588,13 +584,9 @@ const HomePage: React.FC = () => {
 
   const handleClickOpen = useCallback(async () => {
     if (user) {
-      if (isPremiumMember) {
-        navigate('/dashboard');
-        return;
-      } else {
-        navigate('/payment');
-        return;
-      }
+      // Navigate to dashboard - token check happens when user tries to generate
+      navigate('/dashboard');
+      return;
     }
     setOpen(true);
     setEmail('');
@@ -602,7 +594,7 @@ const HomePage: React.FC = () => {
     setConfirmPassword('');
     setUsername('');
     setError(null);
-  }, [user, isPremiumMember, navigate]);
+  }, [user, navigate]);
 
   const handleClose = useCallback(() => {
     setOpen(false);
@@ -2206,28 +2198,47 @@ const HomePage: React.FC = () => {
                      plan.id === 'pro' ? 'Great for content creators. 1,000 tokens per month with high quality audio.' : 
                      'Maximum power for professionals. 2,500 tokens per month with priority generation.'}
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
-                          {plan.title}
-                        </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                      {plan.title}
+                    </Typography>
+                    {isYearly && (
+                      <Chip 
+                        label={`Save $${((plan.monthlyPrice * 12) - plan.yearlyPrice).toFixed(0)}`}
+                        size="small"
+                        sx={{ 
+                          background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
+                          color: '#fff',
+                          fontWeight: 600,
+                          fontSize: '0.7rem',
+                          height: 24,
+                        }}
+                      />
+                    )}
+                  </Box>
                   
-                  <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 0.5 }}>
                     <Typography variant="h3" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
-                      ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
-                        </Typography>
+                      ${isYearly ? (plan.yearlyPrice / 12).toFixed(2) : plan.monthlyPrice}
+                    </Typography>
                     <Typography sx={{ color: '#86868B', ml: 1 }}>
                       /month
-                        </Typography>
-                      </Box>
+                    </Typography>
+                  </Box>
                   
                   {isYearly && (
-                    <Typography sx={{ fontSize: '0.85rem', color: '#007AFF', mb: 3 }}>
-                      Saves ${((plan.monthlyPrice - plan.yearlyPrice) * 12).toFixed(0)} by billing yearly!
+                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 3 }}>
+                      ${plan.yearlyPrice}/year
                     </Typography>
+                  )}
+                  
+                  {!isYearly && (
+                    <Box sx={{ mb: 3 }} />
                   )}
 
                       <Button 
                         fullWidth 
-                    variant={selectedPlan === plan.id ? 'contained' : 'outlined'}
+                    variant="contained"
                     onClick={(e) => {
                           e.stopPropagation();
                       handleSelectPlan(plan.id);
@@ -2238,19 +2249,13 @@ const HomePage: React.FC = () => {
                       borderRadius: '12px',
                       fontWeight: 600,
                       mb: 3,
-                      ...(selectedPlan === plan.id ? {
-                        background: '#1D1D1F',
-                        color: '#fff',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        '&:hover': { background: '#000' },
-                      } : {
-                        borderColor: 'rgba(0,0,0,0.15)',
-                        color: '#1D1D1F',
-                        '&:hover': { 
-                          borderColor: 'rgba(0,0,0,0.3)',
-                          background: 'rgba(0,0,0,0.03)',
-                        },
-                      }),
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                      color: '#fff',
+                      boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                      '&:hover': { 
+                        background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                        boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+                      },
                     }}
                   >
                     {plan.id === 'starter' ? 'Sign Up' : 'Subscribe'}

@@ -27,9 +27,12 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
+import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
+import UpgradePopup from '../components/UpgradePopup';
+import { reportPurchaseConversion } from '../utils/googleAds';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
@@ -322,8 +325,60 @@ const CreatePage: React.FC = () => {
   const initialTab = (searchParams.get('tab') as TabType) || 'song';
   const songIdFromUrl = searchParams.get('song');
   
-  // Get user from Redux store
-  const { user } = useSelector((state: RootState) => state.auth);
+  // Get user and allowances from Redux store
+  const { user, allowances, subscription } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  
+  // Token checking state
+  const [upgradePopupOpen, setUpgradePopupOpen] = useState(false);
+  const [upgradePopupMessage, setUpgradePopupMessage] = useState('');
+  const [isTopUpLoading, setIsTopUpLoading] = useState(false);
+  const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
+  
+  const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
+  
+  // Get remaining tokens
+  const tokens = getTokensFromAllowances(allowances);
+  const totalTokens = (tokens?.max || 0) + (tokens?.topup || 0);
+  const usedTokens = tokens?.used || 0;
+  const remainingTokens = totalTokens - usedTokens;
+  
+  // Token costs
+  const SONG_COST = 20;
+  const VIDEO_COSTS: Record<string, number> = {
+    'still': 40,
+    'standard': 200,
+    'professional': 2000,
+  };
+  
+  // Check if user has enough tokens
+  const hasEnoughTokens = (cost: number) => remainingTokens >= cost;
+  
+  // Handle upgrade popup actions
+  const handleTopUp = useCallback(async () => {
+    try {
+      setIsTopUpLoading(true);
+      await reportPurchaseConversion();
+      
+      const resultAction = await dispatch(createCheckoutSession({ 
+        priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
+        productId: 'prod_SDuZQfG5jCbfwZ'
+      }));
+      
+      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+        window.location.href = resultAction.payload.url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    } finally {
+      setIsTopUpLoading(false);
+    }
+  }, [dispatch]);
+  
+  const handleUpgrade = useCallback(() => {
+    setIsUpgradeLoading(true);
+    navigate('/payment');
+  }, [navigate]);
   
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   
@@ -476,6 +531,13 @@ const CreatePage: React.FC = () => {
       return;
     }
     
+    // Check if user has enough tokens
+    if (!hasEnoughTokens(SONG_COST)) {
+      setUpgradePopupMessage(`You need ${SONG_COST} tokens to generate a song. You have ${remainingTokens} tokens remaining.`);
+      setUpgradePopupOpen(true);
+      return;
+    }
+    
     setIsGeneratingSong(true);
     try {
       // Call the async song generation API (returns immediately with pending status)
@@ -527,6 +589,14 @@ const CreatePage: React.FC = () => {
         message: 'Please log in to generate videos.',
         severity: 'error'
       });
+      return;
+    }
+    
+    // Check if user has enough tokens for the selected video type
+    const videoCost = VIDEO_COSTS[videoType] || 40;
+    if (!hasEnoughTokens(videoCost)) {
+      setUpgradePopupMessage(`You need ${videoCost} tokens to generate a ${videoType} video. You have ${remainingTokens} tokens remaining.`);
+      setUpgradePopupOpen(true);
       return;
     }
     
@@ -2529,6 +2599,20 @@ const CreatePage: React.FC = () => {
           {notification.message}
         </Alert>
       </Snackbar>
+      
+      {/* Upgrade/Top-up Popup */}
+      <UpgradePopup
+        open={upgradePopupOpen}
+        type="photo"
+        message={upgradePopupMessage}
+        title="Not Enough Tokens"
+        isPremiumTier={isPremiumTier}
+        onClose={() => setUpgradePopupOpen(false)}
+        onTopUp={handleTopUp}
+        onUpgrade={handleUpgrade}
+        isTopUpLoading={isTopUpLoading}
+        isUpgradeLoading={isUpgradeLoading}
+      />
     </Container>
   );
 };

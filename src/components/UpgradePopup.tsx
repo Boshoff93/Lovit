@@ -8,16 +8,12 @@ import {
   Typography,
   Paper,
   Button,
-  useTheme,
-  useMediaQuery,
   CircularProgress
 } from '@mui/material';
-import ImageIcon from '@mui/icons-material/Image';
-import Face3Icon from '@mui/icons-material/Person';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 interface UpgradePopupProps {
   open: boolean;
-  type: 'photo' | 'model' | null;
   message: string;
   title?: string;
   isPremiumTier: boolean;
@@ -26,11 +22,12 @@ interface UpgradePopupProps {
   onUpgrade: () => void;
   isTopUpLoading?: boolean;
   isUpgradeLoading?: boolean;
+  // Legacy prop - kept for compatibility but not used
+  type?: 'photo' | 'model' | null;
 }
 
 const UpgradePopup: React.FC<UpgradePopupProps> = ({
   open,
-  type,
   message,
   title,
   isPremiumTier,
@@ -40,8 +37,6 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
   isTopUpLoading = false,
   isUpgradeLoading = false
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Dialog
@@ -57,7 +52,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
     >
       <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
         <Typography variant="h5" fontWeight={600}>
-          {title || (type === 'photo' ? 'Photo Limit Reached' : 'Model Limit Reached')}
+          {title || 'Not Enough Tokens'}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -74,17 +69,14 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
               width: 80,
               height: 80,
               borderRadius: '50%',
-              backgroundColor: `${theme.palette.warning.main}15`,
+              background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               mb: 1
             }}
           >
-            {type === 'photo' ? 
-              <ImageIcon sx={{ fontSize: 40, color: theme.palette.warning.main }} /> : 
-              <Face3Icon sx={{ fontSize: 40, color: theme.palette.warning.main }} />
-            }
+            <MusicNoteIcon sx={{ fontSize: 40, color: '#007AFF' }} />
           </Box>
           
           <Typography variant="body1" sx={{ mb: 1 }}>
@@ -96,18 +88,14 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
             sx={{
               p: 2,
               borderRadius: 2,
-              backgroundColor: theme.palette.primary.light + '15',
+              background: 'linear-gradient(135deg, rgba(0,122,255,0.05) 0%, rgba(90,200,250,0.05) 100%)',
               width: '100%'
             }}
           >
             <Typography variant="body2" color="text.secondary">
               {isPremiumTier
-                ? (type === 'photo' 
-                  ? 'Purchase additional photo credits to continue creating amazing content!' 
-                  : 'Purchase additional model credits to create more AI personas!')
-                : (type === 'photo' 
-                  ? 'Upgrade to generate more stunning images with your model!' 
-                  : 'Upgrade to create additional AI models of different looks!')}
+                ? 'Purchase additional tokens to continue creating amazing music and videos!'
+                : 'Upgrade your plan for more monthly tokens and premium features!'}
             </Typography>
           </Paper>
         </Box>
@@ -116,89 +104,57 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
         justifyContent: 'center', 
         pb: 3, 
         px: 3,
-        flexDirection: isMobile ? 'column' : 'row',
-        gap: isMobile ? 1 : 0
+        flexDirection: 'column',
+        gap: 1.5
       }}>
-        {isMobile ? (
-          <>
-            <Button 
-              variant="contained" 
-              onClick={onTopUp}
-              sx={{ borderRadius: 2, minWidth: 120 }}
-              color="primary"
-              fullWidth
-              disabled={isTopUpLoading}
-            >
-              {isTopUpLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Top Up'
-              )}
-            </Button>
-            {isPremiumTier === false && (
-              <Button 
-                variant="contained" 
-                onClick={onUpgrade}
-                sx={{ borderRadius: 2, minWidth: 120 }}
-                color="primary"
-                fullWidth
-                disabled={isUpgradeLoading}
-              >
-                {isUpgradeLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  'Upgrade Now'
-                )}
-              </Button>
-            )}
-          </>
-        ) : (
-          <>
-            {isPremiumTier === false ? (
-              <>
-                <Button 
-                  variant="contained" 
-                  onClick={onTopUp}
-                  sx={{ borderRadius: 2, minWidth: 120 }}
-                  color="primary"
-                  disabled={isTopUpLoading}
-                >
-                  {isTopUpLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    'Top Up'
-                  )}
-                </Button>
-                <Button 
-                  variant="contained" 
-                  onClick={onUpgrade}
-                  sx={{ borderRadius: 2, minWidth: 120 }}
-                  color="primary"
-                  disabled={isUpgradeLoading}
-                >
-                  {isUpgradeLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    'Upgrade Now'
-                  )}
-                </Button>
-              </>
+        <Button 
+          variant="contained" 
+          onClick={onTopUp}
+          fullWidth
+          disabled={isTopUpLoading}
+          sx={{ 
+            borderRadius: '12px', 
+            py: 1.5,
+            fontWeight: 600,
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            color: '#fff',
+            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+            '&:hover': { 
+              background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+              boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+            },
+          }}
+        >
+          {isTopUpLoading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Top Up Tokens'
+          )}
+        </Button>
+        {isPremiumTier === false && (
+          <Button 
+            variant="outlined" 
+            onClick={onUpgrade}
+            fullWidth
+            disabled={isUpgradeLoading}
+            sx={{ 
+              borderRadius: '12px', 
+              py: 1.5,
+              fontWeight: 600,
+              borderColor: '#007AFF',
+              color: '#007AFF',
+              '&:hover': { 
+                borderColor: '#0066DD',
+                background: 'rgba(0,122,255,0.05)',
+              },
+            }}
+          >
+            {isUpgradeLoading ? (
+              <CircularProgress size={24} color="inherit" />
             ) : (
-              <Button 
-                variant="contained" 
-                onClick={onTopUp}
-                sx={{ borderRadius: 2, minWidth: 120 }}
-                color="primary"
-                disabled={isTopUpLoading}
-              >
-                {isTopUpLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  'Top Up'
-                )}
-              </Button>
+              'Upgrade Plan'
             )}
-          </>
+          </Button>
         )}
       </DialogActions>
       <Box sx={{ 
