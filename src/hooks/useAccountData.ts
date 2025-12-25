@@ -6,7 +6,7 @@ type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
 // Global cache to prevent multiple components from fetching simultaneously
 let globalLastFetched: Date | null = null;
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache
+const CACHE_DURATION_MS = 1 * 60 * 1000; // 5 minutes cache
 
 export const useAccountData = (_shouldFetch: boolean = false) => {
   const { user, token, updateUser, updateSubscription, updateAllowances } = useAuth();

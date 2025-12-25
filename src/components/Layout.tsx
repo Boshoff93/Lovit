@@ -106,7 +106,7 @@ const AllowanceDisplay: React.FC<{
     <Button
       onClick={() => onUpgrade('credits')}
       sx={{
-        borderRadius: '16px',
+        borderRadius: '20px',
         px: 2,
         py: 1,
         minWidth: 'auto',
