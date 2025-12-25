@@ -346,6 +346,363 @@ const moodData: { [key: string]: { name: string; prompts: string[] } } = {
 };
 
 // =============================================================================
+// BEGINNER/EASE-OF-USE ROUTES DATA
+// =============================================================================
+const beginnerRouteData: { [key: string]: { title: string; description: string; keywords: string; heroTagline: string; heroHeading: string; heroSubtext: string; prompts: string[] } } = {
+  'easy-music-maker': {
+    title: 'Easy Music Maker - No Experience Required | Gruvi',
+    description: 'The easiest way to create music online. No musical experience needed - just describe your song and AI does the rest. Perfect for beginners.',
+    keywords: 'easy music maker, simple music creator, beginner music app, no experience music',
+    heroTagline: 'Easy Music Maker',
+    heroHeading: 'Easy Music Maker\nNo experience required',
+    heroSubtext: 'Create professional music without any musical training. Just describe what you want and our AI creates it instantly. Perfect for complete beginners.',
+    prompts: ['A fun dance song', 'Relaxing background music', 'An upbeat party track', 'Calm meditation sounds']
+  },
+  'simple-song-maker': {
+    title: 'Simple Song Maker - Create Music in Seconds | Gruvi',
+    description: 'The simplest way to make your own songs. Type a description, click create, get your song. No complicated software or music theory required.',
+    keywords: 'simple song maker, easy song creator, quick song generator, beginner song maker',
+    heroTagline: 'Simple Song Maker',
+    heroHeading: 'Simple Song Maker\nCreate songs in seconds',
+    heroSubtext: 'Making music has never been easier. Just type what kind of song you want and watch as AI creates it for you in seconds.',
+    prompts: ['A happy birthday song for mom', 'Chill beats for studying', 'An epic adventure theme', 'Romantic dinner music']
+  },
+  'beginner-music-generator': {
+    title: 'Beginner Music Generator - Start Making Music Today | Gruvi',
+    description: 'Perfect for beginners! Create professional-sounding music with zero experience. Our AI handles the complex stuff - you just describe your idea.',
+    keywords: 'beginner music generator, music for beginners, learn to make music, first time music maker',
+    heroTagline: 'For Beginners',
+    heroHeading: 'Beginner Music Generator\nStart making music today',
+    heroSubtext: 'Never made music before? No problem! Our AI-powered generator is designed for beginners. Just describe your song idea and create professional music instantly.',
+    prompts: ['My first pop song', 'Simple acoustic melody', 'Easy electronic beat', 'Beginner-friendly instrumental']
+  },
+  'online-music-maker': {
+    title: 'Online Music Maker - Create Music in Your Browser | Gruvi',
+    description: 'Make music online without downloading software. Create songs directly in your browser with our AI music generator. Works on any device.',
+    keywords: 'online music maker, browser music creator, web music generator, no download music maker',
+    heroTagline: 'Online Music Maker',
+    heroHeading: 'Online Music Maker\nCreate music in your browser',
+    heroSubtext: 'No software downloads needed. Create professional music directly in your web browser. Works on desktop, tablet, and mobile.',
+    prompts: ['Quick online beat', 'Browser-made song', 'Instant music creation', 'Web music project']
+  },
+  'instant-music-generator': {
+    title: 'Instant Music Generator - Songs in 60 Seconds | Gruvi',
+    description: 'Generate complete songs in under 60 seconds. The fastest AI music generator online. From idea to finished track instantly.',
+    keywords: 'instant music generator, fast song maker, quick music creator, 60 second songs',
+    heroTagline: 'Instant Music',
+    heroHeading: 'Instant Music Generator\nComplete songs in 60 seconds',
+    heroSubtext: 'No waiting around. Our AI generates complete, professional songs in under a minute. Type your idea and have a finished track almost instantly.',
+    prompts: ['Quick pop hit', 'Instant beat drop', 'Fast track creation', 'Rapid song generation']
+  },
+  'ai-song-maker': {
+    title: 'AI Song Maker - Let AI Create Your Music | Gruvi',
+    description: 'Let artificial intelligence create songs for you. Describe your vision, choose a genre, and AI composes original music with lyrics and vocals.',
+    keywords: 'ai song maker, artificial intelligence music, ai composer, auto song creator',
+    heroTagline: 'AI Song Maker',
+    heroHeading: 'AI Song Maker\nLet AI create your music',
+    heroSubtext: 'Artificial intelligence that composes real music. Describe what you want - genre, mood, theme - and our AI creates complete songs with lyrics and vocals.',
+    prompts: ['AI compose a love song', 'Let AI write my anthem', 'AI-generated pop hit', 'Computer-composed masterpiece']
+  },
+  'song-generator-with-lyrics': {
+    title: 'Song Generator with Lyrics - Complete Songs Created | Gruvi',
+    description: 'Generate complete songs with AI-written lyrics and vocals. Not just beats - full songs with words, verses, choruses, and professional vocals.',
+    keywords: 'song generator with lyrics, ai lyrics generator, songs with words, complete song maker',
+    heroTagline: 'Songs with Lyrics',
+    heroHeading: 'Song Generator with Lyrics\nComplete songs with words',
+    heroSubtext: 'Create complete songs with AI-generated lyrics and vocals. Verses, choruses, bridges - everything you need for a real song.',
+    prompts: ['Love song with romantic lyrics', 'Party anthem with catchy words', 'Emotional ballad with deep lyrics', 'Fun song with silly words']
+  },
+  'music-generator-with-vocals': {
+    title: 'Music Generator with Vocals - AI Singing | Gruvi',
+    description: 'Generate music with realistic AI vocals. Choose male or female voices, adjust the style, and create songs with professional singing.',
+    keywords: 'music with vocals, ai singing, vocal music generator, songs with voice',
+    heroTagline: 'AI Vocals',
+    heroHeading: 'Music Generator with Vocals\nAI-powered singing',
+    heroSubtext: 'Create songs with realistic AI-generated vocals. Male, female, or harmonized voices that sound natural and professional.',
+    prompts: ['Female pop vocals', 'Male R&B singer', 'Harmonized choir', 'Solo acoustic voice']
+  },
+  'beat-maker-online': {
+    title: 'Beat Maker Online - Create Beats Free | Gruvi',
+    description: 'Make beats online with AI. Create hip-hop, trap, lo-fi, and electronic beats in your browser. No equipment or experience needed.',
+    keywords: 'beat maker online, free beats, make beats online, ai beat generator',
+    heroTagline: 'Beat Maker',
+    heroHeading: 'Beat Maker Online\nCreate beats with AI',
+    heroSubtext: 'Make professional beats online without any equipment. Hip-hop, trap, lo-fi, electronic - describe the vibe and AI creates it.',
+    prompts: ['Hard trap beat', 'Chill lo-fi beat', 'Bouncy hip-hop instrumental', 'Dark drill beat']
+  },
+  'custom-song-creator': {
+    title: 'Custom Song Creator - Personalized Music | Gruvi',
+    description: 'Create fully customized songs for any occasion. Personalized birthday songs, wedding music, tributes, and more with your own ideas.',
+    keywords: 'custom song creator, personalized music, custom songs, made to order music',
+    heroTagline: 'Custom Songs',
+    heroHeading: 'Custom Song Creator\nPersonalized music for you',
+    heroSubtext: 'Create fully personalized songs for any occasion. Add names, dates, special messages - make music that\'s uniquely yours.',
+    prompts: ['Birthday song for Sarah', 'Our wedding first dance', 'Graduation song for Class of 2025', 'Anniversary surprise song']
+  },
+  'text-to-music': {
+    title: 'Text to Music Generator - Type and Create | Gruvi',
+    description: 'Turn text into music with AI. Simply type a description and our generator transforms your words into original songs and beats.',
+    keywords: 'text to music, type to song, words to music, description to song',
+    heroTagline: 'Text to Music',
+    heroHeading: 'Text to Music\nType it, hear it',
+    heroSubtext: 'Transform your ideas into music instantly. Type any description and watch as AI converts your words into professional songs.',
+    prompts: ['Turn this poem into a song', 'Make music from my story', 'Convert my feelings to melody', 'Words become music']
+  },
+  'no-signup-music-maker': {
+    title: 'Music Maker No Signup - Try Free Instantly | Gruvi',
+    description: 'Create music without signing up. Try our AI music generator instantly - no account required, no email needed. Start making music now.',
+    keywords: 'no signup music maker, try without account, instant music creation, no registration',
+    heroTagline: 'No Signup Needed',
+    heroHeading: 'No Signup Music Maker\nTry instantly for free',
+    heroSubtext: 'No account needed to try. Create your first AI-generated song right now without signing up. See how easy it is.',
+    prompts: ['Try it now', 'Quick demo song', 'Test the AI', 'Instant creation']
+  },
+  'one-click-music': {
+    title: 'One Click Music Generator - Instant Songs | Gruvi',
+    description: 'Generate music with one click. Choose a style, hit generate, get your song. The absolute easiest way to create original music.',
+    keywords: 'one click music, instant song generator, automatic music maker, easy music creation',
+    heroTagline: 'One Click Music',
+    heroHeading: 'One Click Music\nGenerate songs instantly',
+    heroSubtext: 'Just click and create. Select a genre, mood, or occasion - one click generates a complete original song. It couldn\'t be simpler.',
+    prompts: ['One-click pop', 'Instant rock song', 'Quick jazz track', 'Auto-generate electronic']
+  },
+  'professional-music-maker': {
+    title: 'Professional Music Maker - Studio Quality AI | Gruvi',
+    description: 'Create professional, studio-quality music with AI. High-definition audio, industry-standard production, ready for release.',
+    keywords: 'professional music maker, studio quality, high quality music, release ready',
+    heroTagline: 'Professional Quality',
+    heroHeading: 'Professional Music Maker\nStudio-quality results',
+    heroSubtext: 'Create music that sounds professionally produced. High-definition audio quality ready for streaming platforms, videos, or commercial use.',
+    prompts: ['Radio-ready pop song', 'Professional soundtrack', 'Studio-quality beat', 'Release-ready track']
+  },
+  'royalty-free-music-generator': {
+    title: 'Royalty Free Music Generator - Use Anywhere | Gruvi',
+    description: 'Generate royalty-free music you can use anywhere. No copyright claims, no licensing fees. Use for YouTube, TikTok, podcasts, and more.',
+    keywords: 'royalty free music, no copyright music, free to use music, license free songs',
+    heroTagline: 'Royalty Free',
+    heroHeading: 'Royalty Free Music\nUse anywhere, no claims',
+    heroSubtext: 'Create music you actually own. Use it on YouTube, TikTok, podcasts, commercials - anywhere without copyright claims or licensing fees.',
+    prompts: ['YouTube background music', 'Copyright-free beats', 'Podcast intro music', 'Commercial-safe track']
+  },
+  'instrumental-generator': {
+    title: 'Instrumental Music Generator - Beats Without Vocals | Gruvi',
+    description: 'Generate instrumental music without vocals. Create background music, beats, soundtracks, and backing tracks for any purpose.',
+    keywords: 'instrumental music, no vocals, background music, backing tracks',
+    heroTagline: 'Instrumentals Only',
+    heroHeading: 'Instrumental Generator\nMusic without vocals',
+    heroSubtext: 'Create instrumental tracks perfect for background music, videos, presentations, and more. Pure music without vocals.',
+    prompts: ['Piano instrumental', 'Guitar background music', 'Electronic instrumental', 'Orchestral soundtrack']
+  },
+  'ai-producer': {
+    title: 'AI Music Producer - Virtual Producer | Gruvi',
+    description: 'Your personal AI music producer. Creates complete productions with mixing, arrangement, and professional sound design.',
+    keywords: 'ai producer, virtual producer, ai music production, auto producer',
+    heroTagline: 'AI Producer',
+    heroHeading: 'AI Music Producer\nYour virtual producer',
+    heroSubtext: 'Let AI handle the production. Our virtual producer creates fully mixed and mastered tracks with professional arrangements.',
+    prompts: ['Produce my pop idea', 'AI produce a hip-hop track', 'Virtual producer session', 'Full production beat']
+  },
+  'song-writer-ai': {
+    title: 'AI Songwriter - Write Songs with AI | Gruvi',
+    description: 'AI that writes songs for you. Generates original lyrics, melodies, and complete song structures. Your AI songwriting partner.',
+    keywords: 'ai songwriter, song writing ai, auto lyrics, ai song writer',
+    heroTagline: 'AI Songwriter',
+    heroHeading: 'AI Songwriter\nWrite songs with AI',
+    heroSubtext: 'Stuck on lyrics? Let AI write them. Our songwriter AI generates original lyrics, catchy melodies, and complete song structures.',
+    prompts: ['Write a love song for me', 'AI write my breakup anthem', 'Generate song lyrics', 'Create my next hit']
+  },
+  'music-for-videos': {
+    title: 'Music for Videos - Background Music Generator | Gruvi',
+    description: 'Generate perfect background music for your videos. YouTube, TikTok, Instagram, corporate videos - royalty-free and ready to use.',
+    keywords: 'music for videos, video background music, youtube music, content creator music',
+    heroTagline: 'Music for Videos',
+    heroHeading: 'Music for Videos\nPerfect background tracks',
+    heroSubtext: 'Create custom background music for your video content. Matches your video\'s mood perfectly, royalty-free for all platforms.',
+    prompts: ['YouTube intro music', 'Vlog background track', 'Dramatic video score', 'Upbeat social media music']
+  },
+  'commercial-music-generator': {
+    title: 'Commercial Music Generator - Ads & Business | Gruvi',
+    description: 'Create music for commercials, advertisements, and business use. Professional tracks licensed for commercial purposes.',
+    keywords: 'commercial music, advertising music, business music, ad jingles',
+    heroTagline: 'Commercial Music',
+    heroHeading: 'Commercial Music\nFor ads and business',
+    heroSubtext: 'Generate professional music for commercials, advertisements, and corporate content. Fully licensed for commercial use.',
+    prompts: ['Upbeat commercial jingle', 'Corporate presentation music', 'Product ad soundtrack', 'Brand anthem']
+  },
+  'ai-music-creator': {
+    title: 'AI Music Creator - Create Original Music Online | Gruvi',
+    description: 'Create original music online with AI. The simplest music creation tool - describe what you want, get professional results.',
+    keywords: 'ai music creator, create music ai, music creation online',
+    heroTagline: 'AI Music Creator',
+    heroHeading: 'AI Music Creator\nCreate original music online',
+    heroSubtext: 'The simplest way to create music. Just describe your idea and AI creates professional, original music instantly.',
+    prompts: ['Create an upbeat track', 'Make chill vibes', 'Generate a dance song', 'Compose something unique']
+  },
+  'make-music-online': {
+    title: 'Make Music Online Free - No Download Required | Gruvi',
+    description: 'Make music online without downloading any software. Create songs in your browser with AI. Works on any device.',
+    keywords: 'make music online, online music creation, browser music maker',
+    heroTagline: 'Make Music Online',
+    heroHeading: 'Make Music Online\nNo download required',
+    heroSubtext: 'Create music directly in your browser. No software to download, no plugins needed. Just describe and create.',
+    prompts: ['Make a pop song online', 'Create beats in browser', 'Online music production', 'Web-based song creation']
+  },
+  'create-song-online': {
+    title: 'Create Song Online - Free Song Creator | Gruvi',
+    description: 'Create songs online for free. AI generates complete songs with vocals and lyrics. No musical experience needed.',
+    keywords: 'create song online, online song creator, make songs free',
+    heroTagline: 'Create Songs Online',
+    heroHeading: 'Create Song Online\nComplete songs with AI',
+    heroSubtext: 'Create complete songs online with AI-generated vocals and lyrics. Professional quality, free to try.',
+    prompts: ['Create my first song', 'Online song about love', 'Make a party anthem', 'Generate a ballad']
+  },
+  'generate-music': {
+    title: 'Generate Music with AI - Instant Song Creation | Gruvi',
+    description: 'Generate music instantly with artificial intelligence. From idea to finished song in under a minute.',
+    keywords: 'generate music, music generation, ai music, auto music',
+    heroTagline: 'Generate Music',
+    heroHeading: 'Generate Music\nAI-powered creation',
+    heroSubtext: 'Generate original music with the power of AI. Describe your vision and watch as complete songs are created instantly.',
+    prompts: ['Generate pop music', 'Auto-create hip-hop', 'Instant rock generation', 'AI make my song']
+  },
+  'make-a-song': {
+    title: 'Make a Song - Easy Song Maker Online | Gruvi',
+    description: 'Make a song about anything. Describe your idea, choose a genre, and AI creates a complete song with music and vocals.',
+    keywords: 'make a song, song maker, create a song, make music',
+    heroTagline: 'Make a Song',
+    heroHeading: 'Make a Song\nAbout anything',
+    heroSubtext: 'Make a song about literally anything. Your ideas, your topics, your style - AI brings it to life with music and vocals.',
+    prompts: ['Make a song about my dog', 'Create a song for mom', 'Song about summer vibes', 'Make my story a song']
+  },
+  'song-maker': {
+    title: 'Song Maker - Free Online Song Creator | Gruvi',
+    description: 'Free song maker powered by AI. Create original songs with vocals, lyrics, and professional production. No experience needed.',
+    keywords: 'song maker, song creator, make songs, song generator',
+    heroTagline: 'Song Maker',
+    heroHeading: 'Song Maker\nCreate songs for free',
+    heroSubtext: 'The easiest song maker online. AI creates complete songs with vocals and professional production. Just describe what you want.',
+    prompts: ['Make a love song', 'Create party music', 'Generate a ballad', 'Craft an anthem']
+  },
+  'music-maker': {
+    title: 'Music Maker Online - Free AI Music Creator | Gruvi',
+    description: 'Free online music maker powered by AI. Create original music in any genre without any musical experience.',
+    keywords: 'music maker, music creator, make music, free music maker',
+    heroTagline: 'Music Maker',
+    heroHeading: 'Music Maker\nCreate music for free',
+    heroSubtext: 'The simplest music maker online. No experience needed - just describe your idea and AI creates professional music.',
+    prompts: ['Make electronic music', 'Create rock track', 'Generate jazz piece', 'Produce hip-hop beat']
+  },
+  'create-music': {
+    title: 'Create Music with AI - Song & Beat Generator | Gruvi',
+    description: 'Create music with AI technology. Generate songs, beats, instrumentals, and complete tracks in any genre.',
+    keywords: 'create music, music creation, ai music maker, generate music',
+    heroTagline: 'Create Music',
+    heroHeading: 'Create Music\nWith AI technology',
+    heroSubtext: 'Create any kind of music with AI. Songs with vocals, beats, instrumentals - describe what you want and get professional results.',
+    prompts: ['Create pop song', 'Make a beat', 'Generate instrumental', 'Compose soundtrack']
+  },
+  'make-beats': {
+    title: 'Make Beats Online Free - AI Beat Maker | Gruvi',
+    description: 'Make beats online for free. AI-powered beat maker creates hip-hop, trap, lo-fi, and electronic beats instantly.',
+    keywords: 'make beats, beat maker, free beats, ai beats',
+    heroTagline: 'Make Beats',
+    heroHeading: 'Make Beats\nAI beat maker online',
+    heroSubtext: 'Create professional beats online with AI. Hip-hop, trap, lo-fi, electronic - any style, instantly generated.',
+    prompts: ['Make trap beat', 'Create lo-fi beat', 'Generate boom bap', 'Produce drill beat']
+  },
+  'background-music-generator': {
+    title: 'Background Music Generator - Royalty Free | Gruvi',
+    description: 'Generate royalty-free background music for videos, presentations, and content. Professional quality, any mood.',
+    keywords: 'background music generator, royalty free background, video background music',
+    heroTagline: 'Background Music',
+    heroHeading: 'Background Music Generator\nRoyalty-free tracks',
+    heroSubtext: 'Create perfect background music for any project. Videos, presentations, podcasts - royalty-free and customized to your needs.',
+    prompts: ['Corporate background', 'Upbeat background track', 'Calm ambient background', 'Motivational background']
+  },
+  'intro-music-maker': {
+    title: 'Intro Music Maker - YouTube & Podcast Intros | Gruvi',
+    description: 'Create catchy intro music for YouTube, podcasts, and content. Professional intros that grab attention.',
+    keywords: 'intro music, youtube intro, podcast intro, intro maker',
+    heroTagline: 'Intro Music',
+    heroHeading: 'Intro Music Maker\nCatchy intros for content',
+    heroSubtext: 'Create memorable intro music for your YouTube channel, podcast, or content. Professional quality that grabs attention.',
+    prompts: ['YouTube intro theme', 'Podcast opening music', 'Channel intro jingle', 'Short attention-grabber']
+  },
+  'outro-music-maker': {
+    title: 'Outro Music Maker - End Screen Music | Gruvi',
+    description: 'Create outro music for videos and podcasts. Professional end screen music that leaves a lasting impression.',
+    keywords: 'outro music, end music, youtube outro, podcast outro',
+    heroTagline: 'Outro Music',
+    heroHeading: 'Outro Music Maker\nPerfect endings',
+    heroSubtext: 'Create memorable outro music that wraps up your content professionally. Perfect for YouTube end screens and podcast outros.',
+    prompts: ['YouTube outro theme', 'Podcast closing music', 'Fade out music', 'End credits track']
+  },
+  'jingle-maker': {
+    title: 'Jingle Maker - Create Catchy Jingles | Gruvi',
+    description: 'Create catchy jingles and short musical pieces. Perfect for brands, ads, and memorable audio branding.',
+    keywords: 'jingle maker, create jingles, ad jingle, brand jingle',
+    heroTagline: 'Jingle Maker',
+    heroHeading: 'Jingle Maker\nCatchy audio branding',
+    heroSubtext: 'Create memorable jingles that stick in people\'s heads. Perfect for brands, advertisements, and audio branding.',
+    prompts: ['Catchy brand jingle', 'Commercial jingle', 'Short memorable tune', 'Radio jingle']
+  },
+  'theme-song-generator': {
+    title: 'Theme Song Generator - Create Theme Music | Gruvi',
+    description: 'Generate theme songs for shows, channels, podcasts, and more. Create memorable theme music that defines your brand.',
+    keywords: 'theme song generator, create theme music, theme song maker',
+    heroTagline: 'Theme Songs',
+    heroHeading: 'Theme Song Generator\nDefine your brand',
+    heroSubtext: 'Create the perfect theme song for your show, channel, or brand. Memorable music that becomes your signature sound.',
+    prompts: ['Channel theme song', 'Podcast theme music', 'Show opening theme', 'Brand anthem']
+  },
+  'study-music-generator': {
+    title: 'Study Music Generator - Focus Music for Studying | Gruvi',
+    description: 'Generate study music to help you focus. Lo-fi beats, ambient sounds, and concentration-boosting tracks.',
+    keywords: 'study music, focus music, concentration music, lo-fi study',
+    heroTagline: 'Study Music',
+    heroHeading: 'Study Music Generator\nFocus and concentrate',
+    heroSubtext: 'Create the perfect study soundtrack. Lo-fi beats, ambient sounds, and focus music designed to boost concentration.',
+    prompts: ['Lo-fi study beats', 'Calm focus music', 'Library ambient', 'Deep concentration track']
+  },
+  'sleep-music-generator': {
+    title: 'Sleep Music Generator - Relaxing Sleep Sounds | Gruvi',
+    description: 'Generate relaxing sleep music and sounds. Drift off to AI-created sleep soundscapes and calming melodies.',
+    keywords: 'sleep music, relaxing music, sleep sounds, bedtime music',
+    heroTagline: 'Sleep Music',
+    heroHeading: 'Sleep Music Generator\nDrift off peacefully',
+    heroSubtext: 'Create calming sleep music to help you drift off. Gentle melodies, ambient sounds, and relaxing soundscapes.',
+    prompts: ['Gentle sleep melody', 'Ambient sleep sounds', 'Calming bedtime music', 'Deep relaxation track']
+  },
+  'focus-music-generator': {
+    title: 'Focus Music Generator - Productivity Music | Gruvi',
+    description: 'Generate focus music to boost productivity. Concentration-enhancing tracks for work, study, and deep focus.',
+    keywords: 'focus music, productivity music, concentration music, work music',
+    heroTagline: 'Focus Music',
+    heroHeading: 'Focus Music Generator\nBoost productivity',
+    heroSubtext: 'Create music designed to enhance focus and productivity. Perfect background for work, coding, and deep concentration.',
+    prompts: ['Deep focus ambient', 'Productivity beats', 'Coding background', 'Work flow music']
+  },
+  'ringtone-maker': {
+    title: 'Ringtone Maker - Create Custom Ringtones | Gruvi',
+    description: 'Create unique custom ringtones with AI. Stand out with personalized ringtones in any style or genre.',
+    keywords: 'ringtone maker, custom ringtones, create ringtone, phone ringtone',
+    heroTagline: 'Ringtones',
+    heroHeading: 'Ringtone Maker\nUnique phone sounds',
+    heroSubtext: 'Create one-of-a-kind ringtones that stand out. AI generates unique sounds in any style for your phone.',
+    prompts: ['Catchy ringtone melody', 'Electronic ringtone', 'Calm notification sound', 'Epic ringtone']
+  },
+  'alarm-music-maker': {
+    title: 'Alarm Music Maker - Custom Wake Up Sounds | Gruvi',
+    description: 'Create custom alarm music and wake-up sounds. Start your day right with personalized morning melodies.',
+    keywords: 'alarm music, wake up music, alarm sounds, morning alarm',
+    heroTagline: 'Alarm Music',
+    heroHeading: 'Alarm Music Maker\nWake up your way',
+    heroSubtext: 'Create the perfect wake-up sound. Gentle morning melodies or energizing alarm music - personalized for you.',
+    prompts: ['Gentle wake up melody', 'Energizing alarm', 'Morning motivation music', 'Peaceful alarm sound']
+  },
+};
+
+// =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
@@ -490,6 +847,25 @@ function generateMoodRoute(mood: string): RouteConfig {
   };
 }
 
+function generateBeginnerRoute(key: string): RouteConfig {
+  const data = beginnerRouteData[key];
+  return {
+    path: `/${key}`,
+    title: data.title,
+    description: data.description,
+    keywords: data.keywords,
+    ogTitle: data.title.split(' - ')[0] + ' | Gruvi',
+    ogDescription: data.description.substring(0, 150),
+    twitterTitle: data.title.split(' - ')[0] + ' | Gruvi',
+    twitterDescription: data.description.substring(0, 150),
+    breadcrumbName: capitalize(key),
+    heroTagline: data.heroTagline,
+    heroHeading: data.heroHeading,
+    heroSubtext: data.heroSubtext,
+    examplePrompts: data.prompts
+  };
+}
+
 // =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
@@ -499,6 +875,7 @@ const holidays = Object.keys(holidayData);
 const videoStyles = Object.keys(videoStyleData);
 const platforms = Object.keys(platformData);
 const moods = Object.keys(moodData);
+const beginnerRoutes = Object.keys(beginnerRouteData);
 
 // =============================================================================
 // GENERATE ALL ROUTES
@@ -578,6 +955,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(videoStyles.map(v => [generateVideoStyleRoute(v).path, generateVideoStyleRoute(v)])),
   ...Object.fromEntries(platforms.map(p => [generatePlatformRoute(p).path, generatePlatformRoute(p)])),
   ...Object.fromEntries(moods.map(m => [generateMoodRoute(m).path, generateMoodRoute(m)])),
+  ...Object.fromEntries(beginnerRoutes.map(b => [generateBeginnerRoute(b).path, generateBeginnerRoute(b)])),
 };
 
 // Helper function to get route config by path

@@ -9,7 +9,7 @@ Allow: /googleadservices/
 Allow: /doubleclick.net/
 
 # Sitemap location
-Sitemap: https://trylovit.com/sitemap.xml
+Sitemap: https://gruvimusic.com/sitemap.xml
 
 # Disallow admin and API routes
 Disallow: /admin/

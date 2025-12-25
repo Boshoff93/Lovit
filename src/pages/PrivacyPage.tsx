@@ -14,8 +14,8 @@ const PrivacyPage: React.FC = () => {
     "description": "Privacy Policy for Lovit - AI Fashion Platform. Learn about how we collect, use, and protect your personal information.",
     "publisher": {
       "@type": "Organization",
-      "name": "Lovit",
-      "url": "https://trylovit.com"
+      "name": "Gruvi",
+      "url": "https://gruvimusic.com"
     },
     "datePublished": new Date().toISOString(),
     "dateModified": new Date().toISOString()
@@ -132,7 +132,7 @@ const PrivacyPage: React.FC = () => {
           <Box sx={{ mt: 4 }}>
             <Typography variant="body2">
               For any questions about our Privacy Policy, please contact us at{' '}
-              <Link to="/contact">admin@trylovit.com</Link>
+              <Link to="/contact">support@gruvimusic.com</Link>
             </Typography>
           </Box>
         </Paper>

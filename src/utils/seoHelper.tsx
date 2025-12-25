@@ -36,14 +36,14 @@ export const SEO: React.FC<SEOProps> = ({
   ogImage,
   ogImageWidth = '1200',
   ogImageHeight = '630',
-  ogImageAlt = 'Lovit AI Fashion Platform',
-  ogSiteName = 'Lovit',
+  ogImageAlt = 'Gruvi AI Music Generator',
+  ogSiteName = 'Gruvi',
   ogLocale = 'en_US',
   twitterCard = 'summary_large_image',
   twitterTitle,
   twitterDescription,
   twitterImage,
-  twitterSite = '@trylovit',
+  twitterSite = '@gruvimusic',
   twitterCreator,
   canonicalUrl,
   robots = 'index, follow',
@@ -52,7 +52,7 @@ export const SEO: React.FC<SEOProps> = ({
   structuredData
 }) => {
   // Use default image if not provided
-  const defaultImage = '/lovit.png';
+  const defaultImage = '/gruvi.png';
   const imageUrl = ogImage || defaultImage;
   const twitterImg = twitterImage || imageUrl;
 
@@ -76,7 +76,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:title" content={ogTitle || title} />
       <meta property="og:description" content={ogDescription || description} />
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content={"Lovit: Your Virtual Fashion Studio"} />
+      <meta property="og:site_name" content={"Gruvi: AI Music Generator"} />
       <meta property="og:locale" content={ogLocale} />
       {ogUrl && <meta property="og:url" content={ogUrl} />}
       <meta property="og:image" content={imageUrl} />
@@ -93,8 +93,8 @@ export const SEO: React.FC<SEOProps> = ({
       {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
       
       {/* Additional Social Media */}
-      <meta name="theme-color" content="#000000" />
-      <meta name="msapplication-TileColor" content="#000000" />
+      <meta name="theme-color" content="#007AFF" />
+      <meta name="msapplication-TileColor" content="#007AFF" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="apple-mobile-web-app-title" content={title} />
@@ -128,9 +128,9 @@ export const createHomePageStructuredData = (featureItems: Array<{ title: string
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Lovit - AI Fashion Platform",
-    "description": "Create, customize and generate AI images of yourself in any outfit with Lovit",
-    "applicationCategory": "FashionApplication",
+    "name": "Gruvi - AI Music Generator",
+    "description": "Create original AI-generated music and stunning music videos with Gruvi",
+    "applicationCategory": "MusicApplication",
     "operatingSystem": "Web",
     "offers": {
       "@type": "AggregateOffer",
@@ -143,21 +143,21 @@ export const createHomePageStructuredData = (featureItems: Array<{ title: string
     "screenshot": featureItems.map(item => item.image),
     "author": {
       "@type": "Organization",
-      "name": "Lovit",
-      "url": "https://trylovit.com"
+      "name": "Gruvi",
+      "url": "https://gruvimusic.com"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Lovit",
-      "url": "https://trylovit.com",
+      "name": "Gruvi",
+      "url": "https://gruvimusic.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://trylovit.com/lovit.png"
+        "url": "https://gruvimusic.com/gruvi.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://trylovit.com"
+      "@id": "https://gruvimusic.com"
     }
   };
 };
@@ -195,10 +195,10 @@ export const createVideoStructuredData = (videoData: {
     "embedUrl": videoData.url,
     "publisher": {
       "@type": "Organization",
-      "name": "Lovit",
+      "name": "Gruvi",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://trylovit.com/lovit.png"
+        "url": "https://gruvimusic.com/gruvi.png"
       }
     }
   };
@@ -236,12 +236,12 @@ export const createArticleStructuredData = ({
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Lovit',
-      url: 'https://trylovit.com'
+      name: 'Gruvi',
+      url: 'https://gruvimusic.com'
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': url
     }
   };
-}; 
+};

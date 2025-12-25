@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { updateAiModelAllowance } from './authSlice';
 import api from '../utils/axiosConfig';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
 
 // Model interface
 export interface Model {

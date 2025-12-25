@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver';
 import api from '../utils/axiosConfig';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
 
 // Base image interface for common properties
 export interface ImageBase {

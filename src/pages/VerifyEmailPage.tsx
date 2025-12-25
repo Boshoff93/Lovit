@@ -103,7 +103,7 @@ const VerifyEmailPage: React.FC = () => {
                 {message}
               </Typography>
               <Typography color="text.secondary" align="center" paragraph>
-                You can now access all the features of Lovit.
+                You can now access all the features of Gruvi.
               </Typography>
               <Button 
                 variant="contained" 

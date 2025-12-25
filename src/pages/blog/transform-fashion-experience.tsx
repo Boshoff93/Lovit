@@ -13,7 +13,7 @@ const TransformFashionExperience: React.FC = () => {
         ogTitle="Transform Your Fashion Experience with AI | Lovit Blog"
         ogDescription="Discover how Lovit's AI technology is revolutionizing the way we shop for clothes and create professional photos."
         ogType="article"
-        ogUrl="https://trylovit.com/blog/transform-fashion-experience"
+        ogUrl="https://gruvimusic.com/blog/transform-fashion-experience"
         twitterTitle="Transform Your Fashion Experience with AI | Lovit Blog"
         twitterDescription="Discover how Lovit's AI technology is revolutionizing the way we shop for clothes and create professional photos."
       />

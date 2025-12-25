@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { refreshToken, logout } from '../store/authSlice';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.trylovit.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
 
 // Create a base axios instance
 const api = axios.create({

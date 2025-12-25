@@ -276,10 +276,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         // If this is an image ID (either found in generating images or has a specific pattern)
         if (isImageConnection) {
           // For image connections, pass imageId parameter
-          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
+          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.gruvimusic.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&imageId=${id}`;
         } else {
           // For model connections, pass modelId parameter
-          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.trylovit.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
+          wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://api.gruvimusic.com/ws'}/updates/${id}?token=${token}&userId=${user.userId}&modelId=${id}`;
         }
         
         console.log(`Connecting to WebSocket for ${isImageConnection ? 'image' : 'model'} ${id}`);
