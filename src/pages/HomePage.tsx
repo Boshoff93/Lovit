@@ -270,7 +270,7 @@ const languages = [
 // Subscription plans
 // Credit-based pricing system
 // Credit costs:
-// 1 Song = 25 credits
+// 1 Song = 20 tokens
 // 1 Still Image Video = 100 credits
 // 1 Animated Video = 500 credits
 

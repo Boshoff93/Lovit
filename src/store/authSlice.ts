@@ -26,10 +26,18 @@ export interface Allowance {
 }
 
 // Define allowances interface
+// Uses 'tokens' as the primary field, with 'aiPhotos' for backwards compatibility
 export interface Allowances {
-  aiPhotos: Allowance;
-  aiModels: Allowance;
+  tokens?: Allowance;  // New unified tokens field
+  aiPhotos?: Allowance;  // Legacy field for backwards compatibility
+  aiModels?: Allowance;  // Legacy field for AI model generation
 }
+
+// Helper function to get tokens from allowances (handles legacy aiPhotos field)
+export const getTokensFromAllowances = (allowances: Allowances | null): Allowance | null => {
+  if (!allowances) return null;
+  return allowances.tokens || allowances.aiPhotos || null;
+};
 
 // Auth state interface
 interface AuthState {
@@ -336,10 +344,23 @@ const authSlice = createSlice({
     setAllowances: (state, action: PayloadAction<Allowances>) => {
       state.allowances = action.payload;
     },
-    // Update AI Photos allowance based on number of images generated
+    // Update tokens (used for songs, videos, etc.)
+    updateTokensUsed: (state, action: PayloadAction<number>) => {
+      if (state.allowances) {
+        // Use 'tokens' field if available, fallback to legacy 'aiPhotos'
+        const tokens = state.allowances.tokens || state.allowances.aiPhotos;
+        if (tokens) {
+          tokens.used += action.payload;
+        }
+      }
+    },
+    // Update AI Photos allowance based on number of images generated (legacy)
     updateAiPhotoAllowance: (state, action: PayloadAction<number>) => {
-      if (state.allowances && state.allowances.aiPhotos) {
-        state.allowances.aiPhotos.used += action.payload;
+      if (state.allowances) {
+        const tokens = state.allowances.tokens || state.allowances.aiPhotos;
+        if (tokens) {
+          tokens.used += action.payload;
+        }
       }
     },
     // Update AI Models allowance when creating a new model
@@ -349,10 +370,17 @@ const authSlice = createSlice({
       }
     },
     // Add topup to allowances
-    addTopupToAllowance: (state, action: PayloadAction<{ type: 'aiPhotos' | 'aiModels', amount: number }>) => {
+    addTopupToAllowance: (state, action: PayloadAction<{ type: 'tokens' | 'aiPhotos' | 'aiModels', amount: number }>) => {
       if (state.allowances) {
         const { type, amount } = action.payload;
-        state.allowances[type].topup += amount;
+        if (type === 'tokens' || type === 'aiPhotos') {
+          const tokens = state.allowances.tokens || state.allowances.aiPhotos;
+          if (tokens) {
+            tokens.topup += amount;
+          }
+        } else if (state.allowances[type]) {
+          state.allowances[type]!.topup += amount;
+        }
       }
     }
   },

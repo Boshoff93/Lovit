@@ -48,12 +48,13 @@ const artStyles = [
 ];
 
 // Video type options - Credit costs:
-// Song = 25 credits
-// Still image video = 100 credits
-// Animated video = 500 credits
+// Token costs:
+// Song = 20 tokens
+// Still image video = 40 tokens
+// Animated video = 200 tokens
 const videoTypes = [
-  { id: 'still', label: 'Still Image Video', credits: 100, description: 'Static images synced to music', icon: ImageIcon },
-  { id: 'animated', label: 'Animated Video', credits: 500, description: 'Full motion animation', icon: AnimationIcon },
+  { id: 'still', label: 'Still Image Video', credits: 40, description: 'Static images synced to music', icon: ImageIcon },
+  { id: 'animated', label: 'Animated Video', credits: 200, description: 'Full motion animation', icon: AnimationIcon },
 ];
 
 // Genres/Moods for music video

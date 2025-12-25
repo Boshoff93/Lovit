@@ -213,11 +213,12 @@ const artStyles = [
 ];
 
 // Video types and quality options
+// Token costs: Still = 40, Standard = 200, Professional = 200
 const videoTypes = [
   { 
     id: 'still', 
     label: 'Still', 
-    credits: 50, 
+    credits: 40, 
     description: 'Static images synced to music',
     tooltip: 'Images transition with smooth fades, synced to your song. Fast and affordable.',
     icon: ImageIcon,
@@ -233,7 +234,7 @@ const videoTypes = [
   { 
     id: 'professional', 
     label: 'Professional', 
-    credits: 2000, 
+    credits: 200, 
     description: 'Premium AI animated video',
     tooltip: 'Powered by Kling 1.0 AI. Cinema-quality animations with the most realistic motion and detail.',
     icon: MovieIcon,
@@ -1013,9 +1014,9 @@ const CreatePage: React.FC = () => {
               </Box>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Credits</Typography>
+                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
                   <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    25
+                    20
                   </Typography>
                 </Box>
               </Box>

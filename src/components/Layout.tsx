@@ -33,7 +33,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { AppDispatch } from '../store/store';
-import { Allowances } from '../store/authSlice';
+import { Allowances, getTokensFromAllowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
 import { reportPurchaseConversion } from '../utils/googleAds';
@@ -98,8 +98,10 @@ const AllowanceDisplay: React.FC<{
 }> = ({ allowances, onUpgrade }) => {
   if (!allowances) return null;
   
-  const totalCredits = (allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0);
-  const usedCredits = allowances.aiPhotos?.used || 0;
+  // Use helper function to get tokens (handles legacy aiPhotos field)
+  const tokens = getTokensFromAllowances(allowances);
+  const totalCredits = (tokens?.max || 0) + (tokens?.topup || 0);
+  const usedCredits = tokens?.used || 0;
   const remainingCredits = totalCredits - usedCredits;
 
   return (
@@ -553,7 +555,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       <MusicNoteIcon />
                     </ListItemIcon>
                     <ListItemText 
-                      primary={`${((allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0)) - (allowances.aiPhotos?.used || 0)} tokens left`}
+                      primary={`${(() => {
+                        const tokens = getTokensFromAllowances(allowances);
+                        return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
+                      })()} tokens left`}
                       primaryTypographyProps={{ 
                         fontWeight: 600,
                         color: '#007AFF'

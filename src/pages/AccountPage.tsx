@@ -22,7 +22,7 @@ import { useAccountData } from '../hooks/useAccountData';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
-import { updateEmailPreferences } from '../store/authSlice';
+import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
@@ -293,33 +293,43 @@ const AccountPage: React.FC = () => {
                       {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up Tokens'}
                     </Button>
                   </Box>
-                  <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <Typography variant="h4" fontWeight={700} color="primary.main">
-                      {(allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) - allowances.aiPhotos.used}
-                      <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
-                        tokens remaining
-                      </Typography>
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {allowances.aiPhotos.used} / {allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)} used
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={calculateAllowancePercentage(allowances.aiPhotos.used, allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0))}
-                    sx={{ 
-                      height: 10, 
-                      borderRadius: 5,
-                      my: 1,
-                      backgroundColor: 'rgba(0,122,255,0.1)',
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 5,
-                        background: allowances.aiPhotos.used >= (allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) 
-                          ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
-                          : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
-                      }
-                    }}
-                  />
+                  {(() => {
+                    const tokens = getTokensFromAllowances(allowances);
+                    const total = (tokens?.max || 0) + (tokens?.topup || 0);
+                    const used = tokens?.used || 0;
+                    const remaining = total - used;
+                    return (
+                      <>
+                        <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                          <Typography variant="h4" fontWeight={700} color="primary.main">
+                            {remaining}
+                            <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+                              tokens remaining
+                            </Typography>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {used} / {total} used
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={calculateAllowancePercentage(used, total)}
+                          sx={{ 
+                            height: 10, 
+                            borderRadius: 5,
+                            my: 1,
+                            backgroundColor: 'rgba(0,122,255,0.1)',
+                            '& .MuiLinearProgress-bar': {
+                              borderRadius: 5,
+                              background: used >= total 
+                                ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
+                                : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                            }
+                          }}
+                        />
+                      </>
+                    );
+                  })()}
                 </Paper>
               </Box>
             )}
