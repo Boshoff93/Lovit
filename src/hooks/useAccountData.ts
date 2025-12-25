@@ -1,26 +1,32 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
+import { useState, useCallback, useRef } from 'react';
 import { useAuth } from './useAuth';
-import { Allowances } from '../store/authSlice';
 import api from '../utils/axiosConfig';
 
 type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
 
-export const useAccountData = (shouldFetch: boolean = true) => {
-  const { user, subscription, token, updateUser, updateSubscription, updateAllowances } = useAuth();
+// Global cache to prevent multiple components from fetching simultaneously
+let globalLastFetched: Date | null = null;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache
+
+export const useAccountData = (_shouldFetch: boolean = false) => {
+  const { user, token, updateUser, updateSubscription, updateAllowances } = useAuth();
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const lastFetched = useRef<Date | null>(null);
+  const isFetching = useRef(false);
 
   const fetchAccountData = useCallback(async (force: boolean = false) => {
-    if (!token) return;
+    if (!token || !user?.userId) return;
     
-    // Skip fetch if we recently fetched and force is false
-    if (!force && lastFetched.current && (new Date().getTime() - lastFetched.current.getTime() < 60000)) {
+    // Prevent concurrent fetches
+    if (isFetching.current) return;
+    
+    // Skip fetch if we recently fetched and force is false (use global cache)
+    if (!force && globalLastFetched && (Date.now() - globalLastFetched.getTime() < CACHE_DURATION_MS)) {
       return;
     }
     
     try {
+      isFetching.current = true;
       setStatus('loading');
       setError(null);
       
@@ -28,65 +34,46 @@ export const useAccountData = (shouldFetch: boolean = true) => {
         '/api/user/account', 
         {
           params: {
-            userId: user?.userId
+            userId: user.userId
           }
         }
       );
       
       const { user: fetchedUser } = response.data;
       
-      // Always update if we have fetched user data
-      if (fetchedUser && 
-        (fetchedUser.username !== user?.username || 
-         fetchedUser.email !== user?.email || 
-         fetchedUser.isVerified !== user?.isVerified ||
-         fetchedUser.createdAt !== user?.createdAt ||
-         fetchedUser.userId !== user?.userId ||
-         fetchedUser.emailPreferences?.notifications !== user?.emailPreferences?.notifications ||
-         fetchedUser.isAdmin !== user?.isAdmin)) {
+      if (fetchedUser) {
+        // Update user data
         updateUser(fetchedUser);
-      }
-      
-      // Check if subscription data exists and update it separately
-      if (fetchedUser?.subscription) {
-        const fetchedSubscription = fetchedUser.subscription;
-        if (
-          !subscription ||
-          fetchedSubscription.tier !== subscription.tier ||
-          fetchedSubscription.status !== subscription.status ||
-          fetchedSubscription.subscriptionId !== subscription.subscriptionId ||
-          fetchedSubscription.customerId !== subscription.customerId ||
-          fetchedSubscription.currentPeriodEnd !== subscription.currentPeriodEnd
-        ) {
-          updateSubscription(fetchedSubscription);
+        
+        // Update subscription if available
+        if (fetchedUser.subscription) {
+          updateSubscription(fetchedUser.subscription);
+        }
+        
+        // Update allowances if available
+        if (fetchedUser.allowances) {
+          updateAllowances(fetchedUser.allowances);
         }
       }
       
-      // Update allowances if available
-      if (fetchedUser.allowances) {
-        updateAllowances(fetchedUser.allowances);
-      }
-      
-      lastFetched.current = new Date();
+      globalLastFetched = new Date();
       setStatus('success');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load account data');
       setStatus('error');
+    } finally {
+      isFetching.current = false;
     }
-  },[token, user, updateUser, updateSubscription, updateAllowances, subscription]);
+  }, [token, user?.userId, updateUser, updateSubscription, updateAllowances]);
 
-  // Initial fetch on mount
-  useEffect(() => {
-    if (shouldFetch && token) {
-      fetchAccountData();
-    }
-  }, [token, shouldFetch, fetchAccountData]);
+  // Note: We no longer auto-fetch on mount. Components should explicitly call fetchAccountData(true)
+  // when they need fresh data (e.g., AccountPage on mount)
 
   return {
     status,
     isLoading: status === 'loading',
     error,
-    lastFetched: lastFetched.current,
+    lastFetched: globalLastFetched,
     fetchAccountData
   };
 }; 

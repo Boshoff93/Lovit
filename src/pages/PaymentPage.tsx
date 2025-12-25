@@ -19,8 +19,6 @@ import {
   Alert,
   Snackbar,
   keyframes,
-  AppBar,
-  Toolbar,
   Chip,
   Link
 } from '@mui/material';
@@ -179,11 +177,12 @@ const PaymentPage: React.FC = () => {
     }
   }, [subscription, selectedPlan]);
   
-  // Fetch subscription data directly on component mount and track page view
+  // Track page view on mount
   useEffect(() => {
     trackPaymentPageView();
     fetchAccountData(true);
-  }, [fetchAccountData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Check for success query param (for Stripe redirect)
   useEffect(() => {
@@ -200,7 +199,8 @@ const PaymentPage: React.FC = () => {
       setError('Payment was not completed. Please try again.');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [fetchAccountData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Use Intersection Observer to detect if proceed button is in viewport
   useEffect(() => {

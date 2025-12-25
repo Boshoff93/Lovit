@@ -22,7 +22,6 @@ import {
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { useAccountData } from '../hooks/useAccountData';
 import { songsApi } from '../services/api';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -38,6 +37,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import CloseIcon from '@mui/icons-material/Close';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { videosApi } from '../services/api';
 
 interface Song {
@@ -68,7 +68,7 @@ interface Video {
 const AppPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { fetchAccountData } = useAccountData(false);
+  // Account data is cached globally - no need to fetch here
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user } = useSelector((state: RootState) => state.auth);
@@ -195,10 +195,7 @@ const AppPage: React.FC = () => {
     }
   }, [searchParams, startPolling]);
 
-  // Fetch latest account data when the dashboard loads
-  useEffect(() => {
-    fetchAccountData(false);
-  }, [fetchAccountData]);
+  // Note: Account data is cached globally and only fetched when needed (e.g., AccountPage)
 
   useEffect(() => {
     // Check if user just subscribed
@@ -439,6 +436,30 @@ const AppPage: React.FC = () => {
     navigate(`/create?tab=video&song=${song.songId}`);
   };
 
+  const handleDeleteSong = async (song: Song) => {
+    if (!user?.userId) return;
+    
+    try {
+      await songsApi.deleteSong(user.userId, song.songId);
+      
+      // Remove from local state
+      setSongs(prev => prev.filter(s => s.songId !== song.songId));
+      
+      setNotification({
+        open: true,
+        message: `"${song.songTitle}" deleted`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting song:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to delete song',
+        severity: 'error'
+      });
+    }
+  };
+
   const handleWatchVideo = (video: Video) => {
     navigate(`/video/${video.videoId}`);
   };
@@ -464,14 +485,14 @@ const AppPage: React.FC = () => {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 0, pb: 3, px: { xs: 2, sm: 3 } }}>
-      {/* Header */}
+    <Container maxWidth="lg" sx={{ pt: { xs: 0, sm: 0 }, pb: 3, px: { xs: 2, sm: 3 } }}>
       {/* Toggle Buttons - Equal width pill style */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, width: '100%' }}>
         <ToggleButtonGroup
           value={activeTab}
           exclusive
           onChange={handleTabChange}
+          fullWidth
           sx={{
             background: 'rgba(255,255,255,0.95)',
             backdropFilter: 'blur(20px)',
@@ -482,16 +503,18 @@ const AppPage: React.FC = () => {
             p: 0.5,
             position: 'relative',
             display: 'flex',
+            width: '100%',
+            maxWidth: { xs: '100%', sm: 480 },
             '& .MuiToggleButton-root': {
               border: 'none',
               borderRadius: '100px !important',
               flex: 1,
-              minWidth: 140,
-              px: 3,
+              minWidth: { xs: 0, sm: 140 },
+              px: { xs: 1.5, sm: 3 },
               py: 1.25,
               textTransform: 'none',
               fontWeight: 600,
-              fontSize: '0.875rem',
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
               color: '#86868B',
               gap: 0.75,
               whiteSpace: 'nowrap',
@@ -845,20 +868,63 @@ const AppPage: React.FC = () => {
                   
                   {/* Processing indicator for action button area */}
                   {isProcessing && (
-                    <CircularProgress size={24} sx={{ color: '#007AFF' }} />
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                        '@keyframes pulse': {
+                          '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                          '50%': { opacity: 0.7, transform: 'scale(0.95)' },
+                        },
+                      }}
+                    >
+                      <AutorenewIcon 
+                        sx={{ 
+                          color: '#fff', 
+                          fontSize: 16,
+                          animation: 'spin 1.5s linear infinite',
+                          '@keyframes spin': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                          },
+                        }} 
+                      />
+                    </Box>
                   )}
                   
-                  {/* Failed status */}
+                  {/* Failed status with delete button */}
                   {isFailed && (
-                    <Chip 
-                      label="Failed" 
-                      size="small" 
-                      sx={{ 
-                        backgroundColor: 'rgba(255,59,48,0.1)',
-                        color: '#FF3B30',
-                        fontWeight: 500
-                      }} 
-                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip 
+                        label="Failed" 
+                        size="small" 
+                        sx={{ 
+                          backgroundColor: 'rgba(255,59,48,0.1)',
+                          color: '#FF3B30',
+                          fontWeight: 500
+                        }} 
+                      />
+                      <Tooltip title="Delete failed song" arrow>
+                        <IconButton
+                          onClick={() => handleDeleteSong(song)}
+                          size="small"
+                          sx={{
+                            color: '#FF3B30',
+                            '&:hover': {
+                              backgroundColor: 'rgba(255,59,48,0.1)',
+                            },
+                          }}
+                        >
+                          <DeleteIcon sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   )}
                 </Box>
               );

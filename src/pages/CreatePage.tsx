@@ -1726,7 +1726,7 @@ const CreatePage: React.FC = () => {
                         <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F' }} />
                         <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
                         <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>{type.description}</Typography>
-                        <Chip label={`${type.credits} credits`} size="small" sx={{ mt: 0.5, fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }} />
+                        <Chip label={`${type.credits} tokens`} size="small" sx={{ mt: 0.5, fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }} />
                       </ToggleButton>
                     </Tooltip>
                   );

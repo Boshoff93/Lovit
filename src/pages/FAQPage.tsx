@@ -314,7 +314,7 @@ const FAQPage: React.FC = () => {
   const accordionRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [expandedPanel, setExpandedPanel] = useState<string | false>(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
+  
   // Get unique categories
   const categories = Array.from(new Set(faqItems.map(item => item.category)));
 
@@ -368,6 +368,7 @@ const FAQPage: React.FC = () => {
     ? faqItems.filter(item => item.category === activeCategory)
     : faqItems;
 
+  // Always show the full-page standalone style (Fable-like)
   return (
     <Box sx={{ 
       minHeight: '100vh', 
@@ -405,7 +406,6 @@ const FAQPage: React.FC = () => {
       />
       
       <Container maxWidth="lg" sx={{ py: 4, position: 'relative', zIndex: 1 }}>
-        {/* Breadcrumbs */}
         <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
           <Link
             component={RouterLink}

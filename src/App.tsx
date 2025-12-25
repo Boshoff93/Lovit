@@ -22,6 +22,7 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
+import DashboardFAQPage from './pages/DashboardFAQPage';
 import FAQQuestionPage from './pages/FAQQuestionPage';
 import AdminEmailPage from './pages/AdminEmailPage';
 import UnsubscribePage from './pages/UnsubscribePage';
@@ -35,6 +36,28 @@ import MusicVideoPlayer from './pages/MusicVideoPlayer';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
+
+// FAQ page wrapper - shows Dashboard-style in Layout when accessed from dashboard, standalone otherwise
+const FAQWithOptionalLayout = () => {
+  const { token, subscription } = useSelector((state: RootState) => state.auth);
+  const location = useLocation();
+  const isPremiumMember = subscription?.tier && subscription.tier !== 'free';
+  
+  // Check if coming from dashboard (via state or referrer)
+  const fromDashboard = location.state?.fromDashboard === true;
+  
+  // If logged in, premium, and coming from dashboard, show Dashboard-style FAQ
+  if (token && isPremiumMember && fromDashboard) {
+    return (
+      <Layout>
+        <DashboardFAQPage />
+      </Layout>
+    );
+  }
+  
+  // Otherwise show standalone full-page FAQ (Fable-style) - including from HomePage
+  return <FAQPage />;
+};
 
 // Route guard to check authentication and premium membership
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -186,7 +209,7 @@ function App() {
             </Layout>
           </RequireAuth>
         } />
-        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/faq" element={<FAQWithOptionalLayout />} />
         <Route path="/faq/:question" element={<FAQQuestionPage />} />
         
         {/* Detail pages */}

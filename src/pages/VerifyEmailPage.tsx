@@ -52,7 +52,8 @@ const VerifyEmailPage: React.FC = () => {
     };
 
     verifyUserEmailAsync();
-  }, [verifyUserEmail, token, userId, fetchAccountData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, userId]);
 
   const handleGoToHome = useCallback(() => {
     navigate('/');

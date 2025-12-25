@@ -13,11 +13,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   useMediaQuery,
   Alert,
   Snackbar,
-  CircularProgress,
   Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -26,7 +24,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
-import CampaignIcon from '@mui/icons-material/Campaign';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -66,11 +64,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
 }>(({ theme }) => ({
   flexGrow: 1,
   width: '100%',
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   marginLeft: 0,
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(2),
-  },
 }));
 
 const AppBarStyled = styled(AppBar, {
@@ -135,7 +130,7 @@ const AllowanceDisplay: React.FC<{
         }
       }}
     >
-      {remainingCredits} credits left
+      {remainingCredits} tokens left
     </Button>
   );
 };
@@ -149,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Helper to check if path is active
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '?');
   const dispatch = useDispatch<AppDispatch>();
-  const { token, user } = useSelector((state: RootState) => state.auth);
+  const { token } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
   
   const [open, setOpen] = useState(!useMediaQuery(theme.breakpoints.down('lg')));
@@ -202,7 +197,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [navigate, isMobile]);
   
   const handleNavigate = useCallback((path: string, e?: React.MouseEvent) => {
-    navigate(path);
+    // Pass state for FAQ to indicate it's from dashboard
+    if (path === '/faq') {
+      navigate(path, { state: { fromDashboard: true } });
+    } else {
+      navigate(path);
+    }
     if (isMobile && (!e || !(e.target instanceof Element) || !e.target.closest('.MuiSelect-select'))) {
       setOpen(false);
     }
@@ -415,30 +415,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   >
                     Support
                   </Button>
-                  {user?.isAdmin && (
-                    <Button
-                      onClick={() => handleNavigate('/admin/email')}
-                      startIcon={<CampaignIcon />}
-                      sx={{
-                        borderRadius: '20px',
-                        px: 2,
-                        py: 1,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        color: isActive('/admin/email') ? '#007AFF' : '#1D1D1F',
-                        backgroundColor: isActive('/admin/email') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                        border: '1px solid',
-                        borderColor: isActive('/admin/email') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                        boxShadow: isActive('/admin/email') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0,122,255,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                        }
-                      }}
-                    >
-                      Campaigns
-                    </Button>
-                  )}
+                  <Button
+                    onClick={() => handleNavigate('/faq')}
+                    startIcon={<HelpOutlineIcon />}
+                    sx={{
+                      borderRadius: '20px',
+                      px: 2,
+                      py: 1,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      color: isActive('/faq') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/faq') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      border: '1px solid',
+                      borderColor: isActive('/faq') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/faq') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,122,255,0.08)',
+                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                      }
+                    }}
+                  >
+                    FAQ
+                  </Button>
                 </>
               )}
               
@@ -463,8 +461,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     setUpgradePopup({
                       open: true,
                       type,
-                      message: 'Upgrade your subscription or top up to generate more songs!',
-                      title: 'Song Credits'
+                      message: 'Upgrade your subscription or top up to get more tokens!',
+                      title: 'Tokens'
                     });
                   }}
                 />
@@ -521,9 +519,51 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </IconButton>
           </DrawerHeader>
           <Divider />
-          <Box sx={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            height: 'calc(100vh - 64px)',
+            overflowY: 'auto',
+          }}>
             <List sx={{ px: 1 }}>
-              {/* Create Section - First */}
+              {/* Tokens display - FIRST at top */}
+              {token && allowances && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      handleDrawerClose();
+                      setUpgradePopup({
+                        open: true,
+                        type: 'credits',
+                        message: 'Upgrade your subscription or top up to get more tokens!',
+                        title: 'Tokens'
+                      });
+                    }}
+                    sx={{
+                      px: 2,
+                      borderRadius: 2,
+                      mb: 1,
+                      backgroundColor: 'rgba(0,122,255,0.08)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,122,255,0.12)',
+                      }
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: '#007AFF' }}>
+                      <MusicNoteIcon />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={`${((allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0)) - (allowances.aiPhotos?.used || 0)} tokens left`}
+                      primaryTypographyProps={{ 
+                        fontWeight: 600,
+                        color: '#007AFF'
+                      }} 
+                    />
+                  </ListItemButton>
+                </ListItem>
+              )}
+
+              {/* Create Section */}
               <ListItem disablePadding>
                 <ListItemButton 
                   sx={{ 
@@ -539,7 +579,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   }}
                   onClick={() => handleNavigate('/create')}
                 >
-                  <ListItemIcon sx={{ color: isActive('/create') ? '#007AFF' : '#86868B' }}>
+                  <ListItemIcon sx={{ color: '#007AFF' }}>
                     <AddIcon />
                   </ListItemIcon>
                   <ListItemText 
@@ -636,123 +676,68 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </ListItemButton>
               </ListItem>
 
-              {/* Campaigns Section - Admin Only */}
-              {user?.isAdmin && (
-                <ListItem disablePadding>
-                  <ListItemButton 
-                    sx={{ 
-                      px: 2, 
-                      borderRadius: 2, 
-                      mb: 1,
-                      backgroundColor: isActive('/admin/email') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                      border: isActive('/admin/email') ? '2px solid #007AFF' : '2px solid transparent',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                      }
-                    }}
-                    onClick={() => handleNavigate('/admin/email')}
-                  >
-                    <ListItemIcon sx={{ color: '#007AFF' }}>
-                      <CampaignIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Campaigns" 
-                      primaryTypographyProps={{ 
-                        fontWeight: isActive('/admin/email') ? 600 : 400,
-                        color: isActive('/admin/email') ? '#007AFF' : 'inherit'
-                      }} 
-                    />
-                  </ListItemButton>
-                </ListItem>
-              )}
-            </List>
-            
-            {/* Credits display in drawer for mobile */}
-            {token && allowances && (
-              <Box sx={{ px: 2, py: 1.5 }}>
-                <Paper
-                  onClick={() => {
-                    handleDrawerClose();
-                    setUpgradePopup({
-                      open: true,
-                      type: 'credits',
-                      message: 'Upgrade your subscription or top up to generate more songs!',
-                      title: 'Song Credits'
-                    });
-                  }}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    background: 'linear-gradient(135deg, rgba(0,122,255,0.05) 0%, rgba(0,122,255,0.1) 100%)',
-                    border: '1px solid rgba(0,122,255,0.15)',
-                    transition: 'all 0.2s ease',
+              {/* FAQ Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ 
+                    px: 2, 
+                    borderRadius: 2, 
+                    mb: 1,
+                    backgroundColor: isActive('/faq') ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: isActive('/faq') ? '2px solid #007AFF' : '2px solid transparent',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(0,122,255,0.15) 100%)',
+                      backgroundColor: 'rgba(0,122,255,0.08)',
                     }
                   }}
+                  onClick={() => handleNavigate('/faq')}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <MusicNoteIcon sx={{ color: '#007AFF', fontSize: 20 }} />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                        {((allowances.aiPhotos?.max || 0) + (allowances.aiPhotos?.topup || 0)) - (allowances.aiPhotos?.used || 0)} credits left
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#86868B' }}>
-                        Tap to top up
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-              </Box>
-            )}
+                  <ListItemIcon sx={{ color: '#007AFF' }}>
+                    <HelpOutlineIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="FAQ" 
+                    primaryTypographyProps={{ 
+                      fontWeight: isActive('/faq') ? 600 : 400,
+                      color: isActive('/faq') ? '#007AFF' : 'inherit'
+                    }} 
+                  />
+                </ListItemButton>
+              </ListItem>
+            </List>
             
-            {/* Logout button in drawer for mobile */}
+            {/* Spacer to push logout to bottom */}
+            <Box sx={{ flexGrow: 1 }} />
+            
+            {/* Logout button at very bottom of drawer, separated */}
             {token && (
-              <Box sx={{ px: 2, pb: 2 }}>
-                <Button
-                  fullWidth
-                  variant="outlined"
+              <Box sx={{ px: 2, pb: 3, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                <ListItemButton
                   onClick={() => {
                     handleDrawerClose();
                     handleLogout();
                   }}
-                  startIcon={<LogoutIcon />}
                   sx={{
                     borderRadius: 2,
-                    py: 1,
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    color: '#86868B',
-                    borderColor: 'rgba(0,0,0,0.1)',
+                    py: 1.5,
+                    justifyContent: 'center',
                     '&:hover': {
-                      borderColor: '#FF3B30',
-                      color: '#FF3B30',
-                      backgroundColor: 'rgba(255,59,48,0.05)',
+                      backgroundColor: 'rgba(255,59,48,0.08)',
                     }
                   }}
                 >
-                  Sign Out
-                </Button>
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <LogoutIcon sx={{ color: '#86868B' }} />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Sign Out"
+                    primaryTypographyProps={{ 
+                      fontWeight: 500,
+                      color: '#86868B'
+                    }} 
+                  />
+                </ListItemButton>
               </Box>
             )}
-
-            <Box sx={{ mt: 'auto', p: 2 }}>
-              <Paper 
-                variant="outlined" 
-                sx={{ 
-                  p: 2, 
-                  borderRadius: 2
-                }}
-              >
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                  Pro Tip
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Use @CharacterName in your song prompts to include your characters in the lyrics and vocals.
-                </Typography>
-              </Paper>
-            </Box>
           </Box>
         </Drawer>
         <Main open={open}>

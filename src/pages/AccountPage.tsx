@@ -33,6 +33,7 @@ const AccountPage: React.FC = () => {
 
   useEffect(() => {
     fetchAccountData(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [portalLoading, setPortalLoading] = useState(false);
@@ -233,7 +234,7 @@ const AccountPage: React.FC = () => {
             {allowances && (
               <Box sx={{ p: { xs: 3, sm: 4 } }}>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                  Your Credits
+                  Your Tokens
                 </Typography>
                 <Paper 
                   elevation={0} 
@@ -261,10 +262,10 @@ const AccountPage: React.FC = () => {
                       </Box>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={600}>
-                          Song Credits
+                          Tokens
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Use credits to generate songs and videos
+                          Use tokens across all Gruvi features
                         </Typography>
                       </Box>
                     </Box>
@@ -289,14 +290,14 @@ const AccountPage: React.FC = () => {
                         }
                       }}
                     >
-                      {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up Credits'}
+                      {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up Tokens'}
                     </Button>
                   </Box>
                   <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <Typography variant="h4" fontWeight={700} color="primary.main">
                       {(allowances.aiPhotos.max + (allowances.aiPhotos.topup || 0)) - allowances.aiPhotos.used}
                       <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
-                        credits remaining
+                        tokens remaining
                       </Typography>
                     </Typography>
                     <Typography variant="body2" color="text.secondary">

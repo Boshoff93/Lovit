@@ -77,6 +77,9 @@ export const songsApi = {
   
   getUserSongs: (userId: string) => 
     api.get(`/api/gruvi/songs/${userId}`),
+  
+  deleteSong: (userId: string, songId: string) => 
+    api.delete(`/api/gruvi/songs/${userId}/${songId}`),
 };
 
 // Videos API

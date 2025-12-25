@@ -23,12 +23,16 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  ListItemButton,
   Divider,
   Switch,
   FormControlLabel,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Drawer,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { getRouteConfig } from '../config/routeConfig';
@@ -48,6 +52,11 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useAuth } from '../hooks/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -510,7 +519,10 @@ const quickRoutes = [
 ];
 
 const HomePage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -528,10 +540,14 @@ const HomePage: React.FC = () => {
   const promptInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription } = useAuth();
+  const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, subscription, logout } = useAuth();
   const { token } = useSelector((state: RootState) => state.auth);
   const isPremiumMember = subscription?.tier && subscription.tier !== 'free';
   const isLoggedIn = !!token;
+
+  const handleDrawerToggle = useCallback(() => {
+    setDrawerOpen(!drawerOpen);
+  }, [drawerOpen]);
 
   // Get route-specific content
   const routeConfig = getRouteConfig(location.pathname);
@@ -781,7 +797,7 @@ const HomePage: React.FC = () => {
       {/* Header - Glassy White */}
       <Box
         component="header"
-              sx={{
+        sx={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -800,7 +816,17 @@ const HomePage: React.FC = () => {
             alignItems: 'center',
             py: 2,
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            {/* Logo - far left */}
+            <Box 
+              component={RouterLink}
+              to="/"
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5,
+                textDecoration: 'none',
+              }}
+            >
               <Box
                 component="img"
                 src="/gruvi.png"
@@ -828,58 +854,322 @@ const HomePage: React.FC = () => {
                 Gruvi
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Button 
-                variant="text"
-                sx={{ 
-                  color: '#86868B',
-                  fontWeight: 500,
-                  display: { xs: 'none', sm: 'inline-flex' },
-                  '&:hover': { color: '#1D1D1F' },
-                }}
-              component={RouterLink} 
-              to="/faq"
-            >
-              FAQ
-            </Button>
-            <Button 
-                variant="outlined"
-                onClick={handleClickOpen}
+
+            {/* Navigation buttons - far right */}
+            {isMobile ? (
+              // Mobile: hamburger menu
+              <IconButton
+                onClick={handleDrawerToggle}
                 sx={{
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
-                  px: 3,
-                  borderRadius: '100px',
-                  '&:hover': {
-                    borderColor: 'rgba(0,0,0,0.3)',
-                    background: 'rgba(0,0,0,0.03)',
-                  },
+                  color: '#007AFF',
+                  ml: 'auto',
                 }}
               >
-                Sign In
-            </Button>
-            <Button 
-              variant="contained" 
-                onClick={handleClickOpen}
-                sx={{
-                  background: '#1D1D1F',
-                  color: '#fff',
-                  px: 3,
-                  borderRadius: '100px',
-                  fontWeight: 600,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  '&:hover': {
-                    background: '#000',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  },
-                }}
-              >
-                Sign Up
-            </Button>
-          </Box>
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              // Desktop: full buttons - pushed to far right
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
+                {isLoggedIn ? (
+                  // Logged in user - show Dashboard, FAQ, and sign out buttons (all rounded with icons)
+                  <>
+                    <Button 
+                      variant="contained" 
+                      component={RouterLink}
+                      to="/dashboard"
+                      startIcon={<DashboardIcon />}
+                      sx={{
+                        background: '#007AFF',
+                        color: '#fff',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                        '&:hover': {
+                          background: '#0066DD',
+                          boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                        },
+                      }}
+                    >
+                      Dashboard
+                    </Button>
+                    <Button 
+                      variant="outlined"
+                      component={RouterLink}
+                      to="/faq"
+                      startIcon={<HelpOutlineIcon />}
+                      sx={{
+                        borderColor: 'rgba(0,0,0,0.15)',
+                        color: '#1D1D1F',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 500,
+                        '&:hover': {
+                          borderColor: '#007AFF',
+                          color: '#007AFF',
+                          background: 'rgba(0,122,255,0.05)',
+                        },
+                      }}
+                    >
+                      FAQ
+                    </Button>
+                    <Button 
+                      variant="outlined"
+                      onClick={logout}
+                      startIcon={<LogoutIcon />}
+                      sx={{
+                        borderColor: 'rgba(0,0,0,0.15)',
+                        color: '#1D1D1F',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 500,
+                        '&:hover': {
+                          borderColor: '#FF3B30',
+                          color: '#FF3B30',
+                          background: 'rgba(255,59,48,0.05)',
+                        },
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  // Not logged in - show auth buttons
+                  <>
+                    <Button 
+                      variant="outlined"
+                      component={RouterLink} 
+                      to="/faq"
+                      startIcon={<HelpOutlineIcon />}
+                      sx={{
+                        borderColor: 'rgba(0,0,0,0.15)',
+                        color: '#1D1D1F',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 500,
+                        '&:hover': {
+                          borderColor: '#007AFF',
+                          color: '#007AFF',
+                          background: 'rgba(0,122,255,0.05)',
+                        },
+                      }}
+                    >
+                      FAQ
+                    </Button>
+                    <Button 
+                      variant="outlined"
+                      onClick={handleClickOpen}
+                      sx={{
+                        borderColor: 'rgba(0,0,0,0.15)',
+                        color: '#1D1D1F',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 500,
+                        '&:hover': {
+                          borderColor: 'rgba(0,0,0,0.3)',
+                          background: 'rgba(0,0,0,0.03)',
+                        },
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button 
+                      variant="contained" 
+                      onClick={handleClickOpen}
+                      sx={{
+                        background: '#1D1D1F',
+                        color: '#fff',
+                        px: 3,
+                        borderRadius: '100px',
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        '&:hover': {
+                          background: '#000',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                        },
+                      }}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </Box>
+            )}
           </Box>
         </Container>
       </Box>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: false,
+          disableScrollLock: true,
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            width: 280,
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '16px 0 0 16px',
+            boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.1)',
+            borderLeft: '1px solid rgba(0, 0, 0, 0.06)',
+          },
+        }}
+      >
+        {/* Drawer Header */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          p: 2,
+          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              component="img"
+              src="/gruvi.png"
+              alt="Gruvi"
+              sx={{ height: 32, width: 32, objectFit: 'contain' }}
+            />
+            <Typography 
+              sx={{ 
+                fontFamily: '"Fredoka", "Inter", sans-serif',
+                fontWeight: 600,
+                fontSize: '1.25rem',
+                background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Gruvi
+            </Typography>
+          </Box>
+          <IconButton onClick={handleDrawerToggle}>
+            <ChevronRightIcon />
+          </IconButton>
+        </Box>
+
+        {/* Drawer Content */}
+        <List sx={{ px: 1, py: 2 }}>
+          {isLoggedIn ? (
+            // Logged in menu items
+            <>
+              <ListItemButton
+                component={RouterLink}
+                to="/dashboard"
+                onClick={handleDrawerToggle}
+                sx={{ borderRadius: 2, mb: 1 }}
+              >
+                <ListItemIcon sx={{ color: '#007AFF' }}>
+                  <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+              <ListItemButton
+                component={RouterLink}
+                to="/faq"
+                onClick={handleDrawerToggle}
+                sx={{ borderRadius: 2, mb: 1 }}
+              >
+                <ListItemIcon sx={{ color: '#007AFF' }}>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="FAQ" />
+              </ListItemButton>
+            </>
+          ) : (
+            // Logged out menu items
+            <ListItemButton
+              component={RouterLink}
+              to="/faq"
+              onClick={handleDrawerToggle}
+              sx={{ borderRadius: 2, mb: 1 }}
+            >
+              <ListItemIcon sx={{ color: '#007AFF' }}>
+                <HelpOutlineIcon />
+              </ListItemIcon>
+              <ListItemText primary="FAQ" />
+            </ListItemButton>
+          )}
+        </List>
+
+        {/* Bottom buttons */}
+        <Box sx={{ 
+          mt: 'auto', 
+          p: 2, 
+          borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1.5,
+        }}>
+          {isLoggedIn ? (
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => {
+                handleDrawerToggle();
+                logout();
+              }}
+              startIcon={<LogoutIcon />}
+              sx={{
+                borderColor: 'rgba(0,0,0,0.15)',
+                color: '#1D1D1F',
+                borderRadius: '100px',
+                py: 1.5,
+                '&:hover': {
+                  borderColor: '#FF3B30',
+                  color: '#FF3B30',
+                  background: 'rgba(255,59,48,0.05)',
+                },
+              }}
+            >
+              Sign Out
+            </Button>
+          ) : (
+            <>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  handleDrawerToggle();
+                  handleClickOpen();
+                }}
+                sx={{
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  color: '#1D1D1F',
+                  borderRadius: '100px',
+                  py: 1.5,
+                }}
+              >
+                Sign In
+              </Button>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => {
+                  handleDrawerToggle();
+                  handleClickOpen();
+                  setAuthTab(1);
+                }}
+                sx={{
+                  background: '#1D1D1F',
+                  color: '#fff',
+                  borderRadius: '100px',
+                  py: 1.5,
+                  fontWeight: 600,
+                }}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
+        </Box>
+      </Drawer>
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{ 
