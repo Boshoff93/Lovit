@@ -25,6 +25,7 @@ import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
 import BoltIcon from '@mui/icons-material/Bolt';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { stripeConfig } from '../config/stripe';
 
 const AccountPage: React.FC = () => {
@@ -136,6 +137,24 @@ const AccountPage: React.FC = () => {
         width: '100%',
         p:0
       }}>
+        {/* Back Button */}
+        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/settings')}
+            sx={{
+              color: '#007AFF',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            Back to Settings
+          </Button>
+        </Box>
+
         {(error || fetchError) && (
           <Alert severity="error" sx={{ mb: 4, width: '100%' }}>
             {error || fetchError}

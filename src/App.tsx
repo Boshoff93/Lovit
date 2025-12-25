@@ -35,6 +35,9 @@ import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
 import CreateVideoPage from './pages/CreateVideoPage';
 import CreatePage from './pages/CreatePage';
 import MusicVideoPlayer from './pages/MusicVideoPlayer';
+import SettingsPage from './pages/SettingsPage';
+import CharactersPage from './pages/CharactersPage';
+import CreateCharacterPage from './pages/CreateCharacterPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -175,6 +178,33 @@ function App() {
           <RequireAuth>
             <Layout>
               <AccountPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Settings page - protected route */}
+        <Route path="/settings" element={
+          <RequireAuth>
+            <Layout>
+              <SettingsPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Characters page - protected route */}
+        <Route path="/characters" element={
+          <RequireAuth>
+            <Layout>
+              <CharactersPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Create Character page - protected route */}
+        <Route path="/characters/create" element={
+          <RequireAuth>
+            <Layout>
+              <CreateCharacterPage />
             </Layout>
           </RequireAuth>
         } />

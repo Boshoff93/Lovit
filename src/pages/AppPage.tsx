@@ -28,7 +28,7 @@ import {
   ListItemIcon,
   ListItemText
 } from '@mui/material';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { songsApi } from '../services/api';
@@ -39,7 +39,6 @@ import MovieIcon from '@mui/icons-material/Movie';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
@@ -47,6 +46,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LyricsIcon from '@mui/icons-material/Lyrics';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { videosApi } from '../services/api';
+import { useAccountData } from '../hooks/useAccountData';
 
 interface Song {
   songId: string;
@@ -75,14 +75,27 @@ interface Video {
   duration?: number;
 }
 
-const AppPage: React.FC = () => {
+interface AppPageProps {
+  defaultTab?: 'songs' | 'videos';
+}
+
+const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   // Account data is cached globally - no need to fetch here
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user } = useSelector((state: RootState) => state.auth);
   
+  // Determine initial tab from: prop > URL path > URL param > default
+  const getInitialTab = (): 'songs' | 'videos' => {
+    if (defaultTab) return defaultTab;
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'videos') return 'videos';
+    return 'songs';
+  };
+
   const [songs, setSongs] = useState<Song[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(true);
@@ -90,7 +103,14 @@ const AppPage: React.FC = () => {
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'songs' | 'videos' | 'characters'>('songs');
+  const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
+
+  // Update tab when route changes (e.g., navigating to /characters)
+  useEffect(() => {
+    setActiveTab(getInitialTab());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, defaultTab]);
+
   const songsPerPage = 10;
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
@@ -217,28 +237,34 @@ const AppPage: React.FC = () => {
     }
   }, [searchParams, startPolling]);
 
-  // Note: Account data is cached globally and only fetched when needed (e.g., AccountPage)
+  // Account data hook for refreshing after purchases
+  const { fetchAccountData } = useAccountData();
 
   useEffect(() => {
-    // Check if user just subscribed
+    // Check if user just subscribed or topped up
     const hasSubscribed = searchParams.get('subscription') === 'true';
     const hasTopup = searchParams.get('topup') === 'true';
+    
     if (hasSubscribed) {
       setNotification({
         open: true,
         message: `Welcome to Gruvi! Start creating your first song!`,
         severity: 'success'
       });
+      // Force refresh account data to get updated tokens
+      fetchAccountData(true);
     }
 
     if (hasTopup) {
       setNotification({
         open: true,
-        message: `Thank you for your purchase! Credits have been added to your account.`,
+        message: `Thank you for your purchase! Tokens have been added to your account.`,
         severity: 'success'
       });
+      // Force refresh account data to get updated tokens
+      fetchAccountData(true);
     }
-  }, [searchParams]);
+  }, [searchParams, fetchAccountData]);
 
   // Fetch videos
   const fetchVideos = useCallback(async (showLoading = true): Promise<boolean> => {
@@ -538,7 +564,7 @@ const AppPage: React.FC = () => {
 
   const handleTabChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newTab: 'songs' | 'videos' | 'characters' | null
+    newTab: 'songs' | 'videos' | null
   ) => {
     if (newTab !== null) {
       setActiveTab(newTab);
@@ -610,10 +636,6 @@ const AppPage: React.FC = () => {
           <ToggleButton value="videos">
             <VideoLibraryIcon sx={{ fontSize: 18 }} />
             Music Videos
-          </ToggleButton>
-          <ToggleButton value="characters">
-            <PersonIcon sx={{ fontSize: 18 }} />
-            Characters
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
@@ -1373,111 +1395,6 @@ const AppPage: React.FC = () => {
               </Button>
             </Box>
           )}
-        </Paper>
-      )}
-
-      {/* Characters Tab */}
-      {activeTab === 'characters' && (
-        <Paper
-          elevation={0}
-          sx={{
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            overflow: 'hidden',
-          }}
-        >
-          <Box 
-            sx={{ 
-              p: 3, 
-              borderBottom: '1px solid rgba(0,0,0,0.06)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <PersonIcon sx={{ color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Your Characters
-              </Typography>
-              <Chip 
-                label="0 characters" 
-                size="small" 
-                sx={{ 
-                  ml: 1,
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  color: '#007AFF',
-                  fontWeight: 500
-                }} 
-              />
-            </Box>
-            {isMobile ? (
-              <Tooltip title="Create New Character" arrow>
-                <IconButton
-                  onClick={() => navigate('/create?tab=character')}
-                  sx={{
-                    background: '#007AFF',
-                    color: '#fff',
-                    width: 32,
-                    height: 32,
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    '&:hover': {
-                      background: '#0066CC',
-                    },
-                  }}
-                >
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/create?tab=character')}
-                sx={{
-                  background: '#007AFF',
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: '#0066CC',
-                  },
-                }}
-              >
-                Create New
-              </Button>
-            )}
-          </Box>
-          <Box sx={{ py: 8, textAlign: 'center' }}>
-            <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary">
-              No characters yet
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
-              Create characters to include in your song lyrics and music videos
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/create?tab=character')}
-              sx={{
-                borderRadius: '12px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3,
-                background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-              }}
-            >
-              Create Character
-            </Button>
-          </Box>
         </Paper>
       )}
 

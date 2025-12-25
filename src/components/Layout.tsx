@@ -21,17 +21,13 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import LogoutIcon from '@mui/icons-material/Logout';
-import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SettingsIcon from '@mui/icons-material/Settings';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { logoutAllState } from '../store/actions';
 import { AppDispatch } from '../store/store';
 import { Allowances, getTokensFromAllowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
@@ -108,25 +104,28 @@ const AllowanceDisplay: React.FC<{
   return (
     <Button
       onClick={() => onUpgrade('credits')}
-      startIcon={<BoltIcon />}
       sx={{
-        borderRadius: '20px',
+        borderRadius: '16px',
         px: 2,
         py: 1,
+        minWidth: 'auto',
         textTransform: 'none',
         fontWeight: 600,
-        color: '#1D1D1F',
-        backgroundColor: 'transparent',
-        border: '1px solid',
-        borderColor: 'rgba(0,0,0,0.1)',
-        boxShadow: 'none',
+        color: '#fff',
+        background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+        border: 'none',
+        boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
         '&:hover': {
-          backgroundColor: 'rgba(0,122,255,0.08)',
-          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+          background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+          boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
         }
       }}
     >
-      {remainingCredits} tokens
+      <BoltIcon sx={{ fontSize: 18, color: '#fff' }} />
+      <span style={{ color: '#fff' }}>{remainingCredits}</span>
     </Button>
   );
 };
@@ -210,14 +209,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       open: false
     }));
   }, []);
-
-  const handleLogout = useCallback(() => {
-    dispatch(logoutAllState());
-    navigate('/login');
-    if (isMobile) {
-      setOpen(false);
-    }
-  }, [dispatch, navigate, isMobile]);
 
   const handleUpgradePopupClose = () => {
     setUpgradePopup(prev => ({
@@ -375,70 +366,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     My Library
                   </Button>
                   <Button
-                    onClick={() => handleNavigate('/support')}
-                    startIcon={<HeadsetMicIcon />}
+                    onClick={() => handleNavigate('/settings')}
+                    startIcon={<SettingsIcon />}
                     sx={{
                       borderRadius: '20px',
                       px: 2,
                       py: 1,
                       textTransform: 'none',
                       fontWeight: 600,
-                      color: isActive('/support') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/support') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      color: isActive('/settings') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/settings') ? 'rgba(0,122,255,0.12)' : 'transparent',
                       border: '1px solid',
-                      borderColor: isActive('/support') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/support') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      borderColor: isActive('/settings') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/settings') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
                       '&:hover': {
                         backgroundColor: 'rgba(0,122,255,0.08)',
                         boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
                       }
                     }}
                   >
-                    Support
-                  </Button>
-                  <Button
-                    onClick={() => handleNavigate('/faq')}
-                    startIcon={<HelpOutlineIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/faq') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/faq') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/faq') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/faq') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    FAQ
-                  </Button>
-                  <Button
-                    onClick={() => handleNavigate('/account')}
-                    startIcon={<PersonOutlineIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/account') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/account') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/account') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/account') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    Account
+                    Settings
                   </Button>
                 </>
               )}
@@ -471,11 +418,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
               )}
 
-              {!isMobile && token && (
-                <IconButton onClick={() => handleLogout()} sx={{ color: '#007AFF' }}>
-                  <LogoutIcon />
-                </IconButton>
-              )}
             </Box>
           </Toolbar>
         </AppBarStyled>
@@ -626,124 +568,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </ListItemButton>
               </ListItem>
 
-              {/* Account Section */}
+              {/* Settings Section */}
               <ListItem disablePadding>
                 <ListItemButton 
                   sx={{ 
                     px: 2, 
                     borderRadius: 2, 
                     mb: 1,
-                    backgroundColor: isActive('/account') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/account') ? '2px solid #007AFF' : '2px solid transparent',
+                    backgroundColor: isActive('/settings') ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: isActive('/settings') ? '2px solid #007AFF' : '2px solid transparent',
                     '&:hover': {
                       backgroundColor: 'rgba(0,122,255,0.08)',
                     }
                   }}
-                  onClick={() => handleNavigate('/account')}
+                  onClick={() => handleNavigate('/settings')}
                 >
                   <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <PersonOutlineIcon />
+                    <SettingsIcon />
                   </ListItemIcon>
                   <ListItemText 
-                    primary="Account" 
+                    primary="Settings" 
                     primaryTypographyProps={{ 
-                      fontWeight: isActive('/account') ? 600 : 400,
-                      color: isActive('/account') ? '#007AFF' : 'inherit'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-
-              {/* Support Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/support') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/support') ? '2px solid #007AFF' : '2px solid transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/support')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <HeadsetMicIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Support" 
-                    primaryTypographyProps={{ 
-                      fontWeight: isActive('/support') ? 600 : 400,
-                      color: isActive('/support') ? '#007AFF' : 'inherit'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-
-              {/* FAQ Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/faq') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/faq') ? '2px solid #007AFF' : '2px solid transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/faq')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <HelpOutlineIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="FAQ" 
-                    primaryTypographyProps={{ 
-                      fontWeight: isActive('/faq') ? 600 : 400,
-                      color: isActive('/faq') ? '#007AFF' : 'inherit'
+                      fontWeight: isActive('/settings') ? 600 : 400,
+                      color: isActive('/settings') ? '#007AFF' : 'inherit'
                     }} 
                   />
                 </ListItemButton>
               </ListItem>
             </List>
-            
-            {/* Spacer to push logout to bottom */}
-            <Box sx={{ flexGrow: 1 }} />
-            
-            {/* Logout button at very bottom of drawer, separated */}
-            {token && (
-              <Box sx={{ px: 2, pb: 3, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                <ListItemButton
-                  onClick={() => {
-                    handleDrawerClose();
-                    handleLogout();
-                  }}
-                  sx={{
-                    borderRadius: 2,
-                    py: 1.5,
-                    justifyContent: 'center',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255,59,48,0.08)',
-                    }
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 32 }}>
-                    <LogoutIcon sx={{ color: '#86868B' }} />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Sign Out"
-                    primaryTypographyProps={{ 
-                      fontWeight: 500,
-                      color: '#86868B'
-                    }} 
-                  />
-                </ListItemButton>
-              </Box>
-            )}
           </Box>
         </Drawer>
         <Main open={open}>

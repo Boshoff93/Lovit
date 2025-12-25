@@ -1,5 +1,9 @@
 // Stripe configuration - switches between test and production based on environment
 
+// TODO: Set back to false after testing!
+// TEMPORARY: Force test mode for testing Stripe integration
+const FORCE_TEST_MODE = true;
+
 const isLocalhost = typeof window !== 'undefined' && 
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
@@ -50,7 +54,8 @@ const testConfig = {
 };
 
 // Export the appropriate config based on environment
-export const stripeConfig = isLocalhost ? testConfig : productionConfig;
+// TEMPORARY: Using FORCE_TEST_MODE for testing - set to false for production!
+export const stripeConfig = (FORCE_TEST_MODE || isLocalhost) ? testConfig : productionConfig;
 
 // Helper to get top-up details
 export const getTopUpConfig = () => stripeConfig.topUp;

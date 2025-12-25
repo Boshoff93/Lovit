@@ -9,14 +9,13 @@ import {
   Card,
   CardContent,
   Divider,
-  useTheme,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import FAQIcon from '@mui/icons-material/QuestionAnswer';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 
 const SupportPage: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
 
   const handleEmailClick = () => {
@@ -70,6 +69,24 @@ const SupportPage: React.FC = () => {
         width: '100%',
         p: 0
       }}>
+        {/* Back Button */}
+        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/settings')}
+            sx={{
+              color: '#007AFF',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            Back to Settings
+          </Button>
+        </Box>
+
         <Card sx={{ 
           width: '100%', 
           borderRadius: { xs: 2, sm: 3 },

@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { faqItems } from './FAQPage';
 
@@ -84,6 +85,24 @@ const DashboardFAQPage: React.FC = () => {
         width: '100%',
         p: 0
       }}>
+        {/* Back Button */}
+        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/settings')}
+            sx={{
+              color: '#007AFF',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            Back to Settings
+          </Button>
+        </Box>
+
         <Card sx={{ 
           width: '100%', 
           borderRadius: { xs: 2, sm: 3 },

@@ -853,20 +853,7 @@ const PaymentPage: React.FC = () => {
           
           {/* Token Top-ups */}
           <Typography sx={{ color: '#86868B', fontSize: '0.9rem', mt: 4 }}>
-            Need more tokens? Purchase a 100 token top-up pack anytime. Tokens never expire and can be used for songs, videos, or any generation.
-            <Link href="#" sx={{ color: '#007AFF', ml: 0.5 }}>Learn more</Link>
-          </Typography>
-
-          <Typography 
-            sx={{ 
-              mt: 3,
-              maxWidth: '600px',
-              mx: 'auto',
-              color: '#86868B',
-              fontSize: '0.85rem',
-            }}
-          >
-            If you are unhappy with the product please contact us within 7 days of purchase and we will do our best to refund your purchase.
+            Need more tokens? Purchase a 500 token top-up pack anytime for $8.99. Top-up tokens never expire and can be used for songs, videos, or any generation.
           </Typography>
         </Box>
       </Container>
