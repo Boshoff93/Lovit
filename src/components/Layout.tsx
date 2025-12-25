@@ -134,7 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Helper to check if path is active
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '?');
@@ -142,7 +142,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { token } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
   
-  const [open, setOpen] = useState(!useMediaQuery(theme.breakpoints.down('lg')));
+  const [open, setOpen] = useState(false);
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -171,10 +171,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
 
-  // Update drawer state when screen size changes
+  // Auto-close drawer when screen becomes large (full header visible)
   useEffect(() => {
-    setOpen(!isMobile);
-  }, [isMobile]);
+    if (!isMobile && open) {
+      setOpen(false);
+    }
+  }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDrawerOpen = () => {
     setOpen(true);
