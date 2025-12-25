@@ -30,7 +30,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
-import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
+import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
 import { stripeConfig } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
 import { reportPurchaseConversion } from '../utils/googleAds';
@@ -552,6 +552,9 @@ const CreatePage: React.FC = () => {
       
       console.log('Song generation started:', response.data);
       
+      // Update local token count immediately so UI reflects the spend
+      dispatch(updateTokensUsed(SONG_COST));
+      
       // Clear form
       setSongPrompt('');
       setShowSongPromptError(false);
@@ -613,9 +616,13 @@ const CreatePage: React.FC = () => {
       
       console.log('Video generation response:', response.data);
       
+      // Update local token count immediately so UI reflects the spend
+      const videoCostToDeduct = VIDEO_COSTS[videoType] || 40;
+      dispatch(updateTokensUsed(videoCostToDeduct));
+      
       setNotification({
         open: true,
-        message: 'Music video generated successfully! Check your library.',
+        message: 'Music video generation started! Check your library.',
         severity: 'success'
       });
       setVideoPrompt('');
