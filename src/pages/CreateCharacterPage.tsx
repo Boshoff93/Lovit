@@ -64,14 +64,44 @@ const hairColorOptions = [
   { id: 'White', label: 'White', image: '/hair/short_white.jpeg' },
 ];
 
-// Hair length options with images
+// Hair length options - images will be dynamically generated based on selected color
 const hairLengthOptions = [
-  { id: 'Short', label: 'Short', image: '/hair/short_blonde.jpeg' },
-  { id: 'Medium', label: 'Medium', image: '/hair/medium_brown.jpeg' },
-  { id: 'Long', label: 'Long', image: '/hair/long_strawberry_blonde.jpeg' },
-  { id: 'Very Long', label: 'Very Long', image: '/hair/very_long_blonde.jpeg' },
-  { id: 'Bald', label: 'Bald', image: '/hair/bald.jpeg' },
+  { id: 'Short', label: 'Short' },
+  { id: 'Medium', label: 'Medium' },
+  { id: 'Long', label: 'Long' },
+  { id: 'Very Long', label: 'Very Long' },
+  { id: 'Bald', label: 'Bald' },
 ];
+
+// Helper to get hair length image based on color and length
+const getHairLengthImage = (length: string, color: string): string => {
+  if (length === 'Bald') return '/hair/bald.jpeg';
+  
+  // Map color to filename
+  const colorMap: Record<string, string> = {
+    'Black': 'black',
+    'Dark Brown': 'brown',
+    'Light Brown': 'light_brown',
+    'Blonde': 'blonde',
+    'Strawberry Blonde': 'strawberry_blonde',
+    'Red': 'red',
+    'Grey': 'grey',
+    'White': 'white',
+  };
+  
+  // Map length to prefix
+  const lengthMap: Record<string, string> = {
+    'Short': 'short',
+    'Medium': 'medium',
+    'Long': 'long',
+    'Very Long': 'very_long',
+  };
+  
+  const colorSlug = colorMap[color] || 'brown';
+  const lengthSlug = lengthMap[length] || 'medium';
+  
+  return `/hair/${lengthSlug}_${colorSlug}.jpeg`;
+};
 
 // Eye color options with images
 const eyeColorOptions = [
@@ -107,6 +137,9 @@ const CreateCharacterPage: React.FC = () => {
   const [hairColorPickerOpen, setHairColorPickerOpen] = useState(false);
   const [hairLengthPickerOpen, setHairLengthPickerOpen] = useState(false);
   const [eyeColorPickerOpen, setEyeColorPickerOpen] = useState(false);
+  
+  // Drag and drop state
+  const [isDragging, setIsDragging] = useState(false);
 
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -122,12 +155,52 @@ const CreateCharacterPage: React.FC = () => {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      setUploadedImages(prev => [...prev, ...newFiles].slice(0, MAX_CHARACTER_IMAGES));
+      const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
+      setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
     }
   };
 
   const handleRemoveImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  // Drag and drop handlers
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+  
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
+      if (imageFiles.length > 0) {
+        setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
+      } else {
+        setNotification({
+          open: true,
+          message: 'Please drop image files only',
+          severity: 'warning'
+        });
+      }
+    }
   };
 
   const handleCreateCharacter = async () => {
@@ -450,7 +523,7 @@ const CreateCharacterPage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box component="img" src={hairLengthOptions.find(h => h.id === characterHairLength)?.image} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
+                <Box component="img" src={getHairLengthImage(characterHairLength, characterHairColor)} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
                 {hairLengthOptions.find(h => h.id === characterHairLength)?.label}
               </Box>
               <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
@@ -561,13 +634,38 @@ const CreateCharacterPage: React.FC = () => {
             Upload up to {MAX_CHARACTER_IMAGES} reference images for your character's appearance in music videos
           </Typography>
           
-          <Button
-            variant="outlined"
-            component="label"
-            startIcon={<CloudUploadIcon />}
-            sx={{ width: '100%', borderRadius: '12px', py: 1.5, borderColor: '#007AFF', color: '#007AFF' }}
+          {/* Drag and drop area */}
+          <Box
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            sx={{
+              width: '100%',
+              minHeight: 120,
+              borderRadius: '12px',
+              border: isDragging ? '2px dashed #007AFF' : '2px dashed rgba(0,0,0,0.15)',
+              backgroundColor: isDragging ? 'rgba(0,122,255,0.05)' : 'transparent',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                borderColor: '#007AFF',
+                backgroundColor: 'rgba(0,122,255,0.02)',
+              }
+            }}
           >
-            Upload Images ({uploadedImages.length}/{MAX_CHARACTER_IMAGES})
+            <CloudUploadIcon sx={{ fontSize: 32, color: isDragging ? '#007AFF' : '#86868B', mb: 1 }} />
+            <Typography sx={{ color: isDragging ? '#007AFF' : '#1D1D1F', fontWeight: 500 }}>
+              {isDragging ? 'Drop images here' : 'Drag & drop or click to upload'}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B', mt: 0.5 }}>
+              {uploadedImages.length}/{MAX_CHARACTER_IMAGES} images
+            </Typography>
             <input
               type="file"
               multiple
@@ -576,7 +674,7 @@ const CreateCharacterPage: React.FC = () => {
               onChange={handleFileChange}
               ref={fileInputRef}
             />
-          </Button>
+          </Box>
           
           {uploadedImages.length > 0 && (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
@@ -590,7 +688,7 @@ const CreateCharacterPage: React.FC = () => {
                   <IconButton
                     size="small"
                     sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
-                    onClick={() => handleRemoveImage(index)}
+                    onClick={(e) => { e.stopPropagation(); handleRemoveImage(index); }}
                   >
                     <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
                   </IconButton>
@@ -838,7 +936,7 @@ const CreateCharacterPage: React.FC = () => {
                   }}
                 >
                   <ListItemIcon>
-                    <Box component="img" src={length.image} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
+                    <Box component="img" src={getHairLengthImage(length.id, characterHairColor)} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
                   </ListItemIcon>
                   <ListItemText primary={length.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
                   {characterHairLength === length.id && <CheckIcon sx={{ color: '#007AFF' }} />}
