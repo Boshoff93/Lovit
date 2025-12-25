@@ -77,6 +77,7 @@ const AppPage: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(true);
   const [isLoadingVideos, setIsLoadingVideos] = useState(true);
+  const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos' | 'characters'>('songs');
@@ -439,6 +440,8 @@ const AppPage: React.FC = () => {
   const handleDeleteSong = async (song: Song) => {
     if (!user?.userId) return;
     
+    setDeletingSongId(song.songId);
+    
     try {
       await songsApi.deleteSong(user.userId, song.songId);
       
@@ -457,6 +460,8 @@ const AppPage: React.FC = () => {
         message: 'Failed to delete song',
         severity: 'error'
       });
+    } finally {
+      setDeletingSongId(null);
     }
   };
 
@@ -712,7 +717,7 @@ const AppPage: React.FC = () => {
                       height: 48,
                       borderRadius: '8px',
                       background: isProcessing 
-                        ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)'
+                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
                         : isFailed
                         ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)'
                         : 'linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 100%)',
@@ -867,37 +872,6 @@ const AppPage: React.FC = () => {
                   )}
                   
                   {/* Processing indicator for action button area */}
-                  {isProcessing && (
-                    <Box
-                      sx={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        animation: 'pulse 1.5s ease-in-out infinite',
-                        '@keyframes pulse': {
-                          '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-                          '50%': { opacity: 0.7, transform: 'scale(0.95)' },
-                        },
-                      }}
-                    >
-                      <AutorenewIcon 
-                        sx={{ 
-                          color: '#fff', 
-                          fontSize: 16,
-                          animation: 'spin 1.5s linear infinite',
-                          '@keyframes spin': {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' },
-                          },
-                        }} 
-                      />
-                    </Box>
-                  )}
-                  
                   {/* Failed status with delete button */}
                   {isFailed && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -914,6 +888,7 @@ const AppPage: React.FC = () => {
                         <IconButton
                           onClick={() => handleDeleteSong(song)}
                           size="small"
+                          disabled={deletingSongId === song.songId}
                           sx={{
                             color: '#FF3B30',
                             '&:hover': {
@@ -921,7 +896,11 @@ const AppPage: React.FC = () => {
                             },
                           }}
                         >
-                          <DeleteIcon sx={{ fontSize: 18 }} />
+                          {deletingSongId === song.songId ? (
+                            <CircularProgress size={18} sx={{ color: '#FF3B30' }} />
+                          ) : (
+                            <DeleteIcon sx={{ fontSize: 18 }} />
+                          )}
                         </IconButton>
                       </Tooltip>
                     </Box>

@@ -807,15 +807,16 @@ const HomePage: React.FC = () => {
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+          px: { xs: 2, sm: 3, md: 4 },
         }}
       >
-        <Container maxWidth="lg">
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            py: 2,
-          }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          py: 2,
+          width: '100%',
+        }}>
             {/* Logo - far left */}
             <Box 
               component={RouterLink}
@@ -825,6 +826,7 @@ const HomePage: React.FC = () => {
                 alignItems: 'center', 
                 gap: 1.5,
                 textDecoration: 'none',
+                flexShrink: 0,
               }}
             >
               <Box
@@ -868,7 +870,7 @@ const HomePage: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             ) : (
-              // Desktop: full buttons - pushed to far right
+              // Desktop: full buttons - ml: auto forces right alignment
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
                 {isLoggedIn ? (
                   // Logged in user - show Dashboard, FAQ, and sign out buttons (all rounded with icons)
@@ -996,7 +998,6 @@ const HomePage: React.FC = () => {
               </Box>
             )}
           </Box>
-        </Container>
       </Box>
 
       {/* Mobile Drawer */}
