@@ -84,7 +84,7 @@ export const videosApi = {
   generateVideo: (data: {
     userId: string;
     songId: string;
-    videoType: 'still' | 'animated';
+    videoType: 'still' | 'standard' | 'professional'; // still=slideshow, standard=Seedance, professional=Kling
     style?: string;
   }) => api.post('/api/gruvi/videos/generate', data),
   

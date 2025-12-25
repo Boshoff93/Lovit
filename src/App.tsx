@@ -31,6 +31,7 @@ import StyleDetailPage from './pages/StyleDetailPage';
 import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
 import CreateVideoPage from './pages/CreateVideoPage';
 import CreatePage from './pages/CreatePage';
+import MusicVideoPlayer from './pages/MusicVideoPlayer';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';

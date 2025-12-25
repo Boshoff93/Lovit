@@ -481,20 +481,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Mobile drawer - only shows on small screens */}
         <Drawer
           sx={{
-            display: { xs: 'block', md: 'none' },
+            display: { xs: 'block', lg: 'none' },
             width: drawerWidth,
             flexShrink: 0,
             '& .MuiDrawer-paper': {
               width: drawerWidth,
               boxSizing: 'border-box',
-              borderRight: 'none',
-              boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+              borderLeft: 'none',
+              boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
               backgroundColor: theme.palette.background.paper,
-              borderRadius: '0 16px 16px 0',
+              borderRadius: '16px 0 0 16px',
             },
           }}
           variant="temporary"
-          anchor="left"
+          anchor="right"
           open={open}
           onClose={handleDrawerClose}
           ModalProps={{
@@ -517,7 +517,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Typography>
             </Box>
             <IconButton onClick={handleDrawerClose} color="primary">
-              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              {theme.direction === 'ltr' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton>
           </DrawerHeader>
           <Divider />

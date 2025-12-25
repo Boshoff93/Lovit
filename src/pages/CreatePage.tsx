@@ -23,6 +23,7 @@ import {
   ListItemIcon,
   useMediaQuery,
   useTheme,
+  Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -211,10 +212,32 @@ const artStyles = [
   { id: 'minecraft', label: 'Minecraft', image: '/art_styles/boy_mincraft.jpeg' },
 ];
 
-// Video types
+// Video types and quality options
 const videoTypes = [
-  { id: 'still', label: 'Still Image Video', credits: 100, description: 'Static images synced to music', icon: ImageIcon },
-  { id: 'animated', label: 'Animated Video', credits: 500, description: 'Full motion animation', icon: AnimationIcon },
+  { 
+    id: 'still', 
+    label: 'Still', 
+    credits: 50, 
+    description: 'Static images synced to music',
+    tooltip: 'Images transition with smooth fades, synced to your song. Fast and affordable.',
+    icon: ImageIcon,
+  },
+  { 
+    id: 'standard', 
+    label: 'Standard', 
+    credits: 200, 
+    description: 'Animated video',
+    tooltip: 'Powered by Seedance AI. Brings your scenes to life with fluid motion and animations.',
+    icon: AnimationIcon,
+  },
+  { 
+    id: 'professional', 
+    label: 'Professional', 
+    credits: 2000, 
+    description: 'Premium AI animated video',
+    tooltip: 'Powered by Kling 1.0 AI. Cinema-quality animations with the most realistic motion and detail.',
+    icon: MovieIcon,
+  },
 ];
 
 // Character kind options
@@ -271,19 +294,20 @@ const eyeColorOptions = [
 ];
 
 
-// Mock characters (in real app, fetch from backend)
-const mockCharacters = [
-  { id: '1', name: 'Luna' },
-  { id: '2', name: 'Max' },
-  { id: '3', name: 'Nova' },
-];
+// Character interface
+interface Character {
+  characterId: string;
+  characterName: string;
+}
 
-// Mock songs for video creation
-const mockSongs = [
-  { id: '1', title: 'Summer Vibes', genre: 'Pop', duration: '3:24' },
-  { id: '2', title: 'Midnight Dreams', genre: 'Lo-fi Hip Hop', duration: '2:45' },
-  { id: '3', title: 'Electric Pulse', genre: 'Electronic', duration: '4:12' },
-];
+// Song interface for video creation
+interface Song {
+  songId: string;
+  songTitle: string;
+  genre: string;
+  status: string;
+  audioUrl?: string;
+}
 
 const MAX_CHARACTER_IMAGES = 5;
 
@@ -316,7 +340,7 @@ const CreatePage: React.FC = () => {
   const [selectedSong, setSelectedSong] = useState(songIdFromUrl || '');
   const [videoPrompt, setVideoPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('3d-cartoon');
-  const [videoType, setVideoType] = useState('still');
+  const [videoType, setVideoType] = useState('still'); // 'still', 'casual', or 'creator'
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   
   // Action sheet state
@@ -348,6 +372,12 @@ const CreatePage: React.FC = () => {
   const [hairLengthPickerOpen, setHairLengthPickerOpen] = useState(false);
   const [eyeColorPickerOpen, setEyeColorPickerOpen] = useState(false);
   
+  // Fetched data
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+  
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -368,6 +398,44 @@ const CreatePage: React.FC = () => {
       setSelectedSong(song);
     }
   }, [searchParams]);
+
+  // Fetch user's characters and songs
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      if (!user?.userId) return;
+      
+      setIsLoadingCharacters(true);
+      try {
+        const response = await charactersApi.getUserCharacters(user.userId);
+        setCharacters(response.data.characters || []);
+      } catch (error) {
+        console.error('Error fetching characters:', error);
+      } finally {
+        setIsLoadingCharacters(false);
+      }
+    };
+    
+    const fetchSongs = async () => {
+      if (!user?.userId) return;
+      
+      setIsLoadingSongs(true);
+      try {
+        const response = await songsApi.getUserSongs(user.userId);
+        // Only show completed songs
+        const completedSongs = (response.data.songs || []).filter(
+          (s: Song) => s.status === 'completed'
+        );
+        setSongs(completedSongs);
+      } catch (error) {
+        console.error('Error fetching songs:', error);
+      } finally {
+        setIsLoadingSongs(false);
+      }
+    };
+    
+    fetchCharacters();
+    fetchSongs();
+  }, [user?.userId]);
 
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, open: false }));
@@ -409,7 +477,7 @@ const CreatePage: React.FC = () => {
     
     setIsGeneratingSong(true);
     try {
-      // Call the actual song generation API
+      // Call the async song generation API (returns immediately with pending status)
       const response = await songsApi.generateSong({
         userId: user.userId,
         songPrompt: songPrompt.trim(),
@@ -418,18 +486,14 @@ const CreatePage: React.FC = () => {
         language: selectedLanguage,
       });
       
-      console.log('Song generation response:', response.data);
+      console.log('Song generation started:', response.data);
       
-      setNotification({
-        open: true,
-        message: 'Song generated successfully! Check your library.',
-        severity: 'success'
-      });
+      // Clear form
       setSongPrompt('');
       setShowSongPromptError(false);
       
-      // Navigate to dashboard after a short delay
-      setTimeout(() => navigate('/dashboard'), 1500);
+      // Navigate immediately to library - song will appear in loading state
+      navigate('/dashboard?tab=songs&generating=true');
     } catch (error: any) {
       console.error('Song generation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to generate song. Please try again.';
@@ -471,7 +535,7 @@ const CreatePage: React.FC = () => {
       const response = await videosApi.generateVideo({
         userId: user.userId,
         songId: selectedSong,
-        videoType: videoType as 'still' | 'animated',
+        videoType: videoType as 'still' | 'standard' | 'professional',
         style: selectedStyle,
       });
       
@@ -708,17 +772,20 @@ const CreatePage: React.FC = () => {
                 Describe what you want your song to be about - theme, story, or vibe
               </Typography>
               
-              {mockCharacters.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                    Add characters to your song:
-                  </Typography>
+              {/* Characters Section */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
+                  Add characters to your song:
+                </Typography>
+                {isLoadingCharacters ? (
+                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
+                ) : characters.length > 0 ? (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {mockCharacters.map((char) => (
+                    {characters.map((char) => (
                       <Chip
-                        key={char.id}
-                        label={`@${char.name}`}
-                        onClick={() => insertCharacter(char.name)}
+                        key={char.characterId}
+                        label={`@${char.characterName}`}
+                        onClick={() => insertCharacter(char.characterName)}
                         size="small"
                         sx={{
                           borderRadius: '100px',
@@ -731,8 +798,23 @@ const CreatePage: React.FC = () => {
                       />
                     ))}
                   </Box>
-                </Box>
-              )}
+                ) : (
+                  <Chip
+                    label="+ Create a character"
+                    onClick={() => setActiveTab('character')}
+                    size="small"
+                    sx={{
+                      borderRadius: '100px',
+                      background: 'rgba(0,122,255,0.08)',
+                      border: '1px dashed rgba(0,122,255,0.3)',
+                      color: '#007AFF',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                    }}
+                  />
+                )}
+              </Box>
               
               <TextField
                 fullWidth
@@ -1221,7 +1303,7 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 {selectedSong 
-                  ? mockSongs.find(s => s.id === selectedSong)?.title + ' (' + mockSongs.find(s => s.id === selectedSong)?.genre + ')' 
+                  ? songs.find(s => s.songId === selectedSong)?.songTitle + ' (' + songs.find(s => s.songId === selectedSong)?.genre + ')' 
                   : 'Choose a song from your library'}
                 <KeyboardArrowDownIcon sx={{ color: '#86868B', ml: 1 }} />
               </Button>
@@ -1254,49 +1336,75 @@ const CreatePage: React.FC = () => {
                 </Typography>
               </Box>
               <ScrollableListWrapper>
-                {mockSongs.map((song) => (
-                  <ListItem key={song.id} disablePadding>
-                    <ListItemButton
+                {isLoadingSongs ? (
+                  <Box sx={{ py: 4, textAlign: 'center' }}>
+                    <Typography variant="body2" sx={{ color: '#86868B' }}>Loading songs...</Typography>
+                  </Box>
+                ) : songs.length > 0 ? (
+                  songs.map((song) => (
+                    <ListItem key={song.songId} disablePadding>
+                      <ListItemButton
+                        onClick={() => {
+                          setSelectedSong(song.songId);
+                          setSongPickerOpen(false);
+                          setShowSongSelectionError(false);
+                        }}
+                        sx={{
+                          borderRadius: '12px',
+                          mb: 0.5,
+                          py: 1.5,
+                          background: selectedSong === song.songId ? 'rgba(0,122,255,0.1)' : 'transparent',
+                          border: selectedSong === song.songId ? '2px solid #007AFF' : '2px solid transparent',
+                        }}
+                      >
+                        <ListItemIcon>
+                          <Box
+                            sx={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: '10px',
+                              background: 'linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 100%)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <MusicNoteIcon sx={{ color: '#fff' }} />
+                          </Box>
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={song.songTitle}
+                          secondary={song.genre}
+                          primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }}
+                          secondaryTypographyProps={{ color: '#86868B' }}
+                        />
+                        {selectedSong === song.songId && (
+                          <CheckIcon sx={{ color: '#007AFF' }} />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                ) : (
+                  <Box sx={{ py: 4, textAlign: 'center' }}>
+                    <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>No songs available</Typography>
+                    <Chip
+                      label="+ Create a song first"
                       onClick={() => {
-                        setSelectedSong(song.id);
                         setSongPickerOpen(false);
-                        setShowSongSelectionError(false);
+                        setActiveTab('song');
                       }}
                       sx={{
-                        borderRadius: '12px',
-                        mb: 0.5,
-                        py: 1.5,
-                        background: selectedSong === song.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                        border: selectedSong === song.id ? '2px solid #007AFF' : '2px solid transparent',
+                        borderRadius: '100px',
+                        background: 'rgba(0,122,255,0.08)',
+                        border: '1px dashed rgba(0,122,255,0.3)',
+                        color: '#007AFF',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
                       }}
-                    >
-                      <ListItemIcon>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '10px',
-                            background: 'linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <MusicNoteIcon sx={{ color: '#fff' }} />
-                        </Box>
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={song.title}
-                        secondary={`${song.genre} • ${song.duration}`}
-                        primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }}
-                        secondaryTypographyProps={{ color: '#86868B' }}
-                      />
-                      {selectedSong === song.id && (
-                        <CheckIcon sx={{ color: '#007AFF' }} />
-                      )}
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                    />
+                  </Box>
+                )}
               </ScrollableListWrapper>
               <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
                 <Button
@@ -1345,17 +1453,20 @@ const CreatePage: React.FC = () => {
                 Describe the visual story, scenes, and setting for your music video
               </Typography>
               
-              {mockCharacters.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                    Add characters to your video:
-                  </Typography>
+              {/* Characters Section */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
+                  Add characters to your video:
+                </Typography>
+                {isLoadingCharacters ? (
+                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
+                ) : characters.length > 0 ? (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {mockCharacters.map((char) => (
+                    {characters.map((char) => (
                       <Chip
-                        key={char.id}
-                        label={`@${char.name}`}
-                        onClick={() => insertCharacter(char.name)}
+                        key={char.characterId}
+                        label={`@${char.characterName}`}
+                        onClick={() => insertCharacter(char.characterName)}
                         size="small"
                         sx={{
                           borderRadius: '100px',
@@ -1368,8 +1479,23 @@ const CreatePage: React.FC = () => {
                       />
                     ))}
                   </Box>
-                </Box>
-              )}
+                ) : (
+                  <Chip
+                    label="+ Create a character"
+                    onClick={() => setActiveTab('character')}
+                    size="small"
+                    sx={{
+                      borderRadius: '100px',
+                      background: 'rgba(0,122,255,0.08)',
+                      border: '1px dashed rgba(0,122,255,0.3)',
+                      color: '#007AFF',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                    }}
+                  />
+                )}
+              </Box>
               
               <TextField
                 fullWidth
@@ -1565,36 +1691,44 @@ const CreatePage: React.FC = () => {
                   const IconComponent = type.icon;
                   const isSelected = videoType === type.id;
                   return (
-                    <ToggleButton
+                    <Tooltip 
                       key={type.id}
-                      value={type.id}
-                      sx={{
-                        flex: 1,
-                        py: 2,
-                        flexDirection: 'column',
-                        gap: 1,
-                        textTransform: 'none',
-                        background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                        color: '#1D1D1F',
-                        border: isSelected ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
-                        boxShadow: isSelected ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': { 
-                          background: isSelected ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
-                          borderColor: isSelected ? '#007AFF' : 'rgba(0,0,0,0.15)',
-                        },
-                        '&.Mui-selected': { 
-                          background: 'rgba(0,122,255,0.08)', 
-                          color: '#1D1D1F',
-                          '&:hover': { background: 'rgba(0,122,255,0.12)' },
-                        },
-                      }}
+                      title={type.tooltip} 
+                      arrow 
+                      placement="top"
+                      enterDelay={300}
+                      sx={{ maxWidth: 220 }}
                     >
-                      <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F' }} />
-                      <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>{type.description}</Typography>
-                      <Chip label={`${type.credits} credits`} size="small" sx={{ mt: 0.5, fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }} />
-                    </ToggleButton>
+                      <ToggleButton
+                        value={type.id}
+                        sx={{
+                          flex: 1,
+                          py: 2,
+                          flexDirection: 'column',
+                          gap: 1,
+                          textTransform: 'none',
+                          background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
+                          color: '#1D1D1F',
+                          border: isSelected ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
+                          boxShadow: isSelected ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          '&:hover': { 
+                            background: isSelected ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
+                            borderColor: isSelected ? '#007AFF' : 'rgba(0,0,0,0.15)',
+                          },
+                          '&.Mui-selected': { 
+                            background: 'rgba(0,122,255,0.08)', 
+                            color: '#1D1D1F',
+                            '&:hover': { background: 'rgba(0,122,255,0.12)' },
+                          },
+                        }}
+                      >
+                        <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F' }} />
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>{type.description}</Typography>
+                        <Chip label={`${type.credits} credits`} size="small" sx={{ mt: 0.5, fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }} />
+                      </ToggleButton>
+                    </Tooltip>
                   );
                 })}
               </ToggleButtonGroup>
@@ -1622,7 +1756,7 @@ const CreatePage: React.FC = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Song</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {mockSongs.find(s => s.id === selectedSong)?.title || 'Not selected'}
+                    {songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected'}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
