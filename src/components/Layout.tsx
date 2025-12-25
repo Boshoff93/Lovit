@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import React, { useState, useEffect, createContext, useContext, useCallback, useRef } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -34,6 +34,7 @@ import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
 import { stripeConfig } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
+import { useAccountData } from '../hooks/useAccountData';
 
 // Create a context for the Layout functions
 interface LayoutContextType {
@@ -220,6 +221,32 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const allowances = useSelector((state: RootState) => state.auth.allowances);
+  
+  // Fetch account data periodically to keep token count updated
+  const { fetchAccountData } = useAccountData();
+  const lastFetchRef = useRef<number>(0);
+  
+  // Fetch on mount and periodically (60 second interval)
+  useEffect(() => {
+    if (!token) return;
+    
+    const refreshIntervalMs = 60 * 1000; // 60 seconds
+    
+    // Fetch immediately if we haven't fetched recently
+    const now = Date.now();
+    if (now - lastFetchRef.current > refreshIntervalMs) {
+      fetchAccountData();
+      lastFetchRef.current = now;
+    }
+    
+    // Set up interval for periodic refresh
+    const interval = setInterval(() => {
+      fetchAccountData();
+      lastFetchRef.current = Date.now();
+    }, refreshIntervalMs);
+    
+    return () => clearInterval(interval);
+  }, [token, fetchAccountData]);
 
   const handleTopUp = useCallback(async () => {
     try {
