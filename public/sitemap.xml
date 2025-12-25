@@ -4,67 +4,67 @@
   <!-- MAIN PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/</loc>
+    <loc>https://gruvimusic.com/</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/ai-music-generator</loc>
+    <loc>https://gruvimusic.com/ai-music-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/ai-song-generator</loc>
+    <loc>https://gruvimusic.com/ai-song-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-video-generator</loc>
+    <loc>https://gruvimusic.com/music-video-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/free-music-generator</loc>
+    <loc>https://gruvimusic.com/free-music-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/lyrics-generator</loc>
+    <loc>https://gruvimusic.com/lyrics-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/beat-maker</loc>
+    <loc>https://gruvimusic.com/beat-maker</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq</loc>
+    <loc>https://gruvimusic.com/faq</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/terms</loc>
+    <loc>https://gruvimusic.com/terms</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/privacy</loc>
+    <loc>https://gruvimusic.com/privacy</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/payment</loc>
+    <loc>https://gruvimusic.com/payment</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -74,325 +74,325 @@
   <!-- GENRE DETAIL PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/genres/pop</loc>
+    <loc>https://gruvimusic.com/genres/pop</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/hip-hop</loc>
+    <loc>https://gruvimusic.com/genres/hip-hop</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/rnb</loc>
+    <loc>https://gruvimusic.com/genres/rnb</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/electronic</loc>
+    <loc>https://gruvimusic.com/genres/electronic</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/dance</loc>
+    <loc>https://gruvimusic.com/genres/dance</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/house</loc>
+    <loc>https://gruvimusic.com/genres/house</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/edm</loc>
+    <loc>https://gruvimusic.com/genres/edm</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/techno</loc>
+    <loc>https://gruvimusic.com/genres/techno</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/rock</loc>
+    <loc>https://gruvimusic.com/genres/rock</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/alternative</loc>
+    <loc>https://gruvimusic.com/genres/alternative</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/indie</loc>
+    <loc>https://gruvimusic.com/genres/indie</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/punk</loc>
+    <loc>https://gruvimusic.com/genres/punk</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/metal</loc>
+    <loc>https://gruvimusic.com/genres/metal</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/grunge</loc>
+    <loc>https://gruvimusic.com/genres/grunge</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/jazz</loc>
+    <loc>https://gruvimusic.com/genres/jazz</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/blues</loc>
+    <loc>https://gruvimusic.com/genres/blues</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/soul</loc>
+    <loc>https://gruvimusic.com/genres/soul</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/funk</loc>
+    <loc>https://gruvimusic.com/genres/funk</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/classical</loc>
+    <loc>https://gruvimusic.com/genres/classical</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/orchestral</loc>
+    <loc>https://gruvimusic.com/genres/orchestral</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/opera</loc>
+    <loc>https://gruvimusic.com/genres/opera</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/cinematic</loc>
+    <loc>https://gruvimusic.com/genres/cinematic</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/soundtrack</loc>
+    <loc>https://gruvimusic.com/genres/soundtrack</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/country</loc>
+    <loc>https://gruvimusic.com/genres/country</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/folk</loc>
+    <loc>https://gruvimusic.com/genres/folk</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/bluegrass</loc>
+    <loc>https://gruvimusic.com/genres/bluegrass</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/acoustic</loc>
+    <loc>https://gruvimusic.com/genres/acoustic</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/latin</loc>
+    <loc>https://gruvimusic.com/genres/latin</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/reggaeton</loc>
+    <loc>https://gruvimusic.com/genres/reggaeton</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/salsa</loc>
+    <loc>https://gruvimusic.com/genres/salsa</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/bossa-nova</loc>
+    <loc>https://gruvimusic.com/genres/bossa-nova</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/afrobeat</loc>
+    <loc>https://gruvimusic.com/genres/afrobeat</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/kpop</loc>
+    <loc>https://gruvimusic.com/genres/kpop</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/jpop</loc>
+    <loc>https://gruvimusic.com/genres/jpop</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/bollywood</loc>
+    <loc>https://gruvimusic.com/genres/bollywood</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/reggae</loc>
+    <loc>https://gruvimusic.com/genres/reggae</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/dancehall</loc>
+    <loc>https://gruvimusic.com/genres/dancehall</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/ska</loc>
+    <loc>https://gruvimusic.com/genres/ska</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/tropical</loc>
+    <loc>https://gruvimusic.com/genres/tropical</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/lofi</loc>
+    <loc>https://gruvimusic.com/genres/lofi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/chillwave</loc>
+    <loc>https://gruvimusic.com/genres/chillwave</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/synthwave</loc>
+    <loc>https://gruvimusic.com/genres/synthwave</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/drum-bass</loc>
+    <loc>https://gruvimusic.com/genres/drum-bass</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/dubstep</loc>
+    <loc>https://gruvimusic.com/genres/dubstep</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/trance</loc>
+    <loc>https://gruvimusic.com/genres/trance</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/ambient</loc>
+    <loc>https://gruvimusic.com/genres/ambient</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/downtempo</loc>
+    <loc>https://gruvimusic.com/genres/downtempo</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/gospel</loc>
+    <loc>https://gruvimusic.com/genres/gospel</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/trap</loc>
+    <loc>https://gruvimusic.com/genres/trap</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/drill</loc>
+    <loc>https://gruvimusic.com/genres/drill</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/disco</loc>
+    <loc>https://gruvimusic.com/genres/disco</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/new-wave</loc>
+    <loc>https://gruvimusic.com/genres/new-wave</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/shoegaze</loc>
+    <loc>https://gruvimusic.com/genres/shoegaze</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/genres/emo</loc>
+    <loc>https://gruvimusic.com/genres/emo</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -402,151 +402,151 @@
   <!-- LANGUAGE DETAIL PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/languages/english</loc>
+    <loc>https://gruvimusic.com/languages/english</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/spanish</loc>
+    <loc>https://gruvimusic.com/languages/spanish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/french</loc>
+    <loc>https://gruvimusic.com/languages/french</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/german</loc>
+    <loc>https://gruvimusic.com/languages/german</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/italian</loc>
+    <loc>https://gruvimusic.com/languages/italian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/portuguese</loc>
+    <loc>https://gruvimusic.com/languages/portuguese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/dutch</loc>
+    <loc>https://gruvimusic.com/languages/dutch</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/polish</loc>
+    <loc>https://gruvimusic.com/languages/polish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/russian</loc>
+    <loc>https://gruvimusic.com/languages/russian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/ukrainian</loc>
+    <loc>https://gruvimusic.com/languages/ukrainian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/japanese</loc>
+    <loc>https://gruvimusic.com/languages/japanese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/korean</loc>
+    <loc>https://gruvimusic.com/languages/korean</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/chinese</loc>
+    <loc>https://gruvimusic.com/languages/chinese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/hindi</loc>
+    <loc>https://gruvimusic.com/languages/hindi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/arabic</loc>
+    <loc>https://gruvimusic.com/languages/arabic</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/turkish</loc>
+    <loc>https://gruvimusic.com/languages/turkish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/thai</loc>
+    <loc>https://gruvimusic.com/languages/thai</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/vietnamese</loc>
+    <loc>https://gruvimusic.com/languages/vietnamese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/indonesian</loc>
+    <loc>https://gruvimusic.com/languages/indonesian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/swedish</loc>
+    <loc>https://gruvimusic.com/languages/swedish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/norwegian</loc>
+    <loc>https://gruvimusic.com/languages/norwegian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/danish</loc>
+    <loc>https://gruvimusic.com/languages/danish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/finnish</loc>
+    <loc>https://gruvimusic.com/languages/finnish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/greek</loc>
+    <loc>https://gruvimusic.com/languages/greek</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/languages/hebrew</loc>
+    <loc>https://gruvimusic.com/languages/hebrew</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -556,97 +556,97 @@
   <!-- ART STYLE DETAIL PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/styles/3d-cartoon</loc>
+    <loc>https://gruvimusic.com/styles/3d-cartoon</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/claymation</loc>
+    <loc>https://gruvimusic.com/styles/claymation</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/childrens-storybook</loc>
+    <loc>https://gruvimusic.com/styles/childrens-storybook</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/photo-realism</loc>
+    <loc>https://gruvimusic.com/styles/photo-realism</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/comic-book</loc>
+    <loc>https://gruvimusic.com/styles/comic-book</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/classic-blocks</loc>
+    <loc>https://gruvimusic.com/styles/classic-blocks</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/anime</loc>
+    <loc>https://gruvimusic.com/styles/anime</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/spray-paint</loc>
+    <loc>https://gruvimusic.com/styles/spray-paint</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/playground-crayon</loc>
+    <loc>https://gruvimusic.com/styles/playground-crayon</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/wool-knit</loc>
+    <loc>https://gruvimusic.com/styles/wool-knit</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/minecraft</loc>
+    <loc>https://gruvimusic.com/styles/minecraft</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/watercolor</loc>
+    <loc>https://gruvimusic.com/styles/watercolor</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/pixel</loc>
+    <loc>https://gruvimusic.com/styles/pixel</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/sugarpop</loc>
+    <loc>https://gruvimusic.com/styles/sugarpop</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/origami</loc>
+    <loc>https://gruvimusic.com/styles/origami</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/styles/sketch</loc>
+    <loc>https://gruvimusic.com/styles/sketch</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -656,37 +656,37 @@
   <!-- MUSIC VIDEO DETAIL PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/videos/neon-city-nights</loc>
+    <loc>https://gruvimusic.com/videos/neon-city-nights</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/videos/ocean-dreams</loc>
+    <loc>https://gruvimusic.com/videos/ocean-dreams</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/videos/mountain-journey</loc>
+    <loc>https://gruvimusic.com/videos/mountain-journey</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/videos/urban-rhythm</loc>
+    <loc>https://gruvimusic.com/videos/urban-rhythm</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/videos/fantasy-quest</loc>
+    <loc>https://gruvimusic.com/videos/fantasy-quest</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/videos/sunset-vibes</loc>
+    <loc>https://gruvimusic.com/videos/sunset-vibes</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -696,247 +696,247 @@
   <!-- FAQ QUESTION PAGES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/faq/what-is-gruvi-ai-music-generator</loc>
+    <loc>https://gruvimusic.com/faq/what-is-gruvi-ai-music-generator</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-do-i-create-my-first-ai-generated-song</loc>
+    <loc>https://gruvimusic.com/faq/how-do-i-create-my-first-ai-generated-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/is-gruvi-free-to-use</loc>
+    <loc>https://gruvimusic.com/faq/is-gruvi-free-to-use</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/do-i-need-any-musical-experience-to-use-gruvi</loc>
+    <loc>https://gruvimusic.com/faq/do-i-need-any-musical-experience-to-use-gruvi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/what-music-genres-can-gruvi-create</loc>
+    <loc>https://gruvimusic.com/faq/what-music-genres-can-gruvi-create</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/what-languages-can-i-create-songs-in</loc>
+    <loc>https://gruvimusic.com/faq/what-languages-can-i-create-songs-in</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-long-are-the-songs-gruvi-creates</loc>
+    <loc>https://gruvimusic.com/faq/how-long-are-the-songs-gruvi-creates</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-write-my-own-lyrics-for-ai-to-use</loc>
+    <loc>https://gruvimusic.com/faq/can-i-write-my-own-lyrics-for-ai-to-use</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-do-i-get-better-results-from-ai-music-generation</loc>
+    <loc>https://gruvimusic.com/faq/how-do-i-get-better-results-from-ai-music-generation</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-instrumental-music-without-vocals</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-instrumental-music-without-vocals</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-do-i-create-ai-music-videos</loc>
+    <loc>https://gruvimusic.com/faq/how-do-i-create-ai-music-videos</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/what-art-styles-are-available-for-music-videos</loc>
+    <loc>https://gruvimusic.com/faq/what-art-styles-are-available-for-music-videos</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-add-myself-or-custom-characters-to-music-videos</loc>
+    <loc>https://gruvimusic.com/faq/can-i-add-myself-or-custom-characters-to-music-videos</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/whats-the-difference-between-still-image-and-animated-videos</loc>
+    <loc>https://gruvimusic.com/faq/whats-the-difference-between-still-image-and-animated-videos</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-use-gruvi-music-commercially</loc>
+    <loc>https://gruvimusic.com/faq/can-i-use-gruvi-music-commercially</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/is-ai-generated-music-copyright-free</loc>
+    <loc>https://gruvimusic.com/faq/is-ai-generated-music-copyright-free</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-upload-ai-music-to-spotify-and-streaming-platforms</loc>
+    <loc>https://gruvimusic.com/faq/can-i-upload-ai-music-to-spotify-and-streaming-platforms</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/do-i-need-to-credit-gruvi-when-using-the-music</loc>
+    <loc>https://gruvimusic.com/faq/do-i-need-to-credit-gruvi-when-using-the-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-does-gruvis-pricing-work</loc>
+    <loc>https://gruvimusic.com/faq/how-does-gruvis-pricing-work</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-does-the-token-system-work</loc>
+    <loc>https://gruvimusic.com/faq/how-does-the-token-system-work</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-cancel-my-subscription-anytime</loc>
+    <loc>https://gruvimusic.com/faq/can-i-cancel-my-subscription-anytime</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/is-there-a-free-trial-without-credit-card</loc>
+    <loc>https://gruvimusic.com/faq/is-there-a-free-trial-without-credit-card</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-use-gruvi-music-on-youtube-without-copyright-strikes</loc>
+    <loc>https://gruvimusic.com/faq/can-i-use-gruvi-music-on-youtube-without-copyright-strikes</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/is-gruvi-music-safe-for-tiktok-and-instagram-reels</loc>
+    <loc>https://gruvimusic.com/faq/is-gruvi-music-safe-for-tiktok-and-instagram-reels</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-use-gruvi-for-podcast-intros-and-background-music</loc>
+    <loc>https://gruvimusic.com/faq/can-i-use-gruvi-for-podcast-intros-and-background-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-music-for-video-games-with-gruvi</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-music-for-video-games-with-gruvi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/what-audio-quality-does-gruvi-produce</loc>
+    <loc>https://gruvimusic.com/faq/what-audio-quality-does-gruvi-produce</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-download-stems-or-separate-tracks</loc>
+    <loc>https://gruvimusic.com/faq/can-i-download-stems-or-separate-tracks</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-fast-is-ai-music-generation</loc>
+    <loc>https://gruvimusic.com/faq/how-fast-is-ai-music-generation</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-birthday-songs-with-gruvi</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-birthday-songs-with-gruvi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-make-wedding-songs-and-first-dance-music</loc>
+    <loc>https://gruvimusic.com/faq/can-i-make-wedding-songs-and-first-dance-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-kids-music-and-nursery-rhymes</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-kids-music-and-nursery-rhymes</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-workout-and-fitness-music</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-workout-and-fitness-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-create-holiday-music-for-christmas-halloween-etc</loc>
+    <loc>https://gruvimusic.com/faq/can-i-create-holiday-music-for-christmas-halloween-etc</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/what-if-i-dont-like-the-song-that-was-generated</loc>
+    <loc>https://gruvimusic.com/faq/what-if-i-dont-like-the-song-that-was-generated</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-do-i-contact-customer-support</loc>
+    <loc>https://gruvimusic.com/faq/how-do-i-contact-customer-support</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/why-did-my-song-generation-fail</loc>
+    <loc>https://gruvimusic.com/faq/why-did-my-song-generation-fail</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-i-get-a-refund</loc>
+    <loc>https://gruvimusic.com/faq/can-i-get-a-refund</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/how-is-gruvi-different-from-other-ai-music-generators</loc>
+    <loc>https://gruvimusic.com/faq/how-is-gruvi-different-from-other-ai-music-generators</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/is-gruvi-better-than-hiring-a-music-producer</loc>
+    <loc>https://gruvimusic.com/faq/is-gruvi-better-than-hiring-a-music-producer</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/faq/can-gruvi-replace-royalty-free-music-libraries</loc>
+    <loc>https://gruvimusic.com/faq/can-gruvi-replace-royalty-free-music-libraries</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -946,211 +946,211 @@
   <!-- GENRE CREATION ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/create-pop-music</loc>
+    <loc>https://gruvimusic.com/create-pop-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-rock-music</loc>
+    <loc>https://gruvimusic.com/create-rock-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-hip-hop-music</loc>
+    <loc>https://gruvimusic.com/create-hip-hop-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-rap-music</loc>
+    <loc>https://gruvimusic.com/create-rap-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-jazz-music</loc>
+    <loc>https://gruvimusic.com/create-jazz-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-classical-music</loc>
+    <loc>https://gruvimusic.com/create-classical-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-electronic-music</loc>
+    <loc>https://gruvimusic.com/create-electronic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-edm-music</loc>
+    <loc>https://gruvimusic.com/create-edm-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-house-music</loc>
+    <loc>https://gruvimusic.com/create-house-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-techno-music</loc>
+    <loc>https://gruvimusic.com/create-techno-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-country-music</loc>
+    <loc>https://gruvimusic.com/create-country-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-rnb-music</loc>
+    <loc>https://gruvimusic.com/create-rnb-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-soul-music</loc>
+    <loc>https://gruvimusic.com/create-soul-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-funk-music</loc>
+    <loc>https://gruvimusic.com/create-funk-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-blues-music</loc>
+    <loc>https://gruvimusic.com/create-blues-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-reggae-music</loc>
+    <loc>https://gruvimusic.com/create-reggae-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-latin-music</loc>
+    <loc>https://gruvimusic.com/create-latin-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-reggaeton-music</loc>
+    <loc>https://gruvimusic.com/create-reggaeton-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-kpop-music</loc>
+    <loc>https://gruvimusic.com/create-kpop-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-jpop-music</loc>
+    <loc>https://gruvimusic.com/create-jpop-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-afrobeat-music</loc>
+    <loc>https://gruvimusic.com/create-afrobeat-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-lofi-music</loc>
+    <loc>https://gruvimusic.com/create-lofi-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-ambient-music</loc>
+    <loc>https://gruvimusic.com/create-ambient-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-trap-music</loc>
+    <loc>https://gruvimusic.com/create-trap-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-dubstep-music</loc>
+    <loc>https://gruvimusic.com/create-dubstep-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-trance-music</loc>
+    <loc>https://gruvimusic.com/create-trance-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-synthwave-music</loc>
+    <loc>https://gruvimusic.com/create-synthwave-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-folk-music</loc>
+    <loc>https://gruvimusic.com/create-folk-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-metal-music</loc>
+    <loc>https://gruvimusic.com/create-metal-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-punk-music</loc>
+    <loc>https://gruvimusic.com/create-punk-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-indie-music</loc>
+    <loc>https://gruvimusic.com/create-indie-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-gospel-music</loc>
+    <loc>https://gruvimusic.com/create-gospel-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-disco-music</loc>
+    <loc>https://gruvimusic.com/create-disco-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-cinematic-music</loc>
+    <loc>https://gruvimusic.com/create-cinematic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-orchestral-music</loc>
+    <loc>https://gruvimusic.com/create-orchestral-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1160,121 +1160,121 @@
   <!-- LANGUAGE CREATION ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-english</loc>
+    <loc>https://gruvimusic.com/create-music-in-english</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-spanish</loc>
+    <loc>https://gruvimusic.com/create-music-in-spanish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-french</loc>
+    <loc>https://gruvimusic.com/create-music-in-french</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-german</loc>
+    <loc>https://gruvimusic.com/create-music-in-german</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-japanese</loc>
+    <loc>https://gruvimusic.com/create-music-in-japanese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-korean</loc>
+    <loc>https://gruvimusic.com/create-music-in-korean</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-chinese</loc>
+    <loc>https://gruvimusic.com/create-music-in-chinese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-portuguese</loc>
+    <loc>https://gruvimusic.com/create-music-in-portuguese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-italian</loc>
+    <loc>https://gruvimusic.com/create-music-in-italian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-hindi</loc>
+    <loc>https://gruvimusic.com/create-music-in-hindi</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-arabic</loc>
+    <loc>https://gruvimusic.com/create-music-in-arabic</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-russian</loc>
+    <loc>https://gruvimusic.com/create-music-in-russian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-dutch</loc>
+    <loc>https://gruvimusic.com/create-music-in-dutch</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-polish</loc>
+    <loc>https://gruvimusic.com/create-music-in-polish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-turkish</loc>
+    <loc>https://gruvimusic.com/create-music-in-turkish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-thai</loc>
+    <loc>https://gruvimusic.com/create-music-in-thai</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-vietnamese</loc>
+    <loc>https://gruvimusic.com/create-music-in-vietnamese</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-indonesian</loc>
+    <loc>https://gruvimusic.com/create-music-in-indonesian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-swedish</loc>
+    <loc>https://gruvimusic.com/create-music-in-swedish</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-music-in-norwegian</loc>
+    <loc>https://gruvimusic.com/create-music-in-norwegian</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1284,61 +1284,61 @@
   <!-- HOLIDAY MUSIC ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/christmas-music</loc>
+    <loc>https://gruvimusic.com/christmas-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/halloween-music</loc>
+    <loc>https://gruvimusic.com/halloween-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/valentines-day-music</loc>
+    <loc>https://gruvimusic.com/valentines-day-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/new-years-music</loc>
+    <loc>https://gruvimusic.com/new-years-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/easter-music</loc>
+    <loc>https://gruvimusic.com/easter-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/thanksgiving-music</loc>
+    <loc>https://gruvimusic.com/thanksgiving-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/hanukkah-music</loc>
+    <loc>https://gruvimusic.com/hanukkah-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/diwali-music</loc>
+    <loc>https://gruvimusic.com/diwali-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/mothers-day-music</loc>
+    <loc>https://gruvimusic.com/mothers-day-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/fathers-day-music</loc>
+    <loc>https://gruvimusic.com/fathers-day-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -1348,91 +1348,91 @@
   <!-- MUSIC VIDEO STYLE CREATION ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/create-anime-music-video</loc>
+    <loc>https://gruvimusic.com/create-anime-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-cartoon-music-video</loc>
+    <loc>https://gruvimusic.com/create-cartoon-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-3d-animation-music-video</loc>
+    <loc>https://gruvimusic.com/create-3d-animation-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-pixar-style-music-video</loc>
+    <loc>https://gruvimusic.com/create-pixar-style-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-disney-style-music-video</loc>
+    <loc>https://gruvimusic.com/create-disney-style-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-cinematic-music-video</loc>
+    <loc>https://gruvimusic.com/create-cinematic-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-realistic-music-video</loc>
+    <loc>https://gruvimusic.com/create-realistic-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-watercolor-music-video</loc>
+    <loc>https://gruvimusic.com/create-watercolor-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-pixel-art-music-video</loc>
+    <loc>https://gruvimusic.com/create-pixel-art-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-comic-book-music-video</loc>
+    <loc>https://gruvimusic.com/create-comic-book-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-cyberpunk-music-video</loc>
+    <loc>https://gruvimusic.com/create-cyberpunk-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-fantasy-music-video</loc>
+    <loc>https://gruvimusic.com/create-fantasy-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-retro-music-video</loc>
+    <loc>https://gruvimusic.com/create-retro-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-synthwave-music-video</loc>
+    <loc>https://gruvimusic.com/create-synthwave-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-minimalist-music-video</loc>
+    <loc>https://gruvimusic.com/create-minimalist-music-video</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1442,91 +1442,91 @@
   <!-- PLATFORM/USE CASE ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/music-for-youtube</loc>
+    <loc>https://gruvimusic.com/music-for-youtube</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-tiktok</loc>
+    <loc>https://gruvimusic.com/music-for-tiktok</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-instagram</loc>
+    <loc>https://gruvimusic.com/music-for-instagram</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-instagram-reels</loc>
+    <loc>https://gruvimusic.com/music-for-instagram-reels</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-podcast</loc>
+    <loc>https://gruvimusic.com/music-for-podcast</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-twitch</loc>
+    <loc>https://gruvimusic.com/music-for-twitch</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-streaming</loc>
+    <loc>https://gruvimusic.com/music-for-streaming</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-vlog</loc>
+    <loc>https://gruvimusic.com/music-for-vlog</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-commercial</loc>
+    <loc>https://gruvimusic.com/music-for-commercial</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-film</loc>
+    <loc>https://gruvimusic.com/music-for-film</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-gaming</loc>
+    <loc>https://gruvimusic.com/music-for-gaming</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-workout</loc>
+    <loc>https://gruvimusic.com/music-for-workout</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-meditation</loc>
+    <loc>https://gruvimusic.com/music-for-meditation</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-wedding</loc>
+    <loc>https://gruvimusic.com/music-for-wedding</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/music-for-kids</loc>
+    <loc>https://gruvimusic.com/music-for-kids</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1536,61 +1536,61 @@
   <!-- OCCASION SONG CREATION ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/create-birthday-song</loc>
+    <loc>https://gruvimusic.com/create-birthday-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-wedding-song</loc>
+    <loc>https://gruvimusic.com/create-wedding-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-anniversary-song</loc>
+    <loc>https://gruvimusic.com/create-anniversary-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-graduation-song</loc>
+    <loc>https://gruvimusic.com/create-graduation-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-love-song</loc>
+    <loc>https://gruvimusic.com/create-love-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-breakup-song</loc>
+    <loc>https://gruvimusic.com/create-breakup-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-baby-shower-song</loc>
+    <loc>https://gruvimusic.com/create-baby-shower-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-party-song</loc>
+    <loc>https://gruvimusic.com/create-party-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-motivation-song</loc>
+    <loc>https://gruvimusic.com/create-motivation-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-tribute-song</loc>
+    <loc>https://gruvimusic.com/create-tribute-song</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -1600,61 +1600,61 @@
   <!-- MOOD/VIBE CREATION ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/create-happy-music</loc>
+    <loc>https://gruvimusic.com/create-happy-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-sad-music</loc>
+    <loc>https://gruvimusic.com/create-sad-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-relaxing-music</loc>
+    <loc>https://gruvimusic.com/create-relaxing-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-energetic-music</loc>
+    <loc>https://gruvimusic.com/create-energetic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-romantic-music</loc>
+    <loc>https://gruvimusic.com/create-romantic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-epic-music</loc>
+    <loc>https://gruvimusic.com/create-epic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-chill-music</loc>
+    <loc>https://gruvimusic.com/create-chill-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-uplifting-music</loc>
+    <loc>https://gruvimusic.com/create-uplifting-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-dramatic-music</loc>
+    <loc>https://gruvimusic.com/create-dramatic-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/create-mysterious-music</loc>
+    <loc>https://gruvimusic.com/create-mysterious-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -1664,61 +1664,61 @@
   <!-- LICENSING/FUNCTIONALITY ROUTES -->
   <!-- ========================================== -->
   <url>
-    <loc>https://gruvimusic.ai/royalty-free</loc>
+    <loc>https://gruvimusic.com/royalty-free</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/copyright-free</loc>
+    <loc>https://gruvimusic.com/copyright-free</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/commercial-use</loc>
+    <loc>https://gruvimusic.com/commercial-use</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/download-music</loc>
+    <loc>https://gruvimusic.com/download-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/download-mp3</loc>
+    <loc>https://gruvimusic.com/download-mp3</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/high-quality-audio</loc>
+    <loc>https://gruvimusic.com/high-quality-audio</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/free-music</loc>
+    <loc>https://gruvimusic.com/free-music</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/no-signup</loc>
+    <loc>https://gruvimusic.com/no-signup</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/instrumental</loc>
+    <loc>https://gruvimusic.com/instrumental</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gruvimusic.ai/karaoke</loc>
+    <loc>https://gruvimusic.com/karaoke</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
