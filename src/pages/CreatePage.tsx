@@ -520,6 +520,20 @@ const CreatePage: React.FC = () => {
     }
   };
 
+  // Extract unique character IDs from text with @mentions
+  const getTaggedCharacterIds = (text: string): string[] => {
+    const mentions = text.match(/@[\w]+/g) || [];
+    const uniqueNames = Array.from(new Set(mentions.map(m => m.slice(1).toLowerCase())));
+    
+    const ids: string[] = [];
+    for (const name of uniqueNames) {
+      const char = characters.find(c => c.characterName.toLowerCase() === name);
+      if (char) {
+        ids.push(char.characterId);
+      }
+    }
+    return ids;
+  };
 
   // Song generation handler
   const handleGenerateSong = async () => {
@@ -546,6 +560,9 @@ const CreatePage: React.FC = () => {
     
     setIsGeneratingSong(true);
     try {
+      // Extract tagged character IDs from prompt
+      const characterIds = getTaggedCharacterIds(songPrompt);
+      
       // Call the async song generation API (returns immediately with pending status)
       const response = await songsApi.generateSong({
         userId: user.userId,
@@ -553,6 +570,7 @@ const CreatePage: React.FC = () => {
         genre: selectedGenre,
         mood: selectedMood,
         language: selectedLanguage,
+        characterIds: characterIds.length > 0 ? characterIds : undefined,
       });
       
       console.log('Song generation started:', response.data);
@@ -611,12 +629,17 @@ const CreatePage: React.FC = () => {
     
     setIsGeneratingVideo(true);
     try {
+      // Extract tagged character IDs from prompt
+      const characterIds = getTaggedCharacterIds(videoPrompt);
+      
       // Call the actual video generation API
       const response = await videosApi.generateVideo({
         userId: user.userId,
         songId: selectedSong,
         videoType: videoType as 'still' | 'standard' | 'professional',
         style: selectedStyle,
+        videoPrompt: videoPrompt.trim(),
+        characterIds: characterIds.length > 0 ? characterIds : undefined,
       });
       
       console.log('Video generation response:', response.data);
