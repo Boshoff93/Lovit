@@ -1015,19 +1015,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       <Tooltip title="Cancel/Remove" arrow>
                         <IconButton
                           onClick={() => handleDeleteSong(song)}
-                          size="small"
                           disabled={deletingSongId === song.songId}
                           sx={{
+                            width: 40,
+                            height: 40,
+                            background: '#fff',
+                            border: '1px solid rgba(0,0,0,0.08)',
                             color: '#FF3B30',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                             '&:hover': {
-                              backgroundColor: 'rgba(255,59,48,0.1)',
+                              background: '#fff',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             },
                           }}
                         >
                           {deletingSongId === song.songId ? (
-                            <CircularProgress size={18} sx={{ color: '#FF3B30' }} />
+                            <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
                           ) : (
-                            <DeleteIcon sx={{ fontSize: 18 }} />
+                            <DeleteIcon sx={{ fontSize: 20 }} />
                           )}
                         </IconButton>
                       </Tooltip>
@@ -1049,19 +1054,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       <Tooltip title="Delete failed song" arrow>
                         <IconButton
                           onClick={() => handleDeleteSong(song)}
-                          size="small"
                           disabled={deletingSongId === song.songId}
                           sx={{
+                            width: 40,
+                            height: 40,
+                            background: '#fff',
+                            border: '1px solid rgba(0,0,0,0.08)',
                             color: '#FF3B30',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                             '&:hover': {
-                              backgroundColor: 'rgba(255,59,48,0.1)',
+                              background: '#fff',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             },
                           }}
                         >
                           {deletingSongId === song.songId ? (
-                            <CircularProgress size={18} sx={{ color: '#FF3B30' }} />
+                            <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
                           ) : (
-                            <DeleteIcon sx={{ fontSize: 18 }} />
+                            <DeleteIcon sx={{ fontSize: 20 }} />
                           )}
                         </IconButton>
                       </Tooltip>
