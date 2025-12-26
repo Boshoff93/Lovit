@@ -417,7 +417,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
   };
 
-  const handleDownload = async (song: Song) => {
+  const handleDownload = (song: Song) => {
     if (!song.audioUrl) {
       setNotification({
         open: true,
@@ -429,84 +429,17 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
     setIsDownloading(song.songId);
     
-    try {
-      // Try fetching with CORS mode first
-      const response = await fetch(song.audioUrl, {
-        mode: 'cors',
-        credentials: 'omit',
-      });
-      
-      if (!response.ok) throw new Error('Failed to fetch audio');
-      
-      const blob = await response.blob();
-      
-      // Create a download link with the blob
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${song.songTitle || 'song'}.mp3`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Cleanup after a short delay
-      setTimeout(() => window.URL.revokeObjectURL(url), 100);
-      
-      setNotification({
-        open: true,
-        message: `Downloaded "${song.songTitle}"`,
-        severity: 'success'
-      });
-    } catch (error) {
-      console.error('Download error:', error);
-      
-      // Fallback: Use an iframe to trigger download without opening new tab
-      try {
-        // Create a hidden iframe to trigger download
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        
-        // Create a link inside the iframe document to force download
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-        if (iframeDoc) {
-          const link = iframeDoc.createElement('a');
-          link.href = song.audioUrl;
-          link.download = `${song.songTitle || 'song'}.mp3`;
-          link.setAttribute('download', `${song.songTitle || 'song'}.mp3`);
-          iframeDoc.body.appendChild(link);
-          link.click();
-          
-          // Remove iframe after a delay
-          setTimeout(() => {
-            document.body.removeChild(iframe);
-          }, 1000);
-        } else {
-          // Last resort: direct link click without target="_blank"
-          const link = document.createElement('a');
-          link.href = song.audioUrl;
-          link.download = `${song.songTitle || 'song'}.mp3`;
-          link.setAttribute('download', `${song.songTitle || 'song'}.mp3`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-        
-        setNotification({
-          open: true,
-          message: `Downloading "${song.songTitle}"...`,
-          severity: 'info'
-        });
-      } catch (fallbackError) {
-        setNotification({
-          open: true,
-          message: 'Failed to download. Try right-clicking and "Save as..."',
-          severity: 'error'
-        });
-      }
-    } finally {
-      setIsDownloading(null);
-    }
+    // Direct download - open in new tab which will trigger browser's download behavior for audio files
+    // The download attribute doesn't work cross-origin, but opening the URL will prompt download for mp3
+    window.open(song.audioUrl, '_blank');
+    
+    setNotification({
+      open: true,
+      message: `Opening "${song.songTitle}" for download...`,
+      severity: 'info'
+    });
+    
+    setIsDownloading(null);
   };
 
   const handleViewLyrics = (song: Song) => {
