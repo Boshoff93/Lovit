@@ -514,9 +514,15 @@ const CreatePage: React.FC = () => {
 
   const insertCharacter = (name: string) => {
     if (activeTab === 'song') {
-      setSongPrompt(prev => prev + ` @${name} `);
+      setSongPrompt(prev => {
+        const trimmed = prev.trim();
+        return trimmed ? `${trimmed} @${name} ` : `@${name} `;
+      });
     } else if (activeTab === 'video') {
-      setVideoPrompt(prev => prev + ` @${name} `);
+      setVideoPrompt(prev => {
+        const trimmed = prev.trim();
+        return trimmed ? `${trimmed} @${name} ` : `@${name} `;
+      });
     }
   };
 

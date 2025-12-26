@@ -23,10 +23,14 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   const editorRef = useRef<HTMLDivElement>(null);
   const lastValueRef = useRef(value);
 
-  // Update content when value changes externally (e.g., cleared)
+  // Update content when value changes externally (e.g., cleared or character added)
   useEffect(() => {
     if (editorRef.current && value !== lastValueRef.current) {
-      const currentText = editorRef.current.innerText;
+      let currentText = editorRef.current.innerText;
+      // Normalize trailing newline
+      if (currentText.endsWith('\n')) {
+        currentText = currentText.slice(0, -1);
+      }
       if (currentText !== value) {
         updateEditorContent(value);
       }
@@ -118,7 +122,12 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   const handleInput = () => {
     if (!editorRef.current) return;
     
-    const text = editorRef.current.innerText;
+    // innerText can have trailing newlines, normalize them
+    let text = editorRef.current.innerText;
+    // Remove trailing newline that contentEditable adds
+    if (text.endsWith('\n')) {
+      text = text.slice(0, -1);
+    }
     lastValueRef.current = text;
     onChange(text);
     
