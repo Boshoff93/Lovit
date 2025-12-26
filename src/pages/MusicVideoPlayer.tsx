@@ -25,6 +25,7 @@ import {
   Movie,
   AspectRatio,
   Download,
+  Mic,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { videosApi, songsApi } from '../services/api';
@@ -545,9 +546,12 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f', mb: 2, flexShrink: 0 }}>
-                  🎤 Lyrics
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexShrink: 0 }}>
+                  <Mic sx={{ fontSize: 22, color: '#007AFF' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+                    Lyrics
+                  </Typography>
+                </Box>
                 <Typography
                   sx={{
                     color: '#1d1d1f',
