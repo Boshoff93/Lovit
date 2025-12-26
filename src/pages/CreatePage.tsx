@@ -386,7 +386,7 @@ const CreatePage: React.FC = () => {
   const [songPrompt, setSongPrompt] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('pop');
   const [selectedMood, setSelectedMood] = useState('happy');
-  const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
