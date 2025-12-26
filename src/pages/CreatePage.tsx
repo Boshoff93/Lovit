@@ -401,6 +401,7 @@ const CreatePage: React.FC = () => {
   const [videoPrompt, setVideoPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('3d-cartoon');
   const [videoType, setVideoType] = useState('still'); // 'still', 'casual', or 'creator'
+  const [aspectRatio, setAspectRatio] = useState<'portrait' | 'landscape'>('portrait');
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   
   // Action sheet state
@@ -645,6 +646,7 @@ const CreatePage: React.FC = () => {
         videoType: videoType as 'still' | 'standard' | 'professional',
         style: selectedStyle,
         videoPrompt: videoPrompt.trim(),
+        aspectRatio,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
       });
       
@@ -1944,6 +1946,123 @@ const CreatePage: React.FC = () => {
               </ToggleButtonGroup>
             </Paper>
 
+            {/* Aspect Ratio Selection */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                mb: 3,
+                borderRadius: '20px',
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                <Typography sx={{ fontSize: '1.2rem' }}>📐</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Aspect Ratio
+                </Typography>
+              </Box>
+              
+              <ToggleButtonGroup
+                value={aspectRatio}
+                exclusive
+                onChange={(_event, newValue) => {
+                  if (newValue !== null) setAspectRatio(newValue);
+                }}
+                fullWidth
+                sx={{
+                  gap: 1.5,
+                  '& .MuiToggleButtonGroup-grouped': {
+                    border: 'none !important',
+                    borderRadius: '16px !important',
+                    m: 0,
+                  },
+                }}
+              >
+                <ToggleButton
+                  value="portrait"
+                  sx={{
+                    flex: 1,
+                    py: 2,
+                    px: 2,
+                    flexDirection: 'column',
+                    gap: 0.5,
+                    textTransform: 'none',
+                    background: aspectRatio === 'portrait' 
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
+                      : 'rgba(0,0,0,0.03)',
+                    color: aspectRatio === 'portrait' ? '#fff' : '#1D1D1F',
+                    border: aspectRatio === 'portrait' 
+                      ? '2px solid transparent' 
+                      : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: aspectRatio === 'portrait' 
+                      ? '0 4px 16px rgba(0,122,255,0.3)' 
+                      : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      background: aspectRatio === 'portrait' 
+                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
+                        : 'rgba(0,0,0,0.06)',
+                    },
+                    '&.Mui-selected': {
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                      color: '#fff',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
+                      },
+                    },
+                  }}
+                >
+                  <Typography sx={{ fontSize: '1.5rem' }}>📱</Typography>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>Portrait</Typography>
+                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>9:16</Typography>
+                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>Best for mobile & TikTok</Typography>
+                </ToggleButton>
+                <ToggleButton
+                  value="landscape"
+                  sx={{
+                    flex: 1,
+                    py: 2,
+                    px: 2,
+                    flexDirection: 'column',
+                    gap: 0.5,
+                    textTransform: 'none',
+                    background: aspectRatio === 'landscape' 
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
+                      : 'rgba(0,0,0,0.03)',
+                    color: aspectRatio === 'landscape' ? '#fff' : '#1D1D1F',
+                    border: aspectRatio === 'landscape' 
+                      ? '2px solid transparent' 
+                      : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: aspectRatio === 'landscape' 
+                      ? '0 4px 16px rgba(0,122,255,0.3)' 
+                      : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      background: aspectRatio === 'landscape' 
+                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
+                        : 'rgba(0,0,0,0.06)',
+                    },
+                    '&.Mui-selected': {
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                      color: '#fff',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
+                      },
+                    },
+                  }}
+                >
+                  <Typography sx={{ fontSize: '1.5rem' }}>🖥️</Typography>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>Landscape</Typography>
+                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>16:9</Typography>
+                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>Best for YouTube & TV</Typography>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Paper>
+
           </Box>
 
           {/* Right Column - Summary */}
@@ -1979,6 +2098,12 @@ const CreatePage: React.FC = () => {
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Type</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                     {videoTypes.find(t => t.id === videoType)?.label}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Aspect Ratio</Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    {aspectRatio === 'portrait' ? '9:16 (Portrait)' : '16:9 (Landscape)'}
                   </Typography>
                 </Box>
               </Box>
