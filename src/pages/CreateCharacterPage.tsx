@@ -340,13 +340,14 @@ const CreateCharacterPage: React.FC = () => {
 
         console.log('Character update response:', response.data);
 
+        const typeLabel = characterKind === 'Product' ? 'Product' : 'Character';
         setNotification({
           open: true,
-          message: `Character "${characterName}" updated successfully!`,
+          message: `${typeLabel} "${characterName}" updated successfully!`,
           severity: 'success'
         });
       } else {
-        // Create new character
+        // Create new character/product
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
@@ -356,11 +357,12 @@ const CreateCharacterPage: React.FC = () => {
           imageBase64Array,
         });
 
-        console.log('Character creation response:', response.data);
+        console.log('Character/Product creation response:', response.data);
 
+        const typeLabel = characterKind === 'Product' ? 'Product' : 'Character';
         setNotification({
           open: true,
-          message: `Character "${characterName}" created successfully!`,
+          message: `${typeLabel} "${characterName}" created successfully!`,
           severity: 'success'
         });
       }
@@ -435,12 +437,12 @@ const CreateCharacterPage: React.FC = () => {
               },
             }}
           >
-            Back to Characters
+            Back to Characters & Products
           </Button>
         </Box>
 
         <Box sx={{ width: '100%', px: { xs: 2, sm: 0 } }}>
-        {/* Character Name */}
+        {/* Name */}
         <Paper
           elevation={0}
           sx={{
@@ -456,12 +458,12 @@ const CreateCharacterPage: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <PersonIcon sx={{ color: '#007AFF' }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              Character Name
+              Name
             </Typography>
             <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Give your character a unique name to reference in songs and videos
+            Give your character or product a unique name to reference in songs and videos
           </Typography>
           <TextField
             fullWidth
@@ -470,7 +472,7 @@ const CreateCharacterPage: React.FC = () => {
               setCharacterName(e.target.value);
               if (e.target.value.trim()) setShowCharacterNameError(false);
             }}
-            placeholder="e.g., Luna, Max, Aria"
+            placeholder="e.g., Luna, Max, Aria, Cool Sneakers"
             error={showCharacterNameError && !characterName.trim()}
             helperText={showCharacterNameError && !characterName.trim() ? 'Please enter a character name' : ''}
             sx={{
@@ -482,7 +484,7 @@ const CreateCharacterPage: React.FC = () => {
           />
         </Paper>
 
-        {/* Character Kind */}
+        {/* Type */}
         <Paper
           elevation={0}
           sx={{
@@ -496,10 +498,10 @@ const CreateCharacterPage: React.FC = () => {
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Kind of Character
+            Type
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Choose the type of character: human, non-human (animals, fantasy creatures), or product
+            Human, non-human (animals, fantasy creatures), or product
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {characterKindOptions.map((kind) => (
@@ -740,7 +742,7 @@ const CreateCharacterPage: React.FC = () => {
             Reference Images
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Upload up to {MAX_CHARACTER_IMAGES} reference images for your character's appearance in music videos
+            Upload up to {MAX_CHARACTER_IMAGES} reference images for appearance in music videos
           </Typography>
           
           {/* Drag and drop area */}
@@ -857,7 +859,7 @@ const CreateCharacterPage: React.FC = () => {
             Description (Optional)
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Add extra details about your character's personality, appearance, or traits
+            Add extra details about personality, appearance, features, or traits
           </Typography>
           <TextField
             fullWidth
@@ -865,7 +867,9 @@ const CreateCharacterPage: React.FC = () => {
             onChange={(e) => setCharacterDescription(e.target.value)}
             multiline
             rows={3}
-            placeholder="e.g., A cheerful girl who loves adventures, always wears a red scarf"
+            placeholder={characterKind === 'Product' 
+              ? "e.g., Sleek red sneakers with white soles, premium leather material" 
+              : "e.g., A cheerful girl who loves adventures, always wears a red scarf"}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '12px',
@@ -875,7 +879,7 @@ const CreateCharacterPage: React.FC = () => {
           />
         </Paper>
 
-        {/* Create/Update Character Button */}
+        {/* Create/Update Button */}
         <Button
           fullWidth
           variant="contained"
@@ -898,7 +902,9 @@ const CreateCharacterPage: React.FC = () => {
           ) : (
             <>
               <PersonIcon sx={{ mr: 1 }} />
-              {isEditMode ? 'Update Character' : 'Create Character'}
+              {isEditMode 
+                ? `Update ${characterKind === 'Product' ? 'Product' : 'Character'}` 
+                : `Create ${characterKind === 'Product' ? 'Product' : 'Character'}`}
             </>
           )}
         </Button>

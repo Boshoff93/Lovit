@@ -164,10 +164,10 @@ const CharactersPage: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
               <PersonIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
-                Your Characters
+                Characters & Products
               </Typography>
               <Chip 
-                label={`${characters.length} character${characters.length !== 1 ? 's' : ''}`}
+                label={`${characters.length}`}
                 size="small" 
                 sx={{ 
                   backgroundColor: 'rgba(0,122,255,0.1)',
@@ -178,7 +178,7 @@ const CharactersPage: React.FC = () => {
               />
             </Box>
             {/* Mobile: Icon button */}
-            <Tooltip title="Create New Character" arrow>
+            <Tooltip title="Create New" arrow>
               <IconButton
                 onClick={() => navigate('/characters/create')}
                 sx={{
@@ -228,10 +228,10 @@ const CharactersPage: React.FC = () => {
             <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
               <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
               <Typography variant="h6" color="text.secondary">
-                No characters yet
+                No characters or products yet
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
-                Create characters to include in your song lyrics and music videos
+                Create characters or products to feature in your song lyrics and music videos
               </Typography>
               <Button
                 variant="contained"
@@ -245,7 +245,7 @@ const CharactersPage: React.FC = () => {
                   background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
                 }}
               >
-                Create Character
+                Create New
               </Button>
             </Box>
           ) : (
@@ -344,11 +344,11 @@ const CharactersPage: React.FC = () => {
           }}
         >
           <DialogTitle sx={{ fontWeight: 600 }}>
-            Delete Character?
+            Delete?
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete "{characterToDelete?.characterName}"? This action cannot be undone.
+              Are you sure you want to delete "{characterToDelete?.characterName}"? This cannot be undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
