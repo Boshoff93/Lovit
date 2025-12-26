@@ -33,6 +33,7 @@ import { songsApi, videosApi, charactersApi } from '../services/api';
 import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
 import { stripeConfig } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
+import MentionTextField from '../components/MentionTextField';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -411,11 +412,6 @@ const CreatePage: React.FC = () => {
   const [showVideoPromptError, setShowVideoPromptError] = useState(false);
   const [showSongSelectionError, setShowSongSelectionError] = useState(false);
   
-  // Character autocomplete state
-  const [showCharacterSuggestions, setShowCharacterSuggestions] = useState(false);
-  const [characterSearchQuery, setCharacterSearchQuery] = useState('');
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const videoPromptRef = useRef<HTMLTextAreaElement>(null);
   
   // Character creation state
   const [characterName, setCharacterName] = useState('');
@@ -524,78 +520,6 @@ const CreatePage: React.FC = () => {
     }
   };
 
-  // Handle video prompt change with @ detection
-  const handleVideoPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    const selectionStart = e.target.selectionStart || 0;
-    
-    setVideoPrompt(value);
-    setCursorPosition(selectionStart);
-    if (value.trim()) setShowVideoPromptError(false);
-    
-    // Check if user just typed @ or is typing after @
-    const textBeforeCursor = value.slice(0, selectionStart);
-    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
-    
-    if (lastAtIndex !== -1) {
-      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
-      // Show suggestions if there's no space after @ (still typing the mention)
-      if (!textAfterAt.includes(' ')) {
-        setCharacterSearchQuery(textAfterAt.toLowerCase());
-        setShowCharacterSuggestions(true);
-        return;
-      }
-    }
-    setShowCharacterSuggestions(false);
-    setCharacterSearchQuery('');
-  };
-
-  // Insert character from autocomplete
-  const insertCharacterAutocomplete = (name: string) => {
-    const textBeforeCursor = videoPrompt.slice(0, cursorPosition);
-    const textAfterCursor = videoPrompt.slice(cursorPosition);
-    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
-    
-    if (lastAtIndex !== -1) {
-      const newText = textBeforeCursor.slice(0, lastAtIndex) + `@${name} ` + textAfterCursor;
-      setVideoPrompt(newText);
-    } else {
-      setVideoPrompt(prev => prev + `@${name} `);
-    }
-    
-    setShowCharacterSuggestions(false);
-    setCharacterSearchQuery('');
-    
-    // Focus back on textarea
-    setTimeout(() => {
-      videoPromptRef.current?.focus();
-    }, 0);
-  };
-
-  // Filter characters based on search query
-  const filteredCharacters = characters.filter(char => 
-    char.characterName.toLowerCase().includes(characterSearchQuery)
-  );
-
-  // Render text with highlighted @mentions
-  const renderHighlightedText = (text: string) => {
-    if (!text) return null;
-    
-    // Match @word patterns
-    const parts = text.split(/(@\w+)/g);
-    
-    return parts.map((part, index) => {
-      if (part.startsWith('@')) {
-        return (
-          <span key={index} style={{ color: '#007AFF', fontWeight: 600 }}>
-            {part}
-          </span>
-        );
-      }
-      // Regular text in normal color
-      return <span key={index} style={{ color: '#1D1D1F' }}>{part}</span>;
-    });
-  };
 
   // Song generation handler
   const handleGenerateSong = async () => {
@@ -931,23 +855,65 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {characters.map((char) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
+                    {characters.slice(0, 3).map((char) => {
+                      const isInPrompt = songPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
+                      return (
+                        <Tooltip
+                          key={char.characterId}
+                          title={
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 0.5 }}>
+                              {char.imageUrls?.[0] && (
+                                <Box
+                                  component="img"
+                                  src={char.imageUrls[0]}
+                                  alt={char.characterName}
+                                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover' }}
+                                />
+                              )}
+                              <Box>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                  {isInPrompt ? 'Already added' : 'Click to add'}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          }
+                          arrow
+                          placement="top"
+                        >
+                          <Chip
+                            label={`@${char.characterName}`}
+                            onClick={() => insertCharacter(char.characterName)}
+                            size="small"
+                            sx={{
+                              borderRadius: '100px',
+                              background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
+                              color: isInPrompt ? '#34C759' : '#007AFF',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
+                              '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                            }}
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                    {characters.length > 3 && (
                       <Chip
-                        key={char.characterId}
-                        label={`@${char.characterName}`}
-                        onClick={() => insertCharacter(char.characterName)}
+                        label={`+${characters.length - 3} more`}
+                        onClick={() => navigate('/characters')}
                         size="small"
                         sx={{
                           borderRadius: '100px',
-                          background: 'rgba(0,122,255,0.1)',
-                          color: '#007AFF',
+                          background: 'rgba(0,0,0,0.05)',
+                          color: '#86868B',
                           fontWeight: 500,
                           cursor: 'pointer',
-                          '&:hover': { background: 'rgba(0,122,255,0.2)' },
+                          '&:hover': { background: 'rgba(0,0,0,0.1)' },
                         }}
                       />
-                    ))}
+                    )}
                   </Box>
                 ) : (
                   <Chip
@@ -967,27 +933,17 @@ const CreatePage: React.FC = () => {
                 )}
               </Box>
               
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                placeholder="Describe your song idea... E.g., 'An upbeat summer anthem about road trips and friendship'"
+              <MentionTextField
                 value={songPrompt}
-                onChange={(e) => {
-                  setSongPrompt(e.target.value);
-                  if (e.target.value.trim()) setShowSongPromptError(false);
+                onChange={(value) => {
+                  setSongPrompt(value);
+                  if (value.trim()) setShowSongPromptError(false);
                 }}
+                characters={characters}
+                isLoadingCharacters={isLoadingCharacters}
+                placeholder="Describe your song idea... Type @ to mention a character"
                 error={showSongPromptError && !songPrompt.trim()}
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '16px',
-                    background: '#fff',
-                    '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                    '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#007AFF' },
-                  },
-                }}
               />
             </Paper>
 
@@ -1693,141 +1649,18 @@ const CreatePage: React.FC = () => {
                 )}
               </Box>
               
-              <Box sx={{ position: 'relative' }}>
-                {/* Highlight overlay - positioned over the textarea */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 1,
-                    left: 1,
-                    right: 1,
-                    p: '16.5px 14px',
-                    borderRadius: '16px',
-                    pointerEvents: 'none',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    fontSize: '1rem',
-                    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-                    lineHeight: 1.5,
-                    letterSpacing: '0.00938em',
-                    overflow: 'hidden',
-                    zIndex: 1,
-                  }}
-                >
-                  {renderHighlightedText(videoPrompt)}
-                </Box>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  placeholder="Describe the scenes, setting, and story for your music video... Type @ to mention a character"
-                  value={videoPrompt}
-                  onChange={handleVideoPromptChange}
-                  onBlur={() => setTimeout(() => setShowCharacterSuggestions(false), 200)}
-                  inputRef={videoPromptRef}
-                  error={showVideoPromptError && !videoPrompt.trim()}
-                  helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '16px',
-                      background: '#fff',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
-                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
-                    },
-                    '& .MuiInputBase-input': {
-                      color: 'transparent',
-                      caretColor: '#1D1D1F',
-                      position: 'relative',
-                      zIndex: 2,
-                      '&::placeholder': {
-                        color: 'rgba(0,0,0,0.4)',
-                        opacity: 1,
-                      },
-                    },
-                  }}
-                />
-                
-                {/* Character suggestions popup */}
-                {showCharacterSuggestions && filteredCharacters.length > 0 && (
-                  <Paper
-                    elevation={8}
-                    sx={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      right: 0,
-                      mt: 0.5,
-                      zIndex: 1000,
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                      border: '1px solid rgba(0,0,0,0.1)',
-                      maxHeight: 200,
-                      overflowY: 'auto',
-                    }}
-                  >
-                    <Box sx={{ p: 1 }}>
-                      <Typography variant="caption" sx={{ color: '#86868B', px: 1, display: 'block', mb: 0.5 }}>
-                        Select a character
-                      </Typography>
-                      {filteredCharacters.slice(0, 5).map((char) => (
-                        <Box
-                          key={char.characterId}
-                          onClick={() => insertCharacterAutocomplete(char.characterName)}
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1.5,
-                            p: 1,
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0,122,255,0.08)',
-                            },
-                          }}
-                        >
-                          {char.imageUrls?.[0] ? (
-                            <Box
-                              component="img"
-                              src={char.imageUrls[0]}
-                              alt={char.characterName}
-                              sx={{ 
-                                width: 32, 
-                                height: 32, 
-                                borderRadius: '8px', 
-                                objectFit: 'cover',
-                                border: '1px solid rgba(0,0,0,0.1)',
-                              }}
-                            />
-                          ) : (
-                            <Box
-                              sx={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: '8px',
-                                backgroundColor: 'rgba(0,122,255,0.1)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.8rem' }}>
-                                {char.characterName.charAt(0).toUpperCase()}
-                              </Typography>
-                            </Box>
-                          )}
-                          <Box>
-                            <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1D1D1F' }}>
-                              @{char.characterName}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      ))}
-                    </Box>
-                  </Paper>
-                )}
-              </Box>
+              <MentionTextField
+                value={videoPrompt}
+                onChange={(value) => {
+                  setVideoPrompt(value);
+                  if (value.trim()) setShowVideoPromptError(false);
+                }}
+                characters={characters}
+                isLoadingCharacters={isLoadingCharacters}
+                placeholder="Describe the scenes, setting, and story for your music video... Type @ to mention a character"
+                error={showVideoPromptError && !videoPrompt.trim()}
+                helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
+              />
             </Paper>
 
             {/* Visual Style Selection */}
