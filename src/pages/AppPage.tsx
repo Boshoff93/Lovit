@@ -1342,8 +1342,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         <CircularProgress 
                           size={28} 
                           sx={{ color: '#007AFF' }} 
-                          variant={video.progress ? 'determinate' : 'indeterminate'}
-                          value={video.progress || 0}
                         />
                       </Box>
                     ) : video.status === 'failed' ? (
