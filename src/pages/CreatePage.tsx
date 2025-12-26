@@ -1152,9 +1152,9 @@ const CreatePage: React.FC = () => {
                 Summary
               </Typography>
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Genre</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={genres.find(g => g.id === selectedGenre)?.image}
@@ -1166,9 +1166,9 @@ const CreatePage: React.FC = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Mood</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={moods.find(m => m.id === selectedMood)?.image}
@@ -1180,9 +1180,9 @@ const CreatePage: React.FC = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Language</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={languages.find(l => l.id === selectedLanguage)?.image}
@@ -1194,9 +1194,9 @@ const CreatePage: React.FC = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Prompt</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <Box
                       component="img"
                       src="/gruvi-support.png"
@@ -2154,18 +2154,18 @@ const CreatePage: React.FC = () => {
                 Summary
               </Typography>
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Song</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected'}
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Style</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={artStyles.find(s => s.id === selectedStyle)?.image}
@@ -2177,18 +2177,18 @@ const CreatePage: React.FC = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Type</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <MovieIcon sx={{ fontSize: 18, color: '#FF9500', flexShrink: 0 }} />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {videoTypes.find(t => t.id === videoType)?.label}
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Aspect Ratio</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     {aspectRatio === 'portrait' ? (
                       <SmartphoneIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     ) : (
