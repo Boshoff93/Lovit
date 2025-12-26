@@ -41,12 +41,66 @@ import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LyricsIcon from '@mui/icons-material/Lyrics';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
+
+// Animated Equalizer Component
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
+  isPlaying, 
+  size = 20,
+  color = '#007AFF' 
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+  
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying 
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -950,8 +1004,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           },
                         }} 
                       />
-                    ) : currentSong?.songId === song.songId && isAudioPlaying ? (
-                      <VolumeUpIcon sx={{ color: '#fff', fontSize: 24 }} />
+                    ) : currentSong?.songId === song.songId ? (
+                      // Current song - show equalizer (animated when playing, static when paused)
+                      <AudioEqualizer isPlaying={isAudioPlaying} size={24} color="#fff" />
                     ) : (
                       <Box
                         component="img"

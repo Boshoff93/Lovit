@@ -5,8 +5,95 @@ import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CloseIcon from '@mui/icons-material/Close';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+
+// Genre to image mapping
+const genreImages: Record<string, string> = {
+  'pop': '/genres/pop.jpeg',
+  'rock': '/genres/rock.jpeg',
+  'hip-hop': '/genres/hip-hop.jpeg',
+  'jazz': '/genres/jazz.jpeg',
+  'classical': '/genres/classical.jpeg',
+  'electronic': '/genres/electronic.jpeg',
+  'country': '/genres/country.jpeg',
+  'r&b': '/genres/rnb.jpeg',
+  'rnb': '/genres/rnb.jpeg',
+  'folk': '/genres/folk.jpeg',
+  'blues': '/genres/blues.jpeg',
+  'reggae': '/genres/reggae.jpeg',
+  'latin': '/genres/latin.jpeg',
+  'metal': '/genres/metal.jpeg',
+  'punk': '/genres/punk.jpeg',
+  'indie': '/genres/indie.jpeg',
+  'alternative': '/genres/alternative.jpeg',
+  'soul': '/genres/soul.jpeg',
+  'funk': '/genres/funk.jpeg',
+  'disco': '/genres/disco.jpeg',
+  'house': '/genres/house.jpeg',
+  'techno': '/genres/techno.jpeg',
+  'ambient': '/genres/ambient.jpeg',
+  'lofi': '/genres/lofi.jpeg',
+};
+
+const getGenreImage = (genre: string): string => {
+  const normalizedGenre = genre?.toLowerCase().trim() || '';
+  return genreImages[normalizedGenre] || '/genres/pop.jpeg';
+};
+
+// Animated Equalizer Component
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
+  isPlaying, 
+  size = 20,
+  color = '#007AFF' 
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+  
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying 
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
 
 // Format time helper
 const formatTime = (seconds: number): string => {
@@ -67,21 +154,54 @@ const GlobalAudioPlayer: React.FC = () => {
       }}
     >
       <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, width: '100%' }}>
-        {/* Song Icon */}
+        {/* Song Icon with Genre Image and Equalizer */}
         <Box
           sx={{
             width: { xs: 40, sm: 48 },
             height: { xs: 40, sm: 48 },
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #1D1D1F 0%, #3D3D3F 100%)',
+            background: '#1D1D1F',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          <VolumeUpIcon sx={{ color: '#fff', fontSize: { xs: 20, sm: 24 } }} />
+          {/* Genre Background Image */}
+          <Box
+            component="img"
+            src={getGenreImage(currentSong.genre || '')}
+            alt={currentSong.genre}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+          {/* Dark overlay for better equalizer visibility */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: 'rgba(0,0,0,0.4)',
+            }}
+          />
+          {/* Equalizer overlay */}
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <AudioEqualizer isPlaying={isPlaying} size={20} color="#fff" />
+          </Box>
         </Box>
 
         {/* Song Info */}
