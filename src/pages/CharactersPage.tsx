@@ -407,11 +407,12 @@ const CharactersPage: React.FC = () => {
           autoHideDuration={4000}
           onClose={() => setNotification(prev => ({ ...prev, open: false }))}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          sx={{ mt: 8 }}
         >
           <Alert
             onClose={() => setNotification(prev => ({ ...prev, open: false }))}
             severity={notification.severity}
-            sx={{ width: '100%' }}
+            sx={{ width: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
           >
             {notification.message}
           </Alert>
