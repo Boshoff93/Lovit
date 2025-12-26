@@ -307,10 +307,12 @@ const CharactersPage: React.FC = () => {
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                       }}
                     >
-                      {character.gender || ''}{character.age ? ` • ${character.age}` : ''}
+                      {character.description?.includes('Product') 
+                        ? 'Product' 
+                        : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
                     </Typography>
                   </Box>
-                  <Tooltip title="Delete character" arrow>
+                  <Tooltip title="Delete" arrow>
                     <IconButton
                       onClick={(e) => handleDeleteClick(e, character)}
                       size="small"

@@ -328,19 +328,21 @@ const CreateCharacterPage: React.FC = () => {
             `Eyes: ${characterEyeColor}`,
           ].filter(Boolean).join('. ');
 
+      // Only include gender/age for non-product types
+      const isProduct = characterKind === 'Product';
+
       if (isEditMode && characterId) {
-        // Update existing character
+        // Update existing character/product
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
-          gender: characterGender,
-          age: characterAge,
+          ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
 
-        console.log('Character update response:', response.data);
+        console.log('Character/Product update response:', response.data);
 
-        const typeLabel = characterKind === 'Product' ? 'Product' : 'Character';
+        const typeLabel = isProduct ? 'Product' : 'Character';
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" updated successfully!`,
@@ -351,15 +353,14 @@ const CreateCharacterPage: React.FC = () => {
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
-          gender: characterGender,
-          age: characterAge,
+          ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
 
         console.log('Character/Product creation response:', response.data);
 
-        const typeLabel = characterKind === 'Product' ? 'Product' : 'Character';
+        const typeLabel = isProduct ? 'Product' : 'Character';
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" created successfully!`,
