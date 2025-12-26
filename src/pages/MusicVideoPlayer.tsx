@@ -471,7 +471,7 @@ const MusicVideoPlayer: React.FC = () => {
                         component="img"
                         src={`/genres/${songData.genre.toLowerCase().replace(/\s+/g, '-').replace('r&b', 'rnb')}.jpeg`}
                         alt={songData.genre}
-                        sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover', ml: 0.5 }}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
                       />
                     }
@@ -487,7 +487,7 @@ const MusicVideoPlayer: React.FC = () => {
                         component="img"
                         src={`/moods/${songData.mood.toLowerCase()}.jpeg`}
                         alt={songData.mood}
-                        sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover', ml: 0.5 }}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
                       />
                     }

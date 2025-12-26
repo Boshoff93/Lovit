@@ -1159,7 +1159,7 @@ const CreatePage: React.FC = () => {
                       component="img"
                       src={genres.find(g => g.id === selectedGenre)?.image}
                       alt={genres.find(g => g.id === selectedGenre)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {genres.find(g => g.id === selectedGenre)?.name}
@@ -1173,7 +1173,7 @@ const CreatePage: React.FC = () => {
                       component="img"
                       src={moods.find(m => m.id === selectedMood)?.image}
                       alt={moods.find(m => m.id === selectedMood)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {moods.find(m => m.id === selectedMood)?.name}
@@ -1187,7 +1187,7 @@ const CreatePage: React.FC = () => {
                       component="img"
                       src={languages.find(l => l.id === selectedLanguage)?.image}
                       alt={languages.find(l => l.id === selectedLanguage)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {languages.find(l => l.id === selectedLanguage)?.name}
@@ -1201,7 +1201,7 @@ const CreatePage: React.FC = () => {
                       component="img"
                       src="/gruvi-support.png"
                       alt="Prompt"
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {songPrompt.trim() || 'Not entered'}
@@ -2170,7 +2170,7 @@ const CreatePage: React.FC = () => {
                       component="img"
                       src={artStyles.find(s => s.id === selectedStyle)?.image}
                       alt={artStyles.find(s => s.id === selectedStyle)?.label}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {artStyles.find(s => s.id === selectedStyle)?.label}
