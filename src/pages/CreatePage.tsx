@@ -937,6 +937,7 @@ const CreatePage: React.FC = () => {
                 placeholder="Describe your song idea... Use @name to feature a character"
                 error={showSongPromptError && !songPrompt.trim()}
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
+                characterNames={characters.map(c => c.characterName)}
               />
             </Paper>
 
@@ -1646,6 +1647,7 @@ const CreatePage: React.FC = () => {
                 placeholder="Describe the scenes, setting, and story for your music video... Use @name to feature a character"
                 error={showVideoPromptError && !videoPrompt.trim()}
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
+                characterNames={characters.map(c => c.characterName)}
               />
             </Paper>
 

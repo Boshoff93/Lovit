@@ -8,6 +8,7 @@ interface MentionTextFieldProps {
   error?: boolean;
   helperText?: React.ReactNode;
   rows?: number;
+  characterNames?: string[];
 }
 
 const MentionTextField: React.FC<MentionTextFieldProps> = ({
@@ -17,6 +18,7 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   error,
   helperText,
   rows = 3,
+  characterNames = [],
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const lastValueRef = useRef(value);
@@ -24,7 +26,6 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   // Update content when value changes externally (e.g., cleared)
   useEffect(() => {
     if (editorRef.current && value !== lastValueRef.current) {
-      // Only update if it's an external change (like clearing the field)
       const currentText = editorRef.current.innerText;
       if (currentText !== value) {
         updateEditorContent(value);
@@ -32,6 +33,13 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
       lastValueRef.current = value;
     }
   }, [value]);
+
+  // Also update when characterNames change (to re-highlight)
+  useEffect(() => {
+    if (editorRef.current && value) {
+      updateEditorContent(value);
+    }
+  }, [characterNames]);
 
   const updateEditorContent = (text: string) => {
     if (!editorRef.current) return;
@@ -42,20 +50,31 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
     let cursorOffset = 0;
     
     if (range && editorRef.current.contains(range.startContainer)) {
-      // Calculate cursor offset from start
       const preRange = document.createRange();
       preRange.selectNodeContents(editorRef.current);
       preRange.setEnd(range.startContainer, range.startOffset);
       cursorOffset = preRange.toString().length;
     }
 
-    // Build HTML with highlighted @mentions
-    const html = text
+    // Escape HTML
+    let html = text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/(@[\w]+)/g, '<span style="color: #007AFF; font-weight: 600;">$1</span>')
-      .replace(/\n/g, '<br>');
+      .replace(/>/g, '&gt;');
+
+    // Only highlight @mentions that exactly match a character name (case-insensitive)
+    if (characterNames.length > 0) {
+      html = html.replace(/(@[\w]+)/g, (match) => {
+        const mentionName = match.slice(1).toLowerCase(); // Remove @ and lowercase
+        const isMatch = characterNames.some(name => name.toLowerCase() === mentionName);
+        if (isMatch) {
+          return `<span style="color: #007AFF; font-weight: 600;">${match}</span>`;
+        }
+        return match;
+      });
+    }
+
+    html = html.replace(/\n/g, '<br>');
     
     editorRef.current.innerHTML = html || '';
     
@@ -103,7 +122,6 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
     lastValueRef.current = text;
     onChange(text);
     
-    // Re-render with highlights
     updateEditorContent(text);
   };
 
@@ -113,14 +131,7 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
     document.execCommand('insertText', false, text);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Allow Enter for new lines
-    if (e.key === 'Enter' && !e.shiftKey) {
-      // Let it create a new line naturally
-    }
-  };
-
-  const minHeight = rows * 24; // Approximate line height
+  const minHeight = rows * 24;
 
   return (
     <Box>
@@ -129,7 +140,6 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
         contentEditable
         onInput={handleInput}
         onPaste={handlePaste}
-        onKeyDown={handleKeyDown}
         data-placeholder={placeholder}
         sx={{
           minHeight: `${minHeight}px`,
@@ -150,7 +160,7 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
           '&:focus': {
             borderColor: error ? '#d32f2f' : '#007AFF',
             borderWidth: '2px',
-            p: '15.5px 13px', // Adjust for thicker border
+            p: '15.5px 13px',
           },
           '&:empty::before': {
             content: 'attr(data-placeholder)',
