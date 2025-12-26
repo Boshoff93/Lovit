@@ -1153,58 +1153,58 @@ const CreatePage: React.FC = () => {
               </Typography>
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Genre</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Genre</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     <Box
                       component="img"
                       src={genres.find(g => g.id === selectedGenre)?.image}
                       alt={genres.find(g => g.id === selectedGenre)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {genres.find(g => g.id === selectedGenre)?.name}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Mood</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Mood</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     <Box
                       component="img"
                       src={moods.find(m => m.id === selectedMood)?.image}
                       alt={moods.find(m => m.id === selectedMood)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {moods.find(m => m.id === selectedMood)?.name}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Language</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Language</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     <Box
                       component="img"
                       src={languages.find(l => l.id === selectedLanguage)?.image}
                       alt={languages.find(l => l.id === selectedLanguage)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {languages.find(l => l.id === selectedLanguage)?.name}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Prompt</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Prompt</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     <Box
                       component="img"
                       src="/gruvi-support.png"
                       alt="Prompt"
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {songPrompt.trim() ? songPrompt.substring(0, 7) + (songPrompt.length > 7 ? '...' : '') : 'Empty'}
+                      {songPrompt.trim() || 'Not entered'}
                     </Typography>
                   </Box>
                 </Box>
@@ -2155,46 +2155,46 @@ const CreatePage: React.FC = () => {
               </Typography>
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Song</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
-                    <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Song</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                    <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {songs.find(s => s.songId === selectedSong)?.songTitle?.substring(0, 15) || 'Not selected'}{(songs.find(s => s.songId === selectedSong)?.songTitle?.length || 0) > 15 ? '...' : ''}
+                      {songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected'}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Style</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Style</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     <Box
                       component="img"
                       src={artStyles.find(s => s.id === selectedStyle)?.image}
                       alt={artStyles.find(s => s.id === selectedStyle)?.label}
-                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {artStyles.find(s => s.id === selectedStyle)?.label}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Type</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
-                    <MovieIcon sx={{ fontSize: 18, color: '#FF9500' }} />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Type</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+                    <MovieIcon sx={{ fontSize: 18, color: '#FF9500', flexShrink: 0 }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {videoTypes.find(t => t.id === videoType)?.label}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Aspect Ratio</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Aspect Ratio</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
                     {aspectRatio === 'portrait' ? (
-                      <SmartphoneIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                      <SmartphoneIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     ) : (
-                      <TvIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                      <TvIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     )}
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {aspectRatio === 'portrait' ? '9:16 (Portrait)' : '16:9 (Landscape)'}
                     </Typography>
                   </Box>
