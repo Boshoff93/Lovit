@@ -294,7 +294,7 @@ const MusicVideoPlayer: React.FC = () => {
           }}
         >
           {/* Left Column - Video Player */}
-          <Box sx={{ flex: { xs: '1', md: '2' } }}>
+          <Box sx={{ flex: 1 }}>
             <Paper
               ref={containerRef}
               elevation={0}
@@ -440,7 +440,7 @@ const MusicVideoPlayer: React.FC = () => {
           </Box>
 
           {/* Right Column - Details & Lyrics */}
-          <Box sx={{ flex: { xs: '1', md: '1' }, minWidth: 0 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             {/* Video Info Card */}
             <Paper
               elevation={0}
