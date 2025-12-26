@@ -46,6 +46,7 @@ import AnimationIcon from '@mui/icons-material/Animation';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import BoltIcon from '@mui/icons-material/Bolt';
 
 // Scrollable list wrapper with dynamic fade gradients
 interface ScrollableListProps {
@@ -575,6 +576,26 @@ const CreatePage: React.FC = () => {
   const filteredCharacters = characters.filter(char => 
     char.characterName.toLowerCase().includes(characterSearchQuery)
   );
+
+  // Render text with highlighted @mentions
+  const renderHighlightedText = (text: string) => {
+    if (!text) return null;
+    
+    // Match @word patterns
+    const parts = text.split(/(@\w+)/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('@')) {
+        return (
+          <span key={index} style={{ color: '#007AFF', fontWeight: 600 }}>
+            {part}
+          </span>
+        );
+      }
+      // Regular text in normal color
+      return <span key={index} style={{ color: '#1D1D1F' }}>{part}</span>;
+    });
+  };
 
   // Song generation handler
   const handleGenerateSong = async () => {
@@ -1141,7 +1162,10 @@ const CreatePage: React.FC = () => {
               </Box>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <BoltIcon sx={{ color: '#007AFF', fontSize: 20 }} />
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
+                  </Box>
                   <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     20
                   </Typography>
@@ -1670,6 +1694,28 @@ const CreatePage: React.FC = () => {
               </Box>
               
               <Box sx={{ position: 'relative' }}>
+                {/* Highlight overlay - positioned over the textarea */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 1,
+                    left: 1,
+                    right: 1,
+                    p: '16.5px 14px',
+                    borderRadius: '16px',
+                    pointerEvents: 'none',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    fontSize: '1rem',
+                    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+                    lineHeight: 1.5,
+                    letterSpacing: '0.00938em',
+                    overflow: 'hidden',
+                    zIndex: 1,
+                  }}
+                >
+                  {renderHighlightedText(videoPrompt)}
+                </Box>
                 <TextField
                   fullWidth
                   multiline
@@ -1688,6 +1734,16 @@ const CreatePage: React.FC = () => {
                       '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
                       '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'transparent',
+                      caretColor: '#1D1D1F',
+                      position: 'relative',
+                      zIndex: 2,
+                      '&::placeholder': {
+                        color: 'rgba(0,0,0,0.4)',
+                        opacity: 1,
+                      },
                     },
                   }}
                 />
@@ -2033,7 +2089,10 @@ const CreatePage: React.FC = () => {
               </Box>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Credits</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <BoltIcon sx={{ color: '#007AFF', fontSize: 20 }} />
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
+                  </Box>
                   <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     {getCredits()}
                   </Typography>
