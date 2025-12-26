@@ -9,6 +9,8 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 
 // Language data with detailed information - using image icons
@@ -42,10 +44,20 @@ export const languageData = [
 const LanguageDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { languageId } = useParams<{ languageId: string }>();
+  const { user } = useSelector((state: RootState) => state.auth);
   
   // Check if audio player is active to add bottom padding
   const { currentSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
+
+  // Handle create button click - navigate to create page or login
+  const handleCreateClick = () => {
+    if (user?.userId) {
+      navigate('/create?tab=song');
+    } else {
+      navigate('/login');
+    }
+  };
 
   // Find the current language data
   const currentLanguage = useMemo(() => {
@@ -197,7 +209,7 @@ const LanguageDetailPage: React.FC = () => {
           {/* CTA Button */}
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
               background: 'rgba(0,0,0,0.9)',
@@ -341,7 +353,7 @@ const LanguageDetailPage: React.FC = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             sx={{
               background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
               backdropFilter: 'blur(20px)',
@@ -360,7 +372,7 @@ const LanguageDetailPage: React.FC = () => {
               },
             }}
           >
-            Get Started Free
+            {user?.userId ? 'Create Music' : 'Get Started Free'}
           </Button>
         </Box>
       </Container>
