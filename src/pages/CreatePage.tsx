@@ -48,6 +48,8 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
+import SmartphoneIcon from '@mui/icons-material/Smartphone';
+import TvIcon from '@mui/icons-material/Tv';
 
 // Scrollable list wrapper with dynamic fade gradients
 interface ScrollableListProps {
@@ -2005,7 +2007,7 @@ const CreatePage: React.FC = () => {
                     },
                   }}
                 >
-                  <Typography sx={{ fontSize: '1.5rem', flexShrink: 0 }}>📱</Typography>
+                  <SmartphoneIcon sx={{ fontSize: 28, flexShrink: 0, color: aspectRatio === 'portrait' ? '#007AFF' : '#86868B' }} />
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#1D1D1F' }}>Portrait</Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>9:16 • Best for mobile & TikTok</Typography>
@@ -2038,7 +2040,7 @@ const CreatePage: React.FC = () => {
                     },
                   }}
                 >
-                  <Typography sx={{ fontSize: '1.5rem', flexShrink: 0 }}>🖥️</Typography>
+                  <TvIcon sx={{ fontSize: 28, flexShrink: 0, color: aspectRatio === 'landscape' ? '#007AFF' : '#86868B' }} />
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#1D1D1F' }}>Landscape</Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>16:9 • Best for YouTube & TV</Typography>
