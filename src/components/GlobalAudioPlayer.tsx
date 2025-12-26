@@ -107,7 +107,7 @@ const GlobalAudioPlayer: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Progress Slider - using MUI Slider for smooth experience */}
+        {/* Progress Slider - Full version for md+ screens */}
         <Box 
           sx={{ 
             flex: 1, 
@@ -176,8 +176,62 @@ const GlobalAudioPlayer: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Spacer to push controls to the right on small screens */}
-        <Box sx={{ flex: 1, display: { xs: 'block', md: 'none' } }} />
+        {/* Compact Progress Slider - for small screens only */}
+        <Box 
+          sx={{ 
+            flex: 1, 
+            display: { xs: 'flex', md: 'none' }, 
+            alignItems: 'center', 
+            gap: 0.5,
+            minWidth: 0,
+          }}
+        >
+          <Slider
+            value={displayProgress}
+            min={0}
+            max={duration || 100}
+            onChange={handleSliderChange}
+            onChangeCommitted={handleSliderChangeCommitted}
+            sx={{
+              color: '#007AFF',
+              height: 3,
+              py: 1,
+              '& .MuiSlider-track': {
+                border: 'none',
+                background: 'linear-gradient(90deg, #007AFF, #5AC8FA)',
+              },
+              '& .MuiSlider-rail': {
+                opacity: 1,
+                backgroundColor: 'rgba(0,0,0,0.08)',
+              },
+              '& .MuiSlider-thumb': {
+                width: 12,
+                height: 12,
+                backgroundColor: '#fff',
+                border: '2px solid #007AFF',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                '&:before': {
+                  display: 'none',
+                },
+                '&:hover, &.Mui-focusVisible, &.Mui-active': {
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.25)',
+                },
+              },
+            }}
+          />
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              color: '#86868B', 
+              fontSize: '0.65rem',
+              fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            {formatTime(displayProgress)}
+          </Typography>
+        </Box>
 
         {/* Controls */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
