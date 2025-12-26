@@ -1375,8 +1375,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     sx={{
                                       background: '#fff',
                                       borderRadius: '50%',
-                                      width: 64,
-                                      height: 64,
+                                      width: { xs: 44, sm: 52, md: 64 },
+                                      height: { xs: 44, sm: 52, md: 64 },
                                       display: 'flex',
                                       alignItems: 'center',
                                       justifyContent: 'center',
@@ -1386,12 +1386,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     }}
                                   >
                                     <CircularProgress 
-                                      size={56} 
+                                      size={36}
                                       thickness={3}
                                       sx={{ color: '#007AFF', position: 'absolute' }} 
                                     />
                                     <Typography sx={{ 
-                                      fontSize: '0.85rem', 
+                                      fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' },
                                       fontWeight: 600, 
                                       color: '#007AFF',
                                     }}>
@@ -1543,8 +1543,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     sx={{
                                       background: '#fff',
                                       borderRadius: '50%',
-                                      width: 64,
-                                      height: 64,
+                                      width: { xs: 44, sm: 52, md: 64 },
+                                      height: { xs: 44, sm: 52, md: 64 },
                                       display: 'flex',
                                       alignItems: 'center',
                                       justifyContent: 'center',
@@ -1554,12 +1554,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     }}
                                   >
                                     <CircularProgress 
-                                      size={56} 
+                                      size={36}
                                       thickness={3}
                                       sx={{ color: '#007AFF', position: 'absolute' }} 
                                     />
                                     <Typography sx={{ 
-                                      fontSize: '0.85rem', 
+                                      fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' },
                                       fontWeight: 600, 
                                       color: '#007AFF',
                                     }}>
