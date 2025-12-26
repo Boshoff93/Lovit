@@ -1009,7 +1009,31 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     </>
                   )}
                   
-                  {/* Processing indicator for action button area */}
+                  {/* Processing songs - show cancel/delete button */}
+                  {isProcessing && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Tooltip title="Cancel/Remove" arrow>
+                        <IconButton
+                          onClick={() => handleDeleteSong(song)}
+                          size="small"
+                          disabled={deletingSongId === song.songId}
+                          sx={{
+                            color: '#FF3B30',
+                            '&:hover': {
+                              backgroundColor: 'rgba(255,59,48,0.1)',
+                            },
+                          }}
+                        >
+                          {deletingSongId === song.songId ? (
+                            <CircularProgress size={18} sx={{ color: '#FF3B30' }} />
+                          ) : (
+                            <DeleteIcon sx={{ fontSize: 18 }} />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  )}
+                  
                   {/* Failed status with delete button */}
                   {isFailed && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
