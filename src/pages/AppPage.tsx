@@ -102,6 +102,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [isLoadingSongs, setIsLoadingSongs] = useState(true);
   const [isLoadingVideos, setIsLoadingVideos] = useState(true);
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
+  const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
@@ -133,6 +134,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [menuSong, setMenuSong] = useState<Song | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [songToDelete, setSongToDelete] = useState<Song | null>(null);
+  
+  // Video menu and delete state
+  const [videoMenuAnchorEl, setVideoMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuVideo, setMenuVideo] = useState<Video | null>(null);
+  const [videoDeleteConfirmOpen, setVideoDeleteConfirmOpen] = useState(false);
+  const [videoToDelete, setVideoToDelete] = useState<Video | null>(null);
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -513,6 +520,52 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const handleWatchVideo = (video: Video) => {
     navigate(`/video/${video.videoId}`);
+  };
+
+  const handleDeleteVideo = (video: Video) => {
+    setVideoToDelete(video);
+    setVideoDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteVideo = async () => {
+    if (!user?.userId || !videoToDelete) return;
+    
+    setVideoDeleteConfirmOpen(false);
+    setDeletingVideoId(videoToDelete.videoId);
+    
+    try {
+      await videosApi.deleteVideo(user.userId, videoToDelete.videoId);
+      
+      // Remove from local state
+      setVideos(prev => prev.filter(v => v.videoId !== videoToDelete.videoId));
+      
+      setNotification({
+        open: true,
+        message: `Video deleted`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to delete video',
+        severity: 'error'
+      });
+    } finally {
+      setDeletingVideoId(null);
+      setVideoToDelete(null);
+    }
+  };
+
+  const handleVideoMenuClick = (event: React.MouseEvent<HTMLElement>, video: Video) => {
+    event.stopPropagation();
+    setVideoMenuAnchorEl(event.currentTarget);
+    setMenuVideo(video);
+  };
+
+  const handleVideoMenuClose = () => {
+    setVideoMenuAnchorEl(null);
+    setMenuVideo(null);
   };
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
@@ -1223,25 +1276,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 // Default to portrait (9:16) if not specified
                 const isLandscape = video.aspectRatio === 'landscape';
                 const videoAspectRatio = isLandscape ? '16/9' : '9/16';
+                const isDeleting = deletingVideoId === video.videoId;
                 
                 return (
-                <Paper
+                <Box
                   key={video.videoId}
                   onClick={() => video.status === 'completed' && handleWatchVideo(video)}
                   sx={{
                     position: 'relative',
                     aspectRatio: videoAspectRatio,
-                    borderRadius: 2,
+                    borderRadius: '20px',
                     overflow: 'hidden',
                     cursor: video.status === 'completed' ? 'pointer' : 'default',
-                    border: '1px solid rgba(0,0,0,0.08)',
                     transition: 'all 0.3s ease',
-                    // Landscape videos take up the same column width but less height
-                    gridColumn: isLandscape ? 'span 1' : 'span 1',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    opacity: isDeleting ? 0.5 : 1,
                     '&:hover': video.status === 'completed' ? {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 24px rgba(0,122,255,0.2)',
-                      borderColor: '#007AFF',
+                      transform: 'translateY(-4px) scale(1.02)',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
                     } : {},
                   }}
                 >
@@ -1255,7 +1307,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'linear-gradient(135deg, rgba(0,122,255,0.1), rgba(88,86,214,0.1))',
+                        background: 'linear-gradient(135deg, rgba(0,122,255,0.08), rgba(90,200,250,0.08))',
+                        borderRadius: '20px',
                       }}
                     >
                       <CircularProgress 
@@ -1264,7 +1317,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         variant={video.progress ? 'determinate' : 'indeterminate'}
                         value={video.progress || 0}
                       />
-                      <Typography variant="caption" sx={{ color: '#007AFF', fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ color: '#007AFF', fontWeight: 600, px: 2, textAlign: 'center' }}>
                         {video.progressMessage || 'Creating video...'}
                       </Typography>
                       {video.progress && (
@@ -1282,10 +1335,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'linear-gradient(135deg, rgba(255,59,48,0.1), rgba(255,149,0,0.1))',
+                        background: 'linear-gradient(135deg, rgba(0,0,0,0.02), rgba(0,0,0,0.04))',
+                        borderRadius: '20px',
                       }}
                     >
-                      <Typography variant="caption" sx={{ color: '#FF3B30', fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ color: '#FF3B30', fontWeight: 600, mb: 2 }}>
                         Failed to generate
                       </Typography>
                     </Box>
@@ -1306,79 +1360,76 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         }}
                       />
                       
-                      {/* Play Icon Overlay */}
-                      <Box
+                      {/* Play Icon Overlay - Always visible centered */}
+                      <IconButton
                         sx={{
                           position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: 'rgba(0,0,0,0.3)',
-                          opacity: 0,
-                          transition: 'opacity 0.2s ease',
-                          '&:hover': {
-                            opacity: 1,
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          background: '#fff',
+                          color: '#007AFF',
+                          width: 52,
+                          height: 52,
+                          border: '1px solid rgba(0,0,0,0.08)',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                          transition: 'all 0.2s ease',
+                          '&:hover': { 
+                            background: '#fff', 
+                            transform: 'translate(-50%, -50%) translateY(-2px) scale(1.05)',
+                            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
                           },
                         }}
                       >
-                        <Box
-                          sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: '50%',
-                            background: 'rgba(255,255,255,0.95)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#007AFF', ml: 0.5 }} />
-                        </Box>
-                      </Box>
+                        <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#007AFF' }} />
+                      </IconButton>
                     </>
                   )}
                   
-                  {/* Title Gradient Overlay */}
-                  <Box
+                  {/* More Menu Button - Top right */}
+                  <IconButton
+                    onClick={(e) => handleVideoMenuClick(e, video)}
                     sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      background: 'rgba(0,0,0,0.3)',
+                      backdropFilter: 'blur(10px)',
+                      color: '#fff',
+                      width: 32,
+                      height: 32,
+                      '&:hover': {
+                        background: 'rgba(0,0,0,0.5)',
+                      },
+                    }}
+                  >
+                    {isDeleting ? (
+                      <CircularProgress size={16} sx={{ color: '#fff' }} />
+                    ) : (
+                      <MoreVertIcon sx={{ fontSize: 18 }} />
+                    )}
+                  </IconButton>
+                  
+                  {/* Info overlay at bottom with dark gradient */}
+                  <Box 
+                    sx={{ 
                       position: 'absolute',
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                      p: 2,
+                      p: 1.5,
                       pt: 4,
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
                     }}
                   >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#fff',
-                        fontWeight: 600,
-                        fontSize: '0.85rem',
-                        lineHeight: 1.2,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {video.songTitle || 'Music Video'}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: 'rgba(255,255,255,0.7)',
-                        fontSize: '0.7rem',
-                        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                      }}
-                    >
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
                       {new Date(video.createdAt).toLocaleDateString()}
                     </Typography>
                   </Box>
-                </Paper>
+                </Box>
               );
               })}
             </Box>
@@ -1636,6 +1687,126 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               background: '#FF3B30',
               '&:hover': {
                 background: '#E53528',
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Video Actions Menu */}
+      <Menu
+        anchorEl={videoMenuAnchorEl}
+        open={Boolean(videoMenuAnchorEl)}
+        onClose={handleVideoMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            minWidth: 160,
+          }
+        }}
+      >
+        {menuVideo?.status === 'completed' && (
+          <MenuItem 
+            onClick={() => {
+              if (menuVideo) handleWatchVideo(menuVideo);
+              handleVideoMenuClose();
+            }}
+          >
+            <ListItemIcon>
+              <PlayArrowRoundedIcon sx={{ color: '#007AFF' }} />
+            </ListItemIcon>
+            <ListItemText>Watch</ListItemText>
+          </MenuItem>
+        )}
+        <MenuItem 
+          onClick={() => {
+            if (menuVideo) handleDeleteVideo(menuVideo);
+            handleVideoMenuClose();
+          }}
+          sx={{ color: '#FF3B30' }}
+        >
+          <ListItemIcon>
+            <DeleteIcon sx={{ color: '#FF3B30' }} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Video Delete Confirmation Dialog */}
+      <Dialog
+        open={videoDeleteConfirmOpen}
+        onClose={() => {
+          setVideoDeleteConfirmOpen(false);
+          setVideoToDelete(null);
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            minWidth: 340,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1, 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1.5,
+        }}>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              background: 'rgba(255,59,48,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <DeleteIcon sx={{ color: '#FF3B30', fontSize: 24 }} />
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Delete Video?
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#86868B' }}>
+            Are you sure you want to delete this video? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => {
+              setVideoDeleteConfirmOpen(false);
+              setVideoToDelete(null);
+            }}
+            variant="outlined"
+            sx={{
+              flex: 1,
+              borderRadius: 2,
+              textTransform: 'none',
+              borderColor: 'rgba(0,0,0,0.15)',
+              color: '#1D1D1F',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDeleteVideo}
+            variant="contained"
+            sx={{
+              flex: 1,
+              borderRadius: 2,
+              textTransform: 'none',
+              background: '#007AFF',
+              '&:hover': {
+                background: '#0066DD',
               },
             }}
           >
