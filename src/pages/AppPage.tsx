@@ -681,10 +681,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               }} 
             />
           </Box>
+          {/* Mobile: Icon button */}
           <Tooltip title="Create New Song" arrow>
             <IconButton
               onClick={() => navigate('/create?tab=song')}
               sx={{
+                display: { xs: 'flex', md: 'none' },
                 background: '#007AFF',
                 color: '#fff',
                 width: 32,
@@ -699,6 +701,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <AddIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Tooltip>
+          {/* Desktop: Full button */}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/create?tab=song')}
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              background: '#007AFF',
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 2,
+              py: 0.75,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': {
+                background: '#0066CC',
+              },
+            }}
+          >
+            Create New
+          </Button>
         </Box>
 
         {/* Tracklist */}
@@ -716,12 +739,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             ))}
           </Box>
         ) : songs.length === 0 ? (
-          <Box sx={{ py: 8, textAlign: 'center' }}>
+          <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
             <MusicNoteIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
             <Typography variant="h6" color="text.secondary">
               No songs yet
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
               Create your first song to get started
             </Typography>
             <Button
@@ -1135,10 +1158,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 }} 
               />
             </Box>
+            {/* Mobile: Icon button */}
             <Tooltip title="Create New Video" arrow>
               <IconButton
                 onClick={() => navigate('/create?tab=video')}
                 sx={{
+                  display: { xs: 'flex', md: 'none' },
                   background: '#007AFF',
                   color: '#fff',
                   width: 32,
@@ -1152,6 +1177,28 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               >
                 <AddIcon sx={{ fontSize: 18 }} />
               </IconButton>
+            </Tooltip>
+            {/* Desktop: Full button */}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/create?tab=video')}
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                background: '#007AFF',
+                borderRadius: '12px',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 2,
+                py: 0.75,
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                },
+              }}
+            >
+              Create New
+            </Button>
             </Tooltip>
           </Box>
           
@@ -1338,12 +1385,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               ))}
             </Box>
           ) : (
-            <Box sx={{ py: 8, textAlign: 'center' }}>
+            <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
               <VideoLibraryIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
               <Typography variant="h6" color="text.secondary">
                 No music videos yet
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
                 Create a song first, then generate a music video from it
               </Typography>
               <Button
