@@ -33,6 +33,7 @@ import { charactersApi } from '../services/api';
 const characterKindOptions = [
   { id: 'Human', label: 'Human', icon: '👤' },
   { id: 'Non-Human', label: 'Non-Human', icon: '🐾' },
+  { id: 'Product', label: 'Product', icon: '📦' },
 ];
 
 // Gender options
@@ -168,7 +169,9 @@ const CreateCharacterPage: React.FC = () => {
         const desc = character.description || '';
         
         // Check for character kind
-        if (desc.includes('Non-Human')) {
+        if (desc.includes('Product')) {
+          setCharacterKind('Product');
+        } else if (desc.includes('Non-Human')) {
           setCharacterKind('Non-Human');
         }
         
@@ -312,12 +315,18 @@ const CreateCharacterPage: React.FC = () => {
         : [];
 
       // Build description from character attributes
-      const fullDescription = [
-        characterDescription,
-        `${characterKind}, ${characterGender}, ${characterAge}`,
-        `Hair: ${characterHairColor}, ${characterHairLength}`,
-        `Eyes: ${characterEyeColor}`,
-      ].filter(Boolean).join('. ');
+      // Product type doesn't have age, gender, hair, eye color
+      const fullDescription = characterKind === 'Product'
+        ? [
+            characterDescription,
+            `Product`,
+          ].filter(Boolean).join('. ')
+        : [
+            characterDescription,
+            `${characterKind}, ${characterGender}, ${characterAge}`,
+            `Hair: ${characterHairColor}, ${characterHairLength}`,
+            `Eyes: ${characterEyeColor}`,
+          ].filter(Boolean).join('. ');
 
       if (isEditMode && characterId) {
         // Update existing character
@@ -490,7 +499,7 @@ const CreateCharacterPage: React.FC = () => {
             Kind of Character
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Choose whether your character is human or non-human (animals, fantasy creatures, etc.)
+            Choose the type of character: human, non-human (animals, fantasy creatures), or product
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {characterKindOptions.map((kind) => (
@@ -504,36 +513,38 @@ const CreateCharacterPage: React.FC = () => {
           </Box>
         </Paper>
 
-        {/* Gender */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Gender
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Select the gender identity for your character
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {genderOptions.map((gender) => (
-              <Chip
-                key={gender.id}
-                label={`${gender.icon} ${gender.label}`}
-                onClick={() => setCharacterGender(gender.id)}
-                sx={getChipSx(characterGender === gender.id)}
-              />
-            ))}
-          </Box>
-        </Paper>
+        {/* Gender - Only for Human and Non-Human */}
+        {characterKind !== 'Product' && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              mb: 3,
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+              Gender
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+              Select the gender identity for your character
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {genderOptions.map((gender) => (
+                <Chip
+                  key={gender.id}
+                  label={`${gender.icon} ${gender.label}`}
+                  onClick={() => setCharacterGender(gender.id)}
+                  sx={getChipSx(characterGender === gender.id)}
+                />
+              ))}
+            </Box>
+          </Paper>
+        )}
 
         {/* Hair Color - Only for humans */}
         {characterKind === 'Human' && (
@@ -625,71 +636,74 @@ const CreateCharacterPage: React.FC = () => {
           </Paper>
         )}
 
-        {/* Eye Color */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Eye Color
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Pick the eye color for your character
-          </Typography>
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={() => setEyeColorPickerOpen(true)}
+        {/* Eye Color - Only for Human and Non-Human */}
+        {characterKind !== 'Product' && (
+          <Paper
+            elevation={0}
             sx={{
-              justifyContent: 'space-between',
-              py: 1.5,
-              px: 2,
-              borderRadius: '12px',
-              borderColor: 'rgba(0,0,0,0.15)',
-              color: '#1D1D1F',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
+              p: 3,
+              mb: 3,
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box component="img" src={eyeColorOptions.find(e => e.id === characterEyeColor)?.image} alt={characterEyeColor} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
-              {eyeColorOptions.find(e => e.id === characterEyeColor)?.label}
-            </Box>
-            <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-          </Button>
-        </Paper>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+              Eye Color
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+              Pick the eye color for your character
+            </Typography>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => setEyeColorPickerOpen(true)}
+              sx={{
+                justifyContent: 'space-between',
+                py: 1.5,
+                px: 2,
+                borderRadius: '12px',
+                borderColor: 'rgba(0,0,0,0.15)',
+                color: '#1D1D1F',
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box component="img" src={eyeColorOptions.find(e => e.id === characterEyeColor)?.image} alt={characterEyeColor} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
+                {eyeColorOptions.find(e => e.id === characterEyeColor)?.label}
+              </Box>
+              <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
+            </Button>
+          </Paper>
+        )}
 
-        {/* Age */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Age
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Select the age range for your character
-          </Typography>
-          <Button
-            fullWidth
-            variant="outlined"
+        {/* Age - Only for Human and Non-Human */}
+        {characterKind !== 'Product' && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              mb: 3,
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+              Age
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+              Select the age range for your character
+            </Typography>
+            <Button
+              fullWidth
+              variant="outlined"
             onClick={() => setAgePickerOpen(true)}
             sx={{
               justifyContent: 'space-between',
@@ -705,8 +719,9 @@ const CreateCharacterPage: React.FC = () => {
           >
             {ageOptions.find(a => a.id === characterAge)?.label}
             <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-          </Button>
-        </Paper>
+            </Button>
+          </Paper>
+        )}
 
         {/* Reference Images */}
         <Paper
