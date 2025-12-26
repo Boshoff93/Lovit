@@ -466,7 +466,15 @@ const MusicVideoPlayer: React.FC = () => {
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
                 {songData?.genre && (
                   <Chip
-                    icon={<MusicNote sx={{ fontSize: 16 }} />}
+                    icon={
+                      <Box
+                        component="img"
+                        src={`/genres/${songData.genre.toLowerCase().replace(/\s+/g, '-').replace('r&b', 'rnb')}.jpeg`}
+                        alt={songData.genre}
+                        sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover', ml: 0.5 }}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    }
                     label={songData.genre}
                     size="small"
                     sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
@@ -474,6 +482,15 @@ const MusicVideoPlayer: React.FC = () => {
                 )}
                 {songData?.mood && (
                   <Chip
+                    icon={
+                      <Box
+                        component="img"
+                        src={`/moods/${songData.mood.toLowerCase()}.jpeg`}
+                        alt={songData.mood}
+                        sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover', ml: 0.5 }}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    }
                     label={songData.mood}
                     size="small"
                     sx={{ background: 'rgba(88,86,214,0.1)', color: '#5856D6' }}
@@ -481,7 +498,7 @@ const MusicVideoPlayer: React.FC = () => {
                 )}
                 {videoData.videoType && (
                   <Chip
-                    icon={<Movie sx={{ fontSize: 16 }} />}
+                    icon={<Movie sx={{ fontSize: 16, color: '#FF9500' }} />}
                     label={videoData.videoType === 'still' ? 'Still' : 'Cinematic'}
                     size="small"
                     sx={{ background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
