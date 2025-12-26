@@ -1507,7 +1507,11 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 {selectedSong 
-                  ? songs.find(s => s.songId === selectedSong)?.songTitle + ' (' + songs.find(s => s.songId === selectedSong)?.genre + ')' 
+                  ? (isLoadingSongs 
+                      ? 'Loading songs...'
+                      : (songs.find(s => s.songId === selectedSong)?.songTitle 
+                          ? `${songs.find(s => s.songId === selectedSong)?.songTitle} (${songs.find(s => s.songId === selectedSong)?.genre})`
+                          : 'Song not found'))
                   : 'Choose a song from your library'}
                 <KeyboardArrowDownIcon sx={{ color: '#86868B', ml: 1 }} />
               </Button>
@@ -2157,7 +2161,7 @@ const CreatePage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                     <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF', flexShrink: 0 }} />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected'}
+                      {isLoadingSongs ? 'Loading...' : (songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected')}
                     </Typography>
                   </Box>
                 </Box>
