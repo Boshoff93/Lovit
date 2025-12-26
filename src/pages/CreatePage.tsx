@@ -1959,12 +1959,15 @@ const CreatePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography sx={{ fontSize: '1.2rem' }}>📐</Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                   Aspect Ratio
                 </Typography>
               </Box>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+                Choose the format for your music video
+              </Typography>
               
               <ToggleButtonGroup
                 value={aspectRatio}
@@ -1973,92 +1976,77 @@ const CreatePage: React.FC = () => {
                   if (newValue !== null) setAspectRatio(newValue);
                 }}
                 fullWidth
+                orientation="vertical"
                 sx={{
                   gap: 1.5,
-                  '& .MuiToggleButtonGroup-grouped': {
-                    border: 'none !important',
-                    borderRadius: '16px !important',
-                    m: 0,
-                  },
+                  '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '16px !important', m: 0 },
                 }}
               >
                 <ToggleButton
                   value="portrait"
                   sx={{
-                    flex: 1,
                     py: 2,
-                    px: 2,
-                    flexDirection: 'column',
-                    gap: 0.5,
+                    px: 2.5,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    gap: 2,
                     textTransform: 'none',
-                    background: aspectRatio === 'portrait' 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
-                      : 'rgba(0,0,0,0.03)',
-                    color: aspectRatio === 'portrait' ? '#fff' : '#1D1D1F',
-                    border: aspectRatio === 'portrait' 
-                      ? '2px solid transparent' 
-                      : '2px solid rgba(0,0,0,0.08)',
-                    boxShadow: aspectRatio === 'portrait' 
-                      ? '0 4px 16px rgba(0,122,255,0.3)' 
-                      : 'none',
+                    background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
+                    color: '#1D1D1F',
+                    border: aspectRatio === 'portrait' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: aspectRatio === 'portrait' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      background: aspectRatio === 'portrait' 
-                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
-                        : 'rgba(0,0,0,0.06)',
+                    '&:hover': { 
+                      background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
+                      borderColor: aspectRatio === 'portrait' ? '#007AFF' : 'rgba(0,0,0,0.15)',
                     },
-                    '&.Mui-selected': {
-                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                      color: '#fff',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
-                      },
+                    '&.Mui-selected': { 
+                      background: 'rgba(0,122,255,0.08)', 
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
                 >
-                  <Typography sx={{ fontSize: '1.5rem' }}>📱</Typography>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>Portrait</Typography>
-                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>9:16</Typography>
-                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>Best for mobile & TikTok</Typography>
+                  <Typography sx={{ fontSize: '1.5rem', flexShrink: 0 }}>📱</Typography>
+                  <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#1D1D1F' }}>Portrait</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>9:16 • Best for mobile & TikTok</Typography>
+                  </Box>
                 </ToggleButton>
                 <ToggleButton
                   value="landscape"
                   sx={{
-                    flex: 1,
                     py: 2,
-                    px: 2,
-                    flexDirection: 'column',
-                    gap: 0.5,
+                    px: 2.5,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    gap: 2,
                     textTransform: 'none',
-                    background: aspectRatio === 'landscape' 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
-                      : 'rgba(0,0,0,0.03)',
-                    color: aspectRatio === 'landscape' ? '#fff' : '#1D1D1F',
-                    border: aspectRatio === 'landscape' 
-                      ? '2px solid transparent' 
-                      : '2px solid rgba(0,0,0,0.08)',
-                    boxShadow: aspectRatio === 'landscape' 
-                      ? '0 4px 16px rgba(0,122,255,0.3)' 
-                      : 'none',
+                    background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
+                    color: '#1D1D1F',
+                    border: aspectRatio === 'landscape' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: aspectRatio === 'landscape' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      background: aspectRatio === 'landscape' 
-                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
-                        : 'rgba(0,0,0,0.06)',
+                    '&:hover': { 
+                      background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
+                      borderColor: aspectRatio === 'landscape' ? '#007AFF' : 'rgba(0,0,0,0.15)',
                     },
-                    '&.Mui-selected': {
-                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                      color: '#fff',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
-                      },
+                    '&.Mui-selected': { 
+                      background: 'rgba(0,122,255,0.08)', 
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
                 >
-                  <Typography sx={{ fontSize: '1.5rem' }}>🖥️</Typography>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>Landscape</Typography>
-                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>16:9</Typography>
-                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>Best for YouTube & TV</Typography>
+                  <Typography sx={{ fontSize: '1.5rem', flexShrink: 0 }}>🖥️</Typography>
+                  <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#1D1D1F' }}>Landscape</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>16:9 • Best for YouTube & TV</Typography>
+                  </Box>
                 </ToggleButton>
               </ToggleButtonGroup>
             </Paper>
