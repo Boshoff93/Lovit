@@ -1298,16 +1298,21 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   {/* Thumbnail or Processing State */}
                   {video.status === 'processing' ? (
                     <>
-                      {/* Clean loading background - soft gradient */}
+                      {/* Octopus loading thumbnail - use portrait/landscape based on aspect ratio */}
                       <Box
+                        component="img"
+                        src={video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'}
+                        alt="Creating your video..."
                         sx={{
                           position: 'absolute',
                           inset: 0,
-                          background: 'linear-gradient(145deg, #E8F4FD 0%, #F5F9FF 50%, #E0EFFF 100%)',
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
                         }}
                       />
                       
-                      {/* Centered content - progress + message */}
+                      {/* Overlay for progress indicator */}
                       <Box
                         sx={{
                           position: 'absolute',
@@ -1315,52 +1320,54 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 2,
-                          p: 2,
+                          justifyContent: 'flex-end',
+                          pb: 3,
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)',
                         }}
                       >
-                        <CircularProgress 
-                          size={44} 
-                          sx={{ 
-                            color: '#007AFF',
-                            '& .MuiCircularProgress-circle': {
-                              strokeLinecap: 'round',
-                            },
-                          }} 
-                          variant={video.progress ? 'determinate' : 'indeterminate'}
-                          value={video.progress || 0}
-                        />
-                        <Typography 
-                          sx={{ 
-                            fontSize: '0.75rem', 
-                            fontWeight: 600, 
-                            color: '#007AFF',
-                            textAlign: 'center',
-                            px: 1,
-                          }}
-                        >
-                          {video.progressMessage || 'Creating...'}
-                        </Typography>
-                        {video.progress !== undefined && video.progress > 0 && (
-                          <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                            {video.progress}%
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <CircularProgress 
+                            size={20} 
+                            sx={{ 
+                              color: '#fff',
+                              '& .MuiCircularProgress-circle': {
+                                strokeLinecap: 'round',
+                              },
+                            }} 
+                            variant={video.progress ? 'determinate' : 'indeterminate'}
+                            value={video.progress || 0}
+                          />
+                          <Typography 
+                            sx={{ 
+                              fontSize: '0.75rem', 
+                              fontWeight: 600, 
+                              color: '#fff',
+                              textShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                            }}
+                          >
+                            {video.progressMessage || 'Creating...'} {video.progress ? `${video.progress}%` : ''}
                           </Typography>
-                        )}
+                        </Box>
                       </Box>
                     </>
                   ) : video.status === 'failed' ? (
                     <>
-                      {/* Failed state - gray background */}
+                      {/* Failed thumbnail - grayscale octopus */}
                       <Box
+                        component="img"
+                        src={video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'}
+                        alt="Failed to generate"
                         sx={{
                           position: 'absolute',
                           inset: 0,
-                          background: 'linear-gradient(145deg, #F5F5F5 0%, #EBEBEB 100%)',
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          filter: 'grayscale(100%) brightness(0.7)',
                         }}
                       />
                       
-                      {/* Centered content */}
+                      {/* Centered error indicator */}
                       <Box
                         sx={{
                           position: 'absolute',
@@ -1369,29 +1376,29 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: 1.5,
-                          p: 2,
+                          gap: 1,
                         }}
                       >
                         <Box
                           sx={{
                             background: '#FF3B30',
                             borderRadius: '50%',
-                            width: 44,
-                            height: 44,
+                            width: 48,
+                            height: 48,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                           }}
                         >
-                          <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 600 }}>✕</Typography>
+                          <Typography sx={{ color: '#fff', fontSize: 22, fontWeight: 600 }}>✕</Typography>
                         </Box>
                         <Typography 
                           sx={{ 
-                            fontSize: '0.75rem', 
+                            fontSize: '0.8rem', 
                             fontWeight: 600, 
-                            color: '#FF3B30',
-                            textAlign: 'center',
+                            color: '#fff',
+                            textShadow: '0 1px 4px rgba(0,0,0,0.5)',
                           }}
                         >
                           Failed
