@@ -1289,20 +1289,21 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     } : {},
                   }}
                 >
-                  {/* Thumbnail Image - Same structure for all states */}
+                  {/* Thumbnail Image - Different images for each state */}
                   <Box
                     component="img"
                     src={
                       video.status === 'completed' 
                         ? (video.thumbnailUrl || '/gruvi.png')
-                        : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
+                        : video.status === 'failed'
+                          ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
+                          : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
                     }
                     alt={video.songTitle || 'Music Video'}
                     sx={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
-                      filter: video.status === 'failed' ? 'grayscale(100%) brightness(0.7)' : 'none',
                     }}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       e.currentTarget.src = '/gruvi.png';
