@@ -221,7 +221,7 @@ const artStyles = [
 ];
 
 // Video types and quality options
-// Token costs: Still = 40, Standard = 200, Professional = 200
+// Token costs: Still = 40, Standard = 200
 const videoTypes = [
   { 
     id: 'still', 
@@ -238,14 +238,6 @@ const videoTypes = [
     description: 'Animated video',
     tooltip: 'Powered by Seedance AI. Brings your scenes to life with fluid motion and animations.',
     icon: AnimationIcon,
-  },
-  { 
-    id: 'professional', 
-    label: 'Professional', 
-    credits: 2000, 
-    description: 'Premium AI animated video',
-    tooltip: 'Powered by Kling 1.0 AI. Cinema-quality animations with the most realistic motion and detail.',
-    icon: MovieIcon,
   },
 ];
 
@@ -354,7 +346,6 @@ const CreatePage: React.FC = () => {
   const VIDEO_COSTS: Record<string, number> = {
     'still': 40,
     'standard': 200,
-    'professional': 2000,
   };
   
   // Check if user has enough tokens
@@ -645,7 +636,7 @@ const CreatePage: React.FC = () => {
       const response = await videosApi.generateVideo({
         userId: user.userId,
         songId: selectedSong,
-        videoType: videoType as 'still' | 'standard' | 'professional',
+        videoType: videoType as 'still' | 'standard',
         style: selectedStyle,
         videoPrompt: videoPrompt.trim(),
         aspectRatio,
