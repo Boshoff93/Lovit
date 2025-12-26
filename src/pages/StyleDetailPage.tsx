@@ -10,6 +10,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
@@ -55,9 +57,17 @@ const styleSampleVideos: Record<string, Array<{id: number; title: string; views:
 const StyleDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { styleId } = useParams<{ styleId: string }>();
-
-  // Find the current style data
+  const { user } = useSelector((state: RootState) => state.auth);
   const { currentSong } = useAudioPlayer();
+
+  // Handle create button click - navigate to create page or login
+  const handleCreateClick = () => {
+    if (user?.userId) {
+      navigate('/create?tab=video');
+    } else {
+      navigate('/login');
+    }
+  };
   
   const currentStyle = useMemo(() => {
     return artStyleData.find(style => style.id === styleId);
@@ -212,7 +222,7 @@ const StyleDetailPage: React.FC = () => {
           {/* CTA Button */}
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
               background: 'rgba(0,0,0,0.9)',
@@ -439,7 +449,7 @@ const StyleDetailPage: React.FC = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             sx={{
               background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
               backdropFilter: 'blur(20px)',
@@ -458,7 +468,7 @@ const StyleDetailPage: React.FC = () => {
               },
             }}
           >
-            Get Started Free
+            {user?.userId ? 'Create Music Video' : 'Get Started Free'}
           </Button>
         </Box>
       </Container>

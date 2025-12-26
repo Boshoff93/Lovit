@@ -12,6 +12,8 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 
 // Mood data with detailed information
@@ -57,10 +59,20 @@ const moodSampleTracks: Record<string, Array<{id: number; title: string; duratio
 const MoodDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { moodId } = useParams<{ moodId: string }>();
+  const { user } = useSelector((state: RootState) => state.auth);
   
   // Check if audio player is active to add bottom padding
   const { currentSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
+
+  // Handle create button click - navigate to create page or login
+  const handleCreateClick = () => {
+    if (user?.userId) {
+      navigate('/create?tab=song');
+    } else {
+      navigate('/login');
+    }
+  };
 
   // Find the current mood data
   const currentMood = useMemo(() => {
@@ -217,7 +229,7 @@ const MoodDetailPage: React.FC = () => {
           {/* CTA Button */}
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
               background: 'rgba(0,0,0,0.9)',
@@ -447,7 +459,7 @@ const MoodDetailPage: React.FC = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate('/')}
+            onClick={handleCreateClick}
             sx={{
               background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
               backdropFilter: 'blur(20px)',
@@ -466,7 +478,7 @@ const MoodDetailPage: React.FC = () => {
               },
             }}
           >
-            Get Started Free
+            {user?.userId ? 'Create Music' : 'Get Started Free'}
           </Button>
         </Box>
       </Container>
