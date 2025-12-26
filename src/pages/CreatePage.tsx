@@ -410,6 +410,12 @@ const CreatePage: React.FC = () => {
   const [showVideoPromptError, setShowVideoPromptError] = useState(false);
   const [showSongSelectionError, setShowSongSelectionError] = useState(false);
   
+  // Character autocomplete state
+  const [showCharacterSuggestions, setShowCharacterSuggestions] = useState(false);
+  const [characterSearchQuery, setCharacterSearchQuery] = useState('');
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const videoPromptRef = useRef<HTMLTextAreaElement>(null);
+  
   // Character creation state
   const [characterName, setCharacterName] = useState('');
   const [characterDescription, setCharacterDescription] = useState('');
@@ -516,6 +522,59 @@ const CreatePage: React.FC = () => {
       setVideoPrompt(prev => prev + ` @${name} `);
     }
   };
+
+  // Handle video prompt change with @ detection
+  const handleVideoPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const selectionStart = e.target.selectionStart || 0;
+    
+    setVideoPrompt(value);
+    setCursorPosition(selectionStart);
+    if (value.trim()) setShowVideoPromptError(false);
+    
+    // Check if user just typed @ or is typing after @
+    const textBeforeCursor = value.slice(0, selectionStart);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
+      // Show suggestions if there's no space after @ (still typing the mention)
+      if (!textAfterAt.includes(' ')) {
+        setCharacterSearchQuery(textAfterAt.toLowerCase());
+        setShowCharacterSuggestions(true);
+        return;
+      }
+    }
+    setShowCharacterSuggestions(false);
+    setCharacterSearchQuery('');
+  };
+
+  // Insert character from autocomplete
+  const insertCharacterAutocomplete = (name: string) => {
+    const textBeforeCursor = videoPrompt.slice(0, cursorPosition);
+    const textAfterCursor = videoPrompt.slice(cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const newText = textBeforeCursor.slice(0, lastAtIndex) + `@${name} ` + textAfterCursor;
+      setVideoPrompt(newText);
+    } else {
+      setVideoPrompt(prev => prev + `@${name} `);
+    }
+    
+    setShowCharacterSuggestions(false);
+    setCharacterSearchQuery('');
+    
+    // Focus back on textarea
+    setTimeout(() => {
+      videoPromptRef.current?.focus();
+    }, 0);
+  };
+
+  // Filter characters based on search query
+  const filteredCharacters = characters.filter(char => 
+    char.characterName.toLowerCase().includes(characterSearchQuery)
+  );
 
   // Song generation handler
   const handleGenerateSong = async () => {
@@ -1610,28 +1669,109 @@ const CreatePage: React.FC = () => {
                 )}
               </Box>
               
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                placeholder="Describe the scenes, setting, and story for your music video..."
-                value={videoPrompt}
-                onChange={(e) => {
-                  setVideoPrompt(e.target.value);
-                  if (e.target.value.trim()) setShowVideoPromptError(false);
-                }}
-                error={showVideoPromptError && !videoPrompt.trim()}
-                helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '16px',
-                    background: '#fff',
-                    '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                    '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#007AFF' },
-                  },
-                }}
-              />
+              <Box sx={{ position: 'relative' }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  placeholder="Describe the scenes, setting, and story for your music video... Type @ to mention a character"
+                  value={videoPrompt}
+                  onChange={handleVideoPromptChange}
+                  onBlur={() => setTimeout(() => setShowCharacterSuggestions(false), 200)}
+                  inputRef={videoPromptRef}
+                  error={showVideoPromptError && !videoPrompt.trim()}
+                  helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '16px',
+                      background: '#fff',
+                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
+                      '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                  }}
+                />
+                
+                {/* Character suggestions popup */}
+                {showCharacterSuggestions && filteredCharacters.length > 0 && (
+                  <Paper
+                    elevation={8}
+                    sx={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      mt: 0.5,
+                      zIndex: 1000,
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      maxHeight: 200,
+                      overflowY: 'auto',
+                    }}
+                  >
+                    <Box sx={{ p: 1 }}>
+                      <Typography variant="caption" sx={{ color: '#86868B', px: 1, display: 'block', mb: 0.5 }}>
+                        Select a character
+                      </Typography>
+                      {filteredCharacters.slice(0, 5).map((char) => (
+                        <Box
+                          key={char.characterId}
+                          onClick={() => insertCharacterAutocomplete(char.characterName)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1.5,
+                            p: 1,
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,122,255,0.08)',
+                            },
+                          }}
+                        >
+                          {char.imageUrls?.[0] ? (
+                            <Box
+                              component="img"
+                              src={char.imageUrls[0]}
+                              alt={char.characterName}
+                              sx={{ 
+                                width: 32, 
+                                height: 32, 
+                                borderRadius: '8px', 
+                                objectFit: 'cover',
+                                border: '1px solid rgba(0,0,0,0.1)',
+                              }}
+                            />
+                          ) : (
+                            <Box
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '8px',
+                                backgroundColor: 'rgba(0,122,255,0.1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.8rem' }}>
+                                {char.characterName.charAt(0).toUpperCase()}
+                              </Typography>
+                            </Box>
+                          )}
+                          <Box>
+                            <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1D1D1F' }}>
+                              @{char.characterName}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Paper>
+                )}
+              </Box>
             </Paper>
 
             {/* Visual Style Selection */}
