@@ -1435,20 +1435,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     />
                                   </Tooltip>
                                 ) : (
-                                  <Chip
-                                    label={video.status === 'failed' ? 'Failed' : 'Music Video'}
-                                    size="small"
-                                    sx={{
-                                      background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
-                                      backdropFilter: 'blur(10px)',
-                                      color: '#fff',
-                                      fontSize: '0.7rem',
-                                      fontWeight: 500,
-                                      height: 24,
-                                      borderRadius: '100px',
-                                      border: '1px solid rgba(255,255,255,0.2)',
-                                    }}
-                                  />
+                                  <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
+                                    <Chip
+                                      label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                                      size="small"
+                                      sx={{
+                                        background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                                        backdropFilter: 'blur(10px)',
+                                        color: '#fff',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 500,
+                                        height: 24,
+                                        borderRadius: '100px',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                      }}
+                                    />
+                                  </Tooltip>
                                 )}
                               </Box>
                               
@@ -1605,20 +1607,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     />
                                   </Tooltip>
                                 ) : (
-                                  <Chip
-                                    label={video.status === 'failed' ? 'Failed' : 'Music Video'}
-                                    size="small"
-                                    sx={{
-                                      background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
-                                      backdropFilter: 'blur(10px)',
-                                      color: '#fff',
-                                      fontSize: '0.7rem',
-                                      fontWeight: 500,
-                                      height: 24,
-                                      borderRadius: '100px',
-                                      border: '1px solid rgba(255,255,255,0.2)',
-                                    }}
-                                  />
+                                  <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
+                                    <Chip
+                                      label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                                      size="small"
+                                      sx={{
+                                        background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                                        backdropFilter: 'blur(10px)',
+                                        color: '#fff',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 500,
+                                        height: 24,
+                                        borderRadius: '100px',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                      }}
+                                    />
+                                  </Tooltip>
                                 )}
                               </Box>
                               
