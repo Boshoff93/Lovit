@@ -1422,15 +1422,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                       label={video.progressMessage || 'Creating your video...'}
                                       size="small"
                                       sx={{
-                                        background: 'rgba(0,122,255,0.5)',
+                                        background: 'rgba(255,255,255,0.85)',
                                         backdropFilter: 'blur(10px)',
-                                        color: '#fff',
+                                        color: '#1d1d1f',
                                         fontSize: '0.75rem',
                                         fontWeight: 500,
                                         height: 26,
                                         width: '100%',
                                         borderRadius: '100px',
-                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        border: '1px solid rgba(0,0,0,0.1)',
                                       }}
                                     />
                                   </Tooltip>
@@ -1592,15 +1592,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                       label={video.progressMessage || 'Creating your video...'}
                                       size="small"
                                       sx={{
-                                        background: 'rgba(0,122,255,0.5)',
+                                        background: 'rgba(255,255,255,0.85)',
                                         backdropFilter: 'blur(10px)',
-                                        color: '#fff',
+                                        color: '#1d1d1f',
                                         fontSize: '0.75rem',
                                         fontWeight: 500,
                                         height: 26,
                                         maxWidth: '70%',
                                         borderRadius: '100px',
-                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        border: '1px solid rgba(0,0,0,0.1)',
                                       }}
                                     />
                                   </Tooltip>
