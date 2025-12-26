@@ -303,6 +303,7 @@ const eyeColorOptions = [
 interface Character {
   characterId: string;
   characterName: string;
+  imageUrls?: string[];
 }
 
 // Song interface for video creation
@@ -1531,23 +1532,65 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {characters.map((char) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
+                    {characters.slice(0, 3).map((char) => {
+                      const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
+                      return (
+                        <Tooltip
+                          key={char.characterId}
+                          title={
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 0.5 }}>
+                              {char.imageUrls?.[0] && (
+                                <Box
+                                  component="img"
+                                  src={char.imageUrls[0]}
+                                  alt={char.characterName}
+                                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover' }}
+                                />
+                              )}
+                              <Box>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                  {isInPrompt ? 'Already added' : 'Click to add'}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          }
+                          arrow
+                          placement="top"
+                        >
+                          <Chip
+                            label={`@${char.characterName}`}
+                            onClick={() => insertCharacter(char.characterName)}
+                            size="small"
+                            sx={{
+                              borderRadius: '100px',
+                              background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
+                              color: isInPrompt ? '#34C759' : '#007AFF',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
+                              '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                            }}
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                    {characters.length > 3 && (
                       <Chip
-                        key={char.characterId}
-                        label={`@${char.characterName}`}
-                        onClick={() => insertCharacter(char.characterName)}
+                        label={`+${characters.length - 3} more`}
+                        onClick={() => navigate('/characters')}
                         size="small"
                         sx={{
                           borderRadius: '100px',
-                          background: 'rgba(0,122,255,0.1)',
-                          color: '#007AFF',
+                          background: 'rgba(0,0,0,0.05)',
+                          color: '#86868B',
                           fontWeight: 500,
                           cursor: 'pointer',
-                          '&:hover': { background: 'rgba(0,122,255,0.2)' },
+                          '&:hover': { background: 'rgba(0,0,0,0.1)' },
                         }}
                       />
-                    ))}
+                    )}
                   </Box>
                 ) : (
                   <Chip
@@ -1752,6 +1795,7 @@ const CreatePage: React.FC = () => {
                 exclusive
                 onChange={(_e, v) => v && setVideoType(v)}
                 fullWidth
+                orientation="vertical"
                 sx={{
                   gap: 1.5,
                   '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '16px !important', m: 0 },
@@ -1765,17 +1809,20 @@ const CreatePage: React.FC = () => {
                       key={type.id}
                       title={type.tooltip} 
                       arrow 
-                      placement="top"
+                      placement="right"
                       enterDelay={300}
                       sx={{ maxWidth: 220 }}
                     >
                       <ToggleButton
                         value={type.id}
                         sx={{
-                          flex: 1,
                           py: 2,
-                          flexDirection: 'column',
-                          gap: 1,
+                          px: 2.5,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start',
+                          gap: 2,
                           textTransform: 'none',
                           background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
                           color: '#1D1D1F',
@@ -1793,10 +1840,12 @@ const CreatePage: React.FC = () => {
                           },
                         }}
                       >
-                        <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F' }} />
-                        <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>{type.description}</Typography>
-                        <Chip label={`${type.credits} tokens`} size="small" sx={{ mt: 0.5, fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }} />
+                        <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F', flexShrink: 0 }} />
+                        <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
+                          <Typography sx={{ fontSize: '0.75rem', color: '#86868B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{type.description}</Typography>
+                        </Box>
+                        <Chip label={`${type.credits}`} size="small" sx={{ fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF', flexShrink: 0 }} />
                       </ToggleButton>
                     </Tooltip>
                   );
