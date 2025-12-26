@@ -1298,32 +1298,30 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   {/* Thumbnail or Processing State */}
                   {video.status === 'processing' ? (
                     <>
-                      {/* Loading thumbnail image - matches HomePage card style */}
-                      <Box
-                        component="img"
-                        src="/video-loading.svg"
-                        alt="Creating your video..."
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      
-                      {/* Animated progress indicator - centered like play button */}
+                      {/* Clean loading background - soft gradient */}
                       <Box
                         sx={{
                           position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
+                          inset: 0,
+                          background: 'linear-gradient(145deg, #E8F4FD 0%, #F5F9FF 50%, #E0EFFF 100%)',
+                        }}
+                      />
+                      
+                      {/* Centered content - progress + message */}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          inset: 0,
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 2,
+                          p: 2,
                         }}
                       >
                         <CircularProgress 
-                          size={48} 
+                          size={44} 
                           sx={{ 
                             color: '#007AFF',
                             '& .MuiCircularProgress-circle': {
@@ -1333,116 +1331,71 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           variant={video.progress ? 'determinate' : 'indeterminate'}
                           value={video.progress || 0}
                         />
-                      </Box>
-                      
-                      {/* Info overlay at bottom with dark gradient - matches HomePage */}
-                      <Box 
-                        sx={{ 
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          p: 1.5,
-                          pt: 4,
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                        }}
-                      >
-                        <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {video.songTitle || 'Creating Video...'}
+                        <Typography 
+                          sx={{ 
+                            fontSize: '0.75rem', 
+                            fontWeight: 600, 
+                            color: '#007AFF',
+                            textAlign: 'center',
+                            px: 1,
+                          }}
+                        >
+                          {video.progressMessage || 'Creating...'}
                         </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Chip
-                            label={video.progressMessage || 'Generating...'}
-                            size="small"
-                            sx={{
-                              background: 'rgba(0,122,255,0.4)',
-                              backdropFilter: 'blur(10px)',
-                              color: '#fff',
-                              fontSize: '0.65rem',
-                              fontWeight: 500,
-                              height: 22,
-                              maxWidth: '70%',
-                              borderRadius: '100px',
-                              border: '1px solid rgba(255,255,255,0.2)',
-                              '& .MuiChip-label': {
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }
-                            }}
-                          />
-                          <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
-                            {video.progress || 0}%
+                        {video.progress !== undefined && video.progress > 0 && (
+                          <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                            {video.progress}%
                           </Typography>
-                        </Box>
+                        )}
                       </Box>
                     </>
                   ) : video.status === 'failed' ? (
                     <>
-                      {/* Failed thumbnail - grayed out loading image */}
+                      {/* Failed state - gray background */}
                       <Box
-                        component="img"
-                        src="/video-loading.svg"
-                        alt="Failed to generate"
                         sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          filter: 'grayscale(100%) opacity(0.5)',
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(145deg, #F5F5F5 0%, #EBEBEB 100%)',
                         }}
                       />
                       
-                      {/* Error icon centered */}
+                      {/* Centered content */}
                       <Box
                         sx={{
                           position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          background: 'rgba(255,59,48,0.9)',
-                          borderRadius: '50%',
-                          width: 52,
-                          height: 52,
+                          inset: 0,
                           display: 'flex',
+                          flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          boxShadow: '0 4px 16px rgba(255,59,48,0.3)',
+                          gap: 1.5,
+                          p: 2,
                         }}
                       >
-                        <Typography sx={{ color: '#fff', fontSize: 24, fontWeight: 600 }}>✕</Typography>
-                      </Box>
-                      
-                      {/* Info overlay at bottom */}
-                      <Box 
-                        sx={{ 
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          p: 1.5,
-                          pt: 4,
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                        }}
-                      >
-                        <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {video.songTitle || 'Video'}
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Chip
-                            label="Failed - Tap to delete"
-                            size="small"
-                            sx={{
-                              background: 'rgba(255,59,48,0.6)',
-                              backdropFilter: 'blur(10px)',
-                              color: '#fff',
-                              fontSize: '0.65rem',
-                              fontWeight: 500,
-                              height: 22,
-                              borderRadius: '100px',
-                              border: '1px solid rgba(255,255,255,0.2)',
-                            }}
-                          />
+                        <Box
+                          sx={{
+                            background: '#FF3B30',
+                            borderRadius: '50%',
+                            width: 44,
+                            height: 44,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 600 }}>✕</Typography>
                         </Box>
+                        <Typography 
+                          sx={{ 
+                            fontSize: '0.75rem', 
+                            fontWeight: 600, 
+                            color: '#FF3B30',
+                            textAlign: 'center',
+                          }}
+                        >
+                          Failed
+                        </Typography>
                       </Box>
                     </>
                   ) : (
