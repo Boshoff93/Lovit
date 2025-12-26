@@ -1325,19 +1325,28 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         sx={{
                           background: '#fff',
                           borderRadius: '50%',
-                          width: 52,
-                          height: 52,
+                          width: 64,
+                          height: 64,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           border: '1px solid rgba(0,0,0,0.08)',
                           boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                          position: 'relative',
                         }}
                       >
                         <CircularProgress 
-                          size={28} 
-                          sx={{ color: '#007AFF' }} 
+                          size={56} 
+                          thickness={3}
+                          sx={{ color: '#007AFF', position: 'absolute' }} 
                         />
+                        <Typography sx={{ 
+                          fontSize: '0.85rem', 
+                          fontWeight: 600, 
+                          color: '#007AFF',
+                        }}>
+                          {video.progress || 0}%
+                        </Typography>
                       </Box>
                     ) : video.status === 'failed' ? (
                       <Box
@@ -1391,37 +1400,43 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {video.songTitle || 'Music Video'}
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {video.status === 'processing' ? (
                       <Chip
-                        label={
-                          video.status === 'processing' 
-                            ? (video.progressMessage || 'Creating...') 
-                            : video.status === 'failed' 
-                              ? 'Failed' 
-                              : 'Music Video'
-                        }
+                        label={video.progressMessage || 'Creating your video...'}
                         size="small"
                         sx={{
-                          background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                          background: 'rgba(0,122,255,0.5)',
                           backdropFilter: 'blur(10px)',
                           color: '#fff',
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           fontWeight: 500,
-                          height: 24,
-                          maxWidth: '70%',
+                          height: 26,
+                          width: '100%',
                           borderRadius: '100px',
                           border: '1px solid rgba(255,255,255,0.2)',
-                          '& .MuiChip-label': {
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }
                         }}
                       />
-                      <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
-                        {video.status === 'processing' && video.progress ? `${video.progress}%` : new Date(video.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Box>
+                    ) : (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Chip
+                          label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                          size="small"
+                          sx={{
+                            background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                            backdropFilter: 'blur(10px)',
+                            color: '#fff',
+                            fontSize: '0.7rem',
+                            fontWeight: 500,
+                            height: 24,
+                            borderRadius: '100px',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                          }}
+                        />
+                        <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
+                          {new Date(video.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                   
                   {/* More Menu Button - Top right */}
