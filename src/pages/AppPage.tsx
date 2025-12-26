@@ -1199,7 +1199,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             >
               Create New
             </Button>
-            </Tooltip>
           </Box>
           
           {/* Videos Grid */}
