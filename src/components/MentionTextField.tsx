@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, TextField, Paper, Typography, TextFieldProps } from '@mui/material';
+import { Box, TextField, Paper, Typography, TextFieldProps, Portal, ClickAwayListener } from '@mui/material';
 
 interface Character {
   characterId: string;
@@ -28,7 +28,21 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [cursorPosition, setCursorPosition] = useState(0);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0, width: 0 });
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Update popup position when showing suggestions
+  useEffect(() => {
+    if (showSuggestions && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setPopupPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [showSuggestions, value]);
 
   // Handle text change with @ detection
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -102,8 +116,12 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
     });
   };
 
+  const handleClickAway = () => {
+    setShowSuggestions(false);
+  };
+
   return (
-    <Box sx={{ position: 'relative', zIndex: showSuggestions ? 1300 : 'auto' }}>
+    <Box ref={containerRef} sx={{ position: 'relative' }}>
       {/* Highlight overlay - positioned over the textarea */}
       <Box
         sx={{
@@ -133,7 +151,6 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
-        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         inputRef={inputRef}
         error={error}
         helperText={helperText}
@@ -159,89 +176,92 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
         {...rest}
       />
       
-      {/* Character suggestions popup */}
+      {/* Character suggestions popup - rendered via Portal to escape stacking context */}
       {showSuggestions && filteredCharacters.length > 0 && (
-        <Paper
-          elevation={16}
-          sx={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            mt: 0.5,
-            zIndex: 1400,
-            borderRadius: '12px',
-            overflow: 'hidden',
-            border: '1px solid rgba(0,0,0,0.1)',
-            maxHeight: 200,
-            overflowY: 'auto',
-            backgroundColor: '#fff',
-          }}
-        >
-          <Box sx={{ p: 1 }}>
-            <Typography variant="caption" sx={{ color: '#86868B', px: 1, display: 'block', mb: 0.5 }}>
-              Select a character
-            </Typography>
-            {filteredCharacters.slice(0, 5).map((char) => (
-              <Box
-                key={char.characterId}
-                onClick={() => insertCharacter(char.characterName)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  p: 1,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0,122,255,0.08)',
-                  },
-                }}
-              >
-                {char.imageUrls?.[0] ? (
+        <Portal>
+          <ClickAwayListener onClickAway={handleClickAway}>
+            <Paper
+              elevation={16}
+              sx={{
+                position: 'absolute',
+                top: popupPosition.top,
+                left: popupPosition.left,
+                width: popupPosition.width,
+                zIndex: 9999,
+                borderRadius: '12px',
+                overflow: 'hidden',
+                border: '1px solid rgba(0,0,0,0.1)',
+                maxHeight: 200,
+                overflowY: 'auto',
+                backgroundColor: '#fff',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+              }}
+            >
+              <Box sx={{ p: 1 }}>
+                <Typography variant="caption" sx={{ color: '#86868B', px: 1, display: 'block', mb: 0.5 }}>
+                  Select a character
+                </Typography>
+                {filteredCharacters.slice(0, 5).map((char) => (
                   <Box
-                    component="img"
-                    src={char.imageUrls[0]}
-                    alt={char.characterName}
-                    sx={{ 
-                      width: 32, 
-                      height: 32, 
-                      borderRadius: '8px', 
-                      objectFit: 'cover',
-                      border: '1px solid rgba(0,0,0,0.1)',
-                    }}
-                  />
-                ) : (
-                  <Box
+                    key={char.characterId}
+                    onClick={() => insertCharacter(char.characterName)}
                     sx={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '8px',
-                      backgroundColor: 'rgba(0,122,255,0.1)',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      gap: 1.5,
+                      p: 1,
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,122,255,0.08)',
+                      },
                     }}
                   >
-                    <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.8rem' }}>
-                      {char.characterName.charAt(0).toUpperCase()}
-                    </Typography>
+                    {char.imageUrls?.[0] ? (
+                      <Box
+                        component="img"
+                        src={char.imageUrls[0]}
+                        alt={char.characterName}
+                        sx={{ 
+                          width: 32, 
+                          height: 32, 
+                          borderRadius: '8px', 
+                          objectFit: 'cover',
+                          border: '1px solid rgba(0,0,0,0.1)',
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(0,122,255,0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.8rem' }}>
+                          {char.characterName.charAt(0).toUpperCase()}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box>
+                      <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1D1D1F' }}>
+                        @{char.characterName}
+                      </Typography>
+                    </Box>
                   </Box>
-                )}
-                <Box>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1D1D1F' }}>
-                    @{char.characterName}
-                  </Typography>
-                </Box>
+                ))}
               </Box>
-            ))}
-          </Box>
-        </Paper>
+            </Paper>
+          </ClickAwayListener>
+        </Portal>
       )}
     </Box>
   );
 };
 
 export default MentionTextField;
-
