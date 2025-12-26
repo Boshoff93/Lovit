@@ -352,14 +352,24 @@ const CharactersPage: React.FC = () => {
               Are you sure you want to delete "{characterToDelete?.characterName}"? This action cannot be undone.
             </DialogContentText>
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2 }}>
+          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
             <Button
               onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
+              variant="outlined"
               sx={{
-                color: '#86868B',
+                color: '#1D1D1F',
+                borderColor: 'rgba(0,0,0,0.2)',
                 textTransform: 'none',
                 fontWeight: 500,
+                borderRadius: '12px',
+                px: 3,
+                py: 1,
+                flex: 1,
+                '&:hover': {
+                  borderColor: 'rgba(0,0,0,0.4)',
+                  backgroundColor: 'rgba(0,0,0,0.02)',
+                },
               }}
             >
               Cancel
@@ -367,17 +377,21 @@ const CharactersPage: React.FC = () => {
             <Button
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
+              variant="contained"
               sx={{
                 color: '#fff',
-                backgroundColor: '#FF3B30',
+                backgroundColor: '#007AFF',
                 textTransform: 'none',
                 fontWeight: 600,
+                borderRadius: '12px',
                 px: 3,
+                py: 1,
+                flex: 1,
                 '&:hover': {
-                  backgroundColor: '#E0342B',
+                  backgroundColor: '#0066CC',
                 },
                 '&.Mui-disabled': {
-                  backgroundColor: 'rgba(255,59,48,0.5)',
+                  backgroundColor: 'rgba(0,122,255,0.5)',
                   color: '#fff',
                 },
               }}
