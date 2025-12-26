@@ -1,13 +1,7 @@
-// Stripe configuration - switches between test and production based on environment
+// Stripe configuration - always use production Stripe IDs
 
-// Set to true only for temporary testing - should be false in production!
-const FORCE_TEST_MODE = false;
-
-const isLocalhost = typeof window !== 'undefined' && 
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-// Production Stripe IDs
-const productionConfig = {
+// Production Stripe IDs (used everywhere including localhost)
+export const stripeConfig = {
   topUp: {
     priceId: 'price_1SiFnwB6HvdZJCd5vP1AyQeE',
     productId: 'prod_SDuZQfG5jCbfwZ'
@@ -28,33 +22,6 @@ const productionConfig = {
     yearly: 'price_1SiFiBB6HvdZJCd5KdRTbrco'
   }
 };
-
-// Test Stripe IDs (for localhost)
-const testConfig = {
-  topUp: {
-    priceId: 'price_1SiH0wPU9E45VDzjVUwnRnxU',
-    productId: 'prod_SDuQwcDcLNpFsl'
-  },
-  starter: {
-    productId: 'prod_SApqHExCIJHZbN',
-    monthly: 'price_1SiH3dPU9E45VDzjXqRqGXjl',
-    yearly: 'price_1SiH3dPU9E45VDzjePBeHO5T'
-  },
-  pro: {
-    productId: 'prod_SAprsgkM7ZjCXr',
-    monthly: 'price_1SiH4yPU9E45VDzjOndlKcRy',
-    yearly: 'price_1SiH4yPU9E45VDzjDhA4TLIc'
-  },
-  premium: {
-    productId: 'prod_SAprvoCikmsgYW',
-    monthly: 'price_1SiH6mPU9E45VDzjUTH2VCPy',
-    yearly: 'price_1SiH6mPU9E45VDzjWh5DZKRJ'
-  }
-};
-
-// Export the appropriate config based on environment
-// Uses test config for localhost, production config for deployed environments
-export const stripeConfig = (FORCE_TEST_MODE || isLocalhost) ? testConfig : productionConfig;
 
 // Helper to get top-up details
 export const getTopUpConfig = () => stripeConfig.topUp;
