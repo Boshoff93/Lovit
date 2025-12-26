@@ -1479,7 +1479,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           </Box>
                         )}
                         
-                        {/* Landscape videos - each in its own row, full width */}
+                        {/* Landscape videos - 2 per row on larger screens, full width on mobile */}
+                        <Box sx={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, 
+                          gap: 2,
+                        }}>
                         {dateVideos.filter(v => v.aspectRatio === 'landscape').map((video) => {
                           const isDeleting = deletingVideoId === video.videoId;
                           
@@ -1496,7 +1501,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 transition: 'all 0.3s ease',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                                 opacity: isDeleting ? 0.5 : 1,
-                                width: '100%',
                                 '&:hover': video.status === 'completed' ? {
                                   transform: 'translateY(-4px) scale(1.02)',
                                   boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
@@ -1640,6 +1644,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                             </Box>
                           );
                         })}
+                        </Box>
                       </Box>
                     </Box>
                   );
