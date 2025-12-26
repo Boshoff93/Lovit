@@ -152,8 +152,8 @@ const genres = [
   { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
   { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
   { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
-  { id: 'chillout', name: 'Chill', icon: '😌' },
-  { id: 'gospel', name: 'Gospel', icon: '🙏' },
+{ id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
+  { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
 ];
 
 // Mood options
@@ -1154,12 +1154,12 @@ const CreatePage: React.FC = () => {
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Genre</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
                     <Box
                       component="img"
                       src={genres.find(g => g.id === selectedGenre)?.image}
                       alt={genres.find(g => g.id === selectedGenre)?.name}
-                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                       {genres.find(g => g.id === selectedGenre)?.name}
@@ -1168,12 +1168,12 @@ const CreatePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Mood</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
                     <Box
                       component="img"
                       src={moods.find(m => m.id === selectedMood)?.image}
                       alt={moods.find(m => m.id === selectedMood)?.name}
-                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                       {moods.find(m => m.id === selectedMood)?.name}
@@ -1182,12 +1182,12 @@ const CreatePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Language</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
                     <Box
                       component="img"
                       src={languages.find(l => l.id === selectedLanguage)?.image}
                       alt={languages.find(l => l.id === selectedLanguage)?.name}
-                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                       {languages.find(l => l.id === selectedLanguage)?.name}
@@ -1196,8 +1196,8 @@ const CreatePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Prompt</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', maxWidth: 180, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {songPrompt.trim() ? songPrompt.substring(0, 30) + (songPrompt.length > 30 ? '...' : '') : 'Not entered'}
+                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', minWidth: 100, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {songPrompt.trim() ? songPrompt.substring(0, 20) + (songPrompt.length > 20 ? '...' : '') : 'Not entered'}
                   </Typography>
                 </Box>
               </Box>
