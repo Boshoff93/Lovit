@@ -1690,58 +1690,8 @@ const HomePage: React.FC = () => {
                 </Box>
 
           {/* Videos Carousel with Navigation */}
-          <Box sx={{ position: 'relative' }}>
-            {/* Left Arrow */}
-            <IconButton
-              onClick={() => {
-                const container = document.getElementById('video-carousel');
-                if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
-              }}
-              sx={{
-                position: 'absolute',
-                left: { xs: 8, md: 24 },
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 10,
-                background: 'rgba(255,255,255,0.95)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                width: { xs: 36, md: 44 },
-                height: { xs: 36, md: 44 },
-                '&:hover': {
-                  background: '#fff',
-                  transform: 'translateY(-50%) scale(1.1)',
-                },
-              }}
-            >
-              <ChevronLeftIcon sx={{ color: '#1d1d1f' }} />
-            </IconButton>
-
-            {/* Right Arrow */}
-            <IconButton
-              onClick={() => {
-                const container = document.getElementById('video-carousel');
-                if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
-              }}
-              sx={{
-                position: 'absolute',
-                right: { xs: 8, md: 24 },
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 10,
-                background: 'rgba(255,255,255,0.95)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                width: { xs: 36, md: 44 },
-                height: { xs: 36, md: 44 },
-                '&:hover': {
-                  background: '#fff',
-                  transform: 'translateY(-50%) scale(1.1)',
-                },
-              }}
-            >
-              <ChevronRightIcon sx={{ color: '#1d1d1f' }} />
-            </IconButton>
-
-            {/* Scrollable Container */}
+          <Box sx={{ position: 'relative', width: '100vw', ml: 'calc(-50vw + 50%)' }}>
+            {/* Scrollable Container - Full bleed */}
             <Box
               id="video-carousel"
               sx={{
@@ -1749,12 +1699,9 @@ const HomePage: React.FC = () => {
                 gap: 2,
                 overflowX: 'auto',
                 py: 4,
-                px: { xs: 0, md: 0 },
                 scrollSnapType: 'x mandatory',
                 '&::-webkit-scrollbar': { display: 'none' },
                 scrollbarWidth: 'none',
-                // Full bleed - no padding
-                mx: { xs: -2, sm: 0 },
               }}
             >
             {sampleVideos.map((video, index) => (
@@ -1771,9 +1718,9 @@ const HomePage: React.FC = () => {
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                  // Add margin for first and last items
-                  ml: index === 0 ? { xs: 2, sm: 4, md: 8 } : 0,
-                  mr: index === sampleVideos.length - 1 ? { xs: 2, sm: 4, md: 8 } : 0,
+                  // Add margin for first and last items for edge spacing
+                  ml: index === 0 ? { xs: 2, sm: 4, md: 6, lg: 'calc((100vw - 1200px) / 2 + 24px)' } : 0,
+                  mr: index === sampleVideos.length - 1 ? { xs: 2, sm: 4, md: 6, lg: 'calc((100vw - 1200px) / 2 + 24px)' } : 0,
                   '&:hover': {
                     transform: 'translateY(-4px) scale(1.02)',
                     boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
@@ -1866,6 +1813,48 @@ const HomePage: React.FC = () => {
                 </Box>
               </Box>
             ))}
+            </Box>
+            
+            {/* Navigation Arrows - Below cards, centered */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2, pb: 2 }}>
+              <IconButton
+                onClick={() => {
+                  const container = document.getElementById('video-carousel');
+                  if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
+                }}
+                sx={{
+                  background: '#fff',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+                  width: 48,
+                  height: 48,
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  '&:hover': {
+                    background: '#f5f5f7',
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <ChevronLeftIcon sx={{ color: '#1d1d1f', fontSize: 28 }} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  const container = document.getElementById('video-carousel');
+                  if (container) container.scrollBy({ left: 300, behavior: 'smooth' });
+                }}
+                sx={{
+                  background: '#fff',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+                  width: 48,
+                  height: 48,
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  '&:hover': {
+                    background: '#f5f5f7',
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <ChevronRightIcon sx={{ color: '#1d1d1f', fontSize: 28 }} />
+              </IconButton>
             </Box>
           </Box>
               </Container>
