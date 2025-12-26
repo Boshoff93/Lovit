@@ -148,78 +148,61 @@ const sampleVideos = [
   },
 ];
 
-// Genres data - comprehensive list
+// Genres data - matching the genres we support with images
 const genres = [
-  // Popular/Mainstream
-  { id: 'pop', name: 'Pop', icon: '🎤', color: '#FF6B9D' },
-  { id: 'hip-hop', name: 'Hip Hop', icon: '🎧', color: '#9D4EDD' },
-  { id: 'rnb', name: 'R&B', icon: '💜', color: '#A855F7' },
-  { id: 'electronic', name: 'Electronic', icon: '⚡', color: '#00D9FF' },
-  { id: 'dance', name: 'Dance', icon: '💃', color: '#FF1493' },
-  { id: 'house', name: 'House', icon: '🏠', color: '#00CED1' },
-  { id: 'edm', name: 'EDM', icon: '🔊', color: '#7B68EE' },
-  { id: 'techno', name: 'Techno', icon: '🤖', color: '#8A2BE2' },
-  // Rock & Alternative
-  { id: 'rock', name: 'Rock', icon: '🎸', color: '#FF4757' },
-  { id: 'alternative', name: 'Alternative', icon: '🔥', color: '#DC143C' },
-  { id: 'indie', name: 'Indie', icon: '🌙', color: '#B8860B' },
-  { id: 'punk', name: 'Punk', icon: '⚡', color: '#FF6347' },
-  { id: 'metal', name: 'Metal', icon: '🤘', color: '#2F4F4F' },
-  { id: 'grunge', name: 'Grunge', icon: '🎵', color: '#696969' },
-  // Jazz & Blues
-  { id: 'jazz', name: 'Jazz', icon: '🎷', color: '#FFB347' },
-  { id: 'blues', name: 'Blues', icon: '🎺', color: '#4169E1' },
-  { id: 'soul', name: 'Soul', icon: '❤️', color: '#CD5C5C' },
-  { id: 'funk', name: 'Funk', icon: '🕺', color: '#FF8C00' },
-  // Classical & Orchestral
-  { id: 'classical', name: 'Classical', icon: '🎻', color: '#4ECDC4' },
-  { id: 'orchestral', name: 'Orchestral', icon: '🎼', color: '#8B4513' },
-  { id: 'opera', name: 'Opera', icon: '🎭', color: '#800020' },
-  { id: 'cinematic', name: 'Cinematic', icon: '🎬', color: '#1E293B' },
-  { id: 'soundtrack', name: 'Soundtrack', icon: '🎞️', color: '#2C3E50' },
-  // Country & Folk
-  { id: 'country', name: 'Country', icon: '🤠', color: '#D4A574' },
-  { id: 'folk', name: 'Folk', icon: '🪕', color: '#8B7355' },
-  { id: 'bluegrass', name: 'Bluegrass', icon: '🌾', color: '#6B8E23' },
-  { id: 'acoustic', name: 'Acoustic', icon: '🎸', color: '#DEB887' },
-  // Latin & World
-  { id: 'latin', name: 'Latin', icon: '💃', color: '#FF4500' },
-  { id: 'reggaeton', name: 'Reggaeton', icon: '🔥', color: '#FF6B35' },
-  { id: 'salsa', name: 'Salsa', icon: '🌶️', color: '#E74C3C' },
-  { id: 'bossa-nova', name: 'Bossa Nova', icon: '🌴', color: '#3CB371' },
-  { id: 'afrobeat', name: 'Afrobeat', icon: '🌍', color: '#DAA520' },
-  { id: 'kpop', name: 'K-Pop', icon: '🇰🇷', color: '#FF69B4' },
-  { id: 'jpop', name: 'J-Pop', icon: '🇯🇵', color: '#FFB7C5' },
-  { id: 'bollywood', name: 'Bollywood', icon: '🇮🇳', color: '#FF9933' },
-  // Caribbean & Tropical
-  { id: 'reggae', name: 'Reggae', icon: '🌴', color: '#22C55E' },
-  { id: 'dancehall', name: 'Dancehall', icon: '🎉', color: '#ADFF2F' },
-  { id: 'ska', name: 'Ska', icon: '🎺', color: '#FFD700' },
-  { id: 'tropical', name: 'Tropical', icon: '🏝️', color: '#00FA9A' },
-  // Electronic Sub-genres
-  { id: 'lofi', name: 'Lo-fi', icon: '☁️', color: '#94A3B8' },
-  { id: 'chillwave', name: 'Chillwave', icon: '🌅', color: '#87CEEB' },
-  { id: 'synthwave', name: 'Synthwave', icon: '🌆', color: '#FF00FF' },
-  { id: 'drum-bass', name: 'Drum & Bass', icon: '🥁', color: '#FF1744' },
-  { id: 'dubstep', name: 'Dubstep', icon: '💥', color: '#9C27B0' },
-  { id: 'trance', name: 'Trance', icon: '🌀', color: '#00BFFF' },
-  { id: 'ambient', name: 'Ambient', icon: '🌊', color: '#06B6D4' },
-  { id: 'downtempo', name: 'Downtempo', icon: '🌙', color: '#5F9EA0' },
-  // Other
-  { id: 'gospel', name: 'Gospel', icon: '⛪', color: '#FFD700' },
-  { id: 'trap', name: 'Trap', icon: '🔥', color: '#E040FB' },
-  { id: 'drill', name: 'Drill', icon: '💎', color: '#757575' },
-  { id: 'disco', name: 'Disco', icon: '🪩', color: '#C71585' },
-  { id: 'new-wave', name: 'New Wave', icon: '🌊', color: '#00CED1' },
-  { id: 'shoegaze', name: 'Shoegaze', icon: '👟', color: '#DDA0DD' },
-  { id: 'emo', name: 'Emo', icon: '🖤', color: '#2C2C2C' },
-  { id: 'hyperpop', name: 'Hyperpop', icon: '✨', color: '#FF69B4' },
-  { id: 'experimental', name: 'Experimental', icon: '🧪', color: '#9370DB' },
-  { id: 'noise', name: 'Noise', icon: '📢', color: '#708090' },
-  { id: 'meditation', name: 'Meditation', icon: '🧘', color: '#98FB98' },
-  { id: 'childrens', name: 'Children\'s', icon: '🧸', color: '#FFB6C1' },
-  { id: 'holiday', name: 'Holiday', icon: '🎄', color: '#228B22' },
-  { id: 'videogame', name: 'Video Game', icon: '🎮', color: '#32CD32' },
+  { id: 'pop', name: 'Pop', image: '/genres/pop.jpeg' },
+  { id: 'hip-hop', name: 'Hip Hop', image: '/genres/hip-hop.jpeg' },
+  { id: 'rnb', name: 'R&B', image: '/genres/rnb.jpeg' },
+  { id: 'electronic', name: 'Electronic', image: '/genres/electronic.jpeg' },
+  { id: 'dance', name: 'Dance', image: '/genres/dance.jpeg' },
+  { id: 'house', name: 'House', image: '/genres/house.jpeg' },
+  { id: 'edm', name: 'EDM', image: '/genres/edm.jpeg' },
+  { id: 'techno', name: 'Techno', image: '/genres/techno.jpeg' },
+  { id: 'rock', name: 'Rock', image: '/genres/rock.jpeg' },
+  { id: 'alternative', name: 'Alternative', image: '/genres/alternative.jpeg' },
+  { id: 'indie', name: 'Indie', image: '/genres/indie.jpeg' },
+  { id: 'punk', name: 'Punk', image: '/genres/punk.jpeg' },
+  { id: 'metal', name: 'Metal', image: '/genres/metal.jpeg' },
+  { id: 'jazz', name: 'Jazz', image: '/genres/jazz.jpeg' },
+  { id: 'blues', name: 'Blues', image: '/genres/blues.jpeg' },
+  { id: 'soul', name: 'Soul', image: '/genres/soul.jpeg' },
+  { id: 'funk', name: 'Funk', image: '/genres/funk.jpeg' },
+  { id: 'classical', name: 'Classical', image: '/genres/classic.jpeg' },
+  { id: 'orchestral', name: 'Orchestral', image: '/genres/orchestral.jpeg' },
+  { id: 'cinematic', name: 'Cinematic', image: '/genres/cinematic.jpeg' },
+  { id: 'country', name: 'Country', image: '/genres/country.jpeg' },
+  { id: 'folk', name: 'Folk', image: '/genres/folk.jpeg' },
+  { id: 'acoustic', name: 'Acoustic', image: '/genres/acoustic.jpeg' },
+  { id: 'latin', name: 'Latin', image: '/genres/latin.jpeg' },
+  { id: 'reggaeton', name: 'Reggaeton', image: '/genres/raggaeton.jpeg' },
+  { id: 'kpop', name: 'K-Pop', image: '/genres/kpop.jpeg' },
+  { id: 'jpop', name: 'J-Pop', image: '/genres/jpop.jpeg' },
+  { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
+  { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
+  { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
+  { id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
+  { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
+];
+
+// Moods data - matching the moods we support with images
+const moods = [
+  { id: 'happy', name: 'Happy', image: '/moods/happy.jpeg' },
+  { id: 'sad', name: 'Sad', image: '/moods/sad.jpeg' },
+  { id: 'energetic', name: 'Energetic', image: '/moods/energetic.jpeg' },
+  { id: 'romantic', name: 'Romantic', image: '/moods/romantic.jpeg' },
+  { id: 'chill', name: 'Chill', image: '/moods/chill.jpeg' },
+  { id: 'epic', name: 'Epic', image: '/moods/epic.jpeg' },
+  { id: 'dreamy', name: 'Dreamy', image: '/moods/dreamy.jpeg' },
+  { id: 'dark', name: 'Dark', image: '/moods/dark.jpeg' },
+  { id: 'uplifting', name: 'Uplifting', image: '/moods/uplifting.jpeg' },
+  { id: 'nostalgic', name: 'Nostalgic', image: '/moods/nostalgic.jpeg' },
+  { id: 'peaceful', name: 'Peaceful', image: '/moods/peacful.jpeg' },
+  { id: 'intense', name: 'Intense', image: '/moods/intense.jpeg' },
+  { id: 'melancholic', name: 'Melancholic', image: '/moods/melancholic.jpeg' },
+  { id: 'playful', name: 'Playful', image: '/moods/playful.jpeg' },
+  { id: 'mysterious', name: 'Mysterious', image: '/moods/mysterious.jpeg' },
+  { id: 'triumphant', name: 'Triumphant', image: '/moods/triumphant.jpeg' },
+  { id: 'promotional', name: 'Promotional', image: '/moods/promotional.jpeg' },
 ];
 
 // Art styles for music videos (matching Fable's art styles with boy images)
@@ -242,32 +225,32 @@ const artStyles = [
   { id: 'sketch', label: 'B&W Sketch', image: '/art_styles/boy_sketch.jpeg' },
 ];
 
-// Languages - All 24 supported languages (matching Fable locales)
+// Languages - All 24 supported languages with images
 const languages = [
-  { name: 'English', flag: '🇺🇸', code: 'en' },
-  { name: 'Spanish', flag: '🇪🇸', code: 'es' },
-  { name: 'French', flag: '🇫🇷', code: 'fr' },
-  { name: 'German', flag: '🇩🇪', code: 'de' },
-  { name: 'Italian', flag: '🇮🇹', code: 'it' },
-  { name: 'Portuguese', flag: '🇧🇷', code: 'pt' },
-  { name: 'Dutch', flag: '🇳🇱', code: 'nl' },
-  { name: 'Polish', flag: '🇵🇱', code: 'pl' },
-  { name: 'Russian', flag: '🇷🇺', code: 'ru' },
-  { name: 'Ukrainian', flag: '🇺🇦', code: 'uk' },
-  { name: 'Bulgarian', flag: '🇧🇬', code: 'bg' },
-  { name: 'Czech', flag: '🇨🇿', code: 'cs' },
-  { name: 'Romanian', flag: '🇷🇴', code: 'ro' },
-  { name: 'Greek', flag: '🇬🇷', code: 'el' },
-  { name: 'Finnish', flag: '🇫🇮', code: 'fi' },
-  { name: 'Turkish', flag: '🇹🇷', code: 'tr' },
-  { name: 'Arabic', flag: '🇸🇦', code: 'ar' },
-  { name: 'Hindi', flag: '🇮🇳', code: 'hi' },
-  { name: 'Japanese', flag: '🇯🇵', code: 'ja' },
-  { name: 'Korean', flag: '🇰🇷', code: 'ko' },
-  { name: 'Chinese', flag: '🇨🇳', code: 'zh' },
-  { name: 'Thai', flag: '🇹🇭', code: 'th' },
-  { name: 'Vietnamese', flag: '🇻🇳', code: 'vi' },
-  { name: 'Indonesian', flag: '🇮🇩', code: 'id' },
+  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
+  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
+  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
+  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
+  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
+  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
+  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
+  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
+  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
+  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
+  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
+  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
+  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
+  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
+  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
+  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
+  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
+  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
+  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
+  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
+  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
+  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
+  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
+  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
 ];
 
 // Subscription plans
@@ -1890,14 +1873,14 @@ const HomePage: React.FC = () => {
                 justifyContent: 'center',
             }}
           >
-            {genres.map((genre, index) => (
-                  <Box 
-                    key={index}
-                    onClick={() => navigate(`/genres/${genre.id}`)}
-                    sx={{
-                      display: 'flex',
+            {genres.map((genre) => (
+              <Box 
+                key={genre.id}
+                onClick={() => navigate(`/genres/${genre.id}`)}
+                sx={{
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
+                  gap: 1.5,
                   px: 2.5,
                   py: 1.5,
                   borderRadius: '16px',
@@ -1915,7 +1898,17 @@ const HomePage: React.FC = () => {
                   },
                 }}
               >
-                <Typography sx={{ fontSize: '1.25rem' }}>{genre.icon}</Typography>
+                <Box
+                  component="img"
+                  src={genre.image}
+                  alt={genre.name}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
                 <Typography sx={{ color: '#1D1D1F', fontWeight: 500, fontSize: '0.9rem' }}>
                   {genre.name}
                 </Typography>
@@ -2033,14 +2026,14 @@ const HomePage: React.FC = () => {
               justifyContent: 'center',
             }}
           >
-            {languages.map((lang, index) => (
+            {languages.map((lang) => (
               <Box
-                key={index}
+                key={lang.id}
                 onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
+                  gap: 1.5,
                   px: 2.5,
                   py: 1.5,
                   borderRadius: '14px',
@@ -2058,12 +2051,22 @@ const HomePage: React.FC = () => {
                   },
                 }}
               >
-                <Typography sx={{ fontSize: '1.25rem' }}>{lang.flag}</Typography>
+                <Box
+                  component="img"
+                  src={lang.image}
+                  alt={lang.name}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
                 <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', fontWeight: 500 }}>
                   {lang.name}
                 </Typography>
-                  </Box>
-                ))}
+              </Box>
+            ))}
               </Box>
             </Container>
           </Box>
@@ -2156,6 +2159,81 @@ const HomePage: React.FC = () => {
             ))}
           </Box>
           </Container>
+      </Box>
+
+      <SectionDivider />
+
+      {/* Value Proposition - Moods */}
+      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                fontWeight: 600,
+                color: '#1D1D1F',
+                mb: 2,
+              }}
+            >
+              Set the perfect mood
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
+              From happy to melancholic — create music that captures any emotion
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex', 
+              flexWrap: 'wrap',
+              gap: 1.5,
+              justifyContent: 'center',
+            }}
+          >
+            {moods.map((mood) => (
+              <Box 
+                key={mood.id}
+                onClick={() => navigate(`/moods/${mood.id}`)}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2.5,
+                  py: 1.5,
+                  borderRadius: '16px',
+                  background: 'rgba(255,255,255,0.7)',
+                  backdropFilter: 'blur(40px)',
+                  WebkitBackdropFilter: 'blur(40px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
+                    transform: 'translateY(-2px) scale(1.02)',
+                    borderColor: 'rgba(0,122,255,0.2)',
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  src={mood.image}
+                  alt={mood.name}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 500, fontSize: '0.9rem' }}>
+                  {mood.name}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
       </Box>
 
       <SectionDivider />

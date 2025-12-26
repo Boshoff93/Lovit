@@ -919,26 +919,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         )}
                       </IconButton>
 
-                      {/* Create Video Button - Gradient matching "The AI Music Generator" */}
-                      <Tooltip title="Create Music Video" arrow>
-                        <IconButton
-                          onClick={() => handleCreateVideo(song)}
-                          sx={{
-                            width: { xs: 36, md: 40 },
-                            height: { xs: 36, md: 40 },
-                            background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
-                            color: '#fff',
-                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                            transition: 'all 0.2s ease',
-                            '&:hover': {
-                              boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
-                              transform: 'scale(1.05)',
-                            },
-                          }}
-                        >
-                          <MovieIcon sx={{ fontSize: { xs: 18, md: 20 } }} />
-                        </IconButton>
-                      </Tooltip>
 
                       {/* More Menu Button */}
                       <IconButton

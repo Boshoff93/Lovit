@@ -246,58 +246,7 @@ const videoTypes = [
   },
 ];
 
-// Character kind options
-const characterKindOptions = [
-  { id: 'Human', label: 'Human', icon: '👤' },
-  { id: 'Non-Human', label: 'Non-Human', icon: '🐾' },
-];
 
-// Gender options
-const genderOptions = [
-  { id: 'Male', label: 'Male', icon: '♂️' },
-  { id: 'Female', label: 'Female', icon: '♀️' },
-];
-
-// Age options
-const ageOptions = [
-  { id: 'Baby', label: 'Baby (0-2)' },
-  { id: 'Toddler', label: 'Toddler (2-4)' },
-  { id: 'Child', label: 'Child (5-12)' },
-  { id: 'Teen', label: 'Teen (13-19)' },
-  { id: 'Young Adult', label: 'Young Adult (20-35)' },
-  { id: 'Adult', label: 'Adult (35-55)' },
-  { id: 'Senior', label: 'Senior (55+)' },
-];
-
-// Hair color options
-const hairColorOptions = [
-  { id: 'Black', label: 'Black', image: '/hair/short_black.jpeg' },
-  { id: 'Dark Brown', label: 'Dark Brown', image: '/hair/short_brown.jpeg' },
-  { id: 'Light Brown', label: 'Light Brown', image: '/hair/short_light_brown.jpeg' },
-  { id: 'Blonde', label: 'Blonde', image: '/hair/short_blonde.jpeg' },
-  { id: 'Strawberry Blonde', label: 'Strawberry Blonde', image: '/hair/short_strawberry_blonde.jpeg' },
-  { id: 'Red', label: 'Red / Orange', image: '/hair/short_red.jpeg' },
-  { id: 'Grey', label: 'Grey', image: '/hair/short_grey.jpeg' },
-  { id: 'White', label: 'White', image: '/hair/short_white.jpeg' },
-];
-
-// Hair length options
-const hairLengthOptions = [
-  { id: 'Short', label: 'Short', image: '/hair/short_blonde.jpeg' },
-  { id: 'Medium', label: 'Medium', image: '/hair/medium_brown.jpeg' },
-  { id: 'Long', label: 'Long', image: '/hair/long_strawberry_blonde.jpeg' },
-  { id: 'Very Long', label: 'Very Long', image: '/hair/very_long_blonde.jpeg' },
-  { id: 'Bald', label: 'Bald', image: '/hair/bald.jpeg' },
-];
-
-// Eye color options
-const eyeColorOptions = [
-  { id: 'Brown', label: 'Brown', image: '/eyes/brown.jpg' },
-  { id: 'Blue', label: 'Blue', image: '/eyes/blue.jpg' },
-  { id: 'Green', label: 'Green', image: '/eyes/green.jpg' },
-  { id: 'Hazel', label: 'Hazel', image: '/eyes/hazel.jpg' },
-  { id: 'Grey', label: 'Grey', image: '/eyes/grey.jpg' },
-];
 
 
 // Character interface

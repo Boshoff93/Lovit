@@ -30,6 +30,7 @@ import AdminEmailPage from './pages/AdminEmailPage';
 import UnsubscribePage from './pages/UnsubscribePage';
 import GenreDetailPage from './pages/GenreDetailPage';
 import LanguageDetailPage from './pages/LanguageDetailPage';
+import MoodDetailPage from './pages/MoodDetailPage';
 import StyleDetailPage from './pages/StyleDetailPage';
 import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
 import CreateVideoPage from './pages/CreateVideoPage';
@@ -246,6 +247,7 @@ function App() {
         {/* Detail pages */}
         <Route path="/genres/:genreId" element={<GenreDetailPage />} />
         <Route path="/languages/:languageId" element={<LanguageDetailPage />} />
+        <Route path="/moods/:moodId" element={<MoodDetailPage />} />
         <Route path="/styles/:styleId" element={<StyleDetailPage />} />
         <Route path="/videos/:videoId" element={<MusicVideoDetailPage />} />
         
