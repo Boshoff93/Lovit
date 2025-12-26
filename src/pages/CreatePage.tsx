@@ -122,87 +122,87 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
 
 // Genre options from HomePage
 const genres = [
-  { id: 'pop', name: 'Pop', icon: '🎤' },
-  { id: 'hip-hop', name: 'Hip Hop', icon: '🎧' },
-  { id: 'rnb', name: 'R&B', icon: '💜' },
-  { id: 'electronic', name: 'Electronic', icon: '⚡' },
-  { id: 'dance', name: 'Dance', icon: '💃' },
-  { id: 'house', name: 'House', icon: '🏠' },
-  { id: 'edm', name: 'EDM', icon: '🔊' },
-  { id: 'techno', name: 'Techno', icon: '🤖' },
-  { id: 'rock', name: 'Rock', icon: '🎸' },
-  { id: 'alternative', name: 'Alternative', icon: '🔥' },
-  { id: 'indie', name: 'Indie', icon: '🌙' },
-  { id: 'punk', name: 'Punk', icon: '⚡' },
-  { id: 'metal', name: 'Metal', icon: '🤘' },
-  { id: 'jazz', name: 'Jazz', icon: '🎷' },
-  { id: 'blues', name: 'Blues', icon: '🎺' },
-  { id: 'soul', name: 'Soul', icon: '❤️' },
-  { id: 'funk', name: 'Funk', icon: '🕺' },
-  { id: 'classical', name: 'Classical', icon: '🎻' },
-  { id: 'orchestral', name: 'Orchestral', icon: '🎼' },
-  { id: 'cinematic', name: 'Cinematic', icon: '🎬' },
-  { id: 'country', name: 'Country', icon: '🤠' },
-  { id: 'folk', name: 'Folk', icon: '🪕' },
-  { id: 'acoustic', name: 'Acoustic', icon: '🎸' },
-  { id: 'latin', name: 'Latin', icon: '💃' },
-  { id: 'reggaeton', name: 'Reggaeton', icon: '🔥' },
-  { id: 'kpop', name: 'K-Pop', icon: '🇰🇷' },
-  { id: 'jpop', name: 'J-Pop', icon: '🇯🇵' },
-  { id: 'reggae', name: 'Reggae', icon: '🌴' },
-  { id: 'lofi', name: 'Lo-fi', icon: '🌙' },
-  { id: 'ambient', name: 'Ambient', icon: '🌌' },
+  { id: 'pop', name: 'Pop', image: '/genres/pop.jpeg' },
+  { id: 'hip-hop', name: 'Hip Hop', image: '/genres/hip-hop.jpeg' },
+  { id: 'rnb', name: 'R&B', image: '/genres/rnb.jpeg' },
+  { id: 'electronic', name: 'Electronic', image: '/genres/electronic.jpeg' },
+  { id: 'dance', name: 'Dance', image: '/genres/dance.jpeg' },
+  { id: 'house', name: 'House', image: '/genres/house.jpeg' },
+  { id: 'edm', name: 'EDM', image: '/genres/edm.jpeg' },
+  { id: 'techno', name: 'Techno', image: '/genres/techno.jpeg' },
+  { id: 'rock', name: 'Rock', image: '/genres/rock.jpeg' },
+  { id: 'alternative', name: 'Alternative', image: '/genres/alternative.jpeg' },
+  { id: 'indie', name: 'Indie', image: '/genres/indie.jpeg' },
+  { id: 'punk', name: 'Punk', image: '/genres/punk.jpeg' },
+  { id: 'metal', name: 'Metal', image: '/genres/metal.jpeg' },
+  { id: 'jazz', name: 'Jazz', image: '/genres/jazz.jpeg' },
+  { id: 'blues', name: 'Blues', image: '/genres/blues.jpeg' },
+  { id: 'soul', name: 'Soul', image: '/genres/soul.jpeg' },
+  { id: 'funk', name: 'Funk', image: '/genres/funk.jpeg' },
+  { id: 'classical', name: 'Classical', image: '/genres/classic.jpeg' },
+  { id: 'orchestral', name: 'Orchestral', image: '/genres/orchestral.jpeg' },
+  { id: 'cinematic', name: 'Cinematic', image: '/genres/cinematic.jpeg' },
+  { id: 'country', name: 'Country', image: '/genres/country.jpeg' },
+  { id: 'folk', name: 'Folk', image: '/genres/folk.jpeg' },
+  { id: 'acoustic', name: 'Acoustic', image: '/genres/acoustic.jpeg' },
+  { id: 'latin', name: 'Latin', image: '/genres/latin.jpeg' },
+  { id: 'reggaeton', name: 'Reggaeton', image: '/genres/raggaeton.jpeg' },
+  { id: 'kpop', name: 'K-Pop', image: '/genres/kpop.jpeg' },
+  { id: 'jpop', name: 'J-Pop', image: '/genres/jpop.jpeg' },
+  { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
+  { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
+  { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
   { id: 'chillout', name: 'Chill', icon: '😌' },
   { id: 'gospel', name: 'Gospel', icon: '🙏' },
 ];
 
 // Mood options
 const moods = [
-  { id: 'happy', name: 'Happy', icon: '😊' },
-  { id: 'sad', name: 'Sad', icon: '😢' },
-  { id: 'energetic', name: 'Energetic', icon: '⚡' },
-  { id: 'romantic', name: 'Romantic', icon: '💕' },
-  { id: 'chill', name: 'Chill', icon: '😌' },
-  { id: 'epic', name: 'Epic', icon: '🔥' },
-  { id: 'dreamy', name: 'Dreamy', icon: '✨' },
-  { id: 'dark', name: 'Dark', icon: '🌙' },
-  { id: 'uplifting', name: 'Uplifting', icon: '🌈' },
-  { id: 'nostalgic', name: 'Nostalgic', icon: '📻' },
-  { id: 'peaceful', name: 'Peaceful', icon: '🕊️' },
-  { id: 'intense', name: 'Intense', icon: '💥' },
-  { id: 'melancholic', name: 'Melancholic', icon: '🌧️' },
-  { id: 'playful', name: 'Playful', icon: '🎈' },
-  { id: 'mysterious', name: 'Mysterious', icon: '🔮' },
-  { id: 'triumphant', name: 'Triumphant', icon: '🏆' },
-  { id: 'promotional', name: 'Promotional', icon: '📣' },
+  { id: 'happy', name: 'Happy', image: '/moods/happy.jpeg' },
+  { id: 'sad', name: 'Sad', image: '/moods/sad.jpeg' },
+  { id: 'energetic', name: 'Energetic', image: '/moods/energetic.jpeg' },
+  { id: 'romantic', name: 'Romantic', image: '/moods/romantic.jpeg' },
+  { id: 'chill', name: 'Chill', image: '/moods/chill.jpeg' },
+  { id: 'epic', name: 'Epic', image: '/moods/epic.jpeg' },
+  { id: 'dreamy', name: 'Dreamy', image: '/moods/dreamy.jpeg' },
+  { id: 'dark', name: 'Dark', image: '/moods/dark.jpeg' },
+  { id: 'uplifting', name: 'Uplifting', image: '/moods/uplifting.jpeg' },
+  { id: 'nostalgic', name: 'Nostalgic', image: '/moods/nostalgic.jpeg' },
+  { id: 'peaceful', name: 'Peaceful', image: '/moods/peacful.jpeg' },
+  { id: 'intense', name: 'Intense', image: '/moods/intense.jpeg' },
+  { id: 'melancholic', name: 'Melancholic', image: '/moods/melancholic.jpeg' },
+  { id: 'playful', name: 'Playful', image: '/moods/playful.jpeg' },
+  { id: 'mysterious', name: 'Mysterious', image: '/moods/mysterious.jpeg' },
+  { id: 'triumphant', name: 'Triumphant', image: '/moods/triumphant.jpeg' },
+  { id: 'promotional', name: 'Promotional', image: '/moods/promotional.jpeg' },
 ];
 
 // Languages
 const languages = [
-  { id: 'en', name: 'English', icon: '🇺🇸' },
-  { id: 'es', name: 'Spanish', icon: '🇪🇸' },
-  { id: 'fr', name: 'French', icon: '🇫🇷' },
-  { id: 'de', name: 'German', icon: '🇩🇪' },
-  { id: 'it', name: 'Italian', icon: '🇮🇹' },
-  { id: 'pt', name: 'Portuguese', icon: '🇵🇹' },
-  { id: 'nl', name: 'Dutch', icon: '🇳🇱' },
-  { id: 'pl', name: 'Polish', icon: '🇵🇱' },
-  { id: 'ro', name: 'Romanian', icon: '🇷🇴' },
-  { id: 'cs', name: 'Czech', icon: '🇨🇿' },
-  { id: 'el', name: 'Greek', icon: '🇬🇷' },
-  { id: 'bg', name: 'Bulgarian', icon: '🇧🇬' },
-  { id: 'fi', name: 'Finnish', icon: '🇫🇮' },
-  { id: 'uk', name: 'Ukrainian', icon: '🇺🇦' },
-  { id: 'ru', name: 'Russian', icon: '🇷🇺' },
-  { id: 'tr', name: 'Turkish', icon: '🇹🇷' },
-  { id: 'ar', name: 'Arabic', icon: '🇸🇦' },
-  { id: 'hi', name: 'Hindi', icon: '🇮🇳' },
-  { id: 'th', name: 'Thai', icon: '🇹🇭' },
-  { id: 'vi', name: 'Vietnamese', icon: '🇻🇳' },
-  { id: 'id', name: 'Indonesian', icon: '🇮🇩' },
-  { id: 'ja', name: 'Japanese', icon: '🇯🇵' },
-  { id: 'ko', name: 'Korean', icon: '🇰🇷' },
-  { id: 'zh', name: 'Chinese', icon: '🇨🇳' },
+  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
+  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
+  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
+  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
+  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
+  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
+  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
+  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
+  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
+  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
+  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
+  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
+  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
+  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
+  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
+  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
+  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
+  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
+  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
+  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
+  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
+  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
+  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
+  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
 ];
 
 // Art styles from HomePage
@@ -1026,7 +1026,13 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {genres.find(g => g.id === selectedGenre)?.icon} {genres.find(g => g.id === selectedGenre)?.name}
+                  <Box
+                    component="img"
+                    src={genres.find(g => g.id === selectedGenre)?.image}
+                    alt={genres.find(g => g.id === selectedGenre)?.name}
+                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
+                  />
+                  {genres.find(g => g.id === selectedGenre)?.name}
                 </Box>
                 <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
               </Button>
@@ -1068,7 +1074,13 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {moods.find(m => m.id === selectedMood)?.icon} {moods.find(m => m.id === selectedMood)?.name}
+                  <Box
+                    component="img"
+                    src={moods.find(m => m.id === selectedMood)?.image}
+                    alt={moods.find(m => m.id === selectedMood)?.name}
+                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
+                  />
+                  {moods.find(m => m.id === selectedMood)?.name}
                 </Box>
                 <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
               </Button>
@@ -1110,7 +1122,13 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {languages.find(l => l.id === selectedLanguage)?.icon} {languages.find(l => l.id === selectedLanguage)?.name}
+                  <Box
+                    component="img"
+                    src={languages.find(l => l.id === selectedLanguage)?.image}
+                    alt={languages.find(l => l.id === selectedLanguage)?.name}
+                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
+                  />
+                  {languages.find(l => l.id === selectedLanguage)?.name}
                 </Box>
                 <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
               </Button>
@@ -1136,21 +1154,45 @@ const CreatePage: React.FC = () => {
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Genre</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {genres.find(g => g.id === selectedGenre)?.icon} {genres.find(g => g.id === selectedGenre)?.name}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      component="img"
+                      src={genres.find(g => g.id === selectedGenre)?.image}
+                      alt={genres.find(g => g.id === selectedGenre)?.name}
+                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {genres.find(g => g.id === selectedGenre)?.name}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Mood</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {moods.find(m => m.id === selectedMood)?.icon} {moods.find(m => m.id === selectedMood)?.name}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      component="img"
+                      src={moods.find(m => m.id === selectedMood)?.image}
+                      alt={moods.find(m => m.id === selectedMood)?.name}
+                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {moods.find(m => m.id === selectedMood)?.name}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Language</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {languages.find(l => l.id === selectedLanguage)?.icon} {languages.find(l => l.id === selectedLanguage)?.name}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      component="img"
+                      src={languages.find(l => l.id === selectedLanguage)?.image}
+                      alt={languages.find(l => l.id === selectedLanguage)?.name}
+                      sx={{ width: 18, height: 18, borderRadius: '4px', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {languages.find(l => l.id === selectedLanguage)?.name}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Prompt</Typography>
@@ -1237,8 +1279,20 @@ const CreatePage: React.FC = () => {
                     border: selectedGenre === genre.id ? '2px solid #007AFF' : '2px solid transparent',
                   }}
                 >
+                  <Box
+                    component="img"
+                    src={genre.image}
+                    alt={genre.name}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                      mr: 2,
+                    }}
+                  />
                   <ListItemText 
-                    primary={`${genre.icon} ${genre.name}`} 
+                    primary={genre.name} 
                     primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
                   />
                   {selectedGenre === genre.id && <CheckIcon sx={{ color: '#007AFF' }} />}
@@ -1306,8 +1360,20 @@ const CreatePage: React.FC = () => {
                     border: selectedMood === mood.id ? '2px solid #007AFF' : '2px solid transparent',
                   }}
                 >
+                  <Box
+                    component="img"
+                    src={mood.image}
+                    alt={mood.name}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                      mr: 2,
+                    }}
+                  />
                   <ListItemText 
-                    primary={`${mood.icon} ${mood.name}`} 
+                    primary={mood.name} 
                     primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
                   />
                   {selectedMood === mood.id && <CheckIcon sx={{ color: '#007AFF' }} />}
@@ -1375,8 +1441,20 @@ const CreatePage: React.FC = () => {
                     border: selectedLanguage === language.id ? '2px solid #007AFF' : '2px solid transparent',
                   }}
                 >
+                  <Box
+                    component="img"
+                    src={language.image}
+                    alt={language.name}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                      mr: 2,
+                    }}
+                  />
                   <ListItemText 
-                    primary={`${language.icon} ${language.name}`} 
+                    primary={language.name} 
                     primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
                   />
                   {selectedLanguage === language.id && <CheckIcon sx={{ color: '#007AFF' }} />}
