@@ -3,25 +3,31 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   Box,
+  Container,
   Typography,
   IconButton,
-  Paper,
   CircularProgress,
-  Slider,
+  Chip,
+  Paper,
+  useMediaQuery,
+  useTheme,
+  Divider,
 } from '@mui/material';
 import {
   ArrowBack,
   PlayArrowRounded,
   Pause,
-  Replay10,
-  Forward10,
   Fullscreen,
   FullscreenExit,
-  VolumeUp,
-  VolumeOff,
+  MusicNote,
+  AccessTime,
+  CalendarToday,
+  Movie,
+  AspectRatio,
+  Download,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
-import { videosApi } from '../services/api';
+import { videosApi, songsApi } from '../services/api';
 
 interface VideoData {
   videoId: string;
@@ -32,17 +38,35 @@ interface VideoData {
   duration?: number;
   createdAt: string;
   status: string;
+  aspectRatio?: 'portrait' | 'landscape';
+  videoType?: string;
+  style?: string;
+}
+
+interface SongData {
+  songId: string;
+  title?: string;
+  songTitle?: string;
+  lyrics?: string;
+  lyricsRaw?: string;
+  genre?: string;
+  mood?: string;
+  actualDuration?: number;
+  estimatedDuration?: number;
 }
 
 const MusicVideoPlayer: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user } = useSelector((state: RootState) => state.auth);
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   
   const [videoData, setVideoData] = useState<VideoData | null>(null);
+  const [songData, setSongData] = useState<SongData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -50,17 +74,12 @@ const MusicVideoPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
-  
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch video data
+  // Fetch video and song data
   useEffect(() => {
-    const fetchVideo = async () => {
+    const fetchData = async () => {
       if (!user?.userId || !videoId) {
         setError('Unable to load video');
         setLoading(false);
@@ -68,12 +87,27 @@ const MusicVideoPlayer: React.FC = () => {
       }
 
       try {
-        const response = await videosApi.getUserVideos(user.userId);
-        const videos = response.data.videos || [];
+        // Fetch video
+        const videoResponse = await videosApi.getUserVideos(user.userId);
+        const videos = videoResponse.data.videos || [];
         const video = videos.find((v: VideoData) => v.videoId === videoId);
         
         if (video) {
           setVideoData(video);
+          
+          // Fetch associated song for lyrics
+          if (video.songId) {
+            try {
+              const songsResponse = await songsApi.getUserSongs(user.userId);
+              const songs = songsResponse.data.songs || [];
+              const song = songs.find((s: SongData) => s.songId === video.songId);
+              if (song) {
+                setSongData(song);
+              }
+            } catch (songErr) {
+              console.error('Error fetching song:', songErr);
+            }
+          }
         } else {
           setError('Video not found');
         }
@@ -85,35 +119,11 @@ const MusicVideoPlayer: React.FC = () => {
       }
     };
 
-    fetchVideo();
+    fetchData();
   }, [user?.userId, videoId]);
 
-  // Show/hide controls
-  const handleMouseMove = useCallback(() => {
-    setShowControls(true);
-    
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
-    }
-    
-    if (isPlaying) {
-      controlsTimeoutRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 3000);
-    }
-  }, [isPlaying]);
-
-  // Cleanup timeout
-  useEffect(() => {
-    return () => {
-      if (controlsTimeoutRef.current) {
-        clearTimeout(controlsTimeoutRef.current);
-      }
-    };
-  }, []);
-
   const handleGoBack = useCallback(() => {
-    navigate(-1);
+    navigate('/dashboard?tab=videos');
   }, [navigate]);
 
   const handlePlayPause = useCallback(() => {
@@ -138,43 +148,6 @@ const MusicVideoPlayer: React.FC = () => {
     }
   }, []);
 
-  const handleSeek = useCallback((_event: Event, value: number | number[]) => {
-    if (!videoRef.current) return;
-    const newTime = value as number;
-    videoRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  }, []);
-
-  const handleSkipBackward = useCallback(() => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 10);
-  }, []);
-
-  const handleSkipForward = useCallback(() => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.min(duration, videoRef.current.currentTime + 10);
-  }, [duration]);
-
-  const handleVolumeChange = useCallback((_event: Event, value: number | number[]) => {
-    if (!videoRef.current) return;
-    const newVolume = value as number;
-    videoRef.current.volume = newVolume;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  }, []);
-
-  const handleMuteToggle = useCallback(() => {
-    if (!videoRef.current) return;
-    
-    if (isMuted) {
-      videoRef.current.volume = volume || 1;
-      setIsMuted(false);
-    } else {
-      videoRef.current.volume = 0;
-      setIsMuted(true);
-    }
-  }, [isMuted, volume]);
-
   const handleFullscreenToggle = useCallback(() => {
     if (!containerRef.current) return;
     
@@ -188,6 +161,25 @@ const MusicVideoPlayer: React.FC = () => {
       }
     }
   }, [isFullscreen]);
+
+  const handleDownload = useCallback(async () => {
+    if (!videoData?.videoUrl) return;
+    
+    try {
+      const response = await fetch(videoData.videoUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${videoData.songTitle || 'music-video'}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Download failed:', err);
+    }
+  }, [videoData]);
 
   // Listen for fullscreen changes
   useEffect(() => {
@@ -203,7 +195,6 @@ const MusicVideoPlayer: React.FC = () => {
 
   const handleVideoEnded = useCallback(() => {
     setIsPlaying(false);
-    setShowControls(true);
   }, []);
 
   const formatTime = (seconds: number): string => {
@@ -212,21 +203,35 @@ const MusicVideoPlayer: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  // Clean lyrics (remove section tags)
+  const cleanLyrics = (lyrics: string): string => {
+    return lyrics
+      .replace(/\[(intro|verse|chorus|bridge|outro|hook|pre-chorus)\]/gi, '')
+      .trim();
+  };
+
   if (loading) {
     return (
       <Box
         sx={{
-          width: '100vw',
-          height: '100vh',
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #1D1D1F 0%, #2D2D2F 100%)',
+          background: '#f5f5f7',
         }}
       >
         <CircularProgress sx={{ color: '#007AFF', mb: 2 }} size={48} />
-        <Typography sx={{ color: '#fff' }}>Loading video...</Typography>
+        <Typography sx={{ color: '#1d1d1f' }}>Loading video...</Typography>
       </Box>
     );
   }
@@ -235,268 +240,303 @@ const MusicVideoPlayer: React.FC = () => {
     return (
       <Box
         sx={{
-          width: '100vw',
-          height: '100vh',
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #1D1D1F 0%, #2D2D2F 100%)',
+          background: '#f5f5f7',
         }}
       >
         <Typography variant="h6" sx={{ color: '#FF3B30', mb: 2 }}>
           {error || 'Video not available'}
         </Typography>
-        <IconButton onClick={handleGoBack} sx={{ color: '#fff' }}>
-          <ArrowBack /> Back
+        <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
+          <ArrowBack sx={{ mr: 1 }} /> Back to Videos
         </IconButton>
       </Box>
     );
   }
 
+  const lyrics = songData?.lyrics || songData?.lyricsRaw || '';
+  const songDuration = songData?.actualDuration || songData?.estimatedDuration || duration;
+
   return (
-    <Box
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        background: '#000',
-        zIndex: 9999,
-        cursor: showControls ? 'default' : 'none',
-      }}
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        src={videoData.videoUrl}
-        poster={videoData.thumbnailUrl}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={handleVideoEnded}
-        onWaiting={() => setIsBuffering(true)}
-        onPlaying={() => setIsBuffering(false)}
-        onClick={handlePlayPause}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-        }}
-      />
-
-      {/* Buffering Indicator */}
-      {isBuffering && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 10,
-          }}
-        >
-          <CircularProgress sx={{ color: '#fff' }} size={64} />
-        </Box>
-      )}
-
-      {/* Controls Overlay */}
+    <Box sx={{ minHeight: '100vh', background: '#f5f5f7', pb: 4 }}>
+      {/* Header */}
       <Box
         sx={{
-          position: 'absolute',
-          inset: 0,
-          background: showControls
-            ? 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.8) 100%)'
-            : 'transparent',
-          opacity: showControls ? 1 : 0,
-          transition: 'opacity 0.3s ease',
-          pointerEvents: showControls ? 'auto' : 'none',
+          background: '#fff',
+          borderBottom: '1px solid rgba(0,0,0,0.08)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
         }}
       >
-        {/* Top Bar */}
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', alignItems: 'center', py: 1.5, gap: 2 }}>
+            <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+              {videoData.songTitle || 'Music Video'}
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
         <Box
           sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            p: 2,
             display: 'flex',
-            alignItems: 'center',
-            gap: 2,
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 3,
           }}
         >
-          <IconButton onClick={handleGoBack} sx={{ color: '#fff' }}>
-            <ArrowBack />
-          </IconButton>
-          <Typography
-            variant="h6"
-            sx={{
-              color: '#fff',
-              fontWeight: 600,
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-            }}
-          >
-            {videoData.songTitle || 'Music Video'}
-          </Typography>
-        </Box>
-
-        {/* Center Play Button (when paused) */}
-        {!isPlaying && !isBuffering && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <IconButton
-              onClick={handlePlayPause}
+          {/* Left Column - Video Player */}
+          <Box sx={{ flex: { xs: '1', md: '2' } }}>
+            <Paper
+              ref={containerRef}
+              elevation={0}
               sx={{
-                width: 80,
-                height: 80,
-                background: 'rgba(255,255,255,0.95)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-                '&:hover': {
-                  background: '#fff',
-                  transform: 'scale(1.1)',
-                },
-                transition: 'transform 0.2s ease',
+                borderRadius: 3,
+                overflow: 'hidden',
+                background: '#000',
+                position: 'relative',
+                aspectRatio: videoData.aspectRatio === 'landscape' ? '16/9' : '9/16',
+                maxHeight: { xs: '60vh', md: '80vh' },
+                mx: 'auto',
+                width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
               }}
             >
-              <PlayArrowRounded sx={{ fontSize: 48, color: '#007AFF' }} />
-            </IconButton>
-          </Box>
-        )}
-
-        {/* Bottom Controls */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            p: 2,
-            pb: 3,
-          }}
-        >
-          {/* Progress Bar */}
-          <Box sx={{ px: 2, mb: 2 }}>
-            <Slider
-              value={currentTime}
-              min={0}
-              max={duration || 100}
-              onChange={handleSeek}
-              sx={{
-                color: '#007AFF',
-                height: 4,
-                '& .MuiSlider-thumb': {
-                  width: 16,
-                  height: 16,
-                  backgroundColor: '#fff',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                  '&:hover, &.Mui-focusVisible': {
-                    boxShadow: '0 4px 16px rgba(0,122,255,0.5)',
-                  },
-                },
-                '& .MuiSlider-track': {
-                  background: 'linear-gradient(90deg, #007AFF, #5856D6)',
-                  border: 'none',
-                },
-                '& .MuiSlider-rail': {
-                  background: 'rgba(255,255,255,0.3)',
-                },
-              }}
-            />
-          </Box>
-
-          {/* Time & Controls Row */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              px: 2,
-            }}
-          >
-            {/* Time */}
-            <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500 }}>
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </Typography>
-
-            {/* Center Controls */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton onClick={handleSkipBackward} sx={{ color: '#fff' }}>
-                <Replay10 />
-              </IconButton>
-              <IconButton
+              {/* Video Element */}
+              <video
+                ref={videoRef}
+                src={videoData.videoUrl}
+                poster={videoData.thumbnailUrl}
+                onTimeUpdate={handleTimeUpdate}
+                onLoadedMetadata={handleLoadedMetadata}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={handleVideoEnded}
+                onWaiting={() => setIsBuffering(true)}
+                onPlaying={() => setIsBuffering(false)}
                 onClick={handlePlayPause}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  cursor: 'pointer',
+                }}
+              />
+
+              {/* Buffering Indicator */}
+              {isBuffering && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 10,
+                  }}
+                >
+                  <CircularProgress sx={{ color: '#fff' }} size={64} />
+                </Box>
+              )}
+
+              {/* Play Button Overlay (when paused) */}
+              {!isPlaying && !isBuffering && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 10,
+                  }}
+                >
+                  <IconButton
+                    onClick={handlePlayPause}
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      background: 'rgba(255,255,255,0.95)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                      '&:hover': {
+                        background: '#fff',
+                        transform: 'scale(1.1)',
+                      },
+                      transition: 'transform 0.2s ease',
+                    }}
+                  >
+                    <PlayArrowRounded sx={{ fontSize: 48, color: '#007AFF' }} />
+                  </IconButton>
+                </Box>
+              )}
+
+              {/* Control Bar */}
+              <Box
                 sx={{
-                  width: 56,
-                  height: 56,
-                  background: '#007AFF',
-                  color: '#fff',
-                  '&:hover': {
-                    background: '#0066CC',
-                  },
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  p: 2,
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                {isPlaying ? (
-                  <Pause sx={{ fontSize: 32 }} />
-                ) : (
-                  <PlayArrowRounded sx={{ fontSize: 32 }} />
-                )}
-              </IconButton>
-              <IconButton onClick={handleSkipForward} sx={{ color: '#fff' }}>
-                <Forward10 />
-              </IconButton>
-            </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton onClick={handlePlayPause} sx={{ color: '#fff' }}>
+                    {isPlaying ? <Pause /> : <PlayArrowRounded />}
+                  </IconButton>
+                  <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500 }}>
+                    {formatTime(currentTime)} / {formatTime(duration)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton onClick={handleDownload} sx={{ color: '#fff' }}>
+                    <Download />
+                  </IconButton>
+                  <IconButton onClick={handleFullscreenToggle} sx={{ color: '#fff' }}>
+                    {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+                  </IconButton>
+                </Box>
+              </Box>
 
-            {/* Right Controls */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton onClick={handleMuteToggle} sx={{ color: '#fff' }}>
-                {isMuted ? <VolumeOff /> : <VolumeUp />}
-              </IconButton>
-              <Box sx={{ width: 80, display: { xs: 'none', sm: 'block' } }}>
-                <Slider
-                  value={isMuted ? 0 : volume}
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  onChange={handleVolumeChange}
+              {/* Progress Bar */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 60,
+                  left: 16,
+                  right: 16,
+                  height: 4,
+                  background: 'rgba(255,255,255,0.3)',
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                }}
+                onClick={(e) => {
+                  if (!videoRef.current) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const percent = (e.clientX - rect.left) / rect.width;
+                  videoRef.current.currentTime = percent * duration;
+                }}
+              >
+                <Box
                   sx={{
-                    color: '#fff',
-                    '& .MuiSlider-thumb': {
-                      width: 12,
-                      height: 12,
-                    },
-                    '& .MuiSlider-track': {
-                      border: 'none',
-                    },
-                    '& .MuiSlider-rail': {
-                      background: 'rgba(255,255,255,0.3)',
-                    },
+                    height: '100%',
+                    width: `${(currentTime / duration) * 100}%`,
+                    background: 'linear-gradient(90deg, #007AFF, #5856D6)',
+                    borderRadius: 2,
+                    transition: 'width 0.1s linear',
                   }}
                 />
               </Box>
-              <IconButton onClick={handleFullscreenToggle} sx={{ color: '#fff' }}>
-                {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
-              </IconButton>
-            </Box>
+            </Paper>
+          </Box>
+
+          {/* Right Column - Details & Lyrics */}
+          <Box sx={{ flex: { xs: '1', md: '1' }, minWidth: 0 }}>
+            {/* Video Info Card */}
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                p: 3,
+                mb: 2,
+                background: '#fff',
+              }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: 700, color: '#1d1d1f', mb: 2 }}>
+                {videoData.songTitle || 'Music Video'}
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+                {songData?.genre && (
+                  <Chip
+                    icon={<MusicNote sx={{ fontSize: 16 }} />}
+                    label={songData.genre}
+                    size="small"
+                    sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
+                  />
+                )}
+                {songData?.mood && (
+                  <Chip
+                    label={songData.mood}
+                    size="small"
+                    sx={{ background: 'rgba(88,86,214,0.1)', color: '#5856D6' }}
+                  />
+                )}
+                {videoData.videoType && (
+                  <Chip
+                    icon={<Movie sx={{ fontSize: 16 }} />}
+                    label={videoData.videoType === 'still' ? 'Still' : 'Cinematic'}
+                    size="small"
+                    sx={{ background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
+                  />
+                )}
+              </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <AccessTime sx={{ fontSize: 20, color: '#86868B' }} />
+                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
+                    <strong>Duration:</strong> {formatTime(songDuration)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <AspectRatio sx={{ fontSize: 20, color: '#86868B' }} />
+                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
+                    <strong>Aspect Ratio:</strong> {videoData.aspectRatio === 'landscape' ? '16:9 Landscape' : '9:16 Portrait'}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <CalendarToday sx={{ fontSize: 20, color: '#86868B' }} />
+                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
+                    <strong>Created:</strong> {formatDate(videoData.createdAt)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+
+            {/* Lyrics Card */}
+            {lyrics && (
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  p: 3,
+                  background: '#fff',
+                  maxHeight: { xs: '300px', md: '400px' },
+                  overflow: 'auto',
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f', mb: 2 }}>
+                  🎤 Lyrics
+                </Typography>
+                <Typography
+                  sx={{
+                    color: '#1d1d1f',
+                    lineHeight: 1.8,
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  {cleanLyrics(lyrics)}
+                </Typography>
+              </Paper>
+            )}
           </Box>
         </Box>
-      </Box>
+      </Container>
     </Box>
   );
 };
 
 export default MusicVideoPlayer;
-
-
-
