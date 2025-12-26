@@ -12,6 +12,13 @@ import {
   useTheme,
   CircularProgress,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -19,7 +26,8 @@ import { RootState } from '../store/store';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import api from '../utils/axiosConfig';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { charactersApi } from '../services/api';
 
 interface Character {
   characterId: string;
@@ -40,13 +48,21 @@ const CharactersPage: React.FC = () => {
   
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({ open: false, message: '', severity: 'success' });
 
   const fetchCharacters = useCallback(async () => {
     if (!user?.userId) return;
     
     try {
       setIsLoading(true);
-      const response = await api.get(`/api/gruvi/characters/${user.userId}`);
+      const response = await charactersApi.getUserCharacters(user.userId);
       setCharacters(response.data.characters || []);
     } catch (error) {
       console.error('Error fetching characters:', error);
@@ -59,6 +75,38 @@ const CharactersPage: React.FC = () => {
   useEffect(() => {
     fetchCharacters();
   }, [fetchCharacters]);
+
+  const handleDeleteClick = (e: React.MouseEvent, character: Character) => {
+    e.stopPropagation(); // Prevent navigating to edit page
+    setCharacterToDelete(character);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!user?.userId || !characterToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await charactersApi.deleteCharacter(user.userId, characterToDelete.characterId);
+      setCharacters(prev => prev.filter(c => c.characterId !== characterToDelete.characterId));
+      setNotification({
+        open: true,
+        message: `"${characterToDelete.characterName}" deleted successfully`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting character:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to delete character. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setCharacterToDelete(null);
+    }
+  };
 
   return (
     <Box sx={{ 
@@ -248,11 +296,95 @@ const CharactersPage: React.FC = () => {
                       {character.description || `${character.gender || ''} ${character.age ? `• ${character.age}` : ''}`}
                     </Typography>
                   </Box>
+                  <Tooltip title="Delete character" arrow>
+                    <IconButton
+                      onClick={(e) => handleDeleteClick(e, character)}
+                      sx={{
+                        color: '#8E8E93',
+                        '&:hover': {
+                          color: '#FF3B30',
+                          backgroundColor: 'rgba(255,59,48,0.1)',
+                        },
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               ))}
             </Box>
           )}
         </Paper>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => !isDeleting && setDeleteDialogOpen(false)}
+          PaperProps={{
+            sx: {
+              borderRadius: '16px',
+              maxWidth: 400,
+            }
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 600 }}>
+            Delete Character?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete "{characterToDelete?.characterName}"? This action cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+              sx={{
+                color: '#86868B',
+                textTransform: 'none',
+                fontWeight: 500,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              sx={{
+                color: '#fff',
+                backgroundColor: '#FF3B30',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 3,
+                '&:hover': {
+                  backgroundColor: '#E0342B',
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: 'rgba(255,59,48,0.5)',
+                  color: '#fff',
+                },
+              }}
+            >
+              {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Notification Snackbar */}
+        <Snackbar
+          open={notification.open}
+          autoHideDuration={4000}
+          onClose={() => setNotification(prev => ({ ...prev, open: false }))}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={() => setNotification(prev => ({ ...prev, open: false }))}
+            severity={notification.severity}
+            sx={{ width: '100%' }}
+          >
+            {notification.message}
+          </Alert>
+        </Snackbar>
       </Container>
     </Box>
   );
