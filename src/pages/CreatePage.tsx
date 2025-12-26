@@ -43,7 +43,6 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MovieIcon from '@mui/icons-material/Movie';
 import ImageIcon from '@mui/icons-material/Image';
-import AnimationIcon from '@mui/icons-material/Animation';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -221,23 +220,23 @@ const artStyles = [
 ];
 
 // Video types and quality options
-// Token costs: Still = 40, Standard = 200
+// Token costs: Still = 40, Cinematic = 200
 const videoTypes = [
   { 
     id: 'still', 
     label: 'Still', 
     credits: 40, 
-    description: 'Static images synced to music',
-    tooltip: 'Images transition with smooth fades, synced to your song. Fast and affordable.',
+    description: 'Beautifully composed scenes',
+    tooltip: 'Stunning AI-generated visuals with cinematic transitions, perfectly synced to your music.',
     icon: ImageIcon,
   },
   { 
     id: 'standard', 
-    label: 'Standard', 
+    label: 'Cinematic', 
     credits: 200, 
-    description: 'Animated video',
-    tooltip: 'Powered by Seedance AI. Brings your scenes to life with fluid motion and animations.',
-    icon: AnimationIcon,
+    description: 'Motion picture quality',
+    tooltip: 'Premium AI-powered motion brings your music video to life with fluid, cinematic animations.',
+    icon: MovieIcon,
   },
 ];
 
