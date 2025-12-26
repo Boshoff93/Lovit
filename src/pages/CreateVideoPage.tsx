@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { 
   Box, 
   Container,
@@ -6,12 +7,8 @@ import {
   Button,
   Paper,
   TextField,
-  FormControl,
-  Select,
-  MenuItem,
   Chip,
   IconButton,
-  SelectChangeEvent,
   CircularProgress,
   Snackbar,
   Alert,
@@ -27,6 +24,8 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
+import { RootState } from '../store/store';
+import { videosApi } from '../services/api';
 
 // Art styles for music videos - matching HomePage styles
 const artStyles = [
@@ -51,10 +50,17 @@ const artStyles = [
 // Token costs:
 // Song = 20 tokens
 // Still image video = 40 tokens
-// Animated video = 200 tokens
+// Standard animated video = 200 tokens
+// Professional animated video = 2000 tokens
 const videoTypes = [
-  { id: 'still', label: 'Still Image Video', credits: 40, description: 'Static images synced to music', icon: ImageIcon },
-  { id: 'animated', label: 'Animated Video', credits: 200, description: 'Full motion animation', icon: AnimationIcon },
+  { id: 'still', label: 'Still Image', credits: 40, description: 'Static images synced to music', icon: ImageIcon },
+  { id: 'standard', label: 'Animated', credits: 200, description: 'AI-animated video', icon: AnimationIcon },
+];
+
+// Aspect ratio options
+const aspectRatios = [
+  { id: 'portrait', label: 'Portrait', icon: '📱', ratio: '9:16', description: 'Best for mobile & social' },
+  { id: 'landscape', label: 'Landscape', icon: '🖥️', ratio: '16:9', description: 'Best for TV & YouTube' },
 ];
 
 // Genres/Moods for music video
@@ -96,9 +102,11 @@ const mockCharacters = [
 const CreateVideoPage: React.FC = () => {
   const { songId } = useParams();
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
   
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
+  const [aspectRatio, setAspectRatio] = useState<string>('portrait');
   const [selectedGenre, setSelectedGenre] = useState<string>('pop');
   const [selectedMood, setSelectedMood] = useState<string>('happy');
   const [videoPrompt, setVideoPrompt] = useState<string>('');
@@ -149,11 +157,36 @@ const CreateVideoPage: React.FC = () => {
   };
 
   const handleGenerate = async () => {
+    if (!songId || !videoPrompt.trim()) {
+      setNotification({
+        open: true,
+        message: 'Please describe your music video concept',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    if (!user?.userId) {
+      setNotification({
+        open: true,
+        message: 'Please sign in to create videos',
+        severity: 'error'
+      });
+      return;
+    }
+    
     setIsGenerating(true);
     
     try {
-      // TODO: Implement actual video generation API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await videosApi.generateVideo({
+        userId: user.userId,
+        songId,
+        videoType: videoType as 'still' | 'standard' | 'professional',
+        style: selectedStyle,
+        videoPrompt: videoPrompt.trim(),
+        aspectRatio: aspectRatio as 'portrait' | 'landscape',
+        characterIds: [], // TODO: Add character selection
+      });
       
       setNotification({
         open: true,
@@ -162,12 +195,13 @@ const CreateVideoPage: React.FC = () => {
       });
       
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/dashboard?tab=videos');
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Video generation error:', error);
       setNotification({
         open: true,
-        message: 'Failed to generate video. Please try again.',
+        message: error.response?.data?.error || 'Failed to generate video. Please try again.',
         severity: 'error'
       });
     } finally {
@@ -513,6 +547,93 @@ const CreateVideoPage: React.FC = () => {
                   </ToggleButton>
                 );
               })}
+            </ToggleButtonGroup>
+          </Paper>
+
+          {/* Aspect Ratio Selection */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              mb: 3,
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <Typography sx={{ fontSize: '1.2rem' }}>📐</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Aspect Ratio
+              </Typography>
+            </Box>
+            
+            <ToggleButtonGroup
+              value={aspectRatio}
+              exclusive
+              onChange={(_event, newValue) => {
+                if (newValue !== null) setAspectRatio(newValue);
+              }}
+              fullWidth
+              sx={{
+                gap: 1.5,
+                '& .MuiToggleButtonGroup-grouped': {
+                  border: 'none !important',
+                  borderRadius: '16px !important',
+                  m: 0,
+                },
+              }}
+            >
+              {aspectRatios.map((ar) => (
+                <ToggleButton
+                  key={ar.id}
+                  value={ar.id}
+                  sx={{
+                    flex: 1,
+                    py: 2,
+                    px: 2,
+                    flexDirection: 'column',
+                    gap: 0.5,
+                    textTransform: 'none',
+                    background: aspectRatio === ar.id 
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
+                      : 'rgba(0,0,0,0.03)',
+                    color: aspectRatio === ar.id ? '#fff' : '#1D1D1F',
+                    border: aspectRatio === ar.id 
+                      ? '2px solid transparent' 
+                      : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: aspectRatio === ar.id 
+                      ? '0 4px 16px rgba(0,122,255,0.3)' 
+                      : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      background: aspectRatio === ar.id 
+                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
+                        : 'rgba(0,0,0,0.06)',
+                    },
+                    '&.Mui-selected': {
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                      color: '#fff',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
+                      },
+                    },
+                  }}
+                >
+                  <Typography sx={{ fontSize: '1.5rem' }}>{ar.icon}</Typography>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                    {ar.label}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                    {ar.ratio}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>
+                    {ar.description}
+                  </Typography>
+                </ToggleButton>
+              ))}
             </ToggleButtonGroup>
           </Paper>
 

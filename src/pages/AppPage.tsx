@@ -73,6 +73,7 @@ interface Video {
   progressMessage?: string;
   createdAt: string;
   duration?: number;
+  aspectRatio?: 'portrait' | 'landscape';
 }
 
 interface AppPageProps {
@@ -1184,18 +1185,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               gap: 2,
               p: 3
             }}>
-              {videos.map((video) => (
+              {videos.map((video) => {
+                // Default to portrait (9:16) if not specified
+                const isLandscape = video.aspectRatio === 'landscape';
+                const videoAspectRatio = isLandscape ? '16/9' : '9/16';
+                
+                return (
                 <Paper
                   key={video.videoId}
                   onClick={() => video.status === 'completed' && handleWatchVideo(video)}
                   sx={{
                     position: 'relative',
-                    aspectRatio: '9/16',
+                    aspectRatio: videoAspectRatio,
                     borderRadius: 2,
                     overflow: 'hidden',
                     cursor: video.status === 'completed' ? 'pointer' : 'default',
                     border: '1px solid rgba(0,0,0,0.08)',
                     transition: 'all 0.3s ease',
+                    // Landscape videos take up the same column width but less height
+                    gridColumn: isLandscape ? 'span 1' : 'span 1',
                     '&:hover': video.status === 'completed' ? {
                       transform: 'translateY(-2px)',
                       boxShadow: '0 8px 24px rgba(0,122,255,0.2)',
@@ -1337,7 +1345,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     </Typography>
                   </Box>
                 </Paper>
-              ))}
+              );
+              })}
             </Box>
           ) : (
             <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>

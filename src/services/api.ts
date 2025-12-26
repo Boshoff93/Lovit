@@ -90,11 +90,15 @@ export const videosApi = {
     videoType: 'still' | 'standard' | 'professional'; // still=slideshow, standard=Seedance, professional=Kling
     style?: string;
     videoPrompt?: string;
+    aspectRatio?: 'portrait' | 'landscape';
     characterIds?: string[];
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string) => 
     api.get(`/api/gruvi/videos/${userId}`),
+  
+  deleteVideo: (userId: string, videoId: string) => 
+    api.delete(`/api/gruvi/videos/${userId}/${videoId}`),
 };
 
 // Characters API
