@@ -1295,140 +1295,75 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     } : {},
                   }}
                 >
-                  {/* Thumbnail or Processing State */}
-                  {video.status === 'processing' ? (
-                    <>
-                      {/* Octopus loading thumbnail - use portrait/landscape based on aspect ratio */}
+                  {/* Thumbnail Image - Same structure for all states */}
+                  <Box
+                    component="img"
+                    src={
+                      video.status === 'completed' 
+                        ? (video.thumbnailUrl || '/gruvi.png')
+                        : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
+                    }
+                    alt={video.songTitle || 'Music Video'}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      filter: video.status === 'failed' ? 'grayscale(100%) brightness(0.7)' : 'none',
+                    }}
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      e.currentTarget.src = '/gruvi.png';
+                    }}
+                  />
+                  
+                  {/* Center button/indicator overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {video.status === 'processing' ? (
                       <Box
-                        component="img"
-                        src={video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'}
-                        alt="Creating your video..."
                         sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      
-                      {/* Overlay for progress indicator */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          inset: 0,
+                          background: '#fff',
+                          borderRadius: '50%',
+                          width: 52,
+                          height: 52,
                           display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'flex-end',
-                          pb: 3,
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)',
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <CircularProgress 
-                            size={20} 
-                            sx={{ 
-                              color: '#fff',
-                              '& .MuiCircularProgress-circle': {
-                                strokeLinecap: 'round',
-                              },
-                            }} 
-                            variant={video.progress ? 'determinate' : 'indeterminate'}
-                            value={video.progress || 0}
-                          />
-                          <Typography 
-                            sx={{ 
-                              fontSize: '0.75rem', 
-                              fontWeight: 600, 
-                              color: '#fff',
-                              textShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                            }}
-                          >
-                            {video.progressMessage || 'Creating...'} {video.progress ? `${video.progress}%` : ''}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </>
-                  ) : video.status === 'failed' ? (
-                    <>
-                      {/* Failed thumbnail - grayscale octopus */}
-                      <Box
-                        component="img"
-                        src={video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'}
-                        alt="Failed to generate"
-                        sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          filter: 'grayscale(100%) brightness(0.7)',
-                        }}
-                      />
-                      
-                      {/* Centered error indicator */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: 1,
+                          border: '1px solid rgba(0,0,0,0.08)',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                         }}
                       >
-                        <Box
-                          sx={{
-                            background: '#FF3B30',
-                            borderRadius: '50%',
-                            width: 48,
-                            height: 48,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                          }}
-                        >
-                          <Typography sx={{ color: '#fff', fontSize: 22, fontWeight: 600 }}>✕</Typography>
-                        </Box>
-                        <Typography 
-                          sx={{ 
-                            fontSize: '0.8rem', 
-                            fontWeight: 600, 
-                            color: '#fff',
-                            textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-                          }}
-                        >
-                          Failed
-                        </Typography>
+                        <CircularProgress 
+                          size={28} 
+                          sx={{ color: '#007AFF' }} 
+                          variant={video.progress ? 'determinate' : 'indeterminate'}
+                          value={video.progress || 0}
+                        />
                       </Box>
-                    </>
-                  ) : (
-                    <>
-                      {/* Video Thumbnail */}
+                    ) : video.status === 'failed' ? (
                       <Box
-                        component="img"
-                        src={video.thumbnailUrl || '/gruvi.png'}
-                        alt={video.songTitle || 'Music Video'}
                         sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
+                          background: '#FF3B30',
+                          borderRadius: '50%',
+                          width: 52,
+                          height: 52,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                         }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                          e.currentTarget.src = '/gruvi.png';
-                        }}
-                      />
-                      
-                      {/* Play Icon Overlay - Always visible centered */}
+                      >
+                        <Typography sx={{ color: '#fff', fontSize: 24, fontWeight: 600 }}>✕</Typography>
+                      </Box>
+                    ) : (
                       <IconButton
                         sx={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
                           background: '#fff',
                           color: '#007AFF',
                           width: 52,
@@ -1438,15 +1373,63 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           transition: 'all 0.2s ease',
                           '&:hover': { 
                             background: '#fff', 
-                            transform: 'translate(-50%, -50%) translateY(-2px) scale(1.05)',
+                            transform: 'translateY(-2px) scale(1.05)',
                             boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
                           },
                         }}
                       >
                         <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#007AFF' }} />
                       </IconButton>
-                    </>
-                  )}
+                    )}
+                  </Box>
+                  
+                  {/* Info overlay at bottom with dark gradient - same as HomePage */}
+                  <Box 
+                    sx={{ 
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      p: 1.5,
+                      pt: 4,
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {video.songTitle || 'Music Video'}
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Chip
+                        label={
+                          video.status === 'processing' 
+                            ? (video.progressMessage || 'Creating...') 
+                            : video.status === 'failed' 
+                              ? 'Failed' 
+                              : 'Music Video'
+                        }
+                        size="small"
+                        sx={{
+                          background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                          backdropFilter: 'blur(10px)',
+                          color: '#fff',
+                          fontSize: '0.7rem',
+                          fontWeight: 500,
+                          height: 24,
+                          maxWidth: '70%',
+                          borderRadius: '100px',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          '& .MuiChip-label': {
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }
+                        }}
+                      />
+                      <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
+                        {video.status === 'processing' && video.progress ? `${video.progress}%` : new Date(video.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  </Box>
                   
                   {/* More Menu Button - Top right */}
                   <IconButton
@@ -1472,25 +1455,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     )}
                   </IconButton>
                   
-                  {/* Info overlay at bottom with dark gradient */}
-                  <Box 
-                    sx={{ 
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      p: 1.5,
-                      pt: 4,
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                    }}
-                  >
-                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {video.songTitle || 'Music Video'}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
-                      {new Date(video.createdAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
+                  
                 </Box>
               );
               })}
