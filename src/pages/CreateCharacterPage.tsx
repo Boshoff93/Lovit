@@ -160,16 +160,18 @@ const CreateCharacterPage: React.FC = () => {
       
       if (character) {
         setCharacterName(character.characterName || '');
-        setCharacterDescription(character.description || '');
         setCharacterGender(character.gender || 'Male');
         setCharacterAge(character.age || 'Child');
         setExistingImageUrls(character.imageUrls || []);
         
-        // Try to parse additional attributes from description
+        // Parse the description to extract user-written description vs auto-generated traits
         const desc = character.description || '';
+        
+        // Check for character kind
         if (desc.includes('Non-Human')) {
           setCharacterKind('Non-Human');
         }
+        
         // Extract hair color/length/eye color if present in description
         const hairColorMatch = desc.match(/Hair: ([^,]+),/);
         if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
@@ -177,6 +179,25 @@ const CreateCharacterPage: React.FC = () => {
         if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
         const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
         if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
+        
+        // Extract only the user-written description (the part before the auto-generated traits)
+        // The auto-generated part starts with "Human," or "Non-Human,"
+        const userDescParts = desc.split(/\.\s*(Human|Non-Human),/);
+        if (userDescParts.length > 1 && userDescParts[0].trim()) {
+          setCharacterDescription(userDescParts[0].trim());
+        } else if (!desc.match(/^(Human|Non-Human),/)) {
+          // If description doesn't start with auto-generated traits, it might be all user content
+          // But check if it contains any auto-generated patterns
+          const cleanDesc = desc
+            .replace(/\.\s*(Human|Non-Human), (Male|Female), [^.]+\./g, '')
+            .replace(/\.\s*Hair: [^.]+\./g, '')
+            .replace(/\.\s*Eyes: [^.]+/g, '')
+            .trim();
+          setCharacterDescription(cleanDesc || '');
+        } else {
+          // Description is all auto-generated, leave description empty
+          setCharacterDescription('');
+        }
       }
     } catch (error) {
       console.error('Error fetching character:', error);

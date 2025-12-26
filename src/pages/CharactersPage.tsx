@@ -258,8 +258,8 @@ const CharactersPage: React.FC = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 2,
-                    p: 2,
+                    gap: { xs: 1.5, sm: 2 },
+                    p: { xs: 1.5, sm: 2 },
                     borderRadius: '12px',
                     border: '1px solid rgba(0,0,0,0.08)',
                     mb: 2,
@@ -276,38 +276,55 @@ const CharactersPage: React.FC = () => {
                   <Avatar
                     src={character.imageUrls?.[0]}
                     sx={{
-                      width: 56,
-                      height: 56,
+                      width: { xs: 48, sm: 56 },
+                      height: { xs: 48, sm: 56 },
                       bgcolor: '#E5E5EA',
+                      flexShrink: 0,
                     }}
                   >
                     <PersonIcon sx={{ color: '#8E8E93' }} />
                   </Avatar>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                    <Typography 
+                      variant="subtitle1" 
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: '#1D1D1F',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
+                      }}
+                    >
                       {character.characterName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ 
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      maxWidth: '100%'
-                    }}>
-                      {character.description || `${character.gender || ''} ${character.age ? `• ${character.age}` : ''}`}
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                      }}
+                    >
+                      {character.gender || ''}{character.age ? ` • ${character.age}` : ''}
                     </Typography>
                   </Box>
                   <Tooltip title="Delete character" arrow>
                     <IconButton
                       onClick={(e) => handleDeleteClick(e, character)}
+                      size="small"
                       sx={{
                         color: '#8E8E93',
+                        flexShrink: 0,
                         '&:hover': {
                           color: '#FF3B30',
                           backgroundColor: 'rgba(255,59,48,0.1)',
                         },
                       }}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </Box>

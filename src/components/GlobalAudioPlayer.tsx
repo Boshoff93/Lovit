@@ -66,12 +66,12 @@ const GlobalAudioPlayer: React.FC = () => {
         py: 1.5,
       }}
     >
-      <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, width: '100%' }}>
         {/* Song Icon */}
         <Box
           sx={{
-            width: 48,
-            height: 48,
+            width: { xs: 40, sm: 48 },
+            height: { xs: 40, sm: 48 },
             borderRadius: '12px',
             background: 'linear-gradient(135deg, #1D1D1F 0%, #3D3D3F 100%)',
             display: 'flex',
@@ -81,11 +81,11 @@ const GlobalAudioPlayer: React.FC = () => {
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           }}
         >
-          <VolumeUpIcon sx={{ color: '#fff', fontSize: 24 }} />
+          <VolumeUpIcon sx={{ color: '#fff', fontSize: { xs: 20, sm: 24 } }} />
         </Box>
 
         {/* Song Info */}
-        <Box sx={{ flex: 1, minWidth: 0, maxWidth: { xs: 120, sm: 200 } }}>
+        <Box sx={{ minWidth: 0, maxWidth: { xs: 100, sm: 200 }, flexShrink: 0 }}>
           <Typography
             variant="body2"
             sx={{
@@ -94,13 +94,14 @@ const GlobalAudioPlayer: React.FC = () => {
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
             }}
           >
             {currentSong.songTitle}
           </Typography>
           <Typography
             variant="caption"
-            sx={{ color: '#86868B' }}
+            sx={{ color: '#86868B', fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
           >
             {currentSong.genre}
           </Typography>
@@ -109,11 +110,11 @@ const GlobalAudioPlayer: React.FC = () => {
         {/* Progress Slider - using MUI Slider for smooth experience */}
         <Box 
           sx={{ 
-            flex: 2, 
-            display: { xs: 'none', sm: 'flex' }, 
+            flex: 1, 
+            display: { xs: 'none', md: 'flex' }, 
             alignItems: 'center', 
             gap: 1.5,
-            height: 48, // Match the height of the song icon for consistent alignment
+            minWidth: 0,
           }}
         >
           <Typography 
@@ -128,7 +129,7 @@ const GlobalAudioPlayer: React.FC = () => {
           >
             {formatTime(displayProgress)}
           </Typography>
-          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
             <Slider
               value={displayProgress}
               min={0}
@@ -138,7 +139,6 @@ const GlobalAudioPlayer: React.FC = () => {
               sx={{
                 color: '#007AFF',
                 height: 4,
-                padding: '0 !important',
                 '& .MuiSlider-track': {
                   border: 'none',
                   background: 'linear-gradient(90deg, #007AFF, #5AC8FA)',
@@ -153,8 +153,6 @@ const GlobalAudioPlayer: React.FC = () => {
                   backgroundColor: '#fff',
                   border: '2px solid #007AFF',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  marginTop: 0,
-                  marginLeft: -8,
                   '&:before': {
                     display: 'none',
                   },
@@ -178,8 +176,11 @@ const GlobalAudioPlayer: React.FC = () => {
           </Typography>
         </Box>
 
+        {/* Spacer to push controls to the right on small screens */}
+        <Box sx={{ flex: 1, display: { xs: 'block', md: 'none' } }} />
+
         {/* Controls */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
           <IconButton
             onClick={previousSong}
             size="small"
