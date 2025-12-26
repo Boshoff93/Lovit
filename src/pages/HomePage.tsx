@@ -2058,7 +2058,7 @@ const HomePage: React.FC = () => {
                   sx={{
                     width: 28,
                     height: 28,
-                    borderRadius: '50%',
+                    borderRadius: '0%',
                     objectFit: 'cover',
                   }}
                 />

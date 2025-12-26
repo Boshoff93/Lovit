@@ -31,15 +31,15 @@ import { charactersApi } from '../services/api';
 
 // Character kind options
 const characterKindOptions = [
-  { id: 'Human', label: 'Human', icon: '👤' },
-  { id: 'Non-Human', label: 'Non-Human', icon: '🐾' },
-  { id: 'Product', label: 'Product', icon: '📦' },
+  { id: 'Human', label: 'Human', image: '/characters/human.jpeg' },
+  { id: 'Non-Human', label: 'Non-Human', image: '/characters/dog.jpeg' },
+  { id: 'Product', label: 'Product', image: '/characters/product.jpeg' },
 ];
 
 // Gender options
 const genderOptions = [
-  { id: 'Male', label: 'Male', icon: '♂️' },
-  { id: 'Female', label: 'Female', icon: '♀️' },
+  { id: 'Male', label: 'Male', image: '/characters/male.jpeg' },
+  { id: 'Female', label: 'Female', image: '/characters/female.jpeg' },
 ];
 
 // Age options
@@ -393,21 +393,6 @@ const CreateCharacterPage: React.FC = () => {
     severity: 'success'
   });
 
-  // Chip style helper for inline chip selection
-  const getChipSx = (isSelected: boolean) => ({
-    px: 2,
-    py: 2.5,
-    fontSize: '0.9rem',
-    fontWeight: isSelected ? 600 : 500,
-    borderRadius: '100px',
-    background: isSelected ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
-    color: isSelected ? '#007AFF' : '#1D1D1F',
-    border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    '&:hover': { background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.06)' },
-  });
-
   return (
     <Box sx={{ 
       display: 'flex', 
@@ -504,15 +489,48 @@ const CreateCharacterPage: React.FC = () => {
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
             Human, non-human (animals, fantasy creatures), or product
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {characterKindOptions.map((kind) => (
-              <Chip
-                key={kind.id}
-                label={`${kind.icon} ${kind.label}`}
-                onClick={() => setCharacterKind(kind.id)}
-                sx={getChipSx(characterKind === kind.id)}
-              />
-            ))}
+          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+            {characterKindOptions.map((kind) => {
+              const isSelected = characterKind === kind.id;
+              return (
+                <Box
+                  key={kind.id}
+                  onClick={() => setCharacterKind(kind.id)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    px: 2,
+                    py: 1.5,
+                    borderRadius: '100px',
+                    background: isSelected ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                    border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.06)' },
+                  }}
+                >
+                  <Box 
+                    component="img" 
+                    src={kind.image} 
+                    alt={kind.label} 
+                    sx={{ 
+                      width: 28, 
+                      height: 28, 
+                      borderRadius: '50%', 
+                      objectFit: 'cover',
+                    }} 
+                  />
+                  <Typography sx={{ 
+                    fontWeight: isSelected ? 600 : 500, 
+                    color: isSelected ? '#007AFF' : '#1D1D1F',
+                    fontSize: '0.9rem',
+                  }}>
+                    {kind.label}
+                  </Typography>
+                </Box>
+              );
+            })}
           </Box>
         </Paper>
 
@@ -536,21 +554,54 @@ const CreateCharacterPage: React.FC = () => {
             <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
               Select the gender identity for your character
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {genderOptions.map((gender) => (
-                <Chip
-                  key={gender.id}
-                  label={`${gender.icon} ${gender.label}`}
-                  onClick={() => setCharacterGender(gender.id)}
-                  sx={getChipSx(characterGender === gender.id)}
-                />
-              ))}
+            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+              {genderOptions.map((gender) => {
+                const isSelected = characterGender === gender.id;
+                return (
+                  <Box
+                    key={gender.id}
+                    onClick={() => setCharacterGender(gender.id)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      px: 2,
+                      py: 1.5,
+                      borderRadius: '100px',
+                      background: isSelected ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                      border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      '&:hover': { background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.06)' },
+                    }}
+                  >
+                    <Box 
+                      component="img" 
+                      src={gender.image} 
+                      alt={gender.label} 
+                      sx={{ 
+                        width: 28, 
+                        height: 28, 
+                        borderRadius: '50%', 
+                        objectFit: 'cover',
+                      }} 
+                    />
+                    <Typography sx={{ 
+                      fontWeight: isSelected ? 600 : 500, 
+                      color: isSelected ? '#007AFF' : '#1D1D1F',
+                      fontSize: '0.9rem',
+                    }}>
+                      {gender.label}
+                    </Typography>
+                  </Box>
+                );
+              })}
             </Box>
           </Paper>
         )}
 
-        {/* Hair Color - Only for humans */}
-        {characterKind === 'Human' && (
+        {/* Hair Color - Only for humans with hair (not bald) */}
+        {characterKind === 'Human' && characterHairLength !== 'Bald' && (
           <Paper
             elevation={0}
             sx={{
@@ -594,8 +645,8 @@ const CreateCharacterPage: React.FC = () => {
           </Paper>
         )}
 
-        {/* Hair Length - Only for humans and not bald */}
-        {characterKind === 'Human' && characterHairLength !== 'Bald' && (
+        {/* Hair Length - Only for humans */}
+        {characterKind === 'Human' && (
           <Paper
             elevation={0}
             sx={{
@@ -631,7 +682,9 @@ const CreateCharacterPage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box component="img" src={getHairLengthImage(characterHairLength, characterHairColor)} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
+                {characterHairLength !== 'Bald' && (
+                  <Box component="img" src={getHairLengthImage(characterHairLength, characterHairColor)} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
+                )}
                 {hairLengthOptions.find(h => h.id === characterHairLength)?.label}
               </Box>
               <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
@@ -1084,9 +1137,11 @@ const CreateCharacterPage: React.FC = () => {
                     border: characterHairLength === length.id ? '2px solid #007AFF' : '2px solid transparent',
                   }}
                 >
-                  <ListItemIcon>
-                    <Box component="img" src={getHairLengthImage(length.id, characterHairColor)} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
-                  </ListItemIcon>
+                  {length.id !== 'Bald' && (
+                    <ListItemIcon>
+                      <Box component="img" src={getHairLengthImage(length.id, characterHairColor)} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
+                    </ListItemIcon>
+                  )}
                   <ListItemText primary={length.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
                   {characterHairLength === length.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                 </ListItemButton>
