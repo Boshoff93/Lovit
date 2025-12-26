@@ -1196,9 +1196,17 @@ const CreatePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Prompt</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', minWidth: 100, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {songPrompt.trim() ? songPrompt.substring(0, 20) + (songPrompt.length > 20 ? '...' : '') : 'Not entered'}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 100 }}>
+                    <Box
+                      component="img"
+                      src="/gruvi-support.png"
+                      alt="Prompt"
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {songPrompt.trim() ? songPrompt.substring(0, 15) + (songPrompt.length > 15 ? '...' : '') : 'Not entered'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
