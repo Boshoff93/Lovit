@@ -855,8 +855,17 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-                    {characters.slice(0, 3).map((char) => {
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 1, 
+                    alignItems: 'center',
+                    overflowX: 'auto',
+                    pb: 0.5,
+                    '&::-webkit-scrollbar': { height: 4 },
+                    '&::-webkit-scrollbar-track': { background: 'transparent' },
+                    '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
+                  }}>
+                    {characters.map((char) => {
                       const isInPrompt = songPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (
                         <Tooltip
@@ -892,6 +901,7 @@ const CreatePage: React.FC = () => {
                               color: isInPrompt ? '#34C759' : '#007AFF',
                               fontWeight: 600,
                               cursor: 'pointer',
+                              flexShrink: 0,
                               border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
                               '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
                             }}
@@ -899,21 +909,6 @@ const CreatePage: React.FC = () => {
                         </Tooltip>
                       );
                     })}
-                    {characters.length > 3 && (
-                      <Chip
-                        label={`+${characters.length - 3} more`}
-                        onClick={() => navigate('/characters')}
-                        size="small"
-                        sx={{
-                          borderRadius: '100px',
-                          background: 'rgba(0,0,0,0.05)',
-                          color: '#86868B',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          '&:hover': { background: 'rgba(0,0,0,0.1)' },
-                        }}
-                      />
-                    )}
                   </Box>
                 ) : (
                   <Chip
@@ -1571,8 +1566,17 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-                    {characters.slice(0, 3).map((char) => {
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 1, 
+                    alignItems: 'center',
+                    overflowX: 'auto',
+                    pb: 0.5,
+                    '&::-webkit-scrollbar': { height: 4 },
+                    '&::-webkit-scrollbar-track': { background: 'transparent' },
+                    '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
+                  }}>
+                    {characters.map((char) => {
                       const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (
                         <Tooltip
@@ -1608,6 +1612,7 @@ const CreatePage: React.FC = () => {
                               color: isInPrompt ? '#34C759' : '#007AFF',
                               fontWeight: 600,
                               cursor: 'pointer',
+                              flexShrink: 0,
                               border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
                               '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
                             }}
@@ -1615,21 +1620,6 @@ const CreatePage: React.FC = () => {
                         </Tooltip>
                       );
                     })}
-                    {characters.length > 3 && (
-                      <Chip
-                        label={`+${characters.length - 3} more`}
-                        onClick={() => navigate('/characters')}
-                        size="small"
-                        sx={{
-                          borderRadius: '100px',
-                          background: 'rgba(0,0,0,0.05)',
-                          color: '#86868B',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          '&:hover': { background: 'rgba(0,0,0,0.1)' },
-                        }}
-                      />
-                    )}
                   </Box>
                 ) : (
                   <Chip
