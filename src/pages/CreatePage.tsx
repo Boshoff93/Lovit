@@ -48,6 +48,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import BoltIcon from '@mui/icons-material/Bolt';
+import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 
 // Scrollable list wrapper with dynamic fade gradients
 interface ScrollableListProps {
@@ -1961,7 +1962,7 @@ const CreatePage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <Typography sx={{ fontSize: '1.2rem' }}>📐</Typography>
+                <AspectRatioIcon sx={{ color: '#007AFF' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                   Aspect Ratio
                 </Typography>
