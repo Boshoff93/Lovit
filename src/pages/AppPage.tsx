@@ -1308,36 +1308,37 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         {displayDate}
                       </Typography>
                       
-                      {/* Videos Grid for this date */}
-                      <Box sx={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
-                        gap: 2,
-                      }}>
-                        {dateVideos.map((video) => {
-                          const isLandscape = video.aspectRatio === 'landscape';
-                          const videoAspectRatio = isLandscape ? '16/9' : '9/16';
-                          const isDeleting = deletingVideoId === video.videoId;
-                          
-                          return (
-                            <Box
-                              key={video.videoId}
-                              onClick={() => video.status === 'completed' && handleWatchVideo(video)}
-                              sx={{
-                                position: 'relative',
-                                aspectRatio: videoAspectRatio,
-                                borderRadius: '20px',
-                                overflow: 'hidden',
-                                cursor: video.status === 'completed' ? 'pointer' : 'default',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                                opacity: isDeleting ? 0.5 : 1,
-                                '&:hover': video.status === 'completed' ? {
-                                  transform: 'translateY(-4px) scale(1.02)',
-                                  boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                                } : {},
-                              }}
-                            >
+                      {/* Videos Grid for this date - separate portrait and landscape */}
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {/* Portrait videos in grid */}
+                        {dateVideos.filter(v => v.aspectRatio !== 'landscape').length > 0 && (
+                          <Box sx={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+                            gap: 2,
+                          }}>
+                            {dateVideos.filter(v => v.aspectRatio !== 'landscape').map((video) => {
+                              const isDeleting = deletingVideoId === video.videoId;
+                              
+                              return (
+                                <Box
+                                  key={video.videoId}
+                                  onClick={() => video.status === 'completed' && handleWatchVideo(video)}
+                                  sx={{
+                                    position: 'relative',
+                                    aspectRatio: '9/16',
+                                    borderRadius: '20px',
+                                    overflow: 'hidden',
+                                    cursor: video.status === 'completed' ? 'pointer' : 'default',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                                    opacity: isDeleting ? 0.5 : 1,
+                                    '&:hover': video.status === 'completed' ? {
+                                      transform: 'translateY(-4px) scale(1.02)',
+                                      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                                    } : {},
+                                  }}
+                                >
                               {/* Thumbnail Image */}
                               <Box
                                 component="img"
@@ -1427,6 +1428,170 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                       fontWeight: 500,
                                       height: 26,
                                       width: '100%',
+                                      borderRadius: '100px',
+                                      border: '1px solid rgba(255,255,255,0.2)',
+                                    }}
+                                  />
+                                ) : (
+                                  <Chip
+                                    label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                                    size="small"
+                                    sx={{
+                                      background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
+                                      backdropFilter: 'blur(10px)',
+                                      color: '#fff',
+                                      fontSize: '0.7rem',
+                                      fontWeight: 500,
+                                      height: 24,
+                                      borderRadius: '100px',
+                                      border: '1px solid rgba(255,255,255,0.2)',
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                              
+                              {/* More Menu Button - Top right */}
+                                  <IconButton
+                                    onClick={(e) => handleVideoMenuClick(e, video)}
+                                    sx={{
+                                      position: 'absolute',
+                                      top: 8,
+                                      right: 8,
+                                      background: 'rgba(0,0,0,0.3)',
+                                      backdropFilter: 'blur(10px)',
+                                      color: '#fff',
+                                      width: 32,
+                                      height: 32,
+                                      '&:hover': {
+                                        background: 'rgba(0,0,0,0.5)',
+                                      },
+                                    }}
+                                  >
+                                    {isDeleting ? (
+                                      <CircularProgress size={16} sx={{ color: '#fff' }} />
+                                    ) : (
+                                      <MoreVertIcon sx={{ fontSize: 18 }} />
+                                    )}
+                                  </IconButton>
+                                </Box>
+                              );
+                            })}
+                          </Box>
+                        )}
+                        
+                        {/* Landscape videos - each in its own row */}
+                        {dateVideos.filter(v => v.aspectRatio === 'landscape').map((video) => {
+                          const isDeleting = deletingVideoId === video.videoId;
+                          
+                          return (
+                            <Box
+                              key={video.videoId}
+                              onClick={() => video.status === 'completed' && handleWatchVideo(video)}
+                              sx={{
+                                position: 'relative',
+                                aspectRatio: '16/9',
+                                borderRadius: '20px',
+                                overflow: 'hidden',
+                                cursor: video.status === 'completed' ? 'pointer' : 'default',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                                opacity: isDeleting ? 0.5 : 1,
+                                maxWidth: { xs: '100%', sm: '80%', md: '60%' },
+                                '&:hover': video.status === 'completed' ? {
+                                  transform: 'translateY(-4px) scale(1.02)',
+                                  boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                                } : {},
+                              }}
+                            >
+                              {/* Thumbnail Image */}
+                              <Box
+                                component="img"
+                                src={
+                                  video.status === 'completed' 
+                                    ? (video.thumbnailUrl || '/gruvi.png')
+                                    : video.status === 'failed'
+                                      ? '/gruvi/gruvi-fail-landscape.jpeg'
+                                      : '/gruvi/octopus-landscape-wait.jpeg'
+                                }
+                                alt={video.songTitle || 'Music Video'}
+                                sx={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                }}
+                                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                  e.currentTarget.src = '/gruvi.png';
+                                }}
+                              />
+                              
+                              {/* Center indicator overlay - only for processing state */}
+                              {video.status === 'processing' && (
+                                <Box
+                                  sx={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      background: '#fff',
+                                      borderRadius: '50%',
+                                      width: 64,
+                                      height: 64,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      border: '1px solid rgba(0,0,0,0.08)',
+                                      boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                                      position: 'relative',
+                                    }}
+                                  >
+                                    <CircularProgress 
+                                      size={56} 
+                                      thickness={3}
+                                      sx={{ color: '#007AFF', position: 'absolute' }} 
+                                    />
+                                    <Typography sx={{ 
+                                      fontSize: '0.85rem', 
+                                      fontWeight: 600, 
+                                      color: '#007AFF',
+                                    }}>
+                                      {video.progress || 0}%
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              )}
+                              
+                              {/* Info overlay at bottom */}
+                              <Box 
+                                sx={{ 
+                                  position: 'absolute',
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  p: 1.5,
+                                  pt: 4,
+                                  background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+                                }}
+                              >
+                                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {video.songTitle || 'Music Video'}
+                                </Typography>
+                                {video.status === 'processing' ? (
+                                  <Chip
+                                    label={video.progressMessage || 'Creating your video...'}
+                                    size="small"
+                                    sx={{
+                                      background: 'rgba(0,122,255,0.5)',
+                                      backdropFilter: 'blur(10px)',
+                                      color: '#fff',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 500,
+                                      height: 26,
+                                      maxWidth: '70%',
                                       borderRadius: '100px',
                                       border: '1px solid rgba(255,255,255,0.2)',
                                     }}

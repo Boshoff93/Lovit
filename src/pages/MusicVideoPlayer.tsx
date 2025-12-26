@@ -262,7 +262,7 @@ const MusicVideoPlayer: React.FC = () => {
   const songDuration = songData?.actualDuration || songData?.estimatedDuration || duration;
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#f5f5f7', pb: 4 }}>
+    <Box sx={{ minHeight: '100vh', background: '#f5f5f7', pb: 16 }}>
       {/* Header */}
       <Box
         sx={{
