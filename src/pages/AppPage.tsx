@@ -1417,21 +1417,23 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
                                 {video.status === 'processing' ? (
-                                  <Chip
-                                    label={video.progressMessage || 'Creating your video...'}
-                                    size="small"
-                                    sx={{
-                                      background: 'rgba(0,122,255,0.5)',
-                                      backdropFilter: 'blur(10px)',
-                                      color: '#fff',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500,
-                                      height: 26,
-                                      width: '100%',
-                                      borderRadius: '100px',
-                                      border: '1px solid rgba(255,255,255,0.2)',
-                                    }}
-                                  />
+                                  <Tooltip title={video.progressMessage || 'Creating your video...'} arrow>
+                                    <Chip
+                                      label={video.progressMessage || 'Creating your video...'}
+                                      size="small"
+                                      sx={{
+                                        background: 'rgba(0,122,255,0.5)',
+                                        backdropFilter: 'blur(10px)',
+                                        color: '#fff',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 500,
+                                        height: 26,
+                                        width: '100%',
+                                        borderRadius: '100px',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                      }}
+                                    />
+                                  </Tooltip>
                                 ) : (
                                   <Chip
                                     label={video.status === 'failed' ? 'Failed' : 'Music Video'}
@@ -1585,21 +1587,23 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
                                 {video.status === 'processing' ? (
-                                  <Chip
-                                    label={video.progressMessage || 'Creating your video...'}
-                                    size="small"
-                                    sx={{
-                                      background: 'rgba(0,122,255,0.5)',
-                                      backdropFilter: 'blur(10px)',
-                                      color: '#fff',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500,
-                                      height: 26,
-                                      maxWidth: '70%',
-                                      borderRadius: '100px',
-                                      border: '1px solid rgba(255,255,255,0.2)',
-                                    }}
-                                  />
+                                  <Tooltip title={video.progressMessage || 'Creating your video...'} arrow>
+                                    <Chip
+                                      label={video.progressMessage || 'Creating your video...'}
+                                      size="small"
+                                      sx={{
+                                        background: 'rgba(0,122,255,0.5)',
+                                        backdropFilter: 'blur(10px)',
+                                        color: '#fff',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 500,
+                                        height: 26,
+                                        maxWidth: '70%',
+                                        borderRadius: '100px',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                      }}
+                                    />
+                                  </Tooltip>
                                 ) : (
                                   <Chip
                                     label={video.status === 'failed' ? 'Failed' : 'Music Video'}
