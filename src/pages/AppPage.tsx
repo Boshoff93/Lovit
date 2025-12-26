@@ -1245,22 +1245,16 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           
           {/* Videos Grid */}
           {isLoadingVideos ? (
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
-              gap: 2,
-              p: 3
-            }}>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton 
-                  key={index}
-                  variant="rectangular" 
-                  sx={{ 
-                    aspectRatio: '9/16', 
-                    borderRadius: 2,
-                    background: 'rgba(0,122,255,0.1)'
-                  }} 
-                />
+            <Box sx={{ p: 3 }}>
+              {[1, 2, 3].map((i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Skeleton variant="text" width={32} />
+                  <Skeleton variant="rounded" width={48} height={48} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="60%" />
+                    <Skeleton variant="text" width="40%" />
+                  </Box>
+                </Box>
               ))}
             </Box>
           ) : videos.length > 0 ? (
