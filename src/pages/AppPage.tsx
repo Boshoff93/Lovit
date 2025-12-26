@@ -106,11 +106,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
 
-  // Update tab when route changes (e.g., navigating to /characters)
+  // Update tab when route changes or tab query param changes
   useEffect(() => {
     setActiveTab(getInitialTab());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, defaultTab]);
+  }, [location.pathname, defaultTab, searchParams]);
 
   const songsPerPage = 10;
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);

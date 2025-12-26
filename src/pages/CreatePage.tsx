@@ -667,8 +667,8 @@ const CreatePage: React.FC = () => {
       setShowVideoPromptError(false);
       setShowSongSelectionError(false);
       
-      // Navigate to dashboard after a short delay
-      setTimeout(() => navigate('/dashboard'), 1500);
+      // Navigate to Music Videos tab after a short delay
+      setTimeout(() => navigate('/dashboard?tab=videos'), 1500);
     } catch (error: any) {
       console.error('Video generation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to generate video. Please try again.';
