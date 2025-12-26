@@ -11,6 +11,7 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 // Art style data with detailed information and boy images
 export const artStyleData = [
@@ -56,6 +57,8 @@ const StyleDetailPage: React.FC = () => {
   const { styleId } = useParams<{ styleId: string }>();
 
   // Find the current style data
+  const { currentSong } = useAudioPlayer();
+  
   const currentStyle = useMemo(() => {
     return artStyleData.find(style => style.id === styleId);
   }, [styleId]);
@@ -89,6 +92,8 @@ const StyleDetailPage: React.FC = () => {
         minHeight: '100vh',
         background: '#fff',
         position: 'relative',
+        pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
+        transition: 'padding-bottom 0.3s ease-out',
       }}
     >
       {/* Background gradient */}

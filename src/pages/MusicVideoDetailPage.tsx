@@ -17,6 +17,7 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 // Sample music videos data
 export const musicVideoData = [
@@ -91,6 +92,8 @@ const MusicVideoDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { videoId } = useParams<{ videoId: string }>();
 
+  const { currentSong } = useAudioPlayer();
+  
   // Find the current video data
   const currentVideo = useMemo(() => {
     return musicVideoData.find(video => video.id === videoId);
@@ -120,6 +123,8 @@ const MusicVideoDetailPage: React.FC = () => {
         minHeight: '100vh',
         background: '#fff',
         position: 'relative',
+        pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
+        transition: 'padding-bottom 0.3s ease-out',
       }}
     >
       {/* Background gradient */}

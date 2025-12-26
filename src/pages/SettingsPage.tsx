@@ -140,7 +140,6 @@ const SettingsPage: React.FC = () => {
     <Box sx={{ 
       display: 'flex', 
       justifyContent: 'center', 
-      minHeight: '100vh',
       pt: 0,
       pb: { xs: 2, sm: 4 },
       px: { xs: 1, sm: 2 },

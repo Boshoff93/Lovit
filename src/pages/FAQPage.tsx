@@ -17,6 +17,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { SEO, createFAQStructuredData, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 export const faqItems = [
   // ============================================
@@ -312,6 +313,7 @@ const FAQPage: React.FC = () => {
   const accordionRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [expandedPanel, setExpandedPanel] = useState<string | false>(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const { currentSong } = useAudioPlayer();
   
   // Get unique categories
   const categories = Array.from(new Set(faqItems.map(item => item.category)));
@@ -372,6 +374,8 @@ const FAQPage: React.FC = () => {
       minHeight: '100vh', 
       background: '#fff',
       position: 'relative',
+      pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
+      transition: 'padding-bottom 0.3s ease-out',
     }}>
       {/* Subtle background gradient */}
       <Box

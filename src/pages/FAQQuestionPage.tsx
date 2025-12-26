@@ -14,11 +14,13 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { faqItems } from './FAQPage';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 const FAQQuestionPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { question } = useParams<{ question: string }>();
+  const { currentSong } = useAudioPlayer();
 
   // Function to create a URL-friendly slug from a question
   const createSlug = useCallback((question: string): string => {
@@ -49,7 +51,12 @@ const FAQQuestionPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      bgcolor: 'background.default',
+      pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
+      transition: 'padding-bottom 0.3s ease-out',
+    }}>
       <SEO
         title={`${faqItem.question} - Gruvi FAQ`}
         description={faqItem.answer}
