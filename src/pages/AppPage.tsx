@@ -1310,80 +1310,63 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     }}
                   />
                   
-                  {/* Center button/indicator overlay */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {video.status === 'processing' ? (
-                      <Box
-                        sx={{
-                          background: '#fff',
-                          borderRadius: '50%',
-                          width: 64,
-                          height: 64,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '1px solid rgba(0,0,0,0.08)',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                          position: 'relative',
-                        }}
-                      >
-                        <CircularProgress 
-                          size={56} 
-                          thickness={3}
-                          sx={{ color: '#007AFF', position: 'absolute' }} 
-                        />
-                        <Typography sx={{ 
-                          fontSize: '0.85rem', 
-                          fontWeight: 600, 
-                          color: '#007AFF',
-                        }}>
-                          {video.progress || 0}%
-                        </Typography>
-                      </Box>
-                    ) : video.status === 'failed' ? (
-                      <Box
-                        sx={{
-                          background: '#FF3B30',
-                          borderRadius: '50%',
-                          width: 52,
-                          height: 52,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                        }}
-                      >
-                        <Typography sx={{ color: '#fff', fontSize: 24, fontWeight: 600 }}>✕</Typography>
-                      </Box>
-                    ) : (
-                      <IconButton
-                        sx={{
-                          background: '#fff',
-                          color: '#007AFF',
-                          width: 52,
-                          height: 52,
-                          border: '1px solid rgba(0,0,0,0.08)',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                          transition: 'all 0.2s ease',
-                          '&:hover': { 
-                            background: '#fff', 
-                            transform: 'translateY(-2px) scale(1.05)',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                          },
-                        }}
-                      >
-                        <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#007AFF' }} />
-                      </IconButton>
-                    )}
-                  </Box>
+                  {/* Center indicator overlay - only for processing/failed states */}
+                  {(video.status === 'processing' || video.status === 'failed') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {video.status === 'processing' ? (
+                        <Box
+                          sx={{
+                            background: '#fff',
+                            borderRadius: '50%',
+                            width: 64,
+                            height: 64,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid rgba(0,0,0,0.08)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                            position: 'relative',
+                          }}
+                        >
+                          <CircularProgress 
+                            size={56} 
+                            thickness={3}
+                            sx={{ color: '#007AFF', position: 'absolute' }} 
+                          />
+                          <Typography sx={{ 
+                            fontSize: '0.85rem', 
+                            fontWeight: 600, 
+                            color: '#007AFF',
+                          }}>
+                            {video.progress || 0}%
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <Box
+                          sx={{
+                            background: '#FF3B30',
+                            borderRadius: '50%',
+                            width: 52,
+                            height: 52,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                          }}
+                        >
+                          <Typography sx={{ color: '#fff', fontSize: 24, fontWeight: 600 }}>✕</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  )}
                   
                   {/* Info overlay at bottom with dark gradient - same as HomePage */}
                   <Box 
