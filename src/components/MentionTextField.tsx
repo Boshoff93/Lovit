@@ -1,9 +1,13 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Box, TextField, TextFieldProps } from '@mui/material';
+import React, { useRef, useEffect } from 'react';
+import { Box, FormHelperText } from '@mui/material';
 
-interface MentionTextFieldProps extends Omit<TextFieldProps, 'onChange' | 'value'> {
+interface MentionTextFieldProps {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
+  error?: boolean;
+  helperText?: React.ReactNode;
+  rows?: number;
 }
 
 const MentionTextField: React.FC<MentionTextFieldProps> = ({
@@ -13,120 +17,153 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   error,
   helperText,
   rows = 3,
-  ...rest
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const [scrollTop, setScrollTop] = useState(0);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const lastValueRef = useRef(value);
 
-  // Sync scroll position between textarea and overlay
+  // Update content when value changes externally (e.g., cleared)
   useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const handleScroll = () => {
-      setScrollTop(textarea.scrollTop);
-    };
-
-    textarea.addEventListener('scroll', handleScroll);
-    return () => textarea.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Update overlay scroll when textarea scrolls
-  useEffect(() => {
-    if (overlayRef.current) {
-      overlayRef.current.scrollTop = scrollTop;
-    }
-  }, [scrollTop]);
-
-  // Handle text change
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(e.target.value);
-  };
-
-  // Render text with highlighted @mentions
-  const renderHighlightedText = (text: string) => {
-    if (!text) return <span style={{ color: 'transparent' }}>{placeholder}</span>;
-    
-    // Match @word patterns (including underscores and numbers)
-    const parts = text.split(/(@[\w]+)/g);
-    
-    return parts.map((part, index) => {
-      if (part.startsWith('@')) {
-        return (
-          <span key={index} style={{ color: '#007AFF', fontWeight: 600 }}>
-            {part}
-          </span>
-        );
+    if (editorRef.current && value !== lastValueRef.current) {
+      // Only update if it's an external change (like clearing the field)
+      const currentText = editorRef.current.innerText;
+      if (currentText !== value) {
+        updateEditorContent(value);
       }
-      return <span key={index}>{part}</span>;
-    });
+      lastValueRef.current = value;
+    }
+  }, [value]);
+
+  const updateEditorContent = (text: string) => {
+    if (!editorRef.current) return;
+    
+    // Save cursor position
+    const selection = window.getSelection();
+    const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+    let cursorOffset = 0;
+    
+    if (range && editorRef.current.contains(range.startContainer)) {
+      // Calculate cursor offset from start
+      const preRange = document.createRange();
+      preRange.selectNodeContents(editorRef.current);
+      preRange.setEnd(range.startContainer, range.startOffset);
+      cursorOffset = preRange.toString().length;
+    }
+
+    // Build HTML with highlighted @mentions
+    const html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/(@[\w]+)/g, '<span style="color: #007AFF; font-weight: 600;">$1</span>')
+      .replace(/\n/g, '<br>');
+    
+    editorRef.current.innerHTML = html || '';
+    
+    // Restore cursor position
+    if (range && cursorOffset > 0) {
+      try {
+        const newRange = document.createRange();
+        let charCount = 0;
+        let found = false;
+
+        const walkNodes = (node: Node): boolean => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const textLength = node.textContent?.length || 0;
+            if (charCount + textLength >= cursorOffset) {
+              newRange.setStart(node, cursorOffset - charCount);
+              newRange.collapse(true);
+              found = true;
+              return true;
+            }
+            charCount += textLength;
+          } else {
+            for (const child of Array.from(node.childNodes)) {
+              if (walkNodes(child)) return true;
+            }
+          }
+          return false;
+        };
+
+        walkNodes(editorRef.current);
+        
+        if (found) {
+          selection?.removeAllRanges();
+          selection?.addRange(newRange);
+        }
+      } catch (e) {
+        // Cursor restoration failed, that's okay
+      }
+    }
   };
+
+  const handleInput = () => {
+    if (!editorRef.current) return;
+    
+    const text = editorRef.current.innerText;
+    lastValueRef.current = text;
+    onChange(text);
+    
+    // Re-render with highlights
+    updateEditorContent(text);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Allow Enter for new lines
+    if (e.key === 'Enter' && !e.shiftKey) {
+      // Let it create a new line naturally
+    }
+  };
+
+  const minHeight = rows * 24; // Approximate line height
 
   return (
-    <Box sx={{ position: 'relative' }}>
-      {/* Highlight overlay - exactly matches textarea */}
+    <Box>
       <Box
-        ref={overlayRef}
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        onPaste={handlePaste}
+        onKeyDown={handleKeyDown}
+        data-placeholder={placeholder}
         sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          minHeight: `${minHeight}px`,
           p: '16.5px 14px',
-          border: '1px solid transparent',
           borderRadius: '16px',
-          pointerEvents: 'none',
-          whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-          overflowWrap: 'break-word',
-          overflow: 'hidden',
+          border: error ? '1px solid #d32f2f' : '1px solid rgba(0,0,0,0.1)',
+          background: '#fff',
           fontSize: '1rem',
           fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-          lineHeight: '1.4375em',
-          letterSpacing: '0.00938em',
-          color: '#1D1D1F',
-          zIndex: 1,
-          boxSizing: 'border-box',
-        }}
-      >
-        {renderHighlightedText(value)}
-      </Box>
-      <TextField
-        fullWidth
-        multiline
-        rows={rows}
-        placeholder={placeholder}
-        value={value}
-        onChange={handleChange}
-        inputRef={textareaRef}
-        error={error}
-        helperText={helperText}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '16px',
-            background: '#fff',
-            '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-            '&:hover fieldset': { borderColor: 'rgba(0,122,255,0.3)' },
-            '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+          lineHeight: 1.5,
+          outline: 'none',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          transition: 'border-color 0.2s',
+          '&:hover': {
+            borderColor: error ? '#d32f2f' : 'rgba(0,122,255,0.3)',
           },
-          '& .MuiInputBase-input': {
-            color: 'transparent',
-            caretColor: '#1D1D1F',
-            position: 'relative',
-            zIndex: 2,
-            background: 'transparent',
-            // Match the overlay exactly
-            lineHeight: '1.4375em',
-            '&::placeholder': {
-              color: 'transparent',
-              opacity: 0,
-            },
+          '&:focus': {
+            borderColor: error ? '#d32f2f' : '#007AFF',
+            borderWidth: '2px',
+            p: '15.5px 13px', // Adjust for thicker border
+          },
+          '&:empty::before': {
+            content: 'attr(data-placeholder)',
+            color: 'rgba(0,0,0,0.4)',
+            pointerEvents: 'none',
           },
         }}
-        {...rest}
       />
+      {helperText && (
+        <FormHelperText error={error} sx={{ mx: '14px', mt: '3px' }}>
+          {helperText}
+        </FormHelperText>
+      )}
     </Box>
   );
 };
