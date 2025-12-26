@@ -172,6 +172,7 @@ const moods = [
   { id: 'playful', name: 'Playful', icon: '🎈' },
   { id: 'mysterious', name: 'Mysterious', icon: '🔮' },
   { id: 'triumphant', name: 'Triumphant', icon: '🏆' },
+  { id: 'promotional', name: 'Promotional', icon: '📣' },
 ];
 
 // Languages

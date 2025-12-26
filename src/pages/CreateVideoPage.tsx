@@ -90,6 +90,7 @@ const moods = [
   { id: 'dark', label: 'Dark', emoji: '🌙' },
   { id: 'uplifting', label: 'Uplifting', emoji: '🌈' },
   { id: 'nostalgic', label: 'Nostalgic', emoji: '📻' },
+  { id: 'promotional', label: 'Promotional', emoji: '📣' },
 ];
 
 // Mock characters for demo - in real app, fetch from user's created characters
