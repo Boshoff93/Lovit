@@ -90,10 +90,37 @@ const getGenreImage = (genre: string): string => {
   return genreImages[normalizedGenre] || '/genres/pop.jpeg';
 };
 
+// Mood to image mapping
+const moodImages: Record<string, string> = {
+  'happy': '/moods/happy.jpeg',
+  'sad': '/moods/sad.jpeg',
+  'energetic': '/moods/energetic.jpeg',
+  'romantic': '/moods/romantic.jpeg',
+  'chill': '/moods/chill.jpeg',
+  'epic': '/moods/epic.jpeg',
+  'dreamy': '/moods/dreamy.jpeg',
+  'dark': '/moods/dark.jpeg',
+  'uplifting': '/moods/uplifting.jpeg',
+  'nostalgic': '/moods/nostalgic.jpeg',
+  'peaceful': '/moods/peacful.jpeg',
+  'intense': '/moods/intense.jpeg',
+  'melancholic': '/moods/melancholic.jpeg',
+  'playful': '/moods/playful.jpeg',
+  'mysterious': '/moods/mysterious.jpeg',
+  'triumphant': '/moods/triumphant.jpeg',
+  'promotional': '/moods/promotional.jpeg',
+};
+
+const getMoodImage = (mood: string): string => {
+  const normalizedMood = mood.toLowerCase().replace(/\s+/g, '-');
+  return moodImages[normalizedMood] || '/moods/happy.jpeg';
+};
+
 interface Song {
   songId: string;
   songTitle: string;
   genre: string;
+  mood?: string;
   actualDuration?: number;
   createdAt: string;
   status: 'processing' | 'completed' | 'failed';
@@ -401,6 +428,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       songId: song.songId,
       songTitle: song.songTitle,
       genre: song.genre,
+      mood: song.mood,
       audioUrl: song.audioUrl,
       status: song.status,
       createdAt: song.createdAt,
@@ -416,6 +444,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         songId: s.songId,
         songTitle: s.songTitle,
         genre: s.genre,
+        mood: s.mood,
         audioUrl: s.audioUrl,
         status: s.status,
         createdAt: s.createdAt,
@@ -435,6 +464,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         songId: s.songId,
         songTitle: s.songTitle,
         genre: s.genre,
+        mood: s.mood,
         audioUrl: s.audioUrl,
         status: s.status,
         createdAt: s.createdAt,
