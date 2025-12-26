@@ -104,7 +104,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
 
   // Update tab when route changes (e.g., navigating to /characters)
@@ -384,7 +383,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       }));
     
     playSong(audioSong, completedSongs);
-    setPlayingId(song.songId);
   }, [songs, playSong]);
 
   // Update songs list in global player when songs change
@@ -901,7 +899,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       {/* Desktop: Full buttons */}
                       <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
                         {/* Play Button */}
-                        <Tooltip title={playingId === song.songId ? "Pause" : "Play"} arrow>
+                        <Tooltip title={currentSong?.songId === song.songId && isAudioPlaying ? "Pause" : "Play"} arrow>
                           <IconButton
                             onClick={() => handlePlayPause(song.songId)}
                             sx={{
@@ -917,7 +915,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                               },
                             }}
                           >
-                            {playingId === song.songId ? (
+                            {currentSong?.songId === song.songId && isAudioPlaying ? (
                               <PauseIcon sx={{ fontSize: 20 }} />
                             ) : (
                               <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
@@ -1034,7 +1032,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                           }}
                         >
-                          {playingId === song.songId ? (
+                          {currentSong?.songId === song.songId && isAudioPlaying ? (
                             <PauseIcon sx={{ fontSize: 18 }} />
                           ) : (
                             <PlayArrowRoundedIcon sx={{ fontSize: 18 }} />
