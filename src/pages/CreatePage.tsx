@@ -934,9 +934,7 @@ const CreatePage: React.FC = () => {
                   setSongPrompt(value);
                   if (value.trim()) setShowSongPromptError(false);
                 }}
-                characters={characters}
-                isLoadingCharacters={isLoadingCharacters}
-                placeholder="Describe your song idea... Type @ to mention a character"
+                placeholder="Describe your song idea... Use @name to feature a character"
                 error={showSongPromptError && !songPrompt.trim()}
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
               />
@@ -1645,9 +1643,7 @@ const CreatePage: React.FC = () => {
                   setVideoPrompt(value);
                   if (value.trim()) setShowVideoPromptError(false);
                 }}
-                characters={characters}
-                isLoadingCharacters={isLoadingCharacters}
-                placeholder="Describe the scenes, setting, and story for your music video... Type @ to mention a character"
+                placeholder="Describe the scenes, setting, and story for your music video... Use @name to feature a character"
                 error={showVideoPromptError && !videoPrompt.trim()}
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
               />
