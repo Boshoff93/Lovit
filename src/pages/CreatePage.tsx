@@ -843,6 +843,22 @@ const CreatePage: React.FC = () => {
                     '&::-webkit-scrollbar-track': { background: 'transparent' },
                     '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
                   }}>
+                    {/* Create Character chip - always first */}
+                    <Chip
+                      label="+ Create"
+                      onClick={() => navigate('/characters/create')}
+                      size="small"
+                      sx={{
+                        borderRadius: '100px',
+                        background: 'rgba(0,122,255,0.08)',
+                        border: '1px dashed rgba(0,122,255,0.3)',
+                        color: '#007AFF',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                      }}
+                    />
                     {characters.map((char) => {
                       const isInPrompt = songPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (
@@ -1551,13 +1567,30 @@ const CreatePage: React.FC = () => {
                               width: 48,
                               height: 48,
                               borderRadius: '10px',
-                              background: 'linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 100%)',
+                              background: '#1D1D1F',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
+                              overflow: 'hidden',
+                              position: 'relative',
                             }}
                           >
-                            <MusicNoteIcon sx={{ color: '#fff' }} />
+                            <Box
+                              component="img"
+                              src={`/genres/${song.genre?.toLowerCase().replace(/\s+/g, '-') || 'pop'}.jpeg`}
+                              alt={song.genre}
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                              }}
+                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
                           </Box>
                         </ListItemIcon>
                         <ListItemText
@@ -1659,6 +1692,22 @@ const CreatePage: React.FC = () => {
                     '&::-webkit-scrollbar-track': { background: 'transparent' },
                     '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
                   }}>
+                    {/* Create Character chip - always first */}
+                    <Chip
+                      label="+ Create"
+                      onClick={() => navigate('/characters/create')}
+                      size="small"
+                      sx={{
+                        borderRadius: '100px',
+                        background: 'rgba(0,122,255,0.08)',
+                        border: '1px dashed rgba(0,122,255,0.3)',
+                        color: '#007AFF',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                      }}
+                    />
                     {characters.map((char) => {
                       const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (

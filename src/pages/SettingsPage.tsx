@@ -141,9 +141,9 @@ const SettingsPage: React.FC = () => {
       display: 'flex', 
       justifyContent: 'center', 
       minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: { xs: 2, sm: 3 },
+      pt: 0,
+      pb: { xs: 2, sm: 4 },
+      px: { xs: 1, sm: 2 },
     }}>
       <Container maxWidth="md" sx={{ 
         display: 'flex', 
