@@ -1004,26 +1004,44 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           },
                         }} 
                       />
-                    ) : currentSong?.songId === song.songId ? (
-                      // Current song - show equalizer (animated when playing, static when paused)
-                      <AudioEqualizer isPlaying={isAudioPlaying} size={24} color="#fff" />
                     ) : (
-                      <Box
-                        component="img"
-                        src={getGenreImage(song.genre)}
-                        alt={song.genre}
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                        }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
+                      <>
+                        {/* Genre image background */}
+                        <Box
+                          component="img"
+                          src={getGenreImage(song.genre)}
+                          alt={song.genre}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                          }}
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        {/* Equalizer overlay for current song */}
+                        {currentSong?.songId === song.songId && (
+                          <>
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                background: 'rgba(0,0,0,0.4)',
+                              }}
+                            />
+                            <Box sx={{ position: 'relative', zIndex: 1 }}>
+                              <AudioEqualizer isPlaying={isAudioPlaying} size={22} color="#fff" />
+                            </Box>
+                          </>
+                        )}
+                      </>
                     )}
                   </Box>
 
