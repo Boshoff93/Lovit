@@ -1690,23 +1690,29 @@ const HomePage: React.FC = () => {
 
           {/* Videos Carousel */}
           <Box
-        sx={{
+            sx={{
               display: 'flex',
               gap: 2,
               overflowX: 'auto',
               py: 4,
-              px: 2,
-              justifyContent: 'center',
+              px: { xs: 3, sm: 4, md: 6 },
+              justifyContent: { xs: 'flex-start', md: 'center' },
               '&::-webkit-scrollbar': { display: 'none' },
               scrollbarWidth: 'none',
+              // Ensure content doesn't overflow on larger screens
+              maxWidth: '100vw',
             }}
           >
+            {/* Left spacer for mobile - allows scrolling to first item with padding */}
+            <Box sx={{ display: { xs: 'block', md: 'none' }, minWidth: 0, flexShrink: 0 }} />
+            
             {sampleVideos.map((video) => (
               <Box
                 key={video.id}
                 onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-              sx={{ 
+                sx={{ 
                   minWidth: { xs: '160px', sm: '180px' },
+                  flexShrink: 0,
                 position: 'relative',
                   borderRadius: '20px',
                 overflow: 'hidden',
@@ -1805,7 +1811,10 @@ const HomePage: React.FC = () => {
                 </Box>
               </Box>
             ))}
-                </Box>
+            
+            {/* Right spacer for mobile - allows scrolling to last item with padding */}
+            <Box sx={{ display: { xs: 'block', md: 'none' }, minWidth: 0, flexShrink: 0 }} />
+          </Box>
               </Container>
             </Box>
 
