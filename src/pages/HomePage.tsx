@@ -56,6 +56,7 @@ import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useAuth } from '../hooks/useAuth';
@@ -1688,43 +1689,97 @@ const HomePage: React.FC = () => {
                   </Typography>
                 </Box>
 
-          {/* Videos Carousel */}
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              overflowX: 'auto',
-              py: 4,
-              px: { xs: 3, sm: 4, md: 6 },
-              justifyContent: { xs: 'flex-start', md: 'center' },
-              '&::-webkit-scrollbar': { display: 'none' },
-              scrollbarWidth: 'none',
-              // Ensure content doesn't overflow on larger screens
-              maxWidth: '100vw',
-            }}
-          >
-            {/* Left spacer for mobile - allows scrolling to first item with padding */}
-            <Box sx={{ display: { xs: 'block', md: 'none' }, minWidth: 0, flexShrink: 0 }} />
-            
-            {sampleVideos.map((video) => (
+          {/* Videos Carousel with Navigation */}
+          <Box sx={{ position: 'relative' }}>
+            {/* Left Arrow */}
+            <IconButton
+              onClick={() => {
+                const container = document.getElementById('video-carousel');
+                if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
+              }}
+              sx={{
+                position: 'absolute',
+                left: { xs: 8, md: 24 },
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                background: 'rgba(255,255,255,0.95)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                width: { xs: 36, md: 44 },
+                height: { xs: 36, md: 44 },
+                '&:hover': {
+                  background: '#fff',
+                  transform: 'translateY(-50%) scale(1.1)',
+                },
+              }}
+            >
+              <ChevronLeftIcon sx={{ color: '#1d1d1f' }} />
+            </IconButton>
+
+            {/* Right Arrow */}
+            <IconButton
+              onClick={() => {
+                const container = document.getElementById('video-carousel');
+                if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
+              }}
+              sx={{
+                position: 'absolute',
+                right: { xs: 8, md: 24 },
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                background: 'rgba(255,255,255,0.95)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                width: { xs: 36, md: 44 },
+                height: { xs: 36, md: 44 },
+                '&:hover': {
+                  background: '#fff',
+                  transform: 'translateY(-50%) scale(1.1)',
+                },
+              }}
+            >
+              <ChevronRightIcon sx={{ color: '#1d1d1f' }} />
+            </IconButton>
+
+            {/* Scrollable Container */}
+            <Box
+              id="video-carousel"
+              sx={{
+                display: 'flex',
+                gap: 2,
+                overflowX: 'auto',
+                py: 4,
+                px: { xs: 0, md: 0 },
+                scrollSnapType: 'x mandatory',
+                '&::-webkit-scrollbar': { display: 'none' },
+                scrollbarWidth: 'none',
+                // Full bleed - no padding
+                mx: { xs: -2, sm: 0 },
+              }}
+            >
+            {sampleVideos.map((video, index) => (
               <Box
                 key={video.id}
                 onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
                 sx={{ 
                   minWidth: { xs: '160px', sm: '180px' },
                   flexShrink: 0,
-                position: 'relative',
+                  scrollSnapAlign: 'center',
+                  position: 'relative',
                   borderRadius: '20px',
-                overflow: 'hidden',
+                  overflow: 'hidden',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  // Add margin for first and last items
+                  ml: index === 0 ? { xs: 2, sm: 4, md: 8 } : 0,
+                  mr: index === sampleVideos.length - 1 ? { xs: 2, sm: 4, md: 8 } : 0,
                   '&:hover': {
                     transform: 'translateY(-4px) scale(1.02)',
                     boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                },
-              }}
-            >
+                  },
+                }}
+              >
               {/* Image container */}
               <Box
                 sx={{
@@ -1811,9 +1866,7 @@ const HomePage: React.FC = () => {
                 </Box>
               </Box>
             ))}
-            
-            {/* Right spacer for mobile - allows scrolling to last item with padding */}
-            <Box sx={{ display: { xs: 'block', md: 'none' }, minWidth: 0, flexShrink: 0 }} />
+            </Box>
           </Box>
               </Container>
             </Box>
