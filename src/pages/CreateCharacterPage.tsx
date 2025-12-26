@@ -682,9 +682,7 @@ const CreateCharacterPage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                {characterHairLength !== 'Bald' && (
                   <Box component="img" src={getHairLengthImage(characterHairLength, characterHairColor)} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
-                )}
                 {hairLengthOptions.find(h => h.id === characterHairLength)?.label}
               </Box>
               <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
@@ -1137,11 +1135,11 @@ const CreateCharacterPage: React.FC = () => {
                     border: characterHairLength === length.id ? '2px solid #007AFF' : '2px solid transparent',
                   }}
                 >
-                  {length.id !== 'Bald' && (
+              
                     <ListItemIcon>
                       <Box component="img" src={getHairLengthImage(length.id, characterHairColor)} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
                     </ListItemIcon>
-                  )}
+              
                   <ListItemText primary={length.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
                   {characterHairLength === length.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                 </ListItemButton>

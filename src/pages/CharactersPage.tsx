@@ -38,6 +38,14 @@ interface Character {
   createdAt: string;
 }
 
+// Get the type image based on character description
+const getCharacterTypeImage = (description?: string): string => {
+  if (!description) return '/characters/human.jpeg';
+  if (description.includes('Product')) return '/characters/product.jpeg';
+  if (description.includes('Non-Human')) return '/characters/dog.jpeg';
+  return '/characters/human.jpeg';
+};
+
 const CharactersPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -273,7 +281,7 @@ const CharactersPage: React.FC = () => {
                   }}
                 >
                   <Avatar
-                    src={character.imageUrls?.[0]}
+                    src={character.imageUrls?.[0] || getCharacterTypeImage(character.description)}
                     sx={{
                       width: { xs: 48, sm: 56 },
                       height: { xs: 48, sm: 56 },
