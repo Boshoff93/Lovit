@@ -895,169 +895,69 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
                   {/* Action Buttons - Only show for completed songs */}
                   {!isProcessing && !isFailed && (
-                    <>
-                      {/* Desktop: Full buttons */}
-                      <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-                        {/* Play Button */}
-                        <Tooltip title={currentSong?.songId === song.songId && isAudioPlaying ? "Pause" : "Play"} arrow>
-                          <IconButton
-                            onClick={() => handlePlayPause(song.songId)}
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              background: '#fff',
-                              border: '1px solid rgba(0,0,0,0.08)',
-                              color: '#007AFF',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                              '&:hover': {
-                                background: '#fff',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                              },
-                            }}
-                          >
-                            {currentSong?.songId === song.songId && isAudioPlaying ? (
-                              <PauseIcon sx={{ fontSize: 20 }} />
-                            ) : (
-                              <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-
-                        {/* View Lyrics Button */}
-                        <Tooltip title="View Lyrics" arrow>
-                          <IconButton
-                            onClick={() => handleViewLyrics(song)}
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              background: '#fff',
-                              border: '1px solid rgba(0,0,0,0.08)',
-                              color: '#007AFF',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                              '&:hover': {
-                                background: '#fff',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                              },
-                            }}
-                          >
-                            <LyricsIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                        </Tooltip>
-
-                        {/* Download Button */}
-                        <Tooltip title="Download" arrow>
-                          <IconButton
-                            onClick={() => handleDownload(song)}
-                            disabled={isDownloading === song.songId}
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              background: '#fff',
-                              border: '1px solid rgba(0,0,0,0.08)',
-                              color: '#007AFF',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                              '&:hover': {
-                                background: '#fff',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                              },
-                            }}
-                          >
-                            {isDownloading === song.songId ? (
-                              <CircularProgress size={20} sx={{ color: '#007AFF' }} />
-                            ) : (
-                              <DownloadIcon sx={{ fontSize: 20 }} />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-
-                        {/* Delete Button */}
-                        <Tooltip title="Delete" arrow>
-                          <IconButton
-                            onClick={() => handleDeleteSong(song)}
-                            disabled={deletingSongId === song.songId}
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              background: '#fff',
-                              border: '1px solid rgba(0,0,0,0.08)',
-                              color: '#FF3B30',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                              '&:hover': {
-                                background: '#fff',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                              },
-                            }}
-                          >
-                            {deletingSongId === song.songId ? (
-                              <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
-                            ) : (
-                              <DeleteIcon sx={{ fontSize: 20 }} />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-
-                        {/* Create Video Button - Gradient matching "The AI Music Generator" */}
-                        <Tooltip title="Create Music Video" arrow>
-                          <IconButton
-                            onClick={() => handleCreateVideo(song)}
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
-                              color: '#fff',
-                              boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                              transition: 'all 0.2s ease',
-                              '&:hover': {
-                                boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
-                                transform: 'scale(1.05)',
-                              },
-                            }}
-                          >
-                            <MovieIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-
-                      {/* Mobile: Play button + More menu */}
-                      <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 0.5 }}>
-                        {/* Play Button */}
-                        <IconButton
-                          onClick={() => handlePlayPause(song.songId)}
-                          sx={{
-                            width: 36,
-                            height: 36,
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1 } }}>
+                      {/* Play Button */}
+                      <IconButton
+                        onClick={() => handlePlayPause(song.songId)}
+                        sx={{
+                          width: { xs: 36, md: 40 },
+                          height: { xs: 36, md: 40 },
+                          background: '#fff',
+                          border: '1px solid rgba(0,0,0,0.08)',
+                          color: '#007AFF',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                          '&:hover': {
                             background: '#fff',
-                            border: '1px solid rgba(0,0,0,0.08)',
-                            color: '#007AFF',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                          }}
-                        >
-                          {currentSong?.songId === song.songId && isAudioPlaying ? (
-                            <PauseIcon sx={{ fontSize: 18 }} />
-                          ) : (
-                            <PlayArrowRoundedIcon sx={{ fontSize: 18 }} />
-                          )}
-                        </IconButton>
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          },
+                        }}
+                      >
+                        {currentSong?.songId === song.songId && isAudioPlaying ? (
+                          <PauseIcon sx={{ fontSize: { xs: 18, md: 20 } }} />
+                        ) : (
+                          <PlayArrowRoundedIcon sx={{ fontSize: { xs: 18, md: 20 } }} />
+                        )}
+                      </IconButton>
 
-                        {/* More Menu Button - minimal style */}
+                      {/* Create Video Button - Gradient matching "The AI Music Generator" */}
+                      <Tooltip title="Create Music Video" arrow>
                         <IconButton
-                          onClick={(e) => {
-                            setMenuAnchorEl(e.currentTarget);
-                            setMenuSong(song);
-                          }}
-                          size="small"
+                          onClick={() => handleCreateVideo(song)}
                           sx={{
-                            color: '#86868B',
+                            width: { xs: 36, md: 40 },
+                            height: { xs: 36, md: 40 },
+                            background: 'linear-gradient(135deg, #007AFF 0%, #00D4FF 50%, #5856D6 100%)',
+                            color: '#fff',
+                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                            transition: 'all 0.2s ease',
                             '&:hover': {
-                              color: '#1D1D1F',
-                              background: 'transparent',
+                              boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+                              transform: 'scale(1.05)',
                             },
                           }}
                         >
-                          <MoreVertIcon sx={{ fontSize: 20 }} />
+                          <MovieIcon sx={{ fontSize: { xs: 18, md: 20 } }} />
                         </IconButton>
-                      </Box>
-                    </>
+                      </Tooltip>
+
+                      {/* More Menu Button */}
+                      <IconButton
+                        onClick={(e) => {
+                          setMenuAnchorEl(e.currentTarget);
+                          setMenuSong(song);
+                        }}
+                        size="small"
+                        sx={{
+                          color: '#86868B',
+                          '&:hover': {
+                            color: '#1D1D1F',
+                            background: 'transparent',
+                          },
+                        }}
+                      >
+                        <MoreVertIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
                   )}
                   
                   {/* Processing songs - show cancel/delete button */}

@@ -983,7 +983,7 @@ const CreatePage: React.FC = () => {
                   setSongPrompt(value);
                   if (value.trim()) setShowSongPromptError(false);
                 }}
-                placeholder="Describe your song idea... Use @name to feature a character"
+                placeholder="Describe your song idea..."
                 error={showSongPromptError && !songPrompt.trim()}
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
                 characterNames={characters.map(c => c.characterName)}
@@ -1799,7 +1799,7 @@ const CreatePage: React.FC = () => {
                   setVideoPrompt(value);
                   if (value.trim()) setShowVideoPromptError(false);
                 }}
-                placeholder="Describe the scenes, setting, and story for your music video... Use @name to feature a character"
+                placeholder="Describe the scenes, setting, and story for your music video..."
                 error={showVideoPromptError && !videoPrompt.trim()}
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
                 characterNames={characters.map(c => c.characterName)}
