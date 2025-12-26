@@ -106,6 +106,14 @@ export const charactersApi = {
     imageBase64Array: string[];
   }) => api.post('/api/gruvi/characters', data),
   
+  updateCharacter: (userId: string, characterId: string, data: {
+    characterName?: string;
+    gender?: string;
+    age?: string;
+    description?: string;
+    imageBase64Array?: string[];
+  }) => api.put(`/api/gruvi/characters/${userId}/${characterId}`, data),
+  
   getUserCharacters: (userId: string) => 
     api.get(`/api/gruvi/characters/${userId}`),
   

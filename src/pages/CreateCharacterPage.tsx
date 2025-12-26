@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -18,7 +18,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -116,8 +116,15 @@ const MAX_CHARACTER_IMAGES = 5;
 
 const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { characterId } = useParams<{ characterId?: string }>();
   const { user } = useSelector((state: RootState) => state.auth);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Edit mode state
+  const isEditMode = !!characterId;
+  const [isLoadingCharacter, setIsLoadingCharacter] = useState(false);
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+  const [imagesChanged, setImagesChanged] = useState(false);
 
   // Character state
   const [characterName, setCharacterName] = useState('');
@@ -141,15 +148,51 @@ const CreateCharacterPage: React.FC = () => {
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
 
-  const [notification, setNotification] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'info' | 'warning' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+  // Fetch character data in edit mode
+  const fetchCharacter = useCallback(async () => {
+    if (!isEditMode || !user?.userId || !characterId) return;
+    
+    setIsLoadingCharacter(true);
+    try {
+      const response = await charactersApi.getUserCharacters(user.userId);
+      const characters = response.data.characters || [];
+      const character = characters.find((c: any) => c.characterId === characterId);
+      
+      if (character) {
+        setCharacterName(character.characterName || '');
+        setCharacterDescription(character.description || '');
+        setCharacterGender(character.gender || 'Male');
+        setCharacterAge(character.age || 'Child');
+        setExistingImageUrls(character.imageUrls || []);
+        
+        // Try to parse additional attributes from description
+        const desc = character.description || '';
+        if (desc.includes('Non-Human')) {
+          setCharacterKind('Non-Human');
+        }
+        // Extract hair color/length/eye color if present in description
+        const hairColorMatch = desc.match(/Hair: ([^,]+),/);
+        if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
+        const hairLengthMatch = desc.match(/Hair: [^,]+, ([^.]+)/);
+        if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
+        const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
+        if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
+      }
+    } catch (error) {
+      console.error('Error fetching character:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to load character',
+        severity: 'error'
+      });
+    } finally {
+      setIsLoadingCharacter(false);
+    }
+  }, [isEditMode, user?.userId, characterId]);
+
+  useEffect(() => {
+    fetchCharacter();
+  }, [fetchCharacter]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -157,42 +200,50 @@ const CreateCharacterPage: React.FC = () => {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
       setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
+      setImagesChanged(true);
     }
   };
 
   const handleRemoveImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    setImagesChanged(true);
   };
-  
+
+  const handleRemoveExistingImage = (index: number) => {
+    setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+    setImagesChanged(true);
+  };
+
   // Drag and drop handlers
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
-  
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
-  
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
       if (imageFiles.length > 0) {
         setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
+        setImagesChanged(true);
       } else {
         setNotification({
           open: true,
@@ -214,8 +265,6 @@ const CreateCharacterPage: React.FC = () => {
       return;
     }
 
-    // Reference images are now optional - removed the check
-
     if (!user?.userId) {
       setNotification({
         open: true,
@@ -228,7 +277,7 @@ const CreateCharacterPage: React.FC = () => {
     setIsCreatingCharacter(true);
     try {
       // Convert uploaded images to base64 (if any)
-      const imageBase64Array: string[] = uploadedImages.length > 0 
+      const imageBase64Array: string[] = uploadedImages.length > 0
         ? await Promise.all(
             uploadedImages.map((file) => {
               return new Promise<string>((resolve, reject) => {
@@ -249,29 +298,48 @@ const CreateCharacterPage: React.FC = () => {
         `Eyes: ${characterEyeColor}`,
       ].filter(Boolean).join('. ');
 
-      // Call the actual character creation API
-      const response = await charactersApi.createCharacter({
-        userId: user.userId,
-        characterName: characterName.trim(),
-        gender: characterGender,
-        age: characterAge,
-        description: fullDescription,
-        imageBase64Array,
-      });
-      
-      console.log('Character creation response:', response.data);
-      
-      setNotification({
-        open: true,
-        message: `Character "${characterName}" created successfully!`,
-        severity: 'success'
-      });
-      
+      if (isEditMode && characterId) {
+        // Update existing character
+        const response = await charactersApi.updateCharacter(user.userId, characterId, {
+          characterName: characterName.trim(),
+          gender: characterGender,
+          age: characterAge,
+          description: fullDescription,
+          ...(imagesChanged && { imageBase64Array }),
+        });
+
+        console.log('Character update response:', response.data);
+
+        setNotification({
+          open: true,
+          message: `Character "${characterName}" updated successfully!`,
+          severity: 'success'
+        });
+      } else {
+        // Create new character
+        const response = await charactersApi.createCharacter({
+          userId: user.userId,
+          characterName: characterName.trim(),
+          gender: characterGender,
+          age: characterAge,
+          description: fullDescription,
+          imageBase64Array,
+        });
+
+        console.log('Character creation response:', response.data);
+
+        setNotification({
+          open: true,
+          message: `Character "${characterName}" created successfully!`,
+          severity: 'success'
+        });
+      }
+
       // Navigate back to characters page after a short delay
       setTimeout(() => navigate('/characters'), 1500);
     } catch (error: any) {
-      console.error('Character creation error:', error);
-      const errorMessage = error.response?.data?.error || 'Failed to create character. Please try again.';
+      console.error('Character save error:', error);
+      const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'create'} character. Please try again.`;
       setNotification({
         open: true,
         message: errorMessage,
@@ -281,6 +349,16 @@ const CreateCharacterPage: React.FC = () => {
       setIsCreatingCharacter(false);
     }
   };
+
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'info' | 'warning' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   // Chip style helper for inline chip selection
   const getChipSx = (isSelected: boolean) => ({
@@ -659,7 +737,7 @@ const CreateCharacterPage: React.FC = () => {
               {isDragging ? 'Drop images here' : 'Drag & drop or click to upload'}
             </Typography>
             <Typography variant="body2" sx={{ color: '#86868B', mt: 0.5 }}>
-              {uploadedImages.length}/{MAX_CHARACTER_IMAGES} images
+              {existingImageUrls.length + uploadedImages.length}/{MAX_CHARACTER_IMAGES} images
             </Typography>
             <input
               type="file"
@@ -671,24 +749,57 @@ const CreateCharacterPage: React.FC = () => {
             />
           </Box>
           
+          {/* Existing images (in edit mode) */}
+          {existingImageUrls.length > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.8rem' }}>
+                Current images:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+                {existingImageUrls.map((url, index) => (
+                  <Box key={`existing-${index}`} sx={{ position: 'relative', width: 70, height: 70 }}>
+                    <img 
+                      src={url} 
+                      alt={`Existing ${index}`} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                    <IconButton
+                      size="small"
+                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
+                      onClick={(e) => { e.stopPropagation(); handleRemoveExistingImage(index); }}
+                    >
+                      <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* Newly uploaded images */}
           {uploadedImages.length > 0 && (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
-              {uploadedImages.map((image, index) => (
-                <Box key={index} sx={{ position: 'relative', width: 70, height: 70 }}>
-                  <img 
-                    src={URL.createObjectURL(image)} 
-                    alt={`Upload ${index}`} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-                  />
-                  <IconButton
-                    size="small"
-                    sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
-                    onClick={(e) => { e.stopPropagation(); handleRemoveImage(index); }}
-                  >
-                    <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
-                  </IconButton>
-                </Box>
-              ))}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.8rem' }}>
+                New images to upload:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+                {uploadedImages.map((image, index) => (
+                  <Box key={index} sx={{ position: 'relative', width: 70, height: 70 }}>
+                    <img 
+                      src={URL.createObjectURL(image)} 
+                      alt={`Upload ${index}`} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                    <IconButton
+                      size="small"
+                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
+                      onClick={(e) => { e.stopPropagation(); handleRemoveImage(index); }}
+                    >
+                      <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           )}
         </Paper>
@@ -728,12 +839,12 @@ const CreateCharacterPage: React.FC = () => {
           />
         </Paper>
 
-        {/* Create Character Button */}
+        {/* Create/Update Character Button */}
         <Button
           fullWidth
           variant="contained"
           onClick={handleCreateCharacter}
-          disabled={isCreatingCharacter}
+          disabled={isCreatingCharacter || isLoadingCharacter}
           sx={{
             py: 2,
             borderRadius: '16px',
@@ -751,7 +862,7 @@ const CreateCharacterPage: React.FC = () => {
           ) : (
             <>
               <PersonIcon sx={{ mr: 1 }} />
-              Create Character
+              {isEditMode ? 'Update Character' : 'Create Character'}
             </>
           )}
         </Button>

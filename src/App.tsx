@@ -208,6 +208,15 @@ function App() {
             </Layout>
           </RequireAuth>
         } />
+
+        {/* Edit Character page - protected route */}
+        <Route path="/characters/edit/:characterId" element={
+          <RequireAuth>
+            <Layout>
+              <CreateCharacterPage />
+            </Layout>
+          </RequireAuth>
+        } />
         
         {/* Verify email page */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />

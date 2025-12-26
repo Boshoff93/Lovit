@@ -23,9 +23,12 @@ import api from '../utils/axiosConfig';
 
 interface Character {
   characterId: string;
-  name: string;
+  characterName: string;
+  gender?: string;
+  age?: string;
   description?: string;
-  imageUrl?: string;
+  imageUrls?: string[];
+  imageKeys?: string[];
   createdAt: string;
 }
 
@@ -203,6 +206,7 @@ const CharactersPage: React.FC = () => {
               {characters.map((character) => (
                 <Box
                   key={character.characterId}
+                  onClick={() => navigate(`/characters/edit/${character.characterId}`)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -211,30 +215,38 @@ const CharactersPage: React.FC = () => {
                     borderRadius: '12px',
                     border: '1px solid rgba(0,0,0,0.08)',
                     mb: 2,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
                       backgroundColor: 'rgba(0,122,255,0.05)',
+                      borderColor: '#007AFF',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
                     },
                   }}
                 >
                   <Avatar
-                    src={character.imageUrl}
+                    src={character.imageUrls?.[0]}
                     sx={{
                       width: 56,
                       height: 56,
-                      bgcolor: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                      bgcolor: '#E5E5EA',
                     }}
                   >
-                    <PersonIcon />
+                    <PersonIcon sx={{ color: '#8E8E93' }} />
                   </Avatar>
                   <Box sx={{ flex: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {character.name}
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                      {character.characterName}
                     </Typography>
-                    {character.description && (
-                      <Typography variant="body2" color="text.secondary">
-                        {character.description}
-                      </Typography>
-                    )}
+                    <Typography variant="body2" color="text.secondary" sx={{ 
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100%'
+                    }}>
+                      {character.description || `${character.gender || ''} ${character.age ? `• ${character.age}` : ''}`}
+                    </Typography>
                   </Box>
                 </Box>
               ))}
