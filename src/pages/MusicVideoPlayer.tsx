@@ -35,7 +35,7 @@ interface VideoData {
   songTitle?: string;
   videoUrl?: string;
   thumbnailUrl?: string;
-  duration?: number;
+  durationSeconds?: number; // Backend saves this
   createdAt: string;
   status: string;
   aspectRatio?: 'portrait' | 'landscape';
@@ -259,7 +259,8 @@ const MusicVideoPlayer: React.FC = () => {
   }
 
   const lyrics = songData?.lyrics || songData?.lyricsRaw || '';
-  const songDuration = songData?.actualDuration || songData?.estimatedDuration || duration;
+  // Use video's saved durationSeconds first, then song's actual duration, then video element duration
+  const displayDuration = videoData?.durationSeconds || songData?.actualDuration || songData?.estimatedDuration || duration;
 
   return (
     <Box sx={{ minHeight: '100vh', background: '#f5f5f7', pb: 16 }}>
@@ -440,7 +441,13 @@ const MusicVideoPlayer: React.FC = () => {
           </Box>
 
           {/* Right Column - Details & Lyrics */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ 
+            flex: 1, 
+            minWidth: 0, 
+            display: 'flex', 
+            flexDirection: 'column',
+            maxHeight: { md: '80vh' }, // Match video height on desktop
+          }}>
             {/* Video Info Card */}
             <Paper
               elevation={0}
@@ -449,6 +456,7 @@ const MusicVideoPlayer: React.FC = () => {
                 p: 3,
                 mb: 2,
                 background: '#fff',
+                flexShrink: 0, // Don't shrink
               }}
             >
               <Typography variant="h5" sx={{ fontWeight: 700, color: '#1d1d1f', mb: 2 }}>
@@ -487,7 +495,7 @@ const MusicVideoPlayer: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <AccessTime sx={{ fontSize: 20, color: '#86868B' }} />
                   <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
-                    <strong>Duration:</strong> {formatTime(songDuration)}
+                    <strong>Duration:</strong> {formatTime(displayDuration)}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -505,7 +513,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Paper>
 
-            {/* Lyrics Card */}
+            {/* Lyrics Card - Takes remaining height */}
             {lyrics && (
               <Paper
                 elevation={0}
@@ -513,11 +521,14 @@ const MusicVideoPlayer: React.FC = () => {
                   borderRadius: 3,
                   p: 3,
                   background: '#fff',
-                  maxHeight: { xs: '300px', md: '400px' },
+                  flex: 1, // Take remaining space
+                  minHeight: { xs: 200, md: 0 }, // Min height on mobile
                   overflow: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f', mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f', mb: 2, flexShrink: 0 }}>
                   🎤 Lyrics
                 </Typography>
                 <Typography
@@ -526,6 +537,7 @@ const MusicVideoPlayer: React.FC = () => {
                     lineHeight: 1.8,
                     whiteSpace: 'pre-wrap',
                     fontSize: '0.95rem',
+                    overflow: 'auto',
                   }}
                 >
                   {cleanLyrics(lyrics)}
