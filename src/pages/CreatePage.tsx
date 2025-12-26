@@ -1204,7 +1204,7 @@ const CreatePage: React.FC = () => {
                       sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {songPrompt.trim() ? songPrompt.substring(0, 15) + (songPrompt.length > 15 ? '...' : '') : 'Not entered'}
+                      {songPrompt.trim() ? songPrompt.substring(0, 7) + (songPrompt.length > 7 ? '...' : '') : 'Empty'}
                     </Typography>
                   </Box>
                 </Box>
@@ -2156,27 +2156,48 @@ const CreatePage: React.FC = () => {
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Song</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {songs.find(s => s.songId === selectedSong)?.songTitle || 'Not selected'}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                    <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {songs.find(s => s.songId === selectedSong)?.songTitle?.substring(0, 15) || 'Not selected'}{(songs.find(s => s.songId === selectedSong)?.songTitle?.length || 0) > 15 ? '...' : ''}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Style</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {artStyles.find(s => s.id === selectedStyle)?.label}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                    <Box
+                      component="img"
+                      src={artStyles.find(s => s.id === selectedStyle)?.image}
+                      alt={artStyles.find(s => s.id === selectedStyle)?.label}
+                      sx={{ width: 22, height: 22, borderRadius: '6px', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {artStyles.find(s => s.id === selectedStyle)?.label}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Type</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {videoTypes.find(t => t.id === videoType)?.label}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                    <MovieIcon sx={{ fontSize: 18, color: '#FF9500' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {videoTypes.find(t => t.id === videoType)?.label}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Aspect Ratio</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                    {aspectRatio === 'portrait' ? '9:16 (Portrait)' : '16:9 (Landscape)'}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
+                    {aspectRatio === 'portrait' ? (
+                      <SmartphoneIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                    ) : (
+                      <TvIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                    )}
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {aspectRatio === 'portrait' ? '9:16 (Portrait)' : '16:9 (Landscape)'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
