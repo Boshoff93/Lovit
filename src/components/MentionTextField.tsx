@@ -103,7 +103,7 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
   };
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative', zIndex: showSuggestions ? 1300 : 'auto' }}>
       {/* Highlight overlay - positioned over the textarea */}
       <Box
         sx={{
@@ -162,19 +162,20 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
       {/* Character suggestions popup */}
       {showSuggestions && filteredCharacters.length > 0 && (
         <Paper
-          elevation={8}
+          elevation={16}
           sx={{
             position: 'absolute',
             top: '100%',
             left: 0,
             right: 0,
             mt: 0.5,
-            zIndex: 1000,
+            zIndex: 1400,
             borderRadius: '12px',
             overflow: 'hidden',
             border: '1px solid rgba(0,0,0,0.1)',
             maxHeight: 200,
             overflowY: 'auto',
+            backgroundColor: '#fff',
           }}
         >
           <Box sx={{ p: 1 }}>
