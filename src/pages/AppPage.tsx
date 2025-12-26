@@ -417,7 +417,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
   };
 
-  const handleDownload = (song: Song) => {
+  const handleDownload = async (song: Song) => {
     if (!song.audioUrl) {
       setNotification({
         open: true,
@@ -429,17 +429,40 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
     setIsDownloading(song.songId);
     
-    // Direct download - open in new tab which will trigger browser's download behavior for audio files
-    // The download attribute doesn't work cross-origin, but opening the URL will prompt download for mp3
-    window.open(song.audioUrl, '_blank');
-    
-    setNotification({
-      open: true,
-      message: `Opening "${song.songTitle}" for download...`,
-      severity: 'info'
-    });
-    
-    setIsDownloading(null);
+    try {
+      const response = await fetch(song.audioUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch audio');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${song.songTitle || 'song'}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      setNotification({
+        open: true,
+        message: `Downloaded "${song.songTitle}"`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      setNotification({
+        open: true,
+        message: 'Download failed. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsDownloading(null);
+    }
   };
 
   const handleViewLyrics = (song: Song) => {
