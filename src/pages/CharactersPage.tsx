@@ -111,7 +111,7 @@ const CharactersPage: React.FC = () => {
       minHeight: '100vh',
       pt: 4,
       pb: { xs: 4, sm: 8 },
-      px: 0
+      px: { xs: 2, sm: 3 },
     }}>
       <Container maxWidth="md" sx={{ 
         display: 'flex', 
@@ -121,7 +121,7 @@ const CharactersPage: React.FC = () => {
         p: 0
       }}>
         {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+        <Box sx={{ width: '100%', mb: 2 }}>
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/settings')}

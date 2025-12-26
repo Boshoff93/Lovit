@@ -143,7 +143,7 @@ const SettingsPage: React.FC = () => {
       minHeight: '100vh',
       pt: 4,
       pb: { xs: 4, sm: 8 },
-      px: 0
+      px: { xs: 2, sm: 3 },
     }}>
       <Container maxWidth="md" sx={{ 
         display: 'flex', 
@@ -161,10 +161,19 @@ const SettingsPage: React.FC = () => {
         borderRadius: '16px',
         boxShadow: 'none',
       }}>
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
-              <Typography variant="body1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#1D1D1F',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {user?.email || 'user@email.com'}
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B' }}>
@@ -179,6 +188,7 @@ const SettingsPage: React.FC = () => {
               px: 2,
               py: 1,
               borderRadius: '20px',
+              flexShrink: 0,
             }}>
               <BoltIcon sx={{ color: '#fff', fontSize: 20 }} />
               <Typography variant="body1" sx={{ color: '#fff', fontWeight: 600 }}>
