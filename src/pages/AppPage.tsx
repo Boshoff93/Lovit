@@ -657,68 +657,48 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         {/* Tracklist Header */}
         <Box 
           sx={{ 
-            p: 3, 
+            p: { xs: 2, sm: 3 }, 
             borderBottom: '1px solid rgba(0,0,0,0.06)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            gap: 2,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <QueueMusicIcon sx={{ color: '#007AFF' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+            <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
               Your Songs
             </Typography>
             <Chip 
               label={`${songs.length} tracks`} 
               size="small" 
               sx={{ 
-                ml: 1,
                 backgroundColor: 'rgba(0,122,255,0.1)',
                 color: '#007AFF',
-                fontWeight: 500
+                fontWeight: 500,
+                display: { xs: 'none', sm: 'flex' },
               }} 
             />
           </Box>
-          {isMobile ? (
-            <Tooltip title="Create New Song" arrow>
-              <IconButton
-                onClick={() => navigate('/create?tab=song')}
-                sx={{
-                  background: '#007AFF',
-                  color: '#fff',
-                  width: 32,
-                  height: 32,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: '#0066CC',
-                  },
-                }}
-              >
-                <AddIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Tooltip>
-          ) : (
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+          <Tooltip title="Create New Song" arrow>
+            <IconButton
               onClick={() => navigate('/create?tab=song')}
               sx={{
                 background: '#007AFF',
-                borderRadius: '12px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 2,
-                py: 0.75,
+                color: '#fff',
+                width: 32,
+                height: 32,
+                flexShrink: 0,
                 boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                 '&:hover': {
                   background: '#0066CC',
                 },
               }}
             >
-              Create New
-            </Button>
-          )}
+              <AddIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         {/* Tracklist */}
@@ -771,9 +751,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 2,
-                    p: 2,
-                    px: 3,
+                    gap: { xs: 1.5, sm: 2 },
+                    p: { xs: 1.5, sm: 2 },
+                    px: { xs: 2, sm: 3 },
                     borderBottom: index < displayedSongs.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none',
                     transition: 'all 0.2s ease',
                     opacity: isProcessing ? 0.85 : 1,
@@ -785,11 +765,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   {/* Track Number */}
                   <Typography
                     sx={{
-                      width: 32,
+                      width: { xs: 24, sm: 32 },
                       textAlign: 'center',
                       color: '#86868B',
-                      fontSize: '0.9rem',
+                      fontSize: { xs: '0.8rem', sm: '0.9rem' },
                       fontWeight: 500,
+                      flexShrink: 0,
                     }}
                   >
                     {(currentPage - 1) * songsPerPage + index + 1}
@@ -798,8 +779,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   {/* Album Art / Loading Indicator */}
                   <Box
                     sx={{
-                      width: 48,
-                      height: 48,
+                      width: { xs: 44, sm: 48 },
+                      height: { xs: 44, sm: 48 },
                       borderRadius: '8px',
                       background: isProcessing 
                         ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
@@ -834,12 +815,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   </Box>
 
                   {/* Track Info */}
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                     <Typography
                       sx={{
                         fontWeight: 600,
                         color: isFailed ? '#FF3B30' : '#1D1D1F',
-                        fontSize: '0.95rem',
+                        fontSize: { xs: '0.85rem', sm: '0.95rem' },
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -849,7 +830,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     </Typography>
                     {isProcessing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography sx={{ color: '#007AFF', fontSize: '0.85rem', fontWeight: 500 }}>
+                        <Typography sx={{ color: '#007AFF', fontSize: { xs: '0.75rem', sm: '0.85rem' }, fontWeight: 500 }}>
                           {song.progressMessage || 'Creating...'}
                         </Typography>
                         <LinearProgress 
@@ -869,7 +850,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         />
                       </Box>
                     ) : (
-                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                      <Typography sx={{ 
+                        color: '#86868B', 
+                        fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
                         {song.genre} • {song.actualDuration ? `${Math.floor(song.actualDuration / 60)}:${String(Math.floor(song.actualDuration % 60)).padStart(2, '0')}` : '--:--'} • {new Date(song.createdAt).toLocaleDateString()}
                       </Typography>
                     )}
@@ -1001,7 +988,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       </Box>
 
                       {/* Mobile: Play button + More menu */}
-                      <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+                      <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 0.5 }}>
                         {/* Play Button */}
                         <IconButton
                           onClick={() => handlePlayPause(song.songId)}
@@ -1021,22 +1008,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           )}
                         </IconButton>
 
-                        {/* More Menu Button */}
+                        {/* More Menu Button - minimal style */}
                         <IconButton
                           onClick={(e) => {
                             setMenuAnchorEl(e.currentTarget);
                             setMenuSong(song);
                           }}
+                          size="small"
                           sx={{
-                            width: 36,
-                            height: 36,
-                            background: '#fff',
-                            border: '1px solid rgba(0,0,0,0.08)',
                             color: '#86868B',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            '&:hover': {
+                              color: '#1D1D1F',
+                              background: 'transparent',
+                            },
                           }}
                         >
-                          <MoreVertIcon sx={{ fontSize: 18 }} />
+                          <MoreVertIcon sx={{ fontSize: 20 }} />
                         </IconButton>
                       </Box>
                     </>
@@ -1124,68 +1111,48 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         >
           <Box 
             sx={{ 
-              p: 3, 
+              p: { xs: 2, sm: 3 }, 
               borderBottom: '1px solid rgba(0,0,0,0.06)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              gap: 2,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <VideoLibraryIcon sx={{ color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+              <VideoLibraryIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
                 Your Music Videos
               </Typography>
               <Chip 
                 label={`${videos.length} video${videos.length !== 1 ? 's' : ''}`} 
                 size="small" 
                 sx={{ 
-                  ml: 1,
                   backgroundColor: 'rgba(0,122,255,0.1)',
                   color: '#007AFF',
-                  fontWeight: 500
+                  fontWeight: 500,
+                  display: { xs: 'none', sm: 'flex' },
                 }} 
               />
             </Box>
-            {isMobile ? (
-              <Tooltip title="Create New Video" arrow>
-                <IconButton
-                  onClick={() => navigate('/create?tab=video')}
-                  sx={{
-                    background: '#007AFF',
-                    color: '#fff',
-                    width: 32,
-                    height: 32,
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    '&:hover': {
-                      background: '#0066CC',
-                    },
-                  }}
-                >
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
+            <Tooltip title="Create New Video" arrow>
+              <IconButton
                 onClick={() => navigate('/create?tab=video')}
                 sx={{
                   background: '#007AFF',
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
+                  color: '#fff',
+                  width: 32,
+                  height: 32,
+                  flexShrink: 0,
                   boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                   '&:hover': {
                     background: '#0066CC',
                   },
                 }}
               >
-                Create New
-              </Button>
-            )}
+                <AddIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
           
           {/* Videos Grid */}
