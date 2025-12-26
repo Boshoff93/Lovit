@@ -894,7 +894,7 @@ const CreatePage: React.FC = () => {
                         <Tooltip
                           key={char.characterId}
                           title={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 0.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                               {char.imageUrls?.[0] && (
                                 <Box
                                   component="img"
@@ -904,8 +904,8 @@ const CreatePage: React.FC = () => {
                                 />
                               )}
                               <Box>
-                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{char.characterName}</Typography>
-                                <Typography sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#1D1D1F' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
                                   {isInPrompt ? 'Already added' : 'Click to add'}
                                 </Typography>
                               </Box>
@@ -913,6 +913,26 @@ const CreatePage: React.FC = () => {
                           }
                           arrow
                           placement="top"
+                          slotProps={{
+                            tooltip: {
+                              sx: {
+                                bgcolor: '#fff',
+                                color: '#1D1D1F',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+                                borderRadius: '12px',
+                                p: 1.5,
+                                border: '1px solid rgba(0,0,0,0.06)',
+                              },
+                            },
+                            arrow: {
+                              sx: {
+                                color: '#fff',
+                                '&::before': {
+                                  border: '1px solid rgba(0,0,0,0.06)',
+                                },
+                              },
+                            },
+                          }}
                         >
                           <Chip
                             label={`@${char.characterName}`}
@@ -1604,7 +1624,7 @@ const CreatePage: React.FC = () => {
                         <Tooltip
                           key={char.characterId}
                           title={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 0.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                               {char.imageUrls?.[0] && (
                                 <Box
                                   component="img"
@@ -1614,8 +1634,8 @@ const CreatePage: React.FC = () => {
                                 />
                               )}
                               <Box>
-                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{char.characterName}</Typography>
-                                <Typography sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#1D1D1F' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
                                   {isInPrompt ? 'Already added' : 'Click to add'}
                                 </Typography>
                               </Box>
@@ -1623,6 +1643,26 @@ const CreatePage: React.FC = () => {
                           }
                           arrow
                           placement="top"
+                          slotProps={{
+                            tooltip: {
+                              sx: {
+                                bgcolor: '#fff',
+                                color: '#1D1D1F',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+                                borderRadius: '12px',
+                                p: 1.5,
+                                border: '1px solid rgba(0,0,0,0.06)',
+                              },
+                            },
+                            arrow: {
+                              sx: {
+                                color: '#fff',
+                                '&::before': {
+                                  border: '1px solid rgba(0,0,0,0.06)',
+                                },
+                              },
+                            },
+                          }}
                         >
                           <Chip
                             label={`@${char.characterName}`}
