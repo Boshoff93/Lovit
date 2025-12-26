@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -30,6 +30,17 @@ import {
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { videosApi, songsApi } from '../services/api';
+
+// Image cache map to avoid reloading
+const imageCache = new Map<string, HTMLImageElement>();
+
+// Preload and cache an image
+const preloadImage = (src: string): void => {
+  if (!src || imageCache.has(src)) return;
+  const img = new Image();
+  img.src = src;
+  imageCache.set(src, img);
+};
 
 interface VideoData {
   videoId: string;
@@ -220,6 +231,29 @@ const MusicVideoPlayer: React.FC = () => {
       .trim();
   };
 
+  // Memoize image URLs and preload them (must be before early returns)
+  const genreImageUrl = useMemo(() => {
+    if (!songData?.genre) return null;
+    const url = `/genres/${songData.genre.toLowerCase().replace(/\s+/g, '-').replace('r&b', 'rnb')}.jpeg`;
+    preloadImage(url);
+    return url;
+  }, [songData?.genre]);
+
+  const moodImageUrl = useMemo(() => {
+    if (!songData?.mood) return null;
+    const url = `/moods/${songData.mood.toLowerCase()}.jpeg`;
+    preloadImage(url);
+    return url;
+  }, [songData?.mood]);
+
+  // Preload video thumbnail (must be before early returns)
+  useEffect(() => {
+    if (videoData?.thumbnailUrl) {
+      preloadImage(videoData.thumbnailUrl);
+    }
+  }, [videoData?.thumbnailUrl]);
+
+  // Loading state
   if (loading) {
     return (
       <Box
@@ -238,6 +272,7 @@ const MusicVideoPlayer: React.FC = () => {
     );
   }
 
+  // Error state
   if (error || !videoData?.videoUrl) {
     return (
       <Box
@@ -466,12 +501,12 @@ const MusicVideoPlayer: React.FC = () => {
               </Typography>
 
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                {songData?.genre && (
+                {genreImageUrl && songData?.genre && (
                   <Chip
                     icon={
                       <Box
                         component="img"
-                        src={`/genres/${songData.genre.toLowerCase().replace(/\s+/g, '-').replace('r&b', 'rnb')}.jpeg`}
+                        src={genreImageUrl}
                         alt={songData.genre}
                         sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
@@ -482,12 +517,12 @@ const MusicVideoPlayer: React.FC = () => {
                     sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
                   />
                 )}
-                {songData?.mood && (
+                {moodImageUrl && songData?.mood && (
                   <Chip
                     icon={
                       <Box
                         component="img"
-                        src={`/moods/${songData.mood.toLowerCase()}.jpeg`}
+                        src={moodImageUrl}
                         alt={songData.mood}
                         sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}

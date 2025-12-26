@@ -48,6 +48,27 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
+// Image cache map to avoid reloading
+const imageCache = new Map<string, HTMLImageElement>();
+
+// Preload and cache an image
+const preloadImage = (src: string): void => {
+  if (!src || imageCache.has(src)) return;
+  const img = new Image();
+  img.src = src;
+  imageCache.set(src, img);
+};
+
+// Preload static images on module load
+const staticImages = [
+  '/gruvi.png',
+  '/gruvi/octopus-landscape-wait.jpeg',
+  '/gruvi/octopus-portrait-wait.jpeg',
+  '/gruvi/gruvi-fail-landscape.jpeg',
+  '/gruvi/gruvi-fail-portrait.jpeg',
+];
+staticImages.forEach(preloadImage);
+
 // Genre to image mapping
 const genreImages: Record<string, string> = {
   'pop': '/genres/pop.jpeg',
@@ -411,6 +432,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       }
     };
   }, [user?.userId, fetchVideos, startVideoPolling]);
+
+  // Preload genre images when songs load
+  useEffect(() => {
+    songs.forEach(song => {
+      if (song.genre) {
+        preloadImage(getGenreImage(song.genre));
+      }
+    });
+  }, [songs]);
+
+  // Preload video thumbnails when videos load
+  useEffect(() => {
+    videos.forEach(video => {
+      if (video.thumbnailUrl) {
+        preloadImage(video.thumbnailUrl);
+      }
+    });
+  }, [videos]);
 
   // Audio player handlers
   const handlePlaySong = useCallback((song: Song) => {
