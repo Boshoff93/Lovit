@@ -249,6 +249,13 @@ function App() {
         <Route path="/styles/:styleId" element={<StyleDetailPage />} />
         <Route path="/videos/:videoId" element={<MusicVideoDetailPage />} />
         
+        {/* Music Video Player - protected route */}
+        <Route path="/video/:videoId" element={
+          <RequireAuth>
+            <MusicVideoPlayer />
+          </RequireAuth>
+        } />
+        
         {/* Create page - protected route */}
         <Route path="/create" element={
            <RequireAuth>
