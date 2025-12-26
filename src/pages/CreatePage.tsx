@@ -828,7 +828,7 @@ const CreatePage: React.FC = () => {
               {/* Characters Section */}
               <Box sx={{ mb: 2 }}>
                 <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters to your song:
+                  Add characters or products to your song:
                 </Typography>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
@@ -1677,7 +1677,7 @@ const CreatePage: React.FC = () => {
               {/* Characters Section */}
               <Box sx={{ mb: 2 }}>
                 <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters to your video:
+                  Add characters or products to your video:
                 </Typography>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
