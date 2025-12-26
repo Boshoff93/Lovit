@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { 
   Typography, 
   Button, 
@@ -508,6 +509,11 @@ const HomePage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
+  
   const [open, setOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
@@ -810,6 +816,8 @@ const HomePage: React.FC = () => {
       color: '#1D1D1F',
       position: 'relative',
       overflow: 'hidden',
+      // Add bottom padding when audio player is visible
+      pb: hasActivePlayer ? 12 : 0,
     }}>
       {/* Subtle gradient background - Apple-style clean blue */}
       <Box sx={{

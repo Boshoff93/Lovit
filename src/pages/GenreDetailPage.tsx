@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import {
   Typography,
   Box,
@@ -72,6 +73,10 @@ const genreSampleTracks: Record<string, Array<{id: number; title: string; durati
 const GenreDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { genreId } = useParams<{ genreId: string }>();
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
 
   // Find the current genre data
   const currentGenre = useMemo(() => {
@@ -107,6 +112,8 @@ const GenreDetailPage: React.FC = () => {
         minHeight: '100vh',
         background: '#fff',
         position: 'relative',
+        // Add bottom padding when audio player is visible
+        pb: hasActivePlayer ? 12 : 0,
       }}
     >
       {/* Background gradient */}

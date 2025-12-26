@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import {
   Box,
   Container,
@@ -157,6 +158,10 @@ const PaymentPage: React.FC = () => {
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const navigate = useNavigate();
   const theme = useTheme();
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
   
@@ -337,6 +342,8 @@ const PaymentPage: React.FC = () => {
       color: '#1D1D1F',
       position: 'relative',
       overflow: 'hidden',
+      // Add bottom padding when audio player is visible
+      pb: hasActivePlayer ? 12 : 0,
     }}>
       {/* Subtle gradient background - Apple-style clean blue */}
       <Box sx={{

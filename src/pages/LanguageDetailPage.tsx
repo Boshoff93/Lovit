@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import {
   Typography,
   Box,
@@ -41,6 +42,10 @@ export const languageData = [
 const LanguageDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { languageId } = useParams<{ languageId: string }>();
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
 
   // Find the current language data
   const currentLanguage = useMemo(() => {
@@ -71,6 +76,8 @@ const LanguageDetailPage: React.FC = () => {
         minHeight: '100vh',
         background: '#fff',
         position: 'relative',
+        // Add bottom padding when audio player is visible
+        pb: hasActivePlayer ? 12 : 0,
       }}
     >
       {/* Background gradient */}

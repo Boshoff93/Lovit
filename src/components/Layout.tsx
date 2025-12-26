@@ -35,6 +35,7 @@ import UpgradePopup from './UpgradePopup';
 import { stripeConfig } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 // Create a context for the Layout functions
 interface LayoutContextType {
@@ -136,6 +137,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
   
   // Helper to check if path is active
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '?');
@@ -620,6 +625,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               width: '100%', 
               px: { xs: 2, sm: 3, md: 4 },
               py: 2,
+              // Add bottom padding when audio player is visible to prevent content from being hidden
+              pb: hasActivePlayer ? 12 : 2,
             }}
           >
             <Box sx={{ flexGrow: 1, width: '100%' }}>

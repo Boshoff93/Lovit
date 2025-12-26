@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import {
   Typography,
   Box,
@@ -56,6 +57,10 @@ const moodSampleTracks: Record<string, Array<{id: number; title: string; duratio
 const MoodDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { moodId } = useParams<{ moodId: string }>();
+  
+  // Check if audio player is active to add bottom padding
+  const { currentSong } = useAudioPlayer();
+  const hasActivePlayer = !!currentSong;
 
   // Find the current mood data
   const currentMood = useMemo(() => {
@@ -91,6 +96,8 @@ const MoodDetailPage: React.FC = () => {
         minHeight: '100vh',
         background: '#fff',
         position: 'relative',
+        // Add bottom padding when audio player is visible
+        pb: hasActivePlayer ? 12 : 0,
       }}
     >
       {/* Background gradient */}
