@@ -1864,7 +1864,12 @@ const CreatePage: React.FC = () => {
                           <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
                           <Typography sx={{ fontSize: '0.75rem', color: '#86868B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{type.description}</Typography>
                         </Box>
-                        <Chip label={`${type.credits}`} size="small" sx={{ fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF', flexShrink: 0 }} />
+                        <Chip 
+                          icon={<BoltIcon sx={{ fontSize: 14, color: '#007AFF !important' }} />}
+                          label={`${type.credits}`} 
+                          size="small" 
+                          sx={{ fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF', flexShrink: 0 }} 
+                        />
                       </ToggleButton>
                     </Tooltip>
                   );
