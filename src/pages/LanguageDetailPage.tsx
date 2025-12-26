@@ -10,32 +10,32 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 
-// Language data with detailed information
+// Language data with detailed information - using image icons
 export const languageData = [
-  { id: 'english', name: 'English', flag: '🇺🇸', code: 'en', description: 'Create music in English', fullDescription: 'English is the most widely used language in global music. Create songs with native-quality English lyrics and vocals. Perfect for international audiences, pop, rock, hip-hop, and all mainstream genres. Our AI understands English idioms, slang, and poetic expressions.' },
-  { id: 'spanish', name: 'Spanish', flag: '🇪🇸', code: 'es', description: 'Create music in Spanish', fullDescription: 'Spanish is the second most spoken native language worldwide. Create authentic Latin music, reggaeton, flamenco, and Spanish pop. Our AI captures the passion and rhythm of Spanish-language music with proper pronunciation and cultural nuance.' },
-  { id: 'french', name: 'French', flag: '🇫🇷', code: 'fr', description: 'Create music in French', fullDescription: 'French brings elegance and romance to music. Create chanson française, French pop, or international hits with French lyrics. Our AI delivers authentic French pronunciation with the sophisticated charm the language is known for.' },
-  { id: 'german', name: 'German', flag: '🇩🇪', code: 'de', description: 'Create music in German', fullDescription: 'German offers powerful expression for music. Create Schlager, German rap, rock, or electronic music with German lyrics. Perfect for the Central European market with authentic pronunciation and cultural relevance.' },
-  { id: 'italian', name: 'Italian', flag: '🇮🇹', code: 'it', description: 'Create music in Italian', fullDescription: 'Italian is the language of opera and beautiful melodies. Create Italian pop, love songs, or classical pieces with authentic Italian vocals. Our AI captures the musicality inherent in the Italian language.' },
-  { id: 'portuguese', name: 'Portuguese', flag: '🇧🇷', code: 'pt', description: 'Create music in Portuguese', fullDescription: 'Portuguese brings the rhythm of Brazil and Portugal to your music. Create bossa nova, Brazilian funk, sertanejo, or Portuguese fado. Our AI delivers both Brazilian and European Portuguese styles.' },
-  { id: 'dutch', name: 'Dutch', flag: '🇳🇱', code: 'nl', description: 'Create music in Dutch', fullDescription: 'Dutch music has a unique character in European pop. Create Dutch-language songs with authentic pronunciation for the Netherlands and Belgium market.' },
-  { id: 'polish', name: 'Polish', flag: '🇵🇱', code: 'pl', description: 'Create music in Polish', fullDescription: 'Polish offers rich expression for music. Create Polish pop, disco polo, or contemporary tracks with authentic Polish vocals for the Polish market.' },
-  { id: 'russian', name: 'Russian', flag: '🇷🇺', code: 'ru', description: 'Create music in Russian', fullDescription: 'Russian is spoken across Eastern Europe and Central Asia. Create Russian pop, rap, or traditional music with authentic Cyrillic lyrics and native pronunciation.' },
-  { id: 'ukrainian', name: 'Ukrainian', flag: '🇺🇦', code: 'uk', description: 'Create music in Ukrainian', fullDescription: 'Ukrainian music has beautiful melodic traditions. Create Ukrainian pop, folk-influenced tracks, or modern songs with authentic Ukrainian vocals.' },
-  { id: 'bulgarian', name: 'Bulgarian', flag: '🇧🇬', code: 'bg', description: 'Create music in Bulgarian', fullDescription: 'Bulgarian offers unique musical traditions and vocal styles. Create Bulgarian pop or traditional music with authentic pronunciation.' },
-  { id: 'czech', name: 'Czech', flag: '🇨🇿', code: 'cs', description: 'Create music in Czech', fullDescription: 'Czech brings Central European charm to music. Create Czech-language songs with proper pronunciation for the Czech market.' },
-  { id: 'romanian', name: 'Romanian', flag: '🇷🇴', code: 'ro', description: 'Create music in Romanian', fullDescription: 'Romanian combines Latin roots with Eastern European flavor. Create Romanian pop, manele, or contemporary tracks with authentic vocals.' },
-  { id: 'greek', name: 'Greek', flag: '🇬🇷', code: 'el', description: 'Create music in Greek', fullDescription: 'Greek has ancient musical heritage. Create Greek pop, laika, or modern tracks with authentic Greek pronunciation and Mediterranean feel.' },
-  { id: 'finnish', name: 'Finnish', flag: '🇫🇮', code: 'fi', description: 'Create music in Finnish', fullDescription: 'Finnish offers unique sonic qualities for music. Create Finnish pop, metal, or contemporary tracks with authentic Nordic vocals.' },
-  { id: 'turkish', name: 'Turkish', flag: '🇹🇷', code: 'tr', description: 'Create music in Turkish', fullDescription: 'Turkish bridges East and West in music. Create Turkish pop, arabesque, or modern tracks with authentic Turkish vocals and cultural nuance.' },
-  { id: 'arabic', name: 'Arabic', flag: '🇸🇦', code: 'ar', description: 'Create music in Arabic', fullDescription: 'Arabic is rich with musical tradition. Create Arabic pop, khaleeji, Egyptian, or Levantine style music with authentic Arabic vocals and pronunciation.' },
-  { id: 'hindi', name: 'Hindi', flag: '🇮🇳', code: 'hi', description: 'Create music in Hindi', fullDescription: 'Hindi dominates Bollywood and Indian pop music. Create Hindi songs, Bollywood-style tracks, or contemporary Indian music with authentic Hindi vocals.' },
-  { id: 'japanese', name: 'Japanese', flag: '🇯🇵', code: 'ja', description: 'Create music in Japanese', fullDescription: 'Japanese is essential for J-Pop and anime music. Create Japanese songs with authentic pronunciation, perfect for J-Pop, rock, or anime openings.' },
-  { id: 'korean', name: 'Korean', flag: '🇰🇷', code: 'ko', description: 'Create music in Korean', fullDescription: 'Korean powers the global K-Pop phenomenon. Create K-Pop style tracks with authentic Korean pronunciation, perfect for the polished K-Pop sound.' },
-  { id: 'chinese', name: 'Chinese', flag: '🇨🇳', code: 'zh', description: 'Create music in Chinese', fullDescription: 'Chinese (Mandarin) opens the world\'s largest music market. Create C-Pop, Chinese ballads, or contemporary tracks with authentic tonal pronunciation.' },
-  { id: 'thai', name: 'Thai', flag: '🇹🇭', code: 'th', description: 'Create music in Thai', fullDescription: 'Thai music has distinctive character. Create Thai pop, luk thung, or modern tracks with authentic Thai vocals and tonal accuracy.' },
-  { id: 'vietnamese', name: 'Vietnamese', flag: '🇻🇳', code: 'vi', description: 'Create music in Vietnamese', fullDescription: 'Vietnamese offers melodic tonal qualities. Create V-Pop or Vietnamese traditional-influenced music with authentic pronunciation.' },
-  { id: 'indonesian', name: 'Indonesian', flag: '🇮🇩', code: 'id', description: 'Create music in Indonesian', fullDescription: 'Indonesian unites Southeast Asia\'s largest nation. Create Indonesian pop, dangdut, or contemporary tracks with authentic Indonesian vocals.' },
+  { id: 'english', name: 'English', image: '/locales/en.jpeg', code: 'en', description: 'Create music in English', fullDescription: 'English is the most widely used language in global music. Create songs with native-quality English lyrics and vocals. Perfect for international audiences, pop, rock, hip-hop, and all mainstream genres. Our AI understands English idioms, slang, and poetic expressions.' },
+  { id: 'spanish', name: 'Spanish', image: '/locales/es.jpeg', code: 'es', description: 'Create music in Spanish', fullDescription: 'Spanish is the second most spoken native language worldwide. Create authentic Latin music, reggaeton, flamenco, and Spanish pop. Our AI captures the passion and rhythm of Spanish-language music with proper pronunciation and cultural nuance.' },
+  { id: 'french', name: 'French', image: '/locales/fr.jpeg', code: 'fr', description: 'Create music in French', fullDescription: 'French brings elegance and romance to music. Create chanson française, French pop, or international hits with French lyrics. Our AI delivers authentic French pronunciation with the sophisticated charm the language is known for.' },
+  { id: 'german', name: 'German', image: '/locales/de.jpeg', code: 'de', description: 'Create music in German', fullDescription: 'German offers powerful expression for music. Create Schlager, German rap, rock, or electronic music with German lyrics. Perfect for the Central European market with authentic pronunciation and cultural relevance.' },
+  { id: 'italian', name: 'Italian', image: '/locales/it.jpeg', code: 'it', description: 'Create music in Italian', fullDescription: 'Italian is the language of opera and beautiful melodies. Create Italian pop, love songs, or classical pieces with authentic Italian vocals. Our AI captures the musicality inherent in the Italian language.' },
+  { id: 'portuguese', name: 'Portuguese', image: '/locales/pt.jpeg', code: 'pt', description: 'Create music in Portuguese', fullDescription: 'Portuguese brings the rhythm of Brazil and Portugal to your music. Create bossa nova, Brazilian funk, sertanejo, or Portuguese fado. Our AI delivers both Brazilian and European Portuguese styles.' },
+  { id: 'dutch', name: 'Dutch', image: '/locales/nl.jpeg', code: 'nl', description: 'Create music in Dutch', fullDescription: 'Dutch music has a unique character in European pop. Create Dutch-language songs with authentic pronunciation for the Netherlands and Belgium market.' },
+  { id: 'polish', name: 'Polish', image: '/locales/pl.jpeg', code: 'pl', description: 'Create music in Polish', fullDescription: 'Polish offers rich expression for music. Create Polish pop, disco polo, or contemporary tracks with authentic Polish vocals for the Polish market.' },
+  { id: 'romanian', name: 'Romanian', image: '/locales/ro.jpeg', code: 'ro', description: 'Create music in Romanian', fullDescription: 'Romanian combines Latin roots with Eastern European flavor. Create Romanian pop, manele, or contemporary tracks with authentic vocals.' },
+  { id: 'czech', name: 'Czech', image: '/locales/cs.jpeg', code: 'cs', description: 'Create music in Czech', fullDescription: 'Czech brings Central European charm to music. Create Czech-language songs with proper pronunciation for the Czech market.' },
+  { id: 'greek', name: 'Greek', image: '/locales/el.jpeg', code: 'el', description: 'Create music in Greek', fullDescription: 'Greek has ancient musical heritage. Create Greek pop, laika, or modern tracks with authentic Greek pronunciation and Mediterranean feel.' },
+  { id: 'bulgarian', name: 'Bulgarian', image: '/locales/bg.jpeg', code: 'bg', description: 'Create music in Bulgarian', fullDescription: 'Bulgarian offers unique musical traditions and vocal styles. Create Bulgarian pop or traditional music with authentic pronunciation.' },
+  { id: 'finnish', name: 'Finnish', image: '/locales/fi.jpeg', code: 'fi', description: 'Create music in Finnish', fullDescription: 'Finnish offers unique sonic qualities for music. Create Finnish pop, metal, or contemporary tracks with authentic Nordic vocals.' },
+  { id: 'ukrainian', name: 'Ukrainian', image: '/locales/uk.jpeg', code: 'uk', description: 'Create music in Ukrainian', fullDescription: 'Ukrainian music has beautiful melodic traditions. Create Ukrainian pop, folk-influenced tracks, or modern songs with authentic Ukrainian vocals.' },
+  { id: 'russian', name: 'Russian', image: '/locales/ru.jpeg', code: 'ru', description: 'Create music in Russian', fullDescription: 'Russian is spoken across Eastern Europe and Central Asia. Create Russian pop, rap, or traditional music with authentic Cyrillic lyrics and native pronunciation.' },
+  { id: 'turkish', name: 'Turkish', image: '/locales/tr.jpeg', code: 'tr', description: 'Create music in Turkish', fullDescription: 'Turkish bridges East and West in music. Create Turkish pop, arabesque, or modern tracks with authentic Turkish vocals and cultural nuance.' },
+  { id: 'arabic', name: 'Arabic', image: '/locales/ar.jpeg', code: 'ar', description: 'Create music in Arabic', fullDescription: 'Arabic is rich with musical tradition. Create Arabic pop, khaleeji, Egyptian, or Levantine style music with authentic Arabic vocals and pronunciation.' },
+  { id: 'hindi', name: 'Hindi', image: '/locales/hi.jpeg', code: 'hi', description: 'Create music in Hindi', fullDescription: 'Hindi dominates Bollywood and Indian pop music. Create Hindi songs, Bollywood-style tracks, or contemporary Indian music with authentic Hindi vocals.' },
+  { id: 'thai', name: 'Thai', image: '/locales/th.jpeg', code: 'th', description: 'Create music in Thai', fullDescription: 'Thai music has distinctive character. Create Thai pop, luk thung, or modern tracks with authentic Thai vocals and tonal accuracy.' },
+  { id: 'vietnamese', name: 'Vietnamese', image: '/locales/vi.jpeg', code: 'vi', description: 'Create music in Vietnamese', fullDescription: 'Vietnamese offers melodic tonal qualities. Create V-Pop or Vietnamese traditional-influenced music with authentic pronunciation.' },
+  { id: 'indonesian', name: 'Indonesian', image: '/locales/id.jpeg', code: 'id', description: 'Create music in Indonesian', fullDescription: 'Indonesian unites Southeast Asia\'s largest nation. Create Indonesian pop, dangdut, or contemporary tracks with authentic Indonesian vocals.' },
+  { id: 'japanese', name: 'Japanese', image: '/locales/js.jpeg', code: 'ja', description: 'Create music in Japanese', fullDescription: 'Japanese is essential for J-Pop and anime music. Create Japanese songs with authentic pronunciation, perfect for J-Pop, rock, or anime openings.' },
+  { id: 'korean', name: 'Korean', image: '/locales/ko.jpeg', code: 'ko', description: 'Create music in Korean', fullDescription: 'Korean powers the global K-Pop phenomenon. Create K-Pop style tracks with authentic Korean pronunciation, perfect for the polished K-Pop sound.' },
+  { id: 'chinese', name: 'Chinese', image: '/locales/zh.jpeg', code: 'zh', description: 'Create music in Chinese', fullDescription: 'Chinese (Mandarin) opens the world\'s largest music market. Create C-Pop, Chinese ballads, or contemporary tracks with authentic tonal pronunciation.' },
 ];
 
 const LanguageDetailPage: React.FC = () => {
@@ -120,7 +120,7 @@ const LanguageDetailPage: React.FC = () => {
 
         {/* Hero Section */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          {/* Flag Icon */}
+          {/* Language Image */}
           <Box
             sx={{
               display: 'inline-flex',
@@ -129,14 +129,22 @@ const LanguageDetailPage: React.FC = () => {
               width: 140,
               height: 140,
               borderRadius: '32px',
-              background: 'rgba(255,255,255,0.8)',
-              backdropFilter: 'blur(40px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06)',
+              overflow: 'hidden',
+              border: '3px solid rgba(0,122,255,0.3)',
+              boxShadow: '0 20px 60px rgba(0,122,255,0.15), 0 8px 24px rgba(0,0,0,0.1)',
               mb: 4,
             }}
           >
-            <Typography sx={{ fontSize: '5rem' }}>{currentLanguage.flag}</Typography>
+            <Box
+              component="img"
+              src={currentLanguage.image}
+              alt={currentLanguage.name}
+              sx={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
           </Box>
 
           {/* Title */}
@@ -289,7 +297,17 @@ const LanguageDetailPage: React.FC = () => {
                   },
                 }}
               >
-                <Typography sx={{ fontSize: '1.25rem' }}>{lang.flag}</Typography>
+                <Box
+                  component="img"
+                  src={lang.image}
+                  alt={lang.name}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
                 <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>{lang.name}</Typography>
               </Box>
             ))}

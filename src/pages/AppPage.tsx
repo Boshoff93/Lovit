@@ -48,6 +48,48 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
+// Genre to image mapping
+const genreImages: Record<string, string> = {
+  'pop': '/genres/pop.jpeg',
+  'hip-hop': '/genres/hip-hop.jpeg',
+  'rnb': '/genres/rnb.jpeg',
+  'electronic': '/genres/electronic.jpeg',
+  'dance': '/genres/dance.jpeg',
+  'house': '/genres/house.jpeg',
+  'edm': '/genres/edm.jpeg',
+  'techno': '/genres/techno.jpeg',
+  'rock': '/genres/rock.jpeg',
+  'alternative': '/genres/alternative.jpeg',
+  'indie': '/genres/indie.jpeg',
+  'punk': '/genres/punk.jpeg',
+  'metal': '/genres/metal.jpeg',
+  'jazz': '/genres/jazz.jpeg',
+  'blues': '/genres/blues.jpeg',
+  'soul': '/genres/soul.jpeg',
+  'funk': '/genres/funk.jpeg',
+  'classical': '/genres/classic.jpeg',
+  'orchestral': '/genres/orchestral.jpeg',
+  'cinematic': '/genres/cinematic.jpeg',
+  'country': '/genres/country.jpeg',
+  'folk': '/genres/folk.jpeg',
+  'acoustic': '/genres/acoustic.jpeg',
+  'latin': '/genres/latin.jpeg',
+  'reggaeton': '/genres/raggaeton.jpeg',
+  'kpop': '/genres/kpop.jpeg',
+  'jpop': '/genres/jpop.jpeg',
+  'reggae': '/genres/raggae.jpeg',
+  'lofi': '/genres/lofi.jpeg',
+  'ambient': '/genres/ambient.jpeg',
+  'chillout': '/genres/chillout.jpeg',
+  'chill': '/genres/chillout.jpeg',
+  'gospel': '/genres/gospels.jpeg',
+};
+
+const getGenreImage = (genre: string): string => {
+  const normalizedGenre = genre.toLowerCase().replace(/\s+/g, '-');
+  return genreImages[normalizedGenre] || '/genres/pop.jpeg';
+};
+
 interface Song {
   songId: string;
   songTitle: string;
@@ -812,18 +854,19 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     sx={{
                       width: { xs: 44, sm: 48 },
                       height: { xs: 44, sm: 48 },
-                      borderRadius: '8px',
+                      borderRadius: '10px',
                       background: isProcessing 
                         ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
                         : isFailed
                         ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)'
-                        : 'linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 100%)',
+                        : '#1D1D1F',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                       position: 'relative',
                       overflow: 'hidden',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     }}
                   >
                     {isProcessing ? (
@@ -841,7 +884,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     ) : currentSong?.songId === song.songId && isAudioPlaying ? (
                       <VolumeUpIcon sx={{ color: '#fff', fontSize: 24 }} />
                     ) : (
-                      <MusicNoteIcon sx={{ color: '#fff', fontSize: 24 }} />
+                      <Box
+                        component="img"
+                        src={getGenreImage(song.genre)}
+                        alt={song.genre}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                        }}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                     )}
                   </Box>
 
