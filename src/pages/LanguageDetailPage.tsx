@@ -15,11 +15,11 @@ import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData, createMusicPlaylistStructuredData } from '../utils/seoHelper';
 import { songsApi } from '../services/api';
 
 // User ID for seed songs (pre-generated sample tracks)
-const SEED_SONGS_USER_ID = 'c6ab6e72-915f-449e-8483-9ef73cec258b';
+const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 
 // Language data with detailed information - using image icons
 export const languageData = [
@@ -50,127 +50,126 @@ export const languageData = [
 ];
 
 // Sample tracks for each language with song IDs for playback
-// These will be populated once seed songs are generated
 const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
   'english': [
-    { id: 'placeholder-en-1', title: 'Chasing Horizons', duration: '2:30' },
-    { id: 'placeholder-en-2', title: 'Midnight in Manhattan', duration: '3:15' },
-    { id: 'placeholder-en-3', title: 'Breaking Through', duration: '2:45' },
+    { id: 'ca9e75ed-551e-4f0e-b939-2130ac0fcdc3', title: 'Wide Open Sky', duration: '2:19' },
+    { id: '59873808-9066-49ca-9920-b4b6f8e63cd0', title: 'Midnight in Your Eyes', duration: '2:55' },
+    { id: '41a5f546-a67f-4506-a99b-3410ac190354', title: 'Rise From The Ashes', duration: '2:43' },
   ],
   'spanish': [
-    { id: 'placeholder-es-1', title: 'Fuego en el Alma', duration: '2:40' },
-    { id: 'placeholder-es-2', title: 'Bailando Contigo', duration: '3:00' },
-    { id: 'placeholder-es-3', title: 'Libertad', duration: '2:55' },
+    { id: '1faa7d07-51ef-4bbd-841c-67d0e78a1add', title: 'Fuego en la Piel', duration: '1:38' },
+    { id: '8ac40eec-8d56-4f4b-91d6-f03af139f56f', title: 'Contigo Hasta el Amanecer', duration: '2:21' },
+    { id: '5628d8f9-53b1-4660-b611-e98a90d96332', title: 'Encontraré Mi Luz', duration: '2:28' },
   ],
   'french': [
-    { id: 'placeholder-fr-1', title: 'Sous les Étoiles', duration: '2:50' },
-    { id: 'placeholder-fr-2', title: 'Électrique', duration: '2:35' },
-    { id: 'placeholder-fr-3', title: 'Mélancolie Douce', duration: '3:10' },
+    { id: 'a67bee12-fab5-45ef-aa3a-1c846c60e4d9', title: 'Sous le Ciel de Paris', duration: '2:21' },
+    { id: 'bba8e5e2-7561-4fe8-b105-b4a923a582be', title: 'Lumières de Minuit', duration: '1:53' },
+    { id: '917bc153-e9f1-4b90-bb05-bb3148ee3aeb', title: 'Les Cafés de Mémoire', duration: '2:00' },
   ],
   'german': [
-    { id: 'placeholder-de-1', title: 'Unaufhaltsam', duration: '2:45' },
-    { id: 'placeholder-de-2', title: 'Nachtlichter', duration: '3:00' },
-    { id: 'placeholder-de-3', title: 'Herzschlag', duration: '2:55' },
+    { id: '72b806e0-ff44-4385-ab26-c27c328fc0dc', title: 'Unbezwingbar', duration: '2:17' },
+    { id: 'df4c0636-6e04-4c9d-8759-82a1b228d4bf', title: 'Neonlichter', duration: '2:25' },
+    { id: '44e5a738-a89e-437d-96ec-e27ba260a837', title: 'Für Immer In Mir', duration: '2:19' },
   ],
   'italian': [
-    { id: 'placeholder-it-1', title: 'Amore Eterno', duration: '3:05' },
-    { id: 'placeholder-it-2', title: 'Volare Alto', duration: '2:40' },
-    { id: 'placeholder-it-3', title: 'Nostalgia', duration: '3:20' },
+    { id: '80470df4-8d6d-4049-a208-4adf3489e4b2', title: 'Sei Tu L\'Amore Vero', duration: '3:09' },
+    { id: 'bfecafb9-1a50-4fc9-b089-bdf367628543', title: 'Liberi Stanotte', duration: '2:23' },
+    { id: 'b3cf3d2d-d6ca-41ea-b47a-9e6cf593461e', title: 'Fotografie Sbiadite', duration: '2:21' },
   ],
   'portuguese': [
-    { id: 'placeholder-pt-1', title: 'Saudade do Mar', duration: '2:50' },
-    { id: 'placeholder-pt-2', title: 'Energia', duration: '2:25' },
-    { id: 'placeholder-pt-3', title: 'Coração Partido', duration: '3:00' },
+    { id: 'aedc9a75-0796-4355-9f13-cdb3a55ea37e', title: 'Onde o Mar Me Espera', duration: '2:13' },
+    { id: 'dd361956-cd80-4336-941d-3dd8429f15aa', title: 'Baile da Madrugada', duration: '1:41' },
+    { id: '170379a6-d6f2-4c59-9013-17a3aa01a892', title: 'Coração de Poeira', duration: '2:33' },
   ],
   'dutch': [
-    { id: 'placeholder-nl-1', title: 'Vrij Als De Wind', duration: '2:35' },
-    { id: 'placeholder-nl-2', title: 'Nachtstad', duration: '2:50' },
-    { id: 'placeholder-nl-3', title: 'Thuiskomen', duration: '3:10' },
+    { id: '63c1e199-2faf-4f68-900f-fbcf1f86f4f2', title: 'Vrij Als De Wind', duration: '2:14' },
+    { id: '35bfcf88-a893-449a-854f-d09a2ef9ea6d', title: 'Neonlicht', duration: '2:04' },
+    { id: '8eba3462-4d4d-444a-bddd-d5bedc4f40e8', title: 'Terug Naar Huis', duration: '2:12' },
   ],
   'polish': [
-    { id: 'placeholder-pl-1', title: 'Siła Woli', duration: '2:40' },
-    { id: 'placeholder-pl-2', title: 'Noc w Warszawie', duration: '2:55' },
-    { id: 'placeholder-pl-3', title: 'Wspomnienia', duration: '3:15' },
+    { id: '29ef8653-6dbf-4e39-8e61-00dd6db11998', title: 'Niezniszczalny', duration: '2:23' },
+    { id: '644a84c9-6e09-4f0a-ad9f-9027f2d54b6a', title: 'Neonowe Sny', duration: '1:51' },
+    { id: '33f93854-0ab4-4cd4-98bc-623e9732e1a0', title: 'Echo Tamtych Dni', duration: '2:16' },
   ],
   'romanian': [
-    { id: 'placeholder-ro-1', title: 'Inima Mea', duration: '2:45' },
-    { id: 'placeholder-ro-2', title: 'Noapte de Vară', duration: '2:30' },
-    { id: 'placeholder-ro-3', title: 'Dor de Casă', duration: '3:00' },
+    { id: '23cf8d43-64ef-4e25-a33d-864b23c2bd53', title: 'Foc și Gheață', duration: '2:08' },
+    { id: '3ff2a6ea-8009-4887-8f7a-ca107ec2c973', title: 'Noaptea E a Noastră', duration: '2:10' },
+    { id: '95e89fd5-aabb-477d-8e39-286d7c9f4660', title: 'Drum de Toamnă', duration: '2:17' },
   ],
   'czech': [
-    { id: 'placeholder-cs-1', title: 'Svítání', duration: '2:40' },
-    { id: 'placeholder-cs-2', title: 'Pražské Noci', duration: '2:55' },
-    { id: 'placeholder-cs-3', title: 'Vzpomínky', duration: '3:10' },
+    { id: '74823a1a-2ba1-44fa-874d-870c42467b2a', title: 'Nový svítání', duration: '2:09' },
+    { id: 'e81dd042-37cd-482c-8172-65dfe64a1647', title: 'Noční Praha', duration: '2:22' },
+    { id: '777e2911-1880-4f51-b24d-a45384baf420', title: 'Fotografie v krabici', duration: '2:05' },
   ],
   'greek': [
-    { id: 'placeholder-el-1', title: 'Καλοκαίρι (Kalokairi)', duration: '2:50' },
-    { id: 'placeholder-el-2', title: 'Νύχτες στην Αθήνα', duration: '2:35' },
-    { id: 'placeholder-el-3', title: 'Αγάπη Μου (My Love)', duration: '3:05' },
+    { id: '01d51540-f395-43d6-a931-b4e0cb6977f0', title: 'Καλοκαιρινός Έρωτας', duration: '2:33' },
+    { id: 'f40eace2-592c-4d33-843e-417b479c2c2e', title: 'Στα Μπουζούκια Απόψε', duration: '2:22' },
+    { id: '8d10647e-44bc-4ffd-a0fd-53f7bcc26c0e', title: 'Μια Ζωή Μαζί Σου', duration: '2:03' },
   ],
   'bulgarian': [
-    { id: 'placeholder-bg-1', title: 'Слънце (Slantse)', duration: '2:45' },
-    { id: 'placeholder-bg-2', title: 'Нощен Град', duration: '2:30' },
-    { id: 'placeholder-bg-3', title: 'Спомени (Memories)', duration: '3:00' },
+    { id: '208cce14-e3c5-4e54-9d84-125b1a4094fe', title: 'Слънце в сърцето', duration: '1:50' },
+    { id: '32317da6-4fc3-4c45-b88c-b846c935b86a', title: 'Нощен Пулс', duration: '2:28' },
+    { id: 'aaf702d4-d824-4cd5-aae7-db91d3e31a3e', title: 'Спомени от вчера', duration: '2:40' },
   ],
   'finnish': [
-    { id: 'placeholder-fi-1', title: 'Pohjoinen Taivas', duration: '2:55' },
-    { id: 'placeholder-fi-2', title: 'Metallin Sydän', duration: '3:30' },
-    { id: 'placeholder-fi-3', title: 'Hiljaisuus', duration: '2:50' },
+    { id: '5c97653b-5b5b-4c01-8320-076bcf230911', title: 'Revontulet', duration: '2:13' },
+    { id: 'c1728aeb-80b5-49f1-a264-3585463e5ad0', title: 'Teräksen Sydän', duration: '2:55' },
+    { id: '81d0442e-6ec9-447d-9e81-1778ef1155e4', title: 'Hiljaisuuden laulu', duration: '1:52' },
   ],
   'ukrainian': [
-    { id: 'placeholder-uk-1', title: 'Вільний (Vilnyi)', duration: '2:40' },
-    { id: 'placeholder-uk-2', title: 'Київські Ночі', duration: '2:55' },
-    { id: 'placeholder-uk-3', title: 'Колискова (Lullaby)', duration: '3:10' },
+    { id: '5b65bddb-bf00-4ddd-abc3-8b650fd86cf5', title: 'Вогонь Свободи', duration: '2:00' },
+    { id: 'a7106672-d7bd-4ae1-beb7-8c533cdbbb1b', title: 'Ніч Без Меж', duration: '2:06' },
+    { id: 'cc121209-d13f-4708-bec7-e4a3dd72a462', title: 'Калинова Доля', duration: '2:35' },
   ],
   'russian': [
-    { id: 'placeholder-ru-1', title: 'Огни Москвы', duration: '2:50' },
-    { id: 'placeholder-ru-2', title: 'Невозможное', duration: '2:35' },
-    { id: 'placeholder-ru-3', title: 'Дождь (Rain)', duration: '3:15' },
+    { id: '3e05a0a9-a3a6-465b-8156-b1e8afd69588', title: 'Огни Москвы', duration: '2:38' },
+    { id: 'bac05d97-c7fb-4efd-9663-078ec3efbddf', title: 'Встань и иди', duration: '2:51' },
+    { id: 'c4a35f4f-0c03-4032-b36d-377da625fe1b', title: 'Снег на старых письмах', duration: '2:24' },
   ],
   'turkish': [
-    { id: 'placeholder-tr-1', title: 'Aşk Masalı', duration: '2:45' },
-    { id: 'placeholder-tr-2', title: 'İstanbul Geceleri', duration: '2:30' },
-    { id: 'placeholder-tr-3', title: 'Özlem', duration: '3:05' },
+    { id: '05714691-b94e-474a-b7a1-7ff90fbeba2b', title: 'Sensiz Olamam', duration: '2:34' },
+    { id: '1ac289a8-491c-44af-85a3-b2b00348b0dc', title: 'Gece Bizimle Yaşıyor', duration: '2:15' },
+    { id: '844a8c6c-4156-4cb5-8b5a-ab36340c863e', title: 'Hassatisfaction', duration: '1:43' },
   ],
   'arabic': [
-    { id: 'placeholder-ar-1', title: 'حبيبي (Habibi)', duration: '2:55' },
-    { id: 'placeholder-ar-2', title: 'ليلة في دبي', duration: '2:40' },
-    { id: 'placeholder-ar-3', title: 'شوق (Longing)', duration: '3:20' },
+    { id: '7213cafe-3f48-4dd5-82c1-4dd1795467d3', title: 'قلبي معاك', duration: '1:57' },
+    { id: 'b241a4c8-b14e-4656-a248-4d5571692d5b', title: 'ليلة بلا نهاية', duration: '2:11' },
+    { id: '9e089ad7-bb1b-479d-adbe-9e6d9d654015', title: 'يا ليل الشوق', duration: '2:27' },
   ],
   'hindi': [
-    { id: 'placeholder-hi-1', title: 'दिल की धड़कन', duration: '3:00' },
-    { id: 'placeholder-hi-2', title: 'जश्न (Jashn)', duration: '2:35' },
-    { id: 'placeholder-hi-3', title: 'तन्हाई (Tanhai)', duration: '3:15' },
+    { id: '98e7a1f5-d7c1-4c58-afe8-b9f4e7e3cee9', title: 'Tere Bina Adhura', duration: '2:14' },
+    { id: '3ecf27cd-cb9c-47b2-bf3b-520aba01aabe', title: 'नाचो रे', duration: '2:02' },
+    { id: '0193a3c7-910b-4c89-a017-4eb28d3ac3d8', title: 'तन्हाई का साया', duration: '2:33' },
   ],
   'thai': [
-    { id: 'placeholder-th-1', title: 'รักแรก (Rak Raek)', duration: '2:50' },
-    { id: 'placeholder-th-2', title: 'กรุงเทพราตรี', duration: '2:30' },
-    { id: 'placeholder-th-3', title: 'ความทรงจำ', duration: '3:00' },
+    { id: 'df7effc0-2628-41fd-a522-ffb64cc25a06', title: 'รักแรกพบ', duration: '2:35' },
+    { id: '9bd60414-f260-4c84-9fee-6c23fcf39c14', title: 'แสงไฟในความมืด', duration: '2:08' },
+    { id: '70420f27-b3d3-4d3a-90a5-e184adc8bcb4', title: 'ยังคงจำ', duration: '2:16' },
   ],
   'vietnamese': [
-    { id: 'placeholder-vi-1', title: 'Yêu Em (Love You)', duration: '2:45' },
-    { id: 'placeholder-vi-2', title: 'Sài Gòn Đêm Nay', duration: '2:35' },
-    { id: 'placeholder-vi-3', title: 'Quê Hương', duration: '3:10' },
+    { id: '771d81bd-b99f-4ebb-bae7-3ce05013f134', title: 'Lần Đầu Yêu', duration: '2:13' },
+    { id: '4ec74e38-0a4a-4a9b-998f-c495925e157b', title: 'Đêm Sài Gòn', duration: '1:27' },
+    { id: '31db8738-55a1-4d91-b4d7-1eccb060f9d0', title: 'Về Bến Sông Xưa', duration: '2:05' },
   ],
   'indonesian': [
-    { id: 'placeholder-id-1', title: 'Cinta Pertama', duration: '2:55' },
-    { id: 'placeholder-id-2', title: 'Jakarta Malam Ini', duration: '2:40' },
-    { id: 'placeholder-id-3', title: 'Rindu', duration: '3:05' },
+    { id: '5fbc4978-ed58-405f-a505-7224b27e417c', title: 'Kisah Pertama', duration: '2:53' },
+    { id: '103f2656-c926-4a96-bd7d-409906994a8a', title: 'Malam Jakarta', duration: '2:03' },
+    { id: '106c776d-3c3f-4bad-baa4-8ca9452b2d7c', title: 'Rindu Yang Tak Sampai', duration: '2:38' },
   ],
   'japanese': [
-    { id: 'placeholder-ja-1', title: '桜の季節 (Sakura no Kisetsu)', duration: '2:50' },
-    { id: 'placeholder-ja-2', title: '東京ナイト (Tokyo Night)', duration: '2:30' },
-    { id: 'placeholder-ja-3', title: '雨の日 (Rainy Day)', duration: '3:15' },
+    { id: '2ea32de2-7ed0-44bf-8130-d418e10926e4', title: '桜の約束', duration: '2:18' },
+    { id: '05775b58-38bb-48ab-ab80-80fee8511a58', title: 'ネオン・ハートビート', duration: '2:51' },
+    { id: 'cb81529e-aadd-41b3-abd2-5bcf272f56be', title: '雨の記憶', duration: '2:42' },
   ],
   'korean': [
-    { id: 'placeholder-ko-1', title: '첫사랑 (First Love)', duration: '2:45' },
-    { id: 'placeholder-ko-2', title: '파이어 (Fire)', duration: '2:25' },
-    { id: 'placeholder-ko-3', title: '별빛 (Starlight)', duration: '3:00' },
+    { id: '9488d94b-e493-4a45-9813-fbcb111185cd', title: '첫눈에 (At First Sight)', duration: '2:09' },
+    { id: 'b0025c10-02b3-413c-99bd-eabcf505cbe2', title: '불을 질러 (Set It On Fire)', duration: '1:23' },
+    { id: 'f15f9218-84d7-4b63-8127-1343723f34d7', title: '꿈의 빛 (Light of Dreams)', duration: '2:48' },
   ],
   'chinese': [
-    { id: 'placeholder-zh-1', title: '月光 (Moonlight)', duration: '2:55' },
-    { id: 'placeholder-zh-2', title: '夜上海 (Shanghai Nights)', duration: '2:35' },
-    { id: 'placeholder-zh-3', title: '故乡 (Hometown)', duration: '3:10' },
+    { id: '074cf19a-cb08-428a-9f0b-32f1560eff70', title: '月光下的誓言', duration: '2:36' },
+    { id: 'd1ef5597-173f-427e-b965-094b8fb009a1', title: '霓虹狂欢', duration: '2:24' },
+    { id: 'dd8cab2d-849f-49e8-8ab6-514492b31698', title: '故乡的月光', duration: '3:14' },
   ],
 };
 
@@ -207,10 +206,10 @@ const LanguageDetailPage: React.FC = () => {
       return;
     }
     
-    // Fetch the song metadata with audio URL
+    // Fetch the song metadata with audio URL (using public endpoint - no auth required)
     setLoadingSongId(track.id);
     try {
-      const response = await songsApi.getSongsByIds(SEED_SONGS_USER_ID, [track.id]);
+      const response = await songsApi.getPublicSampleSongs(SEED_SONGS_USER_ID, [track.id]);
       const songs = response.data?.songs || [];
       
       if (songs.length > 0 && songs[0].audioUrl) {
@@ -310,7 +309,18 @@ const LanguageDetailPage: React.FC = () => {
         ogUrl={`https://gruvi.ai/languages/${currentLanguage.id}`}
         twitterTitle={`Create Music in ${currentLanguage.name} | Gruvi`}
         twitterDescription={currentLanguage.description}
-        structuredData={[createBreadcrumbStructuredData(breadcrumbData)]}
+        structuredData={[
+          createBreadcrumbStructuredData(breadcrumbData),
+          createMusicPlaylistStructuredData({
+            name: `${currentLanguage.name} Music by Gruvi`,
+            description: `AI-generated music in ${currentLanguage.name} created with Gruvi.`,
+            url: `https://gruvi.ai/languages/${currentLanguage.id}`,
+            tracks: sampleTracks.map(track => ({
+              name: track.title,
+              duration: `PT${track.duration.replace(':', 'M')}S`,
+            })),
+          }),
+        ]}
       />
 
       <Container maxWidth="md" sx={{ py: 4, position: 'relative', zIndex: 1 }}>
@@ -588,12 +598,6 @@ const LanguageDetailPage: React.FC = () => {
               ))}
             </Box>
             
-            {/* Note about placeholder tracks */}
-            {sampleTracks.some(t => t.id.startsWith('placeholder-')) && (
-              <Typography sx={{ textAlign: 'center', mt: 2, fontSize: '0.85rem', color: '#86868B' }}>
-                Sample tracks coming soon
-              </Typography>
-            )}
           </Box>
         )}
 

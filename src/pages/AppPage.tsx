@@ -26,7 +26,12 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  TextField,
+  InputAdornment,
+  FormControl,
+  Select,
+  SelectChangeEvent,
 } from '@mui/material';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -44,8 +49,67 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LyricsIcon from '@mui/icons-material/Lyrics';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
+
+// Genre options for filter
+const genreOptions = [
+  { id: 'pop', name: 'Pop' },
+  { id: 'hip-hop', name: 'Hip Hop' },
+  { id: 'rnb', name: 'R&B' },
+  { id: 'electronic', name: 'Electronic' },
+  { id: 'dance', name: 'Dance' },
+  { id: 'house', name: 'House' },
+  { id: 'edm', name: 'EDM' },
+  { id: 'techno', name: 'Techno' },
+  { id: 'rock', name: 'Rock' },
+  { id: 'alternative', name: 'Alternative' },
+  { id: 'indie', name: 'Indie' },
+  { id: 'punk', name: 'Punk' },
+  { id: 'metal', name: 'Metal' },
+  { id: 'jazz', name: 'Jazz' },
+  { id: 'blues', name: 'Blues' },
+  { id: 'soul', name: 'Soul' },
+  { id: 'funk', name: 'Funk' },
+  { id: 'classical', name: 'Classical' },
+  { id: 'orchestral', name: 'Orchestral' },
+  { id: 'cinematic', name: 'Cinematic' },
+  { id: 'country', name: 'Country' },
+  { id: 'folk', name: 'Folk' },
+  { id: 'acoustic', name: 'Acoustic' },
+  { id: 'latin', name: 'Latin' },
+  { id: 'reggaeton', name: 'Reggaeton' },
+  { id: 'kpop', name: 'K-Pop' },
+  { id: 'jpop', name: 'J-Pop' },
+  { id: 'reggae', name: 'Reggae' },
+  { id: 'lofi', name: 'Lo-fi' },
+  { id: 'ambient', name: 'Ambient' },
+  { id: 'chillout', name: 'Chill' },
+  { id: 'gospel', name: 'Gospel' },
+];
+
+// Mood options for filter
+const moodOptions = [
+  { id: 'happy', name: 'Happy' },
+  { id: 'sad', name: 'Sad' },
+  { id: 'energetic', name: 'Energetic' },
+  { id: 'romantic', name: 'Romantic' },
+  { id: 'chill', name: 'Chill' },
+  { id: 'epic', name: 'Epic' },
+  { id: 'dreamy', name: 'Dreamy' },
+  { id: 'dark', name: 'Dark' },
+  { id: 'uplifting', name: 'Uplifting' },
+  { id: 'nostalgic', name: 'Nostalgic' },
+  { id: 'peaceful', name: 'Peaceful' },
+  { id: 'intense', name: 'Intense' },
+  { id: 'melancholic', name: 'Melancholic' },
+  { id: 'playful', name: 'Playful' },
+  { id: 'mysterious', name: 'Mysterious' },
+  { id: 'triumphant', name: 'Triumphant' },
+  { id: 'promotional', name: 'Promotional' },
+];
 
 // Animated Equalizer Component
 const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
@@ -248,7 +312,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentVideoPage, setCurrentVideoPage] = useState(1);
+  const [totalSongsCount, setTotalSongsCount] = useState(0);
+  const [totalVideosCount, setTotalVideosCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [genreFilter, setGenreFilter] = useState<string>('');
+  const [moodFilter, setMoodFilter] = useState<string>('');
 
   // Update tab when route changes or tab query param changes
   useEffect(() => {
@@ -257,6 +329,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   }, [location.pathname, defaultTab, searchParams]);
 
   const songsPerPage = 10;
+  const videosPerPage = 12; // 12 videos per page (works well with 4-column grid)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -295,20 +368,26 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   });
 
   // Fetch songs from API
-  const fetchSongs = useCallback(async (showLoading = true) => {
+  // Fetch songs with server-side pagination and filtering
+  const fetchSongs = useCallback(async (showLoading = true, page = currentPage) => {
     if (!user?.userId) return;
     
     if (showLoading) setIsLoadingSongs(true);
     try {
-      const response = await songsApi.getUserSongs(user.userId);
+      const response = await songsApi.getUserSongs(user.userId, { 
+        page, 
+        limit: songsPerPage,
+        search: searchQuery || undefined,
+        genre: genreFilter || undefined,
+        mood: moodFilter || undefined,
+      });
       const fetchedSongs = response.data.songs || [];
-      
-      // Sort by createdAt descending (newest first)
-      fetchedSongs.sort((a: Song, b: Song) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      const pagination = response.data.pagination;
       
       setSongs(fetchedSongs);
+      if (pagination?.totalCount !== undefined) {
+        setTotalSongsCount(pagination.totalCount);
+      }
       
       // Check if any songs are still processing
       const hasProcessingSongs = fetchedSongs.some((s: Song) => s.status === 'processing');
@@ -319,7 +398,35 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       if (showLoading) setIsLoadingSongs(false);
     }
     return false;
-  }, [user?.userId]);
+  }, [user?.userId, currentPage, searchQuery, genreFilter, moodFilter]);
+
+  // Refetch when filters change (with debounce for search)
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    // Clear any pending debounce
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    
+    // Debounce search queries to avoid too many requests while typing
+    if (searchQuery) {
+      searchDebounceRef.current = setTimeout(() => {
+        setCurrentPage(1);
+        fetchSongs(true, 1);
+      }, 300);
+    } else {
+      // For non-search filter changes, fetch immediately
+      setCurrentPage(1);
+      fetchSongs(true, 1);
+    }
+    
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, genreFilter, moodFilter]);
 
   // Start polling for song updates
   const startPolling = useCallback(() => {
@@ -418,7 +525,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   }, [searchParams, fetchAccountData]);
 
   // Fetch videos
-  const fetchVideos = useCallback(async (showLoading = true): Promise<boolean> => {
+  // Fetch videos with server-side pagination
+  const fetchVideos = useCallback(async (showLoading = true, page = currentVideoPage): Promise<boolean> => {
     if (!user?.userId) return false;
     
     if (showLoading) {
@@ -426,8 +534,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
     
     try {
-      const response = await videosApi.getUserVideos(user.userId);
+      const response = await videosApi.getUserVideos(user.userId, { page, limit: videosPerPage });
       setVideos(response.data.videos || []);
+      const pagination = response.data.pagination;
+      if (pagination?.totalCount !== undefined) {
+        setTotalVideosCount(pagination.totalCount);
+      }
       
       // Check if any videos are still processing
       const hasProcessing = (response.data.videos || []).some(
@@ -443,7 +555,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         setIsLoadingVideos(false);
       }
     }
-  }, [user?.userId]);
+  }, [user?.userId, currentVideoPage]);
 
   // Start video polling for processing videos
   const startVideoPolling = useCallback(() => {
@@ -733,6 +845,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
+    // Always fetch from server (filtering is now server-side)
+    fetchSongs(true, page);
   };
 
   const handleTabChange = (
@@ -744,12 +858,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
   };
 
-  // Calculate pagination
-  const totalPages = Math.ceil(songs.length / songsPerPage);
-  const displayedSongs = songs.slice(
-    (currentPage - 1) * songsPerPage,
-    currentPage * songsPerPage
-  );
+  // Filter songs based on search query, genre, and mood
+  // Check if any filters are active (for UI display purposes)
+  const hasActiveFilters = searchQuery || genreFilter || moodFilter;
+
+  // Calculate pagination for songs (server handles filtering, totalSongsCount reflects filtered results)
+  const totalPages = Math.ceil(totalSongsCount / songsPerPage);
+  
+  // Songs are already filtered and paginated from the server
+  const displayedSongs = songs;
+
+  // Calculate pagination for videos (using server-side total count)
+  const totalVideoPages = Math.ceil(totalVideosCount / videosPerPage);
+  // Videos are already paginated from the server
+  // Videos are already paginated from the server
+  const displayedVideos = videos;
+
+  const handleVideoPageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentVideoPage(page);
+    // Fetch data for the new page
+    fetchVideos(true, page);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
@@ -839,12 +968,23 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-            <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
+            <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
               Your Songs
             </Typography>
+            {/* Mobile: simple count */}
+            <Typography 
+              sx={{ 
+                display: { xs: 'block', sm: 'none' },
+                color: '#86868B',
+                fontSize: '0.875rem',
+              }}
+            >
+              ({totalSongsCount})
+            </Typography>
+            {/* Desktop: total count chip */}
             <Chip 
-              label={`${songs.length} tracks`} 
+              label={`${totalSongsCount} track${totalSongsCount !== 1 ? 's' : ''}`} 
               size="small" 
               sx={{ 
                 backgroundColor: 'rgba(0,122,255,0.1)',
@@ -897,21 +1037,138 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </Button>
         </Box>
 
+        {/* Search and Filters */}
+        <Box
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: 2,
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 2,
+            alignItems: { xs: 'stretch', md: 'center' },
+          }}
+        >
+          {/* Search Bar */}
+          <TextField
+            placeholder="Search songs..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // Reset to first page on search
+            }}
+            size="small"
+            sx={{
+              flex: { xs: 1, md: 2 },
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '10px',
+                backgroundColor: 'rgba(0,0,0,0.03)',
+                '& fieldset': { border: 'none' },
+                '&:hover': { backgroundColor: 'rgba(0,0,0,0.05)' },
+                '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.05)' },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#86868B' }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchQuery && (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setSearchQuery('')}>
+                    <ClearIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          {/* Genre Filter */}
+          <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 140 } }}>
+            <Select
+              value={genreFilter}
+              onChange={(e: SelectChangeEvent) => {
+                setGenreFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              displayEmpty
+              sx={{
+                borderRadius: '10px',
+                backgroundColor: genreFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                '&:hover': { backgroundColor: genreFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
+              }}
+            >
+              <MenuItem value="">All Genres</MenuItem>
+              {genreOptions.map((genre) => (
+                <MenuItem key={genre.id} value={genre.id}>{genre.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Mood Filter */}
+          <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 140 } }}>
+            <Select
+              value={moodFilter}
+              onChange={(e: SelectChangeEvent) => {
+                setMoodFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              displayEmpty
+              sx={{
+                borderRadius: '10px',
+                backgroundColor: moodFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                '&:hover': { backgroundColor: moodFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
+              }}
+            >
+              <MenuItem value="">All Moods</MenuItem>
+              {moodOptions.map((mood) => (
+                <MenuItem key={mood.id} value={mood.id}>{mood.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Clear Filters Button - only show when filters are active */}
+          {hasActiveFilters && (
+            <Button
+              size="small"
+              onClick={() => {
+                setSearchQuery('');
+                setGenreFilter('');
+                setMoodFilter('');
+                setCurrentPage(1);
+              }}
+              sx={{
+                textTransform: 'none',
+                color: '#86868B',
+                whiteSpace: 'nowrap',
+                '&:hover': { color: '#1D1D1F', backgroundColor: 'rgba(0,0,0,0.05)' },
+              }}
+              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
+            >
+              Clear filters
+            </Button>
+          )}
+        </Box>
+
         {/* Tracklist */}
         {isLoadingSongs ? (
           <Box sx={{ p: 3 }}>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
               <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Skeleton variant="text" width={32} />
                 <Skeleton variant="rounded" width={48} height={48} />
                 <Box sx={{ flex: 1 }}>
                   <Skeleton variant="text" width="60%" />
                   <Skeleton variant="text" width="40%" />
                 </Box>
+                <Skeleton variant="circular" width={32} height={32} />
+                <Skeleton variant="text" width={12} height={32} />
               </Box>
             ))}
           </Box>
-        ) : songs.length === 0 ? (
+        ) : totalSongsCount === 0 ? (
           <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
             <MusicNoteIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
             <Typography variant="h6" color="text.secondary">
@@ -1229,6 +1486,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               page={currentPage}
               onChange={handlePageChange}
               color="primary"
+              siblingCount={0}
+              boundaryCount={1}
               sx={{
                 '& .MuiPaginationItem-root': {
                   borderRadius: '12px',
@@ -1265,12 +1524,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <VideoLibraryIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
-                Your Music Videos
+              <VideoLibraryIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                {/* Shorter title on mobile */}
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Your Music Videos</Box>
+                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Videos</Box>
               </Typography>
+              {/* Mobile: simple count */}
+              <Typography 
+                sx={{ 
+                  display: { xs: 'block', sm: 'none' },
+                  color: '#86868B',
+                  fontSize: '0.875rem',
+                }}
+              >
+                ({totalVideosCount})
+              </Typography>
+              {/* Desktop: total count chip */}
               <Chip 
-                label={`${videos.length} video${videos.length !== 1 ? 's' : ''}`} 
+                label={`${totalVideosCount} video${totalVideosCount !== 1 ? 's' : ''}`} 
                 size="small" 
                 sx={{ 
                   backgroundColor: 'rgba(0,122,255,0.1)',
@@ -1326,24 +1598,75 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           {/* Videos Grid - Grouped by Date */}
           {isLoadingVideos ? (
             <Box sx={{ p: 3 }}>
-              {[1, 2, 3].map((i) => (
-                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                  <Skeleton variant="text" width={32} />
-                  <Skeleton variant="rounded" width={48} height={48} />
-                  <Box sx={{ flex: 1 }}>
-                    <Skeleton variant="text" width="60%" />
-                    <Skeleton variant="text" width="40%" />
+              {/* First row - 4 portrait video skeletons */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+                gap: 2,
+                mb: 3,
+              }}>
+                {[1, 2, 3, 4].map((i) => (
+                  <Box key={`portrait-1-${i}`} sx={{ position: 'relative' }}>
+                    <Skeleton 
+                      variant="rounded" 
+                      sx={{ 
+                        width: '100%', 
+                        paddingTop: '177.78%', // 9:16 aspect ratio for portrait
+                        borderRadius: '16px',
+                      }} 
+                    />
                   </Box>
-                </Box>
-              ))}
+                ))}
+              </Box>
+              
+              {/* Second row - 2 landscape video skeletons */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, 
+                gap: 2,
+                mb: 3,
+              }}>
+                {[1, 2].map((i) => (
+                  <Box key={`landscape-${i}`} sx={{ position: 'relative' }}>
+                    <Skeleton 
+                      variant="rounded" 
+                      sx={{ 
+                        width: '100%', 
+                        paddingTop: '56.25%', // 16:9 aspect ratio for landscape
+                        borderRadius: '16px',
+                      }} 
+                    />
+                  </Box>
+                ))}
+              </Box>
+              
+              {/* Third row - 4 more portrait video skeletons */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+                gap: 2,
+              }}>
+                {[1, 2, 3, 4].map((i) => (
+                  <Box key={`portrait-2-${i}`} sx={{ position: 'relative' }}>
+                    <Skeleton 
+                      variant="rounded" 
+                      sx={{ 
+                        width: '100%', 
+                        paddingTop: '177.78%', // 9:16 aspect ratio for portrait
+                        borderRadius: '16px',
+                      }} 
+                    />
+                  </Box>
+                ))}
+              </Box>
             </Box>
-          ) : videos.length > 0 ? (
+          ) : totalVideosCount > 0 ? (
             <Box sx={{ p: 3 }}>
-              {/* Group videos by date */}
+              {/* Group displayed videos by date */}
               {(() => {
-                // Group videos by date
+                // Group displayed videos by date (paginated)
                 const groupedVideos: { [key: string]: Video[] } = {};
-                videos.forEach((video) => {
+                displayedVideos.forEach((video) => {
                   const dateKey = new Date(video.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -1738,6 +2061,31 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   );
                 });
               })()}
+              
+              {/* Video Pagination */}
+              {totalVideoPages > 1 && (
+                <Box 
+                  sx={{ 
+                    pt: 3, 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Pagination
+                    count={totalVideoPages}
+                    page={currentVideoPage}
+                    onChange={handleVideoPageChange}
+                    color="primary"
+                    siblingCount={0}
+                    boundaryCount={1}
+                    sx={{
+                      '& .MuiPaginationItem-root': {
+                        borderRadius: '12px',
+                      },
+                    }}
+                  />
+                </Box>
+              )}
             </Box>
           ) : (
             <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>

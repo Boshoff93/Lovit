@@ -1,14 +1,8 @@
 /**
  * Seed Songs Data for Gruvi
  * 
- * This file contains carefully crafted song prompts for each genre and mood.
+ * This file contains carefully crafted song prompts for each genre, mood, and language.
  * Each song is designed to showcase the best of each category.
- * 
- * Usage:
- * 1. Navigate to /admin/seed-songs (when logged in)
- * 2. Click "Generate All" or generate individual songs
- * 3. The song IDs will be logged to console and can be updated here
- * 4. Update GenreDetailPage.tsx and MoodDetailPage.tsx with the generated IDs
  */
 
 export interface SeedSong {

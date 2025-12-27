@@ -68,9 +68,10 @@ import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
 import { songsApi } from '../services/api';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
 
 // Owner user ID for the seed songs
-const SEED_SONGS_USER_ID = 'c6ab6e72-915f-449e-8483-9ef73cec258b';
+const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 
 // Genre to image mapping for sample tracks
 const genreToImage: Record<string, string> = {
@@ -567,39 +568,6 @@ const plans: PricePlan[] = [
   }
 ];
 
-// FAQ data for homepage
-// FAQ data is now imported from FAQPage as faqItems
-
-// Reviews data
-const reviews = [
-  { id: 1, name: 'Alex M.', rating: 5, text: 'Mind-blowing! Created a full song in seconds. This is the future of music.', avatar: '🎵' },
-  { id: 2, name: 'Sarah K.', rating: 5, text: 'As a content creator, this saves me hours. The quality is incredible.', avatar: '🎤' },
-  { id: 3, name: 'David L.', rating: 4.5, text: 'Love the variety of genres. Made K-Pop and lo-fi beats in one session!', avatar: '🎧' },
-  { id: 4, name: 'Emma R.', rating: 5, text: 'The music videos are stunning. My YouTube channel has never looked better.', avatar: '🎬' },
-  { id: 5, name: 'James T.', rating: 4, text: 'Great for quick inspiration. Some gems, some misses, but always creative.', avatar: '🎹' },
-  { id: 6, name: 'Mia C.', rating: 5, text: 'Made a birthday song for my mom. She cried happy tears!', avatar: '💖' },
-  { id: 7, name: 'Chris P.', rating: 5, text: 'Professional quality output. Using it for all my podcast intros now.', avatar: '🎙️' },
-  { id: 8, name: 'Nina S.', rating: 4.5, text: 'The anime style music videos are exactly what I was looking for!', avatar: '✨' },
-  { id: 9, name: 'Ryan B.', rating: 5, text: 'Created 50+ songs last month. Best investment for my content business.', avatar: '🚀' },
-  { id: 10, name: 'Olivia H.', rating: 4, text: 'Easy to use and the results keep getting better. Love this tool!', avatar: '🌟' },
-  { id: 11, name: 'Marcus W.', rating: 5, text: 'The Spanish songs are so authentic! Native speakers loved them.', avatar: '🌎' },
-  { id: 12, name: 'Luna Z.', rating: 4.5, text: 'Finally, AI music that actually sounds like real music. Impressed!', avatar: '🎶' },
-];
-
-// Star rating component
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (rating >= i) {
-      stars.push(<StarIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    } else if (rating >= i - 0.5) {
-      stars.push(<StarHalfIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    } else {
-      stars.push(<StarBorderIcon key={i} sx={{ color: '#FFD700', fontSize: 16 }} />);
-    }
-  }
-  return <Box sx={{ display: 'flex', gap: 0.25 }}>{stars}</Box>;
-};
 
 // Section Divider Component
 const SectionDivider: React.FC = () => (
@@ -787,10 +755,10 @@ const HomePage: React.FC = () => {
       return;
     }
     
-    // Fetch the song metadata with audio URL
+    // Fetch the song metadata with audio URL (using public endpoint - no auth required)
     setLoadingSongId(track.id);
     try {
-      const response = await songsApi.getSongsByIds(SEED_SONGS_USER_ID, [track.id]);
+      const response = await songsApi.getPublicSampleSongs(SEED_SONGS_USER_ID, [track.id]);
       const songs = response.data?.songs || [];
       
       if (songs.length > 0 && songs[0].audioUrl) {
@@ -830,28 +798,37 @@ const HomePage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
-  // Save prompt to localStorage when user tries to generate
+  // Navigate to create page with prompt
   const handleGenerateClick = useCallback(() => {
-    if (prompt.trim()) {
-      localStorage.setItem('pendingPrompt', prompt.trim());
-    }
     if (user) {
-      // Navigate to dashboard - token check happens when user tries to generate
-      navigate('/dashboard');
+      // Navigate to create page with prompt as query param
+      const createUrl = prompt.trim() 
+        ? `/create?tab=song&prompt=${encodeURIComponent(prompt.trim())}`
+        : '/create?tab=song';
+      navigate(createUrl);
     } else {
+      // Save prompt to localStorage for after login, then open auth modal
+      if (prompt.trim()) {
+        localStorage.setItem('pendingPrompt', prompt.trim());
+      }
       setOpen(true);
     }
   }, [user, navigate, prompt]);
 
-  // Restore prompt from localStorage on auth success
+  // Navigate to create page after successful login with saved prompt
   useEffect(() => {
     if (user && open) {
       const savedPrompt = localStorage.getItem('pendingPrompt');
-      if (savedPrompt) {
-        setPrompt(savedPrompt);
-      }
+      localStorage.removeItem('pendingPrompt'); // Clear after using
+      setOpen(false); // Close auth modal
+      
+      // Navigate to create page with the saved prompt
+      const createUrl = savedPrompt 
+        ? `/create?tab=song&prompt=${encodeURIComponent(savedPrompt)}`
+        : '/create?tab=song';
+      navigate(createUrl);
     }
-  }, [user, open]);
+  }, [user, open, navigate]);
 
   const handleClickOpen = useCallback(async () => {
     if (user) {
@@ -1084,6 +1061,18 @@ const HomePage: React.FC = () => {
     }
   }, [isLoggedIn, pendingPlanId, open, handleSubscribeClick]);
 
+  // Create structured data for SEO
+  const trackStructuredData = useMemo(() => createMusicPlaylistStructuredData({
+    name: 'Gruvi Featured Tracks',
+    description: 'Listen to AI-generated music created with Gruvi. High-quality songs across all genres.',
+    url: 'https://gruvi.ai/',
+    tracks: sampleTracks.slice(0, 10).map(track => ({
+      name: track.title,
+      duration: `PT${track.duration.replace(':', 'M')}S`,
+      genre: track.genre,
+    })),
+  }), [sampleTracks]);
+
   return (
     <Box sx={{ 
       minHeight: '100vh',
@@ -1094,6 +1083,24 @@ const HomePage: React.FC = () => {
       // Add bottom padding when audio player is visible
       pb: hasActivePlayer ? 12 : 0,
     }}>
+      {/* SEO */}
+      <SEO
+        title="Gruvi: AI Music Generator | Create Songs & Music Videos"
+        description="Create original AI-generated songs and stunning music videos with Gruvi. Generate professional music in any genre, mood, or language in seconds."
+        keywords="AI music generator, AI song generator, create music with AI, AI music videos, Gruvi, music creation, AI vocals, generate songs"
+        ogTitle="Gruvi: AI Music Generator"
+        ogDescription="Create original AI-generated songs and stunning music videos with Gruvi."
+        ogType="website"
+        ogUrl="https://gruvi.ai/"
+        twitterTitle="Gruvi: AI Music Generator"
+        twitterDescription="Create original AI-generated songs and stunning music videos with Gruvi."
+        structuredData={[
+          trackStructuredData,
+          createSoftwareAppStructuredData(),
+          createOrganizationStructuredData(),
+        ]}
+      />
+
       {/* Subtle gradient background - Apple-style clean blue */}
       <Box sx={{
         position: 'fixed',
@@ -1487,7 +1494,7 @@ const HomePage: React.FC = () => {
       {/* Hero Section with Prompt Input */}
       <Box sx={{ 
         pt: { xs: 16, md: 20 },
-        pb: { xs: 8, md: 12 },
+        pb: { xs: 2 },
         position: 'relative',
         zIndex: 1,
       }}>
@@ -1528,7 +1535,7 @@ const HomePage: React.FC = () => {
                 mb: 2,
             }}
           >
-              {heroHeadingParts[1] || 'Make a song about anything'}
+              {heroHeadingParts[1] || 'A Hit Song for Anyone, in Any Genre'}
           </Typography>
 
             {/* Prompt Input - Glassy */}
@@ -1655,91 +1662,35 @@ const HomePage: React.FC = () => {
           </Box>
         </Container>
 
-        {/* Reviews Carousel */}
-        <Box sx={{ overflow: 'hidden', py: 2 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              animation: 'scrollReviews 45s linear infinite',
-              '&:hover': {
-                animationPlayState: 'paused',
-              },
-              '@keyframes scrollReviews': {
-                '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-50%)' },
-              },
-            }}
-          >
-            {/* Duplicate reviews for seamless loop */}
-            {[...reviews, ...reviews].map((review, index) => (
-              <Box
-                key={`${review.id}-${index}`}
-                sx={{
-                  minWidth: { xs: 260, sm: 300 },
-                  p: 2.5,
-                  borderRadius: '16px',
-                  background: '#fff',
-                  border: '1px solid rgba(0,0,0,0.06)',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.1)',
-                  },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '10px',
-                      background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.1rem',
-                    }}
-                  >
-                    {review.avatar}
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>
-                      {review.name}
-                    </Typography>
-                    <StarRating rating={review.rating} />
-                  </Box>
-                </Box>
-                <Typography sx={{ color: '#86868B', fontSize: '0.85rem', lineHeight: 1.5 }}>
-                  "{review.text}"
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </Box>
+        
       </Box>
 
-      <SectionDivider />
-
+<SectionDivider />
       {/* Featured Tracks Section */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+      <Box sx={{ pt: { xs: 6 }, pb: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="md">
+          
+          {/* Section Header */}
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography
               variant="h2"
-            sx={{ 
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
+              sx={{
+                fontSize: { xs: '2rem', md: '2.5rem' },
                 fontWeight: 600,
                 color: '#1D1D1F',
-              mb: 2, 
+                mb: 1.5,
               }}
             >
-              A Hit Song for Anyone, in Any Genre
-          </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              Listen to what Gruvi can do.
-                </Typography>
+              Mind blowing song quality
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: '1rem', md: '1.15rem' },
+                color: '#86868B',
+              }}
+            >
+              Hear what Gruvi can create
+            </Typography>
           </Box>
 
           {/* Tracklist UI - Premium Glass */}
@@ -1752,6 +1703,8 @@ const HomePage: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.08)',
               boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
               overflow: 'hidden',
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr' },
             }}
           >
             {sampleTracks.map((track, index) => (
@@ -1763,7 +1716,11 @@ const HomePage: React.FC = () => {
                   alignItems: 'center',
                   gap: { xs: 2, sm: 3 },
                   p: { xs: 1.5, sm: 2 },
-                  borderBottom: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                  borderBottom: { 
+                    xs: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                    lg: index < sampleTracks.length - 2 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                  },
+                  borderRight: { xs: 'none', lg: index % 2 === 0 ? '1px solid rgba(0,0,0,0.06)' : 'none' },
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.06)' : 'transparent',

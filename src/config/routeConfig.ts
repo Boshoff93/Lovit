@@ -1409,7 +1409,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     twitterDescription: 'Create original AI music and music videos. Make a song about anything.',
     breadcrumbName: 'Home',
     heroTagline: 'The AI Music Generator',
-    heroHeading: 'The AI Music Generator\nMake a song about anything',
+    heroHeading: 'The AI Music Generator\nA Hit Song for Anyone, in Any Genre',
     heroSubtext: 'Describe your song idea and our AI will create original music. Sign up to download and create more.',
     examplePrompts: ['An upbeat pop song about summer', 'Relaxing jazz for a rainy day', 'Epic cinematic orchestra', 'Funky disco groove']
   },

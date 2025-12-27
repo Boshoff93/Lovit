@@ -396,3 +396,36 @@ export const createPageSectionsStructuredData = (sections: Array<{ name: string;
     }))
   };
 };
+
+// Music Playlist Schema for track listings
+export const createMusicPlaylistStructuredData = (playlist: {
+  name: string;
+  description: string;
+  url: string;
+  tracks: Array<{ name: string; duration: string; genre?: string }>;
+}) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MusicPlaylist",
+    "name": playlist.name,
+    "description": playlist.description,
+    "url": playlist.url,
+    "numTracks": playlist.tracks.length,
+    "creator": {
+      "@type": "Organization",
+      "name": "Gruvi",
+      "url": "https://gruvi.ai"
+    },
+    "track": playlist.tracks.map((track, index) => ({
+      "@type": "MusicRecording",
+      "position": index + 1,
+      "name": track.name,
+      "duration": track.duration,
+      ...(track.genre && { "genre": track.genre }),
+      "creator": {
+        "@type": "Organization",
+        "name": "Gruvi AI"
+      }
+    }))
+  };
+};

@@ -39,8 +39,6 @@ import MusicVideoPlayer from './pages/MusicVideoPlayer';
 import SettingsPage from './pages/SettingsPage';
 import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
-import AdminSeedSongsPage from './pages/AdminSeedSongsPage';
-import AdminFetchSongMetadataPage from './pages/AdminFetchSongMetadataPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -162,24 +160,6 @@ function App() {
               <AdminEmailPage />
             </Layout>
           </RequireAdmin>
-        } />
-        
-        {/* Admin seed songs generator - protected route */}
-        <Route path="/admin/seed-songs" element={
-          <RequireAuth>
-            <Layout>
-              <AdminSeedSongsPage />
-            </Layout>
-          </RequireAuth>
-        } />
-        
-        {/* Admin fetch song metadata - protected route */}
-        <Route path="/admin/fetch-metadata" element={
-          <RequireAuth>
-            <Layout>
-              <AdminFetchSongMetadataPage />
-            </Layout>
-          </RequireAuth>
         } />
         
         {/* Payment page */}

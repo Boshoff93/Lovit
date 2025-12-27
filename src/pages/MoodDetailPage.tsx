@@ -15,11 +15,11 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData, createMusicPlaylistStructuredData } from '../utils/seoHelper';
 import { songsApi } from '../services/api';
 
 // Owner user ID for the seed songs (your account)
-const SEED_SONGS_USER_ID = 'c6ab6e72-915f-449e-8483-9ef73cec258b';
+const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 
 // Mood data with detailed information
 export const moodData = [
@@ -158,10 +158,10 @@ const MoodDetailPage: React.FC = () => {
       return;
     }
     
-    // Fetch the song metadata with audio URL
+    // Fetch the song metadata with audio URL (using public endpoint - no auth required)
     setLoadingSongId(track.id);
     try {
-      const response = await songsApi.getSongsByIds(SEED_SONGS_USER_ID, [track.id]);
+      const response = await songsApi.getPublicSampleSongs(SEED_SONGS_USER_ID, [track.id]);
       const songs = response.data?.songs || [];
       
       if (songs.length > 0 && songs[0].audioUrl) {
@@ -258,10 +258,21 @@ const MoodDetailPage: React.FC = () => {
         ogTitle={`Create ${currentMood.name} Music with AI | Gruvi`}
         ogDescription={`Generate original ${currentMood.name} music with Gruvi's AI music generator. ${currentMood.description}`}
         ogType="website"
-        ogUrl={`https://gruvimusic.com/moods/${currentMood.id}`}
+        ogUrl={`https://gruvi.ai/moods/${currentMood.id}`}
         twitterTitle={`Create ${currentMood.name} Music with AI | Gruvi`}
         twitterDescription={currentMood.description}
-        structuredData={[createBreadcrumbStructuredData(breadcrumbData)]}
+        structuredData={[
+          createBreadcrumbStructuredData(breadcrumbData),
+          createMusicPlaylistStructuredData({
+            name: `${currentMood.name} Music by Gruvi`,
+            description: `AI-generated ${currentMood.name} music samples created with Gruvi.`,
+            url: `https://gruvi.ai/moods/${currentMood.id}`,
+            tracks: sampleTracks.map(track => ({
+              name: track.title,
+              duration: `PT${track.duration.replace(':', 'M')}S`,
+            })),
+          }),
+        ]}
       />
 
       <Container maxWidth="md" sx={{ py: 4, position: 'relative', zIndex: 1 }}>

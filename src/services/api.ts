@@ -75,8 +75,22 @@ export const songsApi = {
     customInstructions?: string;
   }) => api.post('/api/gruvi/songs/generate', data),
   
-  getUserSongs: (userId: string) => 
-    api.get(`/api/gruvi/songs/${userId}`),
+  getUserSongs: (userId: string, options?: { 
+    page?: number; 
+    limit?: number; 
+    search?: string;
+    genre?: string;
+    mood?: string;
+  }) => {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', options.page.toString());
+    if (options?.limit) params.append('limit', options.limit.toString());
+    if (options?.search) params.append('search', options.search);
+    if (options?.genre) params.append('genre', options.genre);
+    if (options?.mood) params.append('mood', options.mood);
+    const queryString = params.toString();
+    return api.get(`/api/gruvi/songs/${userId}${queryString ? `?${queryString}` : ''}`);
+  },
   
   deleteSong: (userId: string, songId: string) => 
     api.delete(`/api/gruvi/songs/${userId}/${songId}`),
@@ -88,6 +102,16 @@ export const songsApi = {
    */
   getSongsByIds: (userId: string, songIds: string[]) => 
     api.post('/api/gruvi/songs/batch', { userId, songIds }),
+  
+  /**
+   * Fetch public sample songs (no auth required - for homepage, genre, mood, language pages)
+   * Uses the seed songs user ID to fetch pre-generated sample tracks
+   * Doesn't require user to be logged in
+   * @param userId - The user ID who owns these songs (seed songs user ID)
+   * @param songIds - Array of song IDs to fetch
+   */
+  getPublicSampleSongs: (userId: string, songIds: string[]) => 
+    api.post('/api/public/songs/batch', { userId, songIds }),
 };
 
 // Videos API
@@ -102,7 +126,17 @@ export const videosApi = {
     characterIds?: string[];
   }) => api.post('/api/gruvi/videos/generate', data),
   
-  getUserVideos: (userId: string) => 
+  getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', options.page.toString());
+    if (options?.limit) params.append('limit', options.limit.toString());
+    if (options?.all) params.append('all', 'true');
+    const queryString = params.toString();
+    return api.get(`/api/gruvi/videos/${userId}${queryString ? `?${queryString}` : ''}`);
+  },
+  
+  // Legacy method kept for backward compatibility
+  getAllUserVideos: (userId: string) => 
     api.get(`/api/gruvi/videos/${userId}`),
   
   deleteVideo: (userId: string, videoId: string) => 

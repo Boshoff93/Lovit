@@ -406,6 +406,11 @@ const CreatePage: React.FC = () => {
     if (song) {
       setSelectedSong(song);
     }
+    // Initialize song prompt from URL parameter
+    const promptFromUrl = searchParams.get('prompt');
+    if (promptFromUrl) {
+      setSongPrompt(promptFromUrl);
+    }
   }, [searchParams]);
 
   // Fetch user's characters and songs
