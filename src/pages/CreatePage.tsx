@@ -46,6 +46,8 @@ import ImageIcon from '@mui/icons-material/Image';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
@@ -386,6 +388,13 @@ const CreatePage: React.FC = () => {
   const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+  const [songSearchQuery, setSongSearchQuery] = useState('');
+  const [songSearchResults, setSongSearchResults] = useState<Song[]>([]);
+  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
+  const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [songsPage, setSongsPage] = useState(1);
+  const [hasMoreSongs, setHasMoreSongs] = useState(true);
+  const [isLoadingMoreSongs, setIsLoadingMoreSongs] = useState(false);
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -405,6 +414,9 @@ const CreatePage: React.FC = () => {
     const song = searchParams.get('song');
     if (song) {
       setSelectedSong(song);
+    } else {
+      // Clear selected song if no song param in URL (e.g., navigating to /create?tab=video directly)
+      setSelectedSong('');
     }
     // Initialize song prompt from URL parameter
     const promptFromUrl = searchParams.get('prompt');
@@ -433,13 +445,36 @@ const CreatePage: React.FC = () => {
       if (!user?.userId) return;
       
       setIsLoadingSongs(true);
+      setSongsPage(1);
       try {
-        const response = await songsApi.getUserSongs(user.userId);
+        // Fetch recent songs for recommendations (limit 20)
+        const response = await songsApi.getUserSongs(user.userId, { page: 1, limit: 20 });
         // Only show completed songs
-        const completedSongs = (response.data.songs || []).filter(
-          (s: Song) => s.status === 'completed'
-        );
+        const completedSongs = (response.data.songs || [])
+          .filter((s: Song) => s.status === 'completed');
         setSongs(completedSongs);
+        
+        // Check if there are more songs
+        const pagination = response.data.pagination;
+        setHasMoreSongs(pagination?.hasNextPage ?? completedSongs.length >= 20);
+        
+        // If a song is pre-selected (from URL) but not in the list, fetch it separately
+        const preSelectedSong = searchParams.get('song');
+        if (preSelectedSong && !completedSongs.find((s: Song) => s.songId === preSelectedSong)) {
+          try {
+            const singleSongResponse = await songsApi.getSongsByIds(user.userId, [preSelectedSong]);
+            const fetchedSong = singleSongResponse.data?.songs?.[0];
+            if (fetchedSong && fetchedSong.status === 'completed') {
+              // Add to beginning, but ensure no duplicates
+              setSongs(prev => {
+                const filtered = prev.filter(s => s.songId !== fetchedSong.songId);
+                return [fetchedSong, ...filtered];
+              });
+            }
+          } catch (err) {
+            console.warn('Could not fetch pre-selected song:', err);
+          }
+        }
       } catch (error) {
         console.error('Error fetching songs:', error);
       } finally {
@@ -449,7 +484,75 @@ const CreatePage: React.FC = () => {
     
     fetchCharacters();
     fetchSongs();
-  }, [user?.userId]);
+  }, [user?.userId, searchParams]);
+
+  // Server-side song search with debounce
+  useEffect(() => {
+    if (!user?.userId) return;
+    
+    // Clear previous debounce
+    if (songSearchDebounceRef.current) {
+      clearTimeout(songSearchDebounceRef.current);
+    }
+    
+    if (!songSearchQuery.trim()) {
+      setSongSearchResults([]);
+      setIsSearchingSongs(false);
+      return;
+    }
+    
+    // Debounce search
+    songSearchDebounceRef.current = setTimeout(async () => {
+      setIsSearchingSongs(true);
+      try {
+        const response = await songsApi.getUserSongs(user.userId, { 
+          search: songSearchQuery.trim(),
+          limit: 20 
+        });
+        const results = (response.data.songs || []).filter((s: Song) => s.status === 'completed');
+        setSongSearchResults(results);
+      } catch (error) {
+        console.error('Error searching songs:', error);
+        setSongSearchResults([]);
+      } finally {
+        setIsSearchingSongs(false);
+      }
+    }, 300);
+    
+    return () => {
+      if (songSearchDebounceRef.current) {
+        clearTimeout(songSearchDebounceRef.current);
+      }
+    };
+  }, [songSearchQuery, user?.userId]);
+
+  // Load more songs for pagination
+  const loadMoreSongs = useCallback(async () => {
+    if (!user?.userId || isLoadingMoreSongs || !hasMoreSongs) return;
+    
+    setIsLoadingMoreSongs(true);
+    const nextPage = songsPage + 1;
+    
+    try {
+      const response = await songsApi.getUserSongs(user.userId, { page: nextPage, limit: 20 });
+      const newSongs = (response.data.songs || []).filter((s: Song) => s.status === 'completed');
+      
+      setSongs(prev => {
+        // Avoid duplicates
+        const existingIds = new Set(prev.map(s => s.songId));
+        const uniqueNewSongs = newSongs.filter((s: Song) => !existingIds.has(s.songId));
+        return [...prev, ...uniqueNewSongs];
+      });
+      
+      setSongsPage(nextPage);
+      const pagination = response.data.pagination;
+      setHasMoreSongs(pagination?.hasNextPage ?? newSongs.length >= 20);
+    } catch (error) {
+      console.error('Error loading more songs:', error);
+    } finally {
+      setIsLoadingMoreSongs(false);
+    }
+  }, [user?.userId, songsPage, isLoadingMoreSongs, hasMoreSongs]);
 
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, open: false }));
@@ -1511,14 +1614,25 @@ const CreatePage: React.FC = () => {
                   },
                 }}
               >
-                {selectedSong 
-                  ? (isLoadingSongs 
-                      ? 'Loading songs...'
-                      : (songs.find(s => s.songId === selectedSong)?.songTitle 
-                          ? `${songs.find(s => s.songId === selectedSong)?.songTitle} (${songs.find(s => s.songId === selectedSong)?.genre})`
-                          : 'Song not found'))
-                  : 'Choose a song from your library'}
-                <KeyboardArrowDownIcon sx={{ color: '#86868B', ml: 1 }} />
+                <Box 
+                  component="span" 
+                  sx={{ 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis', 
+                    whiteSpace: 'nowrap',
+                    flex: 1,
+                    textAlign: 'left',
+                  }}
+                >
+                  {selectedSong 
+                    ? (isLoadingSongs 
+                        ? 'Loading songs...'
+                        : (songs.find(s => s.songId === selectedSong)?.songTitle 
+                            ? `${songs.find(s => s.songId === selectedSong)?.songTitle} (${songs.find(s => s.songId === selectedSong)?.genre})`
+                            : 'Song not found'))
+                    : 'Select a song'}
+                </Box>
+                <KeyboardArrowDownIcon sx={{ color: '#86868B', ml: 1, flexShrink: 0 }} />
               </Button>
               {showSongSelectionError && !selectedSong && (
                 <Typography variant="caption" sx={{ color: '#FF3B30', mt: 1, display: 'block' }}>
@@ -1531,7 +1645,10 @@ const CreatePage: React.FC = () => {
             <Drawer
               anchor="bottom"
               open={songPickerOpen}
-              onClose={() => setSongPickerOpen(false)}
+              onClose={() => {
+                setSongPickerOpen(false);
+                setSongSearchQuery('');
+              }}
               PaperProps={{
                 sx: {
                   borderTopLeftRadius: '20px',
@@ -1544,22 +1661,75 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                 <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left', mb: 2 }}>
                   Select Song
                 </Typography>
+                {/* Search Bar */}
+                <TextField
+                  placeholder="Search your songs..."
+                  value={songSearchQuery}
+                  onChange={(e) => setSongSearchQuery(e.target.value)}
+                  size="small"
+                  fullWidth
+                  autoFocus
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      backgroundColor: 'rgba(0,0,0,0.03)',
+                      '& fieldset': { border: 'none' },
+                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.05)' },
+                      '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.05)' },
+                    },
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#86868B' }} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: songSearchQuery && (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={() => setSongSearchQuery('')}>
+                          <CloseIcon sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               </Box>
               <ScrollableListWrapper>
                 {isLoadingSongs ? (
                   <Box sx={{ py: 4, textAlign: 'center' }}>
                     <Typography variant="body2" sx={{ color: '#86868B' }}>Loading songs...</Typography>
                   </Box>
-                ) : songs.length > 0 ? (
-                  songs.map((song) => (
+                )                 : (() => {
+                  // Use server-side search results when searching, otherwise show recent songs
+                  const isSearching = songSearchQuery.trim().length > 0;
+                  const displaySongs = isSearching ? songSearchResults : songs;
+                  
+                  // Show loading state when searching
+                  if (isSearching && isSearchingSongs) {
+                    return (
+                      <Box sx={{ py: 4, textAlign: 'center' }}>
+                        <CircularProgress size={24} sx={{ color: '#007AFF' }} />
+                        <Typography variant="body2" sx={{ color: '#86868B', mt: 1 }}>Searching...</Typography>
+                      </Box>
+                    );
+                  }
+                  
+                  return displaySongs.length > 0 ? (
+                    <>
+                      {displaySongs.map((song) => (
                     <ListItem key={song.songId} disablePadding>
                       <ListItemButton
                         onClick={() => {
                           setSelectedSong(song.songId);
+                          // If song is from search results, add it to songs array so it can be displayed
+                          if (!songs.find(s => s.songId === song.songId)) {
+                            setSongs(prev => [song, ...prev]);
+                          }
                           setSongPickerOpen(false);
+                          setSongSearchQuery('');
                           setShowSongSelectionError(false);
                         }}
                         sx={{
@@ -1586,7 +1756,17 @@ const CreatePage: React.FC = () => {
                           >
                             <Box
                               component="img"
-                              src={`/genres/${song.genre?.toLowerCase().replace(/\s+/g, '-') || 'pop'}.jpeg`}
+                              src={`/genres/${(() => {
+                                const genre = song.genre?.toLowerCase().replace(/\s+/g, '-') || 'pop';
+                                // Handle filename mismatches
+                                const genreMap: Record<string, string> = {
+                                  'reggaeton': 'raggaeton',
+                                  'reggae': 'raggae',
+                                  'classical': 'classic',
+                                  'gospel': 'gospels',
+                                };
+                                return genreMap[genre] || genre;
+                              })()}.jpeg`}
                               alt={song.genre}
                               sx={{
                                 width: '100%',
@@ -1613,28 +1793,58 @@ const CreatePage: React.FC = () => {
                         )}
                       </ListItemButton>
                     </ListItem>
-                  ))
-                ) : (
-                  <Box sx={{ py: 4, textAlign: 'center' }}>
-                    <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>No songs available</Typography>
-                    <Chip
-                      label="+ Create a song first"
-                      onClick={() => {
-                        setSongPickerOpen(false);
-                        setActiveTab('song');
-                      }}
-                      sx={{
-                        borderRadius: '100px',
-                        background: 'rgba(0,122,255,0.08)',
-                        border: '1px dashed rgba(0,122,255,0.3)',
-                        color: '#007AFF',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
-                      }}
-                    />
-                  </Box>
-                )}
+                  ))}
+                      {/* Load More Button - only show when not searching and there are more songs */}
+                      {!isSearching && hasMoreSongs && (
+                        <Box sx={{ py: 2, textAlign: 'center' }}>
+                          <Button
+                            onClick={loadMoreSongs}
+                            disabled={isLoadingMoreSongs}
+                            sx={{
+                              textTransform: 'none',
+                              color: '#007AFF',
+                              fontWeight: 500,
+                              '&:hover': { background: 'rgba(0,122,255,0.08)' },
+                            }}
+                          >
+                            {isLoadingMoreSongs ? (
+                              <>
+                                <CircularProgress size={16} sx={{ mr: 1, color: '#007AFF' }} />
+                                Loading...
+                              </>
+                            ) : (
+                              'Load more songs'
+                            )}
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  ) : (
+                    <Box sx={{ py: 4, textAlign: 'center' }}>
+                      <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                        {songSearchQuery.trim() ? 'No songs match your search' : 'No songs available'}
+                      </Typography>
+                      {!songSearchQuery.trim() && (
+                        <Chip
+                          label="+ Create a song first"
+                          onClick={() => {
+                            setSongPickerOpen(false);
+                            setActiveTab('song');
+                          }}
+                          sx={{
+                            borderRadius: '100px',
+                            background: 'rgba(0,122,255,0.08)',
+                            border: '1px dashed rgba(0,122,255,0.3)',
+                            color: '#007AFF',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                          }}
+                        />
+                      )}
+                    </Box>
+                  );
+                })()}
               </ScrollableListWrapper>
               <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
                 <Button

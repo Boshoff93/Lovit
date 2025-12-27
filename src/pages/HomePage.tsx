@@ -1872,26 +1872,27 @@ const HomePage: React.FC = () => {
                 scrollbarWidth: 'none',
               }}
             >
+              {/* Left spacer for centering - match Container maxWidth="md" (900px) */}
+              <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
             {sampleVideos.map((video, index) => (
               <Box
                 key={video.id}
                 onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
                 sx={{ 
-                  minWidth: { xs: '160px', sm: '180px' },
+                  width: { xs: '150px', sm: '175px', md: '200px' },
+                  minWidth: { xs: '150px', sm: '175px', md: '200px' },
+                  maxWidth: { xs: '150px', sm: '175px', md: '200px' },
                   flexShrink: 0,
                   scrollSnapAlign: 'center',
                   position: 'relative',
-                  borderRadius: '20px',
+                  borderRadius: '12px',
                   overflow: 'hidden',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                  // Add margin for first and last items for edge spacing
-                  ml: index === 0 ? { xs: 2, sm: 4, md: 6, lg: 'calc((100vw - 1200px) / 2 + 24px)' } : 0,
-                  mr: index === sampleVideos.length - 1 ? { xs: 2, sm: 4, md: 6, lg: 'calc((100vw - 1200px) / 2 + 24px)' } : 0,
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                   '&:hover': {
-                    transform: 'translateY(-4px) scale(1.02)',
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                    transform: 'translateY(-2px) scale(1.02)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                   },
                 }}
               >
@@ -1901,7 +1902,7 @@ const HomePage: React.FC = () => {
                   position: 'relative',
                     aspectRatio: '9/16',
                   overflow: 'hidden',
-                  borderRadius: '16px',
+                  borderRadius: '10px',
                 }}
               >
                 <Box
@@ -1928,19 +1929,19 @@ const HomePage: React.FC = () => {
                     sx={{
                         background: '#fff',
                         color: '#007AFF',
-                        width: 52,
-                        height: 52,
+                        width: 32,
+                        height: 32,
                         border: '1px solid rgba(0,0,0,0.08)',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                         transition: 'all 0.2s ease',
                         '&:hover': { 
                           background: '#fff', 
-                          transform: 'translateY(-2px) scale(1.05)',
-                          boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
                         },
                       }}
                     >
-                      <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#007AFF' }} />
+                      <PlayArrowRoundedIcon sx={{ fontSize: 18, color: '#007AFF' }} />
                     </IconButton>
                 </Box>
                 {/* Info overlay at bottom with dark gradient */}
@@ -1950,30 +1951,30 @@ const HomePage: React.FC = () => {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    p: 1.5,
-                    pt: 4,
+                    p: 1,
+                    pt: 2.5,
                     background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
                   }}
                 >
-                  <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', mb: 0.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {video.title}
                   </Typography>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Chip
                       label={video.style}
-                      size="small"
                       sx={{
                         background: 'rgba(255,255,255,0.25)',
                         backdropFilter: 'blur(10px)',
                         color: '#fff',
-                        fontSize: '0.7rem',
+                        fontSize: '0.75rem',
                         fontWeight: 500,
-                        height: 24,
+                        height: 16,
                         borderRadius: '100px',
                         border: '1px solid rgba(255,255,255,0.2)',
+                        '& .MuiChip-label': { px: 0.4, py: 0 },
                       }}
                     />
-                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)' }}>
                       {video.views}
                   </Typography>
                   </Box>
@@ -1981,6 +1982,8 @@ const HomePage: React.FC = () => {
                 </Box>
               </Box>
             ))}
+              {/* Right spacer for centering - match Container maxWidth="md" (900px) */}
+              <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
             </Box>
             
             {/* Navigation Arrows - Below cards, centered */}
