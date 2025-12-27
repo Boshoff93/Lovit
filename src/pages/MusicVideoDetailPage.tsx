@@ -175,14 +175,14 @@ const MusicVideoDetailPage: React.FC = () => {
         {/* Main Content */}
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
           {/* Video Preview */}
-          <Box sx={{ flex: { xs: 'none', md: '0 0 300px' } }}>
+          <Box sx={{ flex: { xs: 'none', md: '0 0 280px' }, maxWidth: { xs: '240px', sm: '260px', md: '280px' }, mx: { xs: 'auto', md: 0 } }}>
             <Box
               sx={{
                 position: 'relative',
                 aspectRatio: '9/16',
-                borderRadius: '24px',
+                borderRadius: '20px',
                 overflow: 'hidden',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
               }}
             >
               <Box
@@ -211,8 +211,8 @@ const MusicVideoDetailPage: React.FC = () => {
                     background: 'rgba(255,255,255,0.98)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
-                    width: 72,
-                    height: 72,
+                    width: 56,
+                    height: 56,
                     border: '1px solid rgba(0,0,0,0.06)',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
                     transition: 'all 0.3s ease',
@@ -223,7 +223,7 @@ const MusicVideoDetailPage: React.FC = () => {
                     },
                   }}
                 >
-                  <PlayArrowRoundedIcon sx={{ fontSize: 40, color: '#007AFF' }} />
+                  <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#007AFF' }} />
                 </IconButton>
               </Box>
               {/* Style Badge */}
@@ -243,12 +243,12 @@ const MusicVideoDetailPage: React.FC = () => {
           </Box>
 
           {/* Video Info */}
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
             {/* Title */}
             <Typography
               variant="h1"
               sx={{
-                fontSize: { xs: '2rem', md: '2.5rem' },
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
                 fontWeight: 700,
                 color: '#1D1D1F',
                 mb: 2,
@@ -260,7 +260,7 @@ const MusicVideoDetailPage: React.FC = () => {
             {/* Description */}
             <Typography
               sx={{
-                fontSize: '1.1rem',
+                fontSize: '1rem',
                 color: '#86868B',
                 mb: 3,
               }}
@@ -271,7 +271,7 @@ const MusicVideoDetailPage: React.FC = () => {
             {/* Full Description */}
             <Typography
               sx={{
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 color: '#1D1D1F',
                 mb: 4,
                 lineHeight: 1.8,
@@ -363,7 +363,7 @@ const MusicVideoDetailPage: React.FC = () => {
             </Box>
 
             {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: "center" }}>
               <Button
                 variant="contained"
                 startIcon={<DownloadRoundedIcon sx={{ color: '#fff' }} />}
