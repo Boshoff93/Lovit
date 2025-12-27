@@ -473,6 +473,130 @@ const LanguageDetailPage: React.FC = () => {
           </Box>
         </Box>
 
+        {/* Sample Tracks Section */}
+        {sampleTracks.length > 0 && (
+          <Box sx={{ mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: '1.75rem',
+                fontWeight: 600,
+                color: '#1D1D1F',
+                mb: 3,
+                textAlign: 'center',
+              }}
+            >
+              Example {currentLanguage.name} Tracks
+            </Typography>
+
+            <Box
+              sx={{
+                background: 'rgba(255,255,255,0.7)',
+                backdropFilter: 'blur(40px)',
+                WebkitBackdropFilter: 'blur(40px)',
+                borderRadius: '24px',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+                overflow: 'hidden',
+              }}
+            >
+              {sampleTracks.map((track, index) => (
+                <Box
+                  key={track.id}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 2,
+                    borderBottom: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: 'rgba(0,122,255,0.04)',
+                    },
+                  }}
+                >
+                  {/* Track Number */}
+                  <Typography sx={{ width: 24, color: '#86868B', fontWeight: 500 }}>
+                    {index + 1}
+                  </Typography>
+
+                  {/* Language Image as Cover */}
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src={currentLanguage.image}
+                      alt={currentLanguage.name}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Box>
+
+                  {/* Track Info */}
+                  <Box sx={{ flex: 1 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                      {track.title}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                      {currentLanguage.name} • {track.duration}
+                    </Typography>
+                  </Box>
+
+                  {/* Play Button */}
+                  <IconButton
+                    size="small"
+                    onClick={() => handlePlayClick(track)}
+                    disabled={loadingSongId === track.id || track.id.startsWith('placeholder-')}
+                    sx={{
+                      background: currentSong?.songId === track.id ? '#007AFF' : '#fff',
+                      color: currentSong?.songId === track.id ? '#fff' : track.id.startsWith('placeholder-') ? '#ccc' : '#007AFF',
+                      width: 40,
+                      height: 40,
+                      border: '1px solid rgba(0,0,0,0.08)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        background: currentSong?.songId === track.id ? '#0066CC' : '#fff',
+                        transform: track.id.startsWith('placeholder-') ? 'none' : 'translateY(-2px) scale(1.05)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                      },
+                      '&:disabled': {
+                        background: '#f5f5f5',
+                        color: '#ccc',
+                      },
+                    }}
+                  >
+                    {loadingSongId === track.id ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : currentSong?.songId === track.id && isPlaying ? (
+                      <PauseRoundedIcon sx={{ fontSize: 20 }} />
+                    ) : (
+                      <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
+                    )}
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+            
+            {/* Note about placeholder tracks */}
+            {sampleTracks.some(t => t.id.startsWith('placeholder-')) && (
+              <Typography sx={{ textAlign: 'center', mt: 2, fontSize: '0.85rem', color: '#86868B' }}>
+                Sample tracks coming soon
+              </Typography>
+            )}
+          </Box>
+        )}
+
         {/* Other Languages */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography

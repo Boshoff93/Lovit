@@ -30,12 +30,15 @@ import { RootState } from '../store/store';
 import { songsApi } from '../services/api';
 import { 
   genreSeedSongs, 
-  moodSeedSongs, 
+  moodSeedSongs,
+  languageSeedSongs,
   SeedSong,
   getAllGenreIds,
   getAllMoodIds,
+  getAllLanguageIds,
   getTotalGenreSongs,
   getTotalMoodSongs,
+  getTotalLanguageSongs,
 } from '../data/seedSongs';
 
 interface GeneratedSong extends SeedSong {
@@ -77,6 +80,7 @@ const AdminSeedSongsPage: React.FC = () => {
   // Track generated songs with their IDs
   const [genreResults, setGenreResults] = useState<Record<string, GeneratedSong[]>>({});
   const [moodResults, setMoodResults] = useState<Record<string, GeneratedSong[]>>({});
+  const [languageResults, setLanguageResults] = useState<Record<string, GeneratedSong[]>>({});
   
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -147,10 +151,30 @@ const AdminSeedSongsPage: React.FC = () => {
         return updated;
       });
       
+      // Update language results
+      setLanguageResults(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(categoryId => {
+          updated[categoryId] = updated[categoryId].map(song => {
+            if (song.songId && songMap.has(song.songId)) {
+              const backendSong = songMap.get(song.songId)!;
+              return {
+                ...song,
+                actualTitle: backendSong.songTitle !== 'Generating...' ? backendSong.songTitle : undefined,
+                songStatus: backendSong.status,
+              };
+            }
+            return song;
+          });
+        });
+        return updated;
+      });
+      
       // Check if any songs are still processing
       const allGenreSongs = Object.values(genreResults).flat();
       const allMoodSongs = Object.values(moodResults).flat();
-      const allSongs = [...allGenreSongs, ...allMoodSongs];
+      const allLanguageSongs = Object.values(languageResults).flat();
+      const allSongs = [...allGenreSongs, ...allMoodSongs, ...allLanguageSongs];
       const hasProcessing = allSongs.some(s => s.songId && (!s.actualTitle || s.songStatus === 'processing'));
       
       return hasProcessing;
@@ -158,7 +182,7 @@ const AdminSeedSongsPage: React.FC = () => {
       console.error('Error fetching songs:', error);
       return false;
     }
-  }, [user?.userId, genreResults, moodResults]);
+  }, [user?.userId, genreResults, moodResults, languageResults]);
   
   // Start/stop polling
   const togglePolling = useCallback(() => {
@@ -202,7 +226,7 @@ const AdminSeedSongsPage: React.FC = () => {
   }, []);
 
   // Generate a single song
-  const generateSong = async (song: SeedSong, type: 'genre' | 'mood', categoryId: string): Promise<GeneratedSong> => {
+  const generateSong = async (song: SeedSong, type: 'genre' | 'mood' | 'language', categoryId: string): Promise<GeneratedSong> => {
     if (!user?.userId) {
       return { ...song, status: 'error', errorMessage: 'Not logged in' };
     }
@@ -250,7 +274,7 @@ const AdminSeedSongsPage: React.FC = () => {
   const generateCategorySongs = async (
     categoryId: string, 
     songs: SeedSong[], 
-    type: 'genre' | 'mood',
+    type: 'genre' | 'mood' | 'language',
     setResults: React.Dispatch<React.SetStateAction<Record<string, GeneratedSong[]>>>
   ) => {
     // Mark all songs as generating
@@ -328,6 +352,27 @@ const AdminSeedSongsPage: React.FC = () => {
     logAllResults('mood', moodResults);
   };
 
+  // Generate all language songs
+  const generateAllLanguageSongs = async () => {
+    const languageIds = getAllLanguageIds();
+    const total = getTotalLanguageSongs();
+    setTotalToGenerate(total);
+    setProgress(0);
+    setGeneratingAll(true);
+
+    let completed = 0;
+
+    for (const languageId of languageIds) {
+      const songs = languageSeedSongs[languageId];
+      await generateCategorySongs(languageId, songs, 'language', setLanguageResults);
+      completed += songs.length;
+      setProgress((completed / total) * 100);
+    }
+
+    setGeneratingAll(false);
+    logAllResults('language', languageResults);
+  };
+
   // Log all results for easy copying
   const logAllResults = (type: string, results: Record<string, GeneratedSong[]>) => {
     console.log(`\n========================================`);
@@ -349,8 +394,8 @@ const AdminSeedSongsPage: React.FC = () => {
   };
 
   // Copy results to clipboard
-  const copyResultsToClipboard = useCallback((type: 'genre' | 'mood') => {
-    const results = type === 'genre' ? genreResults : moodResults;
+  const copyResultsToClipboard = useCallback((type: 'genre' | 'mood' | 'language') => {
+    const results = type === 'genre' ? genreResults : type === 'mood' ? moodResults : languageResults;
     let text = `// ${type.toUpperCase()} SAMPLE TRACKS\n\n`;
     
     Object.entries(results).forEach(([categoryId, songs]) => {
@@ -371,14 +416,14 @@ const AdminSeedSongsPage: React.FC = () => {
       message: `${type.charAt(0).toUpperCase() + type.slice(1)} results copied to clipboard!`,
       severity: 'success'
     });
-  }, [genreResults, moodResults]);
+  }, [genreResults, moodResults, languageResults]);
 
   // Generate a single song and update state
   const generateSingleSong = async (
     song: SeedSong,
     songIndex: number,
     categoryId: string,
-    type: 'genre' | 'mood',
+    type: 'genre' | 'mood' | 'language',
     setResults: React.Dispatch<React.SetStateAction<Record<string, GeneratedSong[]>>>
   ) => {
     const sourceData = type === 'genre' ? genreSeedSongs : moodSeedSongs;
@@ -410,7 +455,7 @@ const AdminSeedSongsPage: React.FC = () => {
     song: GeneratedSong, 
     index: number,
     categoryId: string,
-    type: 'genre' | 'mood',
+    type: 'genre' | 'mood' | 'language',
     setResults: React.Dispatch<React.SetStateAction<Record<string, GeneratedSong[]>>>
   ) => {
     const statusIcon = {
@@ -517,7 +562,7 @@ const AdminSeedSongsPage: React.FC = () => {
   const renderCategoryAccordion = (
     categoryId: string, 
     songs: SeedSong[], 
-    type: 'genre' | 'mood',
+    type: 'genre' | 'mood' | 'language',
     results: Record<string, GeneratedSong[]>,
     setResults: React.Dispatch<React.SetStateAction<Record<string, GeneratedSong[]>>>
   ) => {
@@ -624,6 +669,7 @@ const AdminSeedSongsPage: React.FC = () => {
           <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
             <Tab label={`Genres (${getTotalGenreSongs()} songs)`} />
             <Tab label={`Moods (${getTotalMoodSongs()} songs)`} />
+            <Tab label={`Languages (${getTotalLanguageSongs()} songs)`} />
           </Tabs>
 
           {/* Genre Tab */}
@@ -702,6 +748,44 @@ const AdminSeedSongsPage: React.FC = () => {
             )}
           </TabPanel>
 
+          {/* Language Tab */}
+          <TabPanel value={tabValue} index={2}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <Button
+                variant="contained"
+                startIcon={<PlayArrowIcon />}
+                onClick={generateAllLanguageSongs}
+                disabled={generatingAll}
+                sx={{
+                  background: '#007AFF',
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                Generate All Language Songs
+              </Button>
+              <Tooltip title="Copy all generated IDs to clipboard">
+                <IconButton 
+                  onClick={() => copyResultsToClipboard('language')}
+                  disabled={Object.keys(languageResults).length === 0}
+                >
+                  <ContentCopyIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            {getAllLanguageIds().map(languageId => 
+              renderCategoryAccordion(
+                languageId, 
+                languageSeedSongs[languageId], 
+                'language',
+                languageResults,
+                setLanguageResults
+              )
+            )}
+          </TabPanel>
+
           {/* Instructions */}
           <Paper 
             elevation={0} 
@@ -720,7 +804,7 @@ const AdminSeedSongsPage: React.FC = () => {
               <li>Click "Generate" for individual categories or "Generate All" for bulk generation</li>
               <li>Open the browser console (F12) to see the generated song IDs</li>
               <li>Use the copy button to copy all IDs in the correct format</li>
-              <li>Update the sample tracks in <code>GenreDetailPage.tsx</code> and <code>MoodDetailPage.tsx</code></li>
+              <li>Update the sample tracks in <code>GenreDetailPage.tsx</code>, <code>MoodDetailPage.tsx</code>, and <code>LanguageDetailPage.tsx</code></li>
               <li>Wait for songs to finish generating in the backend (check your library)</li>
             </Typography>
           </Paper>
