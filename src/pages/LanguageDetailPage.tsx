@@ -1,17 +1,25 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import {
   Typography,
   Box,
   Container,
   Button,
+  IconButton,
+  CircularProgress,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { songsApi } from '../services/api';
+
+// User ID for seed songs (pre-generated sample tracks)
+const SEED_SONGS_USER_ID = 'c6ab6e72-915f-449e-8483-9ef73cec258b';
 
 // Language data with detailed information - using image icons
 export const languageData = [
@@ -41,14 +49,195 @@ export const languageData = [
   { id: 'chinese', name: 'Chinese', image: '/locales/zh.jpeg', code: 'zh', description: 'Create music in Chinese', fullDescription: 'Chinese (Mandarin) opens the world\'s largest music market. Create C-Pop, Chinese ballads, or contemporary tracks with authentic tonal pronunciation.' },
 ];
 
+// Sample tracks for each language with song IDs for playback
+// These will be populated once seed songs are generated
+const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
+  'english': [
+    { id: 'placeholder-en-1', title: 'Chasing Horizons', duration: '2:30' },
+    { id: 'placeholder-en-2', title: 'Midnight in Manhattan', duration: '3:15' },
+    { id: 'placeholder-en-3', title: 'Breaking Through', duration: '2:45' },
+  ],
+  'spanish': [
+    { id: 'placeholder-es-1', title: 'Fuego en el Alma', duration: '2:40' },
+    { id: 'placeholder-es-2', title: 'Bailando Contigo', duration: '3:00' },
+    { id: 'placeholder-es-3', title: 'Libertad', duration: '2:55' },
+  ],
+  'french': [
+    { id: 'placeholder-fr-1', title: 'Sous les Étoiles', duration: '2:50' },
+    { id: 'placeholder-fr-2', title: 'Électrique', duration: '2:35' },
+    { id: 'placeholder-fr-3', title: 'Mélancolie Douce', duration: '3:10' },
+  ],
+  'german': [
+    { id: 'placeholder-de-1', title: 'Unaufhaltsam', duration: '2:45' },
+    { id: 'placeholder-de-2', title: 'Nachtlichter', duration: '3:00' },
+    { id: 'placeholder-de-3', title: 'Herzschlag', duration: '2:55' },
+  ],
+  'italian': [
+    { id: 'placeholder-it-1', title: 'Amore Eterno', duration: '3:05' },
+    { id: 'placeholder-it-2', title: 'Volare Alto', duration: '2:40' },
+    { id: 'placeholder-it-3', title: 'Nostalgia', duration: '3:20' },
+  ],
+  'portuguese': [
+    { id: 'placeholder-pt-1', title: 'Saudade do Mar', duration: '2:50' },
+    { id: 'placeholder-pt-2', title: 'Energia', duration: '2:25' },
+    { id: 'placeholder-pt-3', title: 'Coração Partido', duration: '3:00' },
+  ],
+  'dutch': [
+    { id: 'placeholder-nl-1', title: 'Vrij Als De Wind', duration: '2:35' },
+    { id: 'placeholder-nl-2', title: 'Nachtstad', duration: '2:50' },
+    { id: 'placeholder-nl-3', title: 'Thuiskomen', duration: '3:10' },
+  ],
+  'polish': [
+    { id: 'placeholder-pl-1', title: 'Siła Woli', duration: '2:40' },
+    { id: 'placeholder-pl-2', title: 'Noc w Warszawie', duration: '2:55' },
+    { id: 'placeholder-pl-3', title: 'Wspomnienia', duration: '3:15' },
+  ],
+  'romanian': [
+    { id: 'placeholder-ro-1', title: 'Inima Mea', duration: '2:45' },
+    { id: 'placeholder-ro-2', title: 'Noapte de Vară', duration: '2:30' },
+    { id: 'placeholder-ro-3', title: 'Dor de Casă', duration: '3:00' },
+  ],
+  'czech': [
+    { id: 'placeholder-cs-1', title: 'Svítání', duration: '2:40' },
+    { id: 'placeholder-cs-2', title: 'Pražské Noci', duration: '2:55' },
+    { id: 'placeholder-cs-3', title: 'Vzpomínky', duration: '3:10' },
+  ],
+  'greek': [
+    { id: 'placeholder-el-1', title: 'Καλοκαίρι (Kalokairi)', duration: '2:50' },
+    { id: 'placeholder-el-2', title: 'Νύχτες στην Αθήνα', duration: '2:35' },
+    { id: 'placeholder-el-3', title: 'Αγάπη Μου (My Love)', duration: '3:05' },
+  ],
+  'bulgarian': [
+    { id: 'placeholder-bg-1', title: 'Слънце (Slantse)', duration: '2:45' },
+    { id: 'placeholder-bg-2', title: 'Нощен Град', duration: '2:30' },
+    { id: 'placeholder-bg-3', title: 'Спомени (Memories)', duration: '3:00' },
+  ],
+  'finnish': [
+    { id: 'placeholder-fi-1', title: 'Pohjoinen Taivas', duration: '2:55' },
+    { id: 'placeholder-fi-2', title: 'Metallin Sydän', duration: '3:30' },
+    { id: 'placeholder-fi-3', title: 'Hiljaisuus', duration: '2:50' },
+  ],
+  'ukrainian': [
+    { id: 'placeholder-uk-1', title: 'Вільний (Vilnyi)', duration: '2:40' },
+    { id: 'placeholder-uk-2', title: 'Київські Ночі', duration: '2:55' },
+    { id: 'placeholder-uk-3', title: 'Колискова (Lullaby)', duration: '3:10' },
+  ],
+  'russian': [
+    { id: 'placeholder-ru-1', title: 'Огни Москвы', duration: '2:50' },
+    { id: 'placeholder-ru-2', title: 'Невозможное', duration: '2:35' },
+    { id: 'placeholder-ru-3', title: 'Дождь (Rain)', duration: '3:15' },
+  ],
+  'turkish': [
+    { id: 'placeholder-tr-1', title: 'Aşk Masalı', duration: '2:45' },
+    { id: 'placeholder-tr-2', title: 'İstanbul Geceleri', duration: '2:30' },
+    { id: 'placeholder-tr-3', title: 'Özlem', duration: '3:05' },
+  ],
+  'arabic': [
+    { id: 'placeholder-ar-1', title: 'حبيبي (Habibi)', duration: '2:55' },
+    { id: 'placeholder-ar-2', title: 'ليلة في دبي', duration: '2:40' },
+    { id: 'placeholder-ar-3', title: 'شوق (Longing)', duration: '3:20' },
+  ],
+  'hindi': [
+    { id: 'placeholder-hi-1', title: 'दिल की धड़कन', duration: '3:00' },
+    { id: 'placeholder-hi-2', title: 'जश्न (Jashn)', duration: '2:35' },
+    { id: 'placeholder-hi-3', title: 'तन्हाई (Tanhai)', duration: '3:15' },
+  ],
+  'thai': [
+    { id: 'placeholder-th-1', title: 'รักแรก (Rak Raek)', duration: '2:50' },
+    { id: 'placeholder-th-2', title: 'กรุงเทพราตรี', duration: '2:30' },
+    { id: 'placeholder-th-3', title: 'ความทรงจำ', duration: '3:00' },
+  ],
+  'vietnamese': [
+    { id: 'placeholder-vi-1', title: 'Yêu Em (Love You)', duration: '2:45' },
+    { id: 'placeholder-vi-2', title: 'Sài Gòn Đêm Nay', duration: '2:35' },
+    { id: 'placeholder-vi-3', title: 'Quê Hương', duration: '3:10' },
+  ],
+  'indonesian': [
+    { id: 'placeholder-id-1', title: 'Cinta Pertama', duration: '2:55' },
+    { id: 'placeholder-id-2', title: 'Jakarta Malam Ini', duration: '2:40' },
+    { id: 'placeholder-id-3', title: 'Rindu', duration: '3:05' },
+  ],
+  'japanese': [
+    { id: 'placeholder-ja-1', title: '桜の季節 (Sakura no Kisetsu)', duration: '2:50' },
+    { id: 'placeholder-ja-2', title: '東京ナイト (Tokyo Night)', duration: '2:30' },
+    { id: 'placeholder-ja-3', title: '雨の日 (Rainy Day)', duration: '3:15' },
+  ],
+  'korean': [
+    { id: 'placeholder-ko-1', title: '첫사랑 (First Love)', duration: '2:45' },
+    { id: 'placeholder-ko-2', title: '파이어 (Fire)', duration: '2:25' },
+    { id: 'placeholder-ko-3', title: '별빛 (Starlight)', duration: '3:00' },
+  ],
+  'chinese': [
+    { id: 'placeholder-zh-1', title: '月光 (Moonlight)', duration: '2:55' },
+    { id: 'placeholder-zh-2', title: '夜上海 (Shanghai Nights)', duration: '2:35' },
+    { id: 'placeholder-zh-3', title: '故乡 (Hometown)', duration: '3:10' },
+  ],
+};
+
 const LanguageDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { languageId } = useParams<{ languageId: string }>();
   const { user } = useSelector((state: RootState) => state.auth);
   
-  // Check if audio player is active to add bottom padding
-  const { currentSong } = useAudioPlayer();
+  // Audio player context
+  const { currentSong, isPlaying, playSong, pauseSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
+  
+  // State for loading songs
+  const [loadingSongId, setLoadingSongId] = useState<string | null>(null);
+  const [songCache, setSongCache] = useState<Record<string, any>>({});
+
+  // Handle play button click
+  const handlePlayClick = useCallback(async (track: { id: string; title: string; duration: string }) => {
+    // Skip placeholder tracks
+    if (track.id.startsWith('placeholder-')) {
+      console.log('Song not yet generated. Generate seed songs first.');
+      return;
+    }
+    
+    // If this song is currently playing, pause it
+    if (currentSong?.songId === track.id && isPlaying) {
+      pauseSong();
+      return;
+    }
+    
+    // If we already have this song cached, play it
+    if (songCache[track.id]) {
+      playSong(songCache[track.id]);
+      return;
+    }
+    
+    // Fetch the song metadata with audio URL
+    setLoadingSongId(track.id);
+    try {
+      const response = await songsApi.getSongsByIds(SEED_SONGS_USER_ID, [track.id]);
+      const songs = response.data?.songs || [];
+      
+      if (songs.length > 0 && songs[0].audioUrl) {
+        const song = {
+          songId: songs[0].songId,
+          songTitle: songs[0].songTitle,
+          genre: songs[0].genre,
+          audioUrl: songs[0].audioUrl,
+          status: songs[0].status,
+          createdAt: songs[0].createdAt,
+          duration: songs[0].actualDuration,
+        };
+        
+        // Cache the song
+        setSongCache(prev => ({ ...prev, [track.id]: song }));
+        
+        // Play it
+        playSong(song);
+      } else {
+        console.error('Song not found or no audio URL');
+      }
+    } catch (error) {
+      console.error('Error fetching song:', error);
+    } finally {
+      setLoadingSongId(null);
+    }
+  }, [currentSong, isPlaying, playSong, pauseSong, songCache]);
 
   // Handle create button click - navigate to create page or login
   const handleCreateClick = () => {
@@ -62,6 +251,11 @@ const LanguageDetailPage: React.FC = () => {
   // Find the current language data
   const currentLanguage = useMemo(() => {
     return languageData.find(lang => lang.id === languageId);
+  }, [languageId]);
+
+  // Get sample tracks for this language
+  const sampleTracks = useMemo(() => {
+    return languageSampleTracks[languageId || ''] || [];
   }, [languageId]);
 
   // Scroll to top when component mounts

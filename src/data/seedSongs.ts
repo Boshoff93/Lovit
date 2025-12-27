@@ -1262,11 +1262,621 @@ export const moodSeedSongs: Record<string, SeedSong[]> = {
   ],
 };
 
+// ============================================================================
+// LANGUAGE-BASED SEED SONGS
+// Each language has 3 songs showcasing that language's musical style
+// ============================================================================
+
+export const languageSeedSongs: Record<string, SeedSong[]> = {
+  // ENGLISH
+  'english': [
+    {
+      title: 'Chasing Horizons',
+      prompt: 'An uplifting pop anthem about adventure and self-discovery. Bright production with soaring vocals, catchy hooks, and an anthemic chorus. Modern pop with indie influences.',
+      genre: 'pop',
+      mood: 'uplifting',
+      language: 'en',
+    },
+    {
+      title: 'Midnight in Manhattan',
+      prompt: 'A smooth R&B track about late-night romance in the city. Silky vocals, jazzy chords, and a laid-back groove. Sophisticated and sensual.',
+      genre: 'rnb',
+      mood: 'romantic',
+      language: 'en',
+    },
+    {
+      title: 'Breaking Through',
+      prompt: 'A powerful rock anthem about overcoming obstacles. Driving guitars, thunderous drums, and passionate vocals building to an explosive chorus.',
+      genre: 'rock',
+      mood: 'triumphant',
+      language: 'en',
+    },
+  ],
+
+  // SPANISH
+  'spanish': [
+    {
+      title: 'Fuego en el Alma',
+      prompt: 'Una canción de reggaeton con ritmo contagioso sobre el amor apasionado. Dembow potente, melodías pegajosas y un estribillo que no puedes dejar de cantar. Producción moderna latina.',
+      genre: 'reggaeton',
+      mood: 'energetic',
+      language: 'es',
+    },
+    {
+      title: 'Bailando Contigo',
+      prompt: 'Una bachata romántica sobre el amor verdadero. Guitarras suaves, bongos, y una voz emotiva que cuenta una historia de pasión. Ritmo sensual y melódico.',
+      genre: 'latin',
+      mood: 'romantic',
+      language: 'es',
+    },
+    {
+      title: 'Libertad',
+      prompt: 'Una balada pop latina sobre encontrar tu camino. Producción emotiva con cuerdas, piano, y una voz poderosa. Inspiradora y conmovedora.',
+      genre: 'pop',
+      mood: 'uplifting',
+      language: 'es',
+    },
+  ],
+
+  // FRENCH
+  'french': [
+    {
+      title: 'Sous les Étoiles',
+      prompt: 'Une chanson pop française romantique sur l\'amour sous le ciel de Paris. Mélodie douce, production élégante avec piano et cordes. Voix suave et poétique.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'fr',
+    },
+    {
+      title: 'Électrique',
+      prompt: 'Un morceau électro-pop français énergique sur la vie nocturne. Synthés pulsants, beat dansant, et voix filtrée. Style French touch moderne.',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'fr',
+    },
+    {
+      title: 'Mélancolie Douce',
+      prompt: 'Une chanson française introspective sur les souvenirs. Guitare acoustique, production minimaliste, et paroles poétiques. Ambiance café parisien.',
+      genre: 'acoustic',
+      mood: 'melancholic',
+      language: 'fr',
+    },
+  ],
+
+  // GERMAN
+  'german': [
+    {
+      title: 'Unaufhaltsam',
+      prompt: 'Ein kraftvoller deutscher Pop-Rock Song über Stärke und Durchhaltevermögen. Treibende Gitarren, emotionale Vocals, und ein eingängiger Refrain.',
+      genre: 'rock',
+      mood: 'triumphant',
+      language: 'de',
+    },
+    {
+      title: 'Nachtlichter',
+      prompt: 'Ein atmosphärischer deutscher Elektro-Track über die Nacht in der Stadt. Pulsierende Synths, hypnotischer Beat, und verträumte Vocals.',
+      genre: 'electronic',
+      mood: 'dreamy',
+      language: 'de',
+    },
+    {
+      title: 'Herzschlag',
+      prompt: 'Eine emotionale deutsche Ballade über die Liebe. Gefühlvolle Stimme, Piano-geführte Produktion, und ein ergreifender Refrain.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'de',
+    },
+  ],
+
+  // ITALIAN
+  'italian': [
+    {
+      title: 'Amore Eterno',
+      prompt: 'Una canzone pop italiana romantica sull\'amore vero. Melodia appassionata, arrangiamento orchestrale con archi, e voce emotiva. Stile Sanremo moderno.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'it',
+    },
+    {
+      title: 'Volare Alto',
+      prompt: 'Una canzone dance italiana energica sulla libertà. Beat pulsante, synth brillanti, e un ritornello contagioso. Estate italiana vibes.',
+      genre: 'dance',
+      mood: 'happy',
+      language: 'it',
+    },
+    {
+      title: 'Nostalgia',
+      prompt: 'Una ballata italiana malinconica sui ricordi. Piano delicato, voce intensa, e testo poetico. Emotiva e cinematografica.',
+      genre: 'acoustic',
+      mood: 'nostalgic',
+      language: 'it',
+    },
+  ],
+
+  // PORTUGUESE
+  'portuguese': [
+    {
+      title: 'Saudade do Mar',
+      prompt: 'Uma bossa nova suave sobre saudade e o oceano. Violão acústico, harmonias sofisticadas, e voz relaxada. Vibes de Rio de Janeiro.',
+      genre: 'jazz',
+      mood: 'peaceful',
+      language: 'pt',
+    },
+    {
+      title: 'Energia',
+      prompt: 'Um funk brasileiro animado sobre festa e alegria. Batida pesada, synths brilhantes, e um refrão dançante. Produção moderna de baile funk.',
+      genre: 'funk',
+      mood: 'energetic',
+      language: 'pt',
+    },
+    {
+      title: 'Coração Partido',
+      prompt: 'Uma balada sertaneja sobre amor perdido. Violão, acordeão, e voz emotiva. Toca o coração com melodia linda.',
+      genre: 'country',
+      mood: 'sad',
+      language: 'pt',
+    },
+  ],
+
+  // DUTCH
+  'dutch': [
+    {
+      title: 'Vrij Als De Wind',
+      prompt: 'Een Nederlandse pop song over vrijheid en avontuur. Vrolijke melodie, catchy refrein, en moderne productie. Zomerse vibes.',
+      genre: 'pop',
+      mood: 'happy',
+      language: 'nl',
+    },
+    {
+      title: 'Nachtstad',
+      prompt: 'Een sfeervolle Nederlandse track over het nachtleven. Elektronische beats, atmosferische synths, en dromerige vocals.',
+      genre: 'electronic',
+      mood: 'dreamy',
+      language: 'nl',
+    },
+    {
+      title: 'Thuiskomen',
+      prompt: 'Een emotionele Nederlandse ballade over terugkeren naar je roots. Akoestische gitaar, piano, en oprechte vocals.',
+      genre: 'acoustic',
+      mood: 'nostalgic',
+      language: 'nl',
+    },
+  ],
+
+  // POLISH
+  'polish': [
+    {
+      title: 'Siła Woli',
+      prompt: 'Energetyczna polska piosenka pop-rockowa o sile i determinacji. Mocne gitary, porywający refren, i emocjonalny wokal.',
+      genre: 'rock',
+      mood: 'triumphant',
+      language: 'pl',
+    },
+    {
+      title: 'Noc w Warszawie',
+      prompt: 'Klimatyczny polski utwór elektroniczny o nocnym życiu miasta. Pulsujące basy, syntezatory, i hipnotyzujący beat.',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'pl',
+    },
+    {
+      title: 'Wspomnienia',
+      prompt: 'Wzruszająca polska ballada o wspomnieniach i tęsknocie. Delikatne pianino, orkiestrowe aranżacje, i emocjonalny wokal.',
+      genre: 'pop',
+      mood: 'melancholic',
+      language: 'pl',
+    },
+  ],
+
+  // ROMANIAN
+  'romanian': [
+    {
+      title: 'Inima Mea',
+      prompt: 'O piesă pop românească despre dragoste pasională. Melodie captivantă, producție modernă, și voce expresivă. Hit de vară.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'ro',
+    },
+    {
+      title: 'Noapte de Vară',
+      prompt: 'O piesă dance românească energică despre distracție. Beat puternic, synth-uri strălucitoare, și un refren contagios.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'ro',
+    },
+    {
+      title: 'Dor de Casă',
+      prompt: 'O baladă românească emoționantă despre nostalgie. Chitară acustică, vioară, și voce caldă. Traditional meets modern.',
+      genre: 'folk',
+      mood: 'nostalgic',
+      language: 'ro',
+    },
+  ],
+
+  // CZECH
+  'czech': [
+    {
+      title: 'Svítání',
+      prompt: 'Povznášející česká pop píseň o nových začátcích. Melodická, s moderní produkcí a chytlavým refrénem.',
+      genre: 'pop',
+      mood: 'uplifting',
+      language: 'cs',
+    },
+    {
+      title: 'Pražské Noci',
+      prompt: 'Atmosférický český elektro track o nočním životě v Praze. Pulsující beaty, syntezátory, a snová nálada.',
+      genre: 'electronic',
+      mood: 'dreamy',
+      language: 'cs',
+    },
+    {
+      title: 'Vzpomínky',
+      prompt: 'Emotivní česká balada o vzpomínkách. Akustická kytara, klavír, a upřímný vokál. Dojemná a krásná.',
+      genre: 'acoustic',
+      mood: 'melancholic',
+      language: 'cs',
+    },
+  ],
+
+  // GREEK
+  'greek': [
+    {
+      title: 'Καλοκαίρι (Kalokairi)',
+      prompt: 'Ένα ελληνικό pop τραγούδι για το καλοκαίρι και τον έρωτα. Μεσογειακοί ρυθμοί, χαρούμενη μελωδία, και φωνητικά γεμάτα πάθος.',
+      genre: 'pop',
+      mood: 'happy',
+      language: 'el',
+    },
+    {
+      title: 'Νύχτες στην Αθήνα (Nights in Athens)',
+      prompt: 'Ένα σύγχρονο ελληνικό λαϊκό τραγούδι για τη νυχτερινή ζωή. Μπουζούκι, μοντέρνα παραγωγή, και συναισθηματικός τραγουδιστής.',
+      genre: 'folk',
+      mood: 'energetic',
+      language: 'el',
+    },
+    {
+      title: 'Αγάπη Μου (My Love)',
+      prompt: 'Μια ρομαντική ελληνική μπαλάντα για την αληθινή αγάπη. Συγκινητική μελωδία, ορχήστρα, και βαθιά συναισθηματικά φωνητικά.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'el',
+    },
+  ],
+
+  // BULGARIAN
+  'bulgarian': [
+    {
+      title: 'Слънце (Slantse)',
+      prompt: 'Весела българска поп песен за лятото и радостта. Модерна продукция, запомняща се мелодия, и енергичен вокал.',
+      genre: 'pop',
+      mood: 'happy',
+      language: 'bg',
+    },
+    {
+      title: 'Нощен Град (Night City)',
+      prompt: 'Атмосферна българска електронна песен за нощния живот. Пулсиращи ритми, синтезатори, и хипнотичен бийт.',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'bg',
+    },
+    {
+      title: 'Спомени (Memories)',
+      prompt: 'Емоционална българска балада за миналото. Акустична китара, пиано, и искрен вокал. Докосваща сърцето.',
+      genre: 'acoustic',
+      mood: 'nostalgic',
+      language: 'bg',
+    },
+  ],
+
+  // FINNISH
+  'finnish': [
+    {
+      title: 'Pohjoinen Taivas',
+      prompt: 'Atmosfäärinen suomalainen indie-pop kappale pohjoisesta valosta. Eteerinen tuotanto, kauniit melodiat, ja unenomainen tunnelma.',
+      genre: 'indie',
+      mood: 'dreamy',
+      language: 'fi',
+    },
+    {
+      title: 'Metallin Sydän',
+      prompt: 'Voimakas suomalainen metal-kappale voimasta ja periksiantamattomuudesta. Raskaat kitarat, jyrisevät rummut, ja voimakas laulu.',
+      genre: 'metal',
+      mood: 'intense',
+      language: 'fi',
+    },
+    {
+      title: 'Hiljaisuus',
+      prompt: 'Kaunis suomalainen balladi hiljaisuuden kauneudesta. Akustinen kitara, piano, ja herkkä laulu. Syvällinen ja rauhallinen.',
+      genre: 'acoustic',
+      mood: 'peaceful',
+      language: 'fi',
+    },
+  ],
+
+  // UKRAINIAN
+  'ukrainian': [
+    {
+      title: 'Вільний (Vilnyi)',
+      prompt: 'Потужна українська поп-рок пісня про свободу і силу духу. Енергійні гітари, драйвовий ритм, і емоційний вокал.',
+      genre: 'rock',
+      mood: 'triumphant',
+      language: 'uk',
+    },
+    {
+      title: 'Київські Ночі (Kyiv Nights)',
+      prompt: 'Сучасна українська електронна пісня про нічне життя столиці. Пульсуючі біти, атмосферні синти, і мрійливий настрій.',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'uk',
+    },
+    {
+      title: 'Колискова (Lullaby)',
+      prompt: 'Ніжна українська балада з фольклорними мотивами. Бандура, сопілка, і теплий вокал. Традиційне зустрічає сучасне.',
+      genre: 'folk',
+      mood: 'peaceful',
+      language: 'uk',
+    },
+  ],
+
+  // RUSSIAN
+  'russian': [
+    {
+      title: 'Огни Москвы (Moscow Lights)',
+      prompt: 'Атмосферная русская поп-песня о ночной Москве. Современная продукция, запоминающийся припев, и эмоциональный вокал.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'ru',
+    },
+    {
+      title: 'Невозможное (The Impossible)',
+      prompt: 'Мощный русский рок-трек о преодолении. Драйвовые гитары, эпический припев, и страстный вокал.',
+      genre: 'rock',
+      mood: 'triumphant',
+      language: 'ru',
+    },
+    {
+      title: 'Дождь (Rain)',
+      prompt: 'Меланхоличная русская баллада о тоске и воспоминаниях. Фортепиано, струнные, и глубокий эмоциональный вокал.',
+      genre: 'pop',
+      mood: 'melancholic',
+      language: 'ru',
+    },
+  ],
+
+  // TURKISH
+  'turkish': [
+    {
+      title: 'Aşk Masalı',
+      prompt: 'Romantik bir Türk pop şarkısı aşk hikayesi hakkında. Etkileyici melodi, modern prodüksiyon, ve tutkulu vokal. Arabesk pop tarzı.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'tr',
+    },
+    {
+      title: 'İstanbul Geceleri',
+      prompt: 'Enerjik bir Türk dance şarkısı gece hayatı hakkında. Güçlü beat, parlak synthler, ve akılda kalıcı nakarat.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'tr',
+    },
+    {
+      title: 'Özlem',
+      prompt: 'Duygusal bir Türk baladı hasret ve anılar hakkında. Akustik saz, piyano, ve derin vokal. Geleneksel ve modern birleşimi.',
+      genre: 'acoustic',
+      mood: 'nostalgic',
+      language: 'tr',
+    },
+  ],
+
+  // ARABIC
+  'arabic': [
+    {
+      title: 'حبيبي (Habibi)',
+      prompt: 'أغنية عربية بوب رومانسية عن الحب الحقيقي. إيقاع شرقي، ميلودي جميل، وصوت عاطفي. ستايل خليجي حديث.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'ar',
+    },
+    {
+      title: 'ليلة في دبي (Night in Dubai)',
+      prompt: 'أغنية عربية راقصة عن الحياة الليلية. بيت قوي، سينثات براقة، ولحن راقص. فيوجن عربي حديث.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'ar',
+    },
+    {
+      title: 'شوق (Longing)',
+      prompt: 'أغنية عربية كلاسيكية عن الشوق والحنين. عود، كمان، وصوت عميق. طرب أصيل مع لمسات معاصرة.',
+      genre: 'folk',
+      mood: 'melancholic',
+      language: 'ar',
+    },
+  ],
+
+  // HINDI
+  'hindi': [
+    {
+      title: 'दिल की धड़कन (Dil Ki Dhadkan)',
+      prompt: 'A romantic Bollywood-style song about love. Beautiful melody, orchestral arrangement with Indian instruments, and passionate vocals. Modern filmi style.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'hi',
+    },
+    {
+      title: 'जश्न (Jashn)',
+      prompt: 'An energetic Bollywood dance number celebrating life. Dhol beats, catchy hook, and party vibes. Wedding sangeet energy.',
+      genre: 'dance',
+      mood: 'happy',
+      language: 'hi',
+    },
+    {
+      title: 'तन्हाई (Tanhai)',
+      prompt: 'A soulful Hindi ballad about loneliness and longing. Gentle piano, strings, and emotional vocals. Ghazal-influenced modern pop.',
+      genre: 'acoustic',
+      mood: 'sad',
+      language: 'hi',
+    },
+  ],
+
+  // THAI
+  'thai': [
+    {
+      title: 'รักแรก (Rak Raek)',
+      prompt: 'เพลงป๊อปไทยโรแมนติกเกี่ยวกับรักแรกพบ ท่วงทำนองไพเราะ โปรดักชั่นทันสมัย และเสียงร้องอ่อนหวาน',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'th',
+    },
+    {
+      title: 'กรุงเทพราตรี (Bangkok Nights)',
+      prompt: 'เพลงอิเล็กทรอนิกส์ไทยเกี่ยวกับชีวิตกลางคืน บีตแรง ซินธ์สว่าง และท่อนฮุคติดหู สไตล์ EDM ไทย',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'th',
+    },
+    {
+      title: 'ความทรงจำ (Memories)',
+      prompt: 'เพลงบัลลาดไทยซึ้งๆ เกี่ยวกับความทรงจำ กีตาร์อะคูสติก เปียโน และเสียงร้องอารมณ์ลึก สไตล์ลูกทุ่งร่วมสมัย',
+      genre: 'acoustic',
+      mood: 'nostalgic',
+      language: 'th',
+    },
+  ],
+
+  // VIETNAMESE
+  'vietnamese': [
+    {
+      title: 'Yêu Em (Love You)',
+      prompt: 'Một bài hát V-Pop lãng mạn về tình yêu đầu. Giai điệu ngọt ngào, sản xuất hiện đại, và giọng hát cảm xúc.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'vi',
+    },
+    {
+      title: 'Sài Gòn Đêm Nay',
+      prompt: 'Một bài hát điện tử Việt Nam về đêm Sài Gòn. Beat mạnh, synth sáng, và hook bắt tai. V-Pop dance hiện đại.',
+      genre: 'electronic',
+      mood: 'energetic',
+      language: 'vi',
+    },
+    {
+      title: 'Quê Hương (Homeland)',
+      prompt: 'Một bài ballad Việt Nam về nỗi nhớ quê hương. Đàn bầu, guitar, và giọng hát sâu lắng. Truyền thống gặp hiện đại.',
+      genre: 'folk',
+      mood: 'nostalgic',
+      language: 'vi',
+    },
+  ],
+
+  // INDONESIAN
+  'indonesian': [
+    {
+      title: 'Cinta Pertama',
+      prompt: 'Lagu pop Indonesia romantis tentang cinta pertama. Melodi indah, produksi modern, dan vokal emosional. Gaya pop Melayu.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'id',
+    },
+    {
+      title: 'Jakarta Malam Ini',
+      prompt: 'Lagu dance Indonesia energik tentang kehidupan malam Jakarta. Beat kuat, synth cerah, dan hook catchy.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'id',
+    },
+    {
+      title: 'Rindu',
+      prompt: 'Ballad Indonesia menyentuh tentang kerinduan. Gitar akustik, piano, dan vokal dalam. Dangdut modern meets pop.',
+      genre: 'acoustic',
+      mood: 'melancholic',
+      language: 'id',
+    },
+  ],
+
+  // JAPANESE
+  'japanese': [
+    {
+      title: '桜の季節 (Sakura no Kisetsu)',
+      prompt: 'A beautiful J-Pop song about cherry blossom season and new beginnings. Bright melody, polished production, and hopeful vocals. Classic J-Pop style.',
+      genre: 'pop',
+      mood: 'happy',
+      language: 'ja',
+    },
+    {
+      title: '東京ナイト (Tokyo Night)',
+      prompt: 'An energetic J-Rock song about city life. Driving guitars, powerful drums, and passionate vocals. Anime opening energy.',
+      genre: 'rock',
+      mood: 'energetic',
+      language: 'ja',
+    },
+    {
+      title: '雨の日 (Rainy Day)',
+      prompt: 'A melancholic J-Pop ballad about rainy days and memories. Piano-led, gentle arrangement, and emotional vocals. City pop influences.',
+      genre: 'pop',
+      mood: 'melancholic',
+      language: 'ja',
+    },
+  ],
+
+  // KOREAN
+  'korean': [
+    {
+      title: '첫사랑 (First Love)',
+      prompt: 'A romantic K-Pop song about first love. Sweet melody, polished K-Pop production, and emotional vocals. Ballad with modern elements.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'ko',
+    },
+    {
+      title: '파이어 (Fire)',
+      prompt: 'An explosive K-Pop dance track with powerful energy. Hard-hitting beats, addictive hook, and fierce vocals. Idol group style.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'ko',
+    },
+    {
+      title: '별빛 (Starlight)',
+      prompt: 'A dreamy K-Pop song about hope and dreams. Ethereal production, beautiful harmonies, and uplifting message. K-Drama OST vibes.',
+      genre: 'pop',
+      mood: 'dreamy',
+      language: 'ko',
+    },
+  ],
+
+  // CHINESE
+  'chinese': [
+    {
+      title: '月光 (Moonlight)',
+      prompt: 'A beautiful C-Pop ballad about love under the moonlight. Elegant melody, orchestral arrangement, and emotional vocals. Classic mandopop style.',
+      genre: 'pop',
+      mood: 'romantic',
+      language: 'zh',
+    },
+    {
+      title: '夜上海 (Shanghai Nights)',
+      prompt: 'An energetic Chinese dance pop song about nightlife. Modern production, catchy hook, and stylish vocals. Contemporary C-Pop.',
+      genre: 'dance',
+      mood: 'energetic',
+      language: 'zh',
+    },
+    {
+      title: '故乡 (Hometown)',
+      prompt: 'A nostalgic Chinese folk pop song about missing home. Traditional instruments like erhu and pipa with modern arrangement. Heartwarming and emotional.',
+      genre: 'folk',
+      mood: 'nostalgic',
+      language: 'zh',
+    },
+  ],
+};
+
 // Helper to get all genre IDs
 export const getAllGenreIds = (): string[] => Object.keys(genreSeedSongs);
 
 // Helper to get all mood IDs  
 export const getAllMoodIds = (): string[] => Object.keys(moodSeedSongs);
+
+// Helper to get all language IDs
+export const getAllLanguageIds = (): string[] => Object.keys(languageSeedSongs);
 
 // Helper to get songs for a specific genre
 export const getSongsForGenre = (genreId: string): SeedSong[] => genreSeedSongs[genreId] || [];
@@ -1274,10 +1884,16 @@ export const getSongsForGenre = (genreId: string): SeedSong[] => genreSeedSongs[
 // Helper to get songs for a specific mood
 export const getSongsForMood = (moodId: string): SeedSong[] => moodSeedSongs[moodId] || [];
 
+// Helper to get songs for a specific language
+export const getSongsForLanguage = (languageId: string): SeedSong[] => languageSeedSongs[languageId] || [];
+
 // Total count helpers
 export const getTotalGenreSongs = (): number => 
   Object.values(genreSeedSongs).reduce((acc, songs) => acc + songs.length, 0);
 
 export const getTotalMoodSongs = (): number => 
   Object.values(moodSeedSongs).reduce((acc, songs) => acc + songs.length, 0);
+
+export const getTotalLanguageSongs = (): number => 
+  Object.values(languageSeedSongs).reduce((acc, songs) => acc + songs.length, 0);
 
