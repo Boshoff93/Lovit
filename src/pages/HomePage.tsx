@@ -65,49 +65,82 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
+import { songsApi } from '../services/api';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 
-// Sample tracks data (for showcase)
+// Owner user ID for the seed songs
+const SEED_SONGS_USER_ID = 'c6ab6e72-915f-449e-8483-9ef73cec258b';
+
+// Genre to image mapping for sample tracks
+const genreToImage: Record<string, string> = {
+  'indie': '/genres/indie.jpeg',
+  'chillout': '/genres/chillout.jpeg',
+  'hip-hop': '/genres/hip-hop.jpeg',
+  'pop': '/genres/pop.jpeg',
+  'kpop': '/genres/kpop.jpeg',
+  'jpop': '/genres/jpop.jpeg',
+  'dance': '/genres/dance.jpeg',
+  'gospel': '/genres/gospels.jpeg',
+  'ambient': '/genres/ambient.jpeg',
+  'lofi': '/genres/lofi.jpeg',
+  'house': '/genres/house.jpeg',
+  'metal': '/genres/metal.jpeg',
+  'jazz': '/genres/jazz.jpeg',
+  'blues': '/genres/blues.jpeg',
+  'soul': '/genres/soul.jpeg',
+  'rnb': '/genres/rnb.jpeg',
+  'funk': '/genres/funk.jpeg',
+  'classical': '/genres/classic.jpeg',
+  'orchestral': '/genres/orchestral.jpeg',
+  'cinematic': '/genres/cinematic.jpeg',
+  'country': '/genres/country.jpeg',
+  'folk': '/genres/folk.jpeg',
+  'acoustic': '/genres/acoustic.jpeg',
+  'rock': '/genres/rock.jpeg',
+  'latin': '/genres/latin.jpeg',
+  'reggaeton': '/genres/raggaeton.jpeg',
+  'reggae': '/genres/raggae.jpeg',
+  'electronic': '/genres/electronic.jpeg',
+  'alternative': '/genres/alternative.jpeg',
+  'punk': '/genres/punk.jpeg',
+  'edm': '/genres/edm.jpeg',
+  'techno': '/genres/techno.jpeg',
+};
+
+// Sample tracks data with real song IDs for playback
 const sampleTracks = [
-  {
-    id: 1,
-    title: "Midnight Dreams",
-    genre: "Lo-fi Hip Hop",
-    duration: "2:34",
-    plays: "12.5K",
-    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
-  },
-  {
-    id: 2,
-    title: "Electric Pulse",
-    genre: "Electronic",
-    duration: "3:12",
-    plays: "8.2K",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Summer Gruvis",
-    genre: "Pop",
-    duration: "2:58",
-    plays: "15.8K",
-    cover: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&h=300&fit=crop",
-  },
-  {
-    id: 4,
-    title: "Jazz Cafe",
-    genre: "Jazz",
-    duration: "4:21",
-    plays: "6.3K",
-    cover: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=300&h=300&fit=crop",
-  },
-  {
-    id: 5,
-    title: "Epic Adventure",
-    genre: "Cinematic",
-    duration: "3:45",
-    plays: "22.1K",
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&h=300&fit=crop",
-  },
+  { id: '5c49bfef-b207-42ac-9a61-762112f1a101', title: 'Polaroid Summer', genre: 'indie', duration: '1:59' },
+  { id: 'dd493e6b-a5ac-497c-8952-28161a270e71', title: 'Golden Hour Drive', genre: 'chillout', duration: '2:41' },
+  { id: '48f6a5d8-6086-43ca-9755-5fbbb576c35c', title: 'Concrete Shadows', genre: 'hip-hop', duration: '1:39' },
+  { id: 'a93fd48c-9c12-41a5-8158-7afea227714f', title: 'Unstoppable', genre: 'pop', duration: '2:17' },
+  { id: 'f2614c35-ce09-458d-b647-4ff84ed37ac5', title: 'Shine Like Stars', genre: 'kpop', duration: '1:44' },
+  { id: 'cba96fc1-204a-4da8-8830-965fc8a081c0', title: 'Neon Heartbeat Warriors', genre: 'jpop', duration: '2:09' },
+  { id: '0fb24f5f-029f-4fc0-bf17-6ef34a709a3e', title: 'Hands Up to the Sky', genre: 'dance', duration: '2:05' },
+  { id: '5de7af18-791c-4a7e-8c81-7b317dc25a6c', title: 'Rise Up in Glory', genre: 'gospel', duration: '2:20' },
+  { id: '54169f29-44da-4515-912a-38c3e7c428ec', title: 'Whispers of the Forest', genre: 'ambient', duration: '2:22' },
+  { id: '3619c929-e7ee-4f88-b62e-9300e545d47d', title: '3AM Thoughts', genre: 'lofi', duration: '2:22' },
+  { id: 'dfcaddd2-2896-499a-8823-007483fc76ce', title: 'Golden Hour', genre: 'house', duration: '2:29' },
+  { id: '279f4e79-00bd-45d2-b602-1638fabf8211', title: 'Forge of the Fallen', genre: 'metal', duration: '4:00' },
+  { id: '31a82512-422d-47ee-9661-655d6d050ce7', title: 'Sunshine in My Coffee Cup', genre: 'jazz', duration: '2:05' },
+  { id: '39e76336-ea40-4a4a-9458-c45c02e6dc3c', title: 'Worn Down to the Bone', genre: 'blues', duration: '2:40' },
+  { id: '3cec23f5-d29d-4fd2-a515-b035c88df0a9', title: 'Empty Chair', genre: 'soul', duration: '2:50' },
+  { id: '1001f55b-6365-49c6-88a1-0ed1a3670f9c', title: 'Pieces of Tomorrow', genre: 'rnb', duration: '2:58' },
+  { id: '47b4c888-7c69-43b9-86a4-380f9397fa1c', title: 'Get Up and Groove', genre: 'funk', duration: '1:47' },
+  { id: '4e67936e-4e62-4502-9f55-9ef209060c3d', title: 'Shadows on the Keys', genre: 'classical', duration: '2:53' },
+  { id: '9bd4a5e3-b7b9-44bd-bb44-677304166b48', title: 'Kingdom in the Clouds', genre: 'orchestral', duration: '2:02' },
+  { id: '4ed4cf4d-6a02-457b-adb2-5718501abc9c', title: 'Dawn Will Find Us', genre: 'cinematic', duration: '2:46' },
+  { id: '2f654e24-9234-41f5-ad36-32ee1ee531cd', title: 'Whiskey and Goodbye', genre: 'country', duration: '2:10' },
+  { id: '9e17a9e2-92c1-4cbe-922b-ccfc4e287c7a', title: 'Where the Porch Light Burns', genre: 'folk', duration: '2:08' },
+  { id: 'a0745ff4-44ad-4931-879d-398527047196', title: 'Bare Bones', genre: 'acoustic', duration: '2:29' },
+  { id: '51815c85-86d9-4c3b-a355-189851a7685f', title: 'Rise Against The Machine', genre: 'rock', duration: '2:18' },
+  { id: '70e5649c-af1b-4ad8-b2a5-d5c7bdfb9a35', title: 'Fuego en la Pista', genre: 'latin', duration: '2:24' },
+  { id: '6c892b5e-47ba-4e34-b7f1-70d106099608', title: 'Fuego Tonight', genre: 'reggaeton', duration: '1:26' },
+  { id: '553196cc-7be1-4834-ba8d-39f2c24f4f21', title: 'Midnight Dub Session', genre: 'reggae', duration: '2:18' },
+  { id: 'f4e20940-11a6-4a5c-b992-71961cd53c23', title: 'Rainy Window Afternoons', genre: 'lofi', duration: '1:50' },
+  { id: '08fb2cd6-82f9-4c8b-95c1-aff31b1eb212', title: 'Friday Never Ends', genre: 'punk', duration: '2:14' },
+  { id: '40a9ad54-b56d-4cfe-a3be-e19ea85aedee', title: 'Rise Into the Light', genre: 'electronic', duration: '2:55' },
+  { id: '10b9b6fa-811c-421f-8ca6-31ac93d25d88', title: 'Concrete Veins', genre: 'alternative', duration: '2:14' },
+  { id: '5dab088b-779f-4ae3-a3ef-1c206066f01a', title: 'Pulse of the Infinite', genre: 'techno', duration: '2:25' },
 ];
 
 // Sample music videos data (portrait orientation 9:16)
@@ -510,9 +543,13 @@ const HomePage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
   
-  // Check if audio player is active to add bottom padding
-  const { currentSong } = useAudioPlayer();
+  // Audio player context
+  const { currentSong, isPlaying, playSong, pauseSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
+  
+  // State for playing sample tracks
+  const [loadingSongId, setLoadingSongId] = useState<string | null>(null);
+  const [songCache, setSongCache] = useState<Record<string, any>>({});
   
   const [open, setOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -543,6 +580,52 @@ const HomePage: React.FC = () => {
   const handleDrawerToggle = useCallback(() => {
     setDrawerOpen(!drawerOpen);
   }, [drawerOpen]);
+
+  // Handle play button click for sample tracks
+  const handlePlaySampleTrack = useCallback(async (track: { id: string; title: string; genre: string; duration: string }) => {
+    // If this song is currently playing, pause it
+    if (currentSong?.songId === track.id && isPlaying) {
+      pauseSong();
+      return;
+    }
+    
+    // If we already have this song cached, play it
+    if (songCache[track.id]) {
+      playSong(songCache[track.id]);
+      return;
+    }
+    
+    // Fetch the song metadata with audio URL
+    setLoadingSongId(track.id);
+    try {
+      const response = await songsApi.getSongsByIds(SEED_SONGS_USER_ID, [track.id]);
+      const songs = response.data?.songs || [];
+      
+      if (songs.length > 0 && songs[0].audioUrl) {
+        const song = {
+          songId: songs[0].songId,
+          songTitle: songs[0].songTitle,
+          genre: songs[0].genre,
+          audioUrl: songs[0].audioUrl,
+          status: songs[0].status,
+          createdAt: songs[0].createdAt,
+          duration: songs[0].actualDuration,
+        };
+        
+        // Cache the song
+        setSongCache(prev => ({ ...prev, [track.id]: song }));
+        
+        // Play it
+        playSong(song);
+      } else {
+        console.error('Song not found or no audio URL');
+      }
+    } catch (error) {
+      console.error('Error fetching song:', error);
+    } finally {
+      setLoadingSongId(null);
+    }
+  }, [currentSong, isPlaying, playSong, pauseSong, songCache]);
 
   // Get route-specific content
   const routeConfig = getRouteConfig(location.pathname);
@@ -1460,10 +1543,10 @@ const HomePage: React.FC = () => {
               mb: 2, 
               }}
             >
-              Mind blowing song quality
+              A Hit Song for Anyone, in Any Genre
           </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              Hear what others have created with Gruvi
+              Listen to what Gruvi can do.
                 </Typography>
           </Box>
 
@@ -1482,7 +1565,8 @@ const HomePage: React.FC = () => {
             {sampleTracks.map((track, index) => (
               <Box
                 key={track.id}
-            sx={{
+                onClick={() => handlePlaySampleTrack(track)}
+                sx={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: { xs: 2, sm: 3 },
@@ -1490,19 +1574,20 @@ const HomePage: React.FC = () => {
                   borderBottom: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
+                  background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.06)' : 'transparent',
                   '&:hover': {
-                    background: 'rgba(0,122,255,0.04)',
+                    background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : 'rgba(0,122,255,0.04)',
                   },
                 }}
               >
                 {/* Track Number */}
-          <Typography 
-            sx={{ 
+                <Typography 
+                  sx={{ 
                     width: 24,
                     fontSize: '0.9rem',
                     fontWeight: 500,
-                    color: '#86868B',
-              textAlign: 'center',
+                    color: currentSong?.songId === track.id ? '#007AFF' : '#86868B',
+                    textAlign: 'center',
                     display: { xs: 'none', sm: 'block' },
                   }}
                 >
@@ -1511,8 +1596,8 @@ const HomePage: React.FC = () => {
 
                 {/* Album Art */}
                 <Box
-                        sx={{
-              position: 'relative',
+                  sx={{
+                    position: 'relative',
                     width: { xs: 48, sm: 56 },
                     height: { xs: 48, sm: 56 },
                     borderRadius: '10px',
@@ -1520,61 +1605,32 @@ const HomePage: React.FC = () => {
                     flexShrink: 0,
                   }}
                 >
-              <Box
-                component="img"
-                    src={track.cover}
+                  <Box
+                    component="img"
+                    src={genreToImage[track.genre] || '/genres/pop.jpeg'}
                     alt={track.title}
-                sx={{
+                    sx={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                      inset: 0,
-                      background: 'rgba(0,0,0,0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      opacity: 0,
-                      transition: 'opacity 0.2s ease',
-                      '&:hover': { opacity: 1 },
                     }}
-                  >
-                    <Box
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '50%',
-                        background: '#fff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '1px solid rgba(0,0,0,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                      }}
-                    >
-                      <PlayArrowRoundedIcon sx={{ color: '#007AFF', fontSize: 20 }} />
-                    </Box>
-                  </Box>
-            </Box>
+                  />
+                </Box>
 
                 {/* Track Info */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography
                     sx={{
                       fontSize: { xs: '0.9rem', sm: '1rem' },
-                fontWeight: 600,
-                      color: '#1D1D1F',
+                      fontWeight: 600,
+                      color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                     }}
                   >
                     {track.title}
-                </Typography>
+                  </Typography>
                   <Typography
                     sx={{
                       fontSize: '0.8rem',
@@ -1582,76 +1638,48 @@ const HomePage: React.FC = () => {
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
+                      textTransform: 'capitalize',
                     }}
                   >
-                    {track.genre}
-                </Typography>
-              </Box>
+                    {track.genre} • {track.duration}
+                  </Typography>
+                </Box>
 
-
-
-                {/* Action Buttons - Closer together */}
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                                  {/* Plays */}
-                <Typography
-                  sx={{
-                    alignSelf: 'center',
-                    fontSize: '0.85rem',
-                    color: '#86868B',
-                    display: { xs: 'none', sm: 'block' },
+                {/* Play Button */}
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlaySampleTrack(track);
+                  }}
+                  disabled={loadingSongId === track.id}
+                  sx={{ 
+                    background: currentSong?.songId === track.id ? '#007AFF' : '#fff',
+                    color: currentSong?.songId === track.id ? '#fff' : '#007AFF',
+                    width: 40,
+                    height: 40,
+                    border: '1px solid rgba(0,0,0,0.08)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { 
+                      background: currentSong?.songId === track.id ? '#0066CC' : '#fff',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                    },
+                    '&:disabled': {
+                      background: '#f5f5f5',
+                    },
                   }}
                 >
-                  {track.plays}
-                </Typography>
-                  {/* Download Button */}
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!isLoggedIn) {
-                        setOpen(true);
-                      }
-                    }}
-                    sx={{
-                      background: '#fff',
-                      color: '#007AFF',
-                      width: 40,
-                      height: 40,
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': { 
-                        background: '#fff',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                      },
-                    }}
-                  >
-                    <DownloadRoundedIcon sx={{ fontSize: 20 }} />
-                  </IconButton>
-
-                  {/* Play Button */}
-                  <IconButton
-                    size="small"
-                    sx={{ 
-                      background: '#fff',
-                      color: '#007AFF',
-                      width: 40,
-                      height: 40,
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': { 
-                        background: '#fff',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                      },
-                    }}
-                  >
+                  {loadingSongId === track.id ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : currentSong?.songId === track.id && isPlaying ? (
+                    <PauseRoundedIcon sx={{ fontSize: 20 }} />
+                  ) : (
                     <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
-                  </IconButton>
-                </Box>
-                </Box>
+                  )}
+                </IconButton>
+              </Box>
             ))}
           </Box>
         </Container>

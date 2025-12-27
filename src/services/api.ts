@@ -80,6 +80,14 @@ export const songsApi = {
   
   deleteSong: (userId: string, songId: string) => 
     api.delete(`/api/gruvi/songs/${userId}/${songId}`),
+  
+  /**
+   * Fetch multiple songs by their IDs (for playlists, featured songs, etc.)
+   * @param userId - The user who owns these songs
+   * @param songIds - Array of song IDs to fetch
+   */
+  getSongsByIds: (userId: string, songIds: string[]) => 
+    api.post('/api/gruvi/songs/batch', { userId, songIds }),
 };
 
 // Videos API
