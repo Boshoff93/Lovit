@@ -21,7 +21,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import { useNavigate, useParams } from 'react-router-dom';
-import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData, createVideoStructuredData } from '../utils/seoHelper';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 // Sample music videos data
@@ -288,6 +288,18 @@ const MusicVideoDetailPage: React.FC = () => {
     { name: currentVideo.title, url: `https://gruvi.ai/videos/${currentVideo.id}` }
   ];
 
+  // Create video structured data for real videos (helps with Google video search)
+  const videoStructuredData = currentVideo.realVideoId ? createVideoStructuredData({
+    name: currentVideo.title,
+    description: currentVideo.fullDescription,
+    thumbnailUrl: currentVideo.thumbnail.startsWith('http') 
+      ? currentVideo.thumbnail 
+      : `https://gruvimusic.com${currentVideo.thumbnail}`,
+    uploadDate: '2024-12-01', // Approximate upload date for demo videos
+    duration: `PT${currentVideo.duration.replace(':', 'M')}S`, // ISO 8601 duration format
+    url: `https://gruvimusic.com/videos/${currentVideo.id}`,
+  }) : null;
+
   return (
     <Box
       sx={{
@@ -322,7 +334,10 @@ const MusicVideoDetailPage: React.FC = () => {
         ogUrl={`https://gruvi.ai/videos/${currentVideo.id}`}
         twitterTitle={`${currentVideo.title} | Gruvi`}
         twitterDescription={currentVideo.description}
-        structuredData={[createBreadcrumbStructuredData(breadcrumbData)]}
+        structuredData={[
+          createBreadcrumbStructuredData(breadcrumbData),
+          ...(videoStructuredData ? [videoStructuredData] : []),
+        ]}
       />
 
       <Container maxWidth="md" sx={{ py: 4, position: 'relative', zIndex: 1 }}>
