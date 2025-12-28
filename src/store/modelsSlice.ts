@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { updateTokensUsed } from './authSlice';
 import api from '../utils/axiosConfig';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
+// Always use production API
+const API_BASE_URL = 'https://api.gruvimusic.com';
 
 // Model interface
 export interface Model {

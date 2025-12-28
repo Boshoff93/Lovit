@@ -24,6 +24,7 @@ import {
   useMediaQuery,
   useTheme,
   Tooltip,
+  Slider,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -340,6 +341,7 @@ const CreatePage: React.FC = () => {
   const [selectedGenre, setSelectedGenre] = useState('pop');
   const [selectedMood, setSelectedMood] = useState('happy');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [creativity, setCreativity] = useState(5); // 0-10 scale: 0 = literal, 10 = creative
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
@@ -639,6 +641,7 @@ const CreatePage: React.FC = () => {
         mood: selectedMood,
         language: selectedLanguage,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
+        creativity,
       });
       
       console.log('Song generation started:', response.data);
@@ -1067,6 +1070,53 @@ const CreatePage: React.FC = () => {
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
                 characterNames={characters.map(c => c.characterName)}
               />
+              
+              {/* Creativity Slider - inline below prompt */}
+              <Box sx={{ mt: 3, px: 1 }}>
+                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1.5 }}>
+                  How closely should the song follow your prompt?
+                </Typography>
+                <Slider
+                  value={creativity}
+                  onChange={(_, value) => setCreativity(value as number)}
+                  min={0}
+                  max={10}
+                  step={1}
+                  marks={[
+                    { value: 0, label: 'Literal' },
+                    { value: 5, label: 'Balanced' },
+                    { value: 10, label: 'Creative' },
+                  ]}
+                  sx={{
+                    color: '#007AFF',
+                    '& .MuiSlider-thumb': {
+                      width: 18,
+                      height: 18,
+                      backgroundColor: '#fff',
+                      border: '2px solid #007AFF',
+                      '&:hover, &.Mui-focusVisible': {
+                        boxShadow: '0 0 0 6px rgba(0,122,255,0.16)',
+                      },
+                    },
+                    '& .MuiSlider-track': {
+                      height: 4,
+                      borderRadius: 2,
+                    },
+                    '& .MuiSlider-rail': {
+                      height: 4,
+                      borderRadius: 2,
+                      opacity: 0.3,
+                    },
+                    '& .MuiSlider-mark': {
+                      display: 'none',
+                    },
+                    '& .MuiSlider-markLabel': {
+                      fontSize: '0.7rem',
+                      color: '#86868B',
+                    },
+                  }}
+                />
+              </Box>
             </Paper>
 
             {/* Genre Selection */}
@@ -1212,6 +1262,7 @@ const CreatePage: React.FC = () => {
                 <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
               </Button>
             </Paper>
+
           </Box>
 
           {/* Right Column - Summary */}

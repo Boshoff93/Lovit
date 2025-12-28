@@ -3,7 +3,8 @@ import axios from 'axios';
 import { User, storeAuthData, getToken, clearAuthData, storeToken } from '../utils/storage';
 import api from '../utils/axiosConfig';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
+// Always use production API
+const API_BASE_URL = 'https://api.gruvimusic.com';
 
 // Define subscription tier type
 export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'premium';

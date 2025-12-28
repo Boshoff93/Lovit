@@ -73,6 +73,7 @@ export const songsApi = {
     language?: string;
     characterIds?: string[];
     customInstructions?: string;
+    creativity?: number; // 0-10 scale: 0 = literal, 10 = creative
   }) => api.post('/api/gruvi/songs/generate', data),
   
   getUserSongs: (userId: string, options?: { 
