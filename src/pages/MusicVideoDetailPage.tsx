@@ -232,7 +232,7 @@ const MusicVideoDetailPage: React.FC = () => {
     
     try {
       // Fetch signed URL from backend
-      const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      const apiBase = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
       const response = await fetch(`${apiBase}/api/gruvi/videos/public/${currentVideo.realVideoId}`);
       
       if (!response.ok) {
