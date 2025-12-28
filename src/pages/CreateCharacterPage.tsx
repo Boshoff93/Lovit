@@ -335,6 +335,7 @@ const CreateCharacterPage: React.FC = () => {
         // Update existing character/product
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product',
           ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
@@ -353,6 +354,7 @@ const CreateCharacterPage: React.FC = () => {
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product',
           ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,

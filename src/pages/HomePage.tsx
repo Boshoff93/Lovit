@@ -333,14 +333,44 @@ function getSampleTracksForRoute(pathname: string): Array<{id: string; title: st
   }).filter((track): track is {id: string; title: string; genre: string; duration: string} => track !== null);
 }
 
-// Sample music videos data (portrait orientation 9:16)
-const sampleVideos = [
+// Sample music videos data - mix of portrait (9:16) and landscape (16:9)
+// Thumbnails are stored in /public/video-thumbnails/
+const sampleVideos: Array<{
+  id: string | number;
+  title: string;
+  style: string;
+  views: string;
+  thumbnail: string;
+  aspectRatio: 'portrait' | 'landscape';
+  videoUrl?: string; // Actual video page URL if available
+}> = [
+  // Real videos first
+  {
+    id: 'da4d792d-a24b-45d8-87ba-5b41778496e8',
+    title: "Polaroid Summer",
+    style: "3D Cartoon",
+    views: "1.2K",
+    thumbnail: "/thumbnails/duck.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
+  },
+  {
+    id: '4a7ec232-aca9-4538-bc79-45149d705812',
+    title: "Cha-La Head-Cha-La",
+    style: "Anime",
+    views: "3.5K",
+    thumbnail: "/thumbnails/goku.jpeg",
+    aspectRatio: 'landscape',
+    videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
+  },
+  // Placeholder videos (to be replaced with real ones)
   {
     id: 1,
     title: "Neon City Nights",
     style: "Cyberpunk",
     views: "45.2K",
     thumbnail: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=533&fit=crop",
+    aspectRatio: 'portrait',
   },
   {
     id: 2,
@@ -348,6 +378,7 @@ const sampleVideos = [
     style: "3D Animation",
     views: "32.8K",
     thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=533&fit=crop",
+    aspectRatio: 'portrait',
   },
   {
     id: 3,
@@ -355,6 +386,7 @@ const sampleVideos = [
     style: "Cinematic",
     views: "28.5K",
     thumbnail: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=533&fit=crop",
+    aspectRatio: 'portrait',
   },
   {
     id: 4,
@@ -362,13 +394,7 @@ const sampleVideos = [
     style: "Anime",
     views: "38.1K",
     thumbnail: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=533&fit=crop",
-  },
-  {
-    id: 5,
-    title: "Fantasy Quest",
-    style: "3D Cartoon",
-    views: "52.3K",
-    thumbnail: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&h=533&fit=crop",
+    aspectRatio: 'portrait',
   },
 ];
 
@@ -1874,114 +1900,142 @@ const HomePage: React.FC = () => {
             >
               {/* Left spacer for centering - match Container maxWidth="md" (900px) */}
               <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
-            {sampleVideos.map((video, index) => (
-              <Box
-                key={video.id}
-                onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-                sx={{ 
-                  width: { xs: '150px', sm: '175px', md: '200px' },
-                  minWidth: { xs: '150px', sm: '175px', md: '200px' },
-                  maxWidth: { xs: '150px', sm: '175px', md: '200px' },
-                  flexShrink: 0,
-                  scrollSnapAlign: 'center',
-                  position: 'relative',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-                  '&:hover': {
-                    transform: 'translateY(-2px) scale(1.02)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                  },
-                }}
-              >
-              {/* Image container */}
-              <Box
-                sx={{
-                  position: 'relative',
-                    aspectRatio: '9/16',
-                  overflow: 'hidden',
-                  borderRadius: '10px',
-                }}
-              >
+            {sampleVideos.map((video, index) => {
+              const isLandscape = video.aspectRatio === 'landscape';
+              // Portrait: width with 9:16 aspect ratio
+              // Landscape: calculate width to have SAME HEIGHT as portrait
+              // Portrait height = width * 16/9, Landscape width = height * 16/9
+              // So landscape width = portrait width * (16/9) * (16/9) = portrait width * 256/81 ≈ 3.16x
+              const portraitWidth = { xs: 150, sm: 175, md: 200 };
+              // Landscape width = portrait width * (16/9)^2 to match height
+              const landscapeWidth = { xs: 474, sm: 553, md: 632 }; // ~3.16x portrait width
+              
+              return (
                 <Box
-                  component="img"
-                    src={video.thumbnail}
-                    alt={video.title}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
+                  key={video.id}
+                  onClick={() => {
+                    // Always navigate to internal video route
+                    navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`);
                   }}
-                />
-                {/* Play button overlay */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                      inset: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                    <IconButton
-                    sx={{
-                        background: '#fff',
-                        color: '#007AFF',
-                        width: 32,
-                        height: 32,
-                        border: '1px solid rgba(0,0,0,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                        transition: 'all 0.2s ease',
-                        '&:hover': { 
-                          background: '#fff', 
-                          transform: 'scale(1.05)',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
-                        },
-                      }}
-                    >
-                      <PlayArrowRoundedIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                    </IconButton>
-                </Box>
-                {/* Info overlay at bottom with dark gradient */}
-                <Box 
                   sx={{ 
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    p: 1,
-                    pt: 2.5,
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+                    width: isLandscape 
+                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
+                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
+                    minWidth: isLandscape 
+                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
+                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
+                    maxWidth: isLandscape 
+                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
+                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
+                    flexShrink: 0,
+                    scrollSnapAlign: 'center',
+                    position: 'relative',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                    '&:hover': {
+                      transform: 'translateY(-2px) scale(1.02)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    },
                   }}
                 >
-                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', mb: 0.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {video.title}
-                  </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Chip
-                      label={video.style}
+                  {/* Image container */}
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      aspectRatio: isLandscape ? '16/9' : '9/16',
+                      overflow: 'hidden',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src={video.thumbnail}
+                      alt={video.title}
                       sx={{
-                        background: 'rgba(255,255,255,0.25)',
-                        backdropFilter: 'blur(10px)',
-                        color: '#fff',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        height: 16,
-                        borderRadius: '100px',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        '& .MuiChip-label': { px: 0.4, py: 0 },
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
                       }}
                     />
-                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)' }}>
-                      {video.views}
-                  </Typography>
+                    {/* Play button overlay */}
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <IconButton
+                        sx={{
+                          background: '#fff',
+                          color: '#007AFF',
+                          width: isLandscape ? 48 : 32,
+                          height: isLandscape ? 48 : 32,
+                          border: '1px solid rgba(0,0,0,0.08)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                          transition: 'all 0.2s ease',
+                          '&:hover': { 
+                            background: '#fff', 
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+                          },
+                        }}
+                      >
+                        <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 18, color: '#007AFF' }} />
+                      </IconButton>
+                    </Box>
+                    {/* Info overlay at bottom with dark gradient */}
+                    <Box 
+                      sx={{ 
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        p: isLandscape ? 1.5 : 1,
+                        pt: isLandscape ? 3 : 2.5,
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+                      }}
+                    >
+                      <Typography sx={{ 
+                        fontSize: isLandscape ? '0.9rem' : '0.75rem', 
+                        fontWeight: 600, 
+                        color: '#fff', 
+                        mb: 0.25, 
+                        whiteSpace: 'nowrap', 
+                        overflow: 'hidden', 
+                        textOverflow: 'ellipsis' 
+                      }}>
+                        {video.title}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Chip
+                          label={video.style}
+                          sx={{
+                            background: 'rgba(255,255,255,0.25)',
+                            backdropFilter: 'blur(10px)',
+                            color: '#fff',
+                            fontSize: isLandscape ? '0.8rem' : '0.75rem',
+                            fontWeight: 500,
+                            height: isLandscape ? 20 : 16,
+                            borderRadius: '100px',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            '& .MuiChip-label': { px: isLandscape ? 0.75 : 0.4, py: 0 },
+                          }}
+                        />
+                        <Typography sx={{ fontSize: isLandscape ? '0.8rem' : '0.75rem', color: 'rgba(255,255,255,0.8)' }}>
+                          {video.views}
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
-                </Box>
-              </Box>
-            ))}
+              );
+            })}
               {/* Right spacer for centering - match Container maxWidth="md" (900px) */}
               <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
             </Box>
