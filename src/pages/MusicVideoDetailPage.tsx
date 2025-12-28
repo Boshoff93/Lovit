@@ -364,15 +364,35 @@ const MusicVideoDetailPage: React.FC = () => {
           // Landscape layout - video on top, info below
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {/* Video Player - Full width for landscape */}
-            <Box sx={{ width: '100%' }} ref={containerRef}>
+            <Box 
+              ref={containerRef}
+              sx={{ 
+                width: '100%',
+                // Fullscreen styles
+                ...(isFullscreen && {
+                  width: '100vw',
+                  height: '100vh',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#000',
+                }),
+              }}
+            >
               <Box
                 sx={{
                   position: 'relative',
                   aspectRatio: '16/9',
-                  borderRadius: '20px',
+                  borderRadius: isFullscreen ? 0 : '20px',
                   overflow: 'hidden',
-                  boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+                  boxShadow: isFullscreen ? 'none' : '0 16px 48px rgba(0,0,0,0.12)',
                   background: '#000',
+                  // In fullscreen, fill width and let height be auto
+                  ...(isFullscreen && {
+                    width: '100vw',
+                    height: 'auto',
+                    maxHeight: '100vh',
+                  }),
                 }}
               >
                 {/* Show video if playing, otherwise show thumbnail */}
@@ -693,16 +713,34 @@ const MusicVideoDetailPage: React.FC = () => {
           {/* Video Player */}
           <Box 
             ref={containerRef}
-            sx={{ flex: { xs: 'none', md: '0 0 280px' }, maxWidth: { xs: '240px', sm: '260px', md: '280px' }, mx: { xs: 'auto', md: 0 } }}
+            sx={{ 
+              flex: isFullscreen ? 'none' : { xs: 'none', md: '0 0 280px' }, 
+              maxWidth: isFullscreen ? '100%' : { xs: '240px', sm: '260px', md: '280px' }, 
+              mx: isFullscreen ? 0 : { xs: 'auto', md: 0 },
+              // Fullscreen styles
+              ...(isFullscreen && {
+                width: '100vw',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#000',
+              }),
+            }}
           >
             <Box
               sx={{
                 position: 'relative',
                 aspectRatio: '9/16',
-                borderRadius: '20px',
+                borderRadius: isFullscreen ? 0 : '20px',
                 overflow: 'hidden',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+                boxShadow: isFullscreen ? 'none' : '0 16px 48px rgba(0,0,0,0.12)',
                 background: '#000',
+                // In fullscreen, fill height and let width be auto
+                ...(isFullscreen && {
+                  height: '100vh',
+                  width: 'auto',
+                }),
               }}
             >
               {/* Show video if playing, otherwise show thumbnail */}
