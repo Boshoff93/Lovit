@@ -916,9 +916,9 @@ const CreatePage: React.FC = () => {
       {/* Song Creation Tab */}
       {activeTab === 'song' && (
         <>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%', overflow: 'hidden' }}>
           {/* Left Column - Song Options */}
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
             {/* Prompt Input */}
             <Paper
               elevation={0}
@@ -930,6 +930,8 @@ const CreatePage: React.FC = () => {
                 backdropFilter: 'blur(20px)',
                 border: showSongPromptError && !songPrompt.trim() ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(0,0,0,0.08)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                maxWidth: '100%',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
@@ -944,9 +946,9 @@ const CreatePage: React.FC = () => {
               </Typography>
               
               {/* Characters Section */}
-              <Box sx={{ mb: 2 }}>
+              <Box sx={{ mb: 2, width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters or products to your song:
+                  Add characters, products or places to your song:
                 </Typography>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
@@ -956,7 +958,9 @@ const CreatePage: React.FC = () => {
                     gap: 1, 
                     alignItems: 'center',
                     overflowX: 'auto',
+                    overflowY: 'hidden',
                     pb: 0.5,
+                    maxWidth: '100%',
                     '&::-webkit-scrollbar': { height: 4 },
                     '&::-webkit-scrollbar-track': { background: 'transparent' },
                     '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
@@ -1632,8 +1636,8 @@ const CreatePage: React.FC = () => {
 
       {/* Video Creation Tab */}
       {activeTab === 'video' && (
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-          <Box sx={{ flex: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%', overflow: 'hidden' }}>
+          <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
             {/* Song Selection - Action Sheet Trigger */}
             <Paper
               elevation={0}
@@ -1942,6 +1946,8 @@ const CreatePage: React.FC = () => {
                 backdropFilter: 'blur(20px)',
                 border: '1px solid rgba(0,0,0,0.08)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                maxWidth: '100%',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
@@ -1956,9 +1962,9 @@ const CreatePage: React.FC = () => {
               </Typography>
               
               {/* Characters Section */}
-              <Box sx={{ mb: 2 }}>
+              <Box sx={{ mb: 2, width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters or products to your video:
+                  Add characters, products or places to your video:
                 </Typography>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
@@ -1968,7 +1974,9 @@ const CreatePage: React.FC = () => {
                     gap: 1, 
                     alignItems: 'center',
                     overflowX: 'auto',
+                    overflowY: 'hidden',
                     pb: 0.5,
+                    maxWidth: '100%',
                     '&::-webkit-scrollbar': { height: 4 },
                     '&::-webkit-scrollbar-track': { background: 'transparent' },
                     '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },

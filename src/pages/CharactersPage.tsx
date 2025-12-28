@@ -41,6 +41,7 @@ interface Character {
 // Get the type image based on character description
 const getCharacterTypeImage = (description?: string): string => {
   if (!description) return '/characters/human.jpeg';
+  if (description.includes('Place')) return '/characters/house.jpeg';
   if (description.includes('Product')) return '/characters/product.jpeg';
   if (description.includes('Non-Human')) return '/characters/dog.jpeg';
   return '/characters/human.jpeg';
@@ -120,13 +121,16 @@ const CharactersPage: React.FC = () => {
       pt: 4,
       pb: { xs: 4, sm: 8 },
       px: { xs: 2, sm: 3 },
+      overflow: 'hidden',
     }}>
-      <Container maxWidth="md" sx={{ 
+      <Container maxWidth="lg" sx={{ 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
         width: '100%',
-        p: 0
+        maxWidth: { xs: '100%', lg: '900px' },
+        p: 0,
+        overflow: 'hidden',
       }}>
         {/* Back Button */}
         <Box sx={{ width: '100%', mb: 2 }}>
@@ -257,7 +261,12 @@ const CharactersPage: React.FC = () => {
               </Button>
             </Box>
           ) : (
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ 
+              p: 3, 
+              maxHeight: 'calc(100vh - 250px)',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}>
               {characters.map((character) => (
                 <Box
                   key={character.characterId}
@@ -315,9 +324,11 @@ const CharactersPage: React.FC = () => {
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                       }}
                     >
-                      {character.description?.includes('Product') 
-                        ? 'Product' 
-                        : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
+                      {character.description?.includes('Place') 
+                        ? 'Place' 
+                        : character.description?.includes('Product') 
+                          ? 'Product' 
+                          : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
                     </Typography>
                   </Box>
                   <Tooltip title="Delete" arrow>

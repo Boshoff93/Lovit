@@ -346,6 +346,15 @@ const sampleVideos: Array<{
 }> = [
   // Real videos first
   {
+    id: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac',
+    title: "Walk Right In",
+    style: "Cinematic",
+    views: "892",
+    thumbnail: "/thumbnails/chanel.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
+  },
+  {
     id: 'da4d792d-a24b-45d8-87ba-5b41778496e8',
     title: "Polaroid Summer",
     style: "3D Cartoon",
@@ -1126,18 +1135,6 @@ const HomePage: React.FC = () => {
           createOrganizationStructuredData(),
         ]}
       />
-
-      {/* Subtle gradient background - Apple-style clean blue */}
-      <Box sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'radial-gradient(ellipse at top center, rgba(0, 122, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at bottom right, rgba(90, 200, 250, 0.05) 0%, transparent 40%)',
-        pointerEvents: 'none',
-        zIndex: 0,
-      }} />
 
       {/* Header - Glassy White */}
       <Box

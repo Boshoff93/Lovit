@@ -34,6 +34,7 @@ const characterKindOptions = [
   { id: 'Human', label: 'Human', image: '/characters/human.jpeg' },
   { id: 'Non-Human', label: 'Non-Human', image: '/characters/dog.jpeg' },
   { id: 'Product', label: 'Product', image: '/characters/product.jpeg' },
+  { id: 'Place', label: 'Place / Airbnb', image: '/characters/house.jpeg' },
 ];
 
 // Gender options
@@ -169,7 +170,9 @@ const CreateCharacterPage: React.FC = () => {
         const desc = character.description || '';
         
         // Check for character kind
-        if (desc.includes('Product')) {
+        if (desc.includes('Place')) {
+          setCharacterKind('Place');
+        } else if (desc.includes('Product')) {
           setCharacterKind('Product');
         } else if (desc.includes('Non-Human')) {
           setCharacterKind('Non-Human');
@@ -315,11 +318,12 @@ const CreateCharacterPage: React.FC = () => {
         : [];
 
       // Build description from character attributes
-      // Product type doesn't have age, gender, hair, eye color
-      const fullDescription = characterKind === 'Product'
+      // Product and Place types don't have age, gender, hair, eye color
+      const isProductOrPlace = characterKind === 'Product' || characterKind === 'Place';
+      const fullDescription = isProductOrPlace
         ? [
             characterDescription,
-            `Product`,
+            characterKind, // "Product" or "Place"
           ].filter(Boolean).join('. ')
         : [
             characterDescription,
@@ -328,41 +332,38 @@ const CreateCharacterPage: React.FC = () => {
             `Eyes: ${characterEyeColor}`,
           ].filter(Boolean).join('. ');
 
-      // Only include gender/age for non-product types
-      const isProduct = characterKind === 'Product';
-
       if (isEditMode && characterId) {
-        // Update existing character/product
+        // Update existing character/product/place
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product',
-          ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place',
+          ...(isProductOrPlace ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
 
         console.log('Character/Product update response:', response.data);
 
-        const typeLabel = isProduct ? 'Product' : 'Character';
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character');
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" updated successfully!`,
           severity: 'success'
         });
       } else {
-        // Create new character/product
+        // Create new character/product/place
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product',
-          ...(isProduct ? {} : { gender: characterGender, age: characterAge }),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place',
+          ...(isProductOrPlace ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
 
-        console.log('Character/Product creation response:', response.data);
+        console.log('Character/Product/Place creation response:', response.data);
 
-        const typeLabel = isProduct ? 'Product' : 'Character';
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character');
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" created successfully!`,
@@ -537,7 +538,7 @@ const CreateCharacterPage: React.FC = () => {
         </Paper>
 
         {/* Gender - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && (
           <Paper
             elevation={0}
             sx={{
@@ -693,7 +694,7 @@ const CreateCharacterPage: React.FC = () => {
         )}
 
         {/* Eye Color - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && (
           <Paper
             elevation={0}
             sx={{
@@ -738,7 +739,7 @@ const CreateCharacterPage: React.FC = () => {
         )}
 
         {/* Age - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && (
           <Paper
             elevation={0}
             sx={{
@@ -921,9 +922,13 @@ const CreateCharacterPage: React.FC = () => {
             onChange={(e) => setCharacterDescription(e.target.value)}
             multiline
             rows={3}
-            placeholder={characterKind === 'Product' 
-              ? "e.g., Sleek red sneakers with white soles, premium leather material" 
-              : "e.g., A cheerful girl who loves adventures, always wears a red scarf"}
+            placeholder={
+              characterKind === 'Place' 
+                ? "e.g., Modern beach house with infinity pool, ocean views, open-plan living" 
+                : characterKind === 'Product' 
+                  ? "e.g., Sleek red sneakers with white soles, premium leather material" 
+                  : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
+            }
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '12px',
@@ -957,8 +962,8 @@ const CreateCharacterPage: React.FC = () => {
             <>
               <PersonIcon sx={{ mr: 1 }} />
               {isEditMode 
-                ? `Update ${characterKind === 'Product' ? 'Product' : 'Character'}` 
-                : `Create ${characterKind === 'Product' ? 'Product' : 'Character'}`}
+                ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character')}` 
+                : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character')}`}
             </>
           )}
         </Button>

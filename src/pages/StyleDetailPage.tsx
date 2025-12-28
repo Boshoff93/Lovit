@@ -4,10 +4,8 @@ import {
   Box,
   Container,
   Button,
-  IconButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -35,24 +33,6 @@ export const artStyleData = [
   { id: 'sketch', label: 'B&W Sketch', icon: '✏️', color: '#9e9e9e', image: '/art_styles/boy_sketch.jpeg', description: 'Black and white pencil drawings', fullDescription: 'B&W Sketch style creates artistic videos with detailed black and white pencil work. Perfect for contemplative, artistic songs that embrace minimalism and raw emotion.' },
 ];
 
-// Sample music videos for each style
-const styleSampleVideos: Record<string, Array<{id: number; title: string; views: string}>> = {
-  '3d-cartoon': [
-    { id: 1, title: 'Fantasy Quest', views: '52.3K' },
-    { id: 2, title: 'Dancing Dreams', views: '38.7K' },
-    { id: 3, title: 'Rainbow Adventure', views: '41.2K' },
-  ],
-  'anime': [
-    { id: 1, title: 'Midnight Hero', views: '67.8K' },
-    { id: 2, title: 'Cherry Blossom', views: '45.3K' },
-    { id: 3, title: 'Dragon Spirit', views: '58.1K' },
-  ],
-  'default': [
-    { id: 1, title: 'Video One', views: '25.4K' },
-    { id: 2, title: 'Video Two', views: '18.9K' },
-    { id: 3, title: 'Video Three', views: '32.1K' },
-  ],
-};
 
 const StyleDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -71,11 +51,6 @@ const StyleDetailPage: React.FC = () => {
   
   const currentStyle = useMemo(() => {
     return artStyleData.find(style => style.id === styleId);
-  }, [styleId]);
-
-  // Get sample videos for this style
-  const sampleVideos = useMemo(() => {
-    return styleSampleVideos[styleId || ''] || styleSampleVideos['default'];
   }, [styleId]);
 
   // Scroll to top when component mounts
@@ -248,93 +223,6 @@ const StyleDetailPage: React.FC = () => {
           </Button>
         </Box>
 
-        {/* Sample Videos Section */}
-        <Box sx={{ mb: 6 }}>
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: '1.75rem',
-              fontWeight: 600,
-              color: '#1D1D1F',
-              mb: 3,
-              textAlign: 'center',
-            }}
-          >
-            Example {currentStyle.label} Videos
-          </Typography>
-
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {sampleVideos.map((video) => (
-              <Box
-                key={video.id}
-                sx={{
-                  width: { xs: '140px', sm: '160px' },
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  background: 'rgba(255,255,255,0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
-                  },
-                }}
-              >
-                {/* Video Thumbnail */}
-                <Box
-                  sx={{
-                    aspectRatio: '9/16',
-                    background: `linear-gradient(135deg, ${currentStyle.color}40, ${currentStyle.color}60)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                  }}
-                >
-                  <IconButton
-                    sx={{
-                      background: '#fff',
-                      width: 52,
-                      height: 52,
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': { 
-                        background: '#fff',
-                        transform: 'translateY(-3px) scale(1.08)',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                      },
-                    }}
-                  >
-                    <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#007AFF' }} />
-                  </IconButton>
-                  {/* Info overlay */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      p: 1.5,
-                      pt: 4,
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                    }}
-                  >
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {video.title}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
-                      {video.views} views
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </Box>
 
         {/* Features Section */}
         <Box sx={{ mb: 6 }}>

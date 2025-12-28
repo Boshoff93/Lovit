@@ -158,7 +158,7 @@ export const charactersApi = {
     gender?: string;
     age?: string;
     description?: string;
-    characterType?: 'Human' | 'Non-Human' | 'Product';
+    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place';
     imageBase64Array: string[];
   }) => api.post('/api/gruvi/characters', data),
   
@@ -167,7 +167,7 @@ export const charactersApi = {
     gender?: string;
     age?: string;
     description?: string;
-    characterType?: 'Human' | 'Non-Human' | 'Product';
+    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place';
     imageBase64Array?: string[];
   }) => api.put(`/api/gruvi/characters/${userId}/${characterId}`, data),
   
