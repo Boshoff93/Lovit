@@ -13,7 +13,6 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import SpeedIcon from '@mui/icons-material/Speed';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -649,40 +648,22 @@ const MusicVideoDetailPage: React.FC = () => {
                 </Box>
               </Box>
 
-              {/* Action Buttons */}
+              {/* Action Button */}
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: "center" }}>
-                <Button
-                  variant="contained"
-                  startIcon={<DownloadRoundedIcon />}
-                  sx={{
-                    background: '#007AFF',
-                    color: '#fff',
-                    fontWeight: 600,
-                    borderRadius: '12px',
-                    px: 3,
-                    py: 1.5,
-                    textTransform: 'none',
-                    '&:hover': {
-                      background: '#0056CC',
-                    },
-                  }}
-                >
-                  Download Video
-                </Button>
                 <Button
                   variant="contained"
                   endIcon={<KeyboardArrowRightIcon />}
                   onClick={() => navigate('/create?tab=video')}
                   sx={{
-                    background: '#FF9500',
+                    background: '#007AFF',
                     color: '#fff',
                     fontWeight: 600,
                     borderRadius: '12px',
-                    px: 3,
+                    px: 4,
                     py: 1.5,
                     textTransform: 'none',
                     '&:hover': {
-                      background: '#E08600',
+                      background: '#0056CC',
                     },
                   }}
                 >
@@ -1034,38 +1015,12 @@ const MusicVideoDetailPage: React.FC = () => {
               </Box>
             </Box>
 
-            {/* Action Buttons */}
+            {/* Action Button */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: "center" }}>
               <Button
                 variant="contained"
-                startIcon={<DownloadRoundedIcon sx={{ color: '#fff' }} />}
-                onClick={() => navigate('/')}
-                sx={{
-                  background: '#007AFF',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1.5,
-                  textTransform: 'none',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  boxShadow: '0 8px 24px rgba(0,122,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    background: '#0066DD',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 12px 32px rgba(0,122,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
-                  },
-                }}
-              >
-                Download Video
-              </Button>
-              <Button
-                variant="contained"
                 endIcon={<KeyboardArrowRightIcon sx={{ color: '#fff' }} />}
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/create?tab=video')}
                 sx={{
                   background: '#007AFF',
                   backdropFilter: 'blur(20px)',
@@ -1073,7 +1028,7 @@ const MusicVideoDetailPage: React.FC = () => {
                   color: '#fff',
                   fontWeight: 600,
                   borderRadius: '12px',
-                  px: 3,
+                  px: 4,
                   py: 1.5,
                   textTransform: 'none',
                   border: '1px solid rgba(255,255,255,0.2)',
