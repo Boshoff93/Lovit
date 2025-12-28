@@ -1707,7 +1707,7 @@ const HomePage: React.FC = () => {
                 mb: 1.5,
               }}
             >
-              Mind blowing song quality
+              Everyone deserves a song
             </Typography>
             <Typography
               sx={{
@@ -1719,15 +1719,9 @@ const HomePage: React.FC = () => {
             </Typography>
           </Box>
 
-          {/* Tracklist UI - Premium Glass */}
+          {/* Tracklist UI - Flat */}
           <Box
             sx={{
-              background: 'rgba(255,255,255,0.7)',
-              backdropFilter: 'blur(40px)',
-              WebkitBackdropFilter: 'blur(40px)',
-              borderRadius: '24px',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
               overflow: 'hidden',
               display: 'grid',
               gridTemplateColumns: { xs: '1fr' },

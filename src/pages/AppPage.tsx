@@ -42,6 +42,7 @@ import { songsApi } from '../services/api';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
+import ShareIcon from '@mui/icons-material/Share';
 import MovieIcon from '@mui/icons-material/Movie';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
@@ -760,6 +761,38 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     navigate(`/create?tab=video&song=${song.songId}`);
   };
 
+  const handleShareSong = async (song: Song) => {
+    const shareUrl = `${window.location.origin}/song/${song.songId}`;
+    const shareData = {
+      title: song.songTitle,
+      text: `Check out "${song.songTitle}" on Gruvi!`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setNotification({
+          open: true,
+          message: 'Link copied to clipboard!',
+          severity: 'success'
+        });
+      }
+    } catch (error) {
+      // User cancelled share or error occurred
+      if ((error as Error).name !== 'AbortError') {
+        await navigator.clipboard.writeText(shareUrl);
+        setNotification({
+          open: true,
+          message: 'Link copied to clipboard!',
+          severity: 'success'
+        });
+      }
+    }
+  };
+
   const handleDeleteSong = (song: Song) => {
     setSongToDelete(song);
     setDeleteConfirmOpen(true);
@@ -946,15 +979,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
       {/* Songs Tracklist */}
       {activeTab === 'songs' && (
-      <Paper
-        elevation={0}
+      <Box
         sx={{
-          borderRadius: '20px',
-          background: 'rgba(255,255,255,0.9)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0,0,0,0.08)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+          background: 'transparent',
           overflow: 'hidden',
         }}
       >
@@ -962,7 +989,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         <Box 
           sx={{ 
             p: { xs: 2, sm: 3 }, 
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            pb: { xs: 1, sm: 2 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -1043,8 +1070,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         <Box
           sx={{
             px: { xs: 2, sm: 3 },
-            py: 2,
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            py: 1.5,
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
             gap: 2,
@@ -1409,19 +1435,18 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     sx={{
                       width: { xs: 44, sm: 48 },
                       height: { xs: 44, sm: 48 },
-                      borderRadius: '10px',
+                      borderRadius: '6px',
                       background: isProcessing 
                         ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
                         : isFailed
                         ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)'
-                        : '#1D1D1F',
+                        : '#282828',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                       position: 'relative',
                       overflow: 'hidden',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     }}
                   >
                     {isProcessing ? (
@@ -1671,20 +1696,14 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             />
           </Box>
         )}
-      </Paper>
+      </Box>
       )}
 
       {/* Music Videos Tab */}
       {activeTab === 'videos' && (
-        <Paper
-          elevation={0}
+        <Box
           sx={{
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            background: 'transparent',
             overflow: 'hidden',
           }}
         >
@@ -2292,7 +2311,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               </Button>
             </Box>
           )}
-        </Paper>
+        </Box>
       )}
 
       {/* Subscription Success Notification */}

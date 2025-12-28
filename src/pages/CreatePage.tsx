@@ -53,6 +53,7 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import TvIcon from '@mui/icons-material/Tv';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // Scrollable list wrapper with dynamic fade gradients
 interface ScrollableListProps {
@@ -1071,48 +1072,52 @@ const CreatePage: React.FC = () => {
                 characterNames={characters.map(c => c.characterName)}
               />
               
-              {/* Creativity Slider - inline below prompt */}
-              <Box sx={{ mt: 3, px: 1 }}>
-                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1.5 }}>
-                  How closely should the song follow your prompt?
-                </Typography>
+              {/* Creativity Slider - subtle inline control */}
+              <Box sx={{ mt: 2.5, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      Prompt adherence
+                    </Typography>
+                    <Tooltip 
+                      title="Exact = lyrics closely follow your prompt. Creative = captures the feeling. Recommended: 5"
+                      arrow
+                      placement="top"
+                    >
+                      <InfoOutlinedIcon sx={{ fontSize: 14, color: '#86868B', cursor: 'help' }} />
+                    </Tooltip>
+                  </Box>
+                  <Typography variant="caption" sx={{ color: '#1D1D1F', fontWeight: 500 }}>
+                    {creativity <= 3 ? 'Exact' : creativity <= 6 ? 'Balanced' : 'Creative'} ({creativity}/10)
+                  </Typography>
+                </Box>
                 <Slider
                   value={creativity}
                   onChange={(_, value) => setCreativity(value as number)}
                   min={0}
                   max={10}
                   step={1}
-                  marks={[
-                    { value: 0, label: 'Literal' },
-                    { value: 5, label: 'Balanced' },
-                    { value: 10, label: 'Creative' },
-                  ]}
                   sx={{
                     color: '#007AFF',
+                    height: 4,
+                    padding: '8px 0',
                     '& .MuiSlider-thumb': {
-                      width: 18,
-                      height: 18,
-                      backgroundColor: '#fff',
-                      border: '2px solid #007AFF',
+                      width: 14,
+                      height: 14,
+                      backgroundColor: '#007AFF',
+                      border: 'none',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                       '&:hover, &.Mui-focusVisible': {
-                        boxShadow: '0 0 0 6px rgba(0,122,255,0.16)',
+                        boxShadow: '0 0 0 4px rgba(0,122,255,0.16)',
                       },
                     },
                     '& .MuiSlider-track': {
-                      height: 4,
                       borderRadius: 2,
                     },
                     '& .MuiSlider-rail': {
-                      height: 4,
                       borderRadius: 2,
-                      opacity: 0.3,
-                    },
-                    '& .MuiSlider-mark': {
-                      display: 'none',
-                    },
-                    '& .MuiSlider-markLabel': {
-                      fontSize: '0.7rem',
-                      color: '#86868B',
+                      opacity: 0.2,
+                      backgroundColor: '#86868B',
                     },
                   }}
                 />
