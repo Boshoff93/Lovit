@@ -207,24 +207,24 @@ const languages = [
   { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
 ];
 
-// Art styles from HomePage
+// Art styles - IDs must match backend STYLE_DESCRIPTIONS keys in gruvi-prompts.ts
 const artStyles = [
   { id: '3d-cartoon', label: '3D Cartoon', image: '/art_styles/boy_cartoon.jpeg' },
   { id: 'claymation', label: 'Claymation', image: '/art_styles/boy_claymation.jpeg' },
-  { id: 'storybook', label: 'Storybook', image: '/art_styles/boy_storybook.jpeg' },
-  { id: 'realistic', label: 'Realistic', image: '/art_styles/boy_real.jpeg' },
+  { id: 'childrens-storybook', label: 'Storybook', image: '/art_styles/boy_storybook.jpeg' },
+  { id: 'photo-realism', label: 'Realistic', image: '/art_styles/boy_real.jpeg' },
   { id: 'comic-book', label: 'Comic Book', image: '/art_styles/boy_comic.jpeg' },
   { id: 'classic-blocks', label: 'Classic Blocks', image: '/art_styles/boy_lego.jpeg' },
   { id: 'anime', label: 'Anime', image: '/art_styles/boy_anime.jpeg' },
   { id: 'spray-paint', label: 'Spray Paint', image: '/art_styles/boy_spray_paint.jpeg' },
-  { id: 'crayon', label: 'Crayon', image: '/art_styles/boy_crayon.jpeg' },
-  { id: 'cozy-woolknit', label: 'Cozy Woolknit', image: '/art_styles/boy_woolknit.jpeg' },
+  { id: 'playground-crayon', label: 'Crayon', image: '/art_styles/boy_crayon.jpeg' },
+  { id: 'wool-knit', label: 'Cozy Woolknit', image: '/art_styles/boy_woolknit.jpeg' },
   { id: 'watercolor', label: 'Watercolor', image: '/art_styles/boy_watercolor.jpeg' },
   { id: 'pixel', label: 'Pixel Art', image: '/art_styles/boy_pixel.jpeg' },
   { id: 'sugarpop', label: 'Sugarpop', image: '/art_styles/boy_sugerpop.jpeg' },
   { id: 'origami', label: 'Origami', image: '/art_styles/boy_origami.jpeg' },
-  { id: 'bw-sketch', label: 'B&W Sketch', image: '/art_styles/boy_sketch.jpeg' },
-  { id: 'minecraft', label: 'Minecraft', image: '/art_styles/boy_mincraft.jpeg' },
+  { id: 'sketch', label: 'B&W Sketch', image: '/art_styles/boy_sketch.jpeg' },
+  { id: 'classic-blocks', label: 'Minecraft', image: '/art_styles/boy_mincraft.jpeg' },
 ];
 
 // Video types and quality options
@@ -583,17 +583,23 @@ const CreatePage: React.FC = () => {
   };
 
   // Extract unique character IDs from text with @mentions
+  // Matches @Name or @"Multi Word Name" patterns
   const getTaggedCharacterIds = (text: string): string[] => {
-    const mentions = text.match(/@[\w]+/g) || [];
-    const uniqueNames = Array.from(new Set(mentions.map(m => m.slice(1).toLowerCase())));
-    
     const ids: string[] = [];
-    for (const name of uniqueNames) {
-      const char = characters.find(c => c.characterName.toLowerCase() === name);
-      if (char) {
-        ids.push(char.characterId);
+    
+    // For each character, check if their name appears after an @ in the text
+    // This handles multi-word names like "Dior Sauvage"
+    for (const char of characters) {
+      const charName = char.characterName;
+      // Check for @CharacterName (case insensitive) followed by word boundary or end
+      const regex = new RegExp(`@${charName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$|[^\\w])`, 'i');
+      if (regex.test(text)) {
+        if (!ids.includes(char.characterId)) {
+          ids.push(char.characterId);
+        }
       }
     }
+    
     return ids;
   };
 
