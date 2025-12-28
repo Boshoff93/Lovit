@@ -96,6 +96,12 @@ export const songsApi = {
     api.delete(`/api/gruvi/songs/${userId}/${songId}`),
   
   /**
+   * Fetch a single song by ID (for lyrics, details, etc.)
+   */
+  getSong: (userId: string, songId: string) => 
+    api.get(`/api/gruvi/songs/${userId}/${songId}`),
+  
+  /**
    * Fetch multiple songs by their IDs (for playlists, featured songs, etc.)
    * @param userId - The user who owns these songs
    * @param songIds - Array of song IDs to fetch

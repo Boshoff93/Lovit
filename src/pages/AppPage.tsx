@@ -1690,7 +1690,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   day: 'numeric',
                 });
                 
-                return Object.entries(groupedVideos).map(([dateKey, dateVideos]) => {
+                // Sort date groups by date descending (most recent first)
+                const sortedDateEntries = Object.entries(groupedVideos).sort((a, b) => {
+                  return new Date(b[0]).getTime() - new Date(a[0]).getTime();
+                });
+                
+                return sortedDateEntries.map(([dateKey, dateVideos]) => {
                   // Display "Today", "Yesterday", or the date
                   const displayDate = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
                   

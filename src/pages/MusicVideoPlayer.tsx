@@ -108,17 +108,28 @@ const MusicVideoPlayer: React.FC = () => {
         if (video) {
           setVideoData(video);
           
-          // Fetch associated song for lyrics
+          // Fetch the specific song for lyrics
           if (video.songId) {
             try {
-              const songsResponse = await songsApi.getUserSongs(user.userId);
-              const songs = songsResponse.data.songs || [];
-              const song = songs.find((s: SongData) => s.songId === video.songId);
-              if (song) {
-                setSongData(song);
+              // Try the efficient single-song endpoint first
+              const songResponse = await songsApi.getSong(user.userId, video.songId);
+              if (songResponse.data.song) {
+                setSongData(songResponse.data.song);
               }
-            } catch (songErr) {
-              console.error('Error fetching song:', songErr);
+            } catch (songErr: any) {
+              // Fallback: If single-song endpoint not available (404), fetch from songs list
+              if (songErr.response?.status === 404) {
+                try {
+                  const songsResponse = await songsApi.getUserSongs(user.userId, { limit: 100 });
+                  const songs = songsResponse.data.songs || [];
+                  const song = songs.find((s: SongData) => s.songId === video.songId);
+                  if (song) {
+                    setSongData(song);
+                  }
+                } catch {
+                  // Song fetch failed, lyrics won't be shown
+                }
+              }
             }
           }
         } else {
@@ -323,16 +334,23 @@ const MusicVideoPlayer: React.FC = () => {
         </Container>
       </Box>
 
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
+      <Container maxWidth={videoData.aspectRatio === 'landscape' ? 'md' : 'lg'} sx={{ mt: 3 }}>
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
+            // Landscape videos: always column layout (video on top, info below)
+            // Portrait videos: side-by-side on desktop, column on mobile
+            flexDirection: videoData.aspectRatio === 'landscape' 
+              ? 'column' 
+              : { xs: 'column', md: 'row' },
             gap: 3,
           }}
         >
-          {/* Left Column - Video Player */}
-          <Box sx={{ flex: 1 }}>
+          {/* Video Player - Full width for landscape */}
+          <Box sx={{ 
+            flex: videoData.aspectRatio === 'landscape' ? 'none' : 1,
+            width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
+          }}>
             <Paper
               ref={containerRef}
               elevation={0}
@@ -477,13 +495,17 @@ const MusicVideoPlayer: React.FC = () => {
             </Paper>
           </Box>
 
-          {/* Right Column - Details & Lyrics */}
+          {/* Details & Lyrics - Side by side for landscape, stacked for portrait */}
           <Box sx={{ 
-            flex: 1, 
+            flex: videoData.aspectRatio === 'landscape' ? 'none' : 1, 
+            width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
             minWidth: 0, 
             display: 'flex', 
-            flexDirection: 'column',
-            maxHeight: { md: '80vh' }, // Match video height on desktop
+            flexDirection: videoData.aspectRatio === 'landscape' 
+              ? { xs: 'column', md: 'row' }  // Landscape: info and lyrics side by side on desktop
+              : 'column',                     // Portrait: stacked
+            gap: videoData.aspectRatio === 'landscape' ? 3 : 0,
+            maxHeight: videoData.aspectRatio === 'landscape' ? 'none' : { md: '80vh' },
           }}>
             {/* Video Info Card */}
             <Paper
@@ -491,9 +513,10 @@ const MusicVideoPlayer: React.FC = () => {
               sx={{
                 borderRadius: 3,
                 p: 3,
-                mb: 2,
+                mb: videoData.aspectRatio === 'landscape' ? 0 : 2,
                 background: '#fff',
                 flexShrink: 0, // Don't shrink
+                flex: videoData.aspectRatio === 'landscape' ? 1 : 'none', // Equal width in landscape row
               }}
             >
               <Typography variant="h5" sx={{ fontWeight: 700, color: '#1d1d1f', mb: 2 }}>
@@ -568,26 +591,27 @@ const MusicVideoPlayer: React.FC = () => {
             </Paper>
 
             {/* Lyrics Card - Takes remaining height */}
-            {lyrics && (
-              <Paper
-                elevation={0}
-                sx={{
-                  borderRadius: 3,
-                  p: 3,
-                  background: '#fff',
-                  flex: 1, // Take remaining space
-                  minHeight: { xs: 200, md: 0 }, // Min height on mobile
-                  overflow: 'auto',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexShrink: 0 }}>
-                  <Lyrics sx={{ fontSize: 22, color: '#007AFF' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
-                    Lyrics
-                  </Typography>
-                </Box>
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                p: 3,
+                background: '#fff',
+                flex: 1, // Take remaining space (or equal width in landscape row)
+                minHeight: { xs: 200, md: 0 }, // Min height on mobile
+                maxHeight: videoData.aspectRatio === 'landscape' ? 400 : 'none', // Limit height for landscape
+                overflow: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexShrink: 0 }}>
+                <Lyrics sx={{ fontSize: 22, color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+                  Lyrics
+                </Typography>
+              </Box>
+              {lyrics ? (
                 <Typography
                   sx={{
                     color: '#1d1d1f',
@@ -599,8 +623,18 @@ const MusicVideoPlayer: React.FC = () => {
                 >
                   {cleanLyrics(lyrics)}
                 </Typography>
-              </Paper>
-            )}
+              ) : (
+                <Typography
+                  sx={{
+                    color: '#86868B',
+                    fontStyle: 'italic',
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  {songData ? 'No lyrics available for this song.' : 'Loading lyrics...'}
+                </Typography>
+              )}
+            </Paper>
           </Box>
         </Box>
       </Container>
