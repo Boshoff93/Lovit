@@ -433,8 +433,8 @@ const MusicVideoDetailPage: React.FC = () => {
                         </Button>
                       </Box>
                     )}
-                    {/* Play/Pause overlay when paused */}
-                    {!isPlaying && !isBuffering && (
+                    {/* Play/Pause overlay when paused (not during loading) */}
+                    {!isPlaying && !isBuffering && !videoLoading && (
                       <Box
                         sx={{
                           position: 'absolute',
@@ -764,8 +764,8 @@ const MusicVideoDetailPage: React.FC = () => {
                       </Button>
                     </Box>
                   )}
-                  {/* Play/Pause overlay when paused */}
-                  {!isPlaying && !isBuffering && (
+                  {/* Play/Pause overlay when paused (not during loading) */}
+                  {!isPlaying && !isBuffering && !videoLoading && (
                     <Box
                       sx={{
                         position: 'absolute',
