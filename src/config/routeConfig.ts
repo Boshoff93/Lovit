@@ -1373,8 +1373,377 @@ function generateHobbySongRoute(hobby: string): RouteConfig {
 }
 
 // =============================================================================
+// ARTIST "MUSIC LIKE" DATA - 50 Popular Artists
+// =============================================================================
+const artistData: { [key: string]: { name: string; genre: string; prompts: string[]; subtext: string } } = {
+  // Pop (10)
+  'taylor-swift': { name: 'Taylor Swift', genre: 'Pop', prompts: ['Emotional storytelling pop ballad', 'Catchy pop anthem with personal lyrics', 'Dreamy synth-pop love song', 'Country-pop crossover track'], subtext: 'Create music inspired by Taylor Swift\'s signature storytelling and catchy melodies.' },
+  'ed-sheeran': { name: 'Ed Sheeran', genre: 'Pop', prompts: ['Acoustic pop love song', 'Loop-based beatbox pop', 'Irish-folk influenced pop', 'Romantic wedding song'], subtext: 'Generate heartfelt acoustic pop inspired by Ed Sheeran\'s intimate songwriting style.' },
+  'dua-lipa': { name: 'Dua Lipa', genre: 'Pop', prompts: ['Retro disco-pop dance track', 'Empowering pop anthem', 'Nu-disco club banger', '80s-inspired synth pop'], subtext: 'Create disco-infused pop bangers inspired by Dua Lipa\'s future nostalgia sound.' },
+  'the-weeknd': { name: 'The Weeknd', genre: 'Pop/R&B', prompts: ['Dark synth-wave R&B', '80s-inspired pop track', 'Moody atmospheric ballad', 'Retro-futuristic pop'], subtext: 'Generate atmospheric synth-wave pop inspired by The Weeknd\'s cinematic sound.' },
+  'ariana-grande': { name: 'Ariana Grande', genre: 'Pop', prompts: ['Powerful vocal pop anthem', 'R&B-infused pop track', 'Whistle-tone pop ballad', 'Trap-pop hybrid song'], subtext: 'Create soaring vocal pop tracks inspired by Ariana Grande\'s powerhouse style.' },
+  'bruno-mars': { name: 'Bruno Mars', genre: 'Pop/Funk', prompts: ['Retro funk-pop groove', 'Romantic R&B ballad', '70s soul-inspired pop', 'Uptown funk dance track'], subtext: 'Generate feel-good retro funk-pop inspired by Bruno Mars\' timeless grooves.' },
+  'billie-eilish': { name: 'Billie Eilish', genre: 'Pop', prompts: ['Whispery dark pop', 'Minimalist bass-heavy track', 'Haunting electronic ballad', 'ASMR-influenced pop'], subtext: 'Create atmospheric, bass-heavy dark pop inspired by Billie Eilish\'s unique sound.' },
+  'harry-styles': { name: 'Harry Styles', genre: 'Pop/Rock', prompts: ['70s rock-influenced pop', 'Soft rock ballad', 'Psychedelic pop track', 'British invasion inspired'], subtext: 'Generate vintage rock-influenced pop inspired by Harry Styles\' classic sound.' },
+  'olivia-rodrigo': { name: 'Olivia Rodrigo', genre: 'Pop/Rock', prompts: ['Angsty pop-rock anthem', 'Emotional breakup ballad', 'Gen-Z pop punk track', 'Confessional singer-songwriter'], subtext: 'Create emotionally raw pop-rock inspired by Olivia Rodrigo\'s vulnerable songwriting.' },
+  'lady-gaga': { name: 'Lady Gaga', genre: 'Pop', prompts: ['Theatrical dance-pop anthem', 'Powerful piano ballad', 'Electronic art pop', 'Avant-garde pop track'], subtext: 'Generate theatrical, boundary-pushing pop inspired by Lady Gaga\'s iconic artistry.' },
+  // Hip-Hop/Rap (10)
+  'drake': { name: 'Drake', genre: 'Hip-Hop', prompts: ['Melodic rap with singing', 'Toronto vibes hip-hop', 'Emotional rap ballad', 'Club-ready rap anthem'], subtext: 'Create melodic hip-hop inspired by Drake\'s signature emotional rap style.' },
+  'kendrick-lamar': { name: 'Kendrick Lamar', genre: 'Hip-Hop', prompts: ['Conscious lyrical rap', 'Jazz-influenced hip-hop', 'Storytelling rap track', 'West coast experimental rap'], subtext: 'Generate thought-provoking, lyrical hip-hop inspired by Kendrick Lamar\'s artistry.' },
+  'travis-scott': { name: 'Travis Scott', genre: 'Hip-Hop', prompts: ['Psychedelic trap banger', 'Auto-tuned atmospheric rap', 'Dark Houston trap', 'Festival-ready hip-hop anthem'], subtext: 'Create psychedelic trap bangers inspired by Travis Scott\'s atmospheric production.' },
+  'kanye-west': { name: 'Kanye West', genre: 'Hip-Hop', prompts: ['Soulful sample-based hip-hop', 'Experimental rap production', 'Gospel-influenced rap', 'Maximalist hip-hop anthem'], subtext: 'Generate innovative, genre-bending hip-hop inspired by Kanye West\'s production.' },
+  'j-cole': { name: 'J. Cole', genre: 'Hip-Hop', prompts: ['Introspective boom-bap rap', 'Soulful conscious hip-hop', 'Storytelling rap track', 'Smooth lyrical flow'], subtext: 'Create introspective, soulful hip-hop inspired by J. Cole\'s thoughtful lyricism.' },
+  'post-malone': { name: 'Post Malone', genre: 'Hip-Hop/Pop', prompts: ['Melodic pop-rap hybrid', 'Sad boy rock-rap', 'Guitar-driven hip-hop', 'Catchy hook-heavy rap'], subtext: 'Generate genre-blending melodic rap inspired by Post Malone\'s versatile style.' },
+  'eminem': { name: 'Eminem', genre: 'Hip-Hop', prompts: ['Fast-paced lyrical rap', 'Emotional storytelling rap', 'Technical rap battle track', 'Rock-influenced hip-hop'], subtext: 'Create technically impressive, lyrical rap inspired by Eminem\'s legendary flow.' },
+  'lil-nas-x': { name: 'Lil Nas X', genre: 'Hip-Hop/Pop', prompts: ['Genre-bending pop-rap', 'Country-trap fusion', 'Catchy viral hit', 'Bold statement anthem'], subtext: 'Generate boundary-breaking pop-rap inspired by Lil Nas X\'s genre-defying hits.' },
+  'tyler-the-creator': { name: 'Tyler, The Creator', genre: 'Hip-Hop', prompts: ['Neo-soul hip-hop fusion', 'Jazzy experimental rap', 'Quirky alternative hip-hop', 'Psychedelic soul-rap'], subtext: 'Create eccentric, neo-soul hip-hop inspired by Tyler, The Creator\'s artistic vision.' },
+  '21-savage': { name: '21 Savage', genre: 'Hip-Hop', prompts: ['Dark Atlanta trap', 'Menacing slow-flow rap', 'Street storytelling hip-hop', 'Hard-hitting trap beat'], subtext: 'Generate dark, hard-hitting Atlanta trap inspired by 21 Savage\'s cold delivery.' },
+  // Rock/Alternative (8)
+  'imagine-dragons': { name: 'Imagine Dragons', genre: 'Rock', prompts: ['Epic anthemic rock', 'Stadium rock with electronic elements', 'Powerful motivational rock', 'Cinematic pop-rock'], subtext: 'Create epic, anthemic rock inspired by Imagine Dragons\' stadium-filling sound.' },
+  'coldplay': { name: 'Coldplay', genre: 'Rock/Pop', prompts: ['Atmospheric piano rock ballad', 'Uplifting anthemic rock', 'Ethereal electronic rock', 'Emotional epic rock'], subtext: 'Generate emotional, atmospheric rock inspired by Coldplay\'s sweeping melodies.' },
+  'arctic-monkeys': { name: 'Arctic Monkeys', genre: 'Rock', prompts: ['Indie rock with witty lyrics', 'Retro lounge rock', 'British garage rock', 'Desert rock groove'], subtext: 'Create sharp, witty indie rock inspired by Arctic Monkeys\' distinctive style.' },
+  'linkin-park': { name: 'Linkin Park', genre: 'Rock', prompts: ['Nu-metal with electronic elements', 'Emotional rock with rap verses', 'Heavy alternative rock', 'Anthemic rock ballad'], subtext: 'Generate powerful nu-metal and alt-rock inspired by Linkin Park\'s iconic sound.' },
+  'foo-fighters': { name: 'Foo Fighters', genre: 'Rock', prompts: ['High-energy rock anthem', 'Power rock with big drums', 'Melodic hard rock', 'Arena rock track'], subtext: 'Create driving, energetic rock inspired by Foo Fighters\' powerful performances.' },
+  'green-day': { name: 'Green Day', genre: 'Rock', prompts: ['Pop-punk anthem', 'Political punk rock', 'Power chord rock song', 'Melodic punk track'], subtext: 'Generate catchy pop-punk inspired by Green Day\'s rebellious energy.' },
+  'twenty-one-pilots': { name: 'Twenty One Pilots', genre: 'Alternative', prompts: ['Genre-blending alt-pop', 'Ukulele and rap hybrid', 'Existential alternative track', 'Electronic-rock fusion'], subtext: 'Create genre-defying alternative music inspired by Twenty One Pilots\' unique blend.' },
+  'the-1975': { name: 'The 1975', genre: 'Alternative/Pop', prompts: ['80s-influenced indie pop', 'Synth-driven alternative', 'Atmospheric pop-rock', 'Art-pop with spoken word'], subtext: 'Generate stylish, 80s-influenced indie pop inspired by The 1975\'s aesthetic.' },
+  // Electronic/EDM (8)
+  'calvin-harris': { name: 'Calvin Harris', genre: 'EDM', prompts: ['Festival house anthem', 'Summer dance pop hit', 'Funk-influenced EDM', 'Big room house drop'], subtext: 'Create festival-ready house anthems inspired by Calvin Harris\' chart-topping productions.' },
+  'marshmello': { name: 'Marshmello', genre: 'EDM', prompts: ['Happy future bass track', 'Melodic dubstep anthem', 'Pop-EDM crossover', 'Feel-good electronic dance'], subtext: 'Generate uplifting future bass inspired by Marshmello\'s accessible EDM sound.' },
+  'daft-punk': { name: 'Daft Punk', genre: 'Electronic', prompts: ['French house disco', 'Vocoder-heavy electronic', 'Robotic funk groove', 'Retro-futuristic dance'], subtext: 'Create legendary French house and disco-funk inspired by Daft Punk\'s iconic sound.' },
+  'avicii': { name: 'Avicii', genre: 'EDM', prompts: ['Melodic progressive house', 'Country-EDM fusion', 'Emotional festival anthem', 'Uplifting dance track'], subtext: 'Generate emotional, melodic EDM inspired by Avicii\'s heartfelt productions.' },
+  'deadmau5': { name: 'Deadmau5', genre: 'Electronic', prompts: ['Progressive house journey', 'Dark techno-influenced EDM', 'Atmospheric electronic', 'Build-and-drop house'], subtext: 'Create progressive house masterpieces inspired by Deadmau5\'s technical productions.' },
+  'kygo': { name: 'Kygo', genre: 'Electronic', prompts: ['Tropical house vibes', 'Summer sunset electronic', 'Laid-back dance track', 'Acoustic-electronic fusion'], subtext: 'Generate tropical house and chill electronic inspired by Kygo\'s signature sound.' },
+  'zedd': { name: 'Zedd', genre: 'EDM', prompts: ['Electro house anthem', 'Classical-influenced EDM', 'Pop-EDM crossover hit', 'Euphoric dance buildup'], subtext: 'Create polished electro house inspired by Zedd\'s precise, musical productions.' },
+  'skrillex': { name: 'Skrillex', genre: 'Electronic', prompts: ['Aggressive dubstep drop', 'Bass music banger', 'Glitchy electronic track', 'Heavy bass hybrid'], subtext: 'Generate intense dubstep and bass music inspired by Skrillex\'s groundbreaking sound.' },
+  // R&B/Soul (6)
+  'sza': { name: 'SZA', genre: 'R&B', prompts: ['Neo-soul with hip-hop beats', 'Vulnerable R&B ballad', 'Alternative R&B track', 'Dreamy slow jam'], subtext: 'Create vulnerable, dreamy R&B inspired by SZA\'s emotionally honest songwriting.' },
+  'frank-ocean': { name: 'Frank Ocean', genre: 'R&B', prompts: ['Experimental R&B', 'Minimalist soul track', 'Introspective slow jam', 'Art-R&B with layers'], subtext: 'Generate experimental, introspective R&B inspired by Frank Ocean\'s artistic vision.' },
+  'beyonce': { name: 'Beyoncé', genre: 'R&B/Pop', prompts: ['Powerful R&B anthem', 'Dance-pop with strong vocals', 'Empowerment ballad', 'Genre-bending R&B'], subtext: 'Create powerful, genre-spanning R&B inspired by Beyoncé\'s legendary artistry.' },
+  'usher': { name: 'Usher', genre: 'R&B', prompts: ['Smooth R&B groove', 'Dance-floor R&B hit', 'Classic slow jam', 'Upbeat R&B pop track'], subtext: 'Generate smooth, danceable R&B inspired by Usher\'s classic sound.' },
+  'alicia-keys': { name: 'Alicia Keys', genre: 'R&B/Soul', prompts: ['Soulful piano ballad', 'Neo-soul R&B track', 'Gospel-influenced soul', 'Empowering piano-driven song'], subtext: 'Create soulful, piano-driven R&B inspired by Alicia Keys\' timeless artistry.' },
+  'daniel-caesar': { name: 'Daniel Caesar', genre: 'R&B', prompts: ['Gospel-soul R&B', 'Intimate acoustic R&B', 'Heavenly vocal harmonies', 'Modern soul ballad'], subtext: 'Generate gospel-influenced, intimate R&B inspired by Daniel Caesar\'s angelic sound.' },
+  // Latin (4)
+  'bad-bunny': { name: 'Bad Bunny', genre: 'Latin', prompts: ['Reggaeton perreo track', 'Latin trap banger', 'Experimental Latin pop', 'Caribbean dembow beat'], subtext: 'Create genre-pushing Latin music inspired by Bad Bunny\'s innovative style.' },
+  'j-balvin': { name: 'J Balvin', genre: 'Latin', prompts: ['Colorful reggaeton hit', 'Latin urban dance track', 'Catchy Latino pop', 'Tropical house reggaeton'], subtext: 'Generate vibrant reggaeton and Latin pop inspired by J Balvin\'s colorful productions.' },
+  'shakira': { name: 'Shakira', genre: 'Latin/Pop', prompts: ['Latin pop dance hit', 'Middle Eastern-Latin fusion', 'World music pop blend', 'Energetic dance track'], subtext: 'Create dynamic Latin pop inspired by Shakira\'s global, genre-blending sound.' },
+  'daddy-yankee': { name: 'Daddy Yankee', genre: 'Latin', prompts: ['Classic reggaeton banger', 'Dembow party anthem', 'Latin urban hit', 'Perreo intenso track'], subtext: 'Generate classic reggaeton bangers inspired by Daddy Yankee\'s legendary beats.' },
+  // K-Pop (4)
+  'bts': { name: 'BTS', genre: 'K-Pop', prompts: ['K-pop dance anthem', 'Emotional K-pop ballad', 'Hip-hop influenced K-pop', 'Uplifting fan song'], subtext: 'Create dynamic K-pop inspired by BTS\'s genre-spanning, globally acclaimed sound.' },
+  'blackpink': { name: 'BLACKPINK', genre: 'K-Pop', prompts: ['Powerful girl crush K-pop', 'EDM-infused K-pop anthem', 'Fierce dance track', 'Trendy K-pop banger'], subtext: 'Generate fierce, trendsetting K-pop inspired by BLACKPINK\'s bold style.' },
+  'stray-kids': { name: 'Stray Kids', genre: 'K-Pop', prompts: ['Experimental K-pop', 'Self-produced hip-hop K-pop', 'Intense EDM K-pop', 'Genre-bending K-pop track'], subtext: 'Create experimental, self-produced K-pop inspired by Stray Kids\' unique sound.' },
+  'newjeans': { name: 'NewJeans', genre: 'K-Pop', prompts: ['Y2K-inspired K-pop', 'Minimal R&B K-pop', 'Retro 90s influenced', 'Fresh Gen-Z K-pop'], subtext: 'Generate fresh, Y2K-influenced K-pop inspired by NewJeans\' nostalgic yet modern sound.' },
+};
+
+// =============================================================================
+// TV SHOWS/MOVIES/STREAMING MUSIC DATA
+// =============================================================================
+const showMusicData: { [key: string]: { name: string; category: string; prompts: string[]; subtext: string } } = {
+  // Netflix
+  'stranger-things': { name: 'Stranger Things', category: 'Netflix', prompts: ['80s synth horror soundtrack', 'Retro electronic suspense', 'Nostalgic synth-wave score', 'Eerie synthesizer theme'], subtext: 'Create retro 80s synth music inspired by Stranger Things\' iconic soundtrack.' },
+  'squid-game': { name: 'Squid Game', category: 'Netflix', prompts: ['Tense orchestral suspense', 'Korean thriller soundtrack', 'Childlike melody with dark twist', 'Dramatic game show music'], subtext: 'Generate tense, dramatic music inspired by Squid Game\'s haunting score.' },
+  'wednesday': { name: 'Wednesday', category: 'Netflix', prompts: ['Gothic orchestral theme', 'Dark whimsical soundtrack', 'Cello-driven mysterious music', 'Quirky dark comedy score'], subtext: 'Create gothic, whimsical music inspired by Wednesday\'s dark aesthetic.' },
+  'bridgerton': { name: 'Bridgerton', category: 'Netflix', prompts: ['Classical pop cover arrangement', 'Regency era orchestral', 'String quartet pop adaptation', 'Romantic period drama score'], subtext: 'Generate elegant classical-pop crossovers inspired by Bridgerton\'s unique soundtrack.' },
+  'the-witcher': { name: 'The Witcher', category: 'Netflix', prompts: ['Medieval fantasy bard song', 'Epic orchestral battle music', 'Slavic folk-inspired theme', 'Tavern music with lute'], subtext: 'Create medieval fantasy music inspired by The Witcher\'s atmospheric score.' },
+  'money-heist': { name: 'Money Heist', category: 'Netflix', prompts: ['Spanish heist tension music', 'Bella Ciao style anthem', 'Dramatic suspense soundtrack', 'Flamenco-influenced score'], subtext: 'Generate dramatic heist music inspired by Money Heist\'s intense soundtrack.' },
+  // HBO/Other
+  'game-of-thrones': { name: 'Game of Thrones', category: 'HBO', prompts: ['Epic fantasy orchestra', 'Medieval war drums theme', 'Haunting cello melody', 'Throne room fanfare'], subtext: 'Create epic fantasy orchestral music inspired by Game of Thrones\' legendary score.' },
+  'house-of-the-dragon': { name: 'House of the Dragon', category: 'HBO', prompts: ['Dragon flight orchestral', 'Targaryen house theme', 'Medieval royal fanfare', 'Epic fantasy battle music'], subtext: 'Generate epic dragon-themed orchestral inspired by House of the Dragon.' },
+  'euphoria': { name: 'Euphoria', category: 'HBO', prompts: ['Dreamy electronic indie', 'Emotional synth-pop', 'Dark ambient electronic', 'Gen-Z mood soundtrack'], subtext: 'Create atmospheric electronic music inspired by Euphoria\'s moody soundtrack.' },
+  'the-last-of-us': { name: 'The Last of Us', category: 'HBO', prompts: ['Acoustic guitar post-apocalyptic', 'Emotional survival theme', 'Haunting minimal score', 'Tension-building ambient'], subtext: 'Generate emotional, acoustic-driven music inspired by The Last of Us.' },
+  'succession': { name: 'Succession', category: 'HBO', prompts: ['Hip-hop orchestral blend', 'Power and wealth theme', 'Piano-driven dramatic score', 'Modern classical drama'], subtext: 'Create dramatic, hip-hop influenced orchestral inspired by Succession\'s unique score.' },
+  // Movies/Franchises
+  'marvel': { name: 'Marvel/MCU', category: 'Movies', prompts: ['Superhero epic orchestra', 'Heroic brass fanfare', 'Action movie soundtrack', 'Avengers-style theme'], subtext: 'Generate epic superhero orchestral music inspired by the Marvel Cinematic Universe.' },
+  'star-wars': { name: 'Star Wars', category: 'Movies', prompts: ['Space opera orchestra', 'Epic brass fanfare theme', 'Force mystical melody', 'Imperial march style'], subtext: 'Create legendary space opera music inspired by Star Wars\' iconic score.' },
+  'harry-potter': { name: 'Harry Potter', category: 'Movies', prompts: ['Magical whimsical orchestra', 'Wizard school theme', 'Fantasy adventure score', 'Enchanting celesta melody'], subtext: 'Generate magical, whimsical orchestral inspired by Harry Potter\'s enchanting soundtrack.' },
+  'lord-of-the-rings': { name: 'Lord of the Rings', category: 'Movies', prompts: ['Epic fantasy adventure', 'Elvish ethereal choir', 'Hobbit folk theme', 'Fellowship journey music'], subtext: 'Create epic fantasy music inspired by Lord of the Rings\' legendary score.' },
+  'christopher-nolan': { name: 'Christopher Nolan Films', category: 'Movies', prompts: ['Time-bending orchestral', 'BWAAAAM inception horn', 'Tense ticking soundtrack', 'Mind-bending score'], subtext: 'Generate mind-bending, time-warped orchestral inspired by Christopher Nolan films.' },
+  'james-bond': { name: 'James Bond', category: 'Movies', prompts: ['Spy thriller orchestra', 'Suave jazz-orchestral blend', 'Action spy theme', 'Dramatic opening credits'], subtext: 'Create sophisticated spy thriller music inspired by James Bond\'s iconic sound.' },
+  // Gaming
+  'zelda': { name: 'Legend of Zelda', category: 'Gaming', prompts: ['Adventure game orchestra', 'Heroic fantasy theme', 'Field exploration music', 'Temple puzzle soundtrack'], subtext: 'Generate adventure game orchestral inspired by The Legend of Zelda\'s timeless music.' },
+  'final-fantasy': { name: 'Final Fantasy', category: 'Gaming', prompts: ['JRPG epic orchestra', 'Emotional piano theme', 'Battle victory fanfare', 'Crystal theme melody'], subtext: 'Create emotional JRPG orchestral inspired by Final Fantasy\'s legendary soundtracks.' },
+  'cyberpunk-2077': { name: 'Cyberpunk 2077', category: 'Gaming', prompts: ['Futuristic synth-rock', 'Dystopian electronic', 'Neon city soundtrack', 'Cyberpunk industrial'], subtext: 'Generate futuristic synth-rock inspired by Cyberpunk 2077\'s immersive soundtrack.' },
+  'hollow-knight': { name: 'Hollow Knight', category: 'Gaming', prompts: ['Atmospheric piano ambient', 'Melancholic exploration music', 'Dark cavern soundtrack', 'Indie game orchestral'], subtext: 'Create atmospheric, melancholic music inspired by Hollow Knight\'s beautiful score.' },
+  'minecraft': { name: 'Minecraft', category: 'Gaming', prompts: ['Peaceful piano ambient', 'Nostalgic exploration music', 'Calm creative mode soundtrack', 'Block world ambience'], subtext: 'Generate peaceful, ambient piano music inspired by Minecraft\'s relaxing soundtrack.' },
+};
+
+// =============================================================================
+// ANIME SOUNDTRACK DATA
+// =============================================================================
+const animeSoundtrackData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'dragon-ball': { name: 'Dragon Ball', prompts: ['Epic power-up transformation', 'Intense battle orchestra', 'Super Saiyan theme music', 'Anime fight scene soundtrack'], subtext: 'Create epic battle music inspired by Dragon Ball\'s legendary soundtrack.' },
+  'one-piece': { name: 'One Piece', prompts: ['Pirate adventure orchestra', 'Emotional nakama theme', 'Ocean sailing music', 'Epic crew moment soundtrack'], subtext: 'Generate adventurous pirate music inspired by One Piece\'s emotional score.' },
+  'naruto': { name: 'Naruto', prompts: ['Ninja action soundtrack', 'Sadness and sorrow theme', 'Epic shinobi battle music', 'Emotional ninja journey'], subtext: 'Create emotional ninja soundtrack inspired by Naruto\'s iconic music.' },
+  'attack-on-titan': { name: 'Attack on Titan', prompts: ['Epic choir battle anthem', 'German-influenced orchestra', 'Intense action soundtrack', 'Titan transformation theme'], subtext: 'Generate intense, choir-driven orchestral inspired by Attack on Titan.' },
+  'demon-slayer': { name: 'Demon Slayer', prompts: ['Japanese orchestra action', 'Emotional anime ballad', 'Sword fighting soundtrack', 'Traditional Japanese fusion'], subtext: 'Create beautiful Japanese-influenced orchestral inspired by Demon Slayer.' },
+  'my-hero-academia': { name: 'My Hero Academia', prompts: ['Heroic anime orchestra', 'Plus Ultra power theme', 'Superhero training music', 'Emotional hero moment'], subtext: 'Generate heroic, inspiring music inspired by My Hero Academia\'s soundtrack.' },
+  'jujutsu-kaisen': { name: 'Jujutsu Kaisen', prompts: ['Dark sorcery soundtrack', 'Hip-hop anime fusion', 'Cursed energy battle music', 'Modern anime action theme'], subtext: 'Create dark, hip-hop influenced music inspired by Jujutsu Kaisen.' },
+  'spy-x-family': { name: 'Spy x Family', prompts: ['Jazz spy comedy soundtrack', 'Elegant espionage music', 'Playful family theme', 'Sophisticated action jazz'], subtext: 'Generate jazz-infused spy comedy music inspired by Spy x Family.' },
+  'chainsaw-man': { name: 'Chainsaw Man', prompts: ['Dark electronic anime', 'Chaotic action soundtrack', 'Horror-rock anime theme', 'Edgy modern anime music'], subtext: 'Create dark, edgy music inspired by Chainsaw Man\'s intense soundtrack.' },
+  'death-note': { name: 'Death Note', prompts: ['Dark orchestral suspense', 'Gothic choir theme', 'Psychological thriller music', 'L vs Light soundtrack'], subtext: 'Generate dark, psychological orchestral inspired by Death Note.' },
+  'bleach': { name: 'Bleach', prompts: ['Rock-orchestra anime fusion', 'Soul reaper battle theme', 'Spanish guitar action', 'Epic bankai transformation'], subtext: 'Create rock-infused anime soundtrack inspired by Bleach\'s iconic music.' },
+  'hunter-x-hunter': { name: 'Hunter x Hunter', prompts: ['Adventure orchestra theme', 'Dark chimera ant arc', 'Emotional character music', 'Nen battle soundtrack'], subtext: 'Generate adventurous orchestral inspired by Hunter x Hunter\'s diverse score.' },
+  'fullmetal-alchemist': { name: 'Fullmetal Alchemist', prompts: ['Epic alchemy orchestra', 'Emotional brothers theme', 'Military drama soundtrack', 'Equivalent exchange music'], subtext: 'Create emotional, epic orchestral inspired by Fullmetal Alchemist.' },
+  'cowboy-bebop': { name: 'Cowboy Bebop', prompts: ['Space jazz fusion', 'Bebop and blues mix', 'Noir jazz soundtrack', 'Futuristic jazz band'], subtext: 'Generate legendary jazz-fusion inspired by Cowboy Bebop\'s iconic soundtrack.' },
+  'studio-ghibli': { name: 'Studio Ghibli', prompts: ['Whimsical piano orchestra', 'Magical adventure theme', 'Nostalgic Japanese melody', 'Peaceful nature music'], subtext: 'Create magical, whimsical music inspired by Studio Ghibli\'s beautiful soundtracks.' },
+  'evangelion': { name: 'Neon Genesis Evangelion', prompts: ['Psychological mecha orchestra', 'Classical anime fusion', 'Existential anime soundtrack', 'Dramatic eva unit theme'], subtext: 'Generate complex, psychological orchestral inspired by Evangelion.' },
+  'sailor-moon': { name: 'Sailor Moon', prompts: ['Magical girl transformation', '90s anime pop theme', 'Moon princess orchestra', 'Sailor guardian anthem'], subtext: 'Create magical girl music inspired by Sailor Moon\'s iconic soundtrack.' },
+  'pokemon': { name: 'Pokémon', prompts: ['Adventure journey theme', 'Battle ready music', 'Pokémon center healing', 'Champion battle orchestra'], subtext: 'Generate adventurous, nostalgic music inspired by Pokémon\'s beloved soundtrack.' },
+  'sword-art-online': { name: 'Sword Art Online', prompts: ['Virtual world orchestra', 'MMORPG adventure theme', 'Boss battle music', 'Emotional gamer soundtrack'], subtext: 'Create virtual world orchestral inspired by Sword Art Online.' },
+  'tokyo-ghoul': { name: 'Tokyo Ghoul', prompts: ['Dark rock anime opening', 'Tragic character theme', 'Ghoul transformation music', 'Emotional dark soundtrack'], subtext: 'Generate dark, emotional rock-orchestral inspired by Tokyo Ghoul.' },
+};
+
+// =============================================================================
+// PRODUCT/AD MUSIC DATA
+// =============================================================================
+const adMusicData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'tv-commercial': { name: 'TV Commercial', prompts: ['Upbeat commercial jingle', '30-second ad music', 'Catchy brand theme', 'Professional ad soundtrack'], subtext: 'Create professional TV commercial music and jingles for broadcast advertising.' },
+  'social-media-ad': { name: 'Social Media Ad', prompts: ['Trendy Instagram ad music', 'Short attention-grabbing track', 'TikTok ad background', 'Scroll-stopping audio'], subtext: 'Generate trending music for social media advertisements and sponsored content.' },
+  'youtube-ad': { name: 'YouTube Ad', prompts: ['Non-skippable ad music', 'Pre-roll video soundtrack', 'Brand awareness jingle', 'Product showcase music'], subtext: 'Create compelling music for YouTube pre-roll and mid-roll advertisements.' },
+  'radio-commercial': { name: 'Radio Commercial', prompts: ['Catchy radio jingle', 'Memorable ad tune', 'Voice-over background music', 'Drive-time ad track'], subtext: 'Generate memorable radio commercial jingles and background music.' },
+  'product-launch': { name: 'Product Launch', prompts: ['Exciting reveal music', 'Tech product unveiling', 'Grand announcement soundtrack', 'Innovative launch theme'], subtext: 'Create exciting product launch and announcement music.' },
+  'brand-anthem': { name: 'Brand Anthem', prompts: ['Corporate brand theme', 'Company identity music', 'Inspirational brand soundtrack', 'Mission statement music'], subtext: 'Generate powerful brand anthems that define your company identity.' },
+  'explainer-video': { name: 'Explainer Video', prompts: ['Clear educational background', 'SaaS demo music', 'How-it-works soundtrack', 'Friendly explanation tune'], subtext: 'Create friendly background music for explainer and demo videos.' },
+  'testimonial-video': { name: 'Testimonial Video', prompts: ['Trustworthy background music', 'Customer story soundtrack', 'Authentic testimonial audio', 'Believable ambient track'], subtext: 'Generate authentic, trustworthy music for customer testimonial videos.' },
+  'e-commerce': { name: 'E-commerce', prompts: ['Online shopping music', 'Product showcase background', 'Sale announcement jingle', 'Buy now excitement'], subtext: 'Create engaging music for e-commerce product videos and listings.' },
+  'startup-pitch': { name: 'Startup Pitch', prompts: ['Innovative pitch deck music', 'Investor presentation soundtrack', 'Disruptive energy track', 'Growth mindset theme'], subtext: 'Generate confident, innovative music for startup pitch presentations.' },
+  'event-promo': { name: 'Event Promo', prompts: ['Exciting event announcement', 'Conference promo music', 'Festival ad soundtrack', 'Event countdown theme'], subtext: 'Create exciting promotional music for events and conferences.' },
+  'real-estate-ad': { name: 'Real Estate Ad', prompts: ['Luxury home tour music', 'Property showcase soundtrack', 'Dream home background', 'Aspirational living theme'], subtext: 'Generate elegant music for real estate and property advertisements.' },
+  'automotive-ad': { name: 'Automotive Ad', prompts: ['Car commercial soundtrack', 'Driving excitement music', 'Luxury vehicle theme', 'Road trip adventure'], subtext: 'Create dynamic music for automotive commercials and car advertisements.' },
+  'food-beverage-ad': { name: 'Food & Beverage Ad', prompts: ['Appetizing ad music', 'Restaurant promo soundtrack', 'Refreshing drink jingle', 'Tasty product theme'], subtext: 'Generate appetizing music for food and beverage advertisements.' },
+  'fashion-ad': { name: 'Fashion Ad', prompts: ['Runway show music', 'Fashion brand soundtrack', 'Stylish lookbook background', 'Trendsetting ad theme'], subtext: 'Create stylish, trendy music for fashion advertisements and lookbooks.' },
+};
+
+// =============================================================================
+// STREAMING PLATFORM EXPORT DATA
+// =============================================================================
+const streamingExportData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'spotify': { name: 'Spotify', prompts: ['Streaming-ready track', 'Playlist-worthy song', 'Spotify release single', 'Discover Weekly style'], subtext: 'Create professional music ready for Spotify distribution and playlists.' },
+  'apple-music': { name: 'Apple Music', prompts: ['Apple Music quality track', 'Curated playlist song', 'High-fidelity audio', 'Apple featured style'], subtext: 'Generate high-quality music optimized for Apple Music distribution.' },
+  'amazon-music': { name: 'Amazon Music', prompts: ['Amazon Music track', 'Alexa-friendly audio', 'Prime playlist song', 'Voice-search optimized'], subtext: 'Create music ready for Amazon Music and Alexa playback.' },
+  'youtube-music': { name: 'YouTube Music', prompts: ['YouTube Music release', 'Video-ready audio', 'Trending on YouTube style', 'Music video soundtrack'], subtext: 'Generate music optimized for YouTube Music and video content.' },
+  'soundcloud': { name: 'SoundCloud', prompts: ['Underground SoundCloud track', 'Independent artist style', 'Remix-ready audio', 'SoundCloud rapper beat'], subtext: 'Create independent, underground-style music for SoundCloud.' },
+  'tidal': { name: 'Tidal', prompts: ['High-fidelity audio track', 'Master quality audio', 'Audiophile-grade music', 'Premium streaming quality'], subtext: 'Generate high-fidelity music for Tidal\'s premium streaming.' },
+  'deezer': { name: 'Deezer', prompts: ['Flow playlist song', 'Discovery-ready track', 'International streaming audio', 'Global music style'], subtext: 'Create music ready for Deezer\'s global streaming platform.' },
+  'audiomack': { name: 'Audiomack', prompts: ['Hip-hop streaming track', 'Trending Audiomack style', 'Urban music release', 'Rap-ready audio'], subtext: 'Generate hip-hop and urban music for Audiomack distribution.' },
+  'bandcamp': { name: 'Bandcamp', prompts: ['Independent artist release', 'Direct-to-fan music', 'Album-quality track', 'Supporter-edition audio'], subtext: 'Create independent music for Bandcamp artist releases.' },
+  'listen-on-gruvi': { name: 'Listen on Gruvi', prompts: ['Gruvi showcase track', 'Platform featured song', 'Community favorite style', 'Gruvi original music'], subtext: 'Create and share your music directly on Gruvi\'s platform.' },
+};
+
+// =============================================================================
+// EASE OF USE / BEGINNER MARKETING DATA
+// =============================================================================
+const easeOfUseData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'no-experience-needed': { name: 'No Experience Needed', prompts: ['First-time music creation', 'Beginner-friendly track', 'Easy starter song', 'Simple melody creation'], subtext: 'Create professional music with zero musical experience required.' },
+  'describe-and-create': { name: 'Describe and Create', prompts: ['Just describe your song', 'Text-to-music generation', 'Idea to song instantly', 'Words become music'], subtext: 'Simply describe what you want and AI creates it for you.' },
+  'one-minute-songs': { name: 'One Minute Songs', prompts: ['Quick 60-second track', 'Fast music generation', 'Instant song creation', 'Rapid results'], subtext: 'Generate complete songs in under 60 seconds.' },
+  'zero-learning-curve': { name: 'Zero Learning Curve', prompts: ['Intuitive creation', 'No tutorials needed', 'Click and create', 'Instant understanding'], subtext: 'Start creating immediately with our intuitive interface.' },
+  'non-musicians': { name: 'Music for Non-Musicians', prompts: ['Anyone can create', 'No instruments required', 'AI does the work', 'Musical creativity unlocked'], subtext: 'Unleash your musical creativity without any musical training.' },
+  'ai-does-everything': { name: 'AI Does Everything', prompts: ['Fully automated creation', 'AI handles the details', 'Set and forget music', 'Complete AI composition'], subtext: 'Let AI handle all the musical complexity for you.' },
+  'mobile-friendly': { name: 'Mobile Friendly', prompts: ['Create on your phone', 'Mobile music making', 'Anywhere anytime creation', 'On-the-go generation'], subtext: 'Create professional music right from your smartphone.' },
+  'instant-download': { name: 'Instant Download', prompts: ['Download immediately', 'No waiting required', 'Instant MP3 access', 'Quick export'], subtext: 'Download your created music instantly, no waiting.' },
+  'free-to-start': { name: 'Free to Start', prompts: ['Try before you buy', 'Free first song', 'No credit card needed', 'Risk-free trial'], subtext: 'Start creating for free with no credit card required.' },
+  'professional-quality': { name: 'Professional Quality', prompts: ['Studio-grade output', 'Radio-ready audio', 'Commercial quality', 'Professional sound'], subtext: 'Get studio-quality professional music from simple descriptions.' },
+};
+
+// =============================================================================
+// CINEMATIC PRODUCT PROMO DATA
+// =============================================================================
+const cinematicPromoData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'product-reveal': { name: 'Product Reveal', prompts: ['Dramatic product unveiling', 'Cinematic reveal music', 'Suspenseful buildup', 'Epic product debut'], subtext: 'Create cinematic music for dramatic product reveal videos.' },
+  'unboxing-video': { name: 'Unboxing Video', prompts: ['Exciting unboxing soundtrack', 'First impressions music', 'Package reveal theme', 'Unboxing experience audio'], subtext: 'Generate exciting music for product unboxing content.' },
+  'product-demo': { name: 'Product Demo', prompts: ['Feature showcase music', 'Demo walkthrough soundtrack', 'Product in action theme', 'How it works background'], subtext: 'Create engaging background music for product demonstrations.' },
+  'tech-showcase': { name: 'Tech Showcase', prompts: ['Innovation reveal music', 'Futuristic tech theme', 'Gadget showcase soundtrack', 'Technology demonstration'], subtext: 'Generate futuristic music for technology product showcases.' },
+  'luxury-product': { name: 'Luxury Product', prompts: ['Premium brand music', 'High-end product theme', 'Sophisticated showcase', 'Luxury experience soundtrack'], subtext: 'Create sophisticated music for luxury product presentations.' },
+  'before-after': { name: 'Before & After', prompts: ['Transformation music', 'Before after reveal', 'Dramatic change soundtrack', 'Results showcase theme'], subtext: 'Generate transformation music for before-and-after content.' },
+  'product-comparison': { name: 'Product Comparison', prompts: ['Comparison video music', 'Side by side soundtrack', 'Feature battle theme', 'Which is better audio'], subtext: 'Create objective background music for product comparison videos.' },
+  'testimonial-montage': { name: 'Testimonial Montage', prompts: ['Customer story music', 'Review compilation soundtrack', 'Happy customer theme', 'Success stories audio'], subtext: 'Generate heartfelt music for customer testimonial compilations.' },
+  'lifestyle-product': { name: 'Lifestyle Product', prompts: ['Lifestyle brand music', 'Living the life soundtrack', 'Aspirational product theme', 'Dream lifestyle audio'], subtext: 'Create aspirational music for lifestyle product marketing.' },
+  'product-story': { name: 'Product Story', prompts: ['Brand story music', 'Origin tale soundtrack', 'Behind the product theme', 'Journey of creation audio'], subtext: 'Generate storytelling music for product origin and brand stories.' },
+  'seasonal-promo': { name: 'Seasonal Promo', prompts: ['Holiday product music', 'Seasonal campaign soundtrack', 'Limited edition theme', 'Special occasion audio'], subtext: 'Create festive music for seasonal product promotions.' },
+  'flash-sale': { name: 'Flash Sale', prompts: ['Urgent sale music', 'Limited time soundtrack', 'Act now theme', 'Countdown excitement audio'], subtext: 'Generate urgent, exciting music for flash sale promotions.' },
+  'influencer-collab': { name: 'Influencer Collab', prompts: ['Collab announcement music', 'Partnership reveal soundtrack', 'Creator edition theme', 'Influencer promo audio'], subtext: 'Create trendy music for influencer collaboration promotions.' },
+  'crowdfunding': { name: 'Crowdfunding', prompts: ['Kickstarter campaign music', 'Funding goal soundtrack', 'Support us theme', 'Backer appreciation audio'], subtext: 'Generate inspiring music for crowdfunding campaigns.' },
+  'app-store-preview': { name: 'App Store Preview', prompts: ['App preview music', 'Mobile app soundtrack', 'Download now theme', 'App store video audio'], subtext: 'Create engaging music for app store preview videos.' },
+};
+
+// =============================================================================
+// HELPER FUNCTIONS FOR NEW ROUTES
+// =============================================================================
+
+function generateArtistRoute(artist: string): RouteConfig {
+  const data = artistData[artist];
+  const name = data?.name || capitalize(artist);
+  const genre = data?.genre || 'Various';
+  const prompts = data?.prompts || [`Music inspired by ${name}`, `${name} style track`, `Sound like ${name}`, `${name} inspired song`];
+  const subtext = data?.subtext || `Create original music inspired by ${name}'s distinctive sound and style.`;
+  
+  return {
+    path: `/music-like-${artist}`,
+    title: `Music Like ${name} - AI ${genre} Music Generator | Gruvi`,
+    description: `Generate original music that sounds like ${name}. Create ${genre.toLowerCase()} tracks inspired by ${name}'s iconic style with AI.`,
+    keywords: `music like ${name.toLowerCase()}, ${name.toLowerCase()} style music, ai ${name.toLowerCase()} songs, sound like ${name.toLowerCase()}`,
+    ogTitle: `Music Like ${name} | Gruvi`,
+    ogDescription: `Generate original music inspired by ${name}'s iconic sound.`,
+    twitterTitle: `Music Like ${name} | Gruvi`,
+    twitterDescription: `Create AI music that sounds like ${name}.`,
+    breadcrumbName: `Like ${name}`,
+    heroTagline: `Music Like ${name}`,
+    heroHeading: `Music Like ${name}\nAI-generated ${genre.toLowerCase()} in their style`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateShowMusicRoute(show: string): RouteConfig {
+  const data = showMusicData[show];
+  const name = data?.name || capitalize(show);
+  const category = data?.category || 'Entertainment';
+  const prompts = data?.prompts || [`${name} style soundtrack`, `Music inspired by ${name}`, `${name} theme music`, `${name} score style`];
+  const subtext = data?.subtext || `Create original music inspired by ${name}'s iconic soundtrack.`;
+  
+  return {
+    path: `/music-like-${show}`,
+    title: `Music Like ${name} - ${category} Soundtrack Generator | Gruvi`,
+    description: `Generate original music inspired by ${name}. Create ${category.toLowerCase()} soundtrack-style tracks with AI.`,
+    keywords: `${name.toLowerCase()} soundtrack, music like ${name.toLowerCase()}, ${name.toLowerCase()} music, ${category.toLowerCase()} soundtrack`,
+    ogTitle: `Music Like ${name} | Gruvi`,
+    ogDescription: `Generate music inspired by ${name}'s iconic soundtrack.`,
+    twitterTitle: `Music Like ${name} | Gruvi`,
+    twitterDescription: `Create AI music in the style of ${name}.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Style Music`,
+    heroHeading: `Music Like ${name}\nAI soundtrack inspired by ${name}`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateAnimeSoundtrackRoute(anime: string): RouteConfig {
+  const data = animeSoundtrackData[anime];
+  const name = data?.name || capitalize(anime);
+  const prompts = data?.prompts || [`${name} style anime music`, `${name} battle theme`, `${name} emotional soundtrack`, `${name} opening style`];
+  const subtext = data?.subtext || `Create epic anime music inspired by ${name}'s legendary soundtrack.`;
+  
+  return {
+    path: `/anime-music-${anime}`,
+    title: `${name} Style Anime Music - AI Soundtrack Generator | Gruvi`,
+    description: `Generate original anime music inspired by ${name}. Create epic soundtracks, battle themes, and emotional scores with AI.`,
+    keywords: `${name.toLowerCase()} music, ${name.toLowerCase()} soundtrack, anime music like ${name.toLowerCase()}, ${name.toLowerCase()} ost style`,
+    ogTitle: `${name} Style Anime Music | Gruvi`,
+    ogDescription: `Generate anime music inspired by ${name}'s iconic soundtrack.`,
+    twitterTitle: `${name} Anime Music | Gruvi`,
+    twitterDescription: `Create AI anime music in the style of ${name}.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Style Music`,
+    heroHeading: `${name} Anime Music\nAI soundtrack inspired by ${name}`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateAdMusicRoute(adType: string): RouteConfig {
+  const data = adMusicData[adType];
+  const name = data?.name || capitalize(adType);
+  const prompts = data?.prompts || [`${name} background music`, `${name} jingle`, `${name} soundtrack`, `${name} audio`];
+  const subtext = data?.subtext || `Create professional ${name.toLowerCase()} music for your advertising campaigns.`;
+  
+  return {
+    path: `/music-for-${adType}`,
+    title: `${name} Music - Ad & Commercial Music Generator | Gruvi`,
+    description: `Generate professional ${name.toLowerCase()} music with AI. Create jingles, soundtracks, and background music for advertising.`,
+    keywords: `${adType.replace(/-/g, ' ')} music, ad music, commercial jingle, advertising soundtrack`,
+    ogTitle: `${name} Music | Gruvi`,
+    ogDescription: `Generate professional ${name.toLowerCase()} music with AI.`,
+    twitterTitle: `${name} Music | Gruvi`,
+    twitterDescription: `Create AI music for ${name.toLowerCase()}.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Music`,
+    heroHeading: `${name} Music\nProfessional ad music with AI`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateStreamingExportRoute(platform: string): RouteConfig {
+  const data = streamingExportData[platform];
+  const name = data?.name || capitalize(platform);
+  const prompts = data?.prompts || [`${name} ready track`, `Music for ${name}`, `${name} quality audio`, `${name} release`];
+  const subtext = data?.subtext || `Create professional music ready for ${name} distribution and streaming.`;
+  
+  return {
+    path: `/download-for-${platform}`,
+    title: `Download for ${name} - Create & Export Music | Gruvi`,
+    description: `Create AI music and export to ${name}. Generate streaming-ready tracks for ${name} distribution.`,
+    keywords: `${name.toLowerCase()} music, upload to ${name.toLowerCase()}, ${name.toLowerCase()} distribution, music for ${name.toLowerCase()}`,
+    ogTitle: `Download for ${name} | Gruvi`,
+    ogDescription: `Create AI music ready for ${name} distribution.`,
+    twitterTitle: `Music for ${name} | Gruvi`,
+    twitterDescription: `Create and export music to ${name}.`,
+    breadcrumbName: name,
+    heroTagline: `Music for ${name}`,
+    heroHeading: `Download for ${name}\nCreate streaming-ready music`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateEaseOfUseRoute(feature: string): RouteConfig {
+  const data = easeOfUseData[feature];
+  const name = data?.name || capitalize(feature);
+  const prompts = data?.prompts || [`Easy ${feature} music`, `Simple song creation`, `Beginner ${feature}`, `Quick ${feature}`];
+  const subtext = data?.subtext || `Create professional music easily with our ${name.toLowerCase()} approach.`;
+  
+  return {
+    path: `/${feature}`,
+    title: `${name} - Easy AI Music Generator | Gruvi`,
+    description: `${subtext} The simplest way to create professional music with AI.`,
+    keywords: `easy music maker, ${feature.replace(/-/g, ' ')}, simple song creator, beginner music`,
+    ogTitle: `${name} | Gruvi`,
+    ogDescription: subtext,
+    twitterTitle: `${name} | Gruvi`,
+    twitterDescription: `The simplest way to create music.`,
+    breadcrumbName: name,
+    heroTagline: name,
+    heroHeading: `${name}\nThe easiest way to create music`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+function generateCinematicPromoRoute(promoType: string): RouteConfig {
+  const data = cinematicPromoData[promoType];
+  const name = data?.name || capitalize(promoType);
+  const prompts = data?.prompts || [`Cinematic ${name.toLowerCase()} music`, `${name} soundtrack`, `${name} background music`, `${name} theme`];
+  const subtext = data?.subtext || `Create cinematic music for ${name.toLowerCase()} videos and content.`;
+  
+  return {
+    path: `/cinematic-music-for-${promoType}`,
+    title: `Cinematic ${name} Music - Product Promo Soundtrack | Gruvi`,
+    description: `Generate cinematic music for ${name.toLowerCase()} videos. Create professional soundtracks for product promotions with AI.`,
+    keywords: `${promoType.replace(/-/g, ' ')} music, cinematic promo music, product video soundtrack`,
+    ogTitle: `Cinematic ${name} Music | Gruvi`,
+    ogDescription: `Generate cinematic music for ${name.toLowerCase()} videos.`,
+    twitterTitle: `${name} Music | Gruvi`,
+    twitterDescription: `Create cinematic music for ${name.toLowerCase()}.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Music`,
+    heroHeading: `Cinematic ${name} Music\nEpic soundtracks for your videos`,
+    heroSubtext: subtext,
+    examplePrompts: prompts
+  };
+}
+
+// =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
+const artists = Object.keys(artistData);
+const showsAndMovies = Object.keys(showMusicData);
+const animeSoundtracks = Object.keys(animeSoundtrackData);
+const adMusicTypes = Object.keys(adMusicData);
+const streamingPlatforms = Object.keys(streamingExportData);
+const easeOfUseFeatures = Object.keys(easeOfUseData);
+const cinematicPromoTypes = Object.keys(cinematicPromoData);
 const genres = Object.keys(genreData);
 const languages = Object.keys(languageData);
 const holidays = Object.keys(holidayData);
@@ -1487,6 +1856,20 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(relationshipTypes.map(r => [generateRelationshipSongRoute(r).path, generateRelationshipSongRoute(r)])),
   // NEW: Hobby songs
   ...Object.fromEntries(hobbyTypes.map(h => [generateHobbySongRoute(h).path, generateHobbySongRoute(h)])),
+  // NEW: Artist "Music Like" routes
+  ...Object.fromEntries(artists.map(a => [generateArtistRoute(a).path, generateArtistRoute(a)])),
+  // NEW: TV Shows/Movies/Gaming music routes
+  ...Object.fromEntries(showsAndMovies.map(s => [generateShowMusicRoute(s).path, generateShowMusicRoute(s)])),
+  // NEW: Anime soundtrack routes
+  ...Object.fromEntries(animeSoundtracks.map(a => [generateAnimeSoundtrackRoute(a).path, generateAnimeSoundtrackRoute(a)])),
+  // NEW: Ad/Commercial music routes
+  ...Object.fromEntries(adMusicTypes.map(a => [generateAdMusicRoute(a).path, generateAdMusicRoute(a)])),
+  // NEW: Streaming platform export routes
+  ...Object.fromEntries(streamingPlatforms.map(p => [generateStreamingExportRoute(p).path, generateStreamingExportRoute(p)])),
+  // NEW: Ease of use marketing routes
+  ...Object.fromEntries(easeOfUseFeatures.map(f => [generateEaseOfUseRoute(f).path, generateEaseOfUseRoute(f)])),
+  // NEW: Cinematic product promo routes
+  ...Object.fromEntries(cinematicPromoTypes.map(c => [generateCinematicPromoRoute(c).path, generateCinematicPromoRoute(c)])),
 };
 
 // Helper function to get route config by path
@@ -1504,5 +1887,8 @@ export {
   genres, languages, holidays, videoStyles, platforms, moods,
   promotionalPlaces, promotionalBusinesses, promotionalProducts,
   contentCreators, lifeTopics, emotionalTopics, funnyTypes, 
-  relationshipTypes, hobbyTypes 
+  relationshipTypes, hobbyTypes,
+  // NEW exports
+  artists, showsAndMovies, animeSoundtracks, adMusicTypes,
+  streamingPlatforms, easeOfUseFeatures, cinematicPromoTypes
 };

@@ -32,7 +32,9 @@ import {
   FormControl,
   Select,
   SelectChangeEvent,
+  Divider,
 } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -54,61 +56,61 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
-// Genre options for filter
+// Genre options for filter with images
 const genreOptions = [
-  { id: 'pop', name: 'Pop' },
-  { id: 'hip-hop', name: 'Hip Hop' },
-  { id: 'rnb', name: 'R&B' },
-  { id: 'electronic', name: 'Electronic' },
-  { id: 'dance', name: 'Dance' },
-  { id: 'house', name: 'House' },
-  { id: 'edm', name: 'EDM' },
-  { id: 'techno', name: 'Techno' },
-  { id: 'rock', name: 'Rock' },
-  { id: 'alternative', name: 'Alternative' },
-  { id: 'indie', name: 'Indie' },
-  { id: 'punk', name: 'Punk' },
-  { id: 'metal', name: 'Metal' },
-  { id: 'jazz', name: 'Jazz' },
-  { id: 'blues', name: 'Blues' },
-  { id: 'soul', name: 'Soul' },
-  { id: 'funk', name: 'Funk' },
-  { id: 'classical', name: 'Classical' },
-  { id: 'orchestral', name: 'Orchestral' },
-  { id: 'cinematic', name: 'Cinematic' },
-  { id: 'country', name: 'Country' },
-  { id: 'folk', name: 'Folk' },
-  { id: 'acoustic', name: 'Acoustic' },
-  { id: 'latin', name: 'Latin' },
-  { id: 'reggaeton', name: 'Reggaeton' },
-  { id: 'kpop', name: 'K-Pop' },
-  { id: 'jpop', name: 'J-Pop' },
-  { id: 'reggae', name: 'Reggae' },
-  { id: 'lofi', name: 'Lo-fi' },
-  { id: 'ambient', name: 'Ambient' },
-  { id: 'chillout', name: 'Chill' },
-  { id: 'gospel', name: 'Gospel' },
+  { id: 'pop', name: 'Pop', image: '/genres/pop.jpeg' },
+  { id: 'hip-hop', name: 'Hip Hop', image: '/genres/hip-hop.jpeg' },
+  { id: 'rnb', name: 'R&B', image: '/genres/rnb.jpeg' },
+  { id: 'electronic', name: 'Electronic', image: '/genres/electronic.jpeg' },
+  { id: 'dance', name: 'Dance', image: '/genres/dance.jpeg' },
+  { id: 'house', name: 'House', image: '/genres/house.jpeg' },
+  { id: 'edm', name: 'EDM', image: '/genres/edm.jpeg' },
+  { id: 'techno', name: 'Techno', image: '/genres/techno.jpeg' },
+  { id: 'rock', name: 'Rock', image: '/genres/rock.jpeg' },
+  { id: 'alternative', name: 'Alternative', image: '/genres/alternative.jpeg' },
+  { id: 'indie', name: 'Indie', image: '/genres/indie.jpeg' },
+  { id: 'punk', name: 'Punk', image: '/genres/punk.jpeg' },
+  { id: 'metal', name: 'Metal', image: '/genres/metal.jpeg' },
+  { id: 'jazz', name: 'Jazz', image: '/genres/jazz.jpeg' },
+  { id: 'blues', name: 'Blues', image: '/genres/blues.jpeg' },
+  { id: 'soul', name: 'Soul', image: '/genres/soul.jpeg' },
+  { id: 'funk', name: 'Funk', image: '/genres/funk.jpeg' },
+  { id: 'classical', name: 'Classical', image: '/genres/classic.jpeg' },
+  { id: 'orchestral', name: 'Orchestral', image: '/genres/orchestral.jpeg' },
+  { id: 'cinematic', name: 'Cinematic', image: '/genres/cinematic.jpeg' },
+  { id: 'country', name: 'Country', image: '/genres/country.jpeg' },
+  { id: 'folk', name: 'Folk', image: '/genres/folk.jpeg' },
+  { id: 'acoustic', name: 'Acoustic', image: '/genres/acoustic.jpeg' },
+  { id: 'latin', name: 'Latin', image: '/genres/latin.jpeg' },
+  { id: 'reggaeton', name: 'Reggaeton', image: '/genres/raggaeton.jpeg' },
+  { id: 'kpop', name: 'K-Pop', image: '/genres/kpop.jpeg' },
+  { id: 'jpop', name: 'J-Pop', image: '/genres/jpop.jpeg' },
+  { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
+  { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
+  { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
+  { id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
+  { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
 ];
 
-// Mood options for filter
+// Mood options for filter with images
 const moodOptions = [
-  { id: 'happy', name: 'Happy' },
-  { id: 'sad', name: 'Sad' },
-  { id: 'energetic', name: 'Energetic' },
-  { id: 'romantic', name: 'Romantic' },
-  { id: 'chill', name: 'Chill' },
-  { id: 'epic', name: 'Epic' },
-  { id: 'dreamy', name: 'Dreamy' },
-  { id: 'dark', name: 'Dark' },
-  { id: 'uplifting', name: 'Uplifting' },
-  { id: 'nostalgic', name: 'Nostalgic' },
-  { id: 'peaceful', name: 'Peaceful' },
-  { id: 'intense', name: 'Intense' },
-  { id: 'melancholic', name: 'Melancholic' },
-  { id: 'playful', name: 'Playful' },
-  { id: 'mysterious', name: 'Mysterious' },
-  { id: 'triumphant', name: 'Triumphant' },
-  { id: 'promotional', name: 'Promotional' },
+  { id: 'happy', name: 'Happy', image: '/moods/happy.jpeg' },
+  { id: 'sad', name: 'Sad', image: '/moods/sad.jpeg' },
+  { id: 'energetic', name: 'Energetic', image: '/moods/energetic.jpeg' },
+  { id: 'romantic', name: 'Romantic', image: '/moods/romantic.jpeg' },
+  { id: 'chill', name: 'Chill', image: '/moods/chill.jpeg' },
+  { id: 'epic', name: 'Epic', image: '/moods/epic.jpeg' },
+  { id: 'dreamy', name: 'Dreamy', image: '/moods/dreamy.jpeg' },
+  { id: 'dark', name: 'Dark', image: '/moods/dark.jpeg' },
+  { id: 'uplifting', name: 'Uplifting', image: '/moods/uplifting.jpeg' },
+  { id: 'nostalgic', name: 'Nostalgic', image: '/moods/nostalgic.jpeg' },
+  { id: 'peaceful', name: 'Peaceful', image: '/moods/peacful.jpeg' },
+  { id: 'intense', name: 'Intense', image: '/moods/intense.jpeg' },
+  { id: 'melancholic', name: 'Melancholic', image: '/moods/melancholic.jpeg' },
+  { id: 'playful', name: 'Playful', image: '/moods/playful.jpeg' },
+  { id: 'mysterious', name: 'Mysterious', image: '/moods/mysterious.jpeg' },
+  { id: 'triumphant', name: 'Triumphant', image: '/moods/triumphant.jpeg' },
+  { id: 'promotional', name: 'Promotional', image: '/moods/promotional.jpeg' },
 ];
 
 // Animated Equalizer Component
@@ -1084,8 +1086,16 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             }}
           />
 
-          {/* Genre Filter */}
-          <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 140 } }}>
+          {/* Filters Container - side by side on sm, stacked on xs */}
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', sm: 'row' }, 
+            gap: 2, 
+            width: { xs: '100%', md: 'auto' },
+            flex: { md: 'none' },
+          }}>
+            {/* Genre Filter */}
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 160 }, flex: { sm: 1, md: 'none' } }}>
             <Select
               value={genreFilter}
               onChange={(e: SelectChangeEvent) => {
@@ -1093,22 +1103,104 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 setCurrentPage(1);
               }}
               displayEmpty
+              renderValue={(selected) => {
+                if (!selected) {
+                  return (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ 
+                        width: 28, 
+                        height: 28, 
+                        borderRadius: '6px', 
+                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <MusicNoteIcon sx={{ fontSize: 16, color: '#fff' }} />
+                      </Box>
+                      <Typography sx={{ fontWeight: 500 }}>All Genres</Typography>
+                    </Box>
+                  );
+                }
+                const genre = genreOptions.find(g => g.id === selected);
+                return genre ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      component="img"
+                      src={genre.image}
+                      alt={genre.name}
+                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                    />
+                    <Typography sx={{ fontWeight: 500 }}>{genre.name}</Typography>
+                  </Box>
+                ) : selected;
+              }}
               sx={{
                 borderRadius: '10px',
                 backgroundColor: genreFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                 '&:hover': { backgroundColor: genreFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
               }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 400,
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    mt: 1,
+                  }
+                }
+              }}
             >
-              <MenuItem value="">All Genres</MenuItem>
+              <MenuItem value="" sx={{ py: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ 
+                    width: 28, 
+                    height: 28, 
+                    borderRadius: '6px', 
+                    background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <MusicNoteIcon sx={{ fontSize: 16, color: '#fff' }} />
+                  </Box>
+                  <Typography sx={{ fontWeight: 500 }}>All Genres</Typography>
+                </Box>
+              </MenuItem>
+              <Divider sx={{ my: 1 }} />
               {genreOptions.map((genre) => (
-                <MenuItem key={genre.id} value={genre.id}>{genre.name}</MenuItem>
+                <MenuItem 
+                  key={genre.id} 
+                  value={genre.id}
+                  sx={{ 
+                    py: 1,
+                    '&:hover': { backgroundColor: 'rgba(0,122,255,0.08)' },
+                    '&.Mui-selected': { backgroundColor: 'rgba(0,122,255,0.12)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      component="img"
+                      src={genre.image}
+                      alt={genre.name}
+                      sx={{ 
+                        width: 28, 
+                        height: 28, 
+                        borderRadius: '6px', 
+                        objectFit: 'cover',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      }}
+                    />
+                    <Typography sx={{ fontWeight: 500 }}>{genre.name}</Typography>
+                  </Box>
+                </MenuItem>
               ))}
             </Select>
-          </FormControl>
+            </FormControl>
 
-          {/* Mood Filter */}
-          <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 140 } }}>
+            {/* Mood Filter */}
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 160 }, flex: { sm: 1, md: 'none' } }}>
             <Select
               value={moodFilter}
               onChange={(e: SelectChangeEvent) => {
@@ -1116,19 +1208,102 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 setCurrentPage(1);
               }}
               displayEmpty
+              renderValue={(selected) => {
+                if (!selected) {
+                  return (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ 
+                        width: 28, 
+                        height: 28, 
+                        borderRadius: '6px', 
+                        background: 'linear-gradient(135deg, #FF6B9D, #C44569)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <AutoAwesomeIcon sx={{ fontSize: 16, color: '#fff' }} />
+                      </Box>
+                      <Typography sx={{ fontWeight: 500 }}>All Moods</Typography>
+                    </Box>
+                  );
+                }
+                const mood = moodOptions.find(m => m.id === selected);
+                return mood ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      component="img"
+                      src={mood.image}
+                      alt={mood.name}
+                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                    />
+                    <Typography sx={{ fontWeight: 500 }}>{mood.name}</Typography>
+                  </Box>
+                ) : selected;
+              }}
               sx={{
                 borderRadius: '10px',
                 backgroundColor: moodFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                 '&:hover': { backgroundColor: moodFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
               }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 400,
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    mt: 1,
+                  }
+                }
+              }}
             >
-              <MenuItem value="">All Moods</MenuItem>
+              <MenuItem value="" sx={{ py: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ 
+                    width: 28, 
+                    height: 28, 
+                    borderRadius: '6px', 
+                    background: 'linear-gradient(135deg, #FF6B9D, #C44569)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <AutoAwesomeIcon sx={{ fontSize: 16, color: '#fff' }} />
+                  </Box>
+                  <Typography sx={{ fontWeight: 500 }}>All Moods</Typography>
+                </Box>
+              </MenuItem>
+              <Divider sx={{ my: 1 }} />
               {moodOptions.map((mood) => (
-                <MenuItem key={mood.id} value={mood.id}>{mood.name}</MenuItem>
+                <MenuItem 
+                  key={mood.id} 
+                  value={mood.id}
+                  sx={{ 
+                    py: 1,
+                    '&:hover': { backgroundColor: 'rgba(0,122,255,0.08)' },
+                    '&.Mui-selected': { backgroundColor: 'rgba(0,122,255,0.12)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      component="img"
+                      src={mood.image}
+                      alt={mood.name}
+                      sx={{ 
+                        width: 28, 
+                        height: 28, 
+                        borderRadius: '6px', 
+                        objectFit: 'cover',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      }}
+                    />
+                    <Typography sx={{ fontWeight: 500 }}>{mood.name}</Typography>
+                  </Box>
+                </MenuItem>
               ))}
-            </Select>
-          </FormControl>
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* Clear Filters Button - only show when filters are active */}
           {hasActiveFilters && (
