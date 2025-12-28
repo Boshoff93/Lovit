@@ -233,7 +233,7 @@ const MusicVideoDetailPage: React.FC = () => {
     try {
       // Fetch signed URL from backend
       const apiBase = process.env.REACT_APP_API_URL || 'https://api.gruvimusic.com';
-      const response = await fetch(`${apiBase}/api/gruvi/videos/public/${currentVideo.realVideoId}`);
+      const response = await fetch(`${apiBase}/api/public/videos/${currentVideo.realVideoId}`);
       
       if (!response.ok) {
         throw new Error('Failed to load video');
