@@ -32,7 +32,7 @@ const ResendVerificationPage: React.FC = () => {
   // Redirect to dashboard if user is verified
   useEffect(() => {
     if (user?.isVerified) {
-      navigate('/dashboard');
+      navigate('/my-library');
     }
   }, [user, navigate]);
 

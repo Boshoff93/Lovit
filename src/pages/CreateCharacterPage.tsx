@@ -376,7 +376,7 @@ const CreateCharacterPage: React.FC = () => {
       }
 
       // Navigate back to characters page after a short delay
-      setTimeout(() => navigate('/characters'), 1500);
+      setTimeout(() => navigate('/my-cast'), 1500);
     } catch (error: any) {
       console.error('Character save error:', error);
       const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'create'} character. Please try again.`;
@@ -420,7 +420,7 @@ const CreateCharacterPage: React.FC = () => {
         <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/characters')}
+            onClick={() => navigate('/my-cast')}
             sx={{
               color: '#007AFF',
               textTransform: 'none',

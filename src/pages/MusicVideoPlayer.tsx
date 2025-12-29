@@ -147,7 +147,7 @@ const MusicVideoPlayer: React.FC = () => {
   }, [user?.userId, videoId]);
 
   const handleGoBack = useCallback(() => {
-    navigate('/dashboard?tab=videos');
+    navigate('/my-library?tab=videos');
   }, [navigate]);
 
   const handlePlayPause = useCallback(() => {

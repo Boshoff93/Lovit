@@ -658,7 +658,7 @@ const CreatePage: React.FC = () => {
       setShowSongPromptError(false);
       
       // Navigate immediately to library - song will appear in loading state
-      navigate('/dashboard?tab=songs&generating=true');
+      navigate('/my-library?tab=songs&generating=true');
     } catch (error: any) {
       console.error('Song generation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to generate song. Please try again.';
@@ -741,7 +741,7 @@ const CreatePage: React.FC = () => {
       setShowSongSelectionError(false);
       
       // Navigate to Music Videos tab after a short delay
-      setTimeout(() => navigate('/dashboard?tab=videos'), 1500);
+      setTimeout(() => navigate('/my-library?tab=videos'), 1500);
     } catch (error: any) {
       console.error('Video generation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to generate video. Please try again.';
@@ -831,7 +831,7 @@ const CreatePage: React.FC = () => {
       setShowCharacterNameError(false);
       
       // Navigate to dashboard after a short delay
-      setTimeout(() => navigate('/dashboard'), 1500);
+      setTimeout(() => navigate('/my-library'), 1500);
     } catch (error: any) {
       console.error('Character creation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to create character. Please try again.';
@@ -978,7 +978,7 @@ const CreatePage: React.FC = () => {
                     {/* Create Character chip - always first */}
                     <Chip
                       label="+ Create"
-                      onClick={() => navigate('/characters/create')}
+                      onClick={() => navigate('/my-cast/create')}
                       size="small"
                       sx={{
                         borderRadius: '100px',
@@ -1059,7 +1059,7 @@ const CreatePage: React.FC = () => {
                 ) : (
                   <Chip
                     label="+ Create a character"
-                    onClick={() => navigate('/characters/create')}
+                    onClick={() => navigate('/my-cast/create')}
                     size="small"
                     sx={{
                       borderRadius: '100px',
@@ -1994,7 +1994,7 @@ const CreatePage: React.FC = () => {
                     {/* Create Character chip - always first */}
                     <Chip
                       label="+ Create"
-                      onClick={() => navigate('/characters/create')}
+                      onClick={() => navigate('/my-cast/create')}
                       size="small"
                       sx={{
                         borderRadius: '100px',
@@ -2075,7 +2075,7 @@ const CreatePage: React.FC = () => {
                 ) : (
                   <Chip
                     label="+ Create a character"
-                    onClick={() => navigate('/characters/create')}
+                    onClick={() => navigate('/my-cast/create')}
                     size="small"
                     sx={{
                       borderRadius: '100px',

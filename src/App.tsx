@@ -165,8 +165,8 @@ function App() {
         {/* Payment page */}
         <Route path="/payment" element={<PaymentPage />} />
         
-        {/* App dashboard with layout and tabs - protected route */}
-        <Route path="/dashboard" element={
+        {/* App library with layout and tabs - protected route */}
+        <Route path="/my-library" element={
           <RequireAuth>
             <Layout>
               <AppPage />
@@ -192,8 +192,8 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* Characters page - protected route */}
-        <Route path="/characters" element={
+        {/* My Cast page - protected route */}
+        <Route path="/my-cast" element={
           <RequireAuth>
             <Layout>
               <CharactersPage />
@@ -202,7 +202,7 @@ function App() {
         } />
 
         {/* Create Character page - protected route */}
-        <Route path="/characters/create" element={
+        <Route path="/my-cast/create" element={
           <RequireAuth>
             <Layout>
               <CreateCharacterPage />
@@ -211,13 +211,19 @@ function App() {
         } />
 
         {/* Edit Character page - protected route */}
-        <Route path="/characters/edit/:characterId" element={
+        <Route path="/my-cast/edit/:characterId" element={
           <RequireAuth>
             <Layout>
               <CreateCharacterPage />
             </Layout>
           </RequireAuth>
         } />
+        
+        {/* Redirects for old routes */}
+        <Route path="/dashboard" element={<Navigate to="/my-library" replace />} />
+        <Route path="/characters" element={<Navigate to="/my-cast" replace />} />
+        <Route path="/characters/create" element={<Navigate to="/my-cast/create" replace />} />
+        <Route path="/characters/edit/:characterId" element={<Navigate to="/my-cast/edit/:characterId" replace />} />
         
         {/* Verify email page */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />

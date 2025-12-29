@@ -362,7 +362,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     Create
                   </Button>
                   <Button
-                    onClick={() => handleNavigate('/dashboard')}
+                    onClick={() => handleNavigate('/my-library')}
                     startIcon={<LibraryMusicIcon />}
                     sx={{
                       borderRadius: '20px',
@@ -370,11 +370,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       py: 1,
                       textTransform: 'none',
                       fontWeight: 600,
-                      color: isActive('/dashboard') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/dashboard') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      color: isActive('/my-library') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/my-library') ? 'rgba(0,122,255,0.12)' : 'transparent',
                       border: '1px solid',
-                      borderColor: isActive('/dashboard') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/dashboard') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      borderColor: isActive('/my-library') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/my-library') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
                       '&:hover': {
                         backgroundColor: 'rgba(0,122,255,0.08)',
                         boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
@@ -384,7 +384,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     My Library
                   </Button>
                   <Button
-                    onClick={() => handleNavigate('/characters')}
+                    onClick={() => handleNavigate('/my-cast')}
                     startIcon={<FolderSpecialIcon />}
                     sx={{
                       borderRadius: '20px',
@@ -392,11 +392,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       py: 1,
                       textTransform: 'none',
                       fontWeight: 600,
-                      color: isActive('/characters') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/characters') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      color: isActive('/my-cast') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/my-cast') ? 'rgba(0,122,255,0.12)' : 'transparent',
                       border: '1px solid',
-                      borderColor: isActive('/characters') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/characters') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      borderColor: isActive('/my-cast') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/my-cast') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
                       '&:hover': {
                         backgroundColor: 'rgba(0,122,255,0.08)',
                         boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
@@ -587,13 +587,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     px: 2, 
                     borderRadius: 2, 
                     mb: 1,
-                    backgroundColor: isActive('/dashboard') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/dashboard') ? '2px solid #007AFF' : '2px solid transparent',
+                    backgroundColor: isActive('/my-library') ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: isActive('/my-library') ? '2px solid #007AFF' : '2px solid transparent',
                     '&:hover': {
                       backgroundColor: 'rgba(0,122,255,0.08)',
                     }
                   }}
-                  onClick={() => handleNavigate('/dashboard')}
+                  onClick={() => handleNavigate('/my-library')}
                 >
                   <ListItemIcon sx={{ color: '#007AFF' }}>
                     <LibraryMusicIcon />
@@ -601,8 +601,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <ListItemText 
                     primary="My Library" 
                     primaryTypographyProps={{ 
-                      fontWeight: isActive('/dashboard') ? 600 : 400,
-                      color: isActive('/dashboard') ? '#007AFF' : 'inherit'
+                      fontWeight: isActive('/my-library') ? 600 : 400,
+                      color: isActive('/my-library') ? '#007AFF' : 'inherit'
                     }} 
                   />
                 </ListItemButton>
@@ -615,13 +615,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     px: 2, 
                     borderRadius: 2, 
                     mb: 1,
-                    backgroundColor: isActive('/characters') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/characters') ? '2px solid #007AFF' : '2px solid transparent',
+                    backgroundColor: isActive('/my-cast') ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: isActive('/my-cast') ? '2px solid #007AFF' : '2px solid transparent',
                     '&:hover': {
                       backgroundColor: 'rgba(0,122,255,0.08)',
                     }
                   }}
-                  onClick={() => handleNavigate('/characters')}
+                  onClick={() => handleNavigate('/my-cast')}
                 >
                   <ListItemIcon sx={{ color: '#007AFF' }}>
                     <FolderSpecialIcon />
@@ -629,8 +629,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <ListItemText 
                     primary="My Cast" 
                     primaryTypographyProps={{ 
-                      fontWeight: isActive('/characters') ? 600 : 400,
-                      color: isActive('/characters') ? '#007AFF' : 'inherit'
+                      fontWeight: isActive('/my-cast') ? 600 : 400,
+                      color: isActive('/my-cast') ? '#007AFF' : 'inherit'
                     }} 
                   />
                 </ListItemButton>

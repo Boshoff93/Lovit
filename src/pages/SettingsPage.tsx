@@ -106,7 +106,7 @@ const SettingsPage: React.FC = () => {
       icon: <FaceIcon sx={{ color: '#007AFF' }} />,
       title: 'My Cast',
       description: 'Characters, products & places for your videos',
-      onClick: () => navigate('/characters'),
+      onClick: () => navigate('/my-cast'),
     },
     {
       icon: <SubscriptionIcon sx={{ color: '#007AFF' }} />,

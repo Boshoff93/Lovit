@@ -310,7 +310,7 @@ const PaymentPage: React.FC = () => {
   },[dispatch]);
 
   const handleNavigateToDashboard = useCallback(() => {
-    navigate('/dashboard');
+    navigate('/my-library');
   },[navigate]);
   
   const handleLogout = useCallback(() => {
@@ -418,7 +418,7 @@ const PaymentPage: React.FC = () => {
               <Button 
                 variant="contained" 
                 component={RouterLink}
-                to="/dashboard"
+                to="/my-library"
                 startIcon={<DashboardIcon />}
                 sx={{
                   background: '#007AFF',

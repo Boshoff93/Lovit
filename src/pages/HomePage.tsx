@@ -1208,7 +1208,7 @@ const HomePage: React.FC = () => {
   const handleClickOpen = useCallback(async () => {
     if (user) {
       // Navigate to dashboard - token check happens when user tries to generate
-      navigate('/dashboard');
+      navigate('/my-library');
       return;
     }
     setOpen(true);
@@ -1311,7 +1311,7 @@ const HomePage: React.FC = () => {
             console.error('Failed to resend verification email:', err);
           }
         } else {
-          navigate('/dashboard');
+          navigate('/my-library');
         }
       } else {
         setError(result.payload || 'Google login failed.');
@@ -1355,7 +1355,7 @@ const HomePage: React.FC = () => {
           }
         } else {
           showSnackbar('Logged in successfully!');
-          navigate('/dashboard');
+          navigate('/my-library');
         }
       } else {
         setError(result.payload || 'Login failed. Please check your credentials.');
@@ -1396,7 +1396,7 @@ const HomePage: React.FC = () => {
     if (isLoggedIn) {
       // If already subscribed (not free tier), go to dashboard
       if (subscription && subscription.tier !== 'free') {
-        navigate('/dashboard');
+        navigate('/my-library');
         return;
       }
 
@@ -1580,7 +1580,7 @@ const HomePage: React.FC = () => {
                     </Button>
                     <Button 
                       component={RouterLink}
-                      to="/dashboard"
+                      to="/my-library"
                       startIcon={<LibraryMusicIcon />}
                       sx={{
                         borderRadius: '20px',
@@ -1601,7 +1601,7 @@ const HomePage: React.FC = () => {
                     </Button>
                     <Button 
                       component={RouterLink}
-                      to="/characters"
+                      to="/my-cast"
                       startIcon={<FolderSpecialIcon />}
                       sx={{
                         borderRadius: '20px',
@@ -1806,7 +1806,7 @@ const HomePage: React.FC = () => {
             <>
               <ListItemButton
                 component={RouterLink}
-                to="/dashboard"
+                to="/my-library"
                 onClick={handleDrawerToggle}
                 sx={{ borderRadius: 2, mb: 1 }}
               >

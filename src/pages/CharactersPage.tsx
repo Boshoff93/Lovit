@@ -219,7 +219,7 @@ const CharactersPage: React.FC = () => {
             {/* Mobile: Icon button */}
             <Tooltip title="Create New" arrow>
               <IconButton
-                onClick={() => navigate('/characters/create')}
+                onClick={() => navigate('/my-cast/create')}
                 sx={{
                   display: { xs: 'flex', md: 'none' },
                   background: '#007AFF',
@@ -240,7 +240,7 @@ const CharactersPage: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => navigate('/characters/create')}
+              onClick={() => navigate('/my-cast/create')}
               sx={{
                 display: { xs: 'none', md: 'flex' },
                 background: '#007AFF',
@@ -279,7 +279,7 @@ const CharactersPage: React.FC = () => {
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={() => navigate('/characters/create')}
+                onClick={() => navigate('/my-cast/create')}
                 sx={{
                   borderRadius: '12px',
                   textTransform: 'none',
@@ -301,7 +301,7 @@ const CharactersPage: React.FC = () => {
               {characters.map((character) => (
                 <Box
                   key={character.characterId}
-                  onClick={() => navigate(`/characters/edit/${character.characterId}`)}
+                  onClick={() => navigate(`/my-cast/edit/${character.characterId}`)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',

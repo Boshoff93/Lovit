@@ -196,7 +196,7 @@ const CreateVideoPage: React.FC = () => {
       });
       
       setTimeout(() => {
-        navigate('/dashboard?tab=videos');
+        navigate('/my-library?tab=videos');
       }, 2000);
     } catch (error: any) {
       console.error('Video generation error:', error);
