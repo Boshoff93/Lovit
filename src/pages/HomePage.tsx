@@ -2153,6 +2153,7 @@ const HomePage: React.FC = () => {
                         '&:hover': {
                           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                           transform: 'translateY(-2px)',
+                          '& .play-overlay': { opacity: 1 },
                         },
                       }}
                     >
@@ -2176,6 +2177,7 @@ const HomePage: React.FC = () => {
                         />
                         {/* Play overlay */}
                         <Box
+                          className="play-overlay"
                           sx={{
                             position: 'absolute',
                             inset: 0,
@@ -2185,7 +2187,6 @@ const HomePage: React.FC = () => {
                             background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
                             opacity: currentSong?.songId === track.id ? 1 : 0,
                             transition: 'opacity 0.2s',
-                            '&:hover': { opacity: 1 },
                           }}
                         >
                           {loadingSongId === track.id ? (
@@ -2349,6 +2350,7 @@ const HomePage: React.FC = () => {
                         '&:hover': {
                           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                           transform: 'translateY(-2px)',
+                          '& .play-overlay': { opacity: 1 },
                         },
                       }}
                     >
@@ -2372,6 +2374,7 @@ const HomePage: React.FC = () => {
                         />
                         {/* Play overlay */}
                         <Box
+                          className="play-overlay"
                           sx={{
                             position: 'absolute',
                             inset: 0,
@@ -2381,7 +2384,6 @@ const HomePage: React.FC = () => {
                             background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
                             opacity: currentSong?.songId === track.id ? 1 : 0,
                             transition: 'opacity 0.2s',
-                            '&:hover': { opacity: 1 },
                           }}
                         >
                           {loadingSongId === track.id ? (
@@ -2607,6 +2609,7 @@ const HomePage: React.FC = () => {
                         '&:hover': {
                           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                           transform: 'translateY(-2px)',
+                          '& .play-overlay': { opacity: 1 },
                         },
                       }}
                     >
@@ -2630,6 +2633,7 @@ const HomePage: React.FC = () => {
                         />
                         {/* Play overlay */}
                         <Box
+                          className="play-overlay"
                           sx={{
                             position: 'absolute',
                             inset: 0,
@@ -2639,7 +2643,6 @@ const HomePage: React.FC = () => {
                             background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
                             opacity: currentSong?.songId === track.id ? 1 : 0,
                             transition: 'opacity 0.2s',
-                            '&:hover': { opacity: 1 },
                           }}
                         >
                           {loadingSongId === track.id ? (

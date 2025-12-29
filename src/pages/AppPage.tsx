@@ -974,66 +974,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   return (
     <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
-      {/* Toggle Buttons - Equal width pill style */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, width: '100%' }}>
-        <ToggleButtonGroup
-          value={activeTab}
-          exclusive
-          onChange={handleTabChange}
-          fullWidth
-          sx={{
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: '100px',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-            p: 0.5,
-            position: 'relative',
-            display: 'flex',
-            width: '100%',
-            maxWidth: { xs: '100%', sm: 480 },
-            '& .MuiToggleButton-root': {
-              border: 'none',
-              borderRadius: '100px !important',
-              flex: 1,
-              minWidth: { xs: 0, sm: 140 },
-              px: { xs: 1.5, sm: 3 },
-              py: 1.25,
-              textTransform: 'none',
-              fontWeight: 600,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              color: '#86868B',
-              gap: 0.75,
-              whiteSpace: 'nowrap',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              zIndex: 1,
-              justifyContent: 'center',
-              '&.Mui-selected': {
-                background: '#007AFF',
-                color: '#fff',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.35)',
-                '&:hover': {
-                  background: '#007AFF',
-                },
-              },
-              '&:hover': {
-                background: 'rgba(0,122,255,0.06)',
-              },
-            },
-          }}
-        >
-          <ToggleButton value="songs">
-            <MusicNoteIcon sx={{ fontSize: 18 }} />
-            Music
-          </ToggleButton>
-          <ToggleButton value="videos">
-            <VideoLibraryIcon sx={{ fontSize: 18 }} />
-            Music Videos
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
       {/* Songs Tracklist */}
       {activeTab === 'songs' && (
       <Box
@@ -1042,92 +982,119 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           overflow: 'hidden',
         }}
       >
-        {/* Tracklist Header */}
-        <Box 
-          sx={{ 
-            p: { xs: 2, sm: 3 }, 
-            pb: { xs: 1, sm: 2 },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-            <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-              Your Songs
-            </Typography>
-            {/* Mobile: simple count */}
-            <Typography 
-              sx={{ 
-                display: { xs: 'block', sm: 'none' },
-                color: '#86868B',
-                fontSize: '0.875rem',
-              }}
-            >
-              ({totalSongsCount})
-            </Typography>
-            {/* Desktop: total count chip */}
-            <Chip 
-              label={`${totalSongsCount} track${totalSongsCount !== 1 ? 's' : ''}`} 
-              size="small" 
-              sx={{ 
-                backgroundColor: 'rgba(0,122,255,0.1)',
-                color: '#007AFF',
-                fontWeight: 500,
-                display: { xs: 'none', sm: 'flex' },
-              }} 
-            />
+        {/* Header Row: Title + Toggle + Create Button */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          mb: 3,
+          gap: 2,
+          flexWrap: 'wrap',
+        }}>
+            {/* Left: Title and count */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+              <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                Your Songs
+              </Typography>
+              <Chip 
+                label={`${totalSongsCount}`} 
+                size="small" 
+                sx={{ 
+                  backgroundColor: 'rgba(0,122,255,0.1)',
+                  color: '#007AFF',
+                  fontWeight: 500,
+                  height: 24,
+                  '& .MuiChip-label': { px: 1.5 },
+                }} 
+              />
+            </Box>
+
+            {/* Right: Toggle + Create Button */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              {/* Toggle - same size on mobile and desktop */}
+              <ToggleButtonGroup
+                value={activeTab}
+                exclusive
+                onChange={handleTabChange}
+                sx={{
+                  background: 'rgba(0,0,0,0.04)',
+                  borderRadius: '10px',
+                  p: '3px',
+                  '& .MuiToggleButton-root': {
+                    border: 'none',
+                    borderRadius: '8px !important',
+                    px: { xs: 1.5, md: 2 },
+                    py: '7px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    color: '#86868B',
+                    gap: 0.75,
+                    '&.Mui-selected': {
+                      background: '#fff',
+                      color: '#007AFF',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      '&:hover': { background: '#fff' },
+                    },
+                    '&:hover': { background: 'rgba(0,0,0,0.02)' },
+                  },
+                }}
+              >
+                <ToggleButton value="songs">
+                  <MusicNoteIcon sx={{ fontSize: 18 }} />
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
+                </ToggleButton>
+                <ToggleButton value="videos">
+                  <VideoLibraryIcon sx={{ fontSize: 18 }} />
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Videos</Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              {/* Mobile: Icon button */}
+              <Tooltip title="Create New Song" arrow>
+                <IconButton
+                  onClick={() => navigate('/create?tab=song')}
+                  sx={{
+                    display: { xs: 'flex', md: 'none' },
+                    background: '#007AFF',
+                    color: '#fff',
+                    width: 32,
+                    height: 32,
+                    flexShrink: 0,
+                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                    '&:hover': { background: '#0066CC' },
+                  }}
+                >
+                  <AddIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+              {/* Desktop: Full button */}
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => navigate('/create?tab=song')}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  background: '#007AFF',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2,
+                  py: 0.75,
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': { background: '#0066CC' },
+                }}
+              >
+                Create New
+              </Button>
+            </Box>
           </Box>
-          {/* Mobile: Icon button */}
-          <Tooltip title="Create New Song" arrow>
-            <IconButton
-              onClick={() => navigate('/create?tab=song')}
-              sx={{
-                display: { xs: 'flex', md: 'none' },
-                background: '#007AFF',
-                color: '#fff',
-                width: 32,
-                height: 32,
-                flexShrink: 0,
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: '#0066CC',
-                },
-              }}
-            >
-              <AddIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
-          {/* Desktop: Full button */}
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/create?tab=song')}
-            sx={{
-              display: { xs: 'none', md: 'flex' },
-              background: '#007AFF',
-              borderRadius: '12px',
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 2,
-              py: 0.75,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              '&:hover': {
-                background: '#0066CC',
-              },
-            }}
-          >
-            Create New
-          </Button>
-        </Box>
 
         {/* Search and Filters */}
         <Box
           sx={{
-            px: { xs: 2, sm: 3 },
-            py: 1.5,
+            mb: 2,
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
             gap: 2,
@@ -1764,86 +1731,113 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             overflow: 'hidden',
           }}
         >
-          <Box 
-            sx={{ 
-              p: { xs: 2, sm: 3 }, 
-              borderBottom: '1px solid rgba(0,0,0,0.06)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 2,
-            }}
-          >
+          {/* Header Row: Title + Toggle + Create Button */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            mb: 3,
+            gap: 2,
+            flexWrap: 'wrap',
+          }}>
+            {/* Left: Title and count */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
               <VideoLibraryIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                {/* Shorter title on mobile */}
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Your Music Videos</Box>
-                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Videos</Box>
+                Your Videos
               </Typography>
-              {/* Mobile: simple count */}
-              <Typography 
-                sx={{ 
-                  display: { xs: 'block', sm: 'none' },
-                  color: '#86868B',
-                  fontSize: '0.875rem',
-                }}
-              >
-                ({totalVideosCount})
-              </Typography>
-              {/* Desktop: total count chip */}
               <Chip 
-                label={`${totalVideosCount} video${totalVideosCount !== 1 ? 's' : ''}`} 
+                label={`${totalVideosCount}`} 
                 size="small" 
                 sx={{ 
                   backgroundColor: 'rgba(0,122,255,0.1)',
                   color: '#007AFF',
                   fontWeight: 500,
-                  display: { xs: 'none', sm: 'flex' },
+                  height: 24,
+                  '& .MuiChip-label': { px: 1.5 },
                 }} 
               />
             </Box>
-            {/* Mobile: Icon button */}
-            <Tooltip title="Create New Video" arrow>
-              <IconButton
-                onClick={() => navigate('/create?tab=video')}
+
+            {/* Right: Toggle + Create Button */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              {/* Toggle - same size on mobile and desktop */}
+              <ToggleButtonGroup
+                value={activeTab}
+                exclusive
+                onChange={handleTabChange}
                 sx={{
-                  display: { xs: 'flex', md: 'none' },
-                  background: '#007AFF',
-                  color: '#fff',
-                  width: 32,
-                  height: 32,
-                  flexShrink: 0,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: '#0066CC',
+                  background: 'rgba(0,0,0,0.04)',
+                  borderRadius: '10px',
+                  p: '3px',
+                  '& .MuiToggleButton-root': {
+                    border: 'none',
+                    borderRadius: '8px !important',
+                    px: { xs: 1.5, md: 2 },
+                    py: '7px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    color: '#86868B',
+                    gap: 0.75,
+                    '&.Mui-selected': {
+                      background: '#fff',
+                      color: '#007AFF',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      '&:hover': { background: '#fff' },
+                    },
+                    '&:hover': { background: 'rgba(0,0,0,0.02)' },
                   },
                 }}
               >
-                <AddIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Tooltip>
-            {/* Desktop: Full button */}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/create?tab=video')}
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                background: '#007AFF',
-                borderRadius: '12px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 2,
-                py: 0.75,
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: '#0066CC',
-                },
-              }}
-            >
-              Create New
-            </Button>
+                <ToggleButton value="songs">
+                  <MusicNoteIcon sx={{ fontSize: 18 }} />
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
+                </ToggleButton>
+                <ToggleButton value="videos">
+                  <VideoLibraryIcon sx={{ fontSize: 18 }} />
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Videos</Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              {/* Mobile: Icon button */}
+              <Tooltip title="Create New Video" arrow>
+                <IconButton
+                  onClick={() => navigate('/create?tab=video')}
+                  sx={{
+                    display: { xs: 'flex', md: 'none' },
+                    background: '#007AFF',
+                    color: '#fff',
+                    width: 32,
+                    height: 32,
+                    flexShrink: 0,
+                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                    '&:hover': { background: '#0066CC' },
+                  }}
+                >
+                  <AddIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+              {/* Desktop: Full button */}
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => navigate('/create?tab=video')}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  background: '#007AFF',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2,
+                  py: 0.75,
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': { background: '#0066CC' },
+                }}
+              >
+                Create New
+              </Button>
+            </Box>
           </Box>
           
           {/* Videos Grid - Grouped by Date */}

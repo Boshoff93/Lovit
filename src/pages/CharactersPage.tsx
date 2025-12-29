@@ -3,7 +3,6 @@ import {
   Box, 
   Container,
   Typography,
-  Paper,
   Chip,
   Button,
   IconButton,
@@ -162,220 +161,232 @@ const CharactersPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: { xs: 2, sm: 3 },
-      overflow: 'hidden',
-    }}>
-      <Container maxWidth="lg" sx={{ 
+    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
+      {/* Header Row: Title + Create Button */}
+      <Box sx={{ 
         display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        width: '100%',
-        maxWidth: { xs: '100%', lg: '900px' },
-        p: 0,
-        overflow: 'hidden',
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        mb: 3,
+        gap: 2,
+        flexWrap: 'wrap',
       }}>
-        <Paper
-          elevation={0}
-          sx={{
-            width: '100%',
-            borderRadius: { xs: 2, sm: 3 },
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            overflow: 'hidden',
-          }}
-        >
-          <Box 
+        {/* Left: Title and count */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+          <PersonIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+            My Cast
+          </Typography>
+          <Chip 
+            label={`${characters.length}`}
+            size="small" 
             sx={{ 
-              p: { xs: 2, sm: 3 }, 
-              borderBottom: '1px solid rgba(0,0,0,0.06)',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-                <PersonIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
-                  My Cast
-                </Typography>
-                <Chip 
-                  label={`${characters.length}`}
-                  size="small" 
-                  sx={{ 
-                    backgroundColor: 'rgba(0,122,255,0.1)',
-                    color: '#007AFF',
-                    fontWeight: 500,
-                    display: { xs: 'none', sm: 'flex' },
-                  }} 
-                />
-              </Box>
-            {/* Mobile: Icon button */}
-            <Tooltip title="Create New" arrow>
-              <IconButton
-                onClick={() => navigate('/my-cast/create')}
-                sx={{
-                  display: { xs: 'flex', md: 'none' },
-                  background: '#007AFF',
-                  color: '#fff',
-                  width: 32,
-                  height: 32,
-                  flexShrink: 0,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: '#0066CC',
-                  },
-                }}
-              >
-                <AddIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Tooltip>
-            {/* Desktop: Full button */}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+              backgroundColor: 'rgba(0,122,255,0.1)',
+              color: '#007AFF',
+              fontWeight: 500,
+              height: 24,
+              '& .MuiChip-label': { px: 1.5 },
+            }} 
+          />
+        </Box>
+
+        {/* Right: Create Button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          {/* Mobile: Icon button */}
+          <Tooltip title="Create New" arrow>
+            <IconButton
               onClick={() => navigate('/my-cast/create')}
               sx={{
-                display: { xs: 'none', md: 'flex' },
+                display: { xs: 'flex', md: 'none' },
                 background: '#007AFF',
-                borderRadius: '12px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 2,
-                py: 0.75,
+                color: '#fff',
+                width: 32,
+                height: 32,
+                flexShrink: 0,
                 boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': { background: '#0066CC' },
+              }}
+            >
+              <AddIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
+          {/* Desktop: Full button */}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/my-cast/create')}
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              background: '#007AFF',
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 2,
+              py: 0.75,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': { background: '#0066CC' },
+            }}
+          >
+            Create New
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Description */}
+      <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 3 }}>
+        Add people, products, or places. Tag them when creating a video to feature them!
+      </Typography>
+
+      {/* Content */}
+      {isLoading ? (
+        <Box sx={{ py: 8, textAlign: 'center' }}>
+          <CircularProgress sx={{ color: '#007AFF' }} />
+        </Box>
+      ) : characters.length === 0 ? (
+        <Box sx={{ py: 8, textAlign: 'center' }}>
+          <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary">
+            No references yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+            Add characters, products or places to feature in your songs and videos
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/my-cast/create')}
+            sx={{
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3,
+              background: '#007AFF',
+              '&:hover': { background: '#0066CC' },
+            }}
+          >
+            Create New
+          </Button>
+        </Box>
+      ) : (
+        (() => {
+          // Group characters by type
+          const getCharacterType = (char: Character): 'person' | 'product' | 'place' => {
+            if (char.description?.includes('Place')) return 'place';
+            if (char.description?.includes('Product')) return 'product';
+            return 'person';
+          };
+          
+          const grouped = {
+            person: characters.filter(c => getCharacterType(c) === 'person'),
+            product: characters.filter(c => getCharacterType(c) === 'product'),
+            place: characters.filter(c => getCharacterType(c) === 'place'),
+          };
+
+          const sections = [
+            { key: 'person', label: 'People', items: grouped.person },
+            { key: 'product', label: 'Products', items: grouped.product },
+            { key: 'place', label: 'Places', items: grouped.place },
+          ].filter(section => section.items.length > 0);
+
+          const renderCharacterItem = (character: Character) => (
+            <Box
+              key={character.characterId}
+              onClick={() => navigate(`/my-cast/edit/${character.characterId}`)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 1.5, sm: 2 },
+                p: { xs: 1.5, sm: 2 },
+                borderRadius: '12px',
+                border: '1px solid rgba(0,0,0,0.08)',
+                background: '#fff',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
                 '&:hover': {
-                  background: '#0066CC',
+                  backgroundColor: 'rgba(0,122,255,0.02)',
+                  borderColor: 'rgba(0,122,255,0.2)',
                 },
               }}
             >
-              Create New
-            </Button>
-            </Box>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mt: 0.5, maxWidth: 400 }}>
-              Add people, products, or places. Tag them when creating a video to feature them!
-            </Typography>
-          </Box>
-
-          {isLoading ? (
-            <Box sx={{ py: 8, textAlign: 'center' }}>
-              <CircularProgress sx={{ color: '#007AFF' }} />
-            </Box>
-          ) : characters.length === 0 ? (
-            <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
-              <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary">
-                No references yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
-                Add characters, products or places to feature in your songs and videos
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/my-cast/create')}
-                sx={{
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                }}
-              >
-                Create New
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ 
-              p: 3, 
-              maxHeight: 'calc(100vh - 250px)',
-              overflowY: 'auto',
-              overflowX: 'hidden',
-            }}>
-              {characters.map((character) => (
-                <Box
-                  key={character.characterId}
-                  onClick={() => navigate(`/my-cast/edit/${character.characterId}`)}
+              <LoadingAvatar
+                src={character.imageUrls?.[0] || getCharacterTypeImage(character.description)}
+                size={{ xs: 48, sm: 56 }}
+              />
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#1D1D1F',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                  }}
+                >
+                  {character.characterName}
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  sx={{ 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                  }}
+                >
+                  {character.description?.includes('Place') 
+                    ? 'Place' 
+                    : character.description?.includes('Product') 
+                      ? 'Product' 
+                      : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
+                </Typography>
+              </Box>
+              <Tooltip title="Delete" arrow>
+                <IconButton
+                  onClick={(e) => handleDeleteClick(e, character)}
+                  size="small"
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: { xs: 1.5, sm: 2 },
-                    p: { xs: 1.5, sm: 2 },
-                    borderRadius: '12px',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    mb: 2,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    color: '#8E8E93',
+                    flexShrink: 0,
                     '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.05)',
-                      borderColor: '#007AFF',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
+                      color: '#FF3B30',
+                      backgroundColor: 'rgba(255,59,48,0.1)',
                     },
                   }}
                 >
-                  <LoadingAvatar
-                    src={character.imageUrls?.[0] || getCharacterTypeImage(character.description)}
-                    size={{ xs: 48, sm: 56 }}
-                  />
-                  <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        fontWeight: 600, 
-                        color: '#1D1D1F',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                      }}
-                    >
-                      {character.characterName}
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      color="text.secondary" 
-                      sx={{ 
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                      }}
-                    >
-                      {character.description?.includes('Place') 
-                        ? 'Place' 
-                        : character.description?.includes('Product') 
-                          ? 'Product' 
-                          : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
-                    </Typography>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          );
+
+          return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {sections.map((section) => (
+                <Box key={section.key}>
+                  <Typography 
+                    sx={{ 
+                      fontSize: '0.8rem', 
+                      fontWeight: 600, 
+                      color: '#86868B', 
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      mb: 1.5,
+                    }}
+                  >
+                    {section.label}
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    {section.items.map(renderCharacterItem)}
                   </Box>
-                  <Tooltip title="Delete" arrow>
-                    <IconButton
-                      onClick={(e) => handleDeleteClick(e, character)}
-                      size="small"
-                      sx={{
-                        color: '#8E8E93',
-                        flexShrink: 0,
-                        '&:hover': {
-                          color: '#FF3B30',
-                          backgroundColor: 'rgba(255,59,48,0.1)',
-                        },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
               ))}
             </Box>
-          )}
-        </Paper>
+          );
+        })()
+      )}
 
         {/* Delete Confirmation Dialog */}
         <Dialog
@@ -461,8 +472,7 @@ const CharactersPage: React.FC = () => {
             {notification.message}
           </Alert>
         </Snackbar>
-      </Container>
-    </Box>
+    </Container>
   );
 };
 

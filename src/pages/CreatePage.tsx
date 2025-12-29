@@ -48,6 +48,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SearchIcon from '@mui/icons-material/Search';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
@@ -398,6 +400,10 @@ const CreatePage: React.FC = () => {
   const [songSearchResults, setSongSearchResults] = useState<Song[]>([]);
   const [isSearchingSongs, setIsSearchingSongs] = useState(false);
   const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const songCastScrollRef = useRef<HTMLDivElement>(null);
+  const videoCastScrollRef = useRef<HTMLDivElement>(null);
+  const [songCastShowRightArrow, setSongCastShowRightArrow] = useState(false);
+  const [videoCastShowRightArrow, setVideoCastShowRightArrow] = useState(false);
   const [songsPage, setSongsPage] = useState(1);
   const [hasMoreSongs, setHasMoreSongs] = useState(true);
   const [isLoadingMoreSongs, setIsLoadingMoreSongs] = useState(false);
@@ -411,6 +417,33 @@ const CreatePage: React.FC = () => {
     message: '',
     severity: 'success'
   });
+
+  // Check if cast carousel needs scroll arrows
+  const checkCastScrollArrows = useCallback(() => {
+    if (songCastScrollRef.current) {
+      const { scrollWidth, clientWidth } = songCastScrollRef.current;
+      setSongCastShowRightArrow(scrollWidth > clientWidth + 10);
+    }
+    if (videoCastScrollRef.current) {
+      const { scrollWidth, clientWidth } = videoCastScrollRef.current;
+      setVideoCastShowRightArrow(scrollWidth > clientWidth + 10);
+    }
+  }, []);
+
+  // Update arrow visibility when characters change
+  useEffect(() => {
+    checkCastScrollArrows();
+  }, [characters, checkCastScrollArrows]);
+
+  const scrollCast = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const scrollAmount = ref.current.clientWidth * 0.6;
+      ref.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   useEffect(() => {
     const tab = searchParams.get('tab') as TabType;
@@ -873,52 +906,60 @@ const CreatePage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 1, sm: 2, md: 3 }, minHeight: 0, overflow: 'visible' }}>
-      {/* Toggle Buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, width: '100%' }}>
+      {/* Header with Title and Toggle */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        mb: 3,
+        px: { xs: 1, sm: 0 },
+        gap: 2,
+        flexWrap: 'wrap',
+      }}>
+        {/* Left: Page Title */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <AutoAwesomeIcon sx={{ color: '#007AFF', fontSize: 28 }} />
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            {activeTab === 'song' ? 'Create Music' : 'Create Video'}
+          </Typography>
+        </Box>
+
+        {/* Toggle - same size on mobile and desktop */}
         <ToggleButtonGroup
           value={activeTab}
           exclusive
           onChange={handleTabChange}
-          fullWidth
           sx={{
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '100px',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-            p: 0.5,
-            maxWidth: { xs: '100%', sm: 500 },
+            background: 'rgba(0,0,0,0.04)',
+            borderRadius: '10px',
+            p: '3px',
             '& .MuiToggleButton-root': {
               border: 'none',
-              borderRadius: '100px !important',
-              flex: 1,
-              minWidth: { xs: 'auto', sm: 140 },
-              px: { xs: 1.5, sm: 3 },
-              py: 1.25,
+              borderRadius: '8px !important',
+              px: { xs: 1.5, md: 2 },
+              py: '7px',
               textTransform: 'none',
               fontWeight: 600,
-              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              fontSize: '0.875rem',
               color: '#86868B',
               gap: 0.75,
-              whiteSpace: 'nowrap',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&.Mui-selected': {
-                background: '#007AFF',
-                color: '#fff',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.35)',
-                '&:hover': { background: '#007AFF' },
+                background: '#fff',
+                color: '#007AFF',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                '&:hover': { background: '#fff' },
               },
-              '&:hover': { background: 'rgba(0,122,255,0.06)' },
+              '&:hover': { background: 'rgba(0,0,0,0.02)' },
             },
           }}
         >
           <ToggleButton value="song">
             <MusicNoteIcon sx={{ fontSize: 18 }} />
-            Music
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
           </ToggleButton>
           <ToggleButton value="video">
             <VideoLibraryIcon sx={{ fontSize: 18 }} />
-            Music Videos
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Video</Box>
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
@@ -926,9 +967,9 @@ const CreatePage: React.FC = () => {
       {/* Song Creation Tab */}
       {activeTab === 'song' && (
         <>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%' }}>
           {/* Left Column - Song Options */}
-          <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             {/* Prompt Input */}
             <Paper
               elevation={0}
@@ -940,7 +981,6 @@ const CreatePage: React.FC = () => {
                 backdropFilter: 'blur(20px)',
                 border: showSongPromptError && !songPrompt.trim() ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(0,0,0,0.08)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                overflow: 'hidden',
                 maxWidth: '100%',
               }}
             >
@@ -956,41 +996,86 @@ const CreatePage: React.FC = () => {
               </Typography>
               
               {/* Characters Section */}
-              <Box sx={{ mb: 2, width: '100%', minWidth: 0, overflow: 'hidden' }}>
-                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters, products or places to your song:
-                </Typography>
+              <Box sx={{ mb: 2, width: '100%', minWidth: 0 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                    Add characters, products or places to your song:
+                  </Typography>
+                  {/* Scroll arrows - top right */}
+                  {songCastShowRightArrow && characters.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => scrollCast(songCastScrollRef, 'left')}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          background: 'rgba(0,0,0,0.04)',
+                          '&:hover': { background: 'rgba(0,0,0,0.08)' },
+                        }}
+                      >
+                        <ChevronLeftIcon sx={{ fontSize: 16, color: '#86868B' }} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => scrollCast(songCastScrollRef, 'right')}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          background: 'rgba(0,0,0,0.04)',
+                          '&:hover': { background: 'rgba(0,0,0,0.08)' },
+                        }}
+                      >
+                        <ChevronRightIcon sx={{ fontSize: 16, color: '#86868B' }} />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Box>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: 1, 
-                    alignItems: 'center',
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
-                    pb: 0.5,
-                    maxWidth: '100%',
-                    '&::-webkit-scrollbar': { height: 4 },
-                    '&::-webkit-scrollbar-track': { background: 'transparent' },
-                    '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
-                  }}>
-                    {/* Create Character chip - always first */}
-                    <Chip
-                      label="+ Create"
-                      onClick={() => navigate('/my-cast/create')}
-                      size="small"
+                  <Box sx={{ position: 'relative' }}>
+                    {/* Right gradient fade */}
+                    <Box
                       sx={{
-                        borderRadius: '100px',
-                        background: 'rgba(0,122,255,0.08)',
-                        border: '1px dashed rgba(0,122,255,0.3)',
-                        color: '#007AFF',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 40,
+                        background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
+                        zIndex: 1,
+                        pointerEvents: 'none',
                       }}
                     />
+                    <Box 
+                      ref={songCastScrollRef}
+                      sx={{ 
+                        display: 'flex', 
+                        gap: 1, 
+                        alignItems: 'center',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        pb: 0.5,
+                        maxWidth: '100%',
+                        '&::-webkit-scrollbar': { display: 'none' },
+                      }}>
+                      {/* Create Character chip - always first */}
+                      <Chip
+                        label="+ Create"
+                        onClick={() => navigate('/my-cast/create')}
+                        size="small"
+                        sx={{
+                          borderRadius: '100px',
+                          background: 'rgba(0,122,255,0.08)',
+                          border: '1px dashed rgba(0,122,255,0.3)',
+                          color: '#007AFF',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                          '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                        }}
+                      />
                     {characters.map((char) => {
                       const isInPrompt = songPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (
@@ -1055,6 +1140,7 @@ const CreatePage: React.FC = () => {
                         </Tooltip>
                       );
                     })}
+                    </Box>
                   </Box>
                 ) : (
                   <Chip
@@ -1972,43 +2058,88 @@ const CreatePage: React.FC = () => {
               </Typography>
               
               {/* Characters Section */}
-              <Box sx={{ mb: 2, width: '100%', minWidth: 0, overflow: 'hidden' }}>
-                <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mb: 1 }}>
-                  Add characters, products or places to your video:
-                </Typography>
+              <Box sx={{ mb: 2, width: '100%', minWidth: 0 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                    Add characters, products or places to your video:
+                  </Typography>
+                  {/* Scroll arrows - top right */}
+                  {videoCastShowRightArrow && characters.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => scrollCast(videoCastScrollRef, 'left')}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          background: 'rgba(0,0,0,0.04)',
+                          '&:hover': { background: 'rgba(0,0,0,0.08)' },
+                        }}
+                      >
+                        <ChevronLeftIcon sx={{ fontSize: 16, color: '#86868B' }} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => scrollCast(videoCastScrollRef, 'right')}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          background: 'rgba(0,0,0,0.04)',
+                          '&:hover': { background: 'rgba(0,0,0,0.08)' },
+                        }}
+                      >
+                        <ChevronRightIcon sx={{ fontSize: 16, color: '#86868B' }} />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Box>
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: 1, 
-                    alignItems: 'center',
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
-                    pb: 0.5,
-                    maxWidth: '100%',
-                    '&::-webkit-scrollbar': { height: 4 },
-                    '&::-webkit-scrollbar-track': { background: 'transparent' },
-                    '&::-webkit-scrollbar-thumb': { background: 'rgba(0,0,0,0.1)', borderRadius: 2 },
-                  }}>
-                    {/* Create Character chip - always first */}
-                    <Chip
-                      label="+ Create"
-                      onClick={() => navigate('/my-cast/create')}
-                      size="small"
+                  <Box sx={{ position: 'relative' }}>
+                    {/* Right gradient fade */}
+                    <Box
                       sx={{
-                        borderRadius: '100px',
-                        background: 'rgba(0,122,255,0.08)',
-                        border: '1px dashed rgba(0,122,255,0.3)',
-                        color: '#007AFF',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                        '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 40,
+                        background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
+                        zIndex: 1,
+                        pointerEvents: 'none',
                       }}
                     />
-                    {characters.map((char) => {
-                      const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
+                    <Box 
+                      ref={videoCastScrollRef}
+                      sx={{ 
+                        display: 'flex', 
+                        gap: 1, 
+                        alignItems: 'center',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        pb: 0.5,
+                        maxWidth: '100%',
+                        '&::-webkit-scrollbar': { display: 'none' },
+                      }}>
+                      {/* Create Character chip - always first */}
+                      <Chip
+                        label="+ Create"
+                        onClick={() => navigate('/my-cast/create')}
+                        size="small"
+                        sx={{
+                          borderRadius: '100px',
+                          background: 'rgba(0,122,255,0.08)',
+                          border: '1px dashed rgba(0,122,255,0.3)',
+                          color: '#007AFF',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                          '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                        }}
+                      />
+                      {characters.map((char) => {
+                        const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
                       return (
                         <Tooltip
                           key={char.characterId}
@@ -2070,7 +2201,8 @@ const CreatePage: React.FC = () => {
                           />
                         </Tooltip>
                       );
-                    })}
+                      })}
+                    </Box>
                   </Box>
                 ) : (
                   <Chip
