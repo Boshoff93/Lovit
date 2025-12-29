@@ -1558,7 +1558,7 @@ const HomePage: React.FC = () => {
                 mb: 2,
             }}
           >
-              {heroHeadingParts[1] || 'A Hit Song for Anyone, in Any Genre'}
+              {heroHeadingParts[1] || 'Everyone Deserves a Hit Song'}
           </Typography>
 
             {/* Prompt Input - Glassy */}
@@ -1704,11 +1704,11 @@ const HomePage: React.FC = () => {
                 mb: 1.5,
               }}
             >
-              Everyone deserves a song
+              Create music in any genre or mood
             </Typography>
             <Typography
               sx={{
-                fontSize: { xs: '1rem', md: '1.15rem' },
+                fontSize: { xs: '1'},
                 color: '#86868B',
               }}
             >

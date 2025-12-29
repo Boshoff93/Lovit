@@ -388,8 +388,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       const pagination = response.data.pagination;
       
       setSongs(fetchedSongs);
+      // Use pagination.totalCount if available, otherwise fallback to songs length
       if (pagination?.totalCount !== undefined) {
         setTotalSongsCount(pagination.totalCount);
+      } else {
+        setTotalSongsCount(fetchedSongs.length);
       }
       
       // Check if any songs are still processing
@@ -538,10 +541,14 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     
     try {
       const response = await videosApi.getUserVideos(user.userId, { page, limit: videosPerPage });
-      setVideos(response.data.videos || []);
+      const fetchedVideos = response.data.videos || [];
+      setVideos(fetchedVideos);
       const pagination = response.data.pagination;
+      // Use pagination.totalCount if available, otherwise fallback to videos length
       if (pagination?.totalCount !== undefined) {
         setTotalVideosCount(pagination.totalCount);
+      } else {
+        setTotalVideosCount(fetchedVideos.length);
       }
       
       // Check if any videos are still processing
