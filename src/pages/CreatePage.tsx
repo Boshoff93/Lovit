@@ -230,7 +230,7 @@ const artStyles = [
 ];
 
 // Video types and quality options
-// Token costs: Still = 40, Cinematic = 200
+// Token costs: Still = 40, Cinematic = 250
 const videoTypes = [
   { 
     id: 'still', 
@@ -243,7 +243,7 @@ const videoTypes = [
   { 
     id: 'standard', 
     label: 'Cinematic', 
-    credits: 200, 
+    credits: 250, 
     description: 'Motion picture quality',
     tooltip: 'Premium AI-powered motion brings your music video to life with fluid, cinematic animations.',
     icon: MovieIcon,
@@ -258,6 +258,8 @@ interface Character {
   characterId: string;
   characterName: string;
   imageUrls?: string[];
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place';
+  description?: string;
 }
 
 // Song interface for video creation
@@ -351,6 +353,7 @@ const CreatePage: React.FC = () => {
   // Video creation state
   const [selectedSong, setSelectedSong] = useState(songIdFromUrl || '');
   const [videoPrompt, setVideoPrompt] = useState('');
+  const [placeDescription, setPlaceDescription] = useState(''); // User's description of their property/location
   const [selectedStyle, setSelectedStyle] = useState('3d-cartoon');
   const [videoType, setVideoType] = useState('still'); // 'still', 'casual', or 'creator'
   const [aspectRatio, setAspectRatio] = useState<'portrait' | 'landscape'>('portrait');
@@ -704,6 +707,12 @@ const CreatePage: React.FC = () => {
       // Extract tagged character IDs from prompt
       const characterIds = getTaggedCharacterIds(videoPrompt);
       
+      // Check if any tagged character is a Place
+      const hasPlace = characterIds.some(id => {
+        const char = characters.find(c => c.characterId === id);
+        return char?.characterType === 'Place' || char?.description?.includes('Place');
+      });
+      
       // Call the actual video generation API
       const response = await videosApi.generateVideo({
         userId: user.userId,
@@ -713,6 +722,7 @@ const CreatePage: React.FC = () => {
         videoPrompt: videoPrompt.trim(),
         aspectRatio,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
+        placeDescription: hasPlace && placeDescription.trim() ? placeDescription.trim() : undefined,
       });
       
       console.log('Video generation response:', response.data);
@@ -2091,6 +2101,57 @@ const CreatePage: React.FC = () => {
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
                 characterNames={characters.map(c => c.characterName)}
               />
+              
+              {/* Place Description Field - shows when a Place is tagged */}
+              {(() => {
+                const taggedCharIds = getTaggedCharacterIds(videoPrompt);
+                const hasPlace = taggedCharIds.some(id => {
+                  const char = characters.find(c => c.characterId === id);
+                  return char?.characterType === 'Place' || char?.description?.includes('Place');
+                });
+                
+                if (!hasPlace) return null;
+                
+                return (
+                  <Box sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <Typography sx={{ fontSize: '0.8rem', color: '#007AFF', fontWeight: 500 }}>
+                        🏠 Property Details (helps create accurate visuals)
+                      </Typography>
+                    </Box>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      value={placeDescription}
+                      onChange={(e) => setPlaceDescription(e.target.value)}
+                      placeholder="Describe your property: location, style, key features, amenities, vibe... e.g., 'Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms'"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(0,122,255,0.04)',
+                          '& fieldset': {
+                            borderColor: 'rgba(0,122,255,0.2)',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: 'rgba(0,122,255,0.4)',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#007AFF',
+                          },
+                        },
+                        '& .MuiInputBase-input::placeholder': {
+                          color: '#86868B',
+                          fontSize: '0.85rem',
+                        },
+                      }}
+                    />
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', mt: 0.5 }}>
+                      This helps our AI accurately depict your property in the video
+                    </Typography>
+                  </Box>
+                );
+              })()}
             </Paper>
 
             {/* Visual Style Selection */}

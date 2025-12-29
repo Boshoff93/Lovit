@@ -34,6 +34,7 @@ import {
   Drawer,
   useMediaQuery,
   useTheme,
+  Paper,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { getRouteConfig } from '../config/routeConfig';
@@ -49,15 +50,16 @@ import ShareIcon from '@mui/icons-material/Share';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
 import BoltIcon from '@mui/icons-material/Bolt';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MenuIcon from '@mui/icons-material/Menu';
+import AddIcon from '@mui/icons-material/Add';
+import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -67,7 +69,7 @@ import { RootState, AppDispatch } from '../store/store';
 import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
 import { songsApi } from '../services/api';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+// PauseRoundedIcon replaced with AudioEqualizer component
 import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
 
 // Owner user ID for the seed songs
@@ -107,6 +109,61 @@ const genreToImage: Record<string, string> = {
   'punk': '/genres/punk.jpeg',
   'edm': '/genres/edm.jpeg',
   'techno': '/genres/techno.jpeg',
+};
+
+// Animated Equalizer Component for playing tracks
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
+  isPlaying, 
+  size = 20,
+  color = '#007AFF' 
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+  
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying 
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
 };
 
 // Default sample tracks for the home route (/)
@@ -317,6 +374,66 @@ const genreOrder = [
   'rock', 'latin', 'reggaeton', 'reggae', 'punk', 'electronic', 'alternative', 'techno', 'edm'
 ];
 
+// Language sample tracks - using the same tracks as LanguageDetailPage (one per language, 15 total)
+// These are distinct tracks not used elsewhere on the page
+const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
+  'english': [{ id: 'ca9e75ed-551e-4f0e-b939-2130ac0fcdc3', title: 'Wide Open Sky', duration: '2:19' }],
+  'spanish': [{ id: '1faa7d07-51ef-4bbd-841c-67d0e78a1add', title: 'Fuego en la Piel', duration: '1:38' }],
+  'french': [{ id: 'a67bee12-fab5-45ef-aa3a-1c846c60e4d9', title: 'Sous le Ciel de Paris', duration: '2:21' }],
+  'german': [{ id: '72b806e0-ff44-4385-ab26-c27c328fc0dc', title: 'Unbezwingbar', duration: '2:17' }],
+  'japanese': [{ id: '2ea32de2-7ed0-44bf-8130-d418e10926e4', title: '桜の約束', duration: '2:18' }],
+  'korean': [{ id: '9488d94b-e493-4a45-9813-fbcb111185cd', title: '첫눈에 (At First Sight)', duration: '2:09' }],
+  'chinese': [{ id: '074cf19a-cb08-428a-9f0b-32f1560eff70', title: '月光下的誓言', duration: '2:36' }],
+  'portuguese': [{ id: 'aedc9a75-0796-4355-9f13-cdb3a55ea37e', title: 'Onde o Mar Me Espera', duration: '2:13' }],
+  'italian': [{ id: '80470df4-8d6d-4049-a208-4adf3489e4b2', title: 'Sei Tu L\'Amore Vero', duration: '3:09' }],
+  'hindi': [{ id: '98e7a1f5-d7c1-4c58-afe8-b9f4e7e3cee9', title: 'Tere Bina Adhura', duration: '2:14' }],
+  'arabic': [{ id: '7213cafe-3f48-4dd5-82c1-4dd1795467d3', title: 'قلبي معاك', duration: '1:57' }],
+  'russian': [{ id: '3e05a0a9-a3a6-465b-8156-b1e8afd69588', title: 'Огни Москвы', duration: '2:38' }],
+  'turkish': [{ id: '05714691-b94e-474a-b7a1-7ff90fbeba2b', title: 'Sensiz Olamam', duration: '2:34' }],
+  'thai': [{ id: 'df7effc0-2628-41fd-a522-ffb64cc25a06', title: 'รักแรกพบ', duration: '2:35' }],
+  'vietnamese': [{ id: '771d81bd-b99f-4ebb-bae7-3ce05013f134', title: 'Lần Đầu Yêu', duration: '2:13' }],
+};
+
+// Language display order for the carousel (15 languages)
+const languageOrder = ['english', 'spanish', 'french', 'german', 'japanese', 'korean', 'chinese', 'portuguese', 'italian', 'hindi', 'arabic', 'russian', 'turkish', 'thai', 'vietnamese'];
+
+// Language name to image code mapping
+const languageToImageCode: Record<string, string> = {
+  'english': 'en', 'spanish': 'es', 'french': 'fr', 'german': 'de',
+  'japanese': 'js', 'korean': 'ko', 'chinese': 'zh', 'portuguese': 'pt',
+  'italian': 'it', 'hindi': 'hi', 'arabic': 'ar', 'russian': 'ru',
+  'turkish': 'tr', 'thai': 'th', 'vietnamese': 'vi',
+};
+
+// Function to get language tracks (15 distinct tracks, one per language)
+function getLanguageTracksForRoute(): Array<{id: string; title: string; language: string; duration: string; image: string}> {
+  return languageOrder.map(lang => {
+    const track = languageSampleTracks[lang][0];
+    const langName = lang.charAt(0).toUpperCase() + lang.slice(1);
+    const imageCode = languageToImageCode[lang] || lang.slice(0, 2);
+    return { ...track, language: langName, image: `/locales/${imageCode}.jpeg` };
+  });
+}
+
+// Additional genre tracks to fill the remaining carousel (tracks not in defaultSampleTracks)
+const additionalGenreTracks = [
+  { id: '49995520-1898-4675-9657-3fd93142fd99', title: 'Neon Confessions', genre: 'pop', duration: '2:49' },
+  { id: '93e99651-7173-49b3-bc47-37e6b33dc15b', title: 'City Lights On My Heart', genre: 'pop', duration: '2:02' },
+  { id: '801063e2-df5e-4abf-87b4-5fbfb49cb103', title: 'From the Concrete', genre: 'hip-hop', duration: '1:45' },
+  { id: 'a9b292d1-0215-4e5c-a87d-17a9e7654c0c', title: 'Candlelight Promise', genre: 'rnb', duration: '2:55' },
+  { id: '79b6d662-b0cd-4a8d-9924-b4e3ba16d7d3', title: 'Crystalline Drift', genre: 'electronic', duration: '2:56' },
+  { id: 'b5774873-ea24-49c3-8ff7-4f3ab4f49740', title: 'Rise Into The Light', genre: 'dance', duration: '2:02' },
+  { id: '9c31f3fa-f744-4cfd-b549-b6d754393de4', title: 'Feel the Groove Tonight', genre: 'house', duration: '2:36' },
+  { id: 'a1cf722f-4ec1-45a6-923d-d26b9647ecdb', title: 'Rise Into The Light', genre: 'edm', duration: '2:08' },
+  { id: 'a10e20cb-3d1c-4ba3-ade6-14c970ba2974', title: 'Machine Heart Protocol', genre: 'techno', duration: '2:26' },
+  { id: 'dc096869-8a5e-4c9f-a664-53da6e55966c', title: 'Burn The Night', genre: 'rock', duration: '2:32' },
+  { id: 'b2cf2690-797b-4d79-96a1-b75a61d58bb9', title: 'Empty Rooms', genre: 'alternative', duration: '2:50' },
+  { id: 'abbde752-0560-40dc-858c-75fbc5e5d2b6', title: 'Golden Hour Getaway', genre: 'indie', duration: '1:57' },
+  { id: '394e6756-92c5-4f55-8ec4-f7a83f09b580', title: 'Not Your Puppet', genre: 'punk', duration: '1:55' },
+  { id: 'dcfcae83-63a5-4975-8496-7b97e04fc7d4', title: 'Teeth of the Void', genre: 'metal', duration: '3:46' },
+  { id: 'd00b4220-bc57-43f8-836d-cae5089da865', title: 'Midnight at the Blue Room', genre: 'jazz', duration: '2:50' },
+];
+
 // Function to generate sample tracks based on current route
 function getSampleTracksForRoute(pathname: string): Array<{id: string; title: string; genre: string; duration: string}> {
   // Use default tracks for home route
@@ -333,18 +450,19 @@ function getSampleTracksForRoute(pathname: string): Array<{id: string; title: st
   }).filter((track): track is {id: string; title: string; genre: string; duration: string} => track !== null);
 }
 
-// Sample music videos data - mix of portrait (9:16) and landscape (16:9)
-// Thumbnails are stored in /public/video-thumbnails/
-const sampleVideos: Array<{
-  id: string | number;
+// Video type definition
+interface VideoItem {
+  id: string;
   title: string;
   style: string;
   views: string;
   thumbnail: string;
   aspectRatio: 'portrait' | 'landscape';
-  videoUrl?: string; // Actual video page URL if available
-}> = [
-  // Real videos first
+  videoUrl: string;
+}
+
+// PROMO VIDEOS - Product/brand promotional content (like Walk Right In with Chanel)
+const promoVideosPortrait: VideoItem[] = [
   {
     id: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac',
     title: "Walk Right In",
@@ -354,6 +472,15 @@ const sampleVideos: Array<{
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
   },
+  // Add more portrait promo videos here
+];
+
+const promoVideosLandscape: VideoItem[] = [
+  // Add landscape promo videos here
+];
+
+// MUSIC VIDEOS - Song-focused artistic videos
+const musicVideosPortrait: VideoItem[] = [
   {
     id: 'da4d792d-a24b-45d8-87ba-5b41778496e8',
     title: "Polaroid Summer",
@@ -363,6 +490,10 @@ const sampleVideos: Array<{
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
   },
+  // Add more portrait music videos here
+];
+
+const musicVideosLandscape: VideoItem[] = [
   {
     id: '4a7ec232-aca9-4538-bc79-45149d705812',
     title: "Cha-La Head-Cha-La",
@@ -372,39 +503,7 @@ const sampleVideos: Array<{
     aspectRatio: 'landscape',
     videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
   },
-  // Placeholder videos (to be replaced with real ones)
-  {
-    id: 1,
-    title: "Neon City Nights",
-    style: "Cyberpunk",
-    views: "45.2K",
-    thumbnail: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=533&fit=crop",
-    aspectRatio: 'portrait',
-  },
-  {
-    id: 2,
-    title: "Ocean Dreams",
-    style: "3D Animation",
-    views: "32.8K",
-    thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=533&fit=crop",
-    aspectRatio: 'portrait',
-  },
-  {
-    id: 3,
-    title: "Mountain Journey",
-    style: "Cinematic",
-    views: "28.5K",
-    thumbnail: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=533&fit=crop",
-    aspectRatio: 'portrait',
-  },
-  {
-    id: 4,
-    title: "Urban Rhythm",
-    style: "Anime",
-    views: "38.1K",
-    thumbnail: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=533&fit=crop",
-    aspectRatio: 'portrait',
-  },
+  // Add more landscape music videos here
 ];
 
 // Genres data - matching the genres we support with images
@@ -517,7 +616,7 @@ const languages = [
 // Token costs:
 // 1 Song = 20 tokens
 // 1 Still Image Video = 40 tokens
-// 1 Animated Video = 200 tokens
+// 1 Animated Video = 250 tokens
 
 interface PricePlan {
   id: string;
@@ -569,7 +668,7 @@ const plans: PricePlan[] = [
       '1,000 tokens/month',
       '50 songs',
       '25 still image videos',
-      '5 animated videos',
+      '4 animated videos',
       'High quality audio',
       'Commercial license',
     ],
@@ -590,7 +689,7 @@ const plans: PricePlan[] = [
       '2,500 tokens/month',
       '125 songs',
       '62 still image videos',
-      '12 animated videos',
+      '10 animated videos',
       'Highest quality audio',
       'Priority generation',
       'Commercial license',
@@ -609,7 +708,7 @@ const SectionDivider: React.FC = () => (
   <Container maxWidth="md">
     <Box
       sx={{
-        height: '1.5px',
+        height: '2px',
         background: 'linear-gradient(90deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,0,0,0.12) 50%, rgba(0,122,255,0.15) 80%, transparent 100%)',
         my: { xs: 2, md: 4 },
         position: 'relative',
@@ -730,6 +829,247 @@ const quickRoutes = [
   { path: '/create-uplifting-music', label: 'Uplifting Music' },
 ];
 
+// Reusable Scrollable Carousel with fade edges and arrows
+interface ScrollableCarouselProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children }) => {
+  const [showLeftArrow, setShowLeftArrow] = React.useState(false);
+  const [showRightArrow, setShowRightArrow] = React.useState(true);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const checkScrollPosition = React.useCallback(() => {
+    const container = containerRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      // Initial check
+      setTimeout(checkScrollPosition, 100);
+      return () => container.removeEventListener('scroll', checkScrollPosition);
+    }
+  }, [checkScrollPosition]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    const container = containerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  return (
+    <Box sx={{ position: 'relative' }}>
+      {/* Left fade + arrow */}
+      {showLeftArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 60,
+              background: 'linear-gradient(to right, #fff 0%, #fff 15%, transparent 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('left')}
+            sx={{
+              position: 'absolute',
+              left: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: '#fff',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              width: 40,
+              height: 40,
+              '&:hover': {
+                background: '#fff',
+                transform: 'translateY(-50%) scale(1.05)',
+              },
+            }}
+          >
+            <ChevronLeftIcon sx={{ color: '#1D1D1F' }} />
+          </IconButton>
+        </>
+      )}
+
+      {/* Right fade + arrow */}
+      {showRightArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: 60,
+              background: 'linear-gradient(to left, #fff 0%, #fff 15%, transparent 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('right')}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: '#fff',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              width: 40,
+              height: 40,
+              '&:hover': {
+                background: '#fff',
+                transform: 'translateY(-50%) scale(1.05)',
+              },
+            }}
+          >
+            <ChevronRightIcon sx={{ color: '#1D1D1F' }} />
+          </IconButton>
+        </>
+      )}
+
+      {/* Scrollable content */}
+      <Box
+        ref={containerRef}
+        id={id}
+        sx={{
+          display: 'flex',
+          gap: 2,
+          overflowX: 'auto',
+          py: 1, // Add vertical padding for hover transforms
+          pl: 0.5, // Add left padding so leftmost item isn't clipped
+          '&::-webkit-scrollbar': { display: 'none' },
+          scrollbarWidth: 'none',
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
+// Video Card Component for reuse
+interface VideoCardProps {
+  video: VideoItem;
+  onClick: () => void;
+}
+
+const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
+  const isLandscape = video.aspectRatio === 'landscape';
+  const portraitWidth = { xs: 150, sm: 175, md: 200 };
+  const landscapeWidth = { xs: 280, sm: 320, md: 360 };
+
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        width: isLandscape ? landscapeWidth : portraitWidth,
+        minWidth: isLandscape ? landscapeWidth : portraitWidth,
+        flexShrink: 0,
+        position: 'relative',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        '&:hover': {
+          transform: 'translateY(-2px) scale(1.02)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          aspectRatio: isLandscape ? '16/9' : '9/16',
+          overflow: 'hidden',
+          borderRadius: '10px',
+        }}
+      >
+        <Box
+          component="img"
+          src={video.thumbnail}
+          alt={video.title}
+          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        {/* Play button */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              background: '#fff',
+              borderRadius: '50%',
+              width: isLandscape ? 48 : 36,
+              height: isLandscape ? 48 : 36,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          >
+            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 20, color: '#007AFF' }} />
+          </Box>
+        </Box>
+        {/* Info overlay */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            p: 1.5,
+            pt: 4,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: '#fff',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {video.title}
+          </Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
+            {video.style}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
 const HomePage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -766,7 +1106,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, logout, subscription } = useAuth();
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, allowances } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = !!token;
 
   // Get sample tracks based on current route (default for /, hashed for other routes)
@@ -777,7 +1117,7 @@ const HomePage: React.FC = () => {
   }, [drawerOpen]);
 
   // Handle play button click for sample tracks
-  const handlePlaySampleTrack = useCallback(async (track: { id: string; title: string; genre: string; duration: string }) => {
+  const handlePlaySampleTrack = useCallback(async (track: { id: string; title: string; genre?: string; duration: string }) => {
     // If this song is currently playing, pause it
     if (currentSong?.songId === track.id && isPlaying) {
       pauseSong();
@@ -1098,7 +1438,7 @@ const HomePage: React.FC = () => {
 
   // Create structured data for SEO
   const trackStructuredData = useMemo(() => createMusicPlaylistStructuredData({
-    name: 'Gruvi Featured Tracks',
+    name: 'Gruvi Featured Tracks for You',
     description: 'Listen to AI-generated music created with Gruvi. High-quality songs across all genres.',
     url: 'https://gruvi.ai/',
     tracks: sampleTracks.slice(0, 10).map(track => ({
@@ -1120,15 +1460,15 @@ const HomePage: React.FC = () => {
     }}>
       {/* SEO */}
       <SEO
-        title="Gruvi: AI Music Generator | Create Songs & Music Videos"
-        description="Create original AI-generated songs and stunning music videos with Gruvi. Generate professional music in any genre, mood, or language in seconds."
-        keywords="AI music generator, AI song generator, create music with AI, AI music videos, Gruvi, music creation, AI vocals, generate songs"
-        ogTitle="Gruvi: AI Music Generator"
-        ogDescription="Create original AI-generated songs and stunning music videos with Gruvi."
+        title="Gruvi: AI Music Generator & Music Video Maker | Create Songs in 50+ Genres & 25+ Languages"
+        description="Create AI-generated songs, cinematic music videos, and promo videos with Gruvi. Generate professional music in 50+ genres (pop, hip-hop, rock, jazz, K-pop, anime) and 25+ languages. Add custom characters with My Cast. Perfect for artists, content creators, brands, Airbnb hosts, and businesses."
+        keywords="AI music generator, AI song generator, create music with AI, AI music videos, AI promo videos, product video generator, Airbnb promo video, Gruvi, music creation, AI vocals, generate songs, promotional videos, K-pop generator, anime music, custom character video, 3D cartoon music video, cinematic video maker, multilingual music generator, AI beat maker, lyrics generator, free music generator"
+        ogTitle="Gruvi: AI Music & Video Generator | 50+ Genres, 25+ Languages"
+        ogDescription="Create AI-generated songs in any genre and language. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
         ogType="website"
-        ogUrl="https://gruvi.ai/"
-        twitterTitle="Gruvi: AI Music Generator"
-        twitterDescription="Create original AI-generated songs and stunning music videos with Gruvi."
+        ogUrl="https://gruvimusic.com/"
+        twitterTitle="Gruvi: AI Music & Video Generator | 50+ Genres, 25+ Languages"
+        twitterDescription="Create AI-generated songs in any genre and language. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
         structuredData={[
           trackStructuredData,
           createSoftwareAppStructuredData(),
@@ -1215,67 +1555,129 @@ const HomePage: React.FC = () => {
               // Desktop: full buttons - ml: auto forces right alignment
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
                 {isLoggedIn ? (
-                  // Logged in user - show Dashboard, FAQ, and sign out buttons (all rounded with icons)
+                  // Logged in user - show same buttons as dashboard Layout
                   <>
                     <Button 
-                      variant="contained" 
+                      component={RouterLink}
+                      to="/create"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: '20px',
+                        px: 2,
+                        py: 1,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        color: '#007AFF',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(0,0,0,0.1)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0,122,255,0.08)',
+                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                        }
+                      }}
+                    >
+                      Create
+                    </Button>
+                    <Button 
                       component={RouterLink}
                       to="/dashboard"
-                      startIcon={<DashboardIcon />}
+                      startIcon={<LibraryMusicIcon />}
                       sx={{
-                        background: '#007AFF',
-                        color: '#fff',
-                        px: 3,
-                        borderRadius: '100px',
+                        borderRadius: '20px',
+                        px: 2,
+                        py: 1,
+                        textTransform: 'none',
                         fontWeight: 600,
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                        color: '#1D1D1F',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(0,0,0,0.1)',
                         '&:hover': {
-                          background: '#0066DD',
-                          boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                        },
+                          backgroundColor: 'rgba(0,122,255,0.08)',
+                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                        }
                       }}
                     >
-                      Dashboard
+                      My Library
                     </Button>
                     <Button 
-                      variant="outlined"
                       component={RouterLink}
-                      to="/faq"
-                      startIcon={<HelpOutlineIcon />}
+                      to="/characters"
+                      startIcon={<FolderSpecialIcon />}
                       sx={{
-                        borderColor: 'rgba(0,0,0,0.15)',
+                        borderRadius: '20px',
+                        px: 2,
+                        py: 1,
+                        textTransform: 'none',
+                        fontWeight: 600,
                         color: '#1D1D1F',
-                        px: 3,
-                        borderRadius: '100px',
-                        fontWeight: 500,
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(0,0,0,0.1)',
                         '&:hover': {
-                          borderColor: '#007AFF',
-                          color: '#007AFF',
-                          background: 'rgba(0,122,255,0.05)',
-                        },
+                          backgroundColor: 'rgba(0,122,255,0.08)',
+                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                        }
                       }}
                     >
-                      FAQ
+                      My Cast
                     </Button>
                     <Button 
-                      variant="outlined"
-                      onClick={logout}
-                      startIcon={<LogoutIcon />}
+                      component={RouterLink}
+                      to="/settings"
+                      startIcon={<SettingsIcon />}
                       sx={{
-                        borderColor: 'rgba(0,0,0,0.15)',
+                        borderRadius: '20px',
+                        px: 2,
+                        py: 1,
+                        textTransform: 'none',
+                        fontWeight: 600,
                         color: '#1D1D1F',
-                        px: 3,
-                        borderRadius: '100px',
-                        fontWeight: 500,
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(0,0,0,0.1)',
                         '&:hover': {
-                          borderColor: '#FF3B30',
-                          color: '#FF3B30',
-                          background: 'rgba(255,59,48,0.05)',
-                        },
+                          backgroundColor: 'rgba(0,122,255,0.08)',
+                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                        }
                       }}
                     >
-                      Sign Out
+                      Settings
                     </Button>
+                    {/* Token display */}
+                    {allowances && (
+                      <Button
+                        component={RouterLink}
+                        to="/settings"
+                        sx={{
+                          borderRadius: '20px',
+                          px: 2,
+                          py: 1,
+                          minWidth: 'auto',
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          color: '#fff',
+                          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                          border: 'none',
+                          boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                            boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                          }
+                        }}
+                      >
+                        <BoltIcon sx={{ fontSize: 18, color: '#fff' }} />
+                        <span style={{ color: '#fff' }}>
+                          {(() => {
+                            const tokens = allowances.tokens;
+                            if (!tokens) return 0;
+                            const total = (tokens.max || 0) + (tokens.topup || 0);
+                            const used = tokens.used || 0;
+                            return (total - used).toLocaleString();
+                          })()}
+                        </span>
+                      </Button>
+                    )}
                   </>
                 ) : (
                   // Not logged in - show auth buttons
@@ -1516,32 +1918,39 @@ const HomePage: React.FC = () => {
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{ 
-        pt: { xs: 16, md: 20 },
+        pt: { xs: 14, md: 18 },
         pb: { xs: 2 },
         position: 'relative',
         zIndex: 1,
       }}>
         <Container maxWidth="md">
           <Box sx={{ textAlign: 'center' }}>
-            {/* Main Headline with Gruvi branding */}
+            {/* Main Headline with Gruvi branding - prevent cutoff */}
           <Typography 
             variant="h1" 
             sx={{ 
-                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+                fontSize: { xs: '2rem', sm: '3rem', md: '3.5rem' },
                 fontWeight: 700,
                 color: '#1D1D1F',
-              lineHeight: 1.1,
-                mb: 2,
-                letterSpacing: '-0.03em',
+              lineHeight: 1.15,
+                mb: 1.5,
+                letterSpacing: '-0.02em',
+                px: { xs: 1, sm: 0 },
               }}
             >
-              Gruvi:{' '}
+              <Box 
+                component="span"
+                sx={{ color: '#1D1D1F' }}
+              >
+                Gruvi:
+              </Box>{' '}
               <Box 
                 component="span" 
             sx={{ 
                   background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
                 }}
               >
                 {heroHeadingParts[0]}
@@ -1552,7 +1961,7 @@ const HomePage: React.FC = () => {
           <Typography 
             sx={{ 
                 fontFamily: '"Fredoka", "Inter", sans-serif',
-                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+                fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
                 fontWeight: 600,
                 color: '#1D1D1F',
                 mb: 2,
@@ -1688,540 +2097,961 @@ const HomePage: React.FC = () => {
         
       </Box>
 
-<SectionDivider />
-      {/* Featured Tracks Section */}
-      <Box sx={{ pt: { xs: 6 }, pb: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="md">
-          
-          {/* Section Header */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+      <SectionDivider />
+
+{/* Featured Tracks Section - columns of 3 tracks each */}
+      <Box sx={{ pt: { xs: 4, md: 6 }, pb: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{
-                fontSize: { xs: '2rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 1.5,
-              }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Create music in any genre or mood
+              Featured Tracks for You
             </Typography>
-            <Typography
-              sx={{
-                fontSize: { xs: '1'},
-                color: '#86868B',
-              }}
-            >
-              Hear what Gruvi can create
+            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              Hear what Gruvi can create - professional AI-generated music
             </Typography>
           </Box>
 
-          {/* Tracklist UI - Flat */}
-          <Box
-            sx={{
-              overflow: 'hidden',
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr' },
-            }}
-          >
-            {sampleTracks.map((track, index) => (
-              <Box
-                key={track.id}
-                onClick={() => handlePlaySampleTrack(track)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: { xs: 2, sm: 3 },
-                  p: { xs: 1.5, sm: 2 },
-                  borderBottom: { 
-                    xs: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                    lg: index < sampleTracks.length - 2 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                  },
-                  borderRight: { xs: 'none', lg: index % 2 === 0 ? '1px solid rgba(0,0,0,0.06)' : 'none' },
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.06)' : 'transparent',
-                  '&:hover': {
-                    background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : 'rgba(0,122,255,0.04)',
-                  },
-                }}
-              >
-                {/* Track Number */}
-                <Typography 
-                  sx={{ 
-                    width: 24,
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
-                    color: currentSong?.songId === track.id ? '#007AFF' : '#86868B',
-                    textAlign: 'center',
-                    display: { xs: 'none', sm: 'block' },
-                  }}
-                >
-                  {index + 1}
-                </Typography>
-
-                {/* Album Art */}
+          {/* Single carousel with columns of 3 tracks each - first 15 tracks (5 columns × 3 rows) */}
+          <ScrollableCarousel id="featured-tracks-carousel">
+            {(() => {
+              // Use first 15 tracks (5 columns × 3 rows), group into columns of 3
+              const firstBatch = sampleTracks.slice(0, 15);
+              const columns: typeof sampleTracks[] = [];
+              for (let i = 0; i < firstBatch.length; i += 3) {
+                columns.push(firstBatch.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
                 <Box
+                  key={`track-column-${colIndex}`}
                   sx={{
-                    position: 'relative',
-                    width: { xs: 48, sm: 56 },
-                    height: { xs: 48, sm: 56 },
-                    borderRadius: '10px',
-                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
                     flexShrink: 0,
                   }}
                 >
-                  <Box
-                    component="img"
-                    src={genreToImage[track.genre] || '/genres/pop.jpeg'}
-                    alt={track.title}
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                </Box>
+                  {columnTracks.map((track) => (
+                    <Paper
+                      key={track.id}
+                      elevation={0}
+                      onClick={() => handlePlaySampleTrack(track)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1.5,
+                        width: { xs: 240, sm: 280, md: 300 },
+                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                        borderRadius: '12px',
+                        border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          transform: 'translateY(-2px)',
+                        },
+                      }}
+                    >
+                      {/* Album Art */}
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          width: 48,
+                          height: 48,
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={genreToImage[track.genre] || '/genres/pop.jpeg'}
+                          alt={track.title}
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        {/* Play overlay */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
+                            opacity: currentSong?.songId === track.id ? 1 : 0,
+                            transition: 'opacity 0.2s',
+                            '&:hover': { opacity: 1 },
+                          }}
+                        >
+                          {loadingSongId === track.id ? (
+                            <CircularProgress size={14} sx={{ color: '#fff' }} />
+                          ) : currentSong?.songId === track.id && isPlaying ? (
+                            <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                          ) : (
+                            <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                          )}
+                        </Box>
+                      </Box>
 
-                {/* Track Info */}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography
-                    sx={{
-                      fontSize: { xs: '0.9rem', sm: '1rem' },
-                      fontWeight: 600,
-                      color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {track.title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: '0.8rem',
-                      color: '#86868B',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {track.genre} • {track.duration}
-                  </Typography>
-                </Box>
+                      {/* Track Info */}
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {track.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: '#86868B',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {track.genre}
+                        </Typography>
+                      </Box>
 
-                {/* Play Button */}
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlaySampleTrack(track);
-                  }}
-                  disabled={loadingSongId === track.id}
-                  sx={{ 
-                    background: currentSong?.songId === track.id ? '#007AFF' : '#fff',
-                    color: currentSong?.songId === track.id ? '#fff' : '#007AFF',
-                    width: 40,
-                    height: 40,
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    transition: 'all 0.2s ease',
-                    '&:hover': { 
-                      background: currentSong?.songId === track.id ? '#0066CC' : '#fff',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                    },
-                    '&:disabled': {
-                      background: '#f5f5f5',
-                    },
-                  }}
-                >
-                  {loadingSongId === track.id ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : currentSong?.songId === track.id && isPlaying ? (
-                    <PauseRoundedIcon sx={{ fontSize: 20 }} />
-                  ) : (
-                    <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
-                  )}
-                </IconButton>
-              </Box>
-            ))}
-          </Box>
+                      {/* Duration */}
+                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                        {track.duration}
+                      </Typography>
+                    </Paper>
+                  ))}
+                </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
         </Container>
       </Box>
 
-      <SectionDivider />
+      {/* Music Videos - Portrait */}
+      {musicVideosPortrait.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Turn Songs Into Music Videos
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                Stunning AI-generated visuals synced to your music
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="music-videos-portrait">
+              {musicVideosPortrait.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
 
-      {/* Music Videos Section */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+      {/* Music Videos - Landscape */}
+      {musicVideosLandscape.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Create Cinematic Music Videos
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                Widescreen videos perfect for YouTube and streaming
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="music-videos-landscape">
+              {musicVideosLandscape.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
+
+      {/* More Tracks Section - columns of 3 tracks each */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-                        sx={{
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Turn your music into videos
+              Explore More Tracks
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem', maxWidth: '500px', mx: 'auto' }}>
-              Create stunning AI-generated music videos in any style. 
-              Add your characters and bring your music to life.
-                  </Typography>
-                </Box>
+            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              Discover more AI-generated songs across every genre
+            </Typography>
+          </Box>
 
-          {/* Videos Carousel with Navigation */}
-          <Box sx={{ position: 'relative', width: '100vw', ml: 'calc(-50vw + 50%)' }}>
-            {/* Scrollable Container - Full bleed */}
-            <Box
-              id="video-carousel"
-              sx={{
-                display: 'flex',
-                gap: 2,
-                overflowX: 'auto',
-                py: 4,
-                scrollSnapType: 'x mandatory',
-                '&::-webkit-scrollbar': { display: 'none' },
-                scrollbarWidth: 'none',
-              }}
-            >
-              {/* Left spacer for centering - match Container maxWidth="md" (900px) */}
-              <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
-            {sampleVideos.map((video, index) => {
-              const isLandscape = video.aspectRatio === 'landscape';
-              // Portrait: width with 9:16 aspect ratio
-              // Landscape: calculate width to have SAME HEIGHT as portrait
-              // Portrait height = width * 16/9, Landscape width = height * 16/9
-              // So landscape width = portrait width * (16/9) * (16/9) = portrait width * 256/81 ≈ 3.16x
-              const portraitWidth = { xs: 150, sm: 175, md: 200 };
-              // Landscape width = portrait width * (16/9)^2 to match height
-              const landscapeWidth = { xs: 474, sm: 553, md: 632 }; // ~3.16x portrait width
-              
-              return (
+          {/* Single carousel with columns of 3 tracks each - tracks 15-30 (5 columns × 3 rows) */}
+          <ScrollableCarousel id="more-tracks-carousel">
+            {(() => {
+              // Use tracks from index 15 to 30 (15 tracks = 5 columns × 3 rows), group into columns of 3
+              const secondBatch = sampleTracks.slice(15, 30);
+              const columns: typeof sampleTracks[] = [];
+              for (let i = 0; i < secondBatch.length; i += 3) {
+                columns.push(secondBatch.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
                 <Box
-                  key={video.id}
-                  onClick={() => {
-                    // Always navigate to internal video route
-                    navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`);
-                  }}
-                  sx={{ 
-                    width: isLandscape 
-                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
-                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
-                    minWidth: isLandscape 
-                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
-                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
-                    maxWidth: isLandscape 
-                      ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px`, md: `${landscapeWidth.md}px` }
-                      : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px`, md: `${portraitWidth.md}px` },
+                  key={`more-track-column-${colIndex}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
                     flexShrink: 0,
-                    scrollSnapAlign: 'center',
-                    position: 'relative',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-                    '&:hover': {
-                      transform: 'translateY(-2px) scale(1.02)',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                    },
                   }}
                 >
-                  {/* Image container */}
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      aspectRatio: isLandscape ? '16/9' : '9/16',
-                      overflow: 'hidden',
-                      borderRadius: '10px',
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={video.thumbnail}
-                      alt={video.title}
+                  {columnTracks.map((track) => (
+                    <Paper
+                      key={track.id}
+                      elevation={0}
+                      onClick={() => handlePlaySampleTrack(track)}
                       sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                    {/* Play button overlay */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        gap: 1.5,
+                        p: 1.5,
+                        width: { xs: 240, sm: 280, md: 300 },
+                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                        borderRadius: '12px',
+                        border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          transform: 'translateY(-2px)',
+                        },
                       }}
                     >
-                      <IconButton
+                      {/* Album Art */}
+                      <Box
                         sx={{
-                          background: '#fff',
-                          color: '#007AFF',
-                          width: isLandscape ? 48 : 32,
-                          height: isLandscape ? 48 : 32,
-                          border: '1px solid rgba(0,0,0,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                          transition: 'all 0.2s ease',
-                          '&:hover': { 
-                            background: '#fff', 
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
-                          },
+                          position: 'relative',
+                          width: 48,
+                          height: 48,
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                         }}
                       >
-                        <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 18, color: '#007AFF' }} />
-                      </IconButton>
-                    </Box>
-                    {/* Info overlay at bottom with dark gradient */}
-                    <Box 
-                      sx={{ 
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        p: isLandscape ? 1.5 : 1,
-                        pt: isLandscape ? 3 : 2.5,
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                      }}
-                    >
-                      <Typography sx={{ 
-                        fontSize: isLandscape ? '0.9rem' : '0.75rem', 
-                        fontWeight: 600, 
-                        color: '#fff', 
-                        mb: 0.25, 
-                        whiteSpace: 'nowrap', 
-                        overflow: 'hidden', 
-                        textOverflow: 'ellipsis' 
-                      }}>
-                        {video.title}
-                      </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Chip
-                          label={video.style}
-                          sx={{
-                            background: 'rgba(255,255,255,0.25)',
-                            backdropFilter: 'blur(10px)',
-                            color: '#fff',
-                            fontSize: isLandscape ? '0.8rem' : '0.75rem',
-                            fontWeight: 500,
-                            height: isLandscape ? 20 : 16,
-                            borderRadius: '100px',
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            '& .MuiChip-label': { px: isLandscape ? 0.75 : 0.4, py: 0 },
-                          }}
+                        <Box
+                          component="img"
+                          src={genreToImage[track.genre] || '/genres/pop.jpeg'}
+                          alt={track.title}
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
-                        <Typography sx={{ fontSize: isLandscape ? '0.8rem' : '0.75rem', color: 'rgba(255,255,255,0.8)' }}>
-                          {video.views}
+                        {/* Play overlay */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
+                            opacity: currentSong?.songId === track.id ? 1 : 0,
+                            transition: 'opacity 0.2s',
+                            '&:hover': { opacity: 1 },
+                          }}
+                        >
+                          {loadingSongId === track.id ? (
+                            <CircularProgress size={14} sx={{ color: '#fff' }} />
+                          ) : currentSong?.songId === track.id && isPlaying ? (
+                            <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                          ) : (
+                            <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                          )}
+                        </Box>
+                      </Box>
+
+                      {/* Track Info */}
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {track.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: '#86868B',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {track.genre}
                         </Typography>
                       </Box>
-                    </Box>
-                  </Box>
+
+                      {/* Duration */}
+                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                        {track.duration}
+                      </Typography>
+                    </Paper>
+                  ))}
                 </Box>
-              );
-            })}
-              {/* Right spacer for centering - match Container maxWidth="md" (900px) */}
-              <Box sx={{ flexShrink: 0, width: { xs: 16, sm: 24, md: 'calc((100vw - 900px) / 2)' }, minWidth: { xs: 16, sm: 24 } }} />
-            </Box>
-            
-            {/* Navigation Arrows - Below cards, centered */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2, pb: 2 }}>
-              <IconButton
-                onClick={() => {
-                  const container = document.getElementById('video-carousel');
-                  if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
-                }}
-                sx={{
-                  background: '#fff',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
-                  width: 48,
-                  height: 48,
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  '&:hover': {
-                    background: '#f5f5f7',
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              >
-                <ChevronLeftIcon sx={{ color: '#1d1d1f', fontSize: 28 }} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  const container = document.getElementById('video-carousel');
-                  if (container) container.scrollBy({ left: 300, behavior: 'smooth' });
-                }}
-                sx={{
-                  background: '#fff',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
-                  width: 48,
-                  height: 48,
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  '&:hover': {
-                    background: '#f5f5f7',
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              >
-                <ChevronRightIcon sx={{ color: '#1d1d1f', fontSize: 28 }} />
-              </IconButton>
-            </Box>
-          </Box>
-              </Container>
-            </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
 
-      <SectionDivider />
+      {/* Promo Videos - Portrait */}
+      {promoVideosPortrait.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Promo Videos for Your Brand
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                Showcase products, Airbnb listings, e-commerce stores & more
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="promo-videos-portrait">
+              {promoVideosPortrait.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
 
-      {/* Value Proposition - Genres */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+      {/* Promo Videos - Landscape */}
+      {promoVideosLandscape.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Cinematic Promo Videos
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                High-impact widescreen promotional content
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="promo-videos-landscape">
+              {promoVideosLandscape.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
+
+      {/* Genres Section - Strong hook */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Every genre imaginable
+              Discover More Genres
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              From pop to classical, hip hop to ambient — create any style of music
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              From Hip-Hop to Classical - generate professional tracks in seconds
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-                display: 'flex', 
-                flexWrap: 'wrap',
-              gap: 1.5,
-                justifyContent: 'center',
-            }}
-          >
+          <ScrollableCarousel id="genres-carousel">
             {genres.map((genre) => (
               <Box 
                 key={genre.id}
                 onClick={() => navigate(`/genres/${genre.id}`)}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2.5,
-                  py: 1.5,
-                  borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.7)',
-                  backdropFilter: 'blur(40px)',
-                  WebkitBackdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'all 0.2s ease',
+                  gap: 0.75,
+                  minWidth: { xs: 85, sm: 100 },
                   cursor: 'pointer',
-                  '&:hover': {
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-                    transform: 'translateY(-2px) scale(1.02)',
-                    borderColor: 'rgba(0,122,255,0.2)',
-                  },
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:hover .genre-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
                 }}
               >
                 <Box
-                  component="img"
-                  src={genre.image}
-                  alt={genre.name}
+                  className="genre-circle"
                   sx={{
-                    width: 28,
-                    height: 28,
+                    width: { xs: 72, sm: 88 },
+                    height: { xs: 72, sm: 88 },
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    p: 0.5,
+                    background: '#fff',
                   }}
-                />
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 500, fontSize: '0.9rem' }}>
+                >
+                  <Box
+                    component="img"
+                    src={genre.image}
+                    alt={genre.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {genre.name}
                 </Typography>
               </Box>
             ))}
-          </Box>
+          </ScrollableCarousel>
         </Container>
       </Box>
 
-      <SectionDivider />
-
-      {/* Value Proposition - Art Styles */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+      {/* Discover More Tracks Section - remaining 3 tracks + 12 additional genre tracks = 15 total */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Music videos in any style
+              Create Music in Any Genre
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              Choose from dozens of visual styles for your music videos
+            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              Even more AI-generated music to explore
             </Typography>
           </Box>
 
-          <Box
+          {/* Single carousel with columns of 3 tracks each - remaining + additional tracks (5 columns × 3 rows) */}
+          <ScrollableCarousel id="discover-tracks-carousel">
+            {(() => {
+              // Combine remaining 2 tracks from sampleTracks (30-32) with 13 additional genre tracks to make 15
+              const remainingTracks = sampleTracks.slice(30);
+              const combinedTracks = [...remainingTracks, ...additionalGenreTracks.slice(0, 15 - remainingTracks.length)];
+              const columns: typeof combinedTracks[] = [];
+              for (let i = 0; i < combinedTracks.length; i += 3) {
+                columns.push(combinedTracks.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
+                <Box
+                  key={`discover-track-column-${colIndex}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {columnTracks.map((track) => (
+                    <Paper
+                      key={track.id}
+                      elevation={0}
+                      onClick={() => handlePlaySampleTrack(track)}
                       sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(8, 1fr)' },
-              gap: 2,
-            }}
-          >
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1.5,
+                        width: { xs: 240, sm: 280, md: 300 },
+                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                        borderRadius: '12px',
+                        border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          transform: 'translateY(-2px)',
+                        },
+                      }}
+                    >
+                      {/* Album Art */}
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          width: 48,
+                          height: 48,
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={genreToImage[track.genre] || '/genres/pop.jpeg'}
+                          alt={track.title}
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        {/* Play overlay */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
+                            opacity: currentSong?.songId === track.id ? 1 : 0,
+                            transition: 'opacity 0.2s',
+                            '&:hover': { opacity: 1 },
+                          }}
+                        >
+                          {loadingSongId === track.id ? (
+                            <CircularProgress size={14} sx={{ color: '#fff' }} />
+                          ) : currentSong?.songId === track.id && isPlaying ? (
+                            <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                          ) : (
+                            <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                          )}
+                        </Box>
+                      </Box>
+
+                      {/* Track Info */}
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {track.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: '#86868B',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {track.genre}
+                        </Typography>
+                      </Box>
+
+                      {/* Duration */}
+                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                        {track.duration}
+                      </Typography>
+                    </Paper>
+                  ))}
+                </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
+
+      {/* Art Styles Section - Strong hook */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Turn Your Music Into Stunning Videos
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Anime, Cinematic, 3D, Cyberpunk - pick your visual style
+            </Typography>
+          </Box>
+
+          <ScrollableCarousel id="styles-carousel">
             {artStyles.map((style, index) => (
               <Box
                 key={index}
                 onClick={() => navigate(`/styles/${style.id}`)}
                 sx={{
-                  aspectRatio: '1',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  transition: 'all 0.2s ease',
+                  minWidth: { xs: 130, sm: 150, md: 160 },
                   cursor: 'pointer',
-                  '&:hover': {
-                    transform: 'translateY(-3px) scale(1.02)',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.15)',
-                  },
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'scale(1.03)' },
+                  '&:hover .style-card': { boxShadow: '0 12px 32px rgba(0,0,0,0.2)' },
                 }}
               >
                 <Box
-                  component="img"
-                  src={style.image}
-                  alt={`${style.label} style example`}
+                  className="style-card"
                   sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-                {/* Label overlay at bottom */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                    padding: '24px 8px 8px 8px',
+                    aspectRatio: '1',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    mb: 1,
                   }}
                 >
-                  <Typography sx={{ color: '#fff', fontSize: '0.75rem', fontWeight: 600, textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
-                    {style.label}
-                  </Typography>
+                  <Box
+                    component="img"
+                    src={style.image}
+                    alt={`${style.label} style example`}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {style.label}
+                </Typography>
+              </Box>
+            ))}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
+
+      {/* Languages Section - Strong hook */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Make Music in Any Language
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              24+ languages with native-quality vocals - reach a global audience
+            </Typography>
+          </Box>
+
+          <ScrollableCarousel id="languages-carousel">
+            {languages.map((lang) => (
+              <Box 
+                key={lang.id}
+                onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  minWidth: { xs: 85, sm: 100 },
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:hover .lang-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
+                }}
+              >
+                <Box
+                  className="lang-circle"
+                  sx={{
+                    width: { xs: 80, sm: 96 },
+                    height: { xs: 80, sm: 96 },
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    p: 1,
+                    background: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={lang.image}
+                    alt={lang.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'contain', padding: 1 }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                  {lang.name}
+                </Typography>
+              </Box>
+            ))}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
+
+      {/* Language Tracks Section - 15 tracks in different languages (below Make Music in Any Language) */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Enjoy Music from Around the World
+            </Typography>
+            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              AI-generated songs in 15+ languages - from English to Japanese to Arabic
+            </Typography>
+          </Box>
+
+          {/* Single carousel with columns of 3 tracks each - 15 language tracks (5 columns × 3 rows) */}
+          <ScrollableCarousel id="language-tracks-carousel">
+            {(() => {
+              const languageTracks = getLanguageTracksForRoute();
+              const columns: typeof languageTracks[] = [];
+              for (let i = 0; i < languageTracks.length; i += 3) {
+                columns.push(languageTracks.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
+                <Box
+                  key={`lang-track-column-${colIndex}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {columnTracks.map((track) => (
+                    <Paper
+                      key={`${track.id}-${track.language}`}
+                      elevation={0}
+                      onClick={() => handlePlaySampleTrack(track)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1.5,
+                        width: { xs: 240, sm: 280, md: 300 },
+                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                        borderRadius: '12px',
+                        border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          transform: 'translateY(-2px)',
+                        },
+                        '&:hover .lang-play-overlay': {
+                          opacity: 1,
+                        },
+                      }}
+                    >
+                      {/* Language flag as album art */}
+                      <Box
+                        className="lang-track-image"
+                        sx={{
+                          position: 'relative',
+                          width: 48,
+                          height: 48,
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          background: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={track.image}
+                          alt={track.language}
+                          sx={{ 
+                            width: '85%', 
+                            height: '85%', 
+                            objectFit: 'contain',
+                            transition: 'opacity 0.2s ease',
+                          }}
+                        />
+                        {/* Play overlay - shows on hover */}
+                        <Box
+                          className="lang-play-overlay"
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.5)' : 'rgba(0,0,0,0.35)',
+                            opacity: currentSong?.songId === track.id ? 1 : 0,
+                            transition: 'opacity 0.2s ease',
+                          }}
+                        >
+                          {loadingSongId === track.id ? (
+                            <CircularProgress size={14} sx={{ color: '#fff' }} />
+                          ) : currentSong?.songId === track.id && isPlaying ? (
+                            <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                          ) : (
+                            <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                          )}
+                        </Box>
+                      </Box>
+
+                      {/* Track Info */}
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {track.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: '#86868B',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {track.language}
+                        </Typography>
+                      </Box>
+
+                      {/* Duration */}
+                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                        {track.duration}
+                      </Typography>
+                    </Paper>
+                  ))}
+                </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
+
+      {/* Features Section - Strong hook */}
+      <Box sx={{ py: { xs: 4, md: 6 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Everything You Need to Create
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Professional music and video generation at your fingertips
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+              gap: 2,
+            }}
+          >
+            {[
+              {
+                icon: <MusicNoteIcon sx={{ fontSize: 24 }} />,
+                title: 'Studio-quality audio',
+                description: 'Professional AI music generation.',
+              },
+              {
+                icon: <PersonIcon sx={{ fontSize: 24 }} />,
+                title: 'Custom characters',
+                description: 'Add anyone to your videos.',
+              },
+              {
+                icon: <ShareIcon sx={{ fontSize: 24 }} />,
+                title: 'Share everywhere',
+                description: 'Export to any platform.',
+              },
+              {
+                icon: <VideoLibraryIcon sx={{ fontSize: 24 }} />,
+                title: 'AI music videos',
+                description: 'Stunning visuals from your songs.',
+              },
+              {
+                icon: <BoltIcon sx={{ fontSize: 24 }} />,
+                title: 'Fast generation',
+                description: 'Songs in seconds, not minutes.',
+              },
+              {
+                icon: <ThumbUpIcon sx={{ fontSize: 24 }} />,
+                title: 'Commercial license',
+                description: 'Use for content and streaming.',
+              },
+            ].map((feature, index) => (
+              <Box
+                key={index}
+                sx={{
+                  p: 2,
+                  borderRadius: '10px',
+                  background: '#fff',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ 
+                    color: '#007AFF', 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '8px',
+                    background: 'rgba(0,122,255,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    {feature.icon}
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#1D1D1F' }}>
+                      {feature.title}
+                    </Typography>
+                    <Typography sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                      {feature.description}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             ))}
@@ -2229,243 +3059,64 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
-      <SectionDivider />
-
-      {/* Value Proposition - Languages */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
+      {/* Moods Section - Strong hook */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 , marginBottom:12}}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-                      <Typography 
-              variant="h2"
-                        sx={{ 
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
-            >
-              Create in any language
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              Generate lyrics and vocals in 24+ languages
-                      </Typography>
-                    </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 2,
-              justifyContent: 'center',
-            }}
-          >
-            {languages.map((lang) => (
-              <Box
-                key={lang.id}
-                onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  px: 2.5,
-                  py: 1.5,
-                  borderRadius: '14px',
-                  background: 'rgba(255,255,255,0.7)',
-                  backdropFilter: 'blur(40px)',
-                  WebkitBackdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-                    transform: 'translateY(-2px)',
-                    borderColor: 'rgba(0,122,255,0.2)',
-                  },
-                }}
-              >
-                <Box
-                  component="img"
-                  src={lang.image}
-                  alt={lang.name}
-                  sx={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '0%',
-                    objectFit: 'cover',
-                  }}
-                />
-                <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', fontWeight: 500 }}>
-                  {lang.name}
-                </Typography>
-              </Box>
-            ))}
-              </Box>
-            </Container>
-          </Box>
-
-      <SectionDivider />
-
-      {/* Features Grid */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{ 
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Everything you need to make music your way
+              Set the Perfect Mood
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Uplifting, melancholic, energetic - music that captures any emotion
             </Typography>
           </Box>
 
-          <Box
-                  sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
-              gap: 3,
-            }}
-          >
-            {[
-              {
-                icon: <MusicNoteIcon sx={{ fontSize: 32 }} />,
-                title: 'High-quality audio',
-                description: 'Professional-grade AI music generation with studio-quality output.',
-              },
-              {
-                icon: <PersonIcon sx={{ fontSize: 32 }} />,
-                title: 'Add anyone to your video',
-                description: 'Create characters with reference images and feature them in your music videos.',
-              },
-              {
-                icon: <ShareIcon sx={{ fontSize: 32 }} />,
-                title: 'Share everywhere',
-                description: 'Export and share your creations on any platform or social media.',
-              },
-              {
-                icon: <VideoLibraryIcon sx={{ fontSize: 32 }} />,
-                title: 'Music videos',
-                description: 'Turn any song into a stunning AI-generated music video.',
-              },
-              {
-                icon: <BoltIcon sx={{ fontSize: 32 }} />,
-                title: 'Fast generation',
-                description: 'Get your music in seconds, not minutes. Iterate quickly.',
-              },
-              {
-                icon: <ThumbUpIcon sx={{ fontSize: 32 }} />,
-                title: 'Commercial license',
-                description: 'Use your creations for content, streaming, or commercial projects.',
-              },
-            ].map((feature, index) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 3.5,
-                  borderRadius: '24px',
-                  background: 'rgba(255,255,255,0.7)',
-                  backdropFilter: 'blur(40px)',
-                  WebkitBackdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06)',
-                    borderColor: 'rgba(0,122,255,0.15)',
-                  },
-                }}
-              >
-                <Box sx={{ color: '#007AFF', mb: 2, filter: 'drop-shadow(0 2px 4px rgba(0,122,255,0.2))' }}>{feature.icon}</Box>
-                <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
-                  {feature.title}
-              </Typography>
-                <Typography sx={{ color: '#86868B', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                  {feature.description}
-              </Typography>
-            </Box>
-            ))}
-          </Box>
-          </Container>
-      </Box>
-
-      <SectionDivider />
-
-      {/* Value Proposition - Moods */}
-      <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
-              }}
-            >
-              Set the perfect mood
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
-              From happy to melancholic — create music that captures any emotion
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex', 
-              flexWrap: 'wrap',
-              gap: 1.5,
-              justifyContent: 'center',
-            }}
-          >
+          <ScrollableCarousel id="moods-carousel">
             {moods.map((mood) => (
               <Box 
                 key={mood.id}
                 onClick={() => navigate(`/moods/${mood.id}`)}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2.5,
-                  py: 1.5,
-                  borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.7)',
-                  backdropFilter: 'blur(40px)',
-                  WebkitBackdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'all 0.2s ease',
+                  gap: 0.75,
+                  minWidth: { xs: 85, sm: 100 },
                   cursor: 'pointer',
-                  '&:hover': {
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-                    transform: 'translateY(-2px) scale(1.02)',
-                    borderColor: 'rgba(0,122,255,0.2)',
-                  },
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:hover .mood-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
                 }}
               >
                 <Box
-                  component="img"
-                  src={mood.image}
-                  alt={mood.name}
+                  className="mood-circle"
                   sx={{
-                    width: 28,
-                    height: 28,
+                    width: { xs: 72, sm: 88 },
+                    height: { xs: 72, sm: 88 },
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    p: 0.5,
+                    background: '#fff',
                   }}
-                />
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 500, fontSize: '0.9rem' }}>
+                >
+                  <Box
+                    component="img"
+                    src={mood.image}
+                    alt={mood.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {mood.name}
                 </Typography>
               </Box>
             ))}
-          </Box>
+          </ScrollableCarousel>
         </Container>
       </Box>
 
@@ -2484,10 +3135,10 @@ const HomePage: React.FC = () => {
                 mb: 2,
               }}
             >
-              Start making music for free
+              Start Making Music for Free
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '1rem', mb: 4 }}>
-              Select the plan that best fits your needs
+              New customers get 2 free songs when they sign up. Select the plan that best fits your needs.
               </Typography>
 
             {/* Billing Toggle */}
@@ -2857,7 +3508,7 @@ const HomePage: React.FC = () => {
       <SectionDivider />
 
       {/* Explore Routes Section */}
-      <Box sx={{ py: { xs: 6, md: 8 }, position: 'relative', zIndex: 1 }}>
+      <Box sx={{ py: { xs: 6, md: 8 }, position: 'relative', zIndex: 1, marginBottom: 8}}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 5 }}>
             <Typography

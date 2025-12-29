@@ -839,6 +839,56 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     navigate(`/video/${video.videoId}`);
   };
 
+  const [downloadingVideoId, setDownloadingVideoId] = useState<string | null>(null);
+  
+  const handleDownloadVideo = async (video: Video) => {
+    if (!video.videoUrl) {
+      setNotification({
+        open: true,
+        message: 'Video not available for download yet',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    setDownloadingVideoId(video.videoId);
+    
+    try {
+      const response = await fetch(video.videoUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch video');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${video.songTitle || 'music-video'}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      setNotification({
+        open: true,
+        message: `Downloaded "${video.songTitle || 'Music Video'}"`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      setNotification({
+        open: true,
+        message: 'Download failed. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setDownloadingVideoId(null);
+    }
+  };
+
   const handleDeleteVideo = (video: Video) => {
     setVideoToDelete(video);
     setVideoDeleteConfirmOpen(true);
@@ -2581,6 +2631,26 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <PlayArrowRoundedIcon sx={{ color: '#007AFF' }} />
             </ListItemIcon>
             <ListItemText>Watch</ListItemText>
+          </MenuItem>
+        )}
+        {menuVideo?.status === 'completed' && menuVideo?.videoUrl && (
+          <MenuItem 
+            onClick={() => {
+              if (menuVideo) handleDownloadVideo(menuVideo);
+              handleVideoMenuClose();
+            }}
+            disabled={downloadingVideoId === menuVideo?.videoId}
+          >
+            <ListItemIcon>
+              {downloadingVideoId === menuVideo?.videoId ? (
+                <CircularProgress size={20} sx={{ color: '#007AFF' }} />
+              ) : (
+                <DownloadIcon sx={{ color: '#007AFF' }} />
+              )}
+            </ListItemIcon>
+            <ListItemText>
+              {downloadingVideoId === menuVideo?.videoId ? 'Downloading...' : 'Download'}
+            </ListItemText>
           </MenuItem>
         )}
         <MenuItem 

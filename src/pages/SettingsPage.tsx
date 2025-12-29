@@ -104,8 +104,8 @@ const SettingsPage: React.FC = () => {
     },
     {
       icon: <FaceIcon sx={{ color: '#007AFF' }} />,
-      title: 'Characters & Products',
-      description: 'Manage characters and products for videos',
+      title: 'My Cast',
+      description: 'Characters, products & places for your videos',
       onClick: () => navigate('/characters'),
     },
     {

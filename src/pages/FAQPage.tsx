@@ -112,8 +112,8 @@ export const faqItems = [
   {
     category: "Music Videos",
     question: "What's the difference between still image and animated videos?",
-    answer: "Still image videos feature a single animated scene (40 tokens), while full animated videos include motion, scene changes, and dynamic effects (200 tokens).",
-    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (40 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Full Animated Videos (200 tokens):**\n- Multiple scenes and transitions\n- Full character motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Animated:** Professional releases, YouTube, presentations"
+    answer: "Still image videos feature a single animated scene (40 tokens), while full animated videos include motion, scene changes, and dynamic effects (250 tokens).",
+    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (40 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Full Animated Videos (250 tokens):**\n- Multiple scenes and transitions\n- Full character motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Animated:** Professional releases, YouTube, presentations"
   },
 
   // ============================================

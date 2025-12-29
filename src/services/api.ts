@@ -131,6 +131,7 @@ export const videosApi = {
     videoPrompt?: string;
     aspectRatio?: 'portrait' | 'landscape';
     characterIds?: string[];
+    placeDescription?: string; // Optional: User's description of their property/location for web search
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {

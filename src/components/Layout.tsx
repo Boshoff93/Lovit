@@ -25,6 +25,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
 import BoltIcon from '@mui/icons-material/Bolt';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -383,6 +384,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     My Library
                   </Button>
                   <Button
+                    onClick={() => handleNavigate('/characters')}
+                    startIcon={<FolderSpecialIcon />}
+                    sx={{
+                      borderRadius: '20px',
+                      px: 2,
+                      py: 1,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      color: isActive('/characters') ? '#007AFF' : '#1D1D1F',
+                      backgroundColor: isActive('/characters') ? 'rgba(0,122,255,0.12)' : 'transparent',
+                      border: '1px solid',
+                      borderColor: isActive('/characters') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
+                      boxShadow: isActive('/characters') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,122,255,0.08)',
+                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
+                      }
+                    }}
+                  >
+                    My Cast
+                  </Button>
+                  <Button
                     onClick={() => handleNavigate('/settings')}
                     startIcon={<SettingsIcon />}
                     sx={{
@@ -580,6 +603,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     primaryTypographyProps={{ 
                       fontWeight: isActive('/dashboard') ? 600 : 400,
                       color: isActive('/dashboard') ? '#007AFF' : 'inherit'
+                    }} 
+                  />
+                </ListItemButton>
+              </ListItem>
+
+              {/* Studio Assets Section */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  sx={{ 
+                    px: 2, 
+                    borderRadius: 2, 
+                    mb: 1,
+                    backgroundColor: isActive('/characters') ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: isActive('/characters') ? '2px solid #007AFF' : '2px solid transparent',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0,122,255,0.08)',
+                    }
+                  }}
+                  onClick={() => handleNavigate('/characters')}
+                >
+                  <ListItemIcon sx={{ color: '#007AFF' }}>
+                    <FolderSpecialIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="My Cast" 
+                    primaryTypographyProps={{ 
+                      fontWeight: isActive('/characters') ? 600 : 400,
+                      color: isActive('/characters') ? '#007AFF' : 'inherit'
                     }} 
                   />
                 </ListItemButton>

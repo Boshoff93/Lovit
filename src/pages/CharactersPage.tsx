@@ -17,15 +17,63 @@ import {
   DialogActions,
   Snackbar,
   Alert,
+  Skeleton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { charactersApi } from '../services/api';
+
+// Avatar with skeleton loading state
+const LoadingAvatar: React.FC<{
+  src: string;
+  size: { xs: number; sm: number };
+  fallback?: React.ReactNode;
+}> = ({ src, size, fallback }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <Box sx={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      {isLoading && !hasError && (
+        <Skeleton 
+          variant="circular" 
+          sx={{ 
+            width: size, 
+            height: size, 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }} 
+          animation="wave"
+        />
+      )}
+      <Avatar
+        src={hasError ? undefined : src}
+        sx={{
+          width: size,
+          height: size,
+          bgcolor: '#E5E5EA',
+          opacity: isLoading && !hasError ? 0 : 1,
+          transition: 'opacity 0.2s ease',
+        }}
+        imgProps={{
+          onLoad: () => setIsLoading(false),
+          onError: () => {
+            setIsLoading(false);
+            setHasError(true);
+          },
+          loading: 'lazy',
+        }}
+      >
+        {fallback || <PersonIcon sx={{ color: '#8E8E93' }} />}
+      </Avatar>
+    </Box>
+  );
+};
 
 interface Character {
   characterId: string;
@@ -132,24 +180,6 @@ const CharactersPage: React.FC = () => {
         p: 0,
         overflow: 'hidden',
       }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
-            sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
-            }}
-          >
-            Back to Settings
-          </Button>
-        </Box>
-
         <Paper
           elevation={0}
           sx={{
@@ -167,28 +197,25 @@ const CharactersPage: React.FC = () => {
             sx={{ 
               p: { xs: 2, sm: 3 }, 
               borderBottom: '1px solid rgba(0,0,0,0.06)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 2,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <PersonIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
-                Characters & Products
-              </Typography>
-              <Chip 
-                label={`${characters.length}`}
-                size="small" 
-                sx={{ 
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  color: '#007AFF',
-                  fontWeight: 500,
-                  display: { xs: 'none', sm: 'flex' },
-                }} 
-              />
-            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                <PersonIcon sx={{ color: '#007AFF', flexShrink: 0 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap' }}>
+                  My Cast
+                </Typography>
+                <Chip 
+                  label={`${characters.length}`}
+                  size="small" 
+                  sx={{ 
+                    backgroundColor: 'rgba(0,122,255,0.1)',
+                    color: '#007AFF',
+                    fontWeight: 500,
+                    display: { xs: 'none', sm: 'flex' },
+                  }} 
+                />
+              </Box>
             {/* Mobile: Icon button */}
             <Tooltip title="Create New" arrow>
               <IconButton
@@ -230,6 +257,10 @@ const CharactersPage: React.FC = () => {
             >
               Create New
             </Button>
+            </Box>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mt: 0.5, maxWidth: 400 }}>
+              Add people, products, or places. Tag them when creating a video to feature them!
+            </Typography>
           </Box>
 
           {isLoading ? (
@@ -240,10 +271,10 @@ const CharactersPage: React.FC = () => {
             <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
               <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
               <Typography variant="h6" color="text.secondary">
-                No characters or products yet
+                No references yet
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
-                Create characters or products to feature in your song lyrics and music videos
+                Add characters, products or places to feature in your songs and videos
               </Typography>
               <Button
                 variant="contained"
@@ -289,17 +320,10 @@ const CharactersPage: React.FC = () => {
                     },
                   }}
                 >
-                  <Avatar
+                  <LoadingAvatar
                     src={character.imageUrls?.[0] || getCharacterTypeImage(character.description)}
-                    sx={{
-                      width: { xs: 48, sm: 56 },
-                      height: { xs: 48, sm: 56 },
-                      bgcolor: '#E5E5EA',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <PersonIcon sx={{ color: '#8E8E93' }} />
-                  </Avatar>
+                    size={{ xs: 48, sm: 56 }}
+                  />
                   <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                     <Typography 
                       variant="subtitle1" 
