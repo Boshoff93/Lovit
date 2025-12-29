@@ -5,18 +5,208 @@ import {
   Box,
   Container,
   Button,
-  IconButton,
+  Paper,
   CircularProgress,
+  IconButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { SEO, createBreadcrumbStructuredData, createMusicPlaylistStructuredData } from '../utils/seoHelper';
 import { songsApi } from '../services/api';
+
+// Animated Equalizer Component for playing tracks
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
+  isPlaying, 
+  size = 20,
+  color = '#007AFF' 
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+  
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying 
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
+
+// Scrollable Carousel with arrows and gradient edges
+interface ScrollableCarouselProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children }) => {
+  const [showLeftArrow, setShowLeftArrow] = React.useState(false);
+  const [showRightArrow, setShowRightArrow] = React.useState(true);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const checkScrollPosition = React.useCallback(() => {
+    const container = containerRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      window.addEventListener('resize', checkScrollPosition);
+      // Initial check and delayed check for content to render
+      checkScrollPosition();
+      setTimeout(checkScrollPosition, 100);
+      return () => {
+        container.removeEventListener('scroll', checkScrollPosition);
+        window.removeEventListener('resize', checkScrollPosition);
+      };
+    }
+  }, [checkScrollPosition]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    const container = containerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  return (
+    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+      {showLeftArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: -1,
+              top: -8,
+              bottom: -8,
+              width: 64,
+              background: 'linear-gradient(to right, #fff 0%, #fff 20%, transparent 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('left')}
+            sx={{
+              position: 'absolute',
+              left: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: '#fff',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              width: 40,
+              height: 40,
+              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+            }}
+          >
+            <ChevronLeftIcon sx={{ color: '#1D1D1F' }} />
+          </IconButton>
+        </>
+      )}
+      {showRightArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              right: -1,
+              top: -8,
+              bottom: -8,
+              width: 64,
+              background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('right')}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: '#fff',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              width: 40,
+              height: 40,
+              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+            }}
+          >
+            <ChevronRightIcon sx={{ color: '#1D1D1F' }} />
+          </IconButton>
+        </>
+      )}
+      <Box
+        ref={containerRef}
+        id={id}
+        sx={{
+          display: 'flex',
+          gap: 2,
+          overflowX: 'auto',
+          py: 1,
+          px: 0.5,
+          '&::-webkit-scrollbar': { display: 'none' },
+          scrollbarWidth: 'none',
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
 
 // User ID for seed songs (pre-generated sample tracks)
 const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
@@ -323,7 +513,7 @@ const LanguageDetailPage: React.FC = () => {
         ]}
       />
 
-      <Container maxWidth="md" sx={{ py: 4, position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ py: 4, position: 'relative', zIndex: 1 }}>
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
@@ -381,19 +571,6 @@ const LanguageDetailPage: React.FC = () => {
             }}
           >
             Create Music in {currentLanguage.name}
-          </Typography>
-
-          {/* Description */}
-          <Typography
-            sx={{
-              fontSize: '1.25rem',
-              color: '#86868B',
-              mb: 3,
-              maxWidth: 600,
-              mx: 'auto',
-            }}
-          >
-            {currentLanguage.description}
           </Typography>
 
           {/* Full Description */}
@@ -486,211 +663,217 @@ const LanguageDetailPage: React.FC = () => {
         {/* Sample Tracks Section */}
         {sampleTracks.length > 0 && (
           <Box sx={{ mb: 6 }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: '1.75rem',
-                fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 3,
-                textAlign: 'center',
-              }}
-            >
-              Example {currentLanguage.name} Tracks
-            </Typography>
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Example {currentLanguage.name} Tracks
+              </Typography>
+              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                AI-generated songs in {currentLanguage.name}
+              </Typography>
+            </Box>
 
-            <Box
-              sx={{
-                background: 'rgba(255,255,255,0.7)',
-                backdropFilter: 'blur(40px)',
-                WebkitBackdropFilter: 'blur(40px)',
-                borderRadius: '24px',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
-                overflow: 'hidden',
-              }}
-            >
-              {sampleTracks.map((track, index) => (
-                <Box
+            <ScrollableCarousel id="sample-tracks">
+              {sampleTracks.map((track) => (
+                <Paper
                   key={track.id}
+                  elevation={0}
+                  onClick={() => handlePlayClick(track)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 2,
-                    p: 2,
-                    borderBottom: index < sampleTracks.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                    transition: 'all 0.2s ease',
+                    gap: 1.5,
+                    p: 1.5,
+                    minWidth: 260,
+                    width: 280,
+                    flexShrink: 0,
+                    background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                    borderRadius: '12px',
+                    border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                    cursor: track.id.startsWith('placeholder-') ? 'default' : 'pointer',
+                    transition: 'all 0.15s ease',
                     '&:hover': {
-                      background: 'rgba(0,122,255,0.04)',
+                      boxShadow: track.id.startsWith('placeholder-') ? undefined : '0 4px 16px rgba(0,0,0,0.08)',
+                      transform: track.id.startsWith('placeholder-') ? undefined : 'translateY(-2px)',
+                    },
+                    '&:hover .play-overlay': {
+                      opacity: track.id.startsWith('placeholder-') ? 0 : 1,
                     },
                   }}
                 >
-                  {/* Track Number */}
-                  <Typography sx={{ width: 24, color: '#86868B', fontWeight: 500 }}>
-                    {index + 1}
-                  </Typography>
-
-                  {/* Language Image as Cover */}
+                  {/* Album Art */}
                   <Box
                     sx={{
+                      position: 'relative',
                       width: 48,
                       height: 48,
-                      borderRadius: '10px',
+                      borderRadius: '8px',
                       overflow: 'hidden',
+                      flexShrink: 0,
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      background: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     <Box
                       component="img"
                       src={currentLanguage.image}
-                      alt={currentLanguage.name}
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
+                      alt={track.title}
+                      sx={{ width: '85%', height: '85%', objectFit: 'contain' }}
                     />
+                    {/* Play overlay */}
+                    <Box
+                      className="play-overlay"
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
+                        opacity: currentSong?.songId === track.id ? 1 : 0,
+                        transition: 'opacity 0.2s',
+                      }}
+                    >
+                      {loadingSongId === track.id ? (
+                        <CircularProgress size={14} sx={{ color: '#fff' }} />
+                      ) : currentSong?.songId === track.id && isPlaying ? (
+                        <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                      ) : (
+                        <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                      )}
+                    </Box>
                   </Box>
 
                   {/* Track Info */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      sx={{
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
                       {track.title}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-                      {currentLanguage.name} • {track.duration}
+                    <Typography
+                      sx={{
+                        fontSize: '0.75rem',
+                        color: '#86868B',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {currentLanguage.name}
                     </Typography>
                   </Box>
 
-                  {/* Play Button */}
-                  <IconButton
-                    size="small"
-                    onClick={() => handlePlayClick(track)}
-                    disabled={loadingSongId === track.id || track.id.startsWith('placeholder-')}
-                    sx={{
-                      background: currentSong?.songId === track.id ? '#007AFF' : '#fff',
-                      color: currentSong?.songId === track.id ? '#fff' : track.id.startsWith('placeholder-') ? '#ccc' : '#007AFF',
-                      width: 40,
-                      height: 40,
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        background: currentSong?.songId === track.id ? '#0066CC' : '#fff',
-                        transform: track.id.startsWith('placeholder-') ? 'none' : 'translateY(-2px) scale(1.05)',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                      },
-                      '&:disabled': {
-                        background: '#f5f5f5',
-                        color: '#ccc',
-                      },
-                    }}
-                  >
-                    {loadingSongId === track.id ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : currentSong?.songId === track.id && isPlaying ? (
-                      <PauseRoundedIcon sx={{ fontSize: 20 }} />
-                    ) : (
-                      <PlayArrowRoundedIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
-                </Box>
+                  {/* Duration */}
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                    {track.duration}
+                  </Typography>
+                </Paper>
               ))}
-            </Box>
-            
+            </ScrollableCarousel>
           </Box>
         )}
 
         {/* Other Languages */}
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: '1.5rem',
-              fontWeight: 600,
-              color: '#1D1D1F',
-              mb: 3,
-            }}
-          >
-            Explore More Languages
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center' }}>
-            {languageData.filter(l => l.id !== languageId).slice(0, 12).map((lang) => (
-              <Box
+        <Box sx={{ mb: 6 }}>
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Explore More Languages
+            </Typography>
+            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              Create music in 24+ languages with native-quality vocals
+            </Typography>
+          </Box>
+          <ScrollableCarousel id="related-languages-carousel">
+            {languageData.filter(l => l.id !== languageId).slice(0, 16).map((lang) => (
+              <Box 
                 key={lang.id}
                 onClick={() => navigate(`/languages/${lang.id}`)}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  background: 'rgba(255,255,255,0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  gap: 0.75,
+                  minWidth: { xs: 85, sm: 100 },
+                  flexShrink: 0,
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                  },
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:hover .lang-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
                 }}
               >
                 <Box
-                  component="img"
-                  src={lang.image}
-                  alt={lang.name}
+                  className="lang-circle"
                   sx={{
-                    width: 28,
-                    height: 28,
+                    width: { xs: 80, sm: 96 },
+                    height: { xs: 80, sm: 96 },
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    p: 1,
+                    background: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
-                />
-                <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>{lang.name}</Typography>
+                >
+                  <Box
+                    component="img"
+                    src={lang.image}
+                    alt={lang.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'contain', padding: 1 }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                  {lang.name}
+                </Typography>
               </Box>
             ))}
-          </Box>
+          </ScrollableCarousel>
         </Box>
 
         {/* CTA Section */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            p: 5,
-            borderRadius: '24px',
-            background: 'rgba(255,255,255,0.6)',
-            backdropFilter: 'blur(40px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
-          }}
-        >
+        <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
             Ready to Create in {currentLanguage.name}?
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1.1rem' }}>
+          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1rem' }}>
             Sign up for Gruvi and start generating {currentLanguage.name} music with AI.
           </Typography>
           <Button
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
-              backdropFilter: 'blur(20px)',
+              background: '#007AFF',
               color: '#fff',
               fontWeight: 600,
-              borderRadius: '16px',
-              px: 5,
+              borderRadius: '12px',
+              px: 4,
               py: 1.5,
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               textTransform: 'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
               '&:hover': {
-                background: '#000',
+                background: '#0066DD',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                boxShadow: '0 8px 24px rgba(0,122,255,0.4)',
               },
             }}
           >

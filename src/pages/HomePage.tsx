@@ -853,9 +853,14 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', checkScrollPosition);
-      // Initial check
+      window.addEventListener('resize', checkScrollPosition);
+      // Initial check and delayed check for content to render
+      checkScrollPosition();
       setTimeout(checkScrollPosition, 100);
-      return () => container.removeEventListener('scroll', checkScrollPosition);
+      return () => {
+        container.removeEventListener('scroll', checkScrollPosition);
+        window.removeEventListener('resize', checkScrollPosition);
+      };
     }
   }, [checkScrollPosition]);
 
@@ -871,18 +876,18 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
   };
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
       {/* Left fade + arrow */}
       {showLeftArrow && (
         <>
           <Box
             sx={{
               position: 'absolute',
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: 60,
-              background: 'linear-gradient(to right, #fff 0%, #fff 15%, transparent 100%)',
+              left: -1,
+              top: -8,
+              bottom: -8,
+              width: 64,
+              background: 'linear-gradient(to right, #fff 0%, #fff 20%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -916,11 +921,11 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
           <Box
             sx={{
               position: 'absolute',
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: 60,
-              background: 'linear-gradient(to left, #fff 0%, #fff 15%, transparent 100%)',
+              right: -1,
+              top: -8,
+              bottom: -8,
+              width: 64,
+              background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -957,7 +962,7 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
           gap: 2,
           overflowX: 'auto',
           py: 1, // Add vertical padding for hover transforms
-          pl: 0.5, // Add left padding so leftmost item isn't clipped
+          px: 0.5, // Add horizontal padding so edge items aren't clipped
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
         }}
