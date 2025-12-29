@@ -115,6 +115,7 @@ const eyeColorOptions = [
 ];
 
 const MAX_CHARACTER_IMAGES = 5;
+const MAX_PLACE_IMAGES = 10;
 
 const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -221,12 +222,15 @@ const CreateCharacterPage: React.FC = () => {
     fetchCharacter();
   }, [fetchCharacter]);
 
+  // Get max images based on character type
+  const maxImages = characterKind === 'Place' ? MAX_PLACE_IMAGES : MAX_CHARACTER_IMAGES;
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
-      setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
+      setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages));
       setImagesChanged(true);
     }
   };
@@ -269,7 +273,7 @@ const CreateCharacterPage: React.FC = () => {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
       if (imageFiles.length > 0) {
-        setUploadedImages(prev => [...prev, ...imageFiles].slice(0, MAX_CHARACTER_IMAGES));
+        setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages));
         setImagesChanged(true);
       } else {
         setNotification({
@@ -797,7 +801,7 @@ const CreateCharacterPage: React.FC = () => {
             Reference Images
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Upload up to {MAX_CHARACTER_IMAGES} reference images for appearance in music videos
+            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : 'for appearance in music videos'}
           </Typography>
           
           {/* Drag and drop area */}
@@ -830,7 +834,7 @@ const CreateCharacterPage: React.FC = () => {
               {isDragging ? 'Drop images here' : 'Drag & drop or click to upload'}
             </Typography>
             <Typography variant="body2" sx={{ color: '#86868B', mt: 0.5 }}>
-              {existingImageUrls.length + uploadedImages.length}/{MAX_CHARACTER_IMAGES} images
+              {existingImageUrls.length + uploadedImages.length}/{maxImages} images
             </Typography>
             <input
               type="file"
