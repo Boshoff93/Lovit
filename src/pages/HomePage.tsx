@@ -63,6 +63,9 @@ import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import TranslateIcon from '@mui/icons-material/Translate';
 import { useAuth } from '../hooks/useAuth';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
@@ -3023,6 +3026,21 @@ const HomePage: React.FC = () => {
                 icon: <ThumbUpIcon sx={{ fontSize: 24 }} />,
                 title: 'Commercial license',
                 description: 'Use for content and streaming.',
+              },
+              {
+                icon: <HomeWorkIcon sx={{ fontSize: 24 }} />,
+                title: 'Property promos',
+                description: 'Showcase Airbnbs and rentals.',
+              },
+              {
+                icon: <ShoppingBagIcon sx={{ fontSize: 24 }} />,
+                title: 'Product videos',
+                description: 'Promote your brand and products.',
+              },
+              {
+                icon: <TranslateIcon sx={{ fontSize: 24 }} />,
+                title: '24 languages',
+                description: 'Most popular languages supported.',
               },
             ].map((feature, index) => (
               <Box
