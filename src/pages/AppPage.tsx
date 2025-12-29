@@ -1426,6 +1426,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               return (
                 <Box
                   key={song.songId}
+                  onClick={() => !isProcessing && !isFailed && handlePlayPause(song.songId)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -1435,8 +1436,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     borderBottom: index < displayedSongs.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none',
                     transition: 'all 0.2s ease',
                     opacity: isProcessing ? 0.85 : 1,
+                    cursor: isProcessing || isFailed ? 'default' : 'pointer',
                     '&:hover': {
                       backgroundColor: 'rgba(0,122,255,0.03)',
+                      '& .play-overlay': {
+                        opacity: 1,
+                      },
                     },
                   }}
                 >
@@ -1504,24 +1509,26 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                             e.currentTarget.style.display = 'none';
                           }}
                         />
-                        {/* Equalizer overlay for current song */}
-                        {currentSong?.songId === song.songId && (
-                          <>
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                background: 'rgba(0,0,0,0.4)',
-                              }}
-                            />
-                            <Box sx={{ position: 'relative', zIndex: 1 }}>
-                              <AudioEqualizer isPlaying={isAudioPlaying} size={22} color="#fff" />
-                            </Box>
-                          </>
-                        )}
+                        {/* Play overlay - shows on hover or when playing */}
+                        <Box
+                          className="play-overlay"
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: currentSong?.songId === song.songId ? 'rgba(0,122,255,0.5)' : 'rgba(0,0,0,0.4)',
+                            opacity: currentSong?.songId === song.songId ? 1 : 0,
+                            transition: 'opacity 0.2s',
+                          }}
+                        >
+                          {currentSong?.songId === song.songId && isAudioPlaying ? (
+                            <AudioEqualizer isPlaying={true} size={22} color="#fff" />
+                          ) : (
+                            <PlayArrowRoundedIcon sx={{ fontSize: 22, color: '#fff' }} />
+                          )}
+                        </Box>
                       </>
                     )}
                   </Box>
@@ -1579,7 +1586,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1 } }}>
                       {/* Play Button */}
                       <IconButton
-                        onClick={() => handlePlayPause(song.songId)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlayPause(song.songId);
+                        }}
                         sx={{
                           width: { xs: 36, md: 40 },
                           height: { xs: 36, md: 40 },
@@ -1604,6 +1614,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       {/* More Menu Button */}
                       <IconButton
                         onClick={(e) => {
+                          e.stopPropagation();
                           setMenuAnchorEl(e.currentTarget);
                           setMenuSong(song);
                         }}

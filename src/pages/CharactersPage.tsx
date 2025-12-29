@@ -167,7 +167,7 @@ const CharactersPage: React.FC = () => {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        mb: 3,
+        mb: 1,
         gap: 2,
         flexWrap: 'wrap',
       }}>
@@ -234,7 +234,7 @@ const CharactersPage: React.FC = () => {
 
       {/* Description */}
       <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 3 }}>
-        Add people, products, or places. Tag them when creating a video to feature them!
+        Add people, products, or places. Tag them when creating a video to feature them! This helps the AI understand exactly what they look like, so your videos match your vision.
       </Typography>
 
       {/* Content */}

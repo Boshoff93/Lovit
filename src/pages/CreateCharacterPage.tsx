@@ -927,7 +927,7 @@ const CreateCharacterPage: React.FC = () => {
           )}
         </Paper>
 
-        {/* Description */}
+        {/* Description - Title changes based on character type */}
         <Paper
           elevation={0}
           sx={{
@@ -941,10 +941,18 @@ const CreateCharacterPage: React.FC = () => {
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Description (Optional)
+            {characterKind === 'Place' 
+              ? 'Property Details' 
+              : characterKind === 'Product' 
+                ? 'Product Description' 
+                : 'Description'} (Optional)
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Add extra details about personality, appearance, features, or traits
+            {characterKind === 'Place' 
+              ? 'Describe the location, style, key features, amenities, and vibe'
+              : characterKind === 'Product' 
+                ? 'Describe the product features, materials, colors, and unique details'
+                : 'Add extra details about personality, appearance, features, or traits'}
           </Typography>
           <TextField
             fullWidth
@@ -954,9 +962,9 @@ const CreateCharacterPage: React.FC = () => {
             rows={3}
             placeholder={
               characterKind === 'Place' 
-                ? "e.g., Modern beach house with infinity pool, ocean views, open-plan living" 
+                ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms" 
                 : characterKind === 'Product' 
-                  ? "e.g., Sleek red sneakers with white soles, premium leather material" 
+                  ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side" 
                   : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
             }
             sx={{

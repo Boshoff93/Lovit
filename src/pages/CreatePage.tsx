@@ -355,7 +355,6 @@ const CreatePage: React.FC = () => {
   // Video creation state
   const [selectedSong, setSelectedSong] = useState(songIdFromUrl || '');
   const [videoPrompt, setVideoPrompt] = useState('');
-  const [placeDescription, setPlaceDescription] = useState(''); // User's description of their property/location
   const [selectedStyle, setSelectedStyle] = useState('3d-cartoon');
   const [videoType, setVideoType] = useState('still'); // 'still', 'casual', or 'creator'
   const [aspectRatio, setAspectRatio] = useState<'portrait' | 'landscape'>('portrait');
@@ -402,8 +401,8 @@ const CreatePage: React.FC = () => {
   const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const songCastScrollRef = useRef<HTMLDivElement>(null);
   const videoCastScrollRef = useRef<HTMLDivElement>(null);
-  const [songCastShowRightArrow, setSongCastShowRightArrow] = useState(false);
-  const [videoCastShowRightArrow, setVideoCastShowRightArrow] = useState(false);
+  const [songCastCanScroll, setSongCastCanScroll] = useState({ left: false, right: false });
+  const [videoCastCanScroll, setVideoCastCanScroll] = useState({ left: false, right: false });
   const [songsPage, setSongsPage] = useState(1);
   const [hasMoreSongs, setHasMoreSongs] = useState(true);
   const [isLoadingMoreSongs, setIsLoadingMoreSongs] = useState(false);
@@ -418,22 +417,47 @@ const CreatePage: React.FC = () => {
     severity: 'success'
   });
 
-  // Check if cast carousel needs scroll arrows
-  const checkCastScrollArrows = useCallback(() => {
+  // Check if cast carousel can scroll left/right
+  const checkCastScrollPosition = useCallback(() => {
     if (songCastScrollRef.current) {
-      const { scrollWidth, clientWidth } = songCastScrollRef.current;
-      setSongCastShowRightArrow(scrollWidth > clientWidth + 10);
+      const { scrollLeft, scrollWidth, clientWidth } = songCastScrollRef.current;
+      setSongCastCanScroll({
+        left: scrollLeft > 5,
+        right: scrollLeft < scrollWidth - clientWidth - 5,
+      });
     }
     if (videoCastScrollRef.current) {
-      const { scrollWidth, clientWidth } = videoCastScrollRef.current;
-      setVideoCastShowRightArrow(scrollWidth > clientWidth + 10);
+      const { scrollLeft, scrollWidth, clientWidth } = videoCastScrollRef.current;
+      setVideoCastCanScroll({
+        left: scrollLeft > 5,
+        right: scrollLeft < scrollWidth - clientWidth - 5,
+      });
     }
   }, []);
 
-  // Update arrow visibility when characters change
+  // Update scroll position when characters change or on scroll
   useEffect(() => {
-    checkCastScrollArrows();
-  }, [characters, checkCastScrollArrows]);
+    checkCastScrollPosition();
+    
+    const songRef = songCastScrollRef.current;
+    const videoRef = videoCastScrollRef.current;
+    
+    if (songRef) {
+      songRef.addEventListener('scroll', checkCastScrollPosition);
+    }
+    if (videoRef) {
+      videoRef.addEventListener('scroll', checkCastScrollPosition);
+    }
+    
+    return () => {
+      if (songRef) {
+        songRef.removeEventListener('scroll', checkCastScrollPosition);
+      }
+      if (videoRef) {
+        videoRef.removeEventListener('scroll', checkCastScrollPosition);
+      }
+    };
+  }, [characters, checkCastScrollPosition]);
 
   const scrollCast = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
     if (ref.current) {
@@ -740,12 +764,6 @@ const CreatePage: React.FC = () => {
       // Extract tagged character IDs from prompt
       const characterIds = getTaggedCharacterIds(videoPrompt);
       
-      // Check if any tagged character is a Place
-      const hasPlace = characterIds.some(id => {
-        const char = characters.find(c => c.characterId === id);
-        return char?.characterType === 'Place' || char?.description?.includes('Place');
-      });
-      
       // Call the actual video generation API
       const response = await videosApi.generateVideo({
         userId: user.userId,
@@ -755,7 +773,6 @@ const CreatePage: React.FC = () => {
         videoPrompt: videoPrompt.trim(),
         aspectRatio,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
-        placeDescription: hasPlace && placeDescription.trim() ? placeDescription.trim() : undefined,
       });
       
       console.log('Video generation response:', response.data);
@@ -1002,15 +1019,17 @@ const CreatePage: React.FC = () => {
                     Add characters, products or places to your song:
                   </Typography>
                   {/* Scroll arrows - top right */}
-                  {songCastShowRightArrow && characters.length > 0 && (
+                  {(songCastCanScroll.left || songCastCanScroll.right) && characters.length > 0 && (
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
                         size="small"
                         onClick={() => scrollCast(songCastScrollRef, 'left')}
+                        disabled={!songCastCanScroll.left}
                         sx={{
                           width: 24,
                           height: 24,
                           background: 'rgba(0,0,0,0.04)',
+                          opacity: songCastCanScroll.left ? 1 : 0.4,
                           '&:hover': { background: 'rgba(0,0,0,0.08)' },
                         }}
                       >
@@ -1019,10 +1038,12 @@ const CreatePage: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => scrollCast(songCastScrollRef, 'right')}
+                        disabled={!songCastCanScroll.right}
                         sx={{
                           width: 24,
                           height: 24,
                           background: 'rgba(0,0,0,0.04)',
+                          opacity: songCastCanScroll.right ? 1 : 0.4,
                           '&:hover': { background: 'rgba(0,0,0,0.08)' },
                         }}
                       >
@@ -1034,20 +1055,37 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ position: 'relative' }}>
-                    {/* Right gradient fade */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: 40,
-                        background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
-                        zIndex: 1,
-                        pointerEvents: 'none',
-                      }}
-                    />
+                  <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                    {/* Left gradient fade - only show when can scroll left */}
+                    {songCastCanScroll.left && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 24,
+                          background: 'linear-gradient(to right, #fff 0%, transparent 100%)',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+                    {/* Right gradient fade - only show when can scroll right */}
+                    {songCastCanScroll.right && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 32,
+                          background: 'linear-gradient(to left, #fff 0%, transparent 100%)',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
                     <Box 
                       ref={songCastScrollRef}
                       sx={{ 
@@ -1057,6 +1095,7 @@ const CreatePage: React.FC = () => {
                         overflowX: 'auto',
                         overflowY: 'hidden',
                         pb: 0.5,
+                        pr: 1, // Small padding for last item
                         maxWidth: '100%',
                         '&::-webkit-scrollbar': { display: 'none' },
                       }}>
@@ -2064,15 +2103,17 @@ const CreatePage: React.FC = () => {
                     Add characters, products or places to your video:
                   </Typography>
                   {/* Scroll arrows - top right */}
-                  {videoCastShowRightArrow && characters.length > 0 && (
+                  {(videoCastCanScroll.left || videoCastCanScroll.right) && characters.length > 0 && (
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
                         size="small"
                         onClick={() => scrollCast(videoCastScrollRef, 'left')}
+                        disabled={!videoCastCanScroll.left}
                         sx={{
                           width: 24,
                           height: 24,
                           background: 'rgba(0,0,0,0.04)',
+                          opacity: videoCastCanScroll.left ? 1 : 0.4,
                           '&:hover': { background: 'rgba(0,0,0,0.08)' },
                         }}
                       >
@@ -2081,10 +2122,12 @@ const CreatePage: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => scrollCast(videoCastScrollRef, 'right')}
+                        disabled={!videoCastCanScroll.right}
                         sx={{
                           width: 24,
                           height: 24,
                           background: 'rgba(0,0,0,0.04)',
+                          opacity: videoCastCanScroll.right ? 1 : 0.4,
                           '&:hover': { background: 'rgba(0,0,0,0.08)' },
                         }}
                       >
@@ -2096,20 +2139,37 @@ const CreatePage: React.FC = () => {
                 {isLoadingCharacters ? (
                   <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
                 ) : characters.length > 0 ? (
-                  <Box sx={{ position: 'relative' }}>
-                    {/* Right gradient fade */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: 40,
-                        background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
-                        zIndex: 1,
-                        pointerEvents: 'none',
-                      }}
-                    />
+                  <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                    {/* Left gradient fade - only show when can scroll left */}
+                    {videoCastCanScroll.left && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 24,
+                          background: 'linear-gradient(to right, #fff 0%, transparent 100%)',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+                    {/* Right gradient fade - only show when can scroll right */}
+                    {videoCastCanScroll.right && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 32,
+                          background: 'linear-gradient(to left, #fff 0%, transparent 100%)',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
                     <Box 
                       ref={videoCastScrollRef}
                       sx={{ 
@@ -2119,6 +2179,7 @@ const CreatePage: React.FC = () => {
                         overflowX: 'auto',
                         overflowY: 'hidden',
                         pb: 0.5,
+                        pr: 1, // Small padding for last item
                         maxWidth: '100%',
                         '&::-webkit-scrollbar': { display: 'none' },
                       }}>
@@ -2233,57 +2294,6 @@ const CreatePage: React.FC = () => {
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
                 characterNames={characters.map(c => c.characterName)}
               />
-              
-              {/* Place Description Field - shows when a Place is tagged */}
-              {(() => {
-                const taggedCharIds = getTaggedCharacterIds(videoPrompt);
-                const hasPlace = taggedCharIds.some(id => {
-                  const char = characters.find(c => c.characterId === id);
-                  return char?.characterType === 'Place' || char?.description?.includes('Place');
-                });
-                
-                if (!hasPlace) return null;
-                
-                return (
-                  <Box sx={{ mt: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <Typography sx={{ fontSize: '0.8rem', color: '#007AFF', fontWeight: 500 }}>
-                        🏠 Property Details (helps create accurate visuals)
-                      </Typography>
-                    </Box>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={3}
-                      value={placeDescription}
-                      onChange={(e) => setPlaceDescription(e.target.value)}
-                      placeholder="Describe your property: location, style, key features, amenities, vibe... e.g., 'Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms'"
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: '12px',
-                          backgroundColor: 'rgba(0,122,255,0.04)',
-                          '& fieldset': {
-                            borderColor: 'rgba(0,122,255,0.2)',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: 'rgba(0,122,255,0.4)',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#007AFF',
-                          },
-                        },
-                        '& .MuiInputBase-input::placeholder': {
-                          color: '#86868B',
-                          fontSize: '0.85rem',
-                        },
-                      }}
-                    />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', mt: 0.5 }}>
-                      This helps our AI accurately depict your property in the video
-                    </Typography>
-                  </Box>
-                );
-              })()}
             </Paper>
 
             {/* Visual Style Selection */}
