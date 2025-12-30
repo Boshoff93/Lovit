@@ -148,6 +148,10 @@ export const videosApi = {
   getAllUserVideos: (userId: string) => 
     api.get(`/api/gruvi/videos/${userId}`),
   
+  // Get a single video by ID
+  getVideo: (userId: string, videoId: string) =>
+    api.get(`/api/gruvi/videos/${userId}/${videoId}`),
+  
   deleteVideo: (userId: string, videoId: string) => 
     api.delete(`/api/gruvi/videos/${userId}/${videoId}`),
 };

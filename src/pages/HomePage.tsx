@@ -475,11 +475,27 @@ const promoVideosPortrait: VideoItem[] = [
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
   },
-  // Add more portrait promo videos here
+  {
+    id: 'ef807231-faab-4a97-a51b-08f574fbae52',
+    title: "Beneath the Surface",
+    style: "Cinematic",
+    views: "1.0K",
+    thumbnail: "/thumbnails/rolex.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/ef807231-faab-4a97-a51b-08f574fbae52',
+  },
 ];
 
 const promoVideosLandscape: VideoItem[] = [
-  // Add landscape promo videos here
+  {
+    id: 'dc6c22f4-22e5-433d-aa38-5792bc653185',
+    title: "Glide",
+    style: "Cinematic",
+    views: "1.5K",
+    thumbnail: "/thumbnails/tesla.jpeg",
+    aspectRatio: 'landscape',
+    videoUrl: 'https://gruvimusic.com/video/dc6c22f4-22e5-433d-aa38-5792bc653185',
+  },
 ];
 
 // MUSIC VIDEOS - Song-focused artistic videos

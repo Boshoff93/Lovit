@@ -100,10 +100,9 @@ const MusicVideoPlayer: React.FC = () => {
       }
 
       try {
-        // Fetch video
-        const videoResponse = await videosApi.getUserVideos(user.userId);
-        const videos = videoResponse.data.videos || [];
-        const video = videos.find((v: VideoData) => v.videoId === videoId);
+        // Fetch video directly by ID (works regardless of pagination)
+        const videoResponse = await videosApi.getVideo(user.userId, videoId);
+        const video = videoResponse.data.video;
         
         if (video) {
           setVideoData(video);
@@ -135,9 +134,13 @@ const MusicVideoPlayer: React.FC = () => {
         } else {
           setError('Video not found');
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching video:', err);
-        setError('Failed to load video');
+        if (err.response?.status === 404) {
+          setError('Video not found');
+        } else {
+          setError('Failed to load video');
+        }
       } finally {
         setLoading(false);
       }

@@ -2249,44 +2249,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 }}
                               />
                               
-                              {/* Progress bar at bottom - only for processing state */}
-                              {video.status === 'processing' && (
-                                <Box
-                                  sx={{
-                                    position: 'absolute',
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: 6,
-                                    background: 'rgba(0,0,0,0.3)',
-                                  }}
-                                >
-                                  {/* Progress fill with shimmer */}
-                                  <Box sx={{ 
-                                    height: '100%', 
-                                    width: `${video.progress || 0}%`,
-                                    background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
-                                    transition: 'width 0.5s ease-out',
-                                    position: 'relative',
-                                    overflow: 'hidden',
-                                    '&::after': {
-                                      content: '""',
-                                      position: 'absolute',
-                                      top: 0,
-                                      left: 0,
-                                      right: 0,
-                                      bottom: 0,
-                                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-                                      animation: 'shimmer 1.5s infinite',
-                                    },
-                                    '@keyframes shimmer': {
-                                      '0%': { transform: 'translateX(-100%)' },
-                                      '100%': { transform: 'translateX(100%)' },
-                                    },
-                                  }} />
-                                </Box>
-                              )}
-                              
                               {/* Info overlay at bottom */}
                               <Box 
                                 sx={{ 
@@ -2308,8 +2270,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                       sx={{
                                         position: 'relative',
                                         height: 28,
-                                        maxWidth: '70%',
-                                        minWidth: 180,
+                                        width: '100%',
                                         borderRadius: '100px',
                                         background: 'rgba(255,255,255,0.2)',
                                         backdropFilter: 'blur(10px)',
