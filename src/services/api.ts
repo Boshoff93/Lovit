@@ -68,12 +68,13 @@ export const songsApi = {
   generateSong: (data: {
     userId: string;
     songPrompt: string;
-    genre: string;
-    mood: string;
+    genre: string; // 'auto' to let AI pick based on prompt
+    mood: string; // 'auto' to let AI pick based on prompt
     language?: string;
     characterIds?: string[];
     customInstructions?: string;
     creativity?: number; // 0-10 scale: 0 = literal, 10 = creative
+    songLength?: 'short' | 'standard'; // 'short' = ~45-60s, 'standard' = ~90-120s
   }) => api.post('/api/gruvi/songs/generate', data),
   
   getUserSongs: (userId: string, options?: { 

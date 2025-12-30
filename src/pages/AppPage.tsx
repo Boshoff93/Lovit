@@ -51,6 +51,7 @@ import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LyricsIcon from '@mui/icons-material/Lyrics';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -271,6 +272,11 @@ interface Song {
   audioUrl?: string;
   lyrics?: string;
   lyricsWithTags?: string;
+  songPrompt?: string; // Original prompt used to generate the song
+  language?: string;
+  customInstructions?: string;
+  creativity?: number; // 0-10 scale for prompt adherence
+  songLength?: 'short' | 'standard'; // Song duration preference
 }
 
 interface Video {
@@ -696,7 +702,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleCloseNotification = useCallback(() => {
+  const handleCloseNotification = useCallback((_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return; // Don't close on clickaway
     setNotification(prev => ({
       ...prev,
       open: false
@@ -803,6 +810,38 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const handleDeleteSong = (song: Song) => {
     setSongToDelete(song);
     setDeleteConfirmOpen(true);
+  };
+
+  // Generate a similar song by navigating to create page with pre-filled data
+  const handleGenerateSimilar = (song: Song) => {
+    // Build query params with the original song's data
+    const params = new URLSearchParams();
+    
+    if (song.songPrompt) {
+      // Add slight variation hint to the prompt
+      params.set('prompt', song.songPrompt);
+    }
+    if (song.genre) {
+      params.set('genre', song.genre);
+    }
+    if (song.mood) {
+      params.set('mood', song.mood);
+    }
+    if (song.language) {
+      params.set('language', song.language);
+    }
+    // Pass creativity and song length settings
+    if (song.creativity !== undefined) {
+      params.set('creativity', song.creativity.toString());
+    }
+    if (song.songLength) {
+      params.set('songLength', song.songLength);
+    }
+    // Mark this as a "similar" generation so CreatePage can add variation
+    params.set('similar', 'true');
+    params.set('originalTitle', song.songTitle);
+    
+    navigate(`/create?${params.toString()}`);
   };
 
   const confirmDeleteSong = async () => {
@@ -2024,46 +2063,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 }}
                               />
                               
-                              {/* Center indicator overlay - only for processing state (not failed) */}
-                              {video.status === 'processing' && (
-                                <Box
-                                  sx={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      background: '#fff',
-                                      borderRadius: '50%',
-                                      width: { xs: 44, sm: 52, md: 64 },
-                                      height: { xs: 44, sm: 52, md: 64 },
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      border: '1px solid rgba(0,0,0,0.08)',
-                                      boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                                      position: 'relative',
-                                    }}
-                                  >
-                                    <CircularProgress 
-                                      size={36}
-                                      thickness={3}
-                                      sx={{ color: '#007AFF', position: 'absolute' }} 
-                                    />
-                                    <Typography sx={{ 
-                                      fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' },
-                                      fontWeight: 600, 
-                                      color: '#007AFF',
-                                    }}>
-                                      {video.progress || 0}%
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                              )}
                               
                               {/* Info overlay at bottom */}
                               <Box 
@@ -2081,22 +2080,76 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
                                 {video.status === 'processing' ? (
-                                  <Tooltip title={video.progressMessage || 'Creating your video...'} arrow>
-                                    <Chip
-                                      label={video.progressMessage || 'Creating your video...'}
-                                      size="small"
+                                  <Tooltip title={`${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`} arrow>
+                                    <Box
                                       sx={{
-                                        background: 'rgba(255,255,255,0.85)',
-                                        backdropFilter: 'blur(10px)',
-                                        color: '#1d1d1f',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 500,
-                                        height: 26,
+                                        position: 'relative',
+                                        height: 28,
                                         width: '100%',
                                         borderRadius: '100px',
-                                        border: '1px solid rgba(0,0,0,0.1)',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        backdropFilter: 'blur(10px)',
+                                        border: '1px solid rgba(255,255,255,0.3)',
+                                        overflow: 'hidden',
                                       }}
-                                    />
+                                    >
+                                      {/* Progress fill with shimmer */}
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 0,
+                                          bottom: 0,
+                                          width: `${video.progress || 0}%`,
+                                          background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                                          borderRadius: '100px',
+                                          transition: 'width 0.5s ease-out',
+                                          overflow: 'hidden',
+                                          '&::after': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                                            animation: 'shimmer 1.5s infinite',
+                                          },
+                                          '@keyframes shimmer': {
+                                            '0%': { transform: 'translateX(-100%)' },
+                                            '100%': { transform: 'translateX(100%)' },
+                                          },
+                                        }}
+                                      />
+                                      {/* Text label */}
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 0,
+                                          right: 0,
+                                          bottom: 0,
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          px: 1.5,
+                                        }}
+                                      >
+                                        <Typography
+                                          sx={{
+                                            fontSize: '0.7rem',
+                                            fontWeight: 600,
+                                            color: '#fff',
+                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                          }}
+                                        >
+                                          {video.progress || 0}% · {video.progressMessage || 'Creating...'}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
@@ -2196,44 +2249,41 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 }}
                               />
                               
-                              {/* Center indicator overlay - only for processing state */}
+                              {/* Progress bar at bottom - only for processing state */}
                               {video.status === 'processing' && (
                                 <Box
                                   sx={{
                                     position: 'absolute',
-                                    inset: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    height: 6,
+                                    background: 'rgba(0,0,0,0.3)',
                                   }}
                                 >
-                                  <Box
-                                    sx={{
-                                      background: '#fff',
-                                      borderRadius: '50%',
-                                      width: { xs: 44, sm: 52, md: 64 },
-                                      height: { xs: 44, sm: 52, md: 64 },
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      border: '1px solid rgba(0,0,0,0.08)',
-                                      boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                                      position: 'relative',
-                                    }}
-                                  >
-                                    <CircularProgress 
-                                      size={36}
-                                      thickness={3}
-                                      sx={{ color: '#007AFF', position: 'absolute' }} 
-                                    />
-                                    <Typography sx={{ 
-                                      fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' },
-                                      fontWeight: 600, 
-                                      color: '#007AFF',
-                                    }}>
-                                      {video.progress || 0}%
-                                    </Typography>
-                                  </Box>
+                                  {/* Progress fill with shimmer */}
+                                  <Box sx={{ 
+                                    height: '100%', 
+                                    width: `${video.progress || 0}%`,
+                                    background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                                    transition: 'width 0.5s ease-out',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    '&::after': {
+                                      content: '""',
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                                      animation: 'shimmer 1.5s infinite',
+                                    },
+                                    '@keyframes shimmer': {
+                                      '0%': { transform: 'translateX(-100%)' },
+                                      '100%': { transform: 'translateX(100%)' },
+                                    },
+                                  }} />
                                 </Box>
                               )}
                               
@@ -2253,22 +2303,77 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
                                 {video.status === 'processing' ? (
-                                  <Tooltip title={video.progressMessage || 'Creating your video...'} arrow>
-                                    <Chip
-                                      label={video.progressMessage || 'Creating your video...'}
-                                      size="small"
+                                  <Tooltip title={`${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`} arrow>
+                                    <Box
                                       sx={{
-                                        background: 'rgba(255,255,255,0.85)',
-                                        backdropFilter: 'blur(10px)',
-                                        color: '#1d1d1f',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 500,
-                                        height: 26,
+                                        position: 'relative',
+                                        height: 28,
                                         maxWidth: '70%',
+                                        minWidth: 180,
                                         borderRadius: '100px',
-                                        border: '1px solid rgba(0,0,0,0.1)',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        backdropFilter: 'blur(10px)',
+                                        border: '1px solid rgba(255,255,255,0.3)',
+                                        overflow: 'hidden',
                                       }}
-                                    />
+                                    >
+                                      {/* Progress fill with shimmer */}
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 0,
+                                          bottom: 0,
+                                          width: `${video.progress || 0}%`,
+                                          background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                                          borderRadius: '100px',
+                                          transition: 'width 0.5s ease-out',
+                                          overflow: 'hidden',
+                                          '&::after': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                                            animation: 'shimmer 1.5s infinite',
+                                          },
+                                          '@keyframes shimmer': {
+                                            '0%': { transform: 'translateX(-100%)' },
+                                            '100%': { transform: 'translateX(100%)' },
+                                          },
+                                        }}
+                                      />
+                                      {/* Text label */}
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 0,
+                                          right: 0,
+                                          bottom: 0,
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          px: 1.5,
+                                        }}
+                                      >
+                                        <Typography
+                                          sx={{
+                                            fontSize: '0.7rem',
+                                            fontWeight: 600,
+                                            color: '#fff',
+                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                          }}
+                                        >
+                                          {video.progress || 0}% · {video.progressMessage || 'Creating...'}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
@@ -2516,6 +2621,18 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             <MovieIcon sx={{ color: '#007AFF' }} />
           </ListItemIcon>
           <ListItemText>Create Video</ListItemText>
+        </MenuItem>
+        <MenuItem 
+          onClick={() => {
+            if (menuSong) handleGenerateSimilar(menuSong);
+            setMenuAnchorEl(null);
+            setMenuSong(null);
+          }}
+        >
+          <ListItemIcon>
+            <ContentCopyIcon sx={{ color: '#007AFF' }} />
+          </ListItemIcon>
+          <ListItemText>Generate Similar</ListItemText>
         </MenuItem>
         <MenuItem 
           onClick={() => {

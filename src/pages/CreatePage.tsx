@@ -56,6 +56,8 @@ import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import TvIcon from '@mui/icons-material/Tv';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import TimerIcon from '@mui/icons-material/Timer';
+import TuneIcon from '@mui/icons-material/Tune';
 
 // Scrollable list wrapper with dynamic fade gradients
 interface ScrollableListProps {
@@ -345,6 +347,9 @@ const CreatePage: React.FC = () => {
   const [songPrompt, setSongPrompt] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('pop');
   const [selectedMood, setSelectedMood] = useState('happy');
+  const [autoPickGenre, setAutoPickGenre] = useState(false); // Let AI pick genre based on prompt
+  const [autoPickMood, setAutoPickMood] = useState(false); // Let AI pick mood based on prompt
+  const [songLength, setSongLength] = useState<'short' | 'standard'>('standard'); // Song duration preference
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [creativity, setCreativity] = useState(5); // 0-10 scale: 0 = literal, 10 = creative
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
@@ -481,10 +486,46 @@ const CreatePage: React.FC = () => {
       // Clear selected song if no song param in URL (e.g., navigating to /create?tab=video directly)
       setSelectedSong('');
     }
+    
     // Initialize song prompt from URL parameter
     const promptFromUrl = searchParams.get('prompt');
     if (promptFromUrl) {
       setSongPrompt(promptFromUrl);
+    }
+    
+    // Handle "Generate Similar" - pre-fill form with original song's data
+    const isSimilar = searchParams.get('similar') === 'true';
+    if (isSimilar) {
+      const genreFromUrl = searchParams.get('genre');
+      const moodFromUrl = searchParams.get('mood');
+      const languageFromUrl = searchParams.get('language');
+      
+      // Pre-fill genre and mood (don't use auto-pick for similar songs)
+      if (genreFromUrl) {
+        setSelectedGenre(genreFromUrl.toLowerCase());
+        setAutoPickGenre(false);
+      }
+      if (moodFromUrl) {
+        setSelectedMood(moodFromUrl.toLowerCase());
+        setAutoPickMood(false);
+      }
+      if (languageFromUrl) {
+        setSelectedLanguage(languageFromUrl);
+      }
+      
+      // Pre-fill creativity and song length
+      const creativityFromUrl = searchParams.get('creativity');
+      const songLengthFromUrl = searchParams.get('songLength');
+      
+      if (creativityFromUrl) {
+        const creativityValue = parseInt(creativityFromUrl, 10);
+        if (!isNaN(creativityValue) && creativityValue >= 0 && creativityValue <= 10) {
+          setCreativity(creativityValue);
+        }
+      }
+      if (songLengthFromUrl === 'short' || songLengthFromUrl === 'standard') {
+        setSongLength(songLengthFromUrl);
+      }
     }
   }, [searchParams]);
 
@@ -617,7 +658,8 @@ const CreatePage: React.FC = () => {
     }
   }, [user?.userId, songsPage, isLoadingMoreSongs, hasMoreSongs]);
 
-  const handleCloseNotification = useCallback(() => {
+  const handleCloseNotification = useCallback((_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return; // Don't close on clickaway
     setNotification(prev => ({ ...prev, open: false }));
   }, []);
 
@@ -698,11 +740,12 @@ const CreatePage: React.FC = () => {
       const response = await songsApi.generateSong({
         userId: user.userId,
         songPrompt: songPrompt.trim(),
-        genre: selectedGenre,
-        mood: selectedMood,
+        genre: autoPickGenre ? 'auto' : selectedGenre,
+        mood: autoPickMood ? 'auto' : selectedMood,
         language: selectedLanguage,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
         creativity,
+        songLength, // 'short' or 'standard'
       });
       
       console.log('Song generation started:', response.data);
@@ -1053,7 +1096,7 @@ const CreatePage: React.FC = () => {
                   )}
                 </Box>
                 {isLoadingCharacters ? (
-                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
+                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading your cast...</Typography>
                 ) : characters.length > 0 ? (
                   <Box sx={{ position: 'relative', overflow: 'hidden' }}>
                     {/* Left gradient fade - only show when can scroll left */}
@@ -1276,14 +1319,45 @@ const CreatePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                Genre
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Genre
+                </Typography>
+                <Box 
+                  onClick={() => setAutoPickGenre(!autoPickGenre)}
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 0.5, 
+                    cursor: 'pointer',
+                    color: autoPickGenre ? '#fff' : '#007AFF',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: '20px',
+                    background: autoPickGenre 
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
+                      : 'transparent',
+                    border: autoPickGenre ? 'none' : '1.5px solid #007AFF',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { 
+                      background: autoPickGenre 
+                        ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
+                        : 'rgba(0, 122, 255, 0.08)',
+                    },
+                  }}
+                >
+                  <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+                  Pick for me
+                </Box>
+              </Box>
               <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Choose a music style for your track
+                {autoPickGenre ? 'AI will choose the best genre for your prompt' : 'Choose a music style for your track'}
               </Typography>
               <Button
-                onClick={() => setGenrePickerOpen(true)}
+                onClick={() => !autoPickGenre && setGenrePickerOpen(true)}
+                disabled={autoPickGenre}
                 fullWidth
                 sx={{
                   justifyContent: 'space-between',
@@ -1292,22 +1366,33 @@ const CreatePage: React.FC = () => {
                   px: 2,
                   borderRadius: '12px',
                   border: '1px solid rgba(0,0,0,0.1)',
-                  background: '#fff',
-                  color: '#1D1D1F',
+                  background: autoPickGenre ? 'rgba(0,122,255,0.05)' : '#fff',
+                  color: autoPickGenre ? '#007AFF' : '#1D1D1F',
                   fontWeight: 500,
-                  '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  opacity: autoPickGenre ? 0.7 : 1,
+                  '&:hover': { background: autoPickGenre ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    component="img"
-                    src={genres.find(g => g.id === selectedGenre)?.image}
-                    alt={genres.find(g => g.id === selectedGenre)?.name}
-                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
-                  />
-                  {genres.find(g => g.id === selectedGenre)?.name}
+                  {autoPickGenre ? (
+                    <>
+                      <AutoAwesomeIcon sx={{ fontSize: 20 }} />
+                      AI will pick the best genre
+                    </>
+                  ) : (
+                    <>
+                      <Box
+                        component="img"
+                        src={genres.find(g => g.id === selectedGenre)?.image}
+                        alt={genres.find(g => g.id === selectedGenre)?.name}
+                        sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                      {genres.find(g => g.id === selectedGenre)?.name}
+                    </>
+                  )}
                 </Box>
-                <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
+                {!autoPickGenre && <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />}
               </Button>
             </Paper>
 
@@ -1324,14 +1409,45 @@ const CreatePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                Mood
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Mood
+                </Typography>
+                <Box 
+                  onClick={() => setAutoPickMood(!autoPickMood)}
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 0.5, 
+                    cursor: 'pointer',
+                    color: autoPickMood ? '#fff' : '#007AFF',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: '20px',
+                    background: autoPickMood 
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
+                      : 'transparent',
+                    border: autoPickMood ? 'none' : '1.5px solid #007AFF',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { 
+                      background: autoPickMood 
+                        ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
+                        : 'rgba(0, 122, 255, 0.08)',
+                    },
+                  }}
+                >
+                  <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+                  Pick for me
+                </Box>
+              </Box>
               <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Set the emotional tone of your song
+                {autoPickMood ? 'AI will choose the best mood for your prompt' : 'Set the emotional tone of your song'}
               </Typography>
               <Button
-                onClick={() => setMoodPickerOpen(true)}
+                onClick={() => !autoPickMood && setMoodPickerOpen(true)}
+                disabled={autoPickMood}
                 fullWidth
                 sx={{
                   justifyContent: 'space-between',
@@ -1340,22 +1456,33 @@ const CreatePage: React.FC = () => {
                   px: 2,
                   borderRadius: '12px',
                   border: '1px solid rgba(0,0,0,0.1)',
-                  background: '#fff',
-                  color: '#1D1D1F',
+                  background: autoPickMood ? 'rgba(0,122,255,0.05)' : '#fff',
+                  color: autoPickMood ? '#007AFF' : '#1D1D1F',
                   fontWeight: 500,
-                  '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  opacity: autoPickMood ? 0.7 : 1,
+                  '&:hover': { background: autoPickMood ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    component="img"
-                    src={moods.find(m => m.id === selectedMood)?.image}
-                    alt={moods.find(m => m.id === selectedMood)?.name}
-                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
-                  />
-                  {moods.find(m => m.id === selectedMood)?.name}
+                  {autoPickMood ? (
+                    <>
+                      <AutoAwesomeIcon sx={{ fontSize: 20 }} />
+                      AI will pick the best mood
+                    </>
+                  ) : (
+                    <>
+                      <Box
+                        component="img"
+                        src={moods.find(m => m.id === selectedMood)?.image}
+                        alt={moods.find(m => m.id === selectedMood)?.name}
+                        sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                      {moods.find(m => m.id === selectedMood)?.name}
+                    </>
+                  )}
                 </Box>
-                <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
+                {!autoPickMood && <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />}
               </Button>
             </Paper>
 
@@ -1407,6 +1534,136 @@ const CreatePage: React.FC = () => {
               </Button>
             </Paper>
 
+            {/* Song Length Toggle */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                mb: 3,
+                borderRadius: '20px',
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+                Song Length
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+                Choose between a shorter or standard length track
+              </Typography>
+              <ToggleButtonGroup
+                value={songLength}
+                exclusive
+                onChange={(_e, v) => v && setSongLength(v)}
+                fullWidth
+                orientation="vertical"
+                sx={{
+                  gap: 1.5,
+                  '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '16px !important', m: 0 },
+                }}
+              >
+                {/* Short Option */}
+                <ToggleButton
+                  value="short"
+                  sx={{
+                    py: 2,
+                    px: 2.5,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    gap: 2,
+                    textTransform: 'none',
+                    background: songLength === 'short' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
+                    color: '#1D1D1F',
+                    border: songLength === 'short' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: songLength === 'short' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: songLength === 'short' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
+                      borderColor: '#007AFF',
+                    },
+                    '&.Mui-selected': {
+                      background: 'rgba(0,122,255,0.08)',
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,122,255,0.12)' },
+                    },
+                  }}
+                >
+                  <Box sx={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '10px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    background: songLength === 'short' ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)',
+                  }}>
+                    <TimerIcon sx={{ color: songLength === 'short' ? '#007AFF' : '#86868B' }} />
+                  </Box>
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'short' ? '#007AFF' : '#1D1D1F' }}>
+                      Short
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                      Quick track, ~30-90 seconds
+                    </Typography>
+                  </Box>
+                </ToggleButton>
+
+                {/* Standard Option */}
+                <ToggleButton
+                  value="standard"
+                  sx={{
+                    py: 2,
+                    px: 2.5,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    gap: 2,
+                    textTransform: 'none',
+                    background: songLength === 'standard' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
+                    color: '#1D1D1F',
+                    border: songLength === 'standard' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: songLength === 'standard' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: songLength === 'standard' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)',
+                      borderColor: '#007AFF',
+                    },
+                    '&.Mui-selected': {
+                      background: 'rgba(0,122,255,0.08)',
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,122,255,0.12)' },
+                    },
+                  }}
+                >
+                  <Box sx={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '10px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    background: songLength === 'standard' ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)',
+                  }}>
+                    <MusicNoteIcon sx={{ color: songLength === 'standard' ? '#007AFF' : '#86868B' }} />
+                  </Box>
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'standard' ? '#007AFF' : '#1D1D1F' }}>
+                      Standard
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                      Full length track, ~1.5-3 minutes
+                    </Typography>
+                  </Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Paper>
+
           </Box>
 
           {/* Right Column - Summary */}
@@ -1429,28 +1686,68 @@ const CreatePage: React.FC = () => {
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Genre</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <Box
-                      component="img"
-                      src={genres.find(g => g.id === selectedGenre)?.image}
-                      alt={genres.find(g => g.id === selectedGenre)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                    />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {genres.find(g => g.id === selectedGenre)?.name}
-                    </Typography>
+                    {autoPickGenre ? (
+                      <>
+                        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#007AFF' }}>
+                          AI picks
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Box
+                          component="img"
+                          src={genres.find(g => g.id === selectedGenre)?.image}
+                          alt={genres.find(g => g.id === selectedGenre)?.name}
+                          sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                        />
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {genres.find(g => g.id === selectedGenre)?.name}
+                        </Typography>
+                      </>
+                    )}
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Mood</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <Box
-                      component="img"
-                      src={moods.find(m => m.id === selectedMood)?.image}
-                      alt={moods.find(m => m.id === selectedMood)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                    />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {moods.find(m => m.id === selectedMood)?.name}
+                    {autoPickMood ? (
+                      <>
+                        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#007AFF' }}>
+                          AI picks
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Box
+                          component="img"
+                          src={moods.find(m => m.id === selectedMood)?.image}
+                          alt={moods.find(m => m.id === selectedMood)?.name}
+                          sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                        />
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {moods.find(m => m.id === selectedMood)?.name}
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Length</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    <TimerIcon sx={{ fontSize: 18, color: songLength === 'short' ? '#FF9500' : '#34C759' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {songLength === 'short' ? '30 - 90s' : '1.5 - 3 min'}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Creativity</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    <TuneIcon sx={{ fontSize: 18, color: creativity <= 3 ? '#007AFF' : creativity >= 7 ? '#AF52DE' : '#5856D6' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                      {creativity <= 3 ? 'Literal' : creativity >= 7 ? 'Creative' : 'Balanced'} ({creativity}/10)
                     </Typography>
                   </Box>
                 </Box>
@@ -2137,7 +2434,7 @@ const CreatePage: React.FC = () => {
                   )}
                 </Box>
                 {isLoadingCharacters ? (
-                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading characters...</Typography>
+                  <Typography variant="caption" sx={{ color: '#86868B' }}>Loading your cast...</Typography>
                 ) : characters.length > 0 ? (
                   <Box sx={{ position: 'relative', overflow: 'hidden' }}>
                     {/* Left gradient fade - only show when can scroll left */}
