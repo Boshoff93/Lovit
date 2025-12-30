@@ -14,7 +14,212 @@ export interface RouteConfig {
   heroHeading: string; // Main heading (can include line break with \n)
   heroSubtext: string; // Description below heading
   examplePrompts: string[]; // 4 example prompts
+  // Route category for carousel customization
+  routeCategory?: RouteCategory;
 }
+
+// Route categories for carousel title variations
+export type RouteCategory = 
+  | 'genre'           // Pop, Rock, Hip-Hop, etc.
+  | 'language'        // English, Spanish, Japanese, etc.
+  | 'mood'            // Happy, Sad, Energetic, etc.
+  | 'holiday'         // Christmas, Halloween, etc.
+  | 'occasion'        // Gym, Running, New Years, etc.
+  | 'videoStyle'      // Anime, 3D, Cinematic, etc.
+  | 'platform'        // YouTube, TikTok, etc.
+  | 'airbnb'          // Airbnb, Vacation Rental, etc.
+  | 'ecommerce'       // Shopify, Amazon, etc.
+  | 'ugc'             // Cheap UGC, AI Ads, etc.
+  | 'adTesting'       // Prototype Ads, A/B Testing, etc.
+  | 'artist'          // Music Like Taylor Swift, etc.
+  | 'anime'           // Anime soundtrack routes
+  | 'showMovie'       // TV/Movie soundtrack routes
+  | 'promotional'     // Business promotional videos
+  | 'contentCreator'  // Vlogger, Streamer, etc.
+  | 'default';
+
+// Carousel titles by category - provides variety for SEO while keeping content relevant
+export const carouselTitlesByCategory: Record<RouteCategory, {
+  featuredTracks: { title: string; subtitle: string };
+  musicVideos: { title: string; subtitle: string };
+  cinematicVideos: { title: string; subtitle: string };
+  moreTracks: { title: string; subtitle: string };
+  promoVideos: { title: string; subtitle: string };
+  genres: { title: string; subtitle: string };
+  moreGenres: { title: string; subtitle: string };
+  videoStyles: { title: string; subtitle: string };
+}> = {
+  default: {
+    featuredTracks: { title: 'Featured Tracks for You', subtitle: 'Hear what Gruvi can create - professional AI-generated music' },
+    musicVideos: { title: 'Turn Songs Into Music Videos', subtitle: 'Stunning AI-generated visuals synced to your music' },
+    cinematicVideos: { title: 'Create Cinematic Music Videos', subtitle: 'Widescreen videos perfect for YouTube and streaming' },
+    moreTracks: { title: 'Explore More Tracks', subtitle: 'Discover more AI-generated songs across every genre' },
+    promoVideos: { title: 'Promo Videos for Your Brand', subtitle: 'Showcase products, Airbnb listings, e-commerce stores & more' },
+    genres: { title: 'Discover More Genres', subtitle: 'From Hip-Hop to Classical - generate professional tracks in seconds' },
+    moreGenres: { title: 'Create Music in Any Genre', subtitle: 'Even more AI-generated music to explore' },
+    videoStyles: { title: 'Turn Your Music Into Stunning Videos', subtitle: 'Anime, Cinematic, 3D, Cyberpunk - pick your visual style' },
+  },
+  genre: {
+    featuredTracks: { title: 'Popular Tracks in This Genre', subtitle: 'Listen to what others have created with Gruvi' },
+    musicVideos: { title: 'Genre-Perfect Music Videos', subtitle: 'AI visuals that match your musical style' },
+    cinematicVideos: { title: 'Widescreen Genre Videos', subtitle: 'Professional music videos for any platform' },
+    moreTracks: { title: 'More Songs Like This', subtitle: 'Explore similar AI-generated tracks' },
+    promoVideos: { title: 'Use This Sound for Your Brand', subtitle: 'Perfect background music for promotional content' },
+    genres: { title: 'Related Genres to Explore', subtitle: 'Discover similar styles and sounds' },
+    moreGenres: { title: 'Expand Your Sound', subtitle: 'Try blending genres for unique results' },
+    videoStyles: { title: 'Visualize Your Music', subtitle: 'Choose the perfect art style for your track' },
+  },
+  language: {
+    featuredTracks: { title: 'Songs in This Language', subtitle: 'AI-generated music with authentic vocals' },
+    musicVideos: { title: 'Multilingual Music Videos', subtitle: 'Beautiful visuals for songs in any language' },
+    cinematicVideos: { title: 'International Cinematic Content', subtitle: 'Professional videos that transcend borders' },
+    moreTracks: { title: 'More Multilingual Music', subtitle: 'Explore songs in different languages' },
+    promoVideos: { title: 'Reach Global Audiences', subtitle: 'Create content that speaks to international markets' },
+    genres: { title: 'Popular Genres in This Language', subtitle: 'Discover what sounds great in different languages' },
+    moreGenres: { title: 'Cross-Cultural Sounds', subtitle: 'Blend genres with multilingual vocals' },
+    videoStyles: { title: 'Cultural Visual Styles', subtitle: 'Match your visuals to your language and culture' },
+  },
+  mood: {
+    featuredTracks: { title: 'Tracks That Match This Mood', subtitle: 'AI-generated music for every emotion' },
+    musicVideos: { title: 'Mood-Matched Videos', subtitle: 'Visuals that amplify the emotional impact' },
+    cinematicVideos: { title: 'Emotional Cinematic Content', subtitle: 'Tell stories through mood and atmosphere' },
+    moreTracks: { title: 'More of This Vibe', subtitle: 'Keep the mood going with similar tracks' },
+    promoVideos: { title: 'Set the Right Mood for Your Brand', subtitle: 'Background music that evokes the perfect feeling' },
+    genres: { title: 'Genres for This Mood', subtitle: 'Find the sound that matches your vibe' },
+    moreGenres: { title: 'Explore Mood Combinations', subtitle: 'Mix feelings for unique emotional depth' },
+    videoStyles: { title: 'Visuals That Feel Right', subtitle: 'Art styles that enhance the emotional tone' },
+  },
+  holiday: {
+    featuredTracks: { title: 'Celebrate with Music', subtitle: 'AI-generated songs for your special occasions' },
+    musicVideos: { title: 'Festive Music Videos', subtitle: 'Holiday-themed visuals for your celebrations' },
+    cinematicVideos: { title: 'Holiday Cinematic Content', subtitle: 'Widescreen videos for seasonal celebrations' },
+    moreTracks: { title: 'More Holiday Music', subtitle: 'Build the perfect seasonal playlist' },
+    promoVideos: { title: 'Holiday Marketing Made Easy', subtitle: 'Seasonal promo content for your campaigns' },
+    genres: { title: 'Holiday Genre Mixes', subtitle: 'Traditional and modern takes on seasonal music' },
+    moreGenres: { title: 'Unique Holiday Sounds', subtitle: 'Fresh takes on classic holiday vibes' },
+    videoStyles: { title: 'Festive Visual Styles', subtitle: 'Holiday-perfect animation and video styles' },
+  },
+  occasion: {
+    featuredTracks: { title: 'Music for the Moment', subtitle: 'Perfect tracks for every activity and occasion' },
+    musicVideos: { title: 'Activity-Perfect Videos', subtitle: 'Visuals that match your lifestyle moments' },
+    cinematicVideos: { title: 'Lifestyle Cinematic Content', subtitle: 'Capture the feeling of every occasion' },
+    moreTracks: { title: 'More Music for This Activity', subtitle: 'Build your perfect activity playlist' },
+    promoVideos: { title: 'Market to Lifestyle Moments', subtitle: 'Reach audiences during key activities' },
+    genres: { title: 'Best Genres for This Moment', subtitle: 'Find the sound that fits the activity' },
+    moreGenres: { title: 'Activity Soundtracks', subtitle: 'Music that enhances every experience' },
+    videoStyles: { title: 'Lifestyle Video Styles', subtitle: 'Visuals that capture the moment' },
+  },
+  videoStyle: {
+    featuredTracks: { title: 'Tracks Perfect for This Style', subtitle: 'Music that complements these visuals' },
+    musicVideos: { title: 'More in This Visual Style', subtitle: 'Explore AI-generated videos in this aesthetic' },
+    cinematicVideos: { title: 'Cinematic Takes on This Style', subtitle: 'Widescreen versions of this visual approach' },
+    moreTracks: { title: 'Songs That Fit This Aesthetic', subtitle: 'Music that matches this visual vibe' },
+    promoVideos: { title: 'Use This Style for Your Brand', subtitle: 'Stand out with unique visual branding' },
+    genres: { title: 'Best Genres for This Look', subtitle: 'Musical styles that pair perfectly' },
+    moreGenres: { title: 'Genre + Style Combos', subtitle: 'Experiment with sound and visuals' },
+    videoStyles: { title: 'Similar Visual Styles', subtitle: 'Explore related aesthetics and art directions' },
+  },
+  platform: {
+    featuredTracks: { title: 'Trending on This Platform', subtitle: 'Music optimized for maximum engagement' },
+    musicVideos: { title: 'Platform-Ready Videos', subtitle: 'Formatted and styled for this platform' },
+    cinematicVideos: { title: 'Premium Platform Content', subtitle: 'High-quality videos that stand out' },
+    moreTracks: { title: 'More Platform-Optimized Music', subtitle: 'Tracks designed for engagement' },
+    promoVideos: { title: 'Promotional Content That Converts', subtitle: 'Ads and promos for this platform' },
+    genres: { title: 'What Works on This Platform', subtitle: 'Popular genres for maximum reach' },
+    moreGenres: { title: 'Trending Sounds', subtitle: 'Stay ahead of platform trends' },
+    videoStyles: { title: 'Platform-Perfect Styles', subtitle: 'Visual formats that perform best' },
+  },
+  airbnb: {
+    featuredTracks: { title: 'Ambient Music for Properties', subtitle: 'Set the perfect atmosphere for your guests' },
+    musicVideos: { title: 'Property Showcase Videos', subtitle: 'Stunning visuals that highlight your rental' },
+    cinematicVideos: { title: 'Cinematic Property Tours', subtitle: 'Widescreen videos that sell the experience' },
+    moreTracks: { title: 'More Hospitality Music', subtitle: 'Build playlists for guest experiences' },
+    promoVideos: { title: 'Vacation Rental Marketing', subtitle: 'Videos that increase bookings and engagement' },
+    genres: { title: 'Music by Property Type', subtitle: 'Beach house vibes to mountain cabin sounds' },
+    moreGenres: { title: 'Atmosphere for Every Space', subtitle: 'Match music to your property\'s character' },
+    videoStyles: { title: 'Property Video Styles', subtitle: 'From cozy cabins to luxury villas' },
+  },
+  ecommerce: {
+    featuredTracks: { title: 'Music for Product Content', subtitle: 'Background tracks that boost conversions' },
+    musicVideos: { title: 'Product Showcase Videos', subtitle: 'Make your products shine with AI visuals' },
+    cinematicVideos: { title: 'Premium Product Videos', subtitle: 'High-end content for luxury brands' },
+    moreTracks: { title: 'More E-commerce Music', subtitle: 'Sounds that sell' },
+    promoVideos: { title: 'Sales & Campaign Videos', subtitle: 'Black Friday, launches, and flash sales' },
+    genres: { title: 'Best Sounds for Products', subtitle: 'Match music to your brand identity' },
+    moreGenres: { title: 'Brand Sound Exploration', subtitle: 'Find your unique sonic identity' },
+    videoStyles: { title: 'Product Video Aesthetics', subtitle: 'From minimalist to bold and vibrant' },
+  },
+  ugc: {
+    featuredTracks: { title: 'Music for Authentic Content', subtitle: 'Tracks that feel genuine and relatable' },
+    musicVideos: { title: 'UGC-Style Videos', subtitle: 'Content that connects with audiences' },
+    cinematicVideos: { title: 'Premium UGC Content', subtitle: 'Elevated creator-style videos' },
+    moreTracks: { title: 'More Creator-Friendly Music', subtitle: 'Royalty-free tracks for your content' },
+    promoVideos: { title: 'UGC Ads That Convert', subtitle: 'Authentic-feeling promotional content' },
+    genres: { title: 'Trending Creator Sounds', subtitle: 'What\'s working in UGC right now' },
+    moreGenres: { title: 'Fresh Content Sounds', subtitle: 'Stay ahead of UGC trends' },
+    videoStyles: { title: 'UGC Visual Styles', subtitle: 'Authentic aesthetics that resonate' },
+  },
+  adTesting: {
+    featuredTracks: { title: 'Music for Ad Creative', subtitle: 'Test different sounds before spending' },
+    musicVideos: { title: 'Video Ad Prototypes', subtitle: 'Iterate quickly on creative concepts' },
+    cinematicVideos: { title: 'Premium Ad Concepts', subtitle: 'High-quality prototypes for big campaigns' },
+    moreTracks: { title: 'A/B Testing Music', subtitle: 'Multiple variations for split testing' },
+    promoVideos: { title: 'Ad Creative Library', subtitle: 'Prototype before you commit' },
+    genres: { title: 'Sound Testing by Genre', subtitle: 'Find what resonates with your audience' },
+    moreGenres: { title: 'Creative Sound Exploration', subtitle: 'Discover unexpected winners' },
+    videoStyles: { title: 'Visual Format Testing', subtitle: 'Test different styles before scaling' },
+  },
+  artist: {
+    featuredTracks: { title: 'Inspired by This Sound', subtitle: 'AI-generated tracks in a similar style' },
+    musicVideos: { title: 'Videos in This Aesthetic', subtitle: 'Visuals that match the vibe' },
+    cinematicVideos: { title: 'Cinematic Tributes', subtitle: 'Epic visuals inspired by iconic sounds' },
+    moreTracks: { title: 'More in This Style', subtitle: 'Explore the full spectrum of this sound' },
+    promoVideos: { title: 'Use This Sound for Content', subtitle: 'Perfect for brand alignment' },
+    genres: { title: 'Related Musical Styles', subtitle: 'Explore the artist\'s genre influences' },
+    moreGenres: { title: 'Sonic Neighbors', subtitle: 'Similar artists and sounds to discover' },
+    videoStyles: { title: 'Visual Aesthetics That Fit', subtitle: 'Match the vibe with the right style' },
+  },
+  anime: {
+    featuredTracks: { title: 'Epic Anime Soundtracks', subtitle: 'AI-generated music inspired by your favorites' },
+    musicVideos: { title: 'Anime-Style Music Videos', subtitle: 'Stunning animation for your tracks' },
+    cinematicVideos: { title: 'Cinematic Anime Content', subtitle: 'Widescreen anime-inspired visuals' },
+    moreTracks: { title: 'More Anime Music', subtitle: 'Battle themes, emotional scores, and openings' },
+    promoVideos: { title: 'Anime for Brands', subtitle: 'Reach anime-loving audiences' },
+    genres: { title: 'Anime Genre Fusion', subtitle: 'J-Pop, orchestral, electronic and more' },
+    moreGenres: { title: 'Anime Sound Exploration', subtitle: 'From Shonen to Slice of Life' },
+    videoStyles: { title: 'Anime Art Styles', subtitle: 'Classic, modern, and everything between' },
+  },
+  showMovie: {
+    featuredTracks: { title: 'Soundtrack-Inspired Music', subtitle: 'Capture that cinematic feeling' },
+    musicVideos: { title: 'Cinematic Universe Videos', subtitle: 'Visuals worthy of the big screen' },
+    cinematicVideos: { title: 'Epic Cinematic Content', subtitle: 'Blockbuster-quality video production' },
+    moreTracks: { title: 'More Soundtrack Styles', subtitle: 'Scores and themes from every genre' },
+    promoVideos: { title: 'Cinematic Brand Content', subtitle: 'Movie-quality promotional videos' },
+    genres: { title: 'Soundtrack Genres', subtitle: 'Orchestral, synth, ambient and more' },
+    moreGenres: { title: 'Score Exploration', subtitle: 'Find your cinematic sound' },
+    videoStyles: { title: 'Cinematic Visual Styles', subtitle: 'From noir to sci-fi to fantasy' },
+  },
+  promotional: {
+    featuredTracks: { title: 'Music for Business', subtitle: 'Professional tracks for commercial use' },
+    musicVideos: { title: 'Business Promo Videos', subtitle: 'Make your brand stand out' },
+    cinematicVideos: { title: 'Corporate Cinematic Content', subtitle: 'Premium business video production' },
+    moreTracks: { title: 'More Business Music', subtitle: 'Build your brand sound library' },
+    promoVideos: { title: 'Full Promotional Suite', subtitle: 'Everything you need for marketing' },
+    genres: { title: 'Music by Industry', subtitle: 'Sounds that work for your sector' },
+    moreGenres: { title: 'Brand Sound Options', subtitle: 'Find your unique sonic identity' },
+    videoStyles: { title: 'Business Video Styles', subtitle: 'Professional aesthetics for every brand' },
+  },
+  contentCreator: {
+    featuredTracks: { title: 'Creator-Ready Tracks', subtitle: 'Royalty-free music for your content' },
+    musicVideos: { title: 'Videos for Creators', subtitle: 'Stunning content for your channels' },
+    cinematicVideos: { title: 'Premium Creator Content', subtitle: 'Level up your production value' },
+    moreTracks: { title: 'More Creator Music', subtitle: 'Never run out of fresh tracks' },
+    promoVideos: { title: 'Sponsored Content Made Easy', subtitle: 'Professional branded content' },
+    genres: { title: 'Trending Creator Genres', subtitle: 'What\'s working for top creators' },
+    moreGenres: { title: 'Fresh Sound Ideas', subtitle: 'Stand out from the crowd' },
+    videoStyles: { title: 'Creator Visual Styles', subtitle: 'Match your brand aesthetic' },
+  },
+};
 
 // =============================================================================
 // GENRE DATA
@@ -1030,7 +1235,8 @@ function generateGenreRoute(genre: string): RouteConfig {
     heroTagline: `Create ${name} Music`,
     heroHeading: `${name} Music Generator\nGenerate ${name.toLowerCase()} music with AI`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'genre',
   };
 }
 
@@ -1052,7 +1258,8 @@ function generateLanguageRoute(lang: string): RouteConfig {
     heroTagline: `${name} Music Generator`,
     heroHeading: `${name} Music Generator\nCreate songs in ${name} with AI`,
     heroSubtext: `Generate original songs with ${name} lyrics and vocals. Create authentic ${name.toLowerCase()} music in any genre with AI.`,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'language',
   };
 }
 
@@ -1075,7 +1282,8 @@ function generateHolidayRoute(holiday: string): RouteConfig {
     heroTagline: `${name} Music Generator`,
     heroHeading: `${name} Music Generator\nCreate ${name.toLowerCase()} songs with AI`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'holiday',
   };
 }
 
@@ -1097,7 +1305,8 @@ function generateVideoStyleRoute(style: string): RouteConfig {
     heroTagline: `${name} Music Videos`,
     heroHeading: `${name} Music Videos\nCreate ${name.toLowerCase()} style music videos`,
     heroSubtext: `Generate stunning ${name} style music videos with AI. Transform your songs into visual masterpieces with ${name.toLowerCase()} aesthetics.`,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'videoStyle',
   };
 }
 
@@ -1120,7 +1329,8 @@ function generatePlatformRoute(platform: string): RouteConfig {
     heroTagline: `Music for ${name}`,
     heroHeading: `Music for ${name}\nCreate royalty-free tracks for ${name.toLowerCase()}`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'platform',
   };
 }
 
@@ -1142,7 +1352,8 @@ function generateMoodRoute(mood: string): RouteConfig {
     heroTagline: `${name} Music Generator`,
     heroHeading: `${name} Music Generator\nCreate ${name.toLowerCase()} vibes with AI`,
     heroSubtext: `Generate ${name.toLowerCase()} music that perfectly captures the mood. Create tracks with the exact ${name.toLowerCase()} atmosphere you need.`,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'mood',
   };
 }
 
@@ -1161,7 +1372,8 @@ function generateBeginnerRoute(key: string): RouteConfig {
     heroTagline: data.heroTagline,
     heroHeading: data.heroHeading,
     heroSubtext: data.heroSubtext,
-    examplePrompts: data.prompts
+    examplePrompts: data.prompts,
+    routeCategory: 'default',
   };
 }
 
@@ -1184,7 +1396,8 @@ function generatePromotionalPlaceRoute(place: string): RouteConfig {
     heroTagline: `${name} Promotional Videos`,
     heroHeading: `${name} Promotional Videos\nCreate stunning ${name.toLowerCase()} marketing content`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'airbnb',
   };
 }
 
@@ -1207,7 +1420,8 @@ function generatePromotionalBusinessRoute(business: string): RouteConfig {
     heroTagline: `${name} Promotional Videos`,
     heroHeading: `${name} Promotional Videos\nProfessional marketing content with AI`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'promotional',
   };
 }
 
@@ -1230,7 +1444,8 @@ function generatePromotionalProductRoute(product: string): RouteConfig {
     heroTagline: `${name} Promotional Videos`,
     heroHeading: `${name} Promotional Videos\nShowcase your products with AI`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'ecommerce',
   };
 }
 
@@ -1253,7 +1468,8 @@ function generateContentCreatorRoute(creator: string): RouteConfig {
     heroTagline: `Music for ${name}s`,
     heroHeading: `Music for ${name}s\nPerfect background tracks for your content`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'contentCreator',
   };
 }
 
@@ -1276,7 +1492,8 @@ function generateLifeSongRoute(topic: string): RouteConfig {
     heroTagline: `Songs About ${name}`,
     heroHeading: `Songs About ${name}\nCreate music about everyday life`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'occasion',
   };
 }
 
@@ -1299,7 +1516,8 @@ function generateEmotionalSongRoute(emotion: string): RouteConfig {
     heroTagline: `Songs for ${name}`,
     heroHeading: `Songs for ${name}\nHealing music for difficult times`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'mood',
   };
 }
 
@@ -1322,7 +1540,8 @@ function generateFunnySongRoute(type: string): RouteConfig {
     heroTagline: `${name} Songs`,
     heroHeading: `${name} Songs\nCreate hilarious comedy music`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'mood',
   };
 }
 
@@ -1345,7 +1564,8 @@ function generateRelationshipSongRoute(relationship: string): RouteConfig {
     heroTagline: `${name} Songs`,
     heroHeading: `${name} Songs\nCelebrate special relationships`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'occasion',
   };
 }
 
@@ -1368,7 +1588,8 @@ function generateHobbySongRoute(hobby: string): RouteConfig {
     heroTagline: `${name} Songs`,
     heroHeading: `${name} Songs\nMusic for hobby enthusiasts`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'occasion',
   };
 }
 
@@ -1568,6 +1789,127 @@ const cinematicPromoData: { [key: string]: { name: string; prompts: string[]; su
 };
 
 // =============================================================================
+// UGC / CHEAP AI VIDEO CONTENT DATA
+// =============================================================================
+const ugcVideoData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'cheap-ugc': { name: 'Cheap UGC', prompts: ['Authentic UGC music', 'User generated content vibe', 'Real customer testimonial', 'Organic social content'], subtext: 'Create professional UGC-style videos for a fraction of the cost of traditional production.' },
+  'ai-ugc-ads': { name: 'AI UGC Ads', prompts: ['Social ad music', 'Scroll-stopping beat', 'TikTok ad soundtrack', 'Instagram reel music'], subtext: 'Generate AI-powered UGC ads completely automated - just describe what you want.' },
+  'automated-video-ads': { name: 'Automated Video Ads', prompts: ['Ad campaign music', 'Conversion-focused track', 'Social media ad vibe', 'Performance ad soundtrack'], subtext: 'Fully automated video ad creation - tell us your product and we handle the rest.' },
+  'social-media-ads': { name: 'Social Media Ads', prompts: ['Instagram ad music', 'Facebook ad soundtrack', 'TikTok ad beat', 'YouTube ad intro'], subtext: 'Create scroll-stopping social media ads with AI-generated music and visuals.' },
+  'test-ad-creative': { name: 'Test Ad Creative', prompts: ['A/B test music', 'Ad variant soundtrack', 'Creative testing vibe', 'Split test audio'], subtext: 'Prototype ad creatives before committing to expensive production costs.' },
+  'prototype-ads': { name: 'Prototype Ads', prompts: ['Concept ad music', 'Draft campaign sound', 'Pre-production track', 'Ad mockup audio'], subtext: 'Test your ad concepts with AI-generated prototypes before spending on production.' },
+  'low-cost-ads': { name: 'Low Cost Ads', prompts: ['Budget-friendly ad music', 'Affordable campaign track', 'Cost-effective production', 'Startup ad soundtrack'], subtext: 'Create professional ads on a startup budget with AI automation.' },
+  'bulk-video-content': { name: 'Bulk Video Content', prompts: ['Content library music', 'Batch production track', 'Multiple variations', 'Scale your content'], subtext: 'Generate bulk video content for your campaigns - dozens of variations in minutes.' },
+  'influencer-style-ads': { name: 'Influencer Style Ads', prompts: ['Creator aesthetic music', 'Authentic brand vibe', 'Native content sound', 'Organic ad feel'], subtext: 'Create influencer-style content without the influencer price tag.' },
+  'product-review-video': { name: 'Product Review Video', prompts: ['Review video music', 'Product showcase track', 'Honest review vibe', 'Unbiased look soundtrack'], subtext: 'Generate product review style videos with authentic-feeling music.' },
+  'testimonial-ad': { name: 'Testimonial Ad', prompts: ['Customer story music', 'Success story track', 'Real results vibe', 'Transformation soundtrack'], subtext: 'Create compelling testimonial-style ads with AI-generated content.' },
+  'hook-video': { name: 'Hook Video', prompts: ['Attention grabbing music', 'Scroll stopper beat', 'First 3 seconds track', 'Pattern interrupt sound'], subtext: 'Generate hook videos designed to stop the scroll and grab attention.' },
+};
+
+// =============================================================================
+// AD TESTING / PROTOTYPE DATA
+// =============================================================================
+const adTestingData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'ad-creative-testing': { name: 'Ad Creative Testing', prompts: ['Test creative music', 'A/B test soundtrack', 'Creative variation track', 'Performance test audio'], subtext: 'Test ad creatives before doubling down on ad spend - prototype first, commit later.' },
+  'pre-launch-ads': { name: 'Pre-Launch Ads', prompts: ['Coming soon music', 'Launch teaser track', 'Anticipation builder', 'Pre-release soundtrack'], subtext: 'Create pre-launch ads to gauge interest before your product is ready.' },
+  'mvp-marketing': { name: 'MVP Marketing', prompts: ['Minimum viable music', 'Lean startup track', 'Quick iteration sound', 'Fast test audio'], subtext: 'Generate marketing content for your MVP without breaking the bank.' },
+  'ad-mockups': { name: 'Ad Mockups', prompts: ['Mockup presentation music', 'Client pitch track', 'Concept demo sound', 'Draft ad audio'], subtext: 'Create ad mockups to present to clients or stakeholders before production.' },
+  'creative-iterations': { name: 'Creative Iterations', prompts: ['Version 2 music', 'Iteration soundtrack', 'Refined concept track', 'Improved creative audio'], subtext: 'Quickly iterate on ad creatives to find what resonates with your audience.' },
+  'audience-testing': { name: 'Audience Testing', prompts: ['Target audience music', 'Demographic test track', 'Segment specific sound', 'Persona testing audio'], subtext: 'Create audience-specific ad variations to test which segments convert best.' },
+  'message-testing': { name: 'Message Testing', prompts: ['Value prop music', 'Messaging test track', 'Headline variant sound', 'Copy testing audio'], subtext: 'Test different messaging angles with AI-generated ad prototypes.' },
+  'format-testing': { name: 'Format Testing', prompts: ['Vertical format music', 'Square video track', 'Stories format sound', 'Reels style audio'], subtext: 'Test different ad formats - vertical, square, landscape - before scaling.' },
+};
+
+// =============================================================================
+// OCCASION / ACTIVITY MUSIC DATA
+// =============================================================================
+const occasionMusicData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  // Daily activities
+  'morning-routine': { name: 'Morning Routine', prompts: ['Calm morning music', 'Sunrise soundtrack', 'Peaceful wake up', 'Gentle start to day'], subtext: 'Create peaceful music for your calm morning routine.' },
+  'gym-workout': { name: 'Gym Workout', prompts: ['High energy gym music', 'Workout motivation track', 'Lifting heavy soundtrack', 'Fitness motivation beat'], subtext: 'Generate pumping gym music to power through your workout.' },
+  'running': { name: 'Running', prompts: ['Running pace music', 'Cardio motivation track', 'Jogging rhythm beat', 'Runner high soundtrack'], subtext: 'Create the perfect running playlist with motivating BPM-matched music.' },
+  'yoga-session': { name: 'Yoga Session', prompts: ['Yoga flow music', 'Zen meditation track', 'Mindful movement sound', 'Peaceful yoga soundtrack'], subtext: 'Generate calming music for your yoga and stretching practice.' },
+  'meditation': { name: 'Meditation', prompts: ['Deep meditation music', 'Mindfulness soundtrack', 'Breathing exercise track', 'Inner peace audio'], subtext: 'Create soothing meditation music for mindfulness and relaxation.' },
+  'studying': { name: 'Studying', prompts: ['Focus study music', 'Concentration soundtrack', 'Exam prep track', 'Deep work audio'], subtext: 'Generate study music that helps you focus and retain information.' },
+  'working-from-home': { name: 'Working From Home', prompts: ['Productive WFH music', 'Home office soundtrack', 'Focus without distraction', 'Remote work vibe'], subtext: 'Create the perfect work-from-home ambiance with productivity-boosting music.' },
+  'cooking': { name: 'Cooking', prompts: ['Kitchen cooking music', 'Chef vibes soundtrack', 'Dinner party prep', 'Culinary inspiration track'], subtext: 'Generate music that makes cooking feel like a culinary adventure.' },
+  'dinner-party': { name: 'Dinner Party', prompts: ['Elegant dinner music', 'Dinner party ambiance', 'Sophisticated gathering', 'Evening soiree soundtrack'], subtext: 'Create sophisticated background music for hosting dinner parties.' },
+  'road-trip': { name: 'Road Trip', prompts: ['Highway driving music', 'Road trip adventure', 'Open road soundtrack', 'Journey beats'], subtext: 'Generate the ultimate road trip playlist for your adventures.' },
+  'beach-day': { name: 'Beach Day', prompts: ['Beach vibes music', 'Ocean waves soundtrack', 'Summer sun track', 'Seaside relaxation'], subtext: 'Create chill beach music for your day by the ocean.' },
+  'pool-party': { name: 'Pool Party', prompts: ['Pool party beats', 'Summer splash music', 'Poolside vibes', 'Day drinking soundtrack'], subtext: 'Generate fun pool party music to keep the party going.' },
+  'bbq-cookout': { name: 'BBQ Cookout', prompts: ['Backyard BBQ music', 'Cookout vibes', 'Summer gathering track', 'Grill master soundtrack'], subtext: 'Create laid-back music for your backyard BBQ or cookout.' },
+  'game-night': { name: 'Game Night', prompts: ['Game night music', 'Board game background', 'Competitive fun track', 'Friends gathering sound'], subtext: 'Generate fun background music for game nights with friends.' },
+  'spa-day': { name: 'Spa Day', prompts: ['Spa relaxation music', 'Self-care soundtrack', 'Pamper day vibes', 'Wellness retreat audio'], subtext: 'Create calming spa music for your at-home self-care routine.' },
+  'sunday-brunch': { name: 'Sunday Brunch', prompts: ['Brunch vibes music', 'Lazy Sunday soundtrack', 'Mimosa morning track', 'Weekend chill audio'], subtext: 'Generate the perfect soundtrack for a leisurely Sunday brunch.' },
+  'late-night-vibes': { name: 'Late Night Vibes', prompts: ['Late night music', 'After hours soundtrack', 'Midnight vibes', 'Night owl tracks'], subtext: 'Create atmospheric music for those late night moments.' },
+  'coffee-shop': { name: 'Coffee Shop', prompts: ['Coffee shop ambiance', 'Cafe music vibes', 'Latte art soundtrack', 'Cozy coffee track'], subtext: 'Generate that perfect coffee shop atmosphere music.' },
+  'cleaning-house': { name: 'Cleaning House', prompts: ['Cleaning motivation music', 'Housework energy', 'Tidying up soundtrack', 'Productive cleaning beats'], subtext: 'Create upbeat music that makes cleaning feel less like a chore.' },
+  'walking-dog': { name: 'Walking Dog', prompts: ['Dog walk music', 'Neighborhood stroll', 'Park walking soundtrack', 'Pet adventure vibes'], subtext: 'Generate pleasant walking music for your daily dog walks.' },
+  // Celebrations
+  'new-years-eve': { name: 'New Years Eve', prompts: ['New years countdown music', 'NYE party soundtrack', 'Midnight celebration', 'Year end bash'], subtext: 'Create the perfect New Years Eve party music to ring in the new year.' },
+  'new-years-day': { name: 'New Years Day', prompts: ['Fresh start music', 'New beginnings soundtrack', 'January first vibes', 'Hopeful new year'], subtext: 'Generate hopeful music for new beginnings and fresh starts.' },
+  'super-bowl-party': { name: 'Super Bowl Party', prompts: ['Game day music', 'Football party soundtrack', 'Touchdown celebration', 'Sports party vibes'], subtext: 'Create hype music for your Super Bowl watch party.' },
+  'july-4th': { name: 'July 4th', prompts: ['Independence day music', 'Patriotic celebration', 'Fireworks soundtrack', 'Summer holiday vibes'], subtext: 'Generate festive music for Fourth of July celebrations.' },
+  'cinco-de-mayo': { name: 'Cinco de Mayo', prompts: ['Cinco party music', 'Mexican celebration', 'Fiesta soundtrack', 'Mariachi fusion'], subtext: 'Create lively music for your Cinco de Mayo fiesta.' },
+  'st-patricks-day': { name: 'St Patricks Day', prompts: ['Irish celebration music', 'St Patricks soundtrack', 'Celtic party vibes', 'Green day celebration'], subtext: 'Generate festive Irish-inspired music for St. Patricks Day.' },
+  'mardi-gras': { name: 'Mardi Gras', prompts: ['Mardi Gras music', 'Carnival celebration', 'New Orleans vibes', 'Fat Tuesday party'], subtext: 'Create vibrant Mardi Gras music for your celebration.' },
+  'baby-shower': { name: 'Baby Shower', prompts: ['Baby shower music', 'Expecting celebration', 'Sweet baby soundtrack', 'Parent party vibes'], subtext: 'Generate sweet, celebratory music for baby showers.' },
+  'bridal-shower': { name: 'Bridal Shower', prompts: ['Bridal party music', 'Pre-wedding celebration', 'Bride to be soundtrack', 'Girls celebration'], subtext: 'Create fun music for bridal showers and bachelorette parties.' },
+  'bachelor-party': { name: 'Bachelor Party', prompts: ['Bachelor party music', 'Stag do soundtrack', 'Last night out vibes', 'Groom celebration'], subtext: 'Generate party music for bachelor parties and stag nights.' },
+  'anniversary': { name: 'Anniversary', prompts: ['Anniversary music', 'Love celebration soundtrack', 'Years together track', 'Romantic milestone'], subtext: 'Create romantic music to celebrate anniversaries.' },
+  'retirement-party': { name: 'Retirement Party', prompts: ['Retirement celebration music', 'Career milestone soundtrack', 'New chapter vibes', 'Golden years track'], subtext: 'Generate celebratory music for retirement parties.' },
+  'housewarming': { name: 'Housewarming', prompts: ['Housewarming party music', 'New home celebration', 'Welcome home soundtrack', 'House party vibes'], subtext: 'Create welcoming music for housewarming parties.' },
+  'promotion-celebration': { name: 'Promotion Celebration', prompts: ['Career success music', 'Promotion party soundtrack', 'Level up vibes', 'Achievement celebration'], subtext: 'Generate triumphant music to celebrate promotions and career wins.' },
+};
+
+// =============================================================================
+// E-COMMERCE SPECIFIC DATA
+// =============================================================================
+const ecommerceData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'shopify-store': { name: 'Shopify Store', prompts: ['Shopify store music', 'E-commerce vibe', 'Online shop soundtrack', 'Product page audio'], subtext: 'Create professional promo videos for your Shopify store.' },
+  'amazon-fba': { name: 'Amazon FBA', prompts: ['Amazon listing music', 'FBA product video', 'Marketplace promo', 'Amazon seller soundtrack'], subtext: 'Generate product videos for Amazon FBA listings.' },
+  'etsy-shop': { name: 'Etsy Shop', prompts: ['Handmade product music', 'Artisan shop vibes', 'Craft store soundtrack', 'Etsy seller promo'], subtext: 'Create charming promo videos for your Etsy handmade shop.' },
+  'dropshipping': { name: 'Dropshipping', prompts: ['Dropship product music', 'Trending item promo', 'Viral product video', 'Quick commerce track'], subtext: 'Generate fast, scroll-stopping videos for dropshipping products.' },
+  'product-launch': { name: 'Product Launch', prompts: ['Launch day music', 'New product reveal', 'Coming soon soundtrack', 'Release announcement'], subtext: 'Create hype music for your product launch campaigns.' },
+  'flash-sale-promo': { name: 'Flash Sale Promo', prompts: ['Urgent sale music', 'Limited time offer', 'Act now soundtrack', 'Countdown timer vibes'], subtext: 'Generate urgent, converting music for flash sales.' },
+  'black-friday': { name: 'Black Friday', prompts: ['Black friday music', 'Mega sale soundtrack', 'Shopping frenzy', 'Deal day vibes'], subtext: 'Create exciting music for Black Friday campaigns.' },
+  'cyber-monday': { name: 'Cyber Monday', prompts: ['Cyber monday music', 'Online deals soundtrack', 'Digital shopping vibes', 'Tech sale track'], subtext: 'Generate modern music for Cyber Monday promotions.' },
+  'holiday-sale': { name: 'Holiday Sale', prompts: ['Holiday shopping music', 'Seasonal sale soundtrack', 'Gift giving vibes', 'Festive deals track'], subtext: 'Create festive music for holiday sales and promotions.' },
+  'subscription-box': { name: 'Subscription Box', prompts: ['Unboxing music', 'Monthly surprise soundtrack', 'Subscription reveal', 'Box opening excitement'], subtext: 'Generate exciting music for subscription box promotions.' },
+  'bundle-deal': { name: 'Bundle Deal', prompts: ['Bundle value music', 'Package deal soundtrack', 'Save more vibes', 'Combo offer track'], subtext: 'Create compelling music for bundle and package deals.' },
+  'new-arrival': { name: 'New Arrival', prompts: ['New arrival music', 'Fresh stock soundtrack', 'Just dropped vibes', 'Latest collection track'], subtext: 'Generate trendy music for new arrival promotions.' },
+  'clearance-sale': { name: 'Clearance Sale', prompts: ['Clearance music', 'Everything must go', 'Final sale soundtrack', 'Deep discount vibes'], subtext: 'Create urgent music for clearance and end-of-season sales.' },
+  'free-shipping': { name: 'Free Shipping', prompts: ['Free shipping music', 'No cost delivery', 'Shipping deal soundtrack', 'Order now vibes'], subtext: 'Generate promotional music highlighting free shipping offers.' },
+  'loyalty-program': { name: 'Loyalty Program', prompts: ['Rewards music', 'VIP member soundtrack', 'Points program vibes', 'Exclusive perks track'], subtext: 'Create engaging music for loyalty and rewards programs.' },
+};
+
+// =============================================================================
+// AIRBNB / SHORT-TERM RENTAL DATA
+// =============================================================================
+const airbnbData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'airbnb-listing': { name: 'Airbnb Listing', prompts: ['Vacation rental music', 'Property showcase', 'Guest welcome soundtrack', 'Booking promo'], subtext: 'Create stunning Airbnb listing videos that attract more bookings.' },
+  'vacation-rental': { name: 'Vacation Rental', prompts: ['Holiday home music', 'Vacation property showcase', 'Getaway destination', 'Rental property promo'], subtext: 'Generate beautiful vacation rental promo videos.' },
+  'beach-house-rental': { name: 'Beach House Rental', prompts: ['Beach property music', 'Oceanfront rental', 'Coastal getaway', 'Seaside vacation'], subtext: 'Create dreamy beach house rental videos with ocean vibes.' },
+  'mountain-cabin': { name: 'Mountain Cabin', prompts: ['Cabin retreat music', 'Mountain escape', 'Rustic getaway', 'Forest hideaway'], subtext: 'Generate cozy mountain cabin rental promotional videos.' },
+  'city-apartment': { name: 'City Apartment', prompts: ['Urban rental music', 'Downtown apartment', 'City stay vibes', 'Metro living'], subtext: 'Create stylish city apartment rental videos.' },
+  'luxury-villa': { name: 'Luxury Villa', prompts: ['Villa showcase music', 'Luxury property', 'Premium rental', 'Exclusive estate'], subtext: 'Generate sophisticated luxury villa promotional content.' },
+  'tiny-house': { name: 'Tiny House', prompts: ['Tiny house music', 'Compact living', 'Minimalist retreat', 'Small space vibes'], subtext: 'Create charming tiny house rental promotional videos.' },
+  'treehouse': { name: 'Treehouse', prompts: ['Treehouse adventure music', 'Elevated escape', 'Unique stay vibes', 'Canopy retreat'], subtext: 'Generate whimsical treehouse rental promotional content.' },
+  'glamping': { name: 'Glamping', prompts: ['Glamping music', 'Luxury camping', 'Outdoor comfort', 'Nature retreat vibes'], subtext: 'Create enticing glamping site promotional videos.' },
+  'houseboat': { name: 'Houseboat', prompts: ['Houseboat living music', 'Floating home', 'Water living vibes', 'Boat stay soundtrack'], subtext: 'Generate unique houseboat rental promotional content.' },
+  'farmstay': { name: 'Farmstay', prompts: ['Farm experience music', 'Country living', 'Agricultural retreat', 'Rural getaway'], subtext: 'Create authentic farmstay promotional videos.' },
+  'eco-lodge': { name: 'Eco Lodge', prompts: ['Sustainable stay music', 'Eco-friendly retreat', 'Green living vibes', 'Nature harmony'], subtext: 'Generate eco-conscious lodge promotional content.' },
+  'historic-property': { name: 'Historic Property', prompts: ['Historic charm music', 'Heritage stay', 'Classic elegance', 'Timeless property'], subtext: 'Create elegant historic property rental videos.' },
+  'pet-friendly-rental': { name: 'Pet Friendly Rental', prompts: ['Pet welcome music', 'Furry friend stay', 'Dog friendly vibes', 'Pet paradise'], subtext: 'Generate pet-friendly rental promotional content.' },
+  'family-vacation-home': { name: 'Family Vacation Home', prompts: ['Family getaway music', 'Kid friendly stay', 'Group vacation vibes', 'Multi-gen retreat'], subtext: 'Create family-focused vacation rental videos.' },
+  'romantic-getaway': { name: 'Romantic Getaway', prompts: ['Romantic retreat music', 'Couples escape', 'Love nest vibes', 'Honeymoon destination'], subtext: 'Generate romantic getaway rental promotional content.' },
+  'business-travel': { name: 'Business Travel', prompts: ['Corporate stay music', 'Business trip', 'Executive rental', 'Work travel vibes'], subtext: 'Create professional business travel rental videos.' },
+  'monthly-rental': { name: 'Monthly Rental', prompts: ['Extended stay music', 'Long term rental', 'Monthly discount', 'Flexible living'], subtext: 'Generate monthly rental promotional content for long-term guests.' },
+  'superhost-promo': { name: 'Superhost Promo', prompts: ['5-star host music', 'Top rated stay', 'Superhost quality', 'Premium hosting'], subtext: 'Create Superhost-worthy promotional videos.' },
+  'guest-experience': { name: 'Guest Experience', prompts: ['Welcome guest music', 'Local experience', 'Host hospitality', 'Memorable stay'], subtext: 'Generate guest experience showcase videos.' },
+};
+
+// =============================================================================
 // HELPER FUNCTIONS FOR NEW ROUTES
 // =============================================================================
 
@@ -1591,7 +1933,8 @@ function generateArtistRoute(artist: string): RouteConfig {
     heroTagline: `Music Like ${name}`,
     heroHeading: `Music Like ${name}\nAI-generated ${genre.toLowerCase()} in their style`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'artist',
   };
 }
 
@@ -1615,7 +1958,8 @@ function generateShowMusicRoute(show: string): RouteConfig {
     heroTagline: `${name} Style Music`,
     heroHeading: `Music Like ${name}\nAI soundtrack inspired by ${name}`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'showMovie',
   };
 }
 
@@ -1638,7 +1982,8 @@ function generateAnimeSoundtrackRoute(anime: string): RouteConfig {
     heroTagline: `${name} Style Music`,
     heroHeading: `${name} Anime Music\nAI soundtrack inspired by ${name}`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'anime',
   };
 }
 
@@ -1661,7 +2006,8 @@ function generateAdMusicRoute(adType: string): RouteConfig {
     heroTagline: `${name} Music`,
     heroHeading: `${name} Music\nProfessional ad music with AI`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'promotional',
   };
 }
 
@@ -1684,7 +2030,8 @@ function generateStreamingExportRoute(platform: string): RouteConfig {
     heroTagline: `Music for ${name}`,
     heroHeading: `Download for ${name}\nCreate streaming-ready music`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'platform',
   };
 }
 
@@ -1707,7 +2054,8 @@ function generateEaseOfUseRoute(feature: string): RouteConfig {
     heroTagline: name,
     heroHeading: `${name}\nThe easiest way to create music`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'default',
   };
 }
 
@@ -1730,7 +2078,128 @@ function generateCinematicPromoRoute(promoType: string): RouteConfig {
     heroTagline: `${name} Music`,
     heroHeading: `Cinematic ${name} Music\nEpic soundtracks for your videos`,
     heroSubtext: subtext,
-    examplePrompts: prompts
+    examplePrompts: prompts,
+    routeCategory: 'promotional',
+  };
+}
+
+function generateUgcVideoRoute(ugcType: string): RouteConfig {
+  const data = ugcVideoData[ugcType];
+  const name = data?.name || capitalize(ugcType);
+  const prompts = data?.prompts || [`${name} promo music`, `${name} video soundtrack`, `${name} content`, `${name} ads`];
+  const subtext = data?.subtext || `Create ${name.toLowerCase()} content with AI-generated music and visuals.`;
+  
+  return {
+    path: `/${ugcType}-video`,
+    title: `${name} Video Creator - AI UGC & Ad Generator | Gruvi`,
+    description: `Create ${name.toLowerCase()} videos with AI. ${subtext} No expensive production - just describe what you want.`,
+    keywords: `${ugcType.replace(/-/g, ' ')}, cheap ugc content, ai video ads, automated video content, low cost ads`,
+    ogTitle: `${name} Videos | Gruvi`,
+    ogDescription: `Create ${name.toLowerCase()} content with AI - fraction of traditional costs.`,
+    twitterTitle: `${name} | Gruvi`,
+    twitterDescription: `AI-powered ${name.toLowerCase()} creation.`,
+    breadcrumbName: name,
+    heroTagline: `${name}`,
+    heroHeading: `${name}\nAI-powered videos for a fraction of the cost`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'ugc',
+  };
+}
+
+function generateAdTestingRoute(adType: string): RouteConfig {
+  const data = adTestingData[adType];
+  const name = data?.name || capitalize(adType);
+  const prompts = data?.prompts || [`${name} soundtrack`, `${name} music`, `Test ${name.toLowerCase()}`, `${name} prototype`];
+  const subtext = data?.subtext || `Prototype ${name.toLowerCase()} before committing to expensive production.`;
+  
+  return {
+    path: `/${adType}`,
+    title: `${name} - Test Ads Before Spending | Gruvi`,
+    description: `${subtext} Create AI-powered ad prototypes to test before doubling down on ad spend.`,
+    keywords: `${adType.replace(/-/g, ' ')}, test ad creative, prototype ads, ad testing, pre-production ads`,
+    ogTitle: `${name} | Gruvi`,
+    ogDescription: `Test ad creatives before spending - prototype first.`,
+    twitterTitle: `${name} | Gruvi`,
+    twitterDescription: `Test before you invest in ads.`,
+    breadcrumbName: name,
+    heroTagline: `${name}`,
+    heroHeading: `${name}\nTest before you commit to ad spend`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'adTesting',
+  };
+}
+
+function generateOccasionMusicRoute(occasion: string): RouteConfig {
+  const data = occasionMusicData[occasion];
+  const name = data?.name || capitalize(occasion);
+  const prompts = data?.prompts || [`${name} music`, `${name} soundtrack`, `${name} vibes`, `${name} playlist`];
+  const subtext = data?.subtext || `Create the perfect music for ${name.toLowerCase()}.`;
+  
+  return {
+    path: `/music-for-${occasion}`,
+    title: `${name} Music - AI Generated Soundtrack | Gruvi`,
+    description: `Create AI-generated music for ${name.toLowerCase()}. ${subtext}`,
+    keywords: `${occasion.replace(/-/g, ' ')} music, ${name.toLowerCase()} playlist, ${name.toLowerCase()} soundtrack, ai music generator`,
+    ogTitle: `${name} Music | Gruvi`,
+    ogDescription: `Create the perfect ${name.toLowerCase()} soundtrack with AI.`,
+    twitterTitle: `${name} Music | Gruvi`,
+    twitterDescription: `AI music for ${name.toLowerCase()}.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Music`,
+    heroHeading: `${name} Music\nThe perfect soundtrack for every moment`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'occasion',
+  };
+}
+
+function generateEcommerceRoute(ecomType: string): RouteConfig {
+  const data = ecommerceData[ecomType];
+  const name = data?.name || capitalize(ecomType);
+  const prompts = data?.prompts || [`${name} promo music`, `${name} video soundtrack`, `${name} ad`, `${name} commercial`];
+  const subtext = data?.subtext || `Create professional ${name.toLowerCase()} promotional videos with AI.`;
+  
+  return {
+    path: `/${ecomType}-promo-video`,
+    title: `${name} Promo Video - AI E-commerce Video Generator | Gruvi`,
+    description: `Create ${name.toLowerCase()} promotional videos with AI. ${subtext}`,
+    keywords: `${ecomType.replace(/-/g, ' ')} video, ecommerce promo, product video, ai ad generator, ${name.toLowerCase()} ads`,
+    ogTitle: `${name} Promo Videos | Gruvi`,
+    ogDescription: `Create ${name.toLowerCase()} videos with AI.`,
+    twitterTitle: `${name} Videos | Gruvi`,
+    twitterDescription: `AI-powered ${name.toLowerCase()} promo videos.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Videos`,
+    heroHeading: `${name} Promo Videos\nAI-powered e-commerce marketing`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'ecommerce',
+  };
+}
+
+function generateAirbnbRoute(airbnbType: string): RouteConfig {
+  const data = airbnbData[airbnbType];
+  const name = data?.name || capitalize(airbnbType);
+  const prompts = data?.prompts || [`${name} promo music`, `${name} video`, `${name} showcase`, `${name} listing`];
+  const subtext = data?.subtext || `Create stunning ${name.toLowerCase()} promotional videos to attract more bookings.`;
+  
+  return {
+    path: `/${airbnbType}-promo-video`,
+    title: `${name} Promo Video - AI Rental Property Marketing | Gruvi`,
+    description: `Create ${name.toLowerCase()} promotional videos with AI. ${subtext}`,
+    keywords: `${airbnbType.replace(/-/g, ' ')} video, airbnb promo, vacation rental video, property marketing, ${name.toLowerCase()} listing`,
+    ogTitle: `${name} Promo Videos | Gruvi`,
+    ogDescription: `Create ${name.toLowerCase()} videos to attract more bookings.`,
+    twitterTitle: `${name} Videos | Gruvi`,
+    twitterDescription: `AI-powered ${name.toLowerCase()} marketing.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Videos`,
+    heroHeading: `${name} Promo Videos\nAttract more bookings with AI`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'airbnb',
   };
 }
 
@@ -1744,6 +2213,11 @@ const adMusicTypes = Object.keys(adMusicData);
 const streamingPlatforms = Object.keys(streamingExportData);
 const easeOfUseFeatures = Object.keys(easeOfUseData);
 const cinematicPromoTypes = Object.keys(cinematicPromoData);
+const ugcVideoTypes = Object.keys(ugcVideoData);
+const adTestingTypes = Object.keys(adTestingData);
+const occasionMusicTypes = Object.keys(occasionMusicData);
+const ecommerceTypes = Object.keys(ecommerceData);
+const airbnbTypes = Object.keys(airbnbData);
 const genres = Object.keys(genreData);
 const languages = Object.keys(languageData);
 const holidays = Object.keys(holidayData);
@@ -1870,6 +2344,16 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(easeOfUseFeatures.map(f => [generateEaseOfUseRoute(f).path, generateEaseOfUseRoute(f)])),
   // NEW: Cinematic product promo routes
   ...Object.fromEntries(cinematicPromoTypes.map(c => [generateCinematicPromoRoute(c).path, generateCinematicPromoRoute(c)])),
+  // NEW: UGC / Cheap AI video content routes
+  ...Object.fromEntries(ugcVideoTypes.map(u => [generateUgcVideoRoute(u).path, generateUgcVideoRoute(u)])),
+  // NEW: Ad testing / prototype routes
+  ...Object.fromEntries(adTestingTypes.map(a => [generateAdTestingRoute(a).path, generateAdTestingRoute(a)])),
+  // NEW: Occasion / activity music routes
+  ...Object.fromEntries(occasionMusicTypes.map(o => [generateOccasionMusicRoute(o).path, generateOccasionMusicRoute(o)])),
+  // NEW: E-commerce specific routes
+  ...Object.fromEntries(ecommerceTypes.map(e => [generateEcommerceRoute(e).path, generateEcommerceRoute(e)])),
+  // NEW: Airbnb / short-term rental routes
+  ...Object.fromEntries(airbnbTypes.map(a => [generateAirbnbRoute(a).path, generateAirbnbRoute(a)])),
 };
 
 // Helper function to get route config by path
@@ -1890,5 +2374,7 @@ export {
   relationshipTypes, hobbyTypes,
   // NEW exports
   artists, showsAndMovies, animeSoundtracks, adMusicTypes,
-  streamingPlatforms, easeOfUseFeatures, cinematicPromoTypes
+  streamingPlatforms, easeOfUseFeatures, cinematicPromoTypes,
+  // UGC, Ad Testing, Occasions, E-commerce, Airbnb exports
+  ugcVideoTypes, adTestingTypes, occasionMusicTypes, ecommerceTypes, airbnbTypes
 };

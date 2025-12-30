@@ -37,7 +37,7 @@ import {
   Paper,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { getRouteConfig } from '../config/routeConfig';
+import { getRouteConfig, carouselTitlesByCategory, RouteCategory } from '../config/routeConfig';
 import { getSongIndexForRoute } from '../config/routeSampleSongs';
 import { stripeConfig } from '../config/stripe';
 import CloseIcon from '@mui/icons-material/Close';
@@ -462,6 +462,7 @@ interface VideoItem {
   thumbnail: string;
   aspectRatio: 'portrait' | 'landscape';
   videoUrl: string;
+  tag?: string; // Optional brand/product tag for promo videos
 }
 
 // PROMO VIDEOS - Product/brand promotional content (like Walk Right In with Chanel)
@@ -474,6 +475,7 @@ const promoVideosPortrait: VideoItem[] = [
     thumbnail: "/thumbnails/chanel.jpeg",
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
+    tag: "Coco Chanel",
   },
   {
     id: 'ef807231-faab-4a97-a51b-08f574fbae52',
@@ -483,6 +485,7 @@ const promoVideosPortrait: VideoItem[] = [
     thumbnail: "/thumbnails/rolex.jpeg",
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/ef807231-faab-4a97-a51b-08f574fbae52',
+    tag: "Rolex",
   },
 ];
 
@@ -495,6 +498,7 @@ const promoVideosLandscape: VideoItem[] = [
     thumbnail: "/thumbnails/tesla.jpeg",
     aspectRatio: 'landscape',
     videoUrl: 'https://gruvimusic.com/video/dc6c22f4-22e5-433d-aa38-5792bc653185',
+    tag: "Tesla",
   },
 ];
 
@@ -846,6 +850,79 @@ const quickRoutes = [
   { path: '/create-epic-music', label: 'Epic Music' },
   { path: '/create-dark-music', label: 'Dark Music' },
   { path: '/create-uplifting-music', label: 'Uplifting Music' },
+  
+  // UGC & Cheap AI Video Ads
+  { path: '/cheap-ugc-video', label: 'Cheap UGC Content' },
+  { path: '/ai-ugc-ads-video', label: 'AI UGC Ads' },
+  { path: '/automated-video-ads-video', label: 'Automated Video Ads' },
+  { path: '/social-media-ads-video', label: 'Social Media Ads' },
+  { path: '/test-ad-creative-video', label: 'Test Ad Creative' },
+  { path: '/prototype-ads-video', label: 'Prototype Ads' },
+  { path: '/low-cost-ads-video', label: 'Low Cost Ads' },
+  { path: '/bulk-video-content-video', label: 'Bulk Video Content' },
+  { path: '/influencer-style-ads-video', label: 'Influencer Style Ads' },
+  
+  // Ad Testing & Prototyping
+  { path: '/ad-creative-testing', label: 'Ad Creative Testing' },
+  { path: '/pre-launch-ads', label: 'Pre-Launch Ads' },
+  { path: '/mvp-marketing', label: 'MVP Marketing' },
+  { path: '/ad-mockups', label: 'Ad Mockups' },
+  { path: '/creative-iterations', label: 'Creative Iterations' },
+  { path: '/audience-testing', label: 'Audience Testing' },
+  
+  // Occasion & Activity Music
+  { path: '/music-for-morning-routine', label: 'Morning Routine Music' },
+  { path: '/music-for-gym-workout', label: 'Gym Workout Music' },
+  { path: '/music-for-running', label: 'Running Music' },
+  { path: '/music-for-yoga-session', label: 'Yoga Music' },
+  { path: '/music-for-meditation', label: 'Meditation Music' },
+  { path: '/music-for-studying', label: 'Studying Music' },
+  { path: '/music-for-working-from-home', label: 'Work From Home Music' },
+  { path: '/music-for-cooking', label: 'Cooking Music' },
+  { path: '/music-for-dinner-party', label: 'Dinner Party Music' },
+  { path: '/music-for-road-trip', label: 'Road Trip Music' },
+  { path: '/music-for-beach-day', label: 'Beach Day Music' },
+  { path: '/music-for-pool-party', label: 'Pool Party Music' },
+  { path: '/music-for-bbq-cookout', label: 'BBQ Cookout Music' },
+  { path: '/music-for-late-night-vibes', label: 'Late Night Vibes' },
+  { path: '/music-for-coffee-shop', label: 'Coffee Shop Music' },
+  { path: '/music-for-new-years-eve', label: 'New Years Eve Music' },
+  { path: '/music-for-new-years-day', label: 'New Years Day Music' },
+  { path: '/music-for-super-bowl-party', label: 'Super Bowl Party Music' },
+  { path: '/music-for-july-4th', label: 'July 4th Music' },
+  { path: '/music-for-baby-shower', label: 'Baby Shower Music' },
+  { path: '/music-for-bridal-shower', label: 'Bridal Shower Music' },
+  { path: '/music-for-bachelor-party', label: 'Bachelor Party Music' },
+  { path: '/music-for-anniversary', label: 'Anniversary Music' },
+  { path: '/music-for-retirement-party', label: 'Retirement Party Music' },
+  { path: '/music-for-housewarming', label: 'Housewarming Music' },
+  
+  // E-commerce Promo Videos
+  { path: '/shopify-store-promo-video', label: 'Shopify Store Videos' },
+  { path: '/amazon-fba-promo-video', label: 'Amazon FBA Videos' },
+  { path: '/etsy-shop-promo-video', label: 'Etsy Shop Videos' },
+  { path: '/dropshipping-promo-video', label: 'Dropshipping Videos' },
+  { path: '/product-launch-promo-video', label: 'Product Launch Videos' },
+  { path: '/flash-sale-promo-promo-video', label: 'Flash Sale Videos' },
+  { path: '/black-friday-promo-video', label: 'Black Friday Videos' },
+  { path: '/cyber-monday-promo-video', label: 'Cyber Monday Videos' },
+  { path: '/holiday-sale-promo-video', label: 'Holiday Sale Videos' },
+  { path: '/subscription-box-promo-video', label: 'Subscription Box Videos' },
+  
+  // Airbnb & Rental Property Videos
+  { path: '/airbnb-listing-promo-video', label: 'Airbnb Listing Videos' },
+  { path: '/vacation-rental-promo-video', label: 'Vacation Rental Videos' },
+  { path: '/beach-house-rental-promo-video', label: 'Beach House Rental' },
+  { path: '/mountain-cabin-promo-video', label: 'Mountain Cabin Videos' },
+  { path: '/city-apartment-promo-video', label: 'City Apartment Videos' },
+  { path: '/luxury-villa-promo-video', label: 'Luxury Villa Videos' },
+  { path: '/tiny-house-promo-video', label: 'Tiny House Videos' },
+  { path: '/treehouse-promo-video', label: 'Treehouse Videos' },
+  { path: '/glamping-promo-video', label: 'Glamping Videos' },
+  { path: '/farmstay-promo-video', label: 'Farmstay Videos' },
+  { path: '/pet-friendly-rental-promo-video', label: 'Pet Friendly Rentals' },
+  { path: '/romantic-getaway-promo-video', label: 'Romantic Getaway Videos' },
+  { path: '/superhost-promo-promo-video', label: 'Superhost Promo Videos' },
 ];
 
 // Reusable Scrollable Carousel with fade edges and arrows
@@ -1036,7 +1113,34 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
           alt={video.title}
           sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        {/* Play button */}
+        {/* Tag - top right with glassy blur (brand tag or style) */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            px: 1.5,
+            py: 0.5,
+            borderRadius: '100px',
+            background: 'rgba(255,255,255,0.7)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              color: '#1D1D1F',
+              letterSpacing: '0.02em',
+            }}
+          >
+            {video.tag || video.style}
+          </Typography>
+        </Box>
+        {/* Play button - center with glassy blur */}
         <Box
           sx={{
             position: 'absolute',
@@ -1048,20 +1152,24 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
         >
           <Box
             sx={{
-              background: '#fff',
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
               borderRadius: '50%',
-              width: isLandscape ? 48 : 36,
-              height: isLandscape ? 48 : 36,
+              width: isLandscape ? 52 : 40,
+              height: isLandscape ? 52 : 40,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
+              transition: 'all 0.2s ease',
             }}
           >
-            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 20, color: '#007AFF' }} />
+            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#007AFF' }} />
           </Box>
         </Box>
-        {/* Info overlay */}
+        {/* Info overlay - centered title only */}
         <Box
           sx={{
             position: 'absolute',
@@ -1071,6 +1179,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
             p: 1.5,
             pt: 4,
             background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
           }}
         >
           <Typography
@@ -1081,12 +1193,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              maxWidth: '100%',
             }}
           >
             {video.title}
-          </Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
-            {video.style}
           </Typography>
         </Box>
       </Box>
@@ -1191,6 +1301,10 @@ const HomePage: React.FC = () => {
   const heroHeadingParts = routeConfig.heroHeading.split('\n');
   const heroSubtext = routeConfig.heroSubtext;
   const examplePrompts = routeConfig.examplePrompts;
+  
+  // Get carousel titles based on route category (with fallback to default)
+  const routeCategory: RouteCategory = routeConfig.routeCategory || 'default';
+  const carouselTitles = carouselTitlesByCategory[routeCategory];
 
   // Scroll to top when route changes (makes navigation feel like a new page)
   useEffect(() => {
@@ -1484,15 +1598,15 @@ const HomePage: React.FC = () => {
     }}>
       {/* SEO */}
       <SEO
-        title="Gruvi: AI Music Generator & Music Video Maker | Create Songs in 50+ Genres & 25+ Languages"
-        description="Create AI-generated songs, cinematic music videos, and promo videos with Gruvi. Generate professional music in 50+ genres (pop, hip-hop, rock, jazz, K-pop, anime) and 25+ languages. Add custom characters with My Cast. Perfect for artists, content creators, brands, Airbnb hosts, and businesses."
-        keywords="AI music generator, AI song generator, create music with AI, AI music videos, AI promo videos, product video generator, Airbnb promo video, Gruvi, music creation, AI vocals, generate songs, promotional videos, K-pop generator, anime music, custom character video, 3D cartoon music video, cinematic video maker, multilingual music generator, AI beat maker, lyrics generator, free music generator"
-        ogTitle="Gruvi: AI Music & Video Generator | 50+ Genres, 25+ Languages"
-        ogDescription="Create AI-generated songs in any genre and language. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
+        title="Gruvi: AI Music Generator & Video Maker | Create Songs & Promo Videos in 32 Genres & 24 Languages"
+        description="Create AI-generated songs, cinematic music videos, and stunning promo videos with Gruvi. Generate professional music in 32 genres (pop, hip-hop, rock, jazz, K-pop, anime) and 24 languages. Create brand videos like Rolex, Tesla, and Chanel. Perfect for artists, content creators, Airbnb hosts, e-commerce stores, and businesses."
+        keywords="AI music generator, AI song generator, create music with AI, AI music videos, AI promo videos, product video generator, Airbnb promo video, Gruvi, brand video maker, e-commerce video, promotional videos, K-pop generator, anime music video, custom character video, 3D cartoon music video, cinematic video maker, multilingual music generator, AI beat maker, lyrics generator, free music generator, Tesla video, Rolex video, luxury brand promo"
+        ogTitle="Gruvi: AI Music & Video Generator | 32 Genres, 24 Languages"
+        ogDescription="Create AI-generated songs and stunning promo videos. Make cinematic music videos with custom characters. Create brand videos for products, Airbnb, and e-commerce."
         ogType="website"
         ogUrl="https://gruvimusic.com/"
-        twitterTitle="Gruvi: AI Music & Video Generator | 50+ Genres, 25+ Languages"
-        twitterDescription="Create AI-generated songs in any genre and language. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
+        twitterTitle="Gruvi: AI Music & Video Generator | Songs & Promo Videos"
+        twitterDescription="Create AI-generated songs and stunning promo videos. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
         structuredData={[
           trackStructuredData,
           createSoftwareAppStructuredData(),
@@ -2131,10 +2245,10 @@ const HomePage: React.FC = () => {
               variant="h2"
               sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Featured Tracks for You
+              {carouselTitles.featuredTracks.title}
             </Typography>
             <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              Hear what Gruvi can create - professional AI-generated music
+              {carouselTitles.featuredTracks.subtitle}
             </Typography>
           </Box>
 
@@ -2264,8 +2378,8 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
-      {/* Music Videos - Portrait */}
-      {musicVideosPortrait.length > 0 && (
+      {/* Promo Videos - Portrait */}
+      {promoVideosPortrait.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: 2.5 }}>
@@ -2273,14 +2387,14 @@ const HomePage: React.FC = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
               >
-                Turn Songs Into Music Videos
+                {carouselTitles.promoVideos.title}
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                Stunning AI-generated visuals synced to your music
+                {carouselTitles.promoVideos.subtitle}
               </Typography>
             </Box>
-            <ScrollableCarousel id="music-videos-portrait">
-              {musicVideosPortrait.map((video) => (
+            <ScrollableCarousel id="promo-videos-portrait">
+              {promoVideosPortrait.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -2292,8 +2406,8 @@ const HomePage: React.FC = () => {
         </Box>
       )}
 
-      {/* Music Videos - Landscape */}
-      {musicVideosLandscape.length > 0 && (
+      {/* Promo Videos - Landscape */}
+      {promoVideosLandscape.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: 2.5 }}>
@@ -2301,14 +2415,14 @@ const HomePage: React.FC = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
               >
-                Create Cinematic Music Videos
+                Cinematic Promo Videos
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                Widescreen videos perfect for YouTube and streaming
+                High-impact widescreen promotional content for your brand
               </Typography>
             </Box>
-            <ScrollableCarousel id="music-videos-landscape">
-              {musicVideosLandscape.map((video) => (
+            <ScrollableCarousel id="promo-videos-landscape">
+              {promoVideosLandscape.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -2328,10 +2442,10 @@ const HomePage: React.FC = () => {
               variant="h2"
               sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Explore More Tracks
+              {carouselTitles.moreTracks.title}
             </Typography>
             <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              Discover more AI-generated songs across every genre
+              {carouselTitles.moreTracks.subtitle}
             </Typography>
           </Box>
 
@@ -2461,8 +2575,8 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
-      {/* Promo Videos - Portrait */}
-      {promoVideosPortrait.length > 0 && (
+      {/* Music Videos - Portrait */}
+      {musicVideosPortrait.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: 2.5 }}>
@@ -2470,14 +2584,14 @@ const HomePage: React.FC = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
               >
-                Promo Videos for Your Brand
+                {carouselTitles.musicVideos.title}
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                Showcase products, Airbnb listings, e-commerce stores & more
+                {carouselTitles.musicVideos.subtitle}
               </Typography>
             </Box>
-            <ScrollableCarousel id="promo-videos-portrait">
-              {promoVideosPortrait.map((video) => (
+            <ScrollableCarousel id="music-videos-portrait">
+              {musicVideosPortrait.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -2489,8 +2603,8 @@ const HomePage: React.FC = () => {
         </Box>
       )}
 
-      {/* Promo Videos - Landscape */}
-      {promoVideosLandscape.length > 0 && (
+      {/* Music Videos - Landscape */}
+      {musicVideosLandscape.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: 2.5 }}>
@@ -2498,14 +2612,14 @@ const HomePage: React.FC = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
               >
-                Cinematic Promo Videos
+                {carouselTitles.cinematicVideos.title}
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                High-impact widescreen promotional content
+                {carouselTitles.cinematicVideos.subtitle}
               </Typography>
             </Box>
-            <ScrollableCarousel id="promo-videos-landscape">
-              {promoVideosLandscape.map((video) => (
+            <ScrollableCarousel id="music-videos-landscape">
+              {musicVideosLandscape.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -2525,10 +2639,10 @@ const HomePage: React.FC = () => {
               variant="h2"
               sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Discover More Genres
+              {carouselTitles.genres.title}
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              From Hip-Hop to Classical - generate professional tracks in seconds
+              {carouselTitles.genres.subtitle}
             </Typography>
           </Box>
 
@@ -2586,10 +2700,10 @@ const HomePage: React.FC = () => {
               variant="h2"
               sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Create Music in Any Genre
+              {carouselTitles.moreGenres.title}
             </Typography>
             <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              Even more AI-generated music to explore
+              {carouselTitles.moreGenres.subtitle}
             </Typography>
           </Box>
 
@@ -2728,10 +2842,10 @@ const HomePage: React.FC = () => {
               variant="h2"
               sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
             >
-              Turn Your Music Into Stunning Videos
+              {carouselTitles.videoStyles.title}
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              Anime, Cinematic, 3D, Cyberpunk - pick your visual style
+              {carouselTitles.videoStyles.subtitle}
             </Typography>
           </Box>
 

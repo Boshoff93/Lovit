@@ -285,9 +285,10 @@ interface Video {
   songTitle?: string;
   thumbnailUrl?: string;
   videoUrl?: string;
-  status: 'processing' | 'completed' | 'failed';
+  status: 'queued' | 'processing' | 'completed' | 'failed';
   progress?: number;
   progressMessage?: string;
+  queuePosition?: number; // Position in queue (1-indexed)
   createdAt: string;
   duration?: number;
   aspectRatio?: 'portrait' | 'landscape';
@@ -557,9 +558,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         setTotalVideosCount(fetchedVideos.length);
       }
       
-      // Check if any videos are still processing
+      // Check if any videos are still processing or queued
       const hasProcessing = (response.data.videos || []).some(
-        (video: Video) => video.status === 'processing'
+        (video: Video) => video.status === 'processing' || video.status === 'queued'
       );
       
       return hasProcessing;
@@ -2079,8 +2080,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
-                                {video.status === 'processing' ? (
-                                  <Tooltip title={`${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`} arrow>
+                                {(video.status === 'processing' || video.status === 'queued') ? (
+                                  <Tooltip title={video.status === 'queued' 
+                                    ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
+                                    : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
+                                  } arrow>
                                     <Box
                                       sx={{
                                         position: 'relative',
@@ -2100,11 +2104,14 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                           top: 0,
                                           left: 0,
                                           bottom: 0,
-                                          width: `${video.progress || 0}%`,
-                                          background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                                          width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
+                                          background: video.status === 'queued' 
+                                            ? 'linear-gradient(90deg, #FF9500 0%, #FFCC00 100%)' 
+                                            : 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
                                           borderRadius: '100px',
                                           transition: 'width 0.5s ease-out',
                                           overflow: 'hidden',
+                                          opacity: video.status === 'queued' ? 0.5 : 1,
                                           '&::after': {
                                             content: '""',
                                             position: 'absolute',
@@ -2146,7 +2153,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                             textOverflow: 'ellipsis',
                                           }}
                                         >
-                                          {video.progress || 0}% · {video.progressMessage || 'Creating...'}
+                                          {video.status === 'queued' 
+                                            ? `⏳ Queued${video.queuePosition ? ` #${video.queuePosition}` : ''}` 
+                                            : `${video.progress || 0}% · ${video.progressMessage || 'Creating...'}`}
                                         </Typography>
                                       </Box>
                                     </Box>
@@ -2264,8 +2273,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
-                                {video.status === 'processing' ? (
-                                  <Tooltip title={`${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`} arrow>
+                                {(video.status === 'processing' || video.status === 'queued') ? (
+                                  <Tooltip title={video.status === 'queued' 
+                                    ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
+                                    : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
+                                  } arrow>
                                     <Box
                                       sx={{
                                         position: 'relative',
@@ -2285,11 +2297,14 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                           top: 0,
                                           left: 0,
                                           bottom: 0,
-                                          width: `${video.progress || 0}%`,
-                                          background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                                          width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
+                                          background: video.status === 'queued' 
+                                            ? 'linear-gradient(90deg, #FF9500 0%, #FFCC00 100%)' 
+                                            : 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
                                           borderRadius: '100px',
                                           transition: 'width 0.5s ease-out',
                                           overflow: 'hidden',
+                                          opacity: video.status === 'queued' ? 0.5 : 1,
                                           '&::after': {
                                             content: '""',
                                             position: 'absolute',
@@ -2331,7 +2346,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                             textOverflow: 'ellipsis',
                                           }}
                                         >
-                                          {video.progress || 0}% · {video.progressMessage || 'Creating...'}
+                                          {video.status === 'queued' 
+                                            ? `⏳ Queued${video.queuePosition ? ` #${video.queuePosition}` : ''}` 
+                                            : `${video.progress || 0}% · ${video.progressMessage || 'Creating...'}`}
                                         </Typography>
                                       </Box>
                                     </Box>

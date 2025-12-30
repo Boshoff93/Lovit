@@ -4,7 +4,6 @@ import {
   Box,
   Container,
   Button,
-  Chip,
   IconButton,
   CircularProgress,
 } from '@mui/material';
@@ -54,6 +53,7 @@ export const musicVideoData = [
     thumbnail: '/thumbnails/chanel.jpeg',
     aspectRatio: 'portrait' as const,
     realVideoId: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac',
+    tag: 'Coco Chanel',
     description: 'A smoky blues journey through dim-lit bars and whiskey glasses',
     fullDescription: 'Walk Right In captures the essence of classic blues with cinematic realism. Step into a smoky room where every eye turns as you pass, experience the silence falling like velvet rain, and feel the magnetism of a woman who steals the night with just one breath.',
   },
@@ -71,6 +71,38 @@ export const musicVideoData = [
     realVideoId: '4a7ec232-aca9-4538-bc79-45149d705812',
     description: 'Epic Dragon Ball inspired anime adventure',
     fullDescription: 'Experience the legendary Dragon Ball theme song brought to life with stunning anime visuals. Watch as warriors power up, battle across epic landscapes, and push beyond their limits in this high-energy tribute to the iconic series.',
+  },
+  {
+    id: 'beneath-the-surface',
+    title: 'Beneath the Surface',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Hip Hop',
+    views: '1.8K',
+    duration: '1:21',
+    bpm: 95,
+    thumbnail: '/thumbnails/rolex.jpeg',
+    aspectRatio: 'portrait' as const,
+    realVideoId: 'ef807231-faab-4a97-a51b-08f574fbae52',
+    tag: 'Rolex',
+    description: 'Luxury Rolex Submariner showcased in stunning underwater cinematography',
+    fullDescription: 'Beneath the Surface is a cinematic tribute to the iconic Rolex Submariner. Watch as the legendary dive watch descends through turquoise waters, surrounded by bioluminescent sea life, volcanic rock, and twilight reflections. Every frame captures the timeless elegance and engineering mastery of this horological icon.',
+  },
+  {
+    id: 'glide',
+    title: 'Glide',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Hip Hop',
+    views: '1.5K',
+    duration: '1:21',
+    bpm: 100,
+    thumbnail: '/thumbnails/tesla.jpeg',
+    aspectRatio: 'landscape' as const,
+    realVideoId: 'dc6c22f4-22e5-433d-aa38-5792bc653185',
+    tag: 'Tesla',
+    description: 'Tesla gliding through misty mountain roads at golden hour',
+    fullDescription: 'Glide captures the silent power and elegance of electric driving. A sleek Tesla navigates winding mountain roads through morning mist, surrounded by lush forests and golden sunlight. The cinematic visuals perfectly complement the smooth hip-hop beats, celebrating the harmony between cutting-edge technology and natural beauty.',
   },
   // Placeholder videos
   {
@@ -340,15 +372,27 @@ const MusicVideoDetailPage: React.FC = () => {
       />
 
       <SEO
-        title={`${currentVideo.title} - ${currentVideo.style} Music Video | Gruvi`}
-        description={`${currentVideo.fullDescription} Created with Gruvi's AI music video generator.`}
-        keywords={`${currentVideo.title.toLowerCase()}, ${currentVideo.style.toLowerCase()} music video, ${currentVideo.genre.toLowerCase()} music, AI music video`}
-        ogTitle={`${currentVideo.title} - ${currentVideo.style} Music Video | Gruvi`}
-        ogDescription={currentVideo.description}
+        title={currentVideo.tag 
+          ? `${currentVideo.title} - ${currentVideo.tag} Promo Video | Gruvi AI Video Generator`
+          : `${currentVideo.title} - ${currentVideo.style} Music Video | Gruvi AI Video Generator`}
+        description={currentVideo.tag
+          ? `${currentVideo.fullDescription} Create stunning AI-powered promotional videos for your brand like ${currentVideo.tag}. Perfect for products, Airbnb listings, and e-commerce.`
+          : `${currentVideo.fullDescription} Created with Gruvi's AI music video generator. Turn your songs into stunning ${currentVideo.style.toLowerCase()} visuals.`}
+        keywords={currentVideo.tag
+          ? `${currentVideo.title.toLowerCase()}, ${currentVideo.tag.toLowerCase()} promo video, AI promotional video, brand video generator, product video maker, ${currentVideo.style.toLowerCase()} video, Gruvi AI, Airbnb video, e-commerce promo`
+          : `${currentVideo.title.toLowerCase()}, ${currentVideo.style.toLowerCase()} music video, ${currentVideo.genre.toLowerCase()} music, AI music video, Gruvi, music video generator, ${currentVideo.genre.toLowerCase()} visuals`}
+        ogTitle={currentVideo.tag
+          ? `${currentVideo.title} - ${currentVideo.tag} Promo Video | Gruvi`
+          : `${currentVideo.title} - ${currentVideo.style} Music Video | Gruvi`}
+        ogDescription={currentVideo.tag
+          ? `${currentVideo.description} Create AI-powered promo videos for your brand.`
+          : currentVideo.description}
         ogType="video.other"
-        ogUrl={`https://gruvi.ai/videos/${currentVideo.id}`}
-        twitterTitle={`${currentVideo.title} | Gruvi`}
-        twitterDescription={currentVideo.description}
+        ogUrl={`https://gruvimusic.com/videos/${currentVideo.id}`}
+        twitterTitle={`${currentVideo.title} | ${currentVideo.tag || currentVideo.style} | Gruvi`}
+        twitterDescription={currentVideo.tag
+          ? `${currentVideo.description} AI-powered brand videos.`
+          : currentVideo.description}
         structuredData={[
           createBreadcrumbStructuredData(breadcrumbData),
           ...(videoStructuredData ? [videoStructuredData] : []),
@@ -597,23 +641,34 @@ const MusicVideoDetailPage: React.FC = () => {
                     </Box>
                   </>
                 )}
-                {/* Style Badge */}
-                <Chip
-                  label={currentVideo.style}
+                {/* Tag Badge - brand tag or style */}
+                <Box
                   sx={{
                     position: 'absolute',
                     top: 16,
                     right: 16,
-                    background: 'rgba(255,255,255,0.9)',
-                    backdropFilter: 'blur(10px)',
-                    color: '#FF9500',
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    border: '1px solid rgba(255, 149, 0, 0.3)',
-                    px: 1,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: '100px',
+                    background: 'rgba(255,255,255,0.7)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.5)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
                     zIndex: 5,
                   }}
-                />
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#1D1D1F',
+                      letterSpacing: '0.02em',
+                    }}
+                  >
+                    {currentVideo.tag || currentVideo.style}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
 
@@ -946,20 +1001,34 @@ const MusicVideoDetailPage: React.FC = () => {
                   </Box>
                 </>
               )}
-              {/* Style Badge */}
-              <Chip
-                label={currentVideo.style}
+              {/* Tag Badge - brand tag or style */}
+              <Box
                 sx={{
                   position: 'absolute',
                   top: 16,
                   right: 16,
-                  background: 'rgba(255,255,255,0.9)',
-                  backdropFilter: 'blur(10px)',
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: '100px',
+                  background: 'rgba(255,255,255,0.7)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.5)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
                   zIndex: 5,
                 }}
-              />
+              >
+                <Typography
+                  sx={{
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: '#1D1D1F',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {currentVideo.tag || currentVideo.style}
+                </Typography>
+              </Box>
             </Box>
           </Box>
 
@@ -1245,6 +1314,33 @@ const MusicVideoDetailPage: React.FC = () => {
                       objectFit: 'cover',
                     }}
                   />
+                  {/* Tag - top right with glassy blur (brand tag or style) */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 10,
+                      right: 10,
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: '100px',
+                      background: 'rgba(255,255,255,0.7)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.5)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        color: '#1D1D1F',
+                        letterSpacing: '0.02em',
+                      }}
+                    >
+                      {video.tag || video.style}
+                    </Typography>
+                  </Box>
                   <Box
                     sx={{
                       position: 'absolute',
@@ -1254,25 +1350,24 @@ const MusicVideoDetailPage: React.FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <IconButton
+                    <Box
                       sx={{
-                        background: 'rgba(255,255,255,0.98)',
+                        background: 'rgba(255,255,255,0.7)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
-                        width: 44,
-                        height: 44,
-                        border: '1px solid rgba(0,0,0,0.06)',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                        borderRadius: '50%',
+                        width: video.aspectRatio === 'landscape' ? 52 : 40,
+                        height: video.aspectRatio === 'landscape' ? 52 : 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid rgba(255,255,255,0.5)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
                         transition: 'all 0.2s ease',
-                        '&:hover': { 
-                          background: '#fff',
-                          transform: 'translateY(-2px) scale(1.05)',
-                          boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
-                        },
                       }}
                     >
-                      <PlayArrowRoundedIcon sx={{ fontSize: 24, color: '#007AFF' }} />
-                    </IconButton>
+                      <PlayArrowRoundedIcon sx={{ fontSize: video.aspectRatio === 'landscape' ? 28 : 22, color: '#007AFF' }} />
+                    </Box>
                   </Box>
                   <Box
                     sx={{
@@ -1283,13 +1378,14 @@ const MusicVideoDetailPage: React.FC = () => {
                       p: 1.5,
                       pt: 4,
                       background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
                     }}
                   >
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                       {video.title}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
-                      {video.style}
                     </Typography>
                   </Box>
                 </Box>
