@@ -881,6 +881,23 @@ const PaymentPage: React.FC = () => {
               {topUpBundles.map((bundle, index) => (
                 <Card
                   key={bundle.id}
+                  onClick={async () => {
+                    if (!subscription || subscription.tier === 'free') {
+                      setError('Please subscribe to a plan first before purchasing top-up tokens.');
+                      return;
+                    }
+                    try {
+                      const resultAction = await dispatch(createCheckoutSession({ 
+                        priceId: bundle.priceId,
+                        productId: bundle.productId
+                      }));
+                      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                        window.location.href = resultAction.payload.url;
+                      }
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to create checkout session');
+                    }
+                  }}
                   sx={{
                     flex: { sm: 1 },
                     maxWidth: { sm: 240 },
@@ -890,6 +907,13 @@ const PaymentPage: React.FC = () => {
                     borderRadius: '16px',
                     position: 'relative',
                     overflow: 'visible',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
+                      borderColor: '#007AFF',
+                    },
                   }}
                 >
                   {bundle.badge && (
@@ -918,11 +942,8 @@ const PaymentPage: React.FC = () => {
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
                       {bundle.tokens.toLocaleString()} Tokens
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#007AFF', mb: 1 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#007AFF' }}>
                       ${bundle.price}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
-                      ${(bundle.price / bundle.tokens * 1000).toFixed(2)} per 1K tokens
                     </Typography>
                   </CardContent>
                 </Card>

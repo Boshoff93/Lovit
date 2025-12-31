@@ -66,16 +66,20 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // Only highlight @mentions that exactly match a character name (case-insensitive)
+    // Highlight character names naturally (case-insensitive, whole word match)
+    // Sort by length descending to match longer names first (e.g., "Coco Mademoiselle Chanel" before "Coco")
     if (characterNames.length > 0) {
-      html = html.replace(/(@[\w]+)/g, (match) => {
-        const mentionName = match.slice(1).toLowerCase(); // Remove @ and lowercase
-        const isMatch = characterNames.some(name => name.toLowerCase() === mentionName);
-        if (isMatch) {
-          return `<span style="color: #007AFF; font-weight: 600;">${match}</span>`;
-        }
-        return match;
-      });
+      const sortedNames = [...characterNames].sort((a, b) => b.length - a.length);
+      
+      for (const name of sortedNames) {
+        // Escape special regex characters in the name
+        const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Match the name as a whole word (case-insensitive)
+        const regex = new RegExp(`(^|\\s|,|\\.|!|\\?)(${escapedName})(?=$|\\s|,|\\.|!|\\?)`, 'gi');
+        html = html.replace(regex, (match, prefix, nameMatch) => {
+          return `${prefix}<span style="color: #34C759; font-weight: 600;">${nameMatch}</span>`;
+        });
+      }
     }
 
     html = html.replace(/\n/g, '<br>');

@@ -691,28 +691,29 @@ const CreatePage: React.FC = () => {
     if (activeTab === 'song') {
       setSongPrompt(prev => {
         const trimmed = prev.trim();
-        return trimmed ? `${trimmed} @${name} ` : `@${name} `;
+        return trimmed ? `${trimmed} ${name} ` : `${name} `;
       });
     } else if (activeTab === 'video') {
       setVideoPrompt(prev => {
         const trimmed = prev.trim();
-        return trimmed ? `${trimmed} @${name} ` : `@${name} `;
+        return trimmed ? `${trimmed} ${name} ` : `${name} `;
       });
     }
   };
 
-  // Extract unique character IDs from text with @mentions
-  // Matches @Name or @"Multi Word Name" patterns
+  // Extract unique character IDs from text by matching character names naturally
+  // Matches character names as whole words (case-insensitive)
   const getTaggedCharacterIds = (text: string): string[] => {
     const ids: string[] = [];
+    const lowerText = text.toLowerCase();
     
-    // For each character, check if their name appears after an @ in the text
-    // This handles multi-word names like "Dior Sauvage"
+    // For each character, check if their name appears in the text
     for (const char of characters) {
-      const charName = char.characterName;
-      // Check for @CharacterName (case insensitive) followed by word boundary or end
-      const regex = new RegExp(`@${charName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$|[^\\w])`, 'i');
-      if (regex.test(text)) {
+      const charName = char.characterName.toLowerCase();
+      // Check for the character name as a whole word (case insensitive)
+      const escapedName = charName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(^|\\s|,|\\.|!|\\?)${escapedName}($|\\s|,|\\.|!|\\?)`, 'i');
+      if (regex.test(lowerText)) {
         if (!ids.includes(char.characterId)) {
           ids.push(char.characterId);
         }
@@ -839,17 +840,12 @@ const CreatePage: React.FC = () => {
       const videoCostToDeduct = VIDEO_COSTS[videoType] || 40;
       dispatch(updateTokensUsed(videoCostToDeduct));
       
-      setNotification({
-        open: true,
-        message: 'Music video generation started! Check your library.',
-        severity: 'success'
-      });
       setVideoPrompt('');
       setShowVideoPromptError(false);
       setShowSongSelectionError(false);
       
-      // Navigate to Music Videos tab after a short delay
-      setTimeout(() => navigate('/my-library?tab=videos'), 1500);
+      // Navigate immediately to Music Videos tab
+      navigate('/my-library?tab=videos&generating=true');
     } catch (error: any) {
       console.error('Video generation error:', error);
       const errorMessage = error.response?.data?.error || 'Failed to generate video. Please try again.';
@@ -1173,7 +1169,11 @@ const CreatePage: React.FC = () => {
                         }}
                       />
                     {characters.map((char) => {
-                      const isInPrompt = songPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
+                      const charNameLower = char.characterName.toLowerCase();
+                      const promptLower = songPrompt.toLowerCase();
+                      const escapedName = charNameLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                      const regex = new RegExp(`(^|\\s|,|\\.|!|\\?)${escapedName}($|\\s|,|\\.|!|\\?)`, 'i');
+                      const isInPrompt = regex.test(promptLower);
                       return (
                         <Tooltip
                           key={char.characterId}
@@ -1219,7 +1219,7 @@ const CreatePage: React.FC = () => {
                           }}
                         >
                           <Chip
-                            label={`@${char.characterName}`}
+                            label={char.characterName}
                             onClick={() => insertCharacter(char.characterName)}
                             size="small"
                             sx={{
@@ -2536,7 +2536,11 @@ const CreatePage: React.FC = () => {
                         }}
                       />
                       {characters.map((char) => {
-                        const isInPrompt = videoPrompt.toLowerCase().includes(`@${char.characterName.toLowerCase()}`);
+                        const charNameLower = char.characterName.toLowerCase();
+                        const promptLower = videoPrompt.toLowerCase();
+                        const escapedName = charNameLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`(^|\\s|,|\\.|!|\\?)${escapedName}($|\\s|,|\\.|!|\\?)`, 'i');
+                        const isInPrompt = regex.test(promptLower);
                       return (
                         <Tooltip
                           key={char.characterId}
@@ -2582,7 +2586,7 @@ const CreatePage: React.FC = () => {
                           }}
                         >
                           <Chip
-                            label={`@${char.characterName}`}
+                            label={char.characterName}
                             onClick={() => insertCharacter(char.characterName)}
                             size="small"
                             sx={{

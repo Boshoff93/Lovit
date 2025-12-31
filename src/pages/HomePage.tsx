@@ -1940,8 +1940,55 @@ const HomePage: React.FC = () => {
         {/* Drawer Content */}
         <List sx={{ px: 1, py: 2 }}>
           {isLoggedIn ? (
-            // Logged in menu items
+            // Logged in menu items - matching the Layout.tsx drawer
             <>
+              {/* Tokens display */}
+              {allowances && (
+                <ListItemButton
+                  onClick={() => {
+                    handleDrawerToggle();
+                    navigate('/settings');
+                  }}
+                  sx={{
+                    px: 2,
+                    borderRadius: 2,
+                    mb: 1,
+                    backgroundColor: 'rgba(0,122,255,0.08)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0,122,255,0.12)',
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ color: '#007AFF' }}>
+                    <BoltIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={`${(() => {
+                      const tokens = allowances.tokens;
+                      return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
+                    })()} Tokens`}
+                    primaryTypographyProps={{ 
+                      fontWeight: 600,
+                      color: '#007AFF'
+                    }} 
+                  />
+                </ListItemButton>
+              )}
+
+              {/* Create */}
+              <ListItemButton
+                component={RouterLink}
+                to="/create"
+                onClick={handleDrawerToggle}
+                sx={{ borderRadius: 2, mb: 1 }}
+              >
+                <ListItemIcon sx={{ color: '#007AFF' }}>
+                  <AddIcon />
+                </ListItemIcon>
+                <ListItemText primary="Create" primaryTypographyProps={{ fontWeight: 600 }} />
+              </ListItemButton>
+
+              {/* My Library */}
               <ListItemButton
                 component={RouterLink}
                 to="/my-library"
@@ -1949,20 +1996,35 @@ const HomePage: React.FC = () => {
                 sx={{ borderRadius: 2, mb: 1 }}
               >
                 <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <DashboardIcon />
+                  <LibraryMusicIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard" />
+                <ListItemText primary="My Library" primaryTypographyProps={{ fontWeight: 600 }} />
               </ListItemButton>
+
+              {/* My Cast */}
               <ListItemButton
                 component={RouterLink}
-                to="/faq"
+                to="/my-cast"
                 onClick={handleDrawerToggle}
                 sx={{ borderRadius: 2, mb: 1 }}
               >
                 <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <HelpOutlineIcon />
+                  <VideoLibraryIcon />
                 </ListItemIcon>
-                <ListItemText primary="FAQ" />
+                <ListItemText primary="My Cast" primaryTypographyProps={{ fontWeight: 600 }} />
+              </ListItemButton>
+
+              {/* Settings */}
+              <ListItemButton
+                component={RouterLink}
+                to="/settings"
+                onClick={handleDrawerToggle}
+                sx={{ borderRadius: 2, mb: 1 }}
+              >
+                <ListItemIcon sx={{ color: '#007AFF' }}>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Settings" primaryTypographyProps={{ fontWeight: 600 }} />
               </ListItemButton>
             </>
           ) : (

@@ -830,7 +830,7 @@ const CreateCharacterPage: React.FC = () => {
           </Typography>
           {characterKind === 'Place' && (
             <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Include images of the interior, exterior, surrounding area (beachfront, garden, street view), and any unique features or amenities.
+              💡 Tip: Include images of the interior, exterior, surrounding area (beachfront, garden, street view), and any unique features or amenities. Each photo you upload becomes a scene in your video.
             </Typography>
           )}
           

@@ -374,14 +374,14 @@ const SettingsPage: React.FC = () => {
               width: 56, 
               height: 56, 
               borderRadius: '50%', 
-              background: 'linear-gradient(135deg, rgba(52,199,89,0.1) 0%, rgba(48,209,88,0.1) 100%)',
+              background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               mx: 'auto',
               mb: 2,
             }}>
-              <BoltIcon sx={{ fontSize: 28, color: '#34C759' }} />
+              <BoltIcon sx={{ fontSize: 28, color: '#007AFF' }} />
             </Box>
             Top Up Tokens
           </DialogTitle>
@@ -409,10 +409,10 @@ const SettingsPage: React.FC = () => {
                   '&:first-of-type': { ml: 0 },
                   '&:last-of-type': { mr: 0 },
                   '&.Mui-selected': {
-                    background: 'rgba(52,199,89,0.08)',
-                    borderColor: '#34C759',
+                    background: 'rgba(0,122,255,0.08)',
+                    borderColor: '#007AFF',
                     '&:hover': {
-                      background: 'rgba(52,199,89,0.12)',
+                      background: 'rgba(0,122,255,0.12)',
                     }
                   }
                 }
@@ -430,7 +430,7 @@ const SettingsPage: React.FC = () => {
                       top: -8,
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      background: '#34C759',
+                      background: index === 2 ? '#34C759' : '#007AFF',
                       color: '#fff',
                       fontSize: '0.5rem',
                       fontWeight: 700,
@@ -445,13 +445,13 @@ const SettingsPage: React.FC = () => {
                   {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
                   <Box sx={{ display: 'flex', gap: 0.25, mb: 0.5 }}>
                     {Array.from({ length: index + 1 }).map((_, i) => (
-                      <BoltIcon key={i} sx={{ fontSize: 16, color: '#34C759' }} />
+                      <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF' }} />
                     ))}
                   </Box>
                   <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F' }}>
                     {bundle.tokens.toLocaleString()}
                   </Typography>
-                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#34C759' }}>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
                     ${bundle.price}
                   </Typography>
                 </ToggleButton>
@@ -467,10 +467,10 @@ const SettingsPage: React.FC = () => {
               sx={{ 
                 borderRadius: '12px',
                 py: 1.5,
-                background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
+                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
                 fontWeight: 600,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #2DB84E 0%, #28C04D 100%)',
+                  background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
                 }
               }}
             >

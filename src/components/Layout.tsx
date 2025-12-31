@@ -33,7 +33,7 @@ import { AppDispatch } from '../store/store';
 import { Allowances, getTokensFromAllowances } from '../store/authSlice';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
-import { stripeConfig } from '../config/stripe';
+import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
@@ -237,14 +237,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     fetchAccountData(); // Will be skipped if fetched within last 5 minutes (cache in useAccountData)
   }, [token, location.pathname, fetchAccountData]);
 
-  const handleTopUp = useCallback(async () => {
+  const handleTopUp = useCallback(async (bundle?: TopUpBundle) => {
     try {
       setIsTopUpLoading(true);
       await reportPurchaseConversion();
       
+      // Use selected bundle or default to first bundle
+      const selectedBundle = bundle || topUpBundles[0];
+      
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: stripeConfig.topUp.priceId,
-        productId: stripeConfig.topUp.productId
+        priceId: selectedBundle.priceId,
+        productId: selectedBundle.productId
       }));
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
         window.location.href = resultAction.payload.url;
