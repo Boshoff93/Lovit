@@ -82,6 +82,8 @@ const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 const genreToImage: Record<string, string> = {
   'indie': '/genres/indie.jpeg',
   'chillout': '/genres/chillout.jpeg',
+  'chill': '/genres/chillout.jpeg',
+  'tropical-house': '/genres/chillout.jpeg',
   'hip-hop': '/genres/hip-hop.jpeg',
   'pop': '/genres/pop.jpeg',
   'kpop': '/genres/kpop.jpeg',

@@ -33,7 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { logoutAllState } from '../store/actions';
-import { createCheckoutSession, createPortalSession, getTokensFromAllowances } from '../store/authSlice';
+import { createCheckoutSession, getTokensFromAllowances } from '../store/authSlice';
 import { topUpBundles } from '../config/stripe';
 
 const SettingsPage: React.FC = () => {
@@ -42,7 +42,6 @@ const SettingsPage: React.FC = () => {
   const { user, subscription, allowances } = useSelector((state: RootState) => state.auth);
   
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
-  const [isPortalLoading, setIsPortalLoading] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [topUpDialogOpen, setTopUpDialogOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<string>(topUpBundles[0].id);
@@ -79,25 +78,9 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleSubscription = async () => {
-    // If free tier, go to payment page
-    if (!subscription || subscription.tier === 'free') {
-      navigate('/payment');
-      return;
-    }
-    
-    // Otherwise, go to Stripe portal
-    setIsPortalLoading(true);
-    try {
-      const resultAction = await dispatch(createPortalSession());
-      if (createPortalSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-        window.location.href = resultAction.payload.url;
-      }
-    } catch (error) {
-      console.error('Portal error:', error);
-    } finally {
-      setIsPortalLoading(false);
-    }
+  const handleSubscription = () => {
+    // Always navigate to payment page for subscription management
+    navigate('/payment');
   };
 
   const getTierDisplay = () => {
@@ -123,7 +106,6 @@ const SettingsPage: React.FC = () => {
       title: subscription && subscription.tier !== 'free' ? 'Manage Subscription' : 'Upgrade Plan',
       description: getTierDisplay(),
       onClick: handleSubscription,
-      loading: isPortalLoading,
     },
     {
       icon: <BoltIcon sx={{ color: '#34C759' }} />,

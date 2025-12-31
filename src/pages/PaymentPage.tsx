@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+import { SEO } from '../utils/seoHelper';
 import {
   Box,
   Container,
@@ -350,6 +351,18 @@ const PaymentPage: React.FC = () => {
       // Add bottom padding when audio player is visible
       pb: hasActivePlayer ? 12 : 0,
     }}>
+      {/* SEO */}
+      <SEO
+        title="Gruvi Pricing & Plans | AI Music Generator Subscription | Songs, Music Videos & Cinematic Videos"
+        description="Choose the perfect Gruvi plan for your creative needs. Starter $9.99/mo (1,000 tokens), Pro $39.99/mo (5,000 tokens), or Premium $79.99/mo (10,000 tokens). Create AI songs for 20 tokens, music videos for 100 tokens, and cinematic videos for 1,000 tokens. Commercial license included."
+        keywords="Gruvi pricing, AI music generator cost, music video generator pricing, subscription plans, AI song creator price, cinematic video maker, token pricing, Gruvi Pro, Gruvi Premium, commercial music license"
+        ogTitle="Gruvi Pricing & Plans | Start Creating AI Music Today"
+        ogDescription="Affordable AI music creation. Songs from $0.20, music videos from $1. Choose Starter, Pro, or Premium plans with commercial licensing."
+        ogType="website"
+        ogUrl="https://gruvimusic.com/payment"
+        canonicalUrl="https://gruvimusic.com/payment"
+      />
+
       {/* Subtle gradient background - Apple-style clean blue */}
       <Box sx={{
         position: 'fixed',
@@ -581,15 +594,18 @@ const PaymentPage: React.FC = () => {
                   mt: 1, 
                   width: '100%', 
                   maxWidth: '500px', 
-                  textAlign: 'center',
+                  textAlign: 'left',
                   borderRadius: '12px',
                   background: 'rgba(0, 122, 255, 0.1)',
                   border: '1px solid rgba(0, 122, 255, 0.2)',
+                  '& .MuiAlert-message': {
+                    textAlign: 'left',
+                  },
                 }}
               >
-                You currently are subscribed to the {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} plan
+                You currently are subscribed to the {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} plan.
                 {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
-                  <>. Next billing date: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}</>
+                  <> Next billing date: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}</>
                 )}
               </Alert>
             )}

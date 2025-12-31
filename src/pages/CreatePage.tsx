@@ -27,7 +27,10 @@ import {
   Slider,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseIcon from '@mui/icons-material/Pause';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAudioPlayer, Song as AudioSong } from '../contexts/AudioPlayerContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
@@ -286,6 +289,9 @@ const CreatePage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const initialTab = (searchParams.get('tab') as TabType) || 'song';
   const songIdFromUrl = searchParams.get('song');
+  
+  // Audio player for song preview
+  const { currentSong, isPlaying, playSong, pauseSong } = useAudioPlayer();
   
   // Get user and allowances from Redux store
   const { user, allowances, subscription } = useSelector((state: RootState) => state.auth);
@@ -2289,6 +2295,26 @@ const CreatePage: React.FC = () => {
                               justifyContent: 'center',
                               overflow: 'hidden',
                               position: 'relative',
+                              cursor: 'pointer',
+                              '&:hover .play-overlay': {
+                                opacity: 1,
+                              },
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (song.audioUrl) {
+                                const isCurrentSong = currentSong?.songId === song.songId;
+                                if (isCurrentSong && isPlaying) {
+                                  pauseSong();
+                                } else {
+                                  playSong({
+                                    songId: song.songId,
+                                    songTitle: song.songTitle,
+                                    genre: song.genre,
+                                    audioUrl: song.audioUrl,
+                                  } as AudioSong);
+                                }
+                              }
                             }}
                           >
                             <Box
@@ -2301,6 +2327,8 @@ const CreatePage: React.FC = () => {
                                   'reggae': 'raggae',
                                   'classical': 'classic',
                                   'gospel': 'gospels',
+                                  'tropical-house': 'chillout',
+                                  'chill': 'chillout',
                                 };
                                 return genreMap[genre] || genre;
                               })()}.jpeg`}
@@ -2317,6 +2345,26 @@ const CreatePage: React.FC = () => {
                                 e.currentTarget.style.display = 'none';
                               }}
                             />
+                            {/* Play/Pause overlay */}
+                            <Box
+                              className="play-overlay"
+                              sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'rgba(0,0,0,0.5)',
+                                opacity: currentSong?.songId === song.songId ? 1 : 0,
+                                transition: 'opacity 0.2s',
+                              }}
+                            >
+                              {currentSong?.songId === song.songId && isPlaying ? (
+                                <PauseIcon sx={{ fontSize: 24, color: '#fff' }} />
+                              ) : (
+                                <PlayArrowRoundedIcon sx={{ fontSize: 24, color: '#fff' }} />
+                              )}
+                            </Box>
                           </Box>
                         </ListItemIcon>
                         <ListItemText
