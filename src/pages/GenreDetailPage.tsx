@@ -244,6 +244,7 @@ export const genreData = [
   { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg', color: '#94A3B8', description: 'Chill beats with nostalgic warmth', fullDescription: 'Lo-fi music embraces imperfection with warm, nostalgic sounds. Create chill beats perfect for studying, relaxation, and background ambiance.' },
   { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg', color: '#06B6D4', description: 'Atmospheric soundscapes', fullDescription: 'Ambient music creates atmospheric, textural soundscapes. Create meditative, immersive tracks perfect for relaxation and focus.' },
   { id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg', color: '#5F9EA0', description: 'Relaxed electronic grooves', fullDescription: 'Chill music brings relaxed electronic beats with chilled vibes. Create laid-back tracks for lounge settings and evening relaxation.' },
+  { id: 'tropical-house', name: 'Tropical House', image: '/genres/chillout.jpeg', color: '#00CED1', description: 'Sun-kissed summer vibes à la Kygo & Thomas Jack', fullDescription: 'Tropical House captures the dreamy, sun-kissed sound of artists like Kygo, Thomas Jack, and Matoma. Create uplifting tracks with plucky marimba melodies, warm tropical plucks, organic percussion, and airy vocals perfect for beach sunsets and summer vibes.' },
   { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg', color: '#FFD700', description: 'Spiritual music with powerful vocals', fullDescription: 'Gospel music brings spiritual power with passionate vocals and choir harmonies. Create uplifting, inspirational tracks with gospel tradition.' },
 ];
 
@@ -400,6 +401,11 @@ const genreSampleTracks: Record<string, Array<{id: string; title: string; durati
     { id: '4599e89f-77df-48b9-8386-c4597ccb60a1', title: 'Still Waters', duration: '2:04', plays: '0' },
   ],
   'chillout': [
+    { id: '06142aaf-4c01-4af4-a318-945bfaf91a36', title: 'Golden Hour Fade', duration: '2:59', plays: '0' },
+    { id: '6a55157d-71b5-4052-8beb-229e6399ec57', title: 'Saltwater Dreams', duration: '2:26', plays: '0' },
+    { id: 'dd493e6b-a5ac-497c-8952-28161a270e71', title: 'Golden Hour Drive', duration: '2:41', plays: '0' },
+  ],
+  'tropical-house': [
     { id: '06142aaf-4c01-4af4-a318-945bfaf91a36', title: 'Golden Hour Fade', duration: '2:59', plays: '0' },
     { id: '6a55157d-71b5-4052-8beb-229e6399ec57', title: 'Saltwater Dreams', duration: '2:26', plays: '0' },
     { id: 'dd493e6b-a5ac-497c-8952-28161a270e71', title: 'Golden Hour Drive', duration: '2:41', plays: '0' },

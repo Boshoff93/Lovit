@@ -50,11 +50,11 @@ const artStyles = [
 // Token costs:
 // Song = 20 tokens
 // Still image video = 40 tokens
-// Standard animated video = 200 tokens
-// Professional animated video = 2000 tokens
+// Still image video = 100 tokens
+// Cinematic video = 1000 tokens
 const videoTypes = [
   { id: 'still', label: 'Still Image', credits: 40, description: 'Static images synced to music', icon: ImageIcon },
-  { id: 'standard', label: 'Animated', credits: 200, description: 'AI-animated video', icon: AnimationIcon },
+  { id: 'standard', label: 'Cinematic', credits: 1000, description: 'AI-powered cinematic video', icon: AnimationIcon },
 ];
 
 // Aspect ratio options

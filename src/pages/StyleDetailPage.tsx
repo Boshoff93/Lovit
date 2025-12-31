@@ -333,7 +333,7 @@ const StyleDetailPage: React.FC = () => {
             Create Your {currentStyle.label} Music Video
           </Typography>
           <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1.1rem' }}>
-            Turn any song into a stunning {currentStyle.label} animated video with AI.
+            Turn any song into a stunning {currentStyle.label} cinematic video with AI.
           </Typography>
           <Button
             variant="contained"

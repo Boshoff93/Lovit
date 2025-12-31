@@ -43,6 +43,7 @@ const genreImages: Record<string, string> = {
   'jpop': '/genres/jpop.jpeg',
   'chillout': '/genres/chillout.jpeg',
   'chill': '/genres/chillout.jpeg',
+  'tropical-house': '/genres/chillout.jpeg',
   'gospel': '/genres/gospels.jpeg',
   'acoustic': '/genres/acoustic.jpeg',
 };

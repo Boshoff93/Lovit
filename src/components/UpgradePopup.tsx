@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -8,9 +8,12 @@ import {
   Typography,
   Paper,
   Button,
-  CircularProgress
+  CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
+import { topUpBundles, TopUpBundle } from '../config/stripe';
 
 interface UpgradePopupProps {
   open: boolean;
@@ -18,7 +21,7 @@ interface UpgradePopupProps {
   title?: string;
   isPremiumTier: boolean;
   onClose: () => void;
-  onTopUp: () => void;
+  onTopUp: (bundle?: TopUpBundle) => void;
   onUpgrade: () => void;
   isTopUpLoading?: boolean;
   isUpgradeLoading?: boolean;
@@ -37,6 +40,18 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
   isTopUpLoading = false,
   isUpgradeLoading = false
 }) => {
+  const [selectedBundle, setSelectedBundle] = useState<string>(topUpBundles[0].id);
+
+  const handleBundleChange = (_event: React.MouseEvent<HTMLElement>, newBundle: string | null) => {
+    if (newBundle !== null) {
+      setSelectedBundle(newBundle);
+    }
+  };
+
+  const handleTopUpClick = () => {
+    const bundle = topUpBundles.find(b => b.id === selectedBundle);
+    onTopUp(bundle);
+  };
 
   return (
     <Dialog
@@ -45,14 +60,14 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
       PaperProps={{
         sx: {
           borderRadius: 3,
-          maxWidth: 400,
+          maxWidth: 420,
           px: 1
         }
       }}
     >
       <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
         <Typography variant="h5" fontWeight={600}>
-          {title || 'Not Enough Tokens'}
+          {title || 'Need More Tokens'}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -62,76 +77,148 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
           alignItems: 'center',
           textAlign: 'center',
           gap: 2,
-          py: 2
+          py: 1
         }}>
           <Box
             sx={{
-              width: 80,
-              height: 80,
+              width: 64,
+              height: 64,
               borderRadius: '50%',
               background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 1
             }}
           >
-            <BoltIcon sx={{ fontSize: 40, color: '#007AFF' }} />
+            <BoltIcon sx={{ fontSize: 32, color: '#007AFF' }} />
           </Box>
           
-          <Typography variant="body1" sx={{ mb: 1 }}>
+          <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
             {message}
           </Typography>
           
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              background: 'linear-gradient(135deg, rgba(0,122,255,0.05) 0%, rgba(90,200,250,0.05) 100%)',
-              width: '100%'
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              {isPremiumTier
-                ? 'Purchase additional tokens to continue creating amazing music and videos!'
-                : 'Upgrade your plan for more monthly tokens and premium features!'}
+          {/* Top-up bundle selector */}
+          <Box sx={{ width: '100%' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#1D1D1F' }}>
+              Select a top-up bundle:
             </Typography>
-          </Paper>
+            <ToggleButtonGroup
+              value={selectedBundle}
+              exclusive
+              onChange={handleBundleChange}
+              aria-label="token bundle"
+              sx={{ 
+                width: '100%',
+                display: 'flex',
+                '& .MuiToggleButton-root': {
+                  flex: 1,
+                  flexDirection: 'column',
+                  py: 1.5,
+                  px: 1,
+                  border: '1px solid rgba(0,0,0,0.12)',
+                  borderRadius: '12px !important',
+                  mx: 0.5,
+                  '&:first-of-type': { ml: 0 },
+                  '&:last-of-type': { mr: 0 },
+                  '&.Mui-selected': {
+                    background: 'rgba(0,122,255,0.08)',
+                    borderColor: '#007AFF',
+                    '&:hover': {
+                      background: 'rgba(0,122,255,0.12)',
+                    }
+                  }
+                }
+              }}
+            >
+              {topUpBundles.map((bundle, index) => (
+                <ToggleButton 
+                  key={bundle.id} 
+                  value={bundle.id}
+                  sx={{ position: 'relative' }}
+                >
+                  {bundle.badge && (
+                    <Box sx={{
+                      position: 'absolute',
+                      top: -8,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: index === 2 ? '#34C759' : '#007AFF', // Green for "Best Value", blue for others
+                      color: '#fff',
+                      fontSize: '0.5rem',
+                      fontWeight: 700,
+                      px: 0.5,
+                      py: 0.25,
+                      borderRadius: '4px',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {bundle.badge}
+                    </Box>
+                  )}
+                  {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
+                  <Box sx={{ display: 'flex', gap: 0.25, mb: 0.5 }}>
+                    {Array.from({ length: index + 1 }).map((_, i) => (
+                      <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF' }} />
+                    ))}
+                  </Box>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F' }}>
+                    {bundle.tokens.toLocaleString()}
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
+                    ${bundle.price}
+                  </Typography>
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Box>
+          
+          {!isPremiumTier && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                background: 'rgba(0,0,0,0.03)',
+                width: '100%'
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                Or upgrade your plan for more monthly tokens!
+              </Typography>
+            </Paper>
+          )}
         </Box>
       </DialogContent>
       <DialogActions sx={{ 
         justifyContent: 'center', 
-        pb: 3, 
+        pb: 2, 
         px: 3,
         flexDirection: 'column',
-        gap: 1.5
+        gap: 1
       }}>
         <Button 
           variant="contained" 
-          onClick={onTopUp}
+          onClick={handleTopUpClick}
           fullWidth
           disabled={isTopUpLoading}
           sx={{ 
             borderRadius: '12px', 
-            py: 1.5,
+            py: 1.25,
             fontWeight: 600,
-            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            background: '#007AFF',
             color: '#fff',
             boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
             '&:hover': { 
-              background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-              boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+              background: '#0066DD',
             },
           }}
         >
           {isTopUpLoading ? (
             <CircularProgress size={24} color="inherit" />
           ) : (
-            'Top Up Tokens'
+            `Top Up ${topUpBundles.find(b => b.id === selectedBundle)?.tokens.toLocaleString()} Tokens`
           )}
         </Button>
-        {isPremiumTier === false && (
+        {!isPremiumTier && (
           <Button 
             variant="outlined" 
             onClick={onUpgrade}
@@ -139,12 +226,13 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
             disabled={isUpgradeLoading}
             sx={{ 
               borderRadius: '12px', 
-              py: 1.5,
+              py: 1.25,
               fontWeight: 600,
-              borderColor: '#007AFF',
-              color: '#007AFF',
+              borderColor: 'rgba(0,0,0,0.15)',
+              color: '#1D1D1F',
               '&:hover': { 
-                borderColor: '#0066DD',
+                borderColor: '#007AFF',
+                color: '#007AFF',
                 background: 'rgba(0,122,255,0.05)',
               },
             }}
@@ -156,20 +244,18 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
             )}
           </Button>
         )}
-      </DialogActions>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        pb: 2
-      }}>
         <Button 
-          variant="outlined" 
+          variant="text" 
           onClick={onClose}
-          sx={{ borderRadius: 2, minWidth: 120 }}
+          sx={{ 
+            color: '#86868B',
+            fontWeight: 500,
+            mt: 0.5,
+          }}
         >
-          Later
+          Maybe Later
         </Button>
-      </Box>
+      </DialogActions>
     </Dialog>
   );
 };

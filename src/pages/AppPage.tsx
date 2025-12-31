@@ -91,6 +91,7 @@ const genreOptions = [
   { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
   { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
   { id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
+  { id: 'tropical-house', name: 'Tropical House', image: '/genres/chillout.jpeg' },
   { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
 ];
 
@@ -225,6 +226,7 @@ const genreImages: Record<string, string> = {
   'ambient': '/genres/ambient.jpeg',
   'chillout': '/genres/chillout.jpeg',
   'chill': '/genres/chillout.jpeg',
+  'tropical-house': '/genres/chillout.jpeg',
   'gospel': '/genres/gospels.jpeg',
 };
 

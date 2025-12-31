@@ -32,7 +32,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
 import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
-import { stripeConfig } from '../config/stripe';
+import { topUpBundles, TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
 import MentionTextField from '../components/MentionTextField';
 import { reportPurchaseConversion } from '../utils/googleAds';
@@ -234,12 +234,12 @@ const artStyles = [
 ];
 
 // Video types and quality options
-// Token costs: Still = 40, Cinematic = 250
+// Token costs: Music Video = 100, Cinematic = 1000
 const videoTypes = [
   { 
     id: 'still', 
-    label: 'Still', 
-    credits: 40, 
+    label: 'Music Video', 
+    credits: 100, 
     description: 'Beautifully composed scenes',
     tooltip: 'Stunning AI-generated visuals with cinematic transitions, perfectly synced to your music.',
     icon: ImageIcon,
@@ -247,9 +247,9 @@ const videoTypes = [
   { 
     id: 'standard', 
     label: 'Cinematic', 
-    credits: 250, 
-    description: 'Motion picture quality',
-    tooltip: 'Premium AI-powered motion brings your music video to life with fluid, cinematic animations.',
+    credits: 1000, 
+    description: 'With movement',
+    tooltip: 'Dynamic video scenes with realistic movement and motion, bringing your music video to life.',
     icon: MovieIcon,
   },
 ];
@@ -308,22 +308,25 @@ const CreatePage: React.FC = () => {
   // Token costs
   const SONG_COST = 20;
   const VIDEO_COSTS: Record<string, number> = {
-    'still': 40,
-    'standard': 200,
+    'still': 100,      // Still image video
+    'standard': 1000,  // Animated/Cinematic video
   };
   
   // Check if user has enough tokens
   const hasEnoughTokens = (cost: number) => remainingTokens >= cost;
   
   // Handle upgrade popup actions
-  const handleTopUp = useCallback(async () => {
+  const handleTopUp = useCallback(async (bundle?: TopUpBundle) => {
     try {
       setIsTopUpLoading(true);
       await reportPurchaseConversion();
       
+      // Use selected bundle or default to first bundle
+      const selectedBundle = bundle || topUpBundles[0];
+      
       const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: stripeConfig.topUp.priceId,
-        productId: stripeConfig.topUp.productId
+        priceId: selectedBundle.priceId,
+        productId: selectedBundle.productId
       }));
       
       if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
@@ -501,9 +504,19 @@ const CreatePage: React.FC = () => {
       const moodFromUrl = searchParams.get('mood');
       const languageFromUrl = searchParams.get('language');
       
+      // Genre normalization - map legacy IDs to current ones
+      const normalizeGenre = (genre: string): string => {
+        const genreAliases: Record<string, string> = {
+          'chillout': 'tropical-house',
+          'chill': 'tropical-house',
+        };
+        const normalized = genre.toLowerCase();
+        return genreAliases[normalized] || normalized;
+      };
+      
       // Pre-fill genre and mood (don't use auto-pick for similar songs)
       if (genreFromUrl) {
-        setSelectedGenre(genreFromUrl.toLowerCase());
+        setSelectedGenre(normalizeGenre(genreFromUrl));
         setAutoPickGenre(false);
       }
       if (moodFromUrl) {
@@ -1500,61 +1513,8 @@ const CreatePage: React.FC = () => {
               </Paper>
             </Box>
 
-            {/* Language & Song Length - Side by Side on sm+ */}
-            <Box sx={{ display: 'flex', gap: { xs: 0, sm: 3 }, mb: { xs: 0, sm: 3 }, flexDirection: { xs: 'column', sm: 'row' } }}>
-              {/* Language Selection */}
-              <Paper
-                elevation={0}
-                sx={{
-                  p: { xs: 2, sm: 2.5 },
-                  flex: { sm: 1 },
-                  mb: { xs: 3, sm: 0 },
-                  borderRadius: { xs: '16px', sm: '20px' },
-                  background: 'rgba(255,255,255,0.9)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                }}
-              >
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
-                  Language
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
-                  Select language
-                </Typography>
-                <Button
-                  onClick={() => setLanguagePickerOpen(true)}
-                  fullWidth
-                  sx={{
-                    justifyContent: 'space-between',
-                    textTransform: 'none',
-                    py: 1.25,
-                    px: 1.5,
-                    borderRadius: '10px',
-                    border: '1px solid rgba(0,0,0,0.1)',
-                    background: '#fff',
-                    color: '#1D1D1F',
-                    fontWeight: 500,
-                    fontSize: '0.85rem',
-                    minWidth: 0,
-                    '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
-                    <Box
-                      component="img"
-                      src={languages.find(l => l.id === selectedLanguage)?.image}
-                      alt={languages.find(l => l.id === selectedLanguage)?.name}
-                      sx={{ width: 22, height: 22, borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }}
-                    />
-                    <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {languages.find(l => l.id === selectedLanguage)?.name}
-                    </Box>
-                  </Box>
-                  <KeyboardArrowDownIcon sx={{ color: '#86868B', fontSize: 20, flexShrink: 0 }} />
-                </Button>
-              </Paper>
-
+            {/* Song Length & Language - Side by Side on sm+ */}
+            <Box sx={{ display: 'flex', gap: { xs: 0, sm: 3 }, mb: { xs: 0, sm: 3 }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'flex-start' } }}>
               {/* Song Length Toggle */}
               <Paper
                 elevation={0}
@@ -1687,6 +1647,60 @@ const CreatePage: React.FC = () => {
                 </ToggleButton>
               </ToggleButtonGroup>
             </Paper>
+
+              {/* Language Selection */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: { xs: 2, sm: 2.5 },
+                  flex: { sm: 1 },
+                  mb: { xs: 3, sm: 0 },
+                  borderRadius: { xs: '16px', sm: '20px' },
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                  alignSelf: { sm: 'flex-start' },
+                }}
+              >
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
+                  Language
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
+                  Select language
+                </Typography>
+                <Button
+                  onClick={() => setLanguagePickerOpen(true)}
+                  fullWidth
+                  sx={{
+                    justifyContent: 'space-between',
+                    textTransform: 'none',
+                    py: 1.25,
+                    px: 1.5,
+                    borderRadius: '10px',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    background: '#fff',
+                    color: '#1D1D1F',
+                    fontWeight: 500,
+                    fontSize: '0.85rem',
+                    minWidth: 0,
+                    '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
+                    <Box
+                      component="img"
+                      src={languages.find(l => l.id === selectedLanguage)?.image}
+                      alt={languages.find(l => l.id === selectedLanguage)?.name}
+                      sx={{ width: 22, height: 22, borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }}
+                    />
+                    <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {languages.find(l => l.id === selectedLanguage)?.name}
+                    </Box>
+                  </Box>
+                  <KeyboardArrowDownIcon sx={{ color: '#86868B', fontSize: 20, flexShrink: 0 }} />
+                </Button>
+              </Paper>
             </Box>
 
           </Box>

@@ -111,9 +111,9 @@ export const faqItems = [
   },
   {
     category: "Music Videos",
-    question: "What's the difference between still image and animated videos?",
-    answer: "Still image videos feature a single animated scene (40 tokens), while full animated videos include motion, scene changes, and dynamic effects (250 tokens).",
-    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (40 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Full Animated Videos (250 tokens):**\n- Multiple scenes and transitions\n- Full character motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Animated:** Professional releases, YouTube, presentations"
+    question: "What's the difference between still image and cinematic videos?",
+    answer: "Still image videos feature a single scene with subtle motion (100 tokens), while cinematic videos include full AI-generated motion, scene changes, and professional effects (1,000 tokens).",
+    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (100 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Cinematic Videos (1,000 tokens):**\n- Multiple scenes and transitions\n- Full AI-generated motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n- Mix of Seedance & Kling AI models\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Cinematic:** Professional releases, YouTube, presentations"
   },
 
   // ============================================
@@ -150,14 +150,14 @@ export const faqItems = [
   {
     category: "Pricing",
     question: "How does Gruvi's pricing work?",
-    answer: "Gruvi offers three plans: Starter ($6.99/mo), Pro ($12.99/mo), and Premium ($24.99/mo). Each includes monthly tokens for creating songs and videos, plus commercial licensing.",
-    detailedAnswer: "Our pricing is designed to fit every creator:\n\n**Starter - $6.99/month**\n- 500 tokens (~25 songs)\n- Standard audio quality\n- Commercial license\n- Perfect for hobbyists\n\n**Pro - $12.99/month**\n- 1,200 tokens (~60 songs)\n- High-quality audio\n- Full commercial license\n- Priority generation\n- Best for content creators\n\n**Premium - $24.99/month**\n- 2,500 tokens (~125 songs)\n- Studio-quality audio\n- Stem separation\n- Priority support\n- Best for professionals\n\n**Annual Plans:** Save up to 30% with yearly billing!"
+    answer: "Gruvi offers three plans: Starter ($9.99/mo), Pro ($39.99/mo), and Premium ($79.99/mo). Each includes monthly tokens for creating songs and cinematic videos, plus commercial licensing.",
+    detailedAnswer: "Our pricing is designed to fit every creator:\n\n**Starter - $9.99/month**\n- 1,000 tokens (~50 songs or 1 cinematic video)\n- Standard audio quality\n- Commercial license\n- Perfect for hobbyists\n\n**Pro - $39.99/month**\n- 5,000 tokens (~250 songs or 5 cinematic videos)\n- High-quality audio\n- Full commercial license\n- Best for content creators\n\n**Premium - $79.99/month**\n- 10,000 tokens (~500 songs or 10 cinematic videos)\n- Highest-quality audio\n- Priority generation\n- Priority support\n- Best for professionals\n\n**Annual Plans:** Save 10% with yearly billing!"
   },
   {
     category: "Pricing",
     question: "How does the token system work?",
-    answer: "Tokens are used to generate content: 1 song = 20 tokens, still image video = 40 tokens, full animated video = 200 tokens. Tokens reset monthly with your subscription.",
-    detailedAnswer: "Understanding tokens:\n\n**Token Costs:**\n- **1 Song:** 20 tokens\n- **Still Image Video:** 40 tokens\n- **Full Animated Video:** 200 tokens\n- **Regeneration:** Same cost as original\n\n**Monthly Allowances:**\n- Starter: 500 tokens\n- Pro: 1,200 tokens\n- Premium: 2,500 tokens\n\n**Token Math Examples:**\n- 500 tokens = 25 songs OR 12 still videos OR 2 animated videos\n- 1,200 tokens = 60 songs OR 30 still videos OR 6 animated videos\n- Mix and match based on your needs\n\n**Tips:**\n- Tokens reset at billing cycle start\n- Unused tokens don't roll over\n- Top-up packs available if needed"
+    answer: "Tokens are used to generate content: 1 song = 20 tokens, still image video = 100 tokens, cinematic video = 1,000 tokens. Tokens reset monthly with your subscription.",
+    detailedAnswer: "Understanding tokens:\n\n**Token Costs:**\n- **1 Song:** 20 tokens\n- **Still Image Video:** 100 tokens\n- **Cinematic Video:** 1,000 tokens\n- **Regeneration:** Same cost as original\n\n**Monthly Allowances:**\n- Starter: 1,000 tokens\n- Pro: 5,000 tokens\n- Premium: 10,000 tokens\n\n**Token Math Examples:**\n- 1,000 tokens = 50 songs OR 10 still videos OR 1 cinematic video\n- 5,000 tokens = 250 songs OR 50 still videos OR 5 cinematic videos\n- Mix and match based on your needs\n\n**Tips:**\n- Tokens reset at billing cycle start\n- Unused tokens don't roll over\n- Top-up bundles available: 1K ($12.99), 5K ($49.99), 10K ($89.99)"
   },
   {
     category: "Pricing",

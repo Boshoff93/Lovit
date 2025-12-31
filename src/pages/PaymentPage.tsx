@@ -28,6 +28,7 @@ import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/SpaceDashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import BoltIcon from '@mui/icons-material/Bolt';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -46,11 +47,12 @@ import {
   trackSubscriptionManagement,
   trackCustomerJourneyMilestone
 } from '../utils/analytics';
-import { stripeConfig } from '../config/stripe';
+import { stripeConfig, topUpBundles } from '../config/stripe';
 
 interface PricePlan {
   id: string;
   title: string;
+  description: string;
   monthlyPrice: number;
   yearlyPrice: number;
   popular?: boolean;
@@ -66,22 +68,23 @@ interface PricePlan {
 
 // Token costs:
 // 1 Song = 20 tokens
-// 1 Still Image Video = 40 tokens
-// 1 Animated Video = 200 tokens
+// 1 Still Image Video = 100 tokens
+// 1 Animated/Cinematic Video = 1,000 tokens
 
 const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 8.99,
-    yearlyPrice: 85.99,
-    tokens: 500,
+    description: 'Ideal for users who just want to create their own music',
+    monthlyPrice: 9.99,
+    yearlyPrice: 107.88, // 10% off ($8.99/mo)
+    tokens: 1000,
     musicVideos: true,
     features: [
-      '500 tokens/month',
-      '25 songs',
-      '12 still image videos',
-      '2 animated videos',
+      '1,000 tokens/month',
+      '~50 songs',
+      '~10 music videos',
+      '~1 cinematic music video',
       'Standard quality audio',
       'Commercial license',
     ],
@@ -94,16 +97,17 @@ const plans: PricePlan[] = [
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 16.99,
-    yearlyPrice: 162.99,
+    description: 'Best for regular creators',
+    monthlyPrice: 39.99,
+    yearlyPrice: 431.88, // 10% off ($35.99/mo)
     popular: true,
-    tokens: 1000,
+    tokens: 5000,
     musicVideos: true,
     features: [
-      '1,000 tokens/month',
-      '50 songs',
-      '25 still image videos',
-      '5 animated videos',
+      '5,000 tokens/month',
+      '~250 songs',
+      '~50 music videos',
+      '~5 cinematic music videos',
       'High quality audio',
       'Commercial license',
     ],
@@ -116,15 +120,16 @@ const plans: PricePlan[] = [
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 29.99,
-    yearlyPrice: 287.88,
-    tokens: 2500,
+    description: 'Best for serious creators',
+    monthlyPrice: 79.99,
+    yearlyPrice: 863.88, // 10% off ($71.99/mo)
+    tokens: 10000,
     musicVideos: true,
     features: [
-      '2,500 tokens/month',
-      '125 songs',
-      '62 still image videos',
-      '12 animated videos',
+      '10,000 tokens/month',
+      '~500 songs',
+      '~100 music videos',
+      '~10 cinematic music videos',
       'Highest quality audio',
       'Priority generation',
       'Commercial license',
@@ -680,9 +685,7 @@ const PaymentPage: React.FC = () => {
                   )}
                 </Box>
                 <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 2, fontStyle: 'italic' }}>
-                  {plan.id === 'starter' ? 'Ideal for beginners and hobbyists' : 
-                   plan.id === 'pro' ? 'Best value for regular creators' : 
-                   'Unlimited potential for power users'}
+                  {plan.description}
                 </Typography>
                 
                 <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 0.5 }}>
@@ -859,9 +862,77 @@ const PaymentPage: React.FC = () => {
           </Box>
           
           {/* Token Top-ups */}
-          <Typography sx={{ color: '#86868B', fontSize: '0.9rem', mt: 4 }}>
-            Need more tokens? Purchase a 500 token top-up pack anytime for $8.99. Top-up tokens never expire and can be used for songs, videos, or any generation.
-          </Typography>
+          <Box sx={{ mt: 6 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, textAlign: 'center' }}>
+              Token Top-Up Bundles
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.9rem', mb: 3, textAlign: 'center' }}>
+              Need more tokens? Top-up tokens never expire!
+            </Typography>
+            
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2, 
+              justifyContent: 'center',
+              maxWidth: '800px',
+              mx: 'auto',
+            }}>
+              {topUpBundles.map((bundle, index) => (
+                <Card
+                  key={bundle.id}
+                  sx={{
+                    flex: { sm: 1 },
+                    maxWidth: { sm: 240 },
+                    background: bundle.badge ? 'rgba(0, 122, 255, 0.04)' : 'rgba(255,255,255,0.7)',
+                    backdropFilter: 'blur(20px)',
+                    border: bundle.badge ? '2px solid rgba(0, 122, 255, 0.3)' : '1px solid rgba(0,0,0,0.08)',
+                    borderRadius: '16px',
+                    position: 'relative',
+                    overflow: 'visible',
+                  }}
+                >
+                  {bundle.badge && (
+                    <Chip
+                      label={bundle.badge}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: -10,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: index === 2 ? '#34C759' : '#007AFF', // Green for "Best Value", blue for others
+                        color: '#fff',
+                        fontWeight: 600,
+                        fontSize: '0.6rem',
+                      }}
+                    />
+                  )}
+                  <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
+                    {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mb: 1 }}>
+                      {Array.from({ length: index + 1 }).map((_, i) => (
+                        <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF' }} />
+                      ))}
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+                      {bundle.tokens.toLocaleString()} Tokens
+                    </Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#007AFF', mb: 1 }}>
+                      ${bundle.price}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                      ${(bundle.price / bundle.tokens * 1000).toFixed(2)} per 1K tokens
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+            
+            <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mt: 2, textAlign: 'center', fontStyle: 'italic' }}>
+              Top-ups available in your account settings after subscribing
+            </Typography>
+          </Box>
         </Box>
       </Container>
 

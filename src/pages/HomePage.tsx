@@ -638,8 +638,8 @@ const languages = [
 // Token-based pricing system
 // Token costs:
 // 1 Song = 20 tokens
-// 1 Still Image Video = 40 tokens
-// 1 Animated Video = 250 tokens
+// 1 Still Image Video = 100 tokens
+// 1 Animated/Cinematic Video = 1,000 tokens
 
 interface PricePlan {
   id: string;
@@ -661,15 +661,15 @@ const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    monthlyPrice: 8.99,
-    yearlyPrice: 85.99,
-    tokens: 500,
+    monthlyPrice: 9.99,
+    yearlyPrice: 107.88, // 10% off ($8.99/mo)
+    tokens: 1000,
     musicVideos: true,
     features: [
-      '500 tokens/month',
-      '25 songs',
-      '12 still image videos',
-      '2 animated videos',
+      '1,000 tokens/month',
+      '~50 songs',
+      '~10 still image videos',
+      '~1 cinematic video',
       'Standard quality audio',
       'Commercial license',
     ],
@@ -682,16 +682,16 @@ const plans: PricePlan[] = [
   {
     id: 'pro',
     title: 'Pro',
-    monthlyPrice: 16.99,
-    yearlyPrice: 162.99,
+    monthlyPrice: 39.99,
+    yearlyPrice: 431.88, // 10% off ($35.99/mo)
     popular: true,
-    tokens: 1000,
+    tokens: 5000,
     musicVideos: true,
     features: [
-      '1,000 tokens/month',
-      '50 songs',
-      '25 still image videos',
-      '4 animated videos',
+      '5,000 tokens/month',
+      '~250 songs',
+      '~50 still image videos',
+      '~5 cinematic videos',
       'High quality audio',
       'Commercial license',
     ],
@@ -704,15 +704,15 @@ const plans: PricePlan[] = [
   {
     id: 'premium',
     title: 'Premium',
-    monthlyPrice: 29.99,
-    yearlyPrice: 287.88,
-    tokens: 2500,
+    monthlyPrice: 79.99,
+    yearlyPrice: 863.88, // 10% off ($71.99/mo)
+    tokens: 10000,
     musicVideos: true,
     features: [
-      '2,500 tokens/month',
-      '125 songs',
-      '62 still image videos',
-      '10 animated videos',
+      '10,000 tokens/month',
+      '~500 songs',
+      '~100 still image videos',
+      '~10 cinematic videos',
       'Highest quality audio',
       'Priority generation',
       'Commercial license',
@@ -3512,8 +3512,7 @@ const HomePage: React.FC = () => {
           {/* Token Top-ups */}
           <Box sx={{ textAlign: 'center', mt: 6 }}>
             <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
-              Need more tokens? Purchase a 100 token top-up pack anytime. Tokens never expire and can be used for songs, videos, or any generation.
-              <Link href="#" sx={{ color: '#007AFF', ml: 0.5 }}>Learn more</Link>
+              Need more tokens? Top-up bundles: 1,000 tokens ($12.99) • 5,000 tokens ($49.99) • 10,000 tokens ($89.99). Tokens never expire!
             </Typography>
           </Box>
         </Container>
