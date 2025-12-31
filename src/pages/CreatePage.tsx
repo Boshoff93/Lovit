@@ -136,6 +136,7 @@ const genres = [
   { id: 'electronic', name: 'Electronic', image: '/genres/electronic.jpeg' },
   { id: 'dance', name: 'Dance', image: '/genres/dance.jpeg' },
   { id: 'house', name: 'House', image: '/genres/house.jpeg' },
+  { id: 'tropical-house', name: 'Tropical House', image: '/genres/chillout.jpeg' },
   { id: 'edm', name: 'EDM', image: '/genres/edm.jpeg' },
   { id: 'techno', name: 'Techno', image: '/genres/techno.jpeg' },
   { id: 'rock', name: 'Rock', image: '/genres/rock.jpeg' },
@@ -160,7 +161,6 @@ const genres = [
   { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
   { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
   { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
-{ id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
   { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
 ];
 
@@ -363,6 +363,7 @@ const CreatePage: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState('3d-cartoon');
   const [videoType, setVideoType] = useState('still'); // 'still', 'casual', or 'creator'
   const [aspectRatio, setAspectRatio] = useState<'portrait' | 'landscape'>('portrait');
+  const [videoCreativity, setVideoCreativity] = useState(5); // 0-10 scale: 0 = literal, 10 = creative
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   
   // Action sheet state
@@ -816,6 +817,7 @@ const CreatePage: React.FC = () => {
         videoPrompt: videoPrompt.trim(),
         aspectRatio,
         characterIds: characterIds.length > 0 ? characterIds : undefined,
+        creativity: videoCreativity,
       });
       
       console.log('Video generation response:', response.data);
@@ -2091,8 +2093,8 @@ const CreatePage: React.FC = () => {
 
       {/* Video Creation Tab */}
       {activeTab === 'video' && (
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%', overflow: 'hidden' }}>
-          <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%' }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             {/* Song Selection - Action Sheet Trigger */}
             <Paper
               elevation={0}
@@ -2614,6 +2616,55 @@ const CreatePage: React.FC = () => {
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
                 characterNames={characters.map(c => c.characterName)}
               />
+              
+              {/* Prompt Adherence Slider */}
+              <Box sx={{ mt: 2.5, px: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      Prompt adherence
+                    </Typography>
+                    <Tooltip 
+                      title="Exact = scenes closely follow your description. Creative = AI interprets freely. Recommended: 5"
+                      arrow
+                      placement="top"
+                    >
+                      <InfoOutlinedIcon sx={{ fontSize: 14, color: '#86868B', cursor: 'help' }} />
+                    </Tooltip>
+                  </Box>
+                  <Typography variant="caption" sx={{ color: '#1D1D1F', fontWeight: 500 }}>
+                    {videoCreativity <= 3 ? 'Exact' : videoCreativity <= 6 ? 'Balanced' : 'Creative'} ({videoCreativity}/10)
+                  </Typography>
+                </Box>
+                <Slider
+                  value={videoCreativity}
+                  onChange={(_e, v) => setVideoCreativity(v as number)}
+                  min={0}
+                  max={10}
+                  step={1}
+                  sx={{
+                    color: '#007AFF',
+                    height: 6,
+                    '& .MuiSlider-thumb': {
+                      width: 18,
+                      height: 18,
+                      backgroundColor: '#fff',
+                      border: '2px solid #007AFF',
+                      boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                      '&:hover, &.Mui-focusVisible': {
+                        boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                      },
+                    },
+                    '& .MuiSlider-track': {
+                      background: 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
+                      border: 'none',
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: 'rgba(0,0,0,0.1)',
+                    },
+                  }}
+                />
+              </Box>
             </Paper>
 
             {/* Visual Style Selection */}
@@ -3006,6 +3057,15 @@ const CreatePage: React.FC = () => {
                     )}
                     <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {aspectRatio === 'portrait' ? '9:16 (Portrait)' : '16:9 (Landscape)'}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Creativity</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    <TuneIcon sx={{ fontSize: 18, color: videoCreativity <= 3 ? '#007AFF' : videoCreativity >= 7 ? '#AF52DE' : '#5856D6', flexShrink: 0 }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {videoCreativity <= 3 ? 'Exact' : videoCreativity >= 7 ? 'Creative' : 'Balanced'} ({videoCreativity}/10)
                     </Typography>
                   </Box>
                 </Box>

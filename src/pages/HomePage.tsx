@@ -561,7 +561,7 @@ const genres = [
   { id: 'reggae', name: 'Reggae', image: '/genres/raggae.jpeg' },
   { id: 'lofi', name: 'Lo-fi', image: '/genres/lofi.jpeg' },
   { id: 'ambient', name: 'Ambient', image: '/genres/ambient.jpeg' },
-  { id: 'chillout', name: 'Chill', image: '/genres/chillout.jpeg' },
+  { id: 'tropical-house', name: 'Tropical House', image: '/genres/chillout.jpeg' },
   { id: 'gospel', name: 'Gospel', image: '/genres/gospels.jpeg' },
 ];
 
