@@ -248,14 +248,34 @@ const MusicVideoPlayer: React.FC = () => {
   // Memoize image URLs and preload them (must be before early returns)
   const genreImageUrl = useMemo(() => {
     if (!songData?.genre) return null;
-    const url = `/genres/${songData.genre.toLowerCase().replace(/\s+/g, '-').replace('r&b', 'rnb')}.jpeg`;
+    const genre = songData.genre.toLowerCase().replace(/\s+/g, '-');
+    // Handle filename mismatches
+    const genreFileMap: Record<string, string> = {
+      'r&b': 'rnb',
+      'rnb': 'rnb',
+      'reggaeton': 'raggaeton',
+      'reggae': 'raggae',
+      'classical': 'classic',
+      'gospel': 'gospels',
+      'tropical-house': 'chillout',
+      'chill': 'chillout',
+      'chillout': 'chillout',
+    };
+    const fileName = genreFileMap[genre] || genre;
+    const url = `/genres/${fileName}.jpeg`;
     preloadImage(url);
     return url;
   }, [songData?.genre]);
 
   const moodImageUrl = useMemo(() => {
     if (!songData?.mood) return null;
-    const url = `/moods/${songData.mood.toLowerCase()}.jpeg`;
+    const mood = songData.mood.toLowerCase();
+    // Handle filename mismatches
+    const moodFileMap: Record<string, string> = {
+      'peaceful': 'peacful', // typo in filename
+    };
+    const fileName = moodFileMap[mood] || mood;
+    const url = `/moods/${fileName}.jpeg`;
     preloadImage(url);
     return url;
   }, [songData?.mood]);

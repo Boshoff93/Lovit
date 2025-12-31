@@ -131,6 +131,61 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
   );
 };
 
+// Animated Equalizer Component for playing tracks
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({ 
+  isPlaying, 
+  size = 20,
+  color = '#007AFF' 
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+  
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying 
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
+
 // Genre options from HomePage
 const genres = [
   { id: 'pop', name: 'Pop', image: '/genres/pop.jpeg' },
@@ -416,6 +471,8 @@ const CreatePage: React.FC = () => {
   const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const songCastScrollRef = useRef<HTMLDivElement>(null);
   const videoCastScrollRef = useRef<HTMLDivElement>(null);
+  const songCharacterChipRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const videoCharacterChipRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [songCastCanScroll, setSongCastCanScroll] = useState({ left: false, right: false });
   const [videoCastCanScroll, setVideoCastCanScroll] = useState({ left: false, right: false });
   const [songsPage, setSongsPage] = useState(1);
@@ -483,6 +540,27 @@ const CreatePage: React.FC = () => {
       });
     }
   };
+
+  // Scroll to a character chip when it's matched in the prompt
+  const scrollToCharacterChip = useCallback((characterName: string, isVideo: boolean = false) => {
+    const chipRefs = isVideo ? videoCharacterChipRefs : songCharacterChipRefs;
+    const scrollRef = isVideo ? videoCastScrollRef : songCastScrollRef;
+    
+    const chipElement = chipRefs.current.get(characterName);
+    if (chipElement && scrollRef.current) {
+      const container = scrollRef.current;
+      const chipLeft = chipElement.offsetLeft;
+      const chipWidth = chipElement.offsetWidth;
+      const containerWidth = container.clientWidth;
+      
+      // Scroll to center the chip in view
+      const scrollTo = chipLeft - (containerWidth / 2) + (chipWidth / 2);
+      container.scrollTo({
+        left: Math.max(0, scrollTo),
+        behavior: 'smooth',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const tab = searchParams.get('tab') as TabType;
@@ -1224,21 +1302,28 @@ const CreatePage: React.FC = () => {
                             },
                           }}
                         >
-                          <Chip
-                            label={char.characterName}
-                            onClick={() => insertCharacter(char.characterName)}
-                            size="small"
-                            sx={{
-                              borderRadius: '100px',
-                              background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
-                              color: isInPrompt ? '#34C759' : '#007AFF',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              flexShrink: 0,
-                              border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
-                              '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                          <Box
+                            component="span"
+                            ref={(el: HTMLDivElement | null) => {
+                              if (el) songCharacterChipRefs.current.set(char.characterName, el);
                             }}
-                          />
+                          >
+                            <Chip
+                              label={char.characterName}
+                              onClick={() => insertCharacter(char.characterName)}
+                              size="small"
+                              sx={{
+                                borderRadius: '100px',
+                                background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
+                                color: isInPrompt ? '#34C759' : '#007AFF',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
+                                '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                              }}
+                            />
+                          </Box>
                         </Tooltip>
                       );
                     })}
@@ -1272,6 +1357,7 @@ const CreatePage: React.FC = () => {
                 error={showSongPromptError && !songPrompt.trim()}
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
                 characterNames={characters.map(c => c.characterName)}
+                onCharacterMatched={(name) => scrollToCharacterChip(name, false)}
               />
               
               {/* Creativity Slider - subtle inline control */}
@@ -2295,26 +2381,6 @@ const CreatePage: React.FC = () => {
                               justifyContent: 'center',
                               overflow: 'hidden',
                               position: 'relative',
-                              cursor: 'pointer',
-                              '&:hover .play-overlay': {
-                                opacity: 1,
-                              },
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (song.audioUrl) {
-                                const isCurrentSong = currentSong?.songId === song.songId;
-                                if (isCurrentSong && isPlaying) {
-                                  pauseSong();
-                                } else {
-                                  playSong({
-                                    songId: song.songId,
-                                    songTitle: song.songTitle,
-                                    genre: song.genre,
-                                    audioUrl: song.audioUrl,
-                                  } as AudioSong);
-                                }
-                              }
                             }}
                           >
                             <Box
@@ -2345,26 +2411,21 @@ const CreatePage: React.FC = () => {
                                 e.currentTarget.style.display = 'none';
                               }}
                             />
-                            {/* Play/Pause overlay */}
-                            <Box
-                              className="play-overlay"
-                              sx={{
-                                position: 'absolute',
-                                inset: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: 'rgba(0,0,0,0.5)',
-                                opacity: currentSong?.songId === song.songId ? 1 : 0,
-                                transition: 'opacity 0.2s',
-                              }}
-                            >
-                              {currentSong?.songId === song.songId && isPlaying ? (
-                                <PauseIcon sx={{ fontSize: 24, color: '#fff' }} />
-                              ) : (
-                                <PlayArrowRoundedIcon sx={{ fontSize: 24, color: '#fff' }} />
-                              )}
-                            </Box>
+                            {/* Equalizer overlay when playing */}
+                            {currentSong?.songId === song.songId && isPlaying && (
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  inset: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  background: 'rgba(0,122,255,0.5)',
+                                }}
+                              >
+                                <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                              </Box>
+                            )}
                           </Box>
                         </ListItemIcon>
                         <ListItemText
@@ -2373,8 +2434,42 @@ const CreatePage: React.FC = () => {
                           primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }}
                           secondaryTypographyProps={{ color: '#86868B' }}
                         />
-                        {selectedSong === song.songId && (
-                          <CheckIcon sx={{ color: '#007AFF' }} />
+                        {/* Play/Pause button */}
+                        {song.audioUrl && (
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const isCurrentSong = currentSong?.songId === song.songId;
+                              if (isCurrentSong && isPlaying) {
+                                pauseSong();
+                              } else {
+                                playSong({
+                                  songId: song.songId,
+                                  songTitle: song.songTitle,
+                                  genre: song.genre,
+                                  audioUrl: song.audioUrl,
+                                } as AudioSong);
+                              }
+                            }}
+                            sx={{
+                              mr: 1,
+                              width: 36,
+                              height: 36,
+                              background: currentSong?.songId === song.songId && isPlaying 
+                                ? 'rgba(0,122,255,0.15)' 
+                                : 'rgba(0,0,0,0.05)',
+                              '&:hover': {
+                                background: 'rgba(0,122,255,0.2)',
+                              },
+                            }}
+                          >
+                            {currentSong?.songId === song.songId && isPlaying ? (
+                              <PauseIcon sx={{ fontSize: 20, color: '#007AFF' }} />
+                            ) : (
+                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#007AFF' }} />
+                            )}
+                          </IconButton>
                         )}
                       </ListItemButton>
                     </ListItem>
@@ -2633,21 +2728,28 @@ const CreatePage: React.FC = () => {
                             },
                           }}
                         >
-                          <Chip
-                            label={char.characterName}
-                            onClick={() => insertCharacter(char.characterName)}
-                            size="small"
-                            sx={{
-                              borderRadius: '100px',
-                              background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
-                              color: isInPrompt ? '#34C759' : '#007AFF',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              flexShrink: 0,
-                              border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
-                              '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                          <Box
+                            component="span"
+                            ref={(el: HTMLDivElement | null) => {
+                              if (el) videoCharacterChipRefs.current.set(char.characterName, el);
                             }}
-                          />
+                          >
+                            <Chip
+                              label={char.characterName}
+                              onClick={() => insertCharacter(char.characterName)}
+                              size="small"
+                              sx={{
+                                borderRadius: '100px',
+                                background: isInPrompt ? 'rgba(52,199,89,0.15)' : 'rgba(0,122,255,0.1)',
+                                color: isInPrompt ? '#34C759' : '#007AFF',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                border: isInPrompt ? '1px solid rgba(52,199,89,0.3)' : '1px solid transparent',
+                                '&:hover': { background: isInPrompt ? 'rgba(52,199,89,0.25)' : 'rgba(0,122,255,0.2)' },
+                              }}
+                            />
+                          </Box>
                         </Tooltip>
                       );
                       })}
@@ -2681,6 +2783,7 @@ const CreatePage: React.FC = () => {
                 error={showVideoPromptError && !videoPrompt.trim()}
                 helperText={showVideoPromptError && !videoPrompt.trim() ? 'Please describe your video' : ''}
                 characterNames={characters.map(c => c.characterName)}
+                onCharacterMatched={(name) => scrollToCharacterChip(name, true)}
               />
               
               {/* Prompt Adherence Slider */}
