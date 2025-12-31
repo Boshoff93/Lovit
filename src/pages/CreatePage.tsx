@@ -1430,9 +1430,14 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
-                    Genre
-                  </Typography>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                      Genre
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                      Select a genre for your song
+                    </Typography>
+                  </Box>
                   <Box 
                     onClick={() => setAutoPickGenre(!autoPickGenre)}
                     sx={{ 
@@ -1525,9 +1530,14 @@ const CreatePage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
-                    Mood
-                  </Typography>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                      Mood
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                      What mood should the song have?
+                    </Typography>
+                  </Box>
                   <Box 
                     onClick={() => setAutoPickMood(!autoPickMood)}
                     sx={{ 
