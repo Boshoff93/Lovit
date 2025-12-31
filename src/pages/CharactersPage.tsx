@@ -161,7 +161,7 @@ const CharactersPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
+    <Container maxWidth="md" sx={{ pt: 2, pb: 3, px: { xs: 0, sm: 3 } }}>
       {/* Header Row: Title + Create Button */}
       <Box sx={{ 
         display: 'flex', 

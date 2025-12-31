@@ -965,14 +965,13 @@ const CreatePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 1, sm: 2, md: 3 }, minHeight: 0, overflow: 'visible' }}>
+    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 0, md: 3 }, minHeight: 0, overflow: 'visible' }}>
       {/* Header with Title and Toggle */}
       <Box sx={{ 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
         mb: 3,
-        px: { xs: 1, sm: 0 },
         gap: 2,
         flexWrap: 'wrap',
       }}>
@@ -1027,16 +1026,16 @@ const CreatePage: React.FC = () => {
       {/* Song Creation Tab */}
       {activeTab === 'song' && (
         <>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 0, md: 3 }, width: '100%' }}>
           {/* Left Column - Song Options */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ flex: 1, minWidth: 0, mb: { xs: 0, md: 0 } }}>
             {/* Prompt Input */}
             <Paper
               elevation={0}
               sx={{
-                p: 3,
+                p: { xs: 2, sm: 3 },
                 mb: 3,
-                borderRadius: '20px',
+                borderRadius: { xs: '16px', sm: '20px' },
                 background: 'rgba(255,255,255,0.9)',
                 backdropFilter: 'blur(20px)',
                 border: showSongPromptError && !songPrompt.trim() ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(0,0,0,0.08)',
@@ -1306,252 +1305,273 @@ const CreatePage: React.FC = () => {
               </Box>
             </Paper>
 
-            {/* Genre Selection */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                mb: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  Genre
-                </Typography>
-                <Box 
-                  onClick={() => setAutoPickGenre(!autoPickGenre)}
-                  sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 0.5, 
-                    cursor: 'pointer',
-                    color: autoPickGenre ? '#fff' : '#007AFF',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: '20px',
-                    background: autoPickGenre 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
-                      : 'transparent',
-                    border: autoPickGenre ? 'none' : '1.5px solid #007AFF',
-                    transition: 'all 0.2s ease',
-                    '&:hover': { 
+            {/* Genre & Mood Selection - Side by Side on sm+ */}
+            <Box sx={{ display: 'flex', gap: { xs: 0, sm: 3 }, mb: { xs: 0, sm: 3 }, flexDirection: { xs: 'column', sm: 'row' } }}>
+              {/* Genre Selection */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: { xs: 2, sm: 2.5 },
+                  flex: { sm: 1 },
+                  mb: { xs: 3, sm: 0 },
+                  borderRadius: { xs: '16px', sm: '20px' },
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                  minWidth: 0,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                    Genre
+                  </Typography>
+                  <Box 
+                    onClick={() => setAutoPickGenre(!autoPickGenre)}
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 0.5, 
+                      cursor: 'pointer',
+                      color: autoPickGenre ? '#fff' : '#007AFF',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      px: 1,
+                      py: 0.4,
+                      borderRadius: '16px',
                       background: autoPickGenre 
-                        ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
-                        : 'rgba(0, 122, 255, 0.08)',
-                    },
-                  }}
-                >
-                  <AutoAwesomeIcon sx={{ fontSize: 14 }} />
-                  Pick for me
+                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
+                        : 'transparent',
+                      border: autoPickGenre ? 'none' : '1.5px solid #007AFF',
+                      transition: 'all 0.2s ease',
+                      flexShrink: 0,
+                      '&:hover': { 
+                        background: autoPickGenre 
+                          ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
+                          : 'rgba(0, 122, 255, 0.08)',
+                      },
+                    }}
+                  >
+                    <AutoAwesomeIcon sx={{ fontSize: 12 }} />
+                    Auto
+                  </Box>
                 </Box>
-              </Box>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                {autoPickGenre ? 'AI will choose the best genre for your prompt' : 'Choose a music style for your track'}
-              </Typography>
-              <Button
-                onClick={() => !autoPickGenre && setGenrePickerOpen(true)}
-                disabled={autoPickGenre}
-                fullWidth
-                sx={{
-                  justifyContent: 'space-between',
-                  textTransform: 'none',
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  background: autoPickGenre ? 'rgba(0,122,255,0.05)' : '#fff',
-                  color: autoPickGenre ? '#007AFF' : '#1D1D1F',
-                  fontWeight: 500,
-                  opacity: autoPickGenre ? 0.7 : 1,
-                  '&:hover': { background: autoPickGenre ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
-                  '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {autoPickGenre ? (
-                    <>
-                      <AutoAwesomeIcon sx={{ fontSize: 20 }} />
-                      AI will pick the best genre
-                    </>
-                  ) : (
-                    <>
-                      <Box
-                        component="img"
-                        src={genres.find(g => g.id === selectedGenre)?.image}
-                        alt={genres.find(g => g.id === selectedGenre)?.name}
-                        sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
-                      />
-                      {genres.find(g => g.id === selectedGenre)?.name}
-                    </>
-                  )}
-                </Box>
-                {!autoPickGenre && <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />}
-              </Button>
-            </Paper>
-
-            {/* Mood Selection */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                mb: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  Mood
-                </Typography>
-                <Box 
-                  onClick={() => setAutoPickMood(!autoPickMood)}
-                  sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 0.5, 
-                    cursor: 'pointer',
-                    color: autoPickMood ? '#fff' : '#007AFF',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
+                <Button
+                  onClick={() => !autoPickGenre && setGenrePickerOpen(true)}
+                  disabled={autoPickGenre}
+                  fullWidth
+                  sx={{
+                    justifyContent: 'space-between',
+                    textTransform: 'none',
+                    py: 1.25,
                     px: 1.5,
-                    py: 0.5,
-                    borderRadius: '20px',
-                    background: autoPickMood 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
-                      : 'transparent',
-                    border: autoPickMood ? 'none' : '1.5px solid #007AFF',
-                    transition: 'all 0.2s ease',
-                    '&:hover': { 
-                      background: autoPickMood 
-                        ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
-                        : 'rgba(0, 122, 255, 0.08)',
-                    },
+                    mt: 1,
+                    borderRadius: '10px',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    background: autoPickGenre ? 'rgba(0,122,255,0.05)' : '#fff',
+                    color: autoPickGenre ? '#007AFF' : '#1D1D1F',
+                    fontWeight: 500,
+                    fontSize: '0.85rem',
+                    opacity: autoPickGenre ? 0.7 : 1,
+                    minWidth: 0,
+                    '&:hover': { background: autoPickGenre ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                    '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
                   }}
                 >
-                  <AutoAwesomeIcon sx={{ fontSize: 14 }} />
-                  Pick for me
-                </Box>
-              </Box>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                {autoPickMood ? 'AI will choose the best mood for your prompt' : 'Set the emotional tone of your song'}
-              </Typography>
-              <Button
-                onClick={() => !autoPickMood && setMoodPickerOpen(true)}
-                disabled={autoPickMood}
-                fullWidth
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
+                    {autoPickGenre ? (
+                      <>
+                        <AutoAwesomeIcon sx={{ fontSize: 18, flexShrink: 0 }} />
+                        <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>AI picks</Box>
+                      </>
+                    ) : (
+                      <>
+                        <Box
+                          component="img"
+                          src={genres.find(g => g.id === selectedGenre)?.image}
+                          alt={genres.find(g => g.id === selectedGenre)?.name}
+                          sx={{ width: 22, height: 22, borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }}
+                        />
+                        <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {genres.find(g => g.id === selectedGenre)?.name}
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+                  {!autoPickGenre && <KeyboardArrowDownIcon sx={{ color: '#86868B', fontSize: 20, flexShrink: 0 }} />}
+                </Button>
+              </Paper>
+
+              {/* Mood Selection */}
+              <Paper
+                elevation={0}
                 sx={{
-                  justifyContent: 'space-between',
-                  textTransform: 'none',
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  background: autoPickMood ? 'rgba(0,122,255,0.05)' : '#fff',
-                  color: autoPickMood ? '#007AFF' : '#1D1D1F',
-                  fontWeight: 500,
-                  opacity: autoPickMood ? 0.7 : 1,
-                  '&:hover': { background: autoPickMood ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
-                  '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
+                  p: { xs: 2, sm: 2.5 },
+                  flex: { sm: 1 },
+                  mb: { xs: 3, sm: 0 },
+                  borderRadius: { xs: '16px', sm: '20px' },
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                  minWidth: 0,
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {autoPickMood ? (
-                    <>
-                      <AutoAwesomeIcon sx={{ fontSize: 20 }} />
-                      AI will pick the best mood
-                    </>
-                  ) : (
-                    <>
-                      <Box
-                        component="img"
-                        src={moods.find(m => m.id === selectedMood)?.image}
-                        alt={moods.find(m => m.id === selectedMood)?.name}
-                        sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
-                      />
-                      {moods.find(m => m.id === selectedMood)?.name}
-                    </>
-                  )}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                    Mood
+                  </Typography>
+                  <Box 
+                    onClick={() => setAutoPickMood(!autoPickMood)}
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 0.5, 
+                      cursor: 'pointer',
+                      color: autoPickMood ? '#fff' : '#007AFF',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      px: 1,
+                      py: 0.4,
+                      borderRadius: '16px',
+                      background: autoPickMood 
+                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
+                        : 'transparent',
+                      border: autoPickMood ? 'none' : '1.5px solid #007AFF',
+                      transition: 'all 0.2s ease',
+                      flexShrink: 0,
+                      '&:hover': { 
+                        background: autoPickMood 
+                          ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)'
+                          : 'rgba(0, 122, 255, 0.08)',
+                      },
+                    }}
+                  >
+                    <AutoAwesomeIcon sx={{ fontSize: 12 }} />
+                    Auto
+                  </Box>
                 </Box>
-                {!autoPickMood && <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />}
-              </Button>
-            </Paper>
+                <Button
+                  onClick={() => !autoPickMood && setMoodPickerOpen(true)}
+                  disabled={autoPickMood}
+                  fullWidth
+                  sx={{
+                    justifyContent: 'space-between',
+                    textTransform: 'none',
+                    py: 1.25,
+                    px: 1.5,
+                    mt: 1,
+                    borderRadius: '10px',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    background: autoPickMood ? 'rgba(0,122,255,0.05)' : '#fff',
+                    color: autoPickMood ? '#007AFF' : '#1D1D1F',
+                    fontWeight: 500,
+                    fontSize: '0.85rem',
+                    opacity: autoPickMood ? 0.7 : 1,
+                    minWidth: 0,
+                    '&:hover': { background: autoPickMood ? 'rgba(0,122,255,0.05)' : 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                    '&.Mui-disabled': { color: '#007AFF', background: 'rgba(0,122,255,0.05)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
+                    {autoPickMood ? (
+                      <>
+                        <AutoAwesomeIcon sx={{ fontSize: 18, flexShrink: 0 }} />
+                        <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>AI picks</Box>
+                      </>
+                    ) : (
+                      <>
+                        <Box
+                          component="img"
+                          src={moods.find(m => m.id === selectedMood)?.image}
+                          alt={moods.find(m => m.id === selectedMood)?.name}
+                          sx={{ width: 22, height: 22, borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }}
+                        />
+                        <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {moods.find(m => m.id === selectedMood)?.name}
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+                  {!autoPickMood && <KeyboardArrowDownIcon sx={{ color: '#86868B', fontSize: 20, flexShrink: 0 }} />}
+                </Button>
+              </Paper>
+            </Box>
 
-            {/* Language Selection */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                mb: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                Language
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Select the language for lyrics
-              </Typography>
-              <Button
-                onClick={() => setLanguagePickerOpen(true)}
-                fullWidth
+            {/* Language & Song Length - Side by Side on sm+ */}
+            <Box sx={{ display: 'flex', gap: { xs: 0, sm: 3 }, mb: { xs: 0, sm: 3 }, flexDirection: { xs: 'column', sm: 'row' } }}>
+              {/* Language Selection */}
+              <Paper
+                elevation={0}
                 sx={{
-                  justifyContent: 'space-between',
-                  textTransform: 'none',
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  background: '#fff',
-                  color: '#1D1D1F',
-                  fontWeight: 500,
-                  '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  p: { xs: 2, sm: 2.5 },
+                  flex: { sm: 1 },
+                  mb: { xs: 3, sm: 0 },
+                  borderRadius: { xs: '16px', sm: '20px' },
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    component="img"
-                    src={languages.find(l => l.id === selectedLanguage)?.image}
-                    alt={languages.find(l => l.id === selectedLanguage)?.name}
-                    sx={{ width: 24, height: 24, borderRadius: '6px', objectFit: 'cover' }}
-                  />
-                  {languages.find(l => l.id === selectedLanguage)?.name}
-                </Box>
-                <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
-              </Button>
-            </Paper>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
+                  Language
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
+                  Select language
+                </Typography>
+                <Button
+                  onClick={() => setLanguagePickerOpen(true)}
+                  fullWidth
+                  sx={{
+                    justifyContent: 'space-between',
+                    textTransform: 'none',
+                    py: 1.25,
+                    px: 1.5,
+                    borderRadius: '10px',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    background: '#fff',
+                    color: '#1D1D1F',
+                    fontWeight: 500,
+                    fontSize: '0.85rem',
+                    minWidth: 0,
+                    '&:hover': { background: 'rgba(0,122,255,0.05)', borderColor: '#007AFF' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
+                    <Box
+                      component="img"
+                      src={languages.find(l => l.id === selectedLanguage)?.image}
+                      alt={languages.find(l => l.id === selectedLanguage)?.name}
+                      sx={{ width: 22, height: 22, borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }}
+                    />
+                    <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {languages.find(l => l.id === selectedLanguage)?.name}
+                    </Box>
+                  </Box>
+                  <KeyboardArrowDownIcon sx={{ color: '#86868B', fontSize: 20, flexShrink: 0 }} />
+                </Button>
+              </Paper>
 
-            {/* Song Length Toggle */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                mb: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+              {/* Song Length Toggle */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: { xs: 2, sm: 2.5 },
+                  flex: { sm: 1 },
+                  mb: { xs: 3, sm: 0 },
+                  borderRadius: { xs: '16px', sm: '20px' },
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                }}
+              >
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
                 Song Length
               </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Choose between a shorter or standard length track
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
+                Choose track length
               </Typography>
               <ToggleButtonGroup
                 value={songLength}
@@ -1560,21 +1580,21 @@ const CreatePage: React.FC = () => {
                 fullWidth
                 orientation="vertical"
                 sx={{
-                  gap: 1.5,
-                  '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '16px !important', m: 0 },
+                  gap: 1,
+                  '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '12px !important', m: 0 },
                 }}
               >
                 {/* Short Option */}
                 <ToggleButton
                   value="short"
                   sx={{
-                    py: 2,
-                    px: 2.5,
+                    py: 1.25,
+                    px: 1.5,
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    gap: 2,
+                    gap: 1.5,
                     textTransform: 'none',
                     background: songLength === 'short' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
                     color: '#1D1D1F',
@@ -1593,22 +1613,23 @@ const CreatePage: React.FC = () => {
                   }}
                 >
                   <Box sx={{ 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '10px', 
+                    width: 32, 
+                    height: 32, 
+                    borderRadius: '8px', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     background: songLength === 'short' ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)',
+                    flexShrink: 0,
                   }}>
-                    <TimerIcon sx={{ color: songLength === 'short' ? '#007AFF' : '#86868B' }} />
+                    <TimerIcon sx={{ color: songLength === 'short' ? '#007AFF' : '#86868B', fontSize: 18 }} />
                   </Box>
-                  <Box sx={{ flex: 1, textAlign: 'left' }}>
-                    <Typography sx={{ fontWeight: 600, color: songLength === 'short' ? '#007AFF' : '#1D1D1F' }}>
+                  <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'short' ? '#007AFF' : '#1D1D1F', fontSize: '0.85rem' }}>
                       Short
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.8rem' }}>
-                      Quick track, ~30-90 seconds
+                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      ~30-90 seconds
                     </Typography>
                   </Box>
                 </ToggleButton>
@@ -1617,13 +1638,13 @@ const CreatePage: React.FC = () => {
                 <ToggleButton
                   value="standard"
                   sx={{
-                    py: 2,
-                    px: 2.5,
+                    py: 1.25,
+                    px: 1.5,
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    gap: 2,
+                    gap: 1.5,
                     textTransform: 'none',
                     background: songLength === 'standard' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
                     color: '#1D1D1F',
@@ -1642,27 +1663,29 @@ const CreatePage: React.FC = () => {
                   }}
                 >
                   <Box sx={{ 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '10px', 
+                    width: 32, 
+                    height: 32, 
+                    borderRadius: '8px', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     background: songLength === 'standard' ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)',
+                    flexShrink: 0,
                   }}>
-                    <MusicNoteIcon sx={{ color: songLength === 'standard' ? '#007AFF' : '#86868B' }} />
+                    <MusicNoteIcon sx={{ color: songLength === 'standard' ? '#007AFF' : '#86868B', fontSize: 18 }} />
                   </Box>
-                  <Box sx={{ flex: 1, textAlign: 'left' }}>
-                    <Typography sx={{ fontWeight: 600, color: songLength === 'standard' ? '#007AFF' : '#1D1D1F' }}>
+                  <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'standard' ? '#007AFF' : '#1D1D1F', fontSize: '0.85rem' }}>
                       Standard
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.8rem' }}>
-                      Full length track, ~1.5-3 minutes
+                    <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      ~1.5-3 minutes
                     </Typography>
                   </Box>
                 </ToggleButton>
               </ToggleButtonGroup>
             </Paper>
+            </Box>
 
           </Box>
 

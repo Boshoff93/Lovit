@@ -114,8 +114,7 @@ const eyeColorOptions = [
   { id: 'Grey', label: 'Grey', image: '/eyes/grey.jpg' },
 ];
 
-const MAX_CHARACTER_IMAGES = 5;
-const MAX_PLACE_IMAGES = 10;
+const MAX_IMAGES = 10;
 
 const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -222,8 +221,8 @@ const CreateCharacterPage: React.FC = () => {
     fetchCharacter();
   }, [fetchCharacter]);
 
-  // Get max images based on character type
-  const maxImages = characterKind === 'Place' ? MAX_PLACE_IMAGES : MAX_CHARACTER_IMAGES;
+  // Max images for all types
+  const maxImages = MAX_IMAGES;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -417,7 +416,7 @@ const CreateCharacterPage: React.FC = () => {
         p: 0
       }}>
         {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+        <Box sx={{ width: '100%', mb: 2, px: { xs: 0, sm: 0 } }}>
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/my-cast')}
@@ -434,7 +433,7 @@ const CreateCharacterPage: React.FC = () => {
           </Button>
         </Box>
 
-        <Box sx={{ width: '100%', px: { xs: 2, sm: 0 } }}>
+        <Box sx={{ width: '100%', px: { xs: 0, sm: 0 } }}>
         {/* Name */}
         <Paper
           elevation={0}
@@ -826,9 +825,14 @@ const CreateCharacterPage: React.FC = () => {
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
             Reference Images
           </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : 'for appearance in music videos'}
+          <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.85rem' }}>
+            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : 'for appearance in music videos'}
           </Typography>
+          {characterKind === 'Place' && (
+            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+              💡 Tip: Include images of the interior, exterior, surrounding area (beachfront, garden, street view), and any unique features or amenities.
+            </Typography>
+          )}
           
           {/* Drag and drop area */}
           <Box

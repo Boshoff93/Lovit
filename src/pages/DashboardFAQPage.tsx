@@ -86,7 +86,7 @@ const DashboardFAQPage: React.FC = () => {
         p: 0
       }}>
         {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2, px: { xs: 2, sm: 0 } }}>
+        <Box sx={{ width: '100%', mb: 2}}>
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/settings')}

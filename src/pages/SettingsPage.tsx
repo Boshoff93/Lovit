@@ -142,7 +142,6 @@ const SettingsPage: React.FC = () => {
       justifyContent: 'center', 
       pt: 2,
       pb: { xs: 2, sm: 4 },
-      px: { xs: 1, sm: 2 },
     }}>
       <Container maxWidth="md" sx={{ 
         display: 'flex', 

@@ -1013,7 +1013,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 2, sm: 3 } }}>
+    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 0, md: 3 } }}>
       {/* Songs Tracklist */}
       {activeTab === 'songs' && (
       <Box
@@ -1136,9 +1136,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           sx={{
             mb: 2,
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 2,
-            alignItems: { xs: 'stretch', md: 'center' },
+            flexDirection: { xs: 'column', lg: 'row' },
+            gap: { xs: 1.5, lg: 2 },
+            alignItems: { xs: 'stretch', lg: 'center' },
           }}
         >
           {/* Search Bar */}
@@ -1151,7 +1151,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             }}
             size="small"
             sx={{
-              flex: { xs: 1, md: 2 },
+              flex: { lg: 1 },
               '& .MuiOutlinedInput-root': {
                 borderRadius: '10px',
                 backgroundColor: 'rgba(0,0,0,0.03)',
@@ -1176,16 +1176,16 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             }}
           />
 
-          {/* Filters Container - side by side on sm, stacked on xs */}
+          {/* Filters Container - side by side on all sizes */}
           <Box sx={{ 
             display: 'flex', 
-            flexDirection: { xs: 'column', sm: 'row' }, 
-            gap: 2, 
-            width: { xs: '100%', md: 'auto' },
-            flex: { md: 'none' },
+            flexDirection: 'row', 
+            gap: { xs: 1.5, sm: 2 }, 
+            width: { xs: '100%', lg: 'auto' },
+            flexShrink: 0,
           }}>
             {/* Genre Filter */}
-            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 160 }, flex: { sm: 1, md: 'none' } }}>
+            <FormControl size="small" sx={{ minWidth: { xs: 0, lg: 160 }, flex: { xs: 1, lg: 'none' } }}>
             <Select
               value={genreFilter}
               onChange={(e: SelectChangeEvent) => {
@@ -1196,32 +1196,33 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               renderValue={(selected) => {
                 if (!selected) {
                   return (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
                       <Box sx={{ 
-                        width: 28, 
-                        height: 28, 
+                        width: { xs: 24, sm: 28 }, 
+                        height: { xs: 24, sm: 28 }, 
                         borderRadius: '6px', 
                         background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0,
                       }}>
-                        <MusicNoteIcon sx={{ fontSize: 16, color: '#fff' }} />
+                        <MusicNoteIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#fff' }} />
                       </Box>
-                      <Typography sx={{ fontWeight: 500 }}>All Genres</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>All Genres</Typography>
                     </Box>
                   );
                 }
                 const genre = genreOptions.find(g => g.id === selected);
                 return genre ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={genre.image}
                       alt={genre.name}
-                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500 }}>{genre.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{genre.name}</Typography>
                   </Box>
                 ) : selected;
               }}
@@ -1290,7 +1291,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             </FormControl>
 
             {/* Mood Filter */}
-            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 160 }, flex: { sm: 1, md: 'none' } }}>
+            <FormControl size="small" sx={{ minWidth: { xs: 0, lg: 160 }, flex: { xs: 1, lg: 'none' } }}>
             <Select
               value={moodFilter}
               onChange={(e: SelectChangeEvent) => {
@@ -1301,32 +1302,33 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               renderValue={(selected) => {
                 if (!selected) {
                   return (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
                       <Box sx={{ 
-                        width: 28, 
-                        height: 28, 
+                        width: { xs: 24, sm: 28 }, 
+                        height: { xs: 24, sm: 28 }, 
                         borderRadius: '6px', 
                         background: 'linear-gradient(135deg, #FF6B9D, #C44569)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0,
                       }}>
-                        <AutoAwesomeIcon sx={{ fontSize: 16, color: '#fff' }} />
+                        <AutoAwesomeIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#fff' }} />
                       </Box>
-                      <Typography sx={{ fontWeight: 500 }}>All Moods</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>All Moods</Typography>
                     </Box>
                   );
                 }
                 const mood = moodOptions.find(m => m.id === selected);
                 return mood ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
                     <Box
                       component="img"
                       src={mood.image}
                       alt={mood.name}
-                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500 }}>{mood.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mood.name}</Typography>
                   </Box>
                 ) : selected;
               }}
@@ -1893,7 +1895,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           
           {/* Videos Grid - Grouped by Date */}
           {isLoadingVideos ? (
-            <Box sx={{ p: 3 }}>
+            <Box>
               {/* First row - 4 portrait video skeletons */}
               <Box sx={{ 
                 display: 'grid', 
@@ -1957,7 +1959,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               </Box>
             </Box>
           ) : totalVideosCount > 0 ? (
-            <Box sx={{ p: 3 }}>
+            <Box>
               {/* Group displayed videos by date */}
               {(() => {
                 // Group displayed videos by date (paginated)
