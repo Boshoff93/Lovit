@@ -312,8 +312,47 @@ const videoTypes = [
   },
 ];
 
+// Compress image before upload to reduce bandwidth and storage
+// Returns a base64 data URL
+const compressImage = (file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.85): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Calculate new dimensions maintaining aspect ratio
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
 
+        // Create canvas and draw resized image
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
 
+        // Convert to JPEG with compression
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+};
 
 // Character interface
 interface Character {
@@ -593,19 +632,29 @@ const CreatePage: React.FC = () => {
         const genreAliases: Record<string, string> = {
           'chillout': 'tropical-house',
           'chill': 'tropical-house',
+          'j-pop': 'jpop',
+          'k-pop': 'kpop',
         };
         const normalized = genre.toLowerCase();
         return genreAliases[normalized] || normalized;
       };
       
-      // Pre-fill genre and mood (don't use auto-pick for similar songs)
+      // Pre-fill genre and mood - handle "auto" values correctly
       if (genreFromUrl) {
-        setSelectedGenre(normalizeGenre(genreFromUrl));
-        setAutoPickGenre(false);
+        if (genreFromUrl.toLowerCase() === 'auto') {
+          setAutoPickGenre(true);
+        } else {
+          setSelectedGenre(normalizeGenre(genreFromUrl));
+          setAutoPickGenre(false);
+        }
       }
       if (moodFromUrl) {
-        setSelectedMood(moodFromUrl.toLowerCase());
-        setAutoPickMood(false);
+        if (moodFromUrl.toLowerCase() === 'auto') {
+          setAutoPickMood(true);
+        } else {
+          setSelectedMood(moodFromUrl.toLowerCase());
+          setAutoPickMood(false);
+        }
       }
       if (languageFromUrl) {
         setSelectedLanguage(languageFromUrl);
@@ -847,7 +896,7 @@ const CreatePage: React.FC = () => {
         songLength, // 'short' or 'standard'
       });
       
-      console.log('Song generation started:', response.data);
+      console.debug('Song generation started:', response.data);
       
       // Update local token count immediately so UI reflects the spend
       dispatch(updateTokensUsed(SONG_COST));
@@ -968,16 +1017,10 @@ const CreatePage: React.FC = () => {
 
     setIsCreatingCharacter(true);
     try {
-      // Convert uploaded images to base64
+      // Compress and convert uploaded images to base64
+      // This significantly reduces upload size for large images
       const imageBase64Array: string[] = await Promise.all(
-        uploadedImages.map((file) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        })
+        uploadedImages.map((file) => compressImage(file, 1920, 1920, 0.85))
       );
 
       // Build description from character attributes
@@ -2396,8 +2439,10 @@ const CreatePage: React.FC = () => {
                             <Box
                               component="img"
                               src={`/genres/${(() => {
-                                const genre = song.genre?.toLowerCase().replace(/\s+/g, '-') || 'pop';
-                                // Handle filename mismatches
+                                const rawGenre = song.genre?.toLowerCase().replace(/\s+/g, '-') || 'pop';
+                                // Default to 'pop' for 'auto' or invalid genres
+                                const genre = rawGenre === 'auto' ? 'pop' : rawGenre;
+                                // Handle filename mismatches (API returns hyphenated, files use no hyphen)
                                 const genreMap: Record<string, string> = {
                                   'reggaeton': 'raggaeton',
                                   'reggae': 'raggae',
@@ -2405,6 +2450,8 @@ const CreatePage: React.FC = () => {
                                   'gospel': 'gospels',
                                   'tropical-house': 'chillout',
                                   'chill': 'chillout',
+                                  'j-pop': 'jpop',
+                                  'k-pop': 'kpop',
                                 };
                                 return genreMap[genre] || genre;
                               })()}.jpeg`}

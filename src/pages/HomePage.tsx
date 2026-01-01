@@ -489,6 +489,16 @@ const promoVideosPortrait: VideoItem[] = [
     videoUrl: 'https://gruvimusic.com/video/ef807231-faab-4a97-a51b-08f574fbae52',
     tag: "Rolex",
   },
+  {
+    id: '134e4aed-1b25-4d0b-a41a-73a683f76225',
+    title: "Gotta Catch 'Em All",
+    style: "Cinematic",
+    views: "1.2K",
+    thumbnail: "/thumbnails/pokeball.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/134e4aed-1b25-4d0b-a41a-73a683f76225',
+    tag: "Pokeball",
+  },
 ];
 
 const promoVideosLandscape: VideoItem[] = [
@@ -501,6 +511,16 @@ const promoVideosLandscape: VideoItem[] = [
     aspectRatio: 'landscape',
     videoUrl: 'https://gruvimusic.com/video/dc6c22f4-22e5-433d-aa38-5792bc653185',
     tag: "Tesla",
+  },
+  {
+    id: '4d42bf20-328b-4d80-b319-8ff8d9867036',
+    title: "Frinton Sunrise",
+    style: "Cinematic",
+    views: "892",
+    thumbnail: "/thumbnails/frinton.jpeg",
+    aspectRatio: 'landscape',
+    videoUrl: 'https://gruvimusic.com/video/4d42bf20-328b-4d80-b319-8ff8d9867036',
+    tag: "Airbnb",
   },
 ];
 
@@ -527,8 +547,18 @@ const musicVideosLandscape: VideoItem[] = [
     thumbnail: "/thumbnails/goku.jpeg",
     aspectRatio: 'landscape',
     videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
+    tag: "Dragon Ball",
   },
-  // Add more landscape music videos here
+  {
+    id: '4221ddeb-136c-4968-a46f-7585635827f1',
+    title: "Set Sail to Glory",
+    style: "Anime",
+    views: "2.1K",
+    thumbnail: "/thumbnails/one-piece.jpeg",
+    aspectRatio: 'landscape',
+    videoUrl: 'https://gruvimusic.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
+    tag: "One Piece",
+  },
 ];
 
 // Genres data - matching the genres we support with images

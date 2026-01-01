@@ -114,7 +114,51 @@ const eyeColorOptions = [
   { id: 'Grey', label: 'Grey', image: '/eyes/grey.jpg' },
 ];
 
-const MAX_IMAGES = 10;
+// Max images: 20 for Places (property photos), 10 for others
+const MAX_IMAGES_PLACE = 20;
+const MAX_IMAGES_DEFAULT = 10;
+
+// Compress image before upload to reduce bandwidth and storage
+// Returns a base64 data URL
+const compressImage = (file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.85): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Calculate new dimensions maintaining aspect ratio
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+
+        // Create canvas and draw resized image
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to JPEG with compression
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+};
 
 const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -221,8 +265,8 @@ const CreateCharacterPage: React.FC = () => {
     fetchCharacter();
   }, [fetchCharacter]);
 
-  // Max images for all types
-  const maxImages = MAX_IMAGES;
+  // Max images: 20 for Places, 10 for others
+  const maxImages = characterKind === 'Place' ? MAX_IMAGES_PLACE : MAX_IMAGES_DEFAULT;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -306,17 +350,11 @@ const CreateCharacterPage: React.FC = () => {
 
     setIsCreatingCharacter(true);
     try {
-      // Convert uploaded images to base64 (if any)
+      // Compress and convert uploaded images to base64 (if any)
+      // This significantly reduces upload size for large property photos
       const imageBase64Array: string[] = uploadedImages.length > 0
         ? await Promise.all(
-            uploadedImages.map((file) => {
-              return new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-              });
-            })
+            uploadedImages.map((file) => compressImage(file, 1920, 1920, 0.85))
           )
         : [];
 
@@ -828,9 +866,14 @@ const CreateCharacterPage: React.FC = () => {
           <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.85rem' }}>
             Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : 'for appearance in music videos'}
           </Typography>
+          {characterKind === 'Product' && (
+            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+              💡 Tip: Create one product entry per item. For example, if you have different shoe colors or variants, create a separate entry for each one.
+            </Typography>
+          )}
           {characterKind === 'Place' && (
             <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Include images of the interior, exterior, surrounding area (beachfront, garden, street view), and any unique features or amenities. Each photo you upload becomes a scene in your video.
+              💡 Tip: Upload up to 20 photos! Include interior rooms, exterior views, surrounding area (beachfront, garden, pool), and unique features. Each photo becomes a scene in your video.
             </Typography>
           )}
           

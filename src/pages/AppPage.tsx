@@ -220,7 +220,9 @@ const genreImages: Record<string, string> = {
   'latin': '/genres/latin.jpeg',
   'reggaeton': '/genres/raggaeton.jpeg',
   'kpop': '/genres/kpop.jpeg',
+  'k-pop': '/genres/kpop.jpeg',
   'jpop': '/genres/jpop.jpeg',
+  'j-pop': '/genres/jpop.jpeg',
   'reggae': '/genres/raggae.jpeg',
   'lofi': '/genres/lofi.jpeg',
   'ambient': '/genres/ambient.jpeg',
@@ -287,7 +289,7 @@ interface Video {
   songTitle?: string;
   thumbnailUrl?: string;
   videoUrl?: string;
-  status: 'queued' | 'processing' | 'completed' | 'failed';
+  status: 'queued' | 'processing' | 'completed' | 'failed' | 'interrupted';
   progress?: number;
   progressMessage?: string;
   queuePosition?: number; // Position in queue (1-indexed)
@@ -344,6 +346,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const videosPerPage = 12; // 12 videos per page (works well with 4-column grid)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
+  const processingSongIdsRef = useRef<Set<string>>(new Set()); // Track IDs of songs we're waiting for
   
   // Global audio player
   const { 
@@ -404,15 +407,17 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         setTotalSongsCount(fetchedSongs.length);
       }
       
-      // Check if any songs are still processing
-      const hasProcessingSongs = fetchedSongs.some((s: Song) => s.status === 'processing');
-      return hasProcessingSongs;
+      // Return list of processing song IDs
+      const processingSongIds = fetchedSongs
+        .filter((s: Song) => s.status === 'processing')
+        .map((s: Song) => s.songId);
+      return processingSongIds as string[];
     } catch (error) {
       console.error('Error fetching songs:', error);
     } finally {
       if (showLoading) setIsLoadingSongs(false);
     }
-    return false;
+    return [] as string[];
   }, [user?.userId, currentPage, searchQuery, genreFilter, moodFilter]);
 
   // Refetch when filters change (with debounce for search)
@@ -444,27 +449,44 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   }, [searchQuery, genreFilter, moodFilter]);
 
   // Start polling for song updates
-  const startPolling = useCallback(() => {
+  const startPolling = useCallback((initialProcessingIds: string[]) => {
     // Clear any existing interval
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
     }
     
+    // Track the song IDs we're waiting for
+    initialProcessingIds.forEach(id => processingSongIdsRef.current.add(id));
+    
     // Poll every 3 seconds
     pollingIntervalRef.current = setInterval(async () => {
-      const hasProcessing = await fetchSongs(false);
+      const currentProcessingIds = await fetchSongs(false);
       
-      // Stop polling if no more processing songs
-      if (!hasProcessing && pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-        
-        // Show success notification when song completes
+      // Check if any songs we were waiting for have completed
+      const processingIds = currentProcessingIds || [];
+      const completedIds = Array.from(processingSongIdsRef.current).filter(
+        id => !processingIds.includes(id)
+      );
+      
+      // Show notification for each completed song
+      if (completedIds.length > 0) {
         setNotification({
           open: true,
-          message: 'Your song is ready! 🎵',
+          message: completedIds.length === 1 ? 'Your song is ready! 🎵' : `${completedIds.length} songs are ready! 🎵`,
           severity: 'success'
         });
+        // Remove completed songs from tracking
+        completedIds.forEach(id => processingSongIdsRef.current.delete(id));
+      }
+      
+      // Add any new processing songs to tracking
+      processingIds.forEach(id => processingSongIdsRef.current.add(id));
+      
+      // Stop polling if no more songs to track
+      if (processingIds.length === 0 && pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+        processingSongIdsRef.current.clear();
       }
     }, 3000);
   }, [fetchSongs]);
@@ -472,11 +494,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   // Initial fetch and polling setup
   useEffect(() => {
     const initFetch = async () => {
-      const hasProcessing = await fetchSongs(true);
+      const processingIds = await fetchSongs(true);
       
       // If there are processing songs, start polling
-      if (hasProcessing) {
-        startPolling();
+      if (processingIds && processingIds.length > 0) {
+        startPolling(processingIds);
       }
     };
     
@@ -495,20 +517,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   useEffect(() => {
     const isGenerating = searchParams.get('generating') === 'true';
     if (isGenerating) {
-      // Show notification and start polling
+      // Show notification and fetch songs to start polling
       setNotification({
         open: true,
         message: 'Your song is being created... This usually takes about a minute or two.',
         severity: 'info'
       });
-      startPolling();
+      
+      // Fetch songs to get processing IDs, then start polling
+      (async () => {
+        const processingIds = await fetchSongs(false);
+        if (processingIds && processingIds.length > 0) {
+          startPolling(processingIds);
+        }
+      })();
       
       // Remove the query param from URL
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('generating');
       window.history.replaceState({}, '', newUrl.toString());
     }
-  }, [searchParams, startPolling]);
+  }, [searchParams, startPolling, fetchSongs]);
 
   // Account data hook for refreshing after purchases
   const { fetchAccountData } = useAccountData();
@@ -560,9 +589,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         setTotalVideosCount(fetchedVideos.length);
       }
       
-      // Check if any videos are still processing or queued
+      // Check if any videos are still processing, queued, or interrupted (will auto-retry)
       const hasProcessing = (response.data.videos || []).some(
-        (video: Video) => video.status === 'processing' || video.status === 'queued'
+        (video: Video) => video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted'
       );
       
       return hasProcessing;
@@ -2084,7 +2113,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
-                                {(video.status === 'processing' || video.status === 'queued') ? (
+                                {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
                                   <Tooltip title={video.status === 'queued' 
                                     ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
                                     : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
@@ -2277,7 +2306,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {video.songTitle || 'Music Video'}
                                 </Typography>
-                                {(video.status === 'processing' || video.status === 'queued') ? (
+                                {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
                                   <Tooltip title={video.status === 'queued' 
                                     ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
                                     : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
