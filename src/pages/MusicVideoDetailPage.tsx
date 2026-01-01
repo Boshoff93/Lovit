@@ -8,8 +8,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -54,6 +52,7 @@ export const musicVideoData = [
     aspectRatio: 'portrait' as const,
     realVideoId: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac',
     tag: 'Coco Chanel',
+    isPromo: true,
     description: 'A smoky blues journey through dim-lit bars and whiskey glasses',
     fullDescription: 'Walk Right In captures the essence of classic blues with cinematic realism. Step into a smoky room where every eye turns as you pass, experience the silence falling like velvet rain, and feel the magnetism of a woman who steals the night with just one breath.',
   },
@@ -70,6 +69,7 @@ export const musicVideoData = [
     aspectRatio: 'landscape' as const,
     realVideoId: '4a7ec232-aca9-4538-bc79-45149d705812',
     tag: 'Dragon Ball',
+    isPromo: false, // Fan tribute, not brand promo
     description: 'Epic Dragon Ball inspired anime adventure',
     fullDescription: 'Experience the legendary Dragon Ball theme song brought to life with stunning anime visuals. Watch as warriors power up, battle across epic landscapes, and push beyond their limits in this high-energy tribute to the iconic series.',
   },
@@ -86,6 +86,7 @@ export const musicVideoData = [
     aspectRatio: 'portrait' as const,
     realVideoId: 'ef807231-faab-4a97-a51b-08f574fbae52',
     tag: 'Rolex',
+    isPromo: true,
     description: 'Luxury Rolex Submariner showcased in stunning underwater cinematography',
     fullDescription: 'Beneath the Surface is a cinematic tribute to the iconic Rolex Submariner. Watch as the legendary dive watch descends through turquoise waters, surrounded by bioluminescent sea life, volcanic rock, and twilight reflections. Every frame captures the timeless elegance and engineering mastery of this horological icon.',
   },
@@ -102,6 +103,7 @@ export const musicVideoData = [
     aspectRatio: 'landscape' as const,
     realVideoId: 'dc6c22f4-22e5-433d-aa38-5792bc653185',
     tag: 'Tesla',
+    isPromo: true,
     description: 'Tesla gliding through misty mountain roads at golden hour',
     fullDescription: 'Glide captures the silent power and elegance of electric driving. A sleek Tesla navigates winding mountain roads through morning mist, surrounded by lush forests and golden sunlight. The cinematic visuals perfectly complement the smooth hip-hop beats, celebrating the harmony between cutting-edge technology and natural beauty.',
   },
@@ -118,6 +120,7 @@ export const musicVideoData = [
     aspectRatio: 'portrait' as const,
     realVideoId: '134e4aed-1b25-4d0b-a41a-73a683f76225',
     tag: 'Pokeball',
+    isPromo: true,
     description: 'An energetic Pokémon-inspired adventure with iconic Pokeball action',
     fullDescription: "Gotta Catch 'Em All brings the thrill of Pokémon battles to life with stunning 3D animation. Watch as trainers throw Pokeballs through vibrant worlds, capturing creatures and embarking on epic adventures. The catchy pop beats drive the action forward in this nostalgic tribute to the beloved franchise.",
   },
@@ -134,6 +137,7 @@ export const musicVideoData = [
     aspectRatio: 'landscape' as const,
     realVideoId: '4d42bf20-328b-4d80-b319-8ff8d9867036',
     tag: 'Airbnb',
+    isPromo: true,
     description: 'A peaceful coastal morning at Frinton by the Sea holiday rental',
     fullDescription: 'Frinton Sunrise captures the serene beauty of waking up at a stunning coastal holiday property. Golden morning light washes over the elegant architecture as the ocean breeze carries the promise of a perfect day. This cinematic promo showcases the dreamy escape that awaits at Frinton by the Sea.',
   },
@@ -150,8 +154,77 @@ export const musicVideoData = [
     aspectRatio: 'landscape' as const,
     realVideoId: '4221ddeb-136c-4968-a46f-7585635827f1',
     tag: 'One Piece',
+    isPromo: false, // Fan tribute, not brand promo
     description: 'An epic One Piece inspired adventure on the high seas',
     fullDescription: 'Set Sail to Glory captures the spirit of adventure with stunning anime visuals inspired by One Piece. Watch as the Straw Hat crew embarks on an epic journey across vast oceans, facing challenges with unwavering determination. The powerful rock soundtrack drives the action as dreams of becoming the Pirate King come to life.',
+  },
+  {
+    id: 'labubu-gang',
+    title: 'Labubu Gang',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Hip Hop',
+    views: '1.0K',
+    duration: '0:33',
+    bpm: 95,
+    thumbnail: '/thumbnails/labubu.jpeg',
+    aspectRatio: 'portrait' as const,
+    realVideoId: '9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5',
+    tag: 'Labubu',
+    isPromo: true,
+    description: 'A cute Labubu plush keychain charm in an adorable promo video',
+    fullDescription: 'Labubu Gang celebrates the adorable Labubu plush keychain with hip-hop swagger. Watch as the little monster charm swings and sparkles, bringing all the dreams and the cutest flex you can\'t deny. This triumphant promo captures the charm of the beloved collectible in stunning cinematic style.',
+  },
+  {
+    id: 'kiss-me-slow',
+    title: 'Kiss Me Slow',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Blues',
+    views: '1.1K',
+    duration: '0:54',
+    bpm: 75,
+    thumbnail: '/thumbnails/kiss.jpeg',
+    aspectRatio: 'portrait' as const,
+    realVideoId: '18061fda-525d-4aba-a6b9-cbd41b1748c5',
+    tag: 'MAC Lipstick',
+    isPromo: true,
+    description: 'A seductive lipstick promo with romantic blues vibes',
+    fullDescription: 'Kiss Me Slow captures the allure of red lipstick with sultry blues music. These lips got secrets, and one taste of this magic will have you falling under the spell. The cinematic visuals showcase the bold color and intimate moments, leaving lipstick traces everywhere.',
+  },
+  {
+    id: 'under-the-open-sky',
+    title: 'Under the Open Sky',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Indie',
+    views: '1.3K',
+    duration: '0:59',
+    bpm: 90,
+    thumbnail: '/thumbnails/tent.jpeg',
+    aspectRatio: 'portrait' as const,
+    realVideoId: '5405e955-ec86-453e-ae75-ae666a0f693c',
+    tag: 'North Face',
+    isPromo: true,
+    description: 'Epic camping adventure with The North Face gear under starry skies',
+    fullDescription: 'Under the Open Sky is a cinematic camping promo for The North Face. Chase the mountains, chase the light, and come alive under the open sky with fire in your heart and stars in your eyes. The stunning visuals showcase premium camping gear amidst breathtaking mountain landscapes.',
+  },
+  {
+    id: 'powder-dreams',
+    title: 'Powder Dreams',
+    style: 'Cinematic',
+    styleId: 'photo-realism',
+    genre: 'Cinematic',
+    views: '1.8K',
+    duration: '0:50',
+    bpm: 85,
+    thumbnail: '/thumbnails/skiis.jpeg',
+    aspectRatio: 'portrait' as const,
+    realVideoId: '564c0a00-5064-4713-a6d5-b191f2ab751f',
+    tag: 'Rossignol Skis',
+    isPromo: true,
+    description: 'Dreamy ski promo featuring Rossignol skis against endless white powder',
+    fullDescription: 'Powder Dreams captures the magic of skiing with stunning Rossignol equipment. White horizon calls my name as mountains rise like ancient kings. Snow beneath me, I have wings - falling through the powder dreams where nothing is ever what it seems. Experience the freedom of endless white.',
   },
   // Placeholder videos
   {
@@ -235,18 +308,12 @@ const MusicVideoDetailPage: React.FC = () => {
   // Video player state
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  
-  // Carousel scroll state for fade gradients and arrows
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
   
   // Video URL state (fetched from API for signed URLs)
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -277,37 +344,6 @@ const MusicVideoDetailPage: React.FC = () => {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
-
-  // Carousel scroll handler to show/hide fade gradients
-  const handleCarouselScroll = useCallback(() => {
-    if (!carouselRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-    const overflow = scrollWidth > clientWidth + 5;
-    setHasOverflow(overflow);
-    setCanScrollLeft(scrollLeft > 5);
-    setCanScrollRight(overflow && scrollLeft < scrollWidth - clientWidth - 5);
-  }, []);
-
-  // Scroll carousel left/right
-  const scrollCarousel = useCallback((direction: 'left' | 'right') => {
-    if (!carouselRef.current) return;
-    const scrollAmount = 300;
-    carouselRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
-  }, []);
-
-  // Check scroll state on mount, resize, and after images load
-  useEffect(() => {
-    // Delay initial check to ensure carousel is rendered
-    const timer = setTimeout(handleCarouselScroll, 100);
-    window.addEventListener('resize', handleCarouselScroll);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleCarouselScroll);
-    };
-  }, [handleCarouselScroll, videoId]);
 
   // Video player handlers
   const handlePlayPause = useCallback(() => {
@@ -1234,258 +1270,238 @@ const MusicVideoDetailPage: React.FC = () => {
         </Box>
         )}
 
-        {/* More Videos Section */}
-        <Box sx={{ mt: 8 }}>
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: '1.5rem',
-              fontWeight: 600,
-              color: '#1D1D1F',
-              mb: 3,
-              textAlign: 'center',
-            }}
-          >
-            More Music Videos
-          </Typography>
-          {/* 
-            Portrait: 160px width with 9:16 = 284px height
-            Landscape: To match same height (284px) with 16:9 = 505px width
-            Single row only with horizontal scroll if needed
-          */}
-          <Box sx={{ position: 'relative' }}>
-            {/* Left fade gradient - only show when can scroll left */}
-            {hasOverflow && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: 40,
-                  background: 'linear-gradient(to right, #fff 0%, transparent 100%)',
-                  zIndex: 2,
-                  pointerEvents: 'none',
-                  opacity: canScrollLeft ? 1 : 0,
-                  transition: 'opacity 0.2s ease',
-                }}
-              />
-            )}
-            {/* Right fade gradient - only show when can scroll right */}
-            {hasOverflow && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: 40,
-                  background: 'linear-gradient(to left, #fff 0%, transparent 100%)',
-                  zIndex: 2,
-                  pointerEvents: 'none',
-                  opacity: canScrollRight ? 1 : 0,
-                  transition: 'opacity 0.2s ease',
-                }}
-              />
-            )}
-            <Box 
-              ref={carouselRef}
-              onScroll={handleCarouselScroll}
-              sx={{ 
-                display: 'flex', 
-                gap: 2, 
-                flexWrap: 'nowrap', 
-                alignItems: 'flex-start',
-                overflowX: 'auto',
-                px: 2, // Padding so content isn't cut off
-                pb: 1, // Space for scrollbar
-                // Hide scrollbar by default, show on hover
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'transparent transparent',
-                '&:hover': {
-                  scrollbarColor: 'rgba(0,0,0,0.2) transparent',
-                },
-                '&::-webkit-scrollbar': { height: 6 },
-                '&::-webkit-scrollbar-track': { background: 'transparent' },
-                '&::-webkit-scrollbar-thumb': { 
-                  background: 'transparent', 
-                  borderRadius: 3,
-                  transition: 'background 0.2s ease',
-                },
-                '&:hover::-webkit-scrollbar-thumb': { 
-                  background: 'rgba(0,0,0,0.2)',
-                },
-                '&::-webkit-scrollbar-thumb:hover': { 
-                  background: 'rgba(0,0,0,0.3)',
-                },
-              }}>
-            {musicVideoData.filter(v => v.id !== videoId).slice(0, 4).map((video) => {
-              // Portrait dimensions
-              const portraitWidth = { xs: 140, sm: 160 };
-              // Height of portrait = width * (16/9)
-              const portraitHeight = { xs: portraitWidth.xs * (16/9), sm: portraitWidth.sm * (16/9) };
-              // Landscape width to match portrait height = height * (16/9)
-              const landscapeWidth = { xs: portraitHeight.xs * (16/9), sm: portraitHeight.sm * (16/9) };
+        {/* More Videos Section - Same type and aspect ratio */}
+        {(() => {
+          // Check if current video is a promo (isPromo: true) or music video
+          const isPromoVideo = !!(currentVideo as any).isPromo;
+          const currentAspectRatio = currentVideo.aspectRatio;
+          
+          // Filter videos by same type (promo vs music) and same aspect ratio
+          const sameTypeVideos = musicVideoData.filter(v => 
+            v.id !== videoId && 
+            v.aspectRatio === currentAspectRatio &&
+            (isPromoVideo ? !!(v as any).isPromo : !(v as any).isPromo) &&
+            !!v.realVideoId // Only show real videos
+          ).slice(0, 8);
+          
+          const sectionTitle = isPromoVideo ? 'More Promo Videos' : 'More Music Videos';
+          const sectionSubtext = isPromoVideo 
+            ? 'Explore more AI-generated promotional videos for products, brands, and businesses'
+            : 'Discover more AI-generated music videos in stunning visual styles';
+          
+          // Portrait dimensions
+          const portraitWidth = { xs: 140, sm: 160 };
+          const portraitHeight = { xs: portraitWidth.xs * (16/9), sm: portraitWidth.sm * (16/9) };
+          // Landscape dimensions
+          const landscapeHeight = { xs: 140, sm: 160 };
+          const landscapeWidth = { xs: landscapeHeight.xs * (16/9), sm: landscapeHeight.sm * (16/9) };
+          
+          const isLandscape = currentAspectRatio === 'landscape';
+          
+          if (sameTypeVideos.length === 0) return null;
+          
+          return (
+            <Box sx={{ mt: 8 }}>
+              {/* Section header - left aligned */}
+              <Box sx={{ mb: 3, px: 2 }}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontSize: '1.5rem',
+                    fontWeight: 600,
+                    color: '#1D1D1F',
+                    mb: 0.5,
+                  }}
+                >
+                  {sectionTitle}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '0.95rem',
+                    color: '#86868B',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {sectionSubtext}
+                </Typography>
+              </Box>
               
-              return (
-              <Box
-                key={video.id}
-                onClick={() => navigate(`/videos/${video.id}`)}
-                sx={{
-                  width: video.aspectRatio === 'landscape' 
-                    ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px` } 
-                    : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px` },
-                  height: { xs: `${portraitHeight.xs}px`, sm: `${portraitHeight.sm}px` },
-                  flexShrink: 0,
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                  },
-                }}
-              >
-                <Box sx={{ 
-                  position: 'relative', 
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '16px', 
-                  overflow: 'hidden' 
-                }}>
-                  <Box
-                    component="img"
-                    src={video.thumbnail}
-                    alt={video.title}
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  {/* Tag - top right with glassy blur (brand tag or style) */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 10,
-                      right: 10,
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: '100px',
-                      background: 'rgba(255,255,255,0.7)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255,255,255,0.5)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        color: '#1D1D1F',
-                        letterSpacing: '0.02em',
-                      }}
-                    >
-                      {video.tag || video.style}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
+              {/* Carousel with fade gradients */}
+              <Box sx={{ position: 'relative', overflow: 'visible' }}>
+                {/* Left fade gradient */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: 0,
+                    top: -8,
+                    bottom: 0,
+                    width: 60,
+                    background: 'linear-gradient(to right, #fff 0%, transparent 100%)',
+                    zIndex: 2,
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* Right fade gradient */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: 0,
+                    top: -8,
+                    bottom: 0,
+                    width: 60,
+                    background: 'linear-gradient(to left, #fff 0%, transparent 100%)',
+                    zIndex: 2,
+                    pointerEvents: 'none',
+                  }}
+                />
+                
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    gap: 2, 
+                    flexWrap: 'nowrap', 
+                    alignItems: 'flex-start',
+                    overflowX: 'auto',
+                    overflowY: 'visible',
+                    px: 4,
+                    pt: 1, // Top padding for hover lift
+                    pb: 1,
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'transparent transparent',
+                    '&:hover': {
+                      scrollbarColor: 'rgba(0,0,0,0.2) transparent',
+                    },
+                    '&::-webkit-scrollbar': { height: 6 },
+                    '&::-webkit-scrollbar-track': { background: 'transparent' },
+                    '&::-webkit-scrollbar-thumb': { 
+                      background: 'transparent', 
+                      borderRadius: 3,
+                    },
+                    '&:hover::-webkit-scrollbar-thumb': { 
+                      background: 'rgba(0,0,0,0.2)',
+                    },
+                  }}
+                >
+                  {sameTypeVideos.map((video) => (
                     <Box
+                      key={video.id}
+                      onClick={() => navigate(`/videos/${video.id}`)}
                       sx={{
-                        background: 'rgba(255,255,255,0.7)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        borderRadius: '50%',
-                        width: video.aspectRatio === 'landscape' ? 52 : 40,
-                        height: video.aspectRatio === 'landscape' ? 52 : 40,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '1px solid rgba(255,255,255,0.5)',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
-                        transition: 'all 0.2s ease',
+                        width: isLandscape 
+                          ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px` } 
+                          : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px` },
+                        height: isLandscape
+                          ? { xs: `${landscapeHeight.xs}px`, sm: `${landscapeHeight.sm}px` }
+                          : { xs: `${portraitHeight.xs}px`, sm: `${portraitHeight.sm}px` },
+                        flexShrink: 0,
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                        },
                       }}
                     >
-                      <PlayArrowRoundedIcon sx={{ fontSize: video.aspectRatio === 'landscape' ? 28 : 22, color: '#007AFF' }} />
+                      <Box sx={{ 
+                        position: 'relative', 
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '16px', 
+                        overflow: 'hidden' 
+                      }}>
+                        <Box
+                          component="img"
+                          src={video.thumbnail}
+                          alt={video.title}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        {/* Tag - top right with glassy blur */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: '100px',
+                            background: 'rgba(255,255,255,0.7)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255,255,255,0.5)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              color: '#1D1D1F',
+                              letterSpacing: '0.02em',
+                            }}
+                          >
+                            {video.tag || video.style}
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              background: 'rgba(255,255,255,0.7)',
+                              backdropFilter: 'blur(20px)',
+                              WebkitBackdropFilter: 'blur(20px)',
+                              borderRadius: '50%',
+                              width: isLandscape ? 52 : 40,
+                              height: isLandscape ? 52 : 40,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '1px solid rgba(255,255,255,0.5)',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#007AFF' }} />
+                          </Box>
+                        </Box>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            p: 1.5,
+                            pt: 4,
+                            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                            {video.title}
+                          </Typography>
+                        </Box>
+                      </Box>
                     </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      p: 1.5,
-                      pt: 4,
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                      {video.title}
-                    </Typography>
-                  </Box>
+                  ))}
                 </Box>
               </Box>
-              );
-            })}
             </Box>
-          </Box>
-          
-          {/* Navigation Arrows - only show when there's overflow */}
-          {hasOverflow && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
-              <IconButton
-                onClick={() => scrollCarousel('left')}
-                disabled={!canScrollLeft}
-                sx={{
-                  width: 44,
-                  height: 44,
-                  background: canScrollLeft ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.02)',
-                  border: '1px solid',
-                  borderColor: canScrollLeft ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)',
-                  color: canScrollLeft ? '#1D1D1F' : 'rgba(0,0,0,0.2)',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    background: canScrollLeft ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)',
-                  },
-                }}
-              >
-                <ChevronLeftRoundedIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => scrollCarousel('right')}
-                disabled={!canScrollRight}
-                sx={{
-                  width: 44,
-                  height: 44,
-                  background: canScrollRight ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.02)',
-                  border: '1px solid',
-                  borderColor: canScrollRight ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)',
-                  color: canScrollRight ? '#1D1D1F' : 'rgba(0,0,0,0.2)',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    background: canScrollRight ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)',
-                  },
-                }}
-              >
-                <ChevronRightRoundedIcon />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
+          );
+        })()}
 
         {/* CTA Section */}
         <Box

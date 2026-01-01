@@ -470,6 +470,16 @@ interface VideoItem {
 // PROMO VIDEOS - Product/brand promotional content (like Walk Right In with Chanel)
 const promoVideosPortrait: VideoItem[] = [
   {
+    id: '564c0a00-5064-4713-a6d5-b191f2ab751f',
+    title: "Powder Dreams",
+    style: "Cinematic",
+    views: "1.8K",
+    thumbnail: "/thumbnails/skiis.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/564c0a00-5064-4713-a6d5-b191f2ab751f',
+    tag: "Rossignol Skis",
+  },
+  {
     id: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac',
     title: "Walk Right In",
     style: "Cinematic",
@@ -498,6 +508,36 @@ const promoVideosPortrait: VideoItem[] = [
     aspectRatio: 'portrait',
     videoUrl: 'https://gruvimusic.com/video/134e4aed-1b25-4d0b-a41a-73a683f76225',
     tag: "Pokeball",
+  },
+  {
+    id: '9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5',
+    title: "Labubu Gang",
+    style: "Cinematic",
+    views: "1.0K",
+    thumbnail: "/thumbnails/labubu.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5',
+    tag: "Labubu",
+  },
+  {
+    id: '18061fda-525d-4aba-a6b9-cbd41b1748c5',
+    title: "Kiss Me Slow",
+    style: "Cinematic",
+    views: "1.1K",
+    thumbnail: "/thumbnails/kiss.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/18061fda-525d-4aba-a6b9-cbd41b1748c5',
+    tag: "MAC Lipstick",
+  },
+  {
+    id: '5405e955-ec86-453e-ae75-ae666a0f693c',
+    title: "Under the Open Sky",
+    style: "Cinematic",
+    views: "1.3K",
+    thumbnail: "/thumbnails/tent.jpeg",
+    aspectRatio: 'portrait',
+    videoUrl: 'https://gruvimusic.com/video/5405e955-ec86-453e-ae75-ae666a0f693c',
+    tag: "North Face",
   },
 ];
 
