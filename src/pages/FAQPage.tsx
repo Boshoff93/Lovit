@@ -26,8 +26,8 @@ export const faqItems = [
   {
     category: "Getting Started",
     question: "What is Gruvi AI Music Generator?",
-    answer: "Gruvi is an AI-powered platform that creates original music and music videos from text descriptions. Simply describe the song you want and our AI generates professional-quality music in seconds.",
-    detailedAnswer: "Gruvi is a revolutionary AI-powered platform that transforms how you create music and music videos. Using cutting-edge artificial intelligence, Gruvi allows you to generate original, royalty-free songs simply by describing what you want. Whether you want a catchy pop song, an emotional ballad, or a high-energy EDM track, just type your idea and our AI creates a complete song with vocals, instrumentals, and lyrics.\n\nBut Gruvi goes beyond just music generation. You can also turn your songs into stunning animated music videos in 16 different art styles - from 3D cartoon to anime to photorealistic. Add your own characters using reference images, and watch as AI brings your vision to life. It's the complete creative studio for musicians, content creators, and anyone who wants to make music without needing technical skills."
+    answer: "Gruvi is an AI-powered platform that creates original music and music videos from text descriptions. Generate songs, create stunning music videos, and produce promotional videos for products, Airbnbs, and brands.",
+    detailedAnswer: "Gruvi is a revolutionary AI-powered platform that transforms how you create music and video content. Using cutting-edge artificial intelligence, Gruvi allows you to generate original, royalty-free songs simply by describing what you want. Whether you want a catchy pop song, an emotional ballad, or a high-energy EDM track, just type your idea and our AI creates a complete song with vocals, instrumentals, and lyrics.\n\nBut Gruvi goes beyond just music generation:\n\n**Music Videos:** Turn your songs into stunning animated music videos in 16 different art styles - from anime to cinematic to 3D cartoon.\n\n**Promo Videos:** Create professional promotional videos for your brand, products, or business with AI-generated music.\n\n**Product Videos:** Generate e-commerce videos for Shopify, Amazon, Etsy with custom music that sells.\n\n**Property Videos:** Showcase Airbnbs, hotels, restaurants, and real estate with cinematic videos and original soundtracks.\n\n**Custom Characters:** Add yourself, your products, or any character using reference images.\n\nIt's the complete creative studio for musicians, content creators, businesses, and anyone who wants professional-quality content without needing technical skills."
   },
   {
     category: "Getting Started",
@@ -46,6 +46,18 @@ export const faqItems = [
     question: "Do I need any musical experience to use Gruvi?",
     answer: "No musical experience needed! Gruvi's AI handles all the composition, arrangement, and production. Just describe what you want in plain English.",
     detailedAnswer: "Gruvi is designed for everyone, regardless of musical background:\n\n**For Complete Beginners:**\n- No need to read music or play instruments\n- No music theory knowledge required\n- No production or mixing skills needed\n- Just describe your ideas in natural language\n\n**For Musicians:**\n- Speed up your creative process\n- Generate ideas and inspiration\n- Create backing tracks and demos\n- Explore new genres and styles\n\n**For Professionals:**\n- Rapid prototyping for clients\n- Unlimited creative exploration\n- Stem separation for further production\n- Commercial-ready output\n\nWhether you've never touched an instrument or you're a professional producer, Gruvi meets you where you are."
+  },
+  {
+    category: "Getting Started",
+    question: "What can I create with Gruvi?",
+    answer: "Create AI-generated songs, music videos, product promo videos, Airbnb/property videos, brand videos, and more. All with original music and stunning visuals.",
+    detailedAnswer: "Gruvi is a complete creative platform for multiple use cases:\n\n**Music Creation:**\n- Original songs in 60+ genres\n- Vocals in 24+ languages\n- Instrumental tracks\n- Jingles and sound effects\n\n**Music Videos:**\n- Full cinematic music videos\n- 16 art styles (anime, 3D, cinematic, etc.)\n- Custom characters from your photos\n- Portrait (TikTok) and landscape (YouTube) formats\n\n**Promotional Videos:**\n- Product showcase videos for e-commerce\n- Airbnb and property tour videos\n- Restaurant and food promo videos\n- Brand marketing videos\n- Social media ad content\n\n**Business Uses:**\n- YouTube content creation\n- Podcast intros and outros\n- Background music for videos\n- Event and wedding music\n- Gaming and streaming content"
+  },
+  {
+    category: "Getting Started",
+    question: "How long does it take to generate a song or video?",
+    answer: "Songs generate in 15-30 seconds. Music videos take 2-5 minutes depending on complexity. Pro and Premium users get priority processing for faster results.",
+    detailedAnswer: "Generation times vary by content type:\n\n**Song Generation:**\n- Standard: 15-30 seconds\n- Complex prompts: Up to 1 minute\n- Priority queue (Pro/Premium): ~10 seconds\n\n**Video Generation:**\n- Still image videos: 1-2 minutes\n- Full cinematic videos: 2-5 minutes\n- Videos with custom characters: +30 seconds\n\n**Factors Affecting Speed:**\n- Video length and complexity\n- Number of reference images\n- Current server demand\n- Your subscription tier\n\n**Tips for Faster Results:**\n- Use clear, concise prompts\n- Optimize reference images (they're auto-compressed)\n- Upgrade for priority access\n- Generate during off-peak hours"
   },
 
   // ============================================
@@ -94,8 +106,8 @@ export const faqItems = [
   {
     category: "Music Videos",
     question: "How do I create AI music videos?",
-    answer: "After generating a song, select 'Create Video' and choose from 16 art styles including anime, 3D cartoon, cinematic, and more. Upload character references if desired, then generate.",
-    detailedAnswer: "Creating music videos with Gruvi is seamless:\n\n**Step 1: Generate Your Song**\nStart by creating your AI-generated track\n\n**Step 2: Choose Your Art Style**\nSelect from 16 distinct visual styles:\n- 3D Cartoon\n- Anime/Animation\n- Photorealistic\n- Watercolor\n- Pixel Art\n- Cyberpunk\n- And 10 more!\n\n**Step 3: Add Characters (Optional)**\nUpload 1-3 reference images of people or characters to include in your video\n\n**Step 4: Generate**\nOur AI creates a fully animated music video synchronized to your song\n\n**Video Types:**\n- **Still Image Videos:** More affordable, single animated scene\n- **Full Animation:** Complete motion and scene changes"
+    answer: "After generating a song, select 'Create Video' and choose from 16 art styles including anime, 3D cartoon, cinematic, and more. Upload character or product references if desired, then generate.",
+    detailedAnswer: "Creating music videos with Gruvi is seamless:\n\n**Step 1: Generate Your Song**\nStart by creating your AI-generated track, or use your own music\n\n**Step 2: Choose Your Art Style**\nSelect from 16 distinct visual styles:\n- Cinematic (film-quality visuals)\n- Anime/Animation\n- 3D Cartoon (Pixar-style)\n- Photorealistic\n- Watercolor\n- Pixel Art\n- Cyberpunk\n- And 9 more!\n\n**Step 3: Add Characters, Products, or Places (Optional)**\n- Upload reference images of people to star in your video\n- Add product photos for promotional videos\n- Upload property photos for Airbnb/hotel videos\n\n**Step 4: Generate**\nOur AI creates a fully animated music video synchronized to your song, with dynamic scenes, camera movements, and professional transitions.\n\n**Video Formats:**\n- **Portrait (9:16):** Perfect for TikTok, Instagram Reels, YouTube Shorts\n- **Landscape (16:9):** Ideal for YouTube, presentations, websites"
   },
   {
     category: "Music Videos",
@@ -114,6 +126,34 @@ export const faqItems = [
     question: "What's the difference between still image and cinematic videos?",
     answer: "Still image videos feature a single scene with subtle motion (100 tokens), while cinematic videos include full AI-generated motion, scene changes, and professional effects (1,000 tokens).",
     detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (100 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Cinematic Videos (1,000 tokens):**\n- Multiple scenes and transitions\n- Full AI-generated motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n- Mix of Seedance & Kling AI models\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Cinematic:** Professional releases, YouTube, presentations"
+  },
+
+  // ============================================
+  // PROMO & PRODUCT VIDEOS
+  // ============================================
+  {
+    category: "Promo Videos",
+    question: "Can I create promotional videos for my brand or product?",
+    answer: "Yes! Gruvi creates professional promo videos with AI-generated music. Upload product photos and get cinematic videos perfect for marketing, social media ads, and e-commerce.",
+    detailedAnswer: "Gruvi is perfect for creating promotional content:\n\n**What You Can Promote:**\n- Physical products (cosmetics, electronics, fashion)\n- E-commerce stores (Shopify, Amazon, Etsy)\n- Brands and logos\n- Services and apps\n- Events and launches\n\n**How It Works:**\n1. Upload 1-10 product photos from different angles\n2. Describe the vibe and mood you want\n3. AI generates a catchy song that fits your brand\n4. Get a professional promo video with your product as the star\n\n**Video Styles:**\n- Cinematic product showcase\n- Social media ad format\n- Lifestyle integration\n- Animated product reveals\n\n**Perfect For:**\n- Instagram and TikTok ads\n- Website hero videos\n- Product launch campaigns\n- E-commerce listings"
+  },
+  {
+    category: "Promo Videos",
+    question: "Can I create videos for my Airbnb or rental property?",
+    answer: "Absolutely! Upload photos of your property and Gruvi creates stunning promotional videos with original music. Perfect for Airbnb, VRBO, hotels, and real estate listings.",
+    detailedAnswer: "Showcase your property with professional videos:\n\n**Property Types Supported:**\n- Airbnb and vacation rentals\n- Hotels and resorts\n- Real estate listings\n- Restaurants and cafes\n- Event venues\n- Retail spaces\n\n**How It Works:**\n1. Upload up to 20 photos of your property\n2. Choose a mood (relaxing, luxurious, cozy, vibrant)\n3. AI generates a custom soundtrack\n4. Get a cinematic video tour of your space\n\n**Features:**\n- Smooth camera movements through your space\n- Atmospheric lighting and mood\n- Original music that sets the vibe\n- Professional transitions\n\n**Use For:**\n- Airbnb listing enhancement\n- Social media promotion\n- Website hero videos\n- Booking platform listings\n\n**Pro Tip:** Upload photos in the order you want them to appear - like a virtual tour walking through your space."
+  },
+  {
+    category: "Promo Videos",
+    question: "How do I create product videos for e-commerce?",
+    answer: "Upload product photos, describe your brand vibe, and Gruvi generates professional videos with custom music. Perfect for Shopify, Amazon, Etsy, and social media marketing.",
+    detailedAnswer: "Create e-commerce videos that sell:\n\n**Supported Platforms:**\n- Shopify product pages\n- Amazon listings\n- Etsy shop videos\n- eBay listings\n- Social media ads\n- Your own website\n\n**Step-by-Step Process:**\n1. Upload 3-10 product photos (different angles, lifestyle shots)\n2. Describe your brand and target audience\n3. Choose a music genre and mood that fits\n4. AI generates a professional product video\n\n**Video Styles:**\n- Product showcase with music\n- Lifestyle integration\n- Before/after reveals\n- Unboxing style\n- 360-degree product views\n\n**Why It Works:**\n- Videos increase conversion rates by up to 80%\n- Stand out from static images\n- Custom music creates brand recognition\n- Professional quality without expensive production"
+  },
+  {
+    category: "Promo Videos",
+    question: "Can I create restaurant or food promo videos?",
+    answer: "Yes! Upload photos of your dishes, restaurant interior, or menu items. Gruvi creates mouth-watering promotional videos with custom music perfect for social media marketing.",
+    detailedAnswer: "Make your food irresistible with video:\n\n**What You Can Showcase:**\n- Individual dishes and meals\n- Restaurant interior and ambiance\n- Menu highlights\n- Chef and kitchen action\n- Cocktails and beverages\n- Seasonal specials\n\n**How It Works:**\n1. Upload photos of your food and space\n2. Choose a mood (cozy, upscale, vibrant, romantic)\n3. AI creates music that matches your vibe\n4. Get a video that makes people hungry\n\n**Perfect For:**\n- Instagram Reels and TikTok\n- Google Business Profile\n- Yelp and TripAdvisor\n- Website hero sections\n- Delivery app listings\n- Special event promotion\n\n**Tips for Best Results:**\n- Use well-lit, appetizing photos\n- Include ambiance shots\n- Show food being prepared or served\n- Include exterior shots for location context"
   },
 
   // ============================================
@@ -392,16 +432,16 @@ const FAQPage: React.FC = () => {
       />
 
       <SEO
-        title="FAQ - AI Music Generator Questions Answered | Gruvi"
-        description="Get answers to all your questions about Gruvi's AI music generator and music video creator. Learn about music generation, video creation, pricing, commercial licensing, and how to get started."
-        keywords="Gruvi FAQ, AI music generator questions, music video creator help, AI music commercial license, music generation tutorial, Gruvi pricing, AI song generator guide"
-        ogTitle="Frequently Asked Questions - Gruvi AI Music Generator"
-        ogDescription="Everything you need to know about creating AI-generated music and music videos with Gruvi. Pricing, licensing, features, and more."
+        title="FAQ - AI Music & Video Generator Questions Answered | Gruvi"
+        description="Get answers about Gruvi's AI music generator, music video creator, and promo video maker. Learn about creating product videos, Airbnb promos, brand videos, pricing, and commercial licensing."
+        keywords="Gruvi FAQ, AI music generator questions, music video creator help, AI promo video, product video generator, Airbnb video maker, AI music commercial license, music generation tutorial, Gruvi pricing, AI song generator guide, e-commerce video"
+        ogTitle="Frequently Asked Questions - Gruvi AI Music & Video Generator"
+        ogDescription="Everything you need to know about creating AI-generated music, music videos, and promotional videos with Gruvi. Products, Airbnbs, brands, pricing, licensing, and more."
         ogType="website"
         ogUrl="https://gruvimusic.com/faq"
         canonicalUrl="https://gruvimusic.com/faq"
-        twitterTitle="FAQ - Gruvi AI Music Generator"
-        twitterDescription="Get answers to all your questions about Gruvi's AI music generator and music video creator."
+        twitterTitle="FAQ - Gruvi AI Music & Video Generator"
+        twitterDescription="Get answers about Gruvi's AI music generator, video creator, and promo video maker for products, Airbnbs, and brands."
         structuredData={[
           createFAQStructuredData(faqItems),
           createBreadcrumbStructuredData(breadcrumbData)

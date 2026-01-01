@@ -54,10 +54,10 @@ export const carouselTitlesByCategory: Record<RouteCategory, {
     musicVideos: { title: 'Turn Songs Into Music Videos', subtitle: 'Stunning AI-generated visuals synced to your music' },
     cinematicVideos: { title: 'Create Cinematic Music Videos', subtitle: 'Widescreen videos perfect for YouTube and streaming' },
     moreTracks: { title: 'Explore More Tracks', subtitle: 'Discover more AI-generated songs across every genre' },
-    promoVideos: { title: 'Promo Videos for Your Brand', subtitle: 'Showcase products, Airbnb listings, e-commerce stores & more' },
+    promoVideos: { title: 'Turn Your Music into Promo Videos', subtitle: 'Showcase products, Airbnb listings, e-commerce stores & more' },
     genres: { title: 'Discover More Genres', subtitle: 'From Hip-Hop to Classical - generate professional tracks in seconds' },
     moreGenres: { title: 'Create Music in Any Genre', subtitle: 'Even more AI-generated music to explore' },
-    videoStyles: { title: 'Turn Your Music Into Stunning Videos', subtitle: 'Anime, Cinematic, 3D, Cyberpunk - pick your visual style' },
+    videoStyles: { title: 'Create Videos in Any Style', subtitle: 'Anime, Cinematic, 3D, Cyberpunk - pick your visual style' },
   },
   genre: {
     featuredTracks: { title: 'Popular Tracks in This Genre', subtitle: 'Listen to what others have created with Gruvi' },
@@ -2306,24 +2306,6 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     examplePrompts: ['Anime style music video', '3D cartoon animation', 'Cinematic film look', 'Retro 80s aesthetic']
   },
 
-  // Promotional Video Generator Routes
-  '/promo-video-generator': {
-    path: '/promo-video-generator',
-    title: 'AI Promo Video Generator - Create Product & Brand Videos | Gruvi',
-    description: 'Create stunning AI-generated promotional videos for products, brands, Airbnb listings, restaurants, and more. Turn photos into cinematic promo videos with custom music.',
-    keywords: 'promo video generator, ai promotional video, product video maker, brand video creator, marketing video generator',
-    ogTitle: 'AI Promo Video Generator | Gruvi',
-    ogDescription: 'Create stunning promotional videos for products and brands with AI.',
-    twitterTitle: 'AI Promo Video Generator | Gruvi',
-    twitterDescription: 'Turn photos into cinematic promo videos with custom music.',
-    breadcrumbName: 'Promo Video Generator',
-    heroTagline: 'Promo Video Generator',
-    heroHeading: 'AI Promo Video Generator\nCreate stunning brand videos',
-    heroSubtext: 'Transform product photos into cinematic promotional videos with AI-generated music. Perfect for e-commerce, Airbnb, restaurants, and brands.',
-    examplePrompts: ['Luxury watch promo video', 'Airbnb property showcase', 'Restaurant ambiance video', 'Fashion brand campaign'],
-    routeCategory: 'promotional',
-  },
-
   '/product-video-generator': {
     path: '/product-video-generator',
     title: 'AI Product Video Generator - E-commerce & Shopify Videos | Gruvi',
@@ -2335,7 +2317,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     twitterDescription: 'Turn product photos into stunning videos.',
     breadcrumbName: 'Product Video Generator',
     heroTagline: 'Product Video Generator',
-    heroHeading: 'AI Product Videos\nSell more with video',
+    heroHeading: 'AI Product Videos\nSell more with music videos',
     heroSubtext: 'Transform product photos into professional videos with AI-generated music. Perfect for Shopify, Amazon, Etsy, and e-commerce stores.',
     examplePrompts: ['Jewelry product showcase', 'Skincare routine video', 'Fashion lookbook', 'Tech product demo'],
     routeCategory: 'ecommerce',

@@ -60,7 +60,7 @@ const FAQQuestionPage: React.FC = () => {
       <SEO
         title={`${faqItem.question} - Gruvi FAQ`}
         description={faqItem.answer}
-        keywords={`Gruvi FAQ, AI music generator, music video creator, AI music, ${faqItem.category.toLowerCase()}`}
+        keywords={`Gruvi FAQ, AI music generator, music video creator, promo video maker, product video, Airbnb video, ${faqItem.category.toLowerCase()}`}
         ogTitle={`${faqItem.question} - Gruvi FAQ`}
         ogDescription={faqItem.answer}
         ogType="article"

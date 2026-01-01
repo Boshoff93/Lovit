@@ -2540,34 +2540,6 @@ const HomePage: React.FC = () => {
         </Box>
       )}
 
-      {/* Promo Videos - Landscape */}
-      {promoVideosLandscape.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                Cinematic Promo Videos
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                High-impact widescreen promotional content for your brand
-              </Typography>
-            </Box>
-            <ScrollableCarousel id="promo-videos-landscape">
-              {promoVideosLandscape.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-                />
-              ))}
-            </ScrollableCarousel>
-          </Container>
-        </Box>
-      )}
-
       {/* More Tracks Section - columns of 3 tracks each */}
       <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth="lg">
@@ -2709,8 +2681,8 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
-      {/* Music Videos - Landscape (Cinematic Videos) */}
-      {musicVideosLandscape.length > 0 && (
+      {/* Promo Videos - Landscape */}
+      {promoVideosLandscape.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: 2.5 }}>
@@ -2718,42 +2690,14 @@ const HomePage: React.FC = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
               >
-                {carouselTitles.cinematicVideos.title}
+                Cinematic Brand Videos
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.cinematicVideos.subtitle}
+                Widescreen promo videos with AI-generated music for your brand
               </Typography>
             </Box>
-            <ScrollableCarousel id="music-videos-landscape">
-              {musicVideosLandscape.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-                />
-              ))}
-            </ScrollableCarousel>
-          </Container>
-        </Box>
-      )}
-
-      {/* Music Videos - Portrait (Turn Songs Into Music Videos) */}
-      {musicVideosPortrait.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                {carouselTitles.musicVideos.title}
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.musicVideos.subtitle}
-              </Typography>
-            </Box>
-            <ScrollableCarousel id="music-videos-portrait">
-              {musicVideosPortrait.map((video) => (
+            <ScrollableCarousel id="promo-videos-landscape">
+              {promoVideosLandscape.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -2825,6 +2769,34 @@ const HomePage: React.FC = () => {
           </ScrollableCarousel>
         </Container>
       </Box>
+
+      {/* Music Videos - Landscape (Create Your Very Own Music Video) */}
+      {musicVideosLandscape.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                Create Your Very Own Music Video with AI
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                {carouselTitles.cinematicVideos.subtitle}
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="music-videos-landscape">
+              {musicVideosLandscape.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
 
       {/* Discover More Tracks Section - remaining 3 tracks + 12 additional genre tracks = 15 total */}
       <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
@@ -2967,6 +2939,34 @@ const HomePage: React.FC = () => {
           </ScrollableCarousel>
         </Container>
       </Box>
+
+      {/* Music Videos - Portrait (Turn Songs Into Music Videos) */}
+      {musicVideosPortrait.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                {carouselTitles.musicVideos.title}
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                {carouselTitles.musicVideos.subtitle}
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="music-videos-portrait">
+              {musicVideosPortrait.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
 
       {/* Art Styles Section - Strong hook */}
       <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
@@ -3238,8 +3238,69 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
+      {/* Moods Section - Strong hook */}
+      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Set the Perfect Mood
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Uplifting, melancholic, energetic - music that captures any emotion
+            </Typography>
+          </Box>
+
+          <ScrollableCarousel id="moods-carousel">
+            {moods.map((mood) => (
+              <Box 
+                key={mood.id}
+                onClick={() => navigate(`/moods/${mood.id}`)}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  minWidth: { xs: 85, sm: 100 },
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:hover .mood-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
+                }}
+              >
+                <Box
+                  className="mood-circle"
+                  sx={{
+                    width: { xs: 72, sm: 88 },
+                    height: { xs: 72, sm: 88 },
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    p: 0.5,
+                    background: '#fff',
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={mood.image}
+                    alt={mood.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                </Box>
+                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                  {mood.name}
+                </Typography>
+              </Box>
+            ))}
+          </ScrollableCarousel>
+        </Container>
+      </Box>
+
       {/* Features Section - Strong hook */}
-      <Box sx={{ py: { xs: 4, md: 6 }, position: 'relative', zIndex: 1 }}>
+      <Box sx={{ py: { xs: 4, md: 6 }, position: 'relative', zIndex: 1, marginBottom: 12 }}>
         <Container maxWidth="lg">
           <Box sx={{ mb: 3 }}>
             <Typography
@@ -3346,67 +3407,6 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </Box>
-        </Container>
-      </Box>
-
-      {/* Moods Section - Strong hook */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 , marginBottom:12}}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              Set the Perfect Mood
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              Uplifting, melancholic, energetic - music that captures any emotion
-            </Typography>
-          </Box>
-
-          <ScrollableCarousel id="moods-carousel">
-            {moods.map((mood) => (
-              <Box 
-                key={mood.id}
-                onClick={() => navigate(`/moods/${mood.id}`)}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  minWidth: { xs: 85, sm: 100 },
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  '&:hover': { transform: 'scale(1.05)' },
-                  '&:hover .mood-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
-                }}
-              >
-                <Box
-                  className="mood-circle"
-                  sx={{
-                    width: { xs: 72, sm: 88 },
-                    height: { xs: 72, sm: 88 },
-                    borderRadius: '50%',
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    transition: 'all 0.2s ease',
-                    p: 0.5,
-                    background: '#fff',
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={mood.image}
-                    alt={mood.name}
-                    sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                  />
-                </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
-                  {mood.name}
-                </Typography>
-              </Box>
-            ))}
-          </ScrollableCarousel>
         </Container>
       </Box>
 
