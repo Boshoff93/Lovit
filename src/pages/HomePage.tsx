@@ -2669,35 +2669,7 @@ const HomePage: React.FC = () => {
         </Container>
       </Box>
 
-      {/* Music Videos - Portrait */}
-      {musicVideosPortrait.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                {carouselTitles.musicVideos.title}
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.musicVideos.subtitle}
-              </Typography>
-            </Box>
-            <ScrollableCarousel id="music-videos-portrait">
-              {musicVideosPortrait.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-                />
-              ))}
-            </ScrollableCarousel>
-          </Container>
-        </Box>
-      )}
-
-      {/* Music Videos - Landscape */}
+      {/* Music Videos - Landscape (Cinematic Videos) */}
       {musicVideosLandscape.length > 0 && (
         <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
@@ -2714,6 +2686,34 @@ const HomePage: React.FC = () => {
             </Box>
             <ScrollableCarousel id="music-videos-landscape">
               {musicVideosLandscape.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={() => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                />
+              ))}
+            </ScrollableCarousel>
+          </Container>
+        </Box>
+      )}
+
+      {/* Music Videos - Portrait (Turn Songs Into Music Videos) */}
+      {musicVideosPortrait.length > 0 && (
+        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              >
+                {carouselTitles.musicVideos.title}
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                {carouselTitles.musicVideos.subtitle}
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="music-videos-portrait">
+              {musicVideosPortrait.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
