@@ -141,5 +141,4 @@ const TermsPage: React.FC = () => {
   );
 };
 
-export default TermsPage; 
-export default TermsPage; 
+export default TermsPage;

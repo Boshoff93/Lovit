@@ -93,7 +93,7 @@ const PrivacyPage: React.FC = () => {
             <li>Payment processors (Stripe)</li>
             <li>Authentication providers (Google Sign-In)</li>
             <li>Cloud storage providers (AWS S3)</li>
-            <li>AI generation services (Fal AI, Suno)</li>
+            <li>AI generation services (Fal AI, Minimax)</li>
             <li>Analytics services</li>
           </ul>
 
