@@ -192,6 +192,11 @@ export const videosApi = {
     selectedImageUrls?: string[];
   }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/social-thumbnail`, data),
   
+  // Upload custom thumbnail
+  uploadThumbnail: (userId: string, videoId: string, data: {
+    thumbnailBase64: string;
+  }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/upload-thumbnail`, data),
+  
   // YouTube Upload
   uploadToYouTube: (userId: string, videoId: string, data?: { addThumbnailIntro?: boolean }) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, data || {}),

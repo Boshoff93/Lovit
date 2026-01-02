@@ -27,6 +27,7 @@ import {
   CreditCard as SubscriptionIcon,
   Bolt as BoltIcon,
   Face as FaceIcon,
+  Link as LinkIcon,
 } from '@mui/icons-material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -100,6 +101,12 @@ const SettingsPage: React.FC = () => {
       title: 'My Cast',
       description: 'Characters, products & places for your videos',
       onClick: () => navigate('/my-cast'),
+    },
+    {
+      icon: <LinkIcon sx={{ color: '#007AFF' }} />,
+      title: 'Connected Accounts',
+      description: 'YouTube, TikTok, Instagram & more',
+      onClick: () => navigate('/settings/connected-accounts'),
     },
     {
       icon: <SubscriptionIcon sx={{ color: '#007AFF' }} />,

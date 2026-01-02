@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   Box,
@@ -9,8 +9,6 @@ import {
   CircularProgress,
   Chip,
   Paper,
-  useMediaQuery,
-  useTheme,
   Divider,
   Button,
   TextField,
@@ -18,6 +16,11 @@ import {
   Tooltip,
   Switch,
   FormControlLabel,
+  Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -25,26 +28,23 @@ import {
   Pause,
   Fullscreen,
   FullscreenExit,
-  MusicNote,
   AccessTime,
   CalendarToday,
   Movie,
   AspectRatio,
   Download,
-  Mic,
   Lyrics,
   Share,
   YouTube,
   AutoAwesome,
-  Image as ImageIcon,
-  Edit,
   Add,
-  LocationOn,
-  Refresh,
   Check,
   ContentCopy,
+  CloudUpload,
+  Bolt,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
+import { getTokensFromAllowances } from '../store/authSlice';
 import { videosApi, songsApi, youtubeApi, charactersApi, Character } from '../services/api';
 
 // Image cache map to avoid reloading
@@ -72,6 +72,7 @@ interface VideoData {
   style?: string;
   characterIds?: string[];
   seedreamReferenceUrls?: Record<string, string>; // characterId -> seedream URL
+  sceneImageUrls?: string[]; // All generated scene images from video
 }
 
 interface SongData {
@@ -89,9 +90,13 @@ interface SongData {
 const MusicVideoPlayer: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { user } = useSelector((state: RootState) => state.auth);
+  const [searchParams] = useSearchParams();
+  const { user, allowances } = useSelector((state: RootState) => state.auth);
+  const socialSectionRef = useRef<HTMLDivElement>(null);
+  
+  // Calculate remaining tokens
+  const tokens = getTokensFromAllowances(allowances);
+  const remainingTokens = ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -118,11 +123,11 @@ const MusicVideoPlayer: React.FC = () => {
   } | null>(null);
   const [isGeneratingMetadata, setIsGeneratingMetadata] = useState(false);
   const [socialThumbnailUrl, setSocialThumbnailUrl] = useState<string | null>(null);
+  const [localThumbnailFile, setLocalThumbnailFile] = useState<{ dataUrl: string; file: File } | null>(null); // Legacy - kept for compatibility
+  const [uploadedCustomThumbnails, setUploadedCustomThumbnails] = useState<{ dataUrl: string; file: File }[]>([]); // Up to 3 custom uploaded thumbnails
   const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
-  const [socialLocation, setSocialLocation] = useState('');
   const [socialError, setSocialError] = useState<string | null>(null);
   const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
   const [hookText, setHookText] = useState('');
   const [newTag, setNewTag] = useState('');
@@ -134,9 +139,15 @@ const MusicVideoPlayer: React.FC = () => {
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
   
+  // Platform selection & upload confirmation
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [showUploadConfirm, setShowUploadConfirm] = useState(false);
+  
   // Video characters state (for thumbnail selection)
   const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
+  const [generatedThumbnails, setGeneratedThumbnails] = useState<string[]>([]); // Store all AI-generated thumbnails
+  const [selectedThumbnailUrl, setSelectedThumbnailUrl] = useState<string | null>(null); // Currently selected thumbnail
 
   // Fetch video and song data
   useEffect(() => {
@@ -213,20 +224,6 @@ const MusicVideoPlayer: React.FC = () => {
           videoData.characterIds?.includes(c.characterId)
         );
         setVideoCharacters(usedCharacters);
-        
-        // Pre-select all images by default (seedream + original images)
-        const allImageIds: string[] = [];
-        usedCharacters.forEach((char: Character) => {
-          // Add seedream reference if available
-          if (videoData.seedreamReferenceUrls?.[char.characterId]) {
-            allImageIds.push(`${char.characterId}_seedream`);
-          }
-          // Add all original images
-          char.imageUrls?.forEach((_, idx) => {
-            allImageIds.push(`${char.characterId}_img_${idx}`);
-          });
-        });
-        setSelectedCharacterIds(allImageIds);
       } catch (err) {
         console.error('Failed to fetch video characters:', err);
       }
@@ -234,6 +231,24 @@ const MusicVideoPlayer: React.FC = () => {
     
     fetchVideoCharacters();
   }, [user?.userId, videoData?.characterIds, videoData?.seedreamReferenceUrls]);
+
+  // Handle scroll to social section from query param
+  useEffect(() => {
+    const scrollTo = searchParams.get('scrollTo');
+    if (scrollTo === 'social' && videoData && !loading) {
+      // Wait for the page to fully render before scrolling
+      const scrollTimer = setTimeout(() => {
+        const element = socialSectionRef.current || document.getElementById('social-sharing-section');
+        if (element) {
+          // Get element position and scroll with offset to keep header visible
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = elementPosition - 100; // 100px offset from top
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      }, 800);
+      return () => clearTimeout(scrollTimer);
+    }
+  }, [searchParams, videoData, loading]); // Re-run when video data loads and loading completes
 
   // Load existing social metadata and YouTube status
   useEffect(() => {
@@ -247,7 +262,6 @@ const MusicVideoPlayer: React.FC = () => {
           setSocialMetadata(response.data.socialMetadata);
           setEditedMetadata(response.data.socialMetadata);
           setHookText(response.data.socialMetadata.hook || '');
-          setSocialLocation(response.data.socialMetadata.location || '');
         }
         if (response.data.socialThumbnailUrl) {
           setSocialThumbnailUrl(response.data.socialThumbnailUrl);
@@ -276,7 +290,7 @@ const MusicVideoPlayer: React.FC = () => {
     setSocialError(null);
     
     try {
-      const response = await videosApi.generateSocialMetadata(user.userId, videoId, { location: socialLocation });
+      const response = await videosApi.generateSocialMetadata(user.userId, videoId, {});
       const newMetadata = response.data.socialMetadata;
       setSocialMetadata(newMetadata);
       setEditedMetadata(newMetadata);
@@ -284,24 +298,14 @@ const MusicVideoPlayer: React.FC = () => {
       setSocialSuccess('Social metadata generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
-      setSocialError(err.response?.data?.error || 'Failed to generate metadata');
+      const errorData = err.response?.data;
+      if (errorData?.error === 'Insufficient credits') {
+        setSocialError(`Insufficient credits. You need ${errorData.required} credits but have ${errorData.available}. Add credits or enter metadata manually.`);
+      } else {
+        setSocialError(errorData?.error || 'Failed to generate metadata');
+      }
     } finally {
       setIsGeneratingMetadata(false);
-    }
-  };
-
-  const handleSaveMetadata = async () => {
-    if (!user?.userId || !videoId || !editedMetadata) return;
-    setSocialError(null);
-    
-    try {
-      await videosApi.updateSocialMetadata(user.userId, videoId, editedMetadata);
-      setSocialMetadata(editedMetadata);
-      setIsEditing(false);
-      setSocialSuccess('Metadata saved!');
-      setTimeout(() => setSocialSuccess(null), 3000);
-    } catch (err: any) {
-      setSocialError(err.response?.data?.error || 'Failed to save metadata');
     }
   };
 
@@ -310,25 +314,38 @@ const MusicVideoPlayer: React.FC = () => {
       setSocialError('Please enter hook text for the thumbnail');
       return;
     }
+    // Filter out the toggle marker
+    const realSelectedIds = selectedCharacterIds.filter(id => id !== 'toggle_open');
+    if (realSelectedIds.length === 0) {
+      setSocialError('Please select at least one image');
+      return;
+    }
     setIsGeneratingThumbnail(true);
     setSocialError(null);
     
     try {
       // Convert selected image IDs to actual URLs
       const selectedImageUrls: string[] = [];
-      selectedCharacterIds.forEach(id => {
-        // Parse the ID format: characterId_seedream or characterId_img_N
+      realSelectedIds.forEach(id => {
+        // Handle different ID formats
         if (id.endsWith('_seedream')) {
+          // Seedream reference: characterId_seedream
           const charId = id.replace('_seedream', '');
           const url = videoData?.seedreamReferenceUrls?.[charId];
           if (url) selectedImageUrls.push(url);
-        } else if (id.includes('_img_')) {
-          const [charId, , idxStr] = id.split('_img_');
-          const idx = parseInt(idxStr || '0');
-          const char = videoCharacters.find(c => c.characterId === charId);
-          if (char?.imageUrls?.[idx]) {
-            selectedImageUrls.push(char.imageUrls[idx]);
-          }
+        } else if (id.startsWith('scene_')) {
+          // Video scene: scene_N
+          const idx = parseInt(id.replace('scene_', ''));
+          const url = videoData?.sceneImageUrls?.[idx];
+          if (url) selectedImageUrls.push(url);
+        } else if (id === 'original_thumb') {
+          // Original thumbnail
+          if (videoData?.thumbnailUrl) selectedImageUrls.push(videoData.thumbnailUrl);
+        } else if (id.startsWith('upload_')) {
+          // User-uploaded custom thumbnail
+          const idx = parseInt(id.replace('upload_', ''));
+          const thumb = uploadedCustomThumbnails[idx];
+          if (thumb?.dataUrl) selectedImageUrls.push(thumb.dataUrl);
         }
       });
       
@@ -336,7 +353,14 @@ const MusicVideoPlayer: React.FC = () => {
         hookText,
         selectedImageUrls: selectedImageUrls.length > 0 ? selectedImageUrls : undefined,
       });
-      setSocialThumbnailUrl(response.data.thumbnailUrl);
+      const newThumbnailUrl = response.data.thumbnailUrl;
+      setSocialThumbnailUrl(newThumbnailUrl);
+      setSelectedThumbnailUrl(newThumbnailUrl);
+      // Add to generated thumbnails list (don't duplicate)
+      setGeneratedThumbnails(prev => 
+        prev.includes(newThumbnailUrl) ? prev : [...prev, newThumbnailUrl]
+      );
+      setLocalThumbnailFile(null); // Clear any custom upload
       setSocialSuccess('Thumbnail generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
@@ -346,12 +370,69 @@ const MusicVideoPlayer: React.FC = () => {
     }
   };
 
+  const handleThumbnailUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // Simple: process each file and update state
+    fileArray.forEach((file, index) => {
+      if (index >= 3) return; // Max 3
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        
+        setUploadedCustomThumbnails(prev => {
+          const newThumb = { dataUrl, file };
+          
+          if (prev.length < 3) {
+            // Add to existing
+            return [...prev, newThumb];
+          } else {
+            // Replace from the end backwards
+            const slotToReplace = 2 - (index % 3); // 2, 1, 0 pattern
+            const updated = [...prev];
+            updated[slotToReplace] = newThumb;
+            return updated;
+          }
+        });
+        
+        // Select this thumbnail
+        setSelectedThumbnailUrl(dataUrl);
+        setSocialThumbnailUrl(dataUrl);
+        setLocalThumbnailFile({ dataUrl, file });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input
+    event.target.value = '';
+
+    // Reset input so same file can be selected again
+    event.target.value = '';
+  };
+
   const handleAddTag = () => {
-    if (editedMetadata && newTag.trim()) {
-      const updatedTags = [...(editedMetadata.tags || []), newTag.trim()];
-      setEditedMetadata({ ...editedMetadata, tags: updatedTags });
-      setNewTag('');
-    }
+    if (!newTag.trim()) return;
+    
+    const tagToAdd = newTag.trim();
+    setEditedMetadata(prev => {
+      const currentTags = prev?.tags || [];
+      // Avoid duplicates
+      if (currentTags.includes(tagToAdd)) {
+        return prev;
+      }
+      return {
+        title: prev?.title || '',
+        description: prev?.description || '',
+        tags: [...currentTags, tagToAdd],
+        hook: prev?.hook || '',
+        location: prev?.location,
+      };
+    });
+    setNewTag('');
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
@@ -417,10 +498,38 @@ const MusicVideoPlayer: React.FC = () => {
       return;
     }
     
+    if (!editedMetadata?.title) {
+      setSocialError('Please enter a title for your video');
+      return;
+    }
+    
     setIsUploading(true);
     setSocialError(null);
     
     try {
+      // If user uploaded a custom thumbnail, upload it first
+      if (localThumbnailFile) {
+        try {
+          const thumbnailResponse = await videosApi.uploadThumbnail(user.userId, videoId, {
+            thumbnailBase64: localThumbnailFile.dataUrl,
+          });
+          setSocialThumbnailUrl(thumbnailResponse.data.thumbnailUrl);
+          setLocalThumbnailFile(null); // Clear local file after successful upload
+        } catch (err: any) {
+          console.error('Failed to upload custom thumbnail:', err);
+          // Continue with upload even if thumbnail fails
+        }
+      }
+      
+      // Save metadata (in case user manually entered it)
+      await videosApi.updateSocialMetadata(user.userId, videoId, {
+        title: editedMetadata.title,
+        description: editedMetadata.description || '',
+        tags: editedMetadata.tags || [],
+        hook: editedMetadata.hook || hookText || '',
+      });
+      
+      // Then upload to YouTube
       const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro });
       setYoutubeUrl(response.data.youtubeUrl);
       setSocialSuccess(`Uploaded to YouTube!`);
@@ -632,13 +741,44 @@ const MusicVideoPlayer: React.FC = () => {
         }}
       >
         <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', alignItems: 'center', py: 1.5, gap: 2 }}>
-            <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
-              <ArrowBack />
-            </IconButton>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
-              {videoData.songTitle || 'Music Video'}
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
+                <ArrowBack />
+              </IconButton>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+                {videoData.songTitle || 'Music Video'}
+              </Typography>
+            </Box>
+            
+            {/* Tokens Button */}
+            {user && allowances && (
+              <Button
+                onClick={() => navigate('/payment')}
+                sx={{
+                  borderRadius: '20px',
+                  px: 2,
+                  py: 0.75,
+                  minWidth: 'auto',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  color: '#fff',
+                  background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                  border: 'none',
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                    boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                  }
+                }}
+              >
+                <Bolt sx={{ fontSize: 18, color: '#fff' }} />
+                <span style={{ color: '#fff' }}>{remainingTokens}</span>
+              </Button>
+            )}
           </Box>
         </Container>
       </Box>
@@ -957,6 +1097,7 @@ const MusicVideoPlayer: React.FC = () => {
 
         {/* Social Sharing Section */}
         <Paper
+          ref={socialSectionRef}
           id="social-sharing-section"
           elevation={0}
           sx={{
@@ -985,380 +1126,764 @@ const MusicVideoPlayer: React.FC = () => {
             </Alert>
           )}
 
-          {/* Generate Metadata Section */}
-          {!socialMetadata ? (
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: '#86868B', mb: 2 }}>
-                Generate AI-powered title, description, tags, and hook for your video
-              </Typography>
-              
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                <TextField
-                  label="Location (Optional)"
-                  placeholder="e.g., New York City, Beach sunset"
-                  value={socialLocation}
-                  onChange={(e) => setSocialLocation(e.target.value)}
-                  InputProps={{
-                    startAdornment: <LocationOn sx={{ color: '#86868B', mr: 1 }} />,
-                  }}
-                  sx={{ flex: 1, minWidth: 250 }}
-                  size="small"
-                />
-                <Button
-                  variant="contained"
-                  startIcon={isGeneratingMetadata ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <AutoAwesome />}
-                  onClick={handleGenerateMetadata}
-                  disabled={isGeneratingMetadata}
-                  sx={{
-                    background: 'linear-gradient(135deg, #007AFF, #5856D6)',
-                    px: 3,
-                    py: 1,
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&:hover': { background: 'linear-gradient(135deg, #0066CC, #4845B3)' },
-                  }}
-                >
-                  {isGeneratingMetadata ? 'Generating...' : 'Generate Metadata (10 credits)'}
-                </Button>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ mb: 3 }}>
-              {/* Metadata Editor */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  Social Media Details
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    startIcon={<Refresh />}
-                    onClick={handleGenerateMetadata}
-                    disabled={isGeneratingMetadata}
+          {/* Platform Selection - At the top */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+              Select Platforms
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+              {/* YouTube - Selectable */}
+              <Box
+                onClick={() => {
+                  if (!youtubeConnected) {
+                    // Connect first
+                    handleYouTubeUpload();
+                  } else {
+                    // Toggle selection
+                    setSelectedPlatforms(prev => 
+                      prev.includes('youtube') 
+                        ? prev.filter(p => p !== 'youtube')
+                        : [...prev, 'youtube']
+                    );
+                  }
+                }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  border: selectedPlatforms.includes('youtube') 
+                    ? '2px solid #FF0000' 
+                    : youtubeConnected 
+                      ? '2px solid #34C759' 
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: selectedPlatforms.includes('youtube') 
+                    ? 'rgba(255,0,0,0.05)' 
+                    : youtubeConnected 
+                      ? 'rgba(52,199,89,0.05)' 
+                      : '#fff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { 
+                    borderColor: youtubeConnected ? '#FF0000' : '#FF0000',
+                    background: 'rgba(255,0,0,0.02)',
+                  },
+                }}
+              >
+                {youtubeConnected && (
+                  <Checkbox
+                    checked={selectedPlatforms.includes('youtube')}
                     size="small"
-                  >
-                    Regenerate
-                  </Button>
-                  {!isEditing ? (
-                    <Button startIcon={<Edit />} onClick={() => setIsEditing(true)} size="small">
-                      Edit
-                    </Button>
-                  ) : (
-                    <Button startIcon={<Check />} onClick={handleSaveMetadata} size="small" variant="contained">
-                      Save
-                    </Button>
-                  )}
+                    sx={{ p: 0, mr: -0.5, color: '#FF0000', '&.Mui-checked': { color: '#FF0000' } }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => {
+                      setSelectedPlatforms(prev => 
+                        prev.includes('youtube') 
+                          ? prev.filter(p => p !== 'youtube')
+                          : [...prev, 'youtube']
+                      );
+                    }}
+                  />
+                )}
+                <Box sx={{ 
+                  width: 36, height: 36, borderRadius: '10px', 
+                  background: 'rgba(255,0,0,0.1)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <YouTube sx={{ fontSize: 22, color: '#FF0000' }} />
+                </Box>
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>YouTube</Typography>
+                    {youtubeConnected && (
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                    )}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                    {youtubeConnected ? (youtubeChannel?.channelTitle || 'Connected') : 'Click to connect'}
+                  </Typography>
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-                {/* Title */}
-                <TextField
-                  fullWidth
-                  label="Title"
-                  value={editedMetadata?.title || ''}
-                  onChange={(e) => setEditedMetadata(prev => prev ? { ...prev, title: e.target.value } : null)}
-                  disabled={!isEditing}
-                  size="small"
-                  inputProps={{ maxLength: 100 }}
-                  helperText={`${editedMetadata?.title?.length || 0}/100`}
-                />
-
-                {/* Hook */}
-                <TextField
-                  fullWidth
-                  label="Hook (for thumbnail)"
-                  value={editedMetadata?.hook || ''}
-                  onChange={(e) => {
-                    setEditedMetadata(prev => prev ? { ...prev, hook: e.target.value } : null);
-                    setHookText(e.target.value);
-                  }}
-                  disabled={!isEditing}
-                  size="small"
-                  placeholder="e.g., 'Epic Adventure Awaits!'"
-                />
+              {/* TikTok - Coming Soon */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: 'rgba(0,0,0,0.02)',
+                  opacity: 0.5,
+                }}
+              >
+                <Box sx={{ 
+                  width: 36, height: 36, borderRadius: '10px', 
+                  background: 'rgba(0,0,0,0.06)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>TikTok</Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                </Box>
               </Box>
 
-              {/* Description */}
-              <Box sx={{ position: 'relative', mt: 2 }}>
-                <TextField
-                  fullWidth
-                  label="Description"
-                  value={editedMetadata?.description || ''}
-                  onChange={(e) => setEditedMetadata(prev => prev ? { ...prev, description: e.target.value } : null)}
-                  disabled={!isEditing}
-                  multiline
-                  rows={3}
-                  size="small"
-                />
+              {/* Instagram - Coming Soon */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: 'rgba(0,0,0,0.02)',
+                  opacity: 0.5,
+                }}
+              >
+                <Box sx={{ 
+                  width: 36, height: 36, borderRadius: '10px', 
+                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.1) 100%)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18 }}>
+                    <defs>
+                      <linearGradient id="ig-grad-select" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FFDC80" />
+                        <stop offset="50%" stopColor="#E1306C" />
+                        <stop offset="100%" stopColor="#833AB4" />
+                      </linearGradient>
+                    </defs>
+                    <path fill="url(#ig-grad-select)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>Instagram</Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                </Box>
+              </Box>
+
+              {/* Facebook - Coming Soon */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: 'rgba(0,0,0,0.02)',
+                  opacity: 0.5,
+                }}
+              >
+                <Box sx={{ 
+                  width: 36, height: 36, borderRadius: '10px', 
+                  background: 'rgba(24,119,242,0.1)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#1877F2' }}>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>Facebook</Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* YouTube already uploaded success */}
+            {youtubeUrl && (
+              <Alert 
+                severity="success"
+                action={
+                  <Button color="inherit" size="small" href={youtubeUrl} target="_blank">
+                    View
+                  </Button>
+                }
+                sx={{ mt: 2 }}
+              >
+                Uploaded to YouTube!
+              </Alert>
+            )}
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {/* Metadata Section - Always show editor, with option to generate */}
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Social Media Details
+              </Typography>
+              
+              {/* Generate with AI button */}
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Button
+                  variant="outlined"
+                  startIcon={isGeneratingMetadata ? <CircularProgress size={18} /> : <AutoAwesome />}
+                  onClick={handleGenerateMetadata}
+                  disabled={isGeneratingMetadata}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    borderColor: '#007AFF',
+                    color: '#007AFF',
+                    '&:hover': { borderColor: '#0066CC', bgcolor: 'rgba(0,122,255,0.05)' },
+                  }}
+                >
+                  {isGeneratingMetadata ? 'Generating...' : 'Generate with AI (10 credits)'}
+                </Button>
+              </Box>
+            </Box>
+            
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+              Enter details manually or use AI to generate title, description, and tags
+            </Typography>
+
+            {/* Title */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+                Title
+              </Typography>
+              <TextField
+                fullWidth
+                value={editedMetadata?.title || ''}
+                onChange={(e) => setEditedMetadata(prev => ({ 
+                  title: e.target.value,
+                  description: prev?.description || '',
+                  tags: prev?.tags || [],
+                  hook: prev?.hook || '',
+                  location: prev?.location,
+                }))}
+                size="small"
+                inputProps={{ maxLength: 100 }}
+                helperText={`${editedMetadata?.title?.length || 0}/100`}
+                placeholder="Enter a catchy title"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Description */}
+            <Box sx={{ position: 'relative', mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+                Description
+              </Typography>
+              <TextField
+                fullWidth
+                value={editedMetadata?.description || ''}
+                onChange={(e) => setEditedMetadata(prev => ({
+                  title: prev?.title || '',
+                  description: e.target.value,
+                  tags: prev?.tags || [],
+                  hook: prev?.hook || '',
+                  location: prev?.location,
+                }))}
+                multiline
+                rows={3}
+                size="small"
+                placeholder="Describe your video..."
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                  },
+                }}
+              />
+              {editedMetadata?.description && (
                 <Tooltip title="Copy description">
                   <IconButton
                     onClick={handleCopyDescription}
-                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                    sx={{ position: 'absolute', top: 32, right: 8 }}
                     size="small"
                   >
                     <ContentCopy fontSize="small" />
                   </IconButton>
                 </Tooltip>
-              </Box>
-
-              {/* Tags */}
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
-                  Tags
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
-                  {editedMetadata?.tags?.map((tag, index) => (
-                    <Chip
-                      key={index}
-                      label={tag.startsWith('#') ? tag : `#${tag}`}
-                      size="small"
-                      onDelete={isEditing ? () => handleRemoveTag(tag) : undefined}
-                      sx={{
-                        bgcolor: 'rgba(0,122,255,0.1)',
-                        color: '#007AFF',
-                        '& .MuiChip-deleteIcon': { color: '#007AFF' },
-                      }}
-                    />
-                  ))}
-                </Box>
-                {isEditing && (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <TextField
-                      size="small"
-                      placeholder="Add a tag..."
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                      sx={{ flex: 1, maxWidth: 200 }}
-                    />
-                    <IconButton onClick={handleAddTag} disabled={!newTag.trim()} size="small">
-                      <Add />
-                    </IconButton>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-          )}
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Thumbnail Generation */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
-              Custom Thumbnail
-            </Typography>
-            
-            <Box>
-              <Box sx={{ mb: 2 }}>
-                <TextField
-                  fullWidth
-                  label="Hook Text (appears on thumbnail)"
-                  value={hookText}
-                  onChange={(e) => setHookText(e.target.value)}
-                  placeholder="e.g., 'This Changes Everything!'"
-                  size="small"
-                  sx={{ mb: 2 }}
-                  helperText="Catchy 2-6 word phrase"
-                />
-
-                {/* Characters/Products Selection with ALL images */}
-                {videoCharacters.length > 0 && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#86868B', fontWeight: 500, mb: 1.5 }}>
-                      Include in Thumbnail (click images to select)
-                    </Typography>
-                    
-                    {videoCharacters.map((char) => {
-                      // Collect all images for this character
-                      const allImages: { url: string; label: string; id: string }[] = [];
-                      
-                      // Add Seedream reference image (AI-generated) if available
-                      const seedreamUrl = videoData?.seedreamReferenceUrls?.[char.characterId];
-                      if (seedreamUrl) {
-                        allImages.push({
-                          url: seedreamUrl,
-                          label: 'AI Reference',
-                          id: `${char.characterId}_seedream`,
-                        });
-                      }
-                      
-                      // Add all original images
-                      char.imageUrls?.forEach((url, idx) => {
-                        allImages.push({
-                          url,
-                          label: char.characterType === 'App' ? `Screenshot ${idx + 1}` : `Image ${idx + 1}`,
-                          id: `${char.characterId}_img_${idx}`,
-                        });
-                      });
-                      
-                      if (allImages.length === 0) return null;
-                      
-                      return (
-                        <Box key={char.characterId} sx={{ mb: 2 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            <Typography sx={{ fontSize: 14 }}>
-                              {char.characterType === 'App' ? '📱' : 
-                               char.characterType === 'Product' ? '📦' :
-                               char.characterType === 'Place' ? '🏠' : '👤'}
-                            </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                              {char.characterName}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: '#86868B' }}>
-                              ({char.characterType || 'Character'})
-                            </Typography>
-                          </Box>
-                          
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {allImages.map((img) => {
-                              const isSelected = selectedCharacterIds.includes(img.id);
-                              
-                              return (
-                                <Box
-                                  key={img.id}
-                                  onClick={() => {
-                                    setSelectedCharacterIds(prev => 
-                                      isSelected 
-                                        ? prev.filter(id => id !== img.id)
-                                        : [...prev, img.id]
-                                    );
-                                  }}
-                                  sx={{
-                                    position: 'relative',
-                                    cursor: 'pointer',
-                                    borderRadius: 1.5,
-                                    overflow: 'hidden',
-                                    border: isSelected ? '3px solid #007AFF' : '2px solid transparent',
-                                    boxShadow: isSelected ? '0 0 0 2px rgba(0,122,255,0.3)' : 'none',
-                                    transition: 'all 0.2s',
-                                    '&:hover': {
-                                      transform: 'scale(1.05)',
-                                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                    },
-                                  }}
-                                >
-                                  <Box
-                                    component="img"
-                                    src={img.url}
-                                    alt={img.label}
-                                    sx={{
-                                      width: 60,
-                                      height: 60,
-                                      objectFit: 'cover',
-                                      display: 'block',
-                                    }}
-                                  />
-                                  {/* Label badge */}
-                                  <Box
-                                    sx={{
-                                      position: 'absolute',
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      bgcolor: 'rgba(0,0,0,0.6)',
-                                      color: '#fff',
-                                      fontSize: '9px',
-                                      fontWeight: 500,
-                                      textAlign: 'center',
-                                      py: 0.25,
-                                    }}
-                                  >
-                                    {img.label}
-                                  </Box>
-                                  {/* Selection checkmark */}
-                                  {isSelected && (
-                                    <Box
-                                      sx={{
-                                        position: 'absolute',
-                                        top: 2,
-                                        right: 2,
-                                        width: 18,
-                                        height: 18,
-                                        borderRadius: '50%',
-                                        bgcolor: '#007AFF',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                      }}
-                                    >
-                                      <Check sx={{ fontSize: 12, color: '#fff' }} />
-                                    </Box>
-                                  )}
-                                </Box>
-                              );
-                            })}
-                          </Box>
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                )}
-
-                <Button
-                  variant="outlined"
-                  startIcon={isGeneratingThumbnail ? <CircularProgress size={18} /> : <ImageIcon />}
-                  onClick={handleGenerateThumbnail}
-                  disabled={isGeneratingThumbnail || !hookText.trim()}
-                  sx={{ borderRadius: 2, textTransform: 'none' }}
-                >
-                  {isGeneratingThumbnail ? 'Generating...' : 'Generate Thumbnail (10 credits)'}
-                </Button>
-              </Box>
-
-              {/* Thumbnail Preview - shows below the generate button */}
-              {(socialThumbnailUrl || videoData?.thumbnailUrl) && (
-                <Box
-                  sx={{
-                    mt: 2,
-                    width: videoData?.aspectRatio === 'landscape' ? '100%' : 200,
-                    maxWidth: videoData?.aspectRatio === 'landscape' ? 480 : 200,
-                    aspectRatio: videoData?.aspectRatio === 'landscape' ? '16/9' : '9/16',
-                    bgcolor: '#f5f5f7',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                  }}
-                >
-                  <img
-                    src={socialThumbnailUrl || videoData?.thumbnailUrl}
-                    alt="Thumbnail Preview"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </Box>
               )}
             </Box>
+
+            {/* Tags */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+                Tags
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
+                {editedMetadata?.tags?.map((tag, index) => (
+                  <Chip
+                    key={index}
+                    label={tag}
+                    size="small"
+                    onDelete={() => handleRemoveTag(tag)}
+                    sx={{
+                      borderRadius: '100px',
+                      bgcolor: 'rgba(0,122,255,0.1)',
+                      color: '#007AFF',
+                      fontWeight: 500,
+                      '& .MuiChip-deleteIcon': { color: '#007AFF' },
+                    }}
+                  />
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <TextField
+                  size="small"
+                  placeholder="Add a tag..."
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                  sx={{ 
+                    flex: 1, 
+                    maxWidth: 200,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    },
+                  }}
+                />
+                <IconButton 
+                  onClick={handleAddTag} 
+                  disabled={!newTag.trim()} 
+                  size="small"
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    background: newTag.trim() ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.04)',
+                    '&:hover': { background: 'rgba(0,122,255,0.2)' },
+                  }}
+                >
+                  <Add sx={{ color: newTag.trim() ? '#007AFF' : '#86868B' }} />
+                </IconButton>
+              </Box>
+            </Box>
+
           </Box>
 
           <Divider sx={{ my: 3 }} />
 
-          {/* YouTube Upload Section */}
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <YouTube sx={{ fontSize: 32, color: '#FF0000' }} />
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  Upload to YouTube {videoData?.aspectRatio === 'portrait' ? 'Shorts' : ''}
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B' }}>
-                  {youtubeConnected 
-                    ? `Connected: ${youtubeChannel?.channelTitle || 'Your Channel'}`
-                    : 'Connect your YouTube account to upload'
+          {/* Select Thumbnail Section */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+              Select Thumbnail
+            </Typography>
+            
+            {/* Thumbnail Options Grid */}
+            {(() => {
+              const isLandscape = videoData?.aspectRatio === 'landscape';
+              const thumbWidth = isLandscape ? 160 : 90;
+              const thumbHeight = isLandscape ? 90 : 160;
+              
+              // All available thumbnails: original + AI generated + uploaded customs
+              const thumbnailOptions: { url: string; label: string; type: 'original' | 'ai' | 'custom'; dataUrl?: string }[] = [];
+              
+              // Add original video thumbnail
+              if (videoData?.thumbnailUrl) {
+                thumbnailOptions.push({ url: videoData.thumbnailUrl, label: 'Original', type: 'original' });
+              }
+              
+              // Add AI generated thumbnails
+              generatedThumbnails.forEach((url, idx) => {
+                thumbnailOptions.push({ url, label: `AI #${idx + 1}`, type: 'ai' });
+              });
+              
+              // Add custom uploaded thumbnails (up to 3 persisted)
+              uploadedCustomThumbnails.forEach((thumb, idx) => {
+                thumbnailOptions.push({ 
+                  url: thumb.dataUrl, 
+                  label: `Upload #${idx + 1}`, 
+                  type: 'custom',
+                  dataUrl: thumb.dataUrl,
+                });
+              });
+              
+              const showCreatePanel = selectedCharacterIds.length > 0;
+              
+              return (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}>
+                  {/* Existing thumbnail options */}
+                  {thumbnailOptions.map((thumb, idx) => {
+                    const isSelected = thumb.type === 'custom' 
+                      ? selectedThumbnailUrl === thumb.dataUrl
+                      : selectedThumbnailUrl === thumb.url;
+                    return (
+                      <Box
+                        key={`thumb-${thumb.type}-${idx}`}
+                        onClick={() => {
+                          const url = thumb.type === 'custom' ? thumb.dataUrl! : thumb.url;
+                          setSelectedThumbnailUrl(url);
+                          setSocialThumbnailUrl(url);
+                          // Close the Create panel when selecting an existing thumbnail
+                          setSelectedCharacterIds([]);
+                        }}
+                        sx={{
+                          position: 'relative',
+                          cursor: 'pointer',
+                          borderRadius: 1,
+                          overflow: 'hidden',
+                          width: thumbWidth,
+                          height: thumbHeight,
+                          border: isSelected ? '3px solid #34C759' : '2px solid rgba(0,0,0,0.1)',
+                          transition: 'all 0.2s',
+                          '&:hover': { transform: 'scale(1.02)', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' },
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={thumb.type === 'custom' ? thumb.dataUrl : thumb.url}
+                          alt={thumb.label}
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        />
+                        {isSelected && (
+                          <Box sx={{ position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: '50%', bgcolor: '#34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Check sx={{ fontSize: 14, color: '#fff' }} />
+                          </Box>
+                        )}
+                      </Box>
+                    );
+                  })}
+                  
+                  {/* Create Custom Thumbnail Toggle */}
+                  <Box
+                    onClick={() => setSelectedCharacterIds(prev => prev.length === 0 ? ['toggle_open'] : [])}
+                    sx={{
+                      width: thumbWidth,
+                      height: thumbHeight,
+                      borderRadius: 1,
+                      border: showCreatePanel ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      bgcolor: showCreatePanel ? 'rgba(0,122,255,0.08)' : '#fff',
+                      transition: 'all 0.2s',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&:hover': { 
+                        borderColor: '#007AFF', 
+                        bgcolor: showCreatePanel ? 'rgba(0,122,255,0.12)' : 'rgba(0,122,255,0.04)',
+                      },
+                    }}
+                  >
+                    <AutoAwesome sx={{ fontSize: 20, color: showCreatePanel ? '#007AFF' : '#86868B', mb: 0.5 }} />
+                    <Typography sx={{ fontSize: '8px', color: showCreatePanel ? '#007AFF' : '#86868B', fontWeight: showCreatePanel ? 600 : 500, textAlign: 'center' }}>
+                      Create
+                    </Typography>
+                  </Box>
+                  
+                  {/* Upload Thumbnail Button */}
+                  <Box
+                    component="label"
+                    sx={{
+                      width: thumbWidth,
+                      height: thumbHeight,
+                      borderRadius: 1,
+                      border: '2px solid rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      bgcolor: '#fff',
+                      transition: 'all 0.2s',
+                      '&:hover': { 
+                        borderColor: '#34C759', 
+                        bgcolor: 'rgba(52,199,89,0.04)',
+                      },
+                    }}
+                  >
+                    <CloudUpload sx={{ fontSize: 20, color: '#86868B', mb: 0.5 }} />
+                    <Typography sx={{ fontSize: '8px', color: '#86868B', fontWeight: 500, textAlign: 'center' }}>
+                      Upload
+                    </Typography>
+                    <input type="file" hidden accept="image/*" multiple onChange={handleThumbnailUpload} />
+                  </Box>
+                </Box>
+              );
+            })()}
+            
+            {/* Create Custom Thumbnail Panel (shown when + is clicked) */}
+            {selectedCharacterIds.length > 0 && (
+              <Box sx={{ 
+                mt: 2,
+                p: 2,
+                border: '1px solid rgba(0,122,255,0.2)', 
+                borderRadius: '12px', 
+                bgcolor: 'rgba(0,122,255,0.02)',
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    Create Custom Thumbnail
+                  </Typography>
+                  <IconButton 
+                    size="small" 
+                    onClick={() => setSelectedCharacterIds([])}
+                    sx={{ 
+                      color: '#86868B',
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      p: 0,
+                    }}
+                  >
+                    <Typography sx={{ fontSize: 16, lineHeight: 1 }}>×</Typography>
+                  </IconButton>
+                </Box>
+                
+                {/* Reference Image Selection */}
+                {(() => {
+                  const availableImages: { url: string; label: string; id: string }[] = [];
+                  
+                  // Seedream-generated reference images
+                  videoCharacters.forEach((char) => {
+                    const seedreamUrl = videoData?.seedreamReferenceUrls?.[char.characterId];
+                    if (seedreamUrl) {
+                      availableImages.push({
+                        url: seedreamUrl,
+                        label: char.characterName || 'Reference',
+                        id: `${char.characterId}_seedream`,
+                      });
+                    }
+                  });
+                  
+                  // Video scene images
+                  videoData?.sceneImageUrls?.forEach((url, idx) => {
+                    availableImages.push({ url, label: `Scene ${idx + 1}`, id: `scene_${idx}` });
+                  });
+                  
+                  // Original thumbnail fallback
+                  if (!videoData?.sceneImageUrls?.length && videoData?.thumbnailUrl) {
+                    availableImages.push({ url: videoData.thumbnailUrl, label: 'Original', id: 'original_thumb' });
                   }
-                </Typography>
+                  
+                  // User-uploaded custom thumbnails
+                  uploadedCustomThumbnails.forEach((thumb, idx) => {
+                    availableImages.push({ url: thumb.dataUrl, label: `Upload ${idx + 1}`, id: `upload_${idx}` });
+                  });
+                  
+                  const isLandscape = videoData?.aspectRatio === 'landscape';
+                  const refThumbWidth = isLandscape ? 80 : 45;
+                  const refThumbHeight = isLandscape ? 45 : 80;
+                  const realSelectedIds = selectedCharacterIds.filter(id => id !== 'toggle_open');
+                  const maxSelections = 3;
+                  
+                  return (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
+                          Select reference images
+                        </Typography>
+                        <Typography variant="caption" sx={{ 
+                          color: '#007AFF', 
+                          fontWeight: 600,
+                          bgcolor: 'rgba(0,122,255,0.1)',
+                          px: 1.5, py: 0.5, borderRadius: '100px',
+                        }}>
+                          {realSelectedIds.length}/{maxSelections}
+                        </Typography>
+                      </Box>
+                      
+                      {availableImages.length > 0 ? (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                          {availableImages.map((img) => {
+                            const isSelected = realSelectedIds.includes(img.id);
+                            const canSelect = isSelected || realSelectedIds.length < maxSelections;
+                            
+                            return (
+                              <Box
+                                key={img.id}
+                                onClick={() => {
+                                  if (!canSelect && !isSelected) return;
+                                  setSelectedCharacterIds(prev => {
+                                    const filtered = prev.filter(id => id !== 'toggle_open');
+                                    const newIds = isSelected 
+                                      ? filtered.filter(id => id !== img.id)
+                                      : [...filtered, img.id];
+                                    return newIds.length === 0 ? ['toggle_open'] : newIds;
+                                  });
+                                }}
+                                sx={{
+                                  position: 'relative',
+                                  cursor: canSelect ? 'pointer' : 'not-allowed',
+                                  borderRadius: 1,
+                                  overflow: 'hidden',
+                                  border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                                  opacity: canSelect ? 1 : 0.4,
+                                  transition: 'all 0.2s',
+                                  '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : {},
+                                }}
+                              >
+                                <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block' }} />
+                                {isSelected && (
+                                  <Box sx={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Check sx={{ fontSize: 9, color: '#fff' }} />
+                                  </Box>
+                                )}
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                          No reference images available
+                        </Typography>
+                      )}
+                      
+                      {/* Hook Text */}
+                      <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
+                        Hook Text
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        value={hookText}
+                        onChange={(e) => {
+                          setHookText(e.target.value);
+                          setEditedMetadata(prev => prev ? { ...prev, hook: e.target.value } : { title: '', description: '', tags: [], hook: e.target.value });
+                        }}
+                        size="small"
+                        placeholder="e.g., 'Epic Adventure Awaits!'"
+                        sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
+                      />
+                      
+                      {/* Actions */}
+                      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Button
+                          variant="contained"
+                          startIcon={isGeneratingThumbnail ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <AutoAwesome />}
+                          onClick={handleGenerateThumbnail}
+                          disabled={isGeneratingThumbnail || !hookText.trim() || realSelectedIds.length === 0}
+                          size="small"
+                          sx={{ bgcolor: '#007AFF', borderRadius: '8px', textTransform: 'none', fontWeight: 600, '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)' } }}
+                        >
+                          {isGeneratingThumbnail ? 'Generating...' : 'Generate (10 credits)'}
+                        </Button>
+                      </Box>
+                    </>
+                  );
+                })()}
               </Box>
-              {youtubeChannel?.channelThumbnail && (
-                <Box
-                  component="img"
-                  src={youtubeChannel.channelThumbnail}
-                  alt="Channel"
-                  sx={{ width: 40, height: 40, borderRadius: '50%' }}
-                />
+            )}
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {/* Upload Button */}
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <CloudUpload />}
+              onClick={() => setShowUploadConfirm(true)}
+              disabled={isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title}
+              sx={{
+                bgcolor: '#007AFF',
+                px: 5,
+                py: 1.5,
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '1rem',
+                textTransform: 'none',
+                boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
+                '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)', boxShadow: 'none' },
+              }}
+            >
+              {isUploading 
+                ? 'Uploading...' 
+                : selectedPlatforms.length === 0 
+                  ? 'Select a Platform'
+                  : !editedMetadata?.title 
+                    ? 'Enter Title First'
+                    : `Upload to ${selectedPlatforms.length} Platform${selectedPlatforms.length > 1 ? 's' : ''}`
+              }
+            </Button>
+          </Box>
+
+        </Paper>
+
+        {/* Upload Confirmation Modal */}
+        <Dialog 
+          open={showUploadConfirm} 
+          onClose={() => setShowUploadConfirm(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: { borderRadius: '16px', p: 1 }
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
+            Confirm Upload
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 3 }}>
+              Your video will be uploaded to the following platforms:
+            </Typography>
+
+            {/* Selected Platforms */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+              {selectedPlatforms.includes('youtube') && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(255,0,0,0.05)', borderRadius: '12px', border: '1px solid rgba(255,0,0,0.2)' }}>
+                  <YouTube sx={{ fontSize: 32, color: '#FF0000' }} />
+                  <Box>
+                    <Typography sx={{ fontWeight: 600 }}>YouTube</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      {youtubeChannel?.channelTitle || 'Your Channel'}
+                    </Typography>
+                  </Box>
+                </Box>
               )}
             </Box>
 
-            {/* Thumbnail intro toggle */}
-            {youtubeConnected && socialMetadata && socialThumbnailUrl && (
+            {/* Video Details Summary */}
+            <Box sx={{ bgcolor: '#f5f5f7', borderRadius: '12px', p: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
+              <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
+                <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5, 
+                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' 
+              }}>
+                <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
+              </Typography>
+              {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                  {editedMetadata.tags.slice(0, 5).map((tag, i) => (
+                    <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
+                  ))}
+                  {editedMetadata.tags.length > 5 && (
+                    <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
+                  )}
+                </Box>
+              )}
+            </Box>
+
+            {/* Thumbnail Intro Toggle */}
+            {socialThumbnailUrl && (
               <FormControlLabel
                 control={
                   <Switch
@@ -1367,68 +1892,39 @@ const MusicVideoPlayer: React.FC = () => {
                     size="small"
                   />
                 }
-                label={<Typography variant="body2">Add 2-second thumbnail intro with fade transition</Typography>}
-                sx={{ mb: 2 }}
+                label={<Typography variant="body2">Add thumbnail intro with fade</Typography>}
+                sx={{ mt: 2 }}
               />
             )}
-
-            {youtubeUrl ? (
-              <Alert 
-                severity="success"
-                action={
-                  <Button color="inherit" size="small" href={youtubeUrl} target="_blank">
-                    View on YouTube
-                  </Button>
-                }
-              >
-                Successfully uploaded to YouTube!
-              </Alert>
-            ) : (
-              <Button
-                variant="contained"
-                startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <YouTube />}
-                onClick={handleYouTubeUpload}
-                disabled={isUploading || (!youtubeConnected && !socialMetadata)}
-                sx={{
-                  bgcolor: youtubeConnected ? '#FF0000' : '#1D1D1F',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  '&:hover': { bgcolor: youtubeConnected ? '#CC0000' : '#333' },
-                }}
-              >
-                {isUploading 
-                  ? 'Uploading...' 
-                  : youtubeConnected 
-                    ? (socialMetadata ? 'Upload to YouTube' : 'Generate Metadata First')
-                    : 'Connect YouTube Account'
-                }
-              </Button>
-            )}
-
-            {/* Coming Soon Platforms */}
-            <Box sx={{ display: 'flex', gap: 2, mt: 3, opacity: 0.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 24, height: 24, borderRadius: 0.5, bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>T</Typography>
-                </Box>
-                <Typography variant="body2" sx={{ color: '#86868B' }}>TikTok (Coming Soon)</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ 
-                  width: 24, height: 24, borderRadius: 0.5, 
-                  background: 'linear-gradient(45deg, #405DE6, #833AB4, #E1306C, #F77737)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
-                }}>
-                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>I</Typography>
-                </Box>
-                <Typography variant="body2" sx={{ color: '#86868B' }}>Instagram (Coming Soon)</Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Paper>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 1 }}>
+            <Button 
+              onClick={() => setShowUploadConfirm(false)}
+              sx={{ borderRadius: '10px', textTransform: 'none', color: '#86868B' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
+              onClick={() => {
+                setShowUploadConfirm(false);
+                handleYouTubeUpload();
+              }}
+              disabled={isUploading}
+              sx={{
+                bgcolor: '#FF0000',
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 3,
+                '&:hover': { bgcolor: '#CC0000' },
+              }}
+            >
+              {isUploading ? 'Uploading...' : 'Upload Now'}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
 
     </Box>

@@ -2798,6 +2798,21 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             </ListItemText>
           </MenuItem>
         )}
+        {menuVideo?.status === 'completed' && (
+          <MenuItem 
+            onClick={() => {
+              if (menuVideo) {
+                navigate(`/video/${menuVideo.videoId}?scrollTo=social`);
+              }
+              handleVideoMenuClose();
+            }}
+          >
+            <ListItemIcon>
+              <ShareIcon sx={{ color: '#007AFF' }} />
+            </ListItemIcon>
+            <ListItemText>Upload to Social</ListItemText>
+          </MenuItem>
+        )}
         <MenuItem 
           onClick={() => {
             if (menuVideo) handleDeleteVideo(menuVideo);

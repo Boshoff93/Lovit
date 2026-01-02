@@ -37,6 +37,7 @@ import CreateVideoPage from './pages/CreateVideoPage';
 import CreatePage from './pages/CreatePage';
 import MusicVideoPlayer from './pages/MusicVideoPlayer';
 import SettingsPage from './pages/SettingsPage';
+import ConnectedAccountsPage from './pages/ConnectedAccountsPage';
 import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
 import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
@@ -192,6 +193,13 @@ function App() {
           <RequireAuth>
             <Layout>
               <SettingsPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        <Route path="/settings/connected-accounts" element={
+          <RequireAuth>
+            <Layout>
+              <ConnectedAccountsPage />
             </Layout>
           </RequireAuth>
         } />
