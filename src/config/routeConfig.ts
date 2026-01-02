@@ -1884,6 +1884,62 @@ const ecommerceData: { [key: string]: { name: string; prompts: string[]; subtext
 };
 
 // =============================================================================
+// SOFTWARE & APP PROMO VIDEO DATA
+// =============================================================================
+const softwareAppData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  // Mobile Apps
+  'mobile-app': { name: 'Mobile App', prompts: ['App store preview video', 'Mobile app demo music', 'iOS Android promo', 'App launch video'], subtext: 'Create stunning mobile app promo videos that drive downloads and installs.' },
+  'ios-app': { name: 'iOS App', prompts: ['iPhone app showcase', 'iOS app store video', 'Apple app promo', 'Swift app demo'], subtext: 'Generate professional iOS app preview videos for the App Store.' },
+  'android-app': { name: 'Android App', prompts: ['Google Play video', 'Android app demo', 'Kotlin app showcase', 'Play Store promo'], subtext: 'Create compelling Android app videos for Google Play Store listings.' },
+  'react-native-app': { name: 'React Native App', prompts: ['Cross-platform app video', 'React Native demo', 'Mobile app promo', 'Hybrid app showcase'], subtext: 'Generate promo videos for your React Native cross-platform apps.' },
+  'flutter-app': { name: 'Flutter App', prompts: ['Flutter app demo video', 'Cross-platform showcase', 'Dart app promo', 'Flutter UI video'], subtext: 'Create beautiful promo videos for Flutter apps with smooth animations.' },
+  
+  // Web Apps & SaaS
+  'web-app': { name: 'Web App', prompts: ['SaaS product video', 'Web app demo music', 'Browser app promo', 'Cloud software video'], subtext: 'Create professional web app demo videos that convert visitors to users.' },
+  'saas-product': { name: 'SaaS Product', prompts: ['SaaS demo video', 'Subscription software promo', 'Cloud platform showcase', 'B2B software video'], subtext: 'Generate compelling SaaS product videos for landing pages and ads.' },
+  'chrome-extension': { name: 'Chrome Extension', prompts: ['Browser extension demo', 'Chrome Web Store video', 'Extension promo music', 'Browser plugin showcase'], subtext: 'Create Chrome extension promo videos that drive installs.' },
+  
+  // Desktop Software
+  'desktop-app': { name: 'Desktop App', prompts: ['Desktop software demo', 'Mac Windows app video', 'Native app promo', 'Desktop tool showcase'], subtext: 'Generate professional desktop application promotional videos.' },
+  'mac-app': { name: 'Mac App', prompts: ['macOS app video', 'Mac App Store promo', 'Apple desktop demo', 'Mac software showcase'], subtext: 'Create stunning Mac app videos for the Mac App Store.' },
+  'windows-app': { name: 'Windows App', prompts: ['Windows software demo', 'Microsoft Store video', 'PC app promo', 'Windows tool showcase'], subtext: 'Generate professional Windows application promo videos.' },
+  
+  // Website Builders & No-Code
+  'website-builder': { name: 'Website Builder', prompts: ['Site builder demo', 'No-code website video', 'Drag drop builder', 'Website creator promo'], subtext: 'Create promo videos for website builder platforms and templates.' },
+  'squarespace-site': { name: 'Squarespace Site', prompts: ['Squarespace template video', 'Portfolio site promo', 'Squarespace design demo', 'Beautiful website showcase'], subtext: 'Generate stunning Squarespace website promotional videos.' },
+  'wix-site': { name: 'Wix Site', prompts: ['Wix website demo', 'Wix template promo', 'Drag drop site video', 'Wix design showcase'], subtext: 'Create professional Wix website promo videos.' },
+  'webflow-site': { name: 'Webflow Site', prompts: ['Webflow design video', 'No-code website promo', 'Webflow template demo', 'Design showcase'], subtext: 'Generate beautiful Webflow website promotional content.' },
+  'framer-site': { name: 'Framer Site', prompts: ['Framer website video', 'Interactive site promo', 'Framer template demo', 'Motion design showcase'], subtext: 'Create dynamic Framer website promo videos with motion.' },
+  'wordpress-site': { name: 'WordPress Site', prompts: ['WordPress demo video', 'Theme showcase promo', 'CMS website video', 'WordPress design'], subtext: 'Generate WordPress website and theme promotional videos.' },
+  'shopify-store-app': { name: 'Shopify Store', prompts: ['Shopify store demo', 'E-commerce site video', 'Online store promo', 'Shopify theme showcase'], subtext: 'Create Shopify store promotional videos that drive sales.' },
+  
+  // AI-Coded / Vibe-Coded Apps
+  'ai-coded-app': { name: 'AI-Coded App', prompts: ['AI built app video', 'Vibe coded promo', 'AI generated software', 'No-code AI app demo'], subtext: 'Create promo videos for apps built with AI coding assistants.' },
+  'lovable-app': { name: 'Lovable App', prompts: ['Lovable built app demo', 'AI generated app video', 'Lovable project promo', 'Vibe coded showcase'], subtext: 'Generate promo videos for apps built with Lovable AI.' },
+  'bolt-app': { name: 'Bolt App', prompts: ['Bolt built app video', 'AI coded demo', 'Bolt project promo', 'Instant app showcase'], subtext: 'Create stunning promo videos for Bolt-generated applications.' },
+  'cursor-app': { name: 'Cursor-Built App', prompts: ['Cursor coded app demo', 'AI pair programmed video', 'Cursor project promo', 'AI-assisted software'], subtext: 'Generate promo videos for apps built with Cursor AI.' },
+  'v0-app': { name: 'v0 App', prompts: ['v0 generated UI video', 'AI designed app promo', 'v0 component showcase', 'Generative UI demo'], subtext: 'Create promo videos for v0-generated interfaces and apps.' },
+  'replit-app': { name: 'Replit App', prompts: ['Replit built app video', 'Cloud IDE project promo', 'Replit deployment demo', 'Collaborative app showcase'], subtext: 'Generate promo videos for apps deployed on Replit.' },
+  
+  // Framework-Specific
+  'react-app': { name: 'React App', prompts: ['React application video', 'Frontend app promo', 'React UI demo', 'Component showcase'], subtext: 'Create professional promo videos for React applications.' },
+  'nextjs-app': { name: 'Next.js App', prompts: ['Next.js app video', 'Vercel deployment promo', 'SSR app demo', 'Full-stack showcase'], subtext: 'Generate promo videos for Next.js applications.' },
+  'vue-app': { name: 'Vue App', prompts: ['Vue.js application video', 'Vue UI promo', 'Frontend demo', 'Vue component showcase'], subtext: 'Create stunning promo videos for Vue.js applications.' },
+  'nuxt-app': { name: 'Nuxt App', prompts: ['Nuxt.js app video', 'Vue SSR promo', 'Nuxt project demo', 'Full-stack Vue showcase'], subtext: 'Generate promo videos for Nuxt.js applications.' },
+  'svelte-app': { name: 'Svelte App', prompts: ['Svelte application video', 'SvelteKit promo', 'Svelte UI demo', 'Reactive app showcase'], subtext: 'Create promo videos for Svelte and SvelteKit apps.' },
+  
+  // Startup & Product Hunt
+  'startup-app': { name: 'Startup App', prompts: ['Startup product video', 'MVP demo promo', 'Launch day video', 'Investor pitch visual'], subtext: 'Create compelling startup app videos for launches and pitches.' },
+  'product-hunt-launch': { name: 'Product Hunt Launch', prompts: ['Product Hunt video', 'Launch day promo', 'Indie maker demo', 'PH featured showcase'], subtext: 'Generate Product Hunt launch videos that get upvotes.' },
+  'indie-hacker-app': { name: 'Indie Hacker App', prompts: ['Indie project video', 'Solo developer promo', 'Side project demo', 'Bootstrapped app showcase'], subtext: 'Create authentic promo videos for indie hacker projects.' },
+  
+  // Developer Tools
+  'developer-tool': { name: 'Developer Tool', prompts: ['Dev tool demo video', 'Developer productivity promo', 'Coding tool showcase', 'DevEx software video'], subtext: 'Generate promo videos for developer tools and utilities.' },
+  'api-product': { name: 'API Product', prompts: ['API demo video', 'Developer platform promo', 'Integration showcase', 'API documentation video'], subtext: 'Create promo videos for API products and developer platforms.' },
+  'cli-tool': { name: 'CLI Tool', prompts: ['Command line demo', 'Terminal tool promo', 'CLI showcase video', 'Developer utility demo'], subtext: 'Generate promo videos for command-line tools and utilities.' },
+};
+
+// =============================================================================
 // AIRBNB / SHORT-TERM RENTAL DATA
 // =============================================================================
 const airbnbData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
@@ -2203,6 +2259,30 @@ function generateAirbnbRoute(airbnbType: string): RouteConfig {
   };
 }
 
+function generateSoftwareAppRoute(appType: string): RouteConfig {
+  const data = softwareAppData[appType];
+  const name = data?.name || capitalize(appType);
+  const prompts = data?.prompts || [`${name} promo video`, `${name} demo`, `${name} showcase`, `${name} launch`];
+  const subtext = data?.subtext || `Create professional ${name.toLowerCase()} promotional videos with AI-generated music and visuals.`;
+  
+  return {
+    path: `/${appType}-promo-video`,
+    title: `${name} Promo Video - AI Software & App Marketing | Gruvi`,
+    description: `Create stunning ${name.toLowerCase()} promotional videos with AI. ${subtext} Fully automated - just upload screenshots and describe your app.`,
+    keywords: `${appType.replace(/-/g, ' ')} promo video, app demo video, software marketing video, ${name.toLowerCase()} showcase, ai video generator`,
+    ogTitle: `${name} Promo Videos | Gruvi`,
+    ogDescription: `Create ${name.toLowerCase()} videos with AI - drive downloads and signups.`,
+    twitterTitle: `${name} Videos | Gruvi`,
+    twitterDescription: `AI-powered ${name.toLowerCase()} promo videos.`,
+    breadcrumbName: name,
+    heroTagline: `${name} Videos`,
+    heroHeading: `${name} Promo Videos\nAI-powered app marketing`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'promotional',
+  };
+}
+
 // =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
@@ -2218,6 +2298,7 @@ const adTestingTypes = Object.keys(adTestingData);
 const occasionMusicTypes = Object.keys(occasionMusicData);
 const ecommerceTypes = Object.keys(ecommerceData);
 const airbnbTypes = Object.keys(airbnbData);
+const softwareAppTypes = Object.keys(softwareAppData);
 const genres = Object.keys(genreData);
 const languages = Object.keys(languageData);
 const holidays = Object.keys(holidayData);
@@ -2371,6 +2452,8 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(ecommerceTypes.map(e => [generateEcommerceRoute(e).path, generateEcommerceRoute(e)])),
   // NEW: Airbnb / short-term rental routes
   ...Object.fromEntries(airbnbTypes.map(a => [generateAirbnbRoute(a).path, generateAirbnbRoute(a)])),
+  // NEW: Software & App promo video routes
+  ...Object.fromEntries(softwareAppTypes.map(s => [generateSoftwareAppRoute(s).path, generateSoftwareAppRoute(s)])),
 };
 
 // Helper function to get route config by path
@@ -2393,5 +2476,7 @@ export {
   artists, showsAndMovies, animeSoundtracks, adMusicTypes,
   streamingPlatforms, easeOfUseFeatures, cinematicPromoTypes,
   // UGC, Ad Testing, Occasions, E-commerce, Airbnb exports
-  ugcVideoTypes, adTestingTypes, occasionMusicTypes, ecommerceTypes, airbnbTypes
+  ugcVideoTypes, adTestingTypes, occasionMusicTypes, ecommerceTypes, airbnbTypes,
+  // Software & App promo video exports
+  softwareAppTypes
 };

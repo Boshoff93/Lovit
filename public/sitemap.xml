@@ -160,6 +160,236 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- ========================================== -->
+  <!-- SOFTWARE & APP PROMO VIDEO PAGES -->
+  <!-- ========================================== -->
+  
+  <!-- Mobile Apps -->
+  <url>
+    <loc>https://gruvimusic.com/mobile-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/ios-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/android-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/react-native-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/flutter-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Web Apps & SaaS -->
+  <url>
+    <loc>https://gruvimusic.com/web-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/saas-product-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/chrome-extension-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Desktop Software -->
+  <url>
+    <loc>https://gruvimusic.com/desktop-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/mac-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/windows-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Website Builders & No-Code -->
+  <url>
+    <loc>https://gruvimusic.com/website-builder-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/squarespace-site-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/wix-site-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/webflow-site-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/framer-site-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/wordpress-site-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/shopify-store-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- AI-Coded / Vibe-Coded Apps -->
+  <url>
+    <loc>https://gruvimusic.com/ai-coded-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/lovable-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/bolt-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/cursor-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/v0-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/replit-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Framework-Specific -->
+  <url>
+    <loc>https://gruvimusic.com/react-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/nextjs-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/vue-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/nuxt-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/svelte-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Startup & Product Hunt -->
+  <url>
+    <loc>https://gruvimusic.com/startup-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/product-hunt-launch-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/indie-hacker-app-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Developer Tools -->
+  <url>
+    <loc>https://gruvimusic.com/developer-tool-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/api-product-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gruvimusic.com/cli-tool-promo-video</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Placeholder videos (lower priority) -->
   <url>
     <loc>https://gruvimusic.com/videos/neon-city-nights</loc>
