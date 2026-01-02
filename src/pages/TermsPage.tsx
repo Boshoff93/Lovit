@@ -111,7 +111,7 @@ const TermsPage: React.FC = () => {
           <Box sx={{ mt: 4 }}>
             <Typography variant="body2">
               For any questions about these Terms of Service, please contact us at{' '}
-              <Link to="/contact">support@gruvimusic.com</Link>
+              <a href="mailto:admin@wbtechventures.com">admin@wbtechventures.com</a>
             </Typography>
           </Box>
         </Paper>

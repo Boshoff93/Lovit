@@ -35,6 +35,7 @@ const characterKindOptions = [
   { id: 'Non-Human', label: 'Non-Human', image: '/characters/dog.jpeg' },
   { id: 'Product', label: 'Product', image: '/characters/product.jpeg' },
   { id: 'Place', label: 'Place / Airbnb', image: '/characters/house.jpeg' },
+  { id: 'App', label: 'Software & Apps', image: '/characters/app.jpeg' },
 ];
 
 // Gender options
@@ -216,6 +217,8 @@ const CreateCharacterPage: React.FC = () => {
         // Check for character kind
         if (desc.includes('Place')) {
           setCharacterKind('Place');
+        } else if (desc.includes('App')) {
+          setCharacterKind('App');
         } else if (desc.includes('Product')) {
           setCharacterKind('Product');
         } else if (desc.includes('Non-Human')) {
@@ -359,9 +362,9 @@ const CreateCharacterPage: React.FC = () => {
         : [];
 
       // Build description from character attributes
-      // Product and Place types don't have age, gender, hair, eye color
-      const isProductOrPlace = characterKind === 'Product' || characterKind === 'Place';
-      const fullDescription = isProductOrPlace
+      // Product, Place, and App types don't have age, gender, hair, eye color
+      const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App';
+      const fullDescription = isProductOrPlaceOrApp
         ? [
             characterDescription,
             characterKind, // "Product" or "Place"
@@ -377,15 +380,15 @@ const CreateCharacterPage: React.FC = () => {
         // Update existing character/product/place
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place',
-          ...(isProductOrPlace ? {} : { gender: characterGender, age: characterAge }),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App',
+          ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
 
-        console.log('Character/Product update response:', response.data);
+        console.log('Character/Product/App update response:', response.data);
 
-        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character');
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'));
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" updated successfully!`,
@@ -396,15 +399,15 @@ const CreateCharacterPage: React.FC = () => {
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place',
-          ...(isProductOrPlace ? {} : { gender: characterGender, age: characterAge }),
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App',
+          ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
 
-        console.log('Character/Product/Place creation response:', response.data);
+        console.log('Character/Product/Place/App creation response:', response.data);
 
-        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character');
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'));
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" created successfully!`,
@@ -605,7 +608,7 @@ const CreateCharacterPage: React.FC = () => {
         </Paper>
 
         {/* Gender - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && characterKind !== 'Place' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
           <Paper
             elevation={0}
             sx={{
@@ -761,7 +764,7 @@ const CreateCharacterPage: React.FC = () => {
         )}
 
         {/* Eye Color - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && characterKind !== 'Place' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
           <Paper
             elevation={0}
             sx={{
@@ -806,7 +809,7 @@ const CreateCharacterPage: React.FC = () => {
         )}
 
         {/* Age - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && characterKind !== 'Place' && (
+        {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
           <Paper
             elevation={0}
             sx={{
@@ -864,7 +867,7 @@ const CreateCharacterPage: React.FC = () => {
             Reference Images
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.85rem' }}>
-            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : 'for appearance in music videos'}
+            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : 'for appearance in music videos'}
           </Typography>
           {characterKind === 'Product' && (
             <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
@@ -874,6 +877,11 @@ const CreateCharacterPage: React.FC = () => {
           {characterKind === 'Place' && (
             <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
               💡 Tip: Upload up to 20 photos! Include interior rooms, exterior views, surrounding area (beachfront, garden, pool), and unique features. Each photo becomes a scene in your video.
+            </Typography>
+          )}
+          {characterKind === 'App' && (
+            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+              💡 Tip: Include app screenshots, UI mockups, logo, and feature highlights. Show key screens and user flows for the best promo video.
             </Typography>
           )}
           
@@ -992,14 +1000,18 @@ const CreateCharacterPage: React.FC = () => {
               ? 'Property Details' 
               : characterKind === 'Product' 
                 ? 'Product Description' 
-                : 'Description'} (Optional)
+                : characterKind === 'App'
+                  ? 'App Description'
+                  : 'Description'} (Optional)
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
             {characterKind === 'Place' 
               ? 'Describe the location, style, key features, amenities, and vibe'
               : characterKind === 'Product' 
                 ? 'Describe the product features, materials, colors, and unique details'
-                : 'Add extra details about personality, appearance, features, or traits'}
+                : characterKind === 'App'
+                  ? 'Describe the app, its key features, target users, and what makes it unique'
+                  : 'Add extra details about personality, appearance, features, or traits'}
           </Typography>
           <TextField
             fullWidth
@@ -1012,7 +1024,9 @@ const CreateCharacterPage: React.FC = () => {
                 ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms" 
                 : characterKind === 'Product' 
                   ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side" 
-                  : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
+                  : characterKind === 'App'
+                    ? "e.g., A fitness tracking app with clean UI, progress charts, workout plans, social features, and gamification elements"
+                    : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
             }
             sx={{
               '& .MuiOutlinedInput-root': {
@@ -1047,8 +1061,8 @@ const CreateCharacterPage: React.FC = () => {
             <>
               <PersonIcon sx={{ mr: 1 }} />
               {isEditMode 
-                ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character')}` 
-                : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : 'Character')}`}
+                ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}` 
+                : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`}
             </>
           )}
         </Button>

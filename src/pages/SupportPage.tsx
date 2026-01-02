@@ -19,7 +19,7 @@ const SupportPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleEmailClick = () => {
-    window.location.href = 'mailto:support@gruvimusic.com';
+    window.location.href = 'mailto:admin@wbtechventures.com';
   };
 
   const handleFAQClick = () => {

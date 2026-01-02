@@ -89,6 +89,7 @@ interface Character {
 const getCharacterTypeImage = (description?: string): string => {
   if (!description) return '/characters/human.jpeg';
   if (description.includes('Place')) return '/characters/house.jpeg';
+  if (description.includes('App')) return '/characters/app.jpeg';
   if (description.includes('Product')) return '/characters/product.jpeg';
   if (description.includes('Non-Human')) return '/characters/dog.jpeg';
   return '/characters/human.jpeg';
@@ -270,8 +271,9 @@ const CharactersPage: React.FC = () => {
       ) : (
         (() => {
           // Group characters by type
-          const getCharacterType = (char: Character): 'person' | 'product' | 'place' => {
+          const getCharacterType = (char: Character): 'person' | 'product' | 'place' | 'app' => {
             if (char.description?.includes('Place')) return 'place';
+            if (char.description?.includes('App')) return 'app';
             if (char.description?.includes('Product')) return 'product';
             return 'person';
           };
@@ -280,12 +282,14 @@ const CharactersPage: React.FC = () => {
             person: characters.filter(c => getCharacterType(c) === 'person'),
             product: characters.filter(c => getCharacterType(c) === 'product'),
             place: characters.filter(c => getCharacterType(c) === 'place'),
+            app: characters.filter(c => getCharacterType(c) === 'app'),
           };
 
           const sections = [
             { key: 'person', label: 'People', items: grouped.person },
             { key: 'product', label: 'Products', items: grouped.product },
             { key: 'place', label: 'Places', items: grouped.place },
+            { key: 'app', label: 'Software & Apps', items: grouped.app },
           ].filter(section => section.items.length > 0);
 
           const renderCharacterItem = (character: Character) => (
@@ -338,9 +342,11 @@ const CharactersPage: React.FC = () => {
                 >
                   {character.description?.includes('Place') 
                     ? 'Place' 
-                    : character.description?.includes('Product') 
-                      ? 'Product' 
-                      : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
+                    : character.description?.includes('App')
+                      ? 'Software & Apps'
+                      : character.description?.includes('Product') 
+                        ? 'Product' 
+                        : `${character.gender || ''}${character.age ? ` • ${character.age}` : ''}`}
                 </Typography>
               </Box>
               <Tooltip title="Delete" arrow>
