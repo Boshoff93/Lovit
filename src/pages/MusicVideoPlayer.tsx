@@ -12,6 +12,12 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  Button,
+  TextField,
+  Alert,
+  Tooltip,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -26,10 +32,20 @@ import {
   AspectRatio,
   Download,
   Mic,
-  Lyrics
+  Lyrics,
+  Share,
+  YouTube,
+  AutoAwesome,
+  Image as ImageIcon,
+  Edit,
+  Add,
+  LocationOn,
+  Refresh,
+  Check,
+  ContentCopy,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
-import { videosApi, songsApi } from '../services/api';
+import { videosApi, songsApi, youtubeApi, charactersApi, Character } from '../services/api';
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -54,6 +70,8 @@ interface VideoData {
   aspectRatio?: 'portrait' | 'landscape';
   videoType?: string;
   style?: string;
+  characterIds?: string[];
+  seedreamReferenceUrls?: Record<string, string>; // characterId -> seedream URL
 }
 
 interface SongData {
@@ -89,6 +107,36 @@ const MusicVideoPlayer: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
+  
+  // Social share state (inline on page)
+  const [socialMetadata, setSocialMetadata] = useState<{
+    title: string;
+    description: string;
+    tags: string[];
+    hook: string;
+    location?: string;
+  } | null>(null);
+  const [isGeneratingMetadata, setIsGeneratingMetadata] = useState(false);
+  const [socialThumbnailUrl, setSocialThumbnailUrl] = useState<string | null>(null);
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+  const [socialLocation, setSocialLocation] = useState('');
+  const [socialError, setSocialError] = useState<string | null>(null);
+  const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
+  const [hookText, setHookText] = useState('');
+  const [newTag, setNewTag] = useState('');
+  
+  // YouTube state
+  const [youtubeConnected, setYoutubeConnected] = useState(false);
+  const [youtubeChannel, setYoutubeChannel] = useState<{ channelTitle?: string; channelThumbnail?: string } | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
+  const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
+  
+  // Video characters state (for thumbnail selection)
+  const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
 
   // Fetch video and song data
   useEffect(() => {
@@ -148,6 +196,244 @@ const MusicVideoPlayer: React.FC = () => {
 
     fetchData();
   }, [user?.userId, videoId]);
+
+  // Fetch characters used in this video
+  useEffect(() => {
+    const fetchVideoCharacters = async () => {
+      if (!user?.userId || !videoData?.characterIds?.length) {
+        setVideoCharacters([]);
+        return;
+      }
+      
+      try {
+        // Fetch all user's characters and filter to ones used in this video
+        const response = await charactersApi.getUserCharacters(user.userId);
+        const allCharacters = response.data.characters || [];
+        const usedCharacters = allCharacters.filter((c: Character) => 
+          videoData.characterIds?.includes(c.characterId)
+        );
+        setVideoCharacters(usedCharacters);
+        
+        // Pre-select all images by default (seedream + original images)
+        const allImageIds: string[] = [];
+        usedCharacters.forEach((char: Character) => {
+          // Add seedream reference if available
+          if (videoData.seedreamReferenceUrls?.[char.characterId]) {
+            allImageIds.push(`${char.characterId}_seedream`);
+          }
+          // Add all original images
+          char.imageUrls?.forEach((_, idx) => {
+            allImageIds.push(`${char.characterId}_img_${idx}`);
+          });
+        });
+        setSelectedCharacterIds(allImageIds);
+      } catch (err) {
+        console.error('Failed to fetch video characters:', err);
+      }
+    };
+    
+    fetchVideoCharacters();
+  }, [user?.userId, videoData?.characterIds, videoData?.seedreamReferenceUrls]);
+
+  // Load existing social metadata and YouTube status
+  useEffect(() => {
+    const loadSocialData = async () => {
+      if (!user?.userId || !videoId) return;
+      
+      try {
+        // Load existing social metadata
+        const response = await videosApi.getSocialMetadata(user.userId, videoId);
+        if (response.data.socialMetadata) {
+          setSocialMetadata(response.data.socialMetadata);
+          setEditedMetadata(response.data.socialMetadata);
+          setHookText(response.data.socialMetadata.hook || '');
+          setSocialLocation(response.data.socialMetadata.location || '');
+        }
+        if (response.data.socialThumbnailUrl) {
+          setSocialThumbnailUrl(response.data.socialThumbnailUrl);
+        }
+      } catch {
+        // No existing metadata, that's okay
+      }
+      
+      try {
+        // Check YouTube status
+        const ytResponse = await youtubeApi.getStatus(user.userId);
+        setYoutubeConnected(ytResponse.data.connected);
+        setYoutubeChannel(ytResponse.data.channelInfo);
+      } catch {
+        // YouTube not connected
+      }
+    };
+    
+    loadSocialData();
+  }, [user?.userId, videoId]);
+
+  // Social sharing handlers
+  const handleGenerateMetadata = async () => {
+    if (!user?.userId || !videoId) return;
+    setIsGeneratingMetadata(true);
+    setSocialError(null);
+    
+    try {
+      const response = await videosApi.generateSocialMetadata(user.userId, videoId, { location: socialLocation });
+      const newMetadata = response.data.socialMetadata;
+      setSocialMetadata(newMetadata);
+      setEditedMetadata(newMetadata);
+      setHookText(newMetadata.hook || '');
+      setSocialSuccess('Social metadata generated! (10 credits used)');
+      setTimeout(() => setSocialSuccess(null), 3000);
+    } catch (err: any) {
+      setSocialError(err.response?.data?.error || 'Failed to generate metadata');
+    } finally {
+      setIsGeneratingMetadata(false);
+    }
+  };
+
+  const handleSaveMetadata = async () => {
+    if (!user?.userId || !videoId || !editedMetadata) return;
+    setSocialError(null);
+    
+    try {
+      await videosApi.updateSocialMetadata(user.userId, videoId, editedMetadata);
+      setSocialMetadata(editedMetadata);
+      setIsEditing(false);
+      setSocialSuccess('Metadata saved!');
+      setTimeout(() => setSocialSuccess(null), 3000);
+    } catch (err: any) {
+      setSocialError(err.response?.data?.error || 'Failed to save metadata');
+    }
+  };
+
+  const handleGenerateThumbnail = async () => {
+    if (!user?.userId || !videoId || !hookText.trim()) {
+      setSocialError('Please enter hook text for the thumbnail');
+      return;
+    }
+    setIsGeneratingThumbnail(true);
+    setSocialError(null);
+    
+    try {
+      // Convert selected image IDs to actual URLs
+      const selectedImageUrls: string[] = [];
+      selectedCharacterIds.forEach(id => {
+        // Parse the ID format: characterId_seedream or characterId_img_N
+        if (id.endsWith('_seedream')) {
+          const charId = id.replace('_seedream', '');
+          const url = videoData?.seedreamReferenceUrls?.[charId];
+          if (url) selectedImageUrls.push(url);
+        } else if (id.includes('_img_')) {
+          const [charId, , idxStr] = id.split('_img_');
+          const idx = parseInt(idxStr || '0');
+          const char = videoCharacters.find(c => c.characterId === charId);
+          if (char?.imageUrls?.[idx]) {
+            selectedImageUrls.push(char.imageUrls[idx]);
+          }
+        }
+      });
+      
+      const response = await videosApi.generateSocialThumbnail(user.userId, videoId, {
+        hookText,
+        selectedImageUrls: selectedImageUrls.length > 0 ? selectedImageUrls : undefined,
+      });
+      setSocialThumbnailUrl(response.data.thumbnailUrl);
+      setSocialSuccess('Thumbnail generated! (10 credits used)');
+      setTimeout(() => setSocialSuccess(null), 3000);
+    } catch (err: any) {
+      setSocialError(err.response?.data?.error || 'Failed to generate thumbnail');
+    } finally {
+      setIsGeneratingThumbnail(false);
+    }
+  };
+
+  const handleAddTag = () => {
+    if (editedMetadata && newTag.trim()) {
+      const updatedTags = [...(editedMetadata.tags || []), newTag.trim()];
+      setEditedMetadata({ ...editedMetadata, tags: updatedTags });
+      setNewTag('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    if (editedMetadata) {
+      const updatedTags = editedMetadata.tags.filter(tag => tag !== tagToRemove);
+      setEditedMetadata({ ...editedMetadata, tags: updatedTags });
+    }
+  };
+
+  const handleCopyDescription = () => {
+    if (editedMetadata?.description) {
+      navigator.clipboard.writeText(editedMetadata.description);
+      setSocialSuccess('Description copied!');
+      setTimeout(() => setSocialSuccess(null), 2000);
+    }
+  };
+
+  const handleConnectYouTube = async () => {
+    if (!user?.userId) return;
+    
+    try {
+      const response = await youtubeApi.getAuthUrl(user.userId);
+      const { authUrl } = response.data;
+      
+      const authWindow = window.open(authUrl, 'YouTube Authorization', 'width=600,height=700');
+      
+      const handleMessage = async (event: MessageEvent) => {
+        if (event.data?.type === 'youtube-oauth-callback') {
+          const { code, state } = event.data;
+          window.removeEventListener('message', handleMessage);
+          
+          try {
+            const callbackResponse = await youtubeApi.handleCallback(code, state);
+            setYoutubeConnected(true);
+            setYoutubeChannel(callbackResponse.data.channelInfo);
+            setSocialSuccess('YouTube connected!');
+            setTimeout(() => setSocialSuccess(null), 3000);
+          } catch (err: any) {
+            setSocialError(err.response?.data?.error || 'Failed to connect YouTube');
+          }
+        }
+      };
+      
+      window.addEventListener('message', handleMessage);
+      
+      const checkClosed = setInterval(() => {
+        if (authWindow?.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', handleMessage);
+        }
+      }, 1000);
+      
+    } catch (err: any) {
+      setSocialError(err.response?.data?.error || 'Failed to start YouTube authorization');
+    }
+  };
+
+  const handleYouTubeUpload = async () => {
+    if (!user?.userId || !videoId) return;
+    
+    if (!youtubeConnected) {
+      handleConnectYouTube();
+      return;
+    }
+    
+    setIsUploading(true);
+    setSocialError(null);
+    
+    try {
+      const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro });
+      setYoutubeUrl(response.data.youtubeUrl);
+      setSocialSuccess(`Uploaded to YouTube!`);
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error || 'Failed to upload to YouTube';
+      if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+        setYoutubeConnected(false);
+      }
+      setSocialError(errorMsg);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleGoBack = useCallback(() => {
     navigate('/my-library?tab=videos');
@@ -477,6 +763,13 @@ const MusicVideoPlayer: React.FC = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton 
+                    onClick={() => document.getElementById('social-sharing-section')?.scrollIntoView({ behavior: 'smooth' })} 
+                    sx={{ color: '#fff' }}
+                    title="Share to social media"
+                  >
+                    <Share />
+                  </IconButton>
                   <IconButton onClick={handleDownload} sx={{ color: '#fff' }}>
                     <Download />
                   </IconButton>
@@ -611,6 +904,7 @@ const MusicVideoPlayer: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
+
             </Paper>
 
             {/* Lyrics Card - Takes remaining height */}
@@ -660,7 +954,483 @@ const MusicVideoPlayer: React.FC = () => {
             </Paper>
           </Box>
         </Box>
+
+        {/* Social Sharing Section */}
+        <Paper
+          id="social-sharing-section"
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            p: 3,
+            mt: 3,
+            background: '#fff',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+            <Share sx={{ fontSize: 24, color: '#FF3B30' }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+              Share to Social Media
+            </Typography>
+          </Box>
+
+          {/* Alerts */}
+          {socialError && (
+            <Alert severity="error" onClose={() => setSocialError(null)} sx={{ mb: 2 }}>
+              {socialError}
+            </Alert>
+          )}
+          {socialSuccess && (
+            <Alert severity="success" onClose={() => setSocialSuccess(null)} sx={{ mb: 2 }}>
+              {socialSuccess}
+            </Alert>
+          )}
+
+          {/* Generate Metadata Section */}
+          {!socialMetadata ? (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ color: '#86868B', mb: 2 }}>
+                Generate AI-powered title, description, tags, and hook for your video
+              </Typography>
+              
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <TextField
+                  label="Location (Optional)"
+                  placeholder="e.g., New York City, Beach sunset"
+                  value={socialLocation}
+                  onChange={(e) => setSocialLocation(e.target.value)}
+                  InputProps={{
+                    startAdornment: <LocationOn sx={{ color: '#86868B', mr: 1 }} />,
+                  }}
+                  sx={{ flex: 1, minWidth: 250 }}
+                  size="small"
+                />
+                <Button
+                  variant="contained"
+                  startIcon={isGeneratingMetadata ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <AutoAwesome />}
+                  onClick={handleGenerateMetadata}
+                  disabled={isGeneratingMetadata}
+                  sx={{
+                    background: 'linear-gradient(135deg, #007AFF, #5856D6)',
+                    px: 3,
+                    py: 1,
+                    borderRadius: 2,
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    '&:hover': { background: 'linear-gradient(135deg, #0066CC, #4845B3)' },
+                  }}
+                >
+                  {isGeneratingMetadata ? 'Generating...' : 'Generate Metadata (10 credits)'}
+                </Button>
+              </Box>
+            </Box>
+          ) : (
+            <Box sx={{ mb: 3 }}>
+              {/* Metadata Editor */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Social Media Details
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    startIcon={<Refresh />}
+                    onClick={handleGenerateMetadata}
+                    disabled={isGeneratingMetadata}
+                    size="small"
+                  >
+                    Regenerate
+                  </Button>
+                  {!isEditing ? (
+                    <Button startIcon={<Edit />} onClick={() => setIsEditing(true)} size="small">
+                      Edit
+                    </Button>
+                  ) : (
+                    <Button startIcon={<Check />} onClick={handleSaveMetadata} size="small" variant="contained">
+                      Save
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                {/* Title */}
+                <TextField
+                  fullWidth
+                  label="Title"
+                  value={editedMetadata?.title || ''}
+                  onChange={(e) => setEditedMetadata(prev => prev ? { ...prev, title: e.target.value } : null)}
+                  disabled={!isEditing}
+                  size="small"
+                  inputProps={{ maxLength: 100 }}
+                  helperText={`${editedMetadata?.title?.length || 0}/100`}
+                />
+
+                {/* Hook */}
+                <TextField
+                  fullWidth
+                  label="Hook (for thumbnail)"
+                  value={editedMetadata?.hook || ''}
+                  onChange={(e) => {
+                    setEditedMetadata(prev => prev ? { ...prev, hook: e.target.value } : null);
+                    setHookText(e.target.value);
+                  }}
+                  disabled={!isEditing}
+                  size="small"
+                  placeholder="e.g., 'Epic Adventure Awaits!'"
+                />
+              </Box>
+
+              {/* Description */}
+              <Box sx={{ position: 'relative', mt: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  value={editedMetadata?.description || ''}
+                  onChange={(e) => setEditedMetadata(prev => prev ? { ...prev, description: e.target.value } : null)}
+                  disabled={!isEditing}
+                  multiline
+                  rows={3}
+                  size="small"
+                />
+                <Tooltip title="Copy description">
+                  <IconButton
+                    onClick={handleCopyDescription}
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                    size="small"
+                  >
+                    <ContentCopy fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* Tags */}
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+                  Tags
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                  {editedMetadata?.tags?.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag.startsWith('#') ? tag : `#${tag}`}
+                      size="small"
+                      onDelete={isEditing ? () => handleRemoveTag(tag) : undefined}
+                      sx={{
+                        bgcolor: 'rgba(0,122,255,0.1)',
+                        color: '#007AFF',
+                        '& .MuiChip-deleteIcon': { color: '#007AFF' },
+                      }}
+                    />
+                  ))}
+                </Box>
+                {isEditing && (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      size="small"
+                      placeholder="Add a tag..."
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                      sx={{ flex: 1, maxWidth: 200 }}
+                    />
+                    <IconButton onClick={handleAddTag} disabled={!newTag.trim()} size="small">
+                      <Add />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          )}
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Thumbnail Generation */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+              Custom Thumbnail
+            </Typography>
+            
+            <Box>
+              <Box sx={{ mb: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Hook Text (appears on thumbnail)"
+                  value={hookText}
+                  onChange={(e) => setHookText(e.target.value)}
+                  placeholder="e.g., 'This Changes Everything!'"
+                  size="small"
+                  sx={{ mb: 2 }}
+                  helperText="Catchy 2-6 word phrase"
+                />
+
+                {/* Characters/Products Selection with ALL images */}
+                {videoCharacters.length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#86868B', fontWeight: 500, mb: 1.5 }}>
+                      Include in Thumbnail (click images to select)
+                    </Typography>
+                    
+                    {videoCharacters.map((char) => {
+                      // Collect all images for this character
+                      const allImages: { url: string; label: string; id: string }[] = [];
+                      
+                      // Add Seedream reference image (AI-generated) if available
+                      const seedreamUrl = videoData?.seedreamReferenceUrls?.[char.characterId];
+                      if (seedreamUrl) {
+                        allImages.push({
+                          url: seedreamUrl,
+                          label: 'AI Reference',
+                          id: `${char.characterId}_seedream`,
+                        });
+                      }
+                      
+                      // Add all original images
+                      char.imageUrls?.forEach((url, idx) => {
+                        allImages.push({
+                          url,
+                          label: char.characterType === 'App' ? `Screenshot ${idx + 1}` : `Image ${idx + 1}`,
+                          id: `${char.characterId}_img_${idx}`,
+                        });
+                      });
+                      
+                      if (allImages.length === 0) return null;
+                      
+                      return (
+                        <Box key={char.characterId} sx={{ mb: 2 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Typography sx={{ fontSize: 14 }}>
+                              {char.characterType === 'App' ? '📱' : 
+                               char.characterType === 'Product' ? '📦' :
+                               char.characterType === 'Place' ? '🏠' : '👤'}
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                              {char.characterName}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#86868B' }}>
+                              ({char.characterType || 'Character'})
+                            </Typography>
+                          </Box>
+                          
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {allImages.map((img) => {
+                              const isSelected = selectedCharacterIds.includes(img.id);
+                              
+                              return (
+                                <Box
+                                  key={img.id}
+                                  onClick={() => {
+                                    setSelectedCharacterIds(prev => 
+                                      isSelected 
+                                        ? prev.filter(id => id !== img.id)
+                                        : [...prev, img.id]
+                                    );
+                                  }}
+                                  sx={{
+                                    position: 'relative',
+                                    cursor: 'pointer',
+                                    borderRadius: 1.5,
+                                    overflow: 'hidden',
+                                    border: isSelected ? '3px solid #007AFF' : '2px solid transparent',
+                                    boxShadow: isSelected ? '0 0 0 2px rgba(0,122,255,0.3)' : 'none',
+                                    transition: 'all 0.2s',
+                                    '&:hover': {
+                                      transform: 'scale(1.05)',
+                                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                    },
+                                  }}
+                                >
+                                  <Box
+                                    component="img"
+                                    src={img.url}
+                                    alt={img.label}
+                                    sx={{
+                                      width: 60,
+                                      height: 60,
+                                      objectFit: 'cover',
+                                      display: 'block',
+                                    }}
+                                  />
+                                  {/* Label badge */}
+                                  <Box
+                                    sx={{
+                                      position: 'absolute',
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bgcolor: 'rgba(0,0,0,0.6)',
+                                      color: '#fff',
+                                      fontSize: '9px',
+                                      fontWeight: 500,
+                                      textAlign: 'center',
+                                      py: 0.25,
+                                    }}
+                                  >
+                                    {img.label}
+                                  </Box>
+                                  {/* Selection checkmark */}
+                                  {isSelected && (
+                                    <Box
+                                      sx={{
+                                        position: 'absolute',
+                                        top: 2,
+                                        right: 2,
+                                        width: 18,
+                                        height: 18,
+                                        borderRadius: '50%',
+                                        bgcolor: '#007AFF',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                      }}
+                                    >
+                                      <Check sx={{ fontSize: 12, color: '#fff' }} />
+                                    </Box>
+                                  )}
+                                </Box>
+                              );
+                            })}
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+
+                <Button
+                  variant="outlined"
+                  startIcon={isGeneratingThumbnail ? <CircularProgress size={18} /> : <ImageIcon />}
+                  onClick={handleGenerateThumbnail}
+                  disabled={isGeneratingThumbnail || !hookText.trim()}
+                  sx={{ borderRadius: 2, textTransform: 'none' }}
+                >
+                  {isGeneratingThumbnail ? 'Generating...' : 'Generate Thumbnail (10 credits)'}
+                </Button>
+              </Box>
+
+              {/* Thumbnail Preview - shows below the generate button */}
+              {(socialThumbnailUrl || videoData?.thumbnailUrl) && (
+                <Box
+                  sx={{
+                    mt: 2,
+                    width: videoData?.aspectRatio === 'landscape' ? '100%' : 200,
+                    maxWidth: videoData?.aspectRatio === 'landscape' ? 480 : 200,
+                    aspectRatio: videoData?.aspectRatio === 'landscape' ? '16/9' : '9/16',
+                    bgcolor: '#f5f5f7',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    border: '1px solid rgba(0,0,0,0.08)',
+                  }}
+                >
+                  <img
+                    src={socialThumbnailUrl || videoData?.thumbnailUrl}
+                    alt="Thumbnail Preview"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+              )}
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* YouTube Upload Section */}
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <YouTube sx={{ fontSize: 32, color: '#FF0000' }} />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Upload to YouTube {videoData?.aspectRatio === 'portrait' ? 'Shorts' : ''}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#86868B' }}>
+                  {youtubeConnected 
+                    ? `Connected: ${youtubeChannel?.channelTitle || 'Your Channel'}`
+                    : 'Connect your YouTube account to upload'
+                  }
+                </Typography>
+              </Box>
+              {youtubeChannel?.channelThumbnail && (
+                <Box
+                  component="img"
+                  src={youtubeChannel.channelThumbnail}
+                  alt="Channel"
+                  sx={{ width: 40, height: 40, borderRadius: '50%' }}
+                />
+              )}
+            </Box>
+
+            {/* Thumbnail intro toggle */}
+            {youtubeConnected && socialMetadata && socialThumbnailUrl && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={addThumbnailIntro}
+                    onChange={(e) => setAddThumbnailIntro(e.target.checked)}
+                    size="small"
+                  />
+                }
+                label={<Typography variant="body2">Add 2-second thumbnail intro with fade transition</Typography>}
+                sx={{ mb: 2 }}
+              />
+            )}
+
+            {youtubeUrl ? (
+              <Alert 
+                severity="success"
+                action={
+                  <Button color="inherit" size="small" href={youtubeUrl} target="_blank">
+                    View on YouTube
+                  </Button>
+                }
+              >
+                Successfully uploaded to YouTube!
+              </Alert>
+            ) : (
+              <Button
+                variant="contained"
+                startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <YouTube />}
+                onClick={handleYouTubeUpload}
+                disabled={isUploading || (!youtubeConnected && !socialMetadata)}
+                sx={{
+                  bgcolor: youtubeConnected ? '#FF0000' : '#1D1D1F',
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: youtubeConnected ? '#CC0000' : '#333' },
+                }}
+              >
+                {isUploading 
+                  ? 'Uploading...' 
+                  : youtubeConnected 
+                    ? (socialMetadata ? 'Upload to YouTube' : 'Generate Metadata First')
+                    : 'Connect YouTube Account'
+                }
+              </Button>
+            )}
+
+            {/* Coming Soon Platforms */}
+            <Box sx={{ display: 'flex', gap: 2, mt: 3, opacity: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 24, height: 24, borderRadius: 0.5, bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>T</Typography>
+                </Box>
+                <Typography variant="body2" sx={{ color: '#86868B' }}>TikTok (Coming Soon)</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ 
+                  width: 24, height: 24, borderRadius: 0.5, 
+                  background: 'linear-gradient(45deg, #405DE6, #833AB4, #E1306C, #F77737)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>I</Typography>
+                </Box>
+                <Typography variant="body2" sx={{ color: '#86868B' }}>Instagram (Coming Soon)</Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
       </Container>
+
     </Box>
   );
 };

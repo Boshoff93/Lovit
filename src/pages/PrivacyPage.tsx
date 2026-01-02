@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container, Typography, Paper, Button } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { SEO } from '../utils/seoHelper';
 
@@ -10,23 +10,23 @@ const PrivacyPage: React.FC = () => {
   const privacyStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Privacy Policy - Lovit",
-    "description": "Privacy Policy for Lovit - AI Fashion Platform. Learn about how we collect, use, and protect your personal information.",
+    "name": "Privacy Policy - Gruvi",
+    "description": "Privacy Policy for Gruvi - AI Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information.",
     "publisher": {
       "@type": "Organization",
       "name": "Gruvi",
       "url": "https://gruvimusic.com"
     },
-    "datePublished": new Date().toISOString(),
-    "dateModified": new Date().toISOString()
+    "datePublished": "2024-01-01",
+    "dateModified": "2026-01-02"
   };
 
   return (
     <>
       <SEO
-        title="Privacy Policy - Lovit"
-        description="Privacy Policy for Lovit - AI Fashion Platform. Learn about how we collect, use, and protect your personal information."
-        keywords="privacy policy, data protection, user privacy, personal information, Lovit privacy"
+        title="Privacy Policy - Gruvi"
+        description="Privacy Policy for Gruvi - AI Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information."
+        keywords="privacy policy, data protection, user privacy, personal information, Gruvi privacy, AI music, video creation"
         ogType="website"
         structuredData={privacyStructuredData}
       />
@@ -44,7 +44,7 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           
           <Typography variant="body1" paragraph>
-            Last updated: {new Date().toLocaleDateString()}
+            Last updated: January 2, 2026
           </Typography>
 
           <Typography variant="h6" gutterBottom>
@@ -55,9 +55,9 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           <ul>
             <li>Account information (email, username, password)</li>
-            <li>Profile information (name, gender, age, etc.)</li>
-            <li>Payment information (processed securely through our payment provider)</li>
-            <li>User-generated content (photos, models, generated images)</li>
+            <li>Profile information (name)</li>
+            <li>Payment information (processed securely through Stripe)</li>
+            <li>User-generated content (uploaded images, AI-generated songs, music videos, thumbnails)</li>
             <li>Usage data and analytics</li>
           </ul>
 
@@ -68,8 +68,9 @@ const PrivacyPage: React.FC = () => {
             We use your information to:
           </Typography>
           <ul>
+            <li>Generate AI music and videos based on your prompts and uploaded content</li>
             <li>Provide and improve our services</li>
-            <li>Process your payments</li>
+            <li>Process your payments and manage credits</li>
             <li>Communicate with you about your account</li>
             <li>Ensure the security of our services</li>
             <li>Comply with legal obligations</li>
@@ -79,7 +80,7 @@ const PrivacyPage: React.FC = () => {
             3. Data Storage and Security
           </Typography>
           <Typography variant="body1" paragraph>
-            We store your data securely using industry-standard practices. While we implement reasonable security measures, no system is completely secure, and we cannot guarantee absolute security.
+            We store your data securely using industry-standard practices including encrypted storage on AWS. Your generated content (songs, videos, images) is stored securely and only accessible to you unless you choose to share it.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
@@ -90,20 +91,42 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           <ul>
             <li>Payment processors (Stripe)</li>
-            <li>Authentication providers (Google)</li>
-            <li>Cloud storage providers (AWS)</li>
+            <li>Authentication providers (Google Sign-In)</li>
+            <li>Cloud storage providers (AWS S3)</li>
+            <li>AI generation services (Fal AI, Suno)</li>
             <li>Analytics services</li>
           </ul>
 
           <Typography variant="h6" gutterBottom>
-            5. Cookies and Tracking
+            5. YouTube Integration
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If you choose to connect your YouTube account, we request access to:
+          </Typography>
+          <ul>
+            <li>Upload videos to your channel on your behalf</li>
+            <li>Set custom thumbnails on uploaded videos</li>
+            <li>View your channel name and profile picture</li>
+          </ul>
+          <Typography variant="body1" paragraph>
+            We only upload content when you explicitly click "Upload to YouTube". You can disconnect your YouTube account at any time from your settings. We store your YouTube OAuth tokens securely and encrypted. We do not access your existing YouTube videos or any other YouTube data beyond what is necessary for uploads.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Google's use and transfer of information received from Google APIs adheres to the{' '}
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+              Google API Services User Data Policy
+            </a>, including the Limited Use requirements.
+          </Typography>
+
+          <Typography variant="h6" gutterBottom>
+            6. Cookies and Tracking
           </Typography>
           <Typography variant="body1" paragraph>
             We use cookies and similar tracking technologies to improve your experience and analyze usage patterns. You can control cookie settings through your browser.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            6. Your Rights
+            7. Your Rights
           </Typography>
           <Typography variant="body1" paragraph>
             You have the right to:
@@ -111,19 +134,20 @@ const PrivacyPage: React.FC = () => {
           <ul>
             <li>Access your personal data</li>
             <li>Correct inaccurate data</li>
-            <li>Request deletion of your data</li>
+            <li>Request deletion of your data and generated content</li>
+            <li>Disconnect connected accounts (YouTube, Google)</li>
             <li>Opt-out of marketing communications</li>
           </ul>
 
           <Typography variant="h6" gutterBottom>
-            7. Children's Privacy
+            8. Children's Privacy
           </Typography>
           <Typography variant="body1" paragraph>
             Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            8. Changes to Privacy Policy
+            9. Changes to Privacy Policy
           </Typography>
           <Typography variant="body1" paragraph>
             We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page.

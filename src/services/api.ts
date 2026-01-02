@@ -1,6 +1,20 @@
 import api from '../utils/axiosConfig';
 import { createAuthenticatedRequest } from '../store/authSlice';
 
+// Character interface
+export interface Character {
+  characterId: string;
+  userId: string;
+  characterName: string;
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  gender?: string;
+  age?: string;
+  description?: string;
+  imageUrls?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // User and authentication API
 export const authApi = {
   login: (email: string, password: string) => 
@@ -155,6 +169,47 @@ export const videosApi = {
   
   deleteVideo: (userId: string, videoId: string) => 
     api.delete(`/api/gruvi/videos/${userId}/${videoId}`),
+  
+  // Social Sharing APIs
+  generateSocialMetadata: (userId: string, videoId: string, data?: { location?: string }) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`, data || {}),
+  
+  getSocialMetadata: (userId: string, videoId: string) =>
+    api.get(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`),
+  
+  updateSocialMetadata: (userId: string, videoId: string, data: {
+    title?: string;
+    description?: string;
+    tags?: string[];
+    hook?: string;
+    location?: string;
+  }) => api.put(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`, data),
+  
+  generateSocialThumbnail: (userId: string, videoId: string, data: {
+    hookText: string;
+    customPrompt?: string;
+    selectedCharacterIds?: string[];
+    selectedImageUrls?: string[];
+  }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/social-thumbnail`, data),
+  
+  // YouTube Upload
+  uploadToYouTube: (userId: string, videoId: string, data?: { addThumbnailIntro?: boolean }) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, data || {}),
+};
+
+// YouTube API
+export const youtubeApi = {
+  getAuthUrl: (userId: string) =>
+    api.get(`/api/gruvi/youtube/auth-url?userId=${userId}`),
+  
+  handleCallback: (code: string, state: string) =>
+    api.post('/api/gruvi/youtube/callback', { code, state }),
+  
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/youtube/status?userId=${userId}`),
+  
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/youtube/disconnect?userId=${userId}`),
 };
 
 // Characters API

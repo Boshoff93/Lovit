@@ -296,7 +296,19 @@ interface Video {
   createdAt: string;
   duration?: number;
   aspectRatio?: 'portrait' | 'landscape';
+  videoCategory?: 'app' | 'place' | 'product' | 'music'; // Type of video based on characters used
 }
+
+// Helper to get video category label for display
+const getVideoCategoryLabel = (category?: string): string => {
+  switch (category) {
+    case 'app': return 'App Video';
+    case 'place': return 'Place Video';
+    case 'product': return 'Product Video';
+    case 'music':
+    default: return 'Music Video';
+  }
+};
 
 interface AppPageProps {
   defaultTab?: 'songs' | 'videos';
@@ -2196,7 +2208,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 ) : (
                                   <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
                                     <Chip
-                                      label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                                      label={video.status === 'failed' ? 'Failed' : getVideoCategoryLabel(video.videoCategory)}
                                       size="small"
                                       sx={{
                                         background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
@@ -2389,7 +2401,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 ) : (
                                   <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
                                     <Chip
-                                      label={video.status === 'failed' ? 'Failed' : 'Music Video'}
+                                      label={video.status === 'failed' ? 'Failed' : getVideoCategoryLabel(video.videoCategory)}
                                       size="small"
                                       sx={{
                                         background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',

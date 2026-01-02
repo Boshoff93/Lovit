@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { 
   Box, 
@@ -13,7 +13,9 @@ import {
   Snackbar,
   Alert,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Checkbox,
+  Avatar
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -24,8 +26,22 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PersonIcon from '@mui/icons-material/Person';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import { RootState } from '../store/store';
-import { videosApi } from '../services/api';
+import { videosApi, charactersApi } from '../services/api';
+
+// Character type matching the API response
+interface Character {
+  characterId: string;
+  characterName: string;
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  description?: string;
+  imageUrls?: string[];
+}
 
 // Art styles for music videos - matching HomePage styles
 const artStyles = [
@@ -93,12 +109,16 @@ const moods = [
   { id: 'promotional', label: 'Promotional', emoji: '📣' },
 ];
 
-// Mock characters for demo - in real app, fetch from user's created characters
-const mockCharacters = [
-  { id: '1', name: 'Luna', avatar: '👧' },
-  { id: '2', name: 'Max', avatar: '👦' },
-  { id: '3', name: 'Nova', avatar: '🧑' },
-];
+// Helper to get character type icon
+const getCharacterTypeIcon = (characterType?: string) => {
+  switch (characterType) {
+    case 'Product': return <ShoppingBagIcon sx={{ fontSize: 16 }} />;
+    case 'Place': return <HomeIcon sx={{ fontSize: 16 }} />;
+    case 'App': return <PhoneIphoneIcon sx={{ fontSize: 16 }} />;
+    case 'Non-Human': return '🐕';
+    default: return <PersonIcon sx={{ fontSize: 16 }} />;
+  }
+};
 
 const CreateVideoPage: React.FC = () => {
   const { songId } = useParams();
@@ -113,6 +133,11 @@ const CreateVideoPage: React.FC = () => {
   const [videoPrompt, setVideoPrompt] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
   
+  // Character selection state
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
+  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
+  
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -122,6 +147,34 @@ const CreateVideoPage: React.FC = () => {
     message: '',
     severity: 'info'
   });
+  
+  // Fetch user's characters on mount
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      if (!user?.userId) return;
+      
+      setIsLoadingCharacters(true);
+      try {
+        const response = await charactersApi.getUserCharacters(user.userId);
+        setCharacters(response.data?.characters || []);
+      } catch (error) {
+        console.error('Failed to fetch characters:', error);
+      } finally {
+        setIsLoadingCharacters(false);
+      }
+    };
+    
+    fetchCharacters();
+  }, [user?.userId]);
+  
+  // Toggle character selection
+  const handleCharacterToggle = (characterId: string) => {
+    setSelectedCharacterIds(prev => 
+      prev.includes(characterId)
+        ? prev.filter(id => id !== characterId)
+        : [...prev, characterId]
+    );
+  };
 
   // Get credits for selected video type
   const getCredits = () => {
@@ -153,9 +206,6 @@ const CreateVideoPage: React.FC = () => {
     setVideoPrompt(event.target.value);
   };
 
-  const insertCharacter = (characterName: string) => {
-    setVideoPrompt(prev => prev + (prev ? ' ' : '') + `@${characterName}`);
-  };
 
   const handleGenerate = async () => {
     if (!songId || !videoPrompt.trim()) {
@@ -186,7 +236,7 @@ const CreateVideoPage: React.FC = () => {
         style: selectedStyle,
         videoPrompt: videoPrompt.trim(),
         aspectRatio: aspectRatio as 'portrait' | 'landscape',
-        characterIds: [], // TODO: Add character selection
+        characterIds: selectedCharacterIds,
       });
       
       setNotification({
@@ -284,42 +334,115 @@ const CreateVideoPage: React.FC = () => {
               />
             </Box>
             
-            {/* Character Quick Insert */}
-            {mockCharacters.length > 0 && (
-              <Box sx={{ mb: 2 }}>
+            {/* Character Selection */}
+            {isLoadingCharacters ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <CircularProgress size={16} />
+                <Typography variant="caption" color="text.secondary">Loading your characters...</Typography>
+              </Box>
+            ) : characters.length > 0 ? (
+              <Box sx={{ mb: 3 }}>
                 <Typography 
-                  variant="caption" 
+                  variant="body2" 
                   sx={{ 
-                    color: '#86868B', 
+                    color: '#1D1D1F', 
+                    fontWeight: 600,
                     display: 'block', 
-                    mb: 1,
-                    ml: 0.5
+                    mb: 1.5,
                   }}
                 >
-                  💡 Add your characters to the video:
+                  🎭 Select Characters, Products, Places, or Apps for your video:
                 </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {mockCharacters.map((char) => (
-                    <Chip
-                      key={char.id}
-                      label={`${char.avatar} @${char.name}`}
-                      onClick={() => insertCharacter(char.name)}
-                      size="small"
-                      sx={{
-                        borderRadius: '100px',
-                        background: 'rgba(0,122,255,0.1)',
-                        color: '#007AFF',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          background: 'rgba(0,122,255,0.2)',
-                          transform: 'translateY(-1px)',
-                        },
-                      }}
-                    />
-                  ))}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                  {characters.map((char) => {
+                    const isSelected = selectedCharacterIds.includes(char.characterId);
+                    const hasImage = char.imageUrls && char.imageUrls.length > 0;
+                    return (
+                      <Box
+                        key={char.characterId}
+                        onClick={() => handleCharacterToggle(char.characterId)}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          p: 1,
+                          pr: 1.5,
+                          borderRadius: '12px',
+                          border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                          background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.9)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            borderColor: '#007AFF',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
+                          },
+                        }}
+                      >
+                        {/* Checkbox or Avatar */}
+                        {hasImage ? (
+                          <Box sx={{ position: 'relative' }}>
+                            <Avatar 
+                              src={char.imageUrls![0]} 
+                              alt={char.characterName}
+                              sx={{ width: 40, height: 40, borderRadius: '8px' }}
+                            />
+                            {isSelected && (
+                              <CheckCircleIcon 
+                                sx={{ 
+                                  position: 'absolute', 
+                                  bottom: -4, 
+                                  right: -4, 
+                                  fontSize: 18, 
+                                  color: '#007AFF',
+                                  background: 'white',
+                                  borderRadius: '50%'
+                                }} 
+                              />
+                            )}
+                          </Box>
+                        ) : (
+                          <Checkbox 
+                            checked={isSelected} 
+                            size="small"
+                            sx={{ p: 0, color: '#007AFF' }}
+                          />
+                        )}
+                        
+                        {/* Name and Type */}
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', lineHeight: 1.2 }}>
+                            {char.characterName}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            {getCharacterTypeIcon(char.characterType)}
+                            <Typography variant="caption" sx={{ color: '#86868B', fontSize: '0.7rem' }}>
+                              {char.characterType || 'Character'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    );
+                  })}
                 </Box>
+                {selectedCharacterIds.length > 0 && (
+                  <Typography variant="caption" sx={{ color: '#007AFF', mt: 1, display: 'block' }}>
+                    ✓ {selectedCharacterIds.length} selected - these will appear in your video
+                  </Typography>
+                )}
+              </Box>
+            ) : (
+              <Box sx={{ mb: 2, p: 2, background: 'rgba(0,122,255,0.05)', borderRadius: '12px', border: '1px dashed rgba(0,122,255,0.3)' }}>
+                <Typography variant="body2" sx={{ color: '#86868B' }}>
+                  💡 <strong>No characters yet?</strong> Create characters, products, places, or apps to feature them in your videos!
+                </Typography>
+                <Button 
+                  size="small" 
+                  onClick={() => navigate('/characters/new')}
+                  sx={{ mt: 1, textTransform: 'none', color: '#007AFF' }}
+                >
+                  + Create Your First Character
+                </Button>
               </Box>
             )}
             
@@ -327,7 +450,7 @@ const CreateVideoPage: React.FC = () => {
               fullWidth
               multiline
               rows={4}
-              placeholder="Describe the scenes, setting, and story for your music video... Use @CharacterName to include your characters."
+              placeholder="Describe the scenes, setting, and story for your music video... Selected characters above will automatically appear in your video."
               value={videoPrompt}
               onChange={handlePromptChange}
               required

@@ -39,6 +39,7 @@ import MusicVideoPlayer from './pages/MusicVideoPlayer';
 import SettingsPage from './pages/SettingsPage';
 import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
+import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -152,6 +153,9 @@ function App() {
         
         {/* Unsubscribe page */}
         <Route path="/unsubscribe" element={<UnsubscribePage />} />
+        
+        {/* YouTube OAuth callback */}
+        <Route path="/youtube/callback" element={<YouTubeCallbackPage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={
