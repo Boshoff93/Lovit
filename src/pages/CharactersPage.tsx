@@ -89,7 +89,7 @@ interface Character {
 const getCharacterTypeImage = (description?: string): string => {
   if (!description) return '/characters/human.jpeg';
   if (description.includes('Place')) return '/characters/house.jpeg';
-  if (description.includes('App')) return '/characters/app.jpeg';
+  if (description.includes('App')) return '/gruvi/app.jpeg';
   if (description.includes('Product')) return '/characters/product.jpeg';
   if (description.includes('Non-Human')) return '/characters/dog.jpeg';
   return '/characters/human.jpeg';

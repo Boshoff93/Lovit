@@ -35,7 +35,7 @@ const characterKindOptions = [
   { id: 'Non-Human', label: 'Non-Human', image: '/characters/dog.jpeg' },
   { id: 'Product', label: 'Product', image: '/characters/product.jpeg' },
   { id: 'Place', label: 'Place / Airbnb', image: '/characters/house.jpeg' },
-  { id: 'App', label: 'Software & Apps', image: '/characters/app.jpeg' },
+  { id: 'App', label: 'Software & Apps', image: '/gruvi/app.jpeg' },
 ];
 
 // Gender options
