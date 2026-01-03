@@ -43,9 +43,12 @@ import {
   CloudUpload,
   Bolt,
 } from '@mui/icons-material';
-import { RootState } from '../store/store';
-import { getTokensFromAllowances } from '../store/authSlice';
+import { RootState, AppDispatch } from '../store/store';
+import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
 import { videosApi, songsApi, youtubeApi, tiktokApi, charactersApi, Character } from '../services/api';
+import { useDispatch } from 'react-redux';
+import UpgradePopup from '../components/UpgradePopup';
+import { topUpBundles, TopUpBundle } from '../config/stripe';
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -90,13 +93,15 @@ interface SongData {
 const MusicVideoPlayer: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchParams] = useSearchParams();
-  const { user, allowances } = useSelector((state: RootState) => state.auth);
+  const { user, allowances, subscription } = useSelector((state: RootState) => state.auth);
   const socialSectionRef = useRef<HTMLDivElement>(null);
   
   // Calculate remaining tokens
   const tokens = getTokensFromAllowances(allowances);
   const remainingTokens = ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
+  const isPremiumTier = subscription?.tier === 'premium' || subscription?.tier === 'pro';
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -128,6 +133,20 @@ const MusicVideoPlayer: React.FC = () => {
   const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
   const [socialError, setSocialError] = useState<string | null>(null);
   const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
+  
+  // Helper to show social error and scroll to it
+  const showSocialError = useCallback((message: string) => {
+    setSocialError(message);
+    // Scroll to the social section so user sees the error
+    setTimeout(() => {
+      const element = socialSectionRef.current;
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
+      }
+    }, 100);
+  }, []);
+  
   const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
   const [hookText, setHookText] = useState('');
   const [newTag, setNewTag] = useState('');
@@ -152,6 +171,34 @@ const MusicVideoPlayer: React.FC = () => {
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [generatedThumbnails, setGeneratedThumbnails] = useState<string[]>([]); // Store all AI-generated thumbnails
   const [selectedThumbnailUrl, setSelectedThumbnailUrl] = useState<string | null>(null); // Currently selected thumbnail
+
+  // Upgrade popup state
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [isTopUpLoading, setIsTopUpLoading] = useState(false);
+
+  // Handle top-up purchase
+  const handleTopUp = async (bundle?: TopUpBundle) => {
+    if (!bundle) return;
+    setIsTopUpLoading(true);
+    try {
+      const result = await dispatch(createCheckoutSession({
+        priceId: bundle.priceId,
+        productId: bundle.productId,
+      })).unwrap();
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } catch (err) {
+      console.error('Failed to create checkout session:', err);
+    } finally {
+      setIsTopUpLoading(false);
+    }
+  };
+
+  const handleUpgrade = () => {
+    setShowUpgradePopup(false);
+    navigate('/payment');
+  };
 
   // Fetch video and song data
   useEffect(() => {
@@ -313,9 +360,9 @@ const MusicVideoPlayer: React.FC = () => {
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData?.error === 'Insufficient credits') {
-        setSocialError(`Insufficient credits. You need ${errorData.required} credits but have ${errorData.available}. Add credits or enter metadata manually.`);
+        showSocialError(`Insufficient credits. You need ${errorData.required} credits but have ${errorData.available}. Add credits or enter metadata manually.`);
       } else {
-        setSocialError(errorData?.error || 'Failed to generate metadata');
+        showSocialError(errorData?.error || 'Failed to generate metadata');
       }
     } finally {
       setIsGeneratingMetadata(false);
@@ -324,13 +371,13 @@ const MusicVideoPlayer: React.FC = () => {
 
   const handleGenerateThumbnail = async () => {
     if (!user?.userId || !videoId || !hookText.trim()) {
-      setSocialError('Please enter hook text for the thumbnail');
+      showSocialError('Please enter hook text for the thumbnail');
       return;
     }
     // Filter out the toggle marker
     const realSelectedIds = selectedCharacterIds.filter(id => id !== 'toggle_open');
     if (realSelectedIds.length === 0) {
-      setSocialError('Please select at least one image');
+      showSocialError('Please select at least one image');
       return;
     }
     setIsGeneratingThumbnail(true);
@@ -377,7 +424,7 @@ const MusicVideoPlayer: React.FC = () => {
       setSocialSuccess('Thumbnail generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
-      setSocialError(err.response?.data?.error || 'Failed to generate thumbnail');
+      showSocialError(err.response?.data?.error || 'Failed to generate thumbnail');
     } finally {
       setIsGeneratingThumbnail(false);
     }
@@ -463,8 +510,17 @@ const MusicVideoPlayer: React.FC = () => {
     }
   };
 
+  // Check if user has a subscription (starter, pro, or premium)
+  const hasSubscription = subscription?.tier === 'starter' || subscription?.tier === 'pro' || subscription?.tier === 'premium';
+
   const handleConnectYouTube = async () => {
     if (!user?.userId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
     
     try {
       const response = await youtubeApi.getAuthUrl(user.userId);
@@ -474,12 +530,18 @@ const MusicVideoPlayer: React.FC = () => {
       window.location.href = authUrl;
       
     } catch (err: any) {
-      setSocialError(err.response?.data?.error || 'Failed to start YouTube authorization');
+      showSocialError(err.response?.data?.error || 'Failed to start YouTube authorization');
     }
   };
 
   const handleConnectTikTok = async () => {
     if (!user?.userId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
     
     try {
       const response = await tiktokApi.getAuthUrl(user.userId);
@@ -489,12 +551,24 @@ const MusicVideoPlayer: React.FC = () => {
       window.location.href = authUrl;
       
     } catch (err: any) {
-      setSocialError(err.response?.data?.error || 'Failed to start TikTok authorization');
+      showSocialError(err.response?.data?.error || 'Failed to start TikTok authorization');
     }
   };
 
   const handleYouTubeUpload = async () => {
     if (!user?.userId || !videoId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+    
+    // Check if video is ready
+    if (!videoData?.videoUrl) {
+      showSocialError('Video is still processing. Please wait until it\'s ready.');
+      return;
+    }
     
     if (!youtubeConnected) {
       handleConnectYouTube();
@@ -502,7 +576,7 @@ const MusicVideoPlayer: React.FC = () => {
     }
     
     if (!editedMetadata?.title) {
-      setSocialError('Please enter a title for your video');
+      showSocialError('Please enter a title for your video');
       return;
     }
     
@@ -533,7 +607,9 @@ const MusicVideoPlayer: React.FC = () => {
       });
       
       // Then upload to YouTube
-      const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro });
+      // Only add thumbnail intro for portrait videos (shorts)
+      const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+      const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro: shouldAddThumbnailIntro });
       setYoutubeUrl(response.data.youtubeUrl);
       setSocialSuccess(`Uploaded to YouTube!`);
     } catch (err: any) {
@@ -541,7 +617,58 @@ const MusicVideoPlayer: React.FC = () => {
       if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
         setYoutubeConnected(false);
       }
-      setSocialError(errorMsg);
+      showSocialError(errorMsg);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleTikTokUpload = async () => {
+    if (!user?.userId || !videoId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+    
+    // Check if video is ready
+    if (!videoData?.videoUrl) {
+      showSocialError('Video is still processing. Please wait until it\'s ready.');
+      return;
+    }
+    
+    if (!tiktokConnected) {
+      handleConnectTikTok();
+      return;
+    }
+    
+    if (!editedMetadata?.title) {
+      showSocialError('Please enter a title for your video');
+      return;
+    }
+    
+    setIsUploading(true);
+    setSocialError(null);
+    
+    try {
+      // Save metadata first
+      await videosApi.updateSocialMetadata(user.userId, videoId, {
+        title: editedMetadata.title,
+        description: editedMetadata.description || '',
+        tags: editedMetadata.tags || [],
+        hook: editedMetadata.hook || hookText || '',
+      });
+      
+      // Upload to TikTok
+      const response = await tiktokApi.upload(user.userId, videoId);
+      setSocialSuccess(response.data.message || 'Uploaded to TikTok! Check your TikTok app to publish.');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error || 'Failed to upload to TikTok';
+      if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+        setTiktokConnected(false);
+      }
+      showSocialError(errorMsg);
     } finally {
       setIsUploading(false);
     }
@@ -706,6 +833,7 @@ const MusicVideoPlayer: React.FC = () => {
 
   // Error state
   if (error || !videoData?.videoUrl) {
+    const isProcessing = videoData && !videoData.videoUrl && videoData.status !== 'failed';
     return (
       <Box
         sx={{
@@ -717,12 +845,28 @@ const MusicVideoPlayer: React.FC = () => {
           background: '#f5f5f7',
         }}
       >
-        <Typography variant="h6" sx={{ color: '#FF3B30', mb: 2 }}>
-          {error || 'Video not available'}
-        </Typography>
-        <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
-          <ArrowBack sx={{ mr: 1 }} /> Back to Videos
-        </IconButton>
+        {isProcessing ? (
+          <>
+            <CircularProgress sx={{ mb: 2, color: '#007AFF' }} />
+            <Typography variant="h6" sx={{ color: '#1D1D1F', mb: 1 }}>
+              Video is still processing...
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+              Please check back in a few moments
+            </Typography>
+          </>
+        ) : (
+          <Typography variant="h6" sx={{ color: '#FF3B30', mb: 2 }}>
+            {error || 'Video not available'}
+          </Typography>
+        )}
+        <Button 
+          onClick={handleGoBack} 
+          startIcon={<ArrowBack />}
+          sx={{ color: '#007AFF' }}
+        >
+          Back to Videos
+        </Button>
       </Box>
     );
   }
@@ -754,34 +898,37 @@ const MusicVideoPlayer: React.FC = () => {
               </Typography>
             </Box>
             
-            {/* Tokens Button */}
-            {user && allowances && (
-              <Button
-                onClick={() => navigate('/payment')}
-                sx={{
-                  borderRadius: '20px',
-                  px: 2,
-                  py: 0.75,
-                  minWidth: 'auto',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  color: '#fff',
-                  background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                  border: 'none',
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                    boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                  }
-                }}
-              >
-                <Bolt sx={{ fontSize: 18, color: '#fff' }} />
-                <span style={{ color: '#fff' }}>{remainingTokens}</span>
-              </Button>
-            )}
+            {/* Right side buttons */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {/* Tokens Button */}
+              {user && allowances && (
+                <Button
+                  onClick={() => setShowUpgradePopup(true)}
+                  sx={{
+                    borderRadius: '20px',
+                    px: 2,
+                    py: 0.75,
+                    minWidth: 'auto',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    color: '#fff',
+                    background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                      boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                    }
+                  }}
+                >
+                  <Bolt sx={{ fontSize: 18, color: '#fff' }} />
+                  <span style={{ color: '#fff' }}>{remainingTokens}</span>
+                </Button>
+              )}
+            </Box>
           </Box>
         </Container>
       </Box>
@@ -1944,20 +2091,6 @@ const MusicVideoPlayer: React.FC = () => {
               )}
             </Box>
 
-            {/* Thumbnail Intro Toggle */}
-            {socialThumbnailUrl && (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={addThumbnailIntro}
-                    onChange={(e) => setAddThumbnailIntro(e.target.checked)}
-                    size="small"
-                  />
-                }
-                label={<Typography variant="body2">Add thumbnail intro with fade</Typography>}
-                sx={{ mt: 2 }}
-              />
-            )}
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 1 }}>
             <Button 
@@ -1969,15 +2102,82 @@ const MusicVideoPlayer: React.FC = () => {
             <Button
               variant="contained"
               startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
-              onClick={() => {
+              onClick={async () => {
                 setShowUploadConfirm(false);
-                // For now, only YouTube upload is implemented
-                if (selectedPlatforms.includes('youtube')) {
-                  handleYouTubeUpload();
+                
+                const uploadYouTube = selectedPlatforms.includes('youtube');
+                const uploadTikTok = selectedPlatforms.includes('tiktok');
+                
+                // Track upload results
+                const results: string[] = [];
+                const errors: string[] = [];
+                
+                // Upload to YouTube if selected
+                if (uploadYouTube) {
+                  try {
+                    setIsUploading(true);
+                    setSocialError(null);
+                    
+                    // Save metadata first
+                    if (editedMetadata?.title) {
+                      await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                        title: editedMetadata.title,
+                        description: editedMetadata.description || '',
+                        tags: editedMetadata.tags || [],
+                        hook: editedMetadata.hook || hookText || '',
+                      });
+                    }
+                    
+                    const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+                    const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
+                    setYoutubeUrl(response.data.youtubeUrl);
+                    results.push('YouTube');
+                  } catch (err: any) {
+                    const errorMsg = err.response?.data?.error || 'YouTube upload failed';
+                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                      setYoutubeConnected(false);
+                    }
+                    errors.push(`YouTube: ${errorMsg}`);
+                  }
                 }
-                // TikTok upload will be implemented later
-                if (selectedPlatforms.includes('tiktok') && !selectedPlatforms.includes('youtube')) {
-                  setSocialError('TikTok upload coming soon! For now, please select YouTube.');
+                
+                // Upload to TikTok if selected
+                if (uploadTikTok) {
+                  try {
+                    if (!uploadYouTube) {
+                      setIsUploading(true);
+                      setSocialError(null);
+                      
+                      // Save metadata if not already saved
+                      if (editedMetadata?.title) {
+                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                          title: editedMetadata.title,
+                          description: editedMetadata.description || '',
+                          tags: editedMetadata.tags || [],
+                          hook: editedMetadata.hook || hookText || '',
+                        });
+                      }
+                    }
+                    
+                    await tiktokApi.upload(user!.userId, videoId!);
+                    results.push('TikTok (check app to publish)');
+                  } catch (err: any) {
+                    const errorMsg = err.response?.data?.error || 'TikTok upload failed';
+                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                      setTiktokConnected(false);
+                    }
+                    errors.push(`TikTok: ${errorMsg}`);
+                  }
+                }
+                
+                setIsUploading(false);
+                
+                // Show results
+                if (results.length > 0) {
+                  setSocialSuccess(`Uploaded to ${results.join(' & ')}!`);
+                }
+                if (errors.length > 0) {
+                  showSocialError(errors.join('. '));
                 }
               }}
               disabled={isUploading}
@@ -1998,6 +2198,17 @@ const MusicVideoPlayer: React.FC = () => {
         </Dialog>
       </Container>
 
+      {/* Tokens Upgrade Popup */}
+      <UpgradePopup
+        open={showUpgradePopup}
+        message="Upgrade your subscription or top up to get more tokens!"
+        title="Tokens"
+        isPremiumTier={isPremiumTier}
+        onClose={() => setShowUpgradePopup(false)}
+        onTopUp={handleTopUp}
+        onUpgrade={handleUpgrade}
+        isTopUpLoading={isTopUpLoading}
+      />
     </Box>
   );
 };

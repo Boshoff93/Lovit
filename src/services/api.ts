@@ -230,6 +230,9 @@ export const tiktokApi = {
   
   disconnect: (userId: string) =>
     api.delete(`/api/gruvi/tiktok/disconnect?userId=${userId}`),
+  
+  upload: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`),
 };
 
 // Characters API

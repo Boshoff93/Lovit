@@ -72,6 +72,8 @@ import { RootState, AppDispatch } from '../store/store';
 import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
 import { songsApi } from '../services/api';
+import UpgradePopup from '../components/UpgradePopup';
+import { topUpBundles, TopUpBundle } from '../config/stripe';
 // PauseRoundedIcon replaced with AudioEqualizer component
 import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
 
@@ -1314,6 +1316,35 @@ const HomePage: React.FC = () => {
   const { login, signup, googleLogin, user, error: authError, resendVerificationEmail, getGoogleIdToken, logout, subscription } = useAuth();
   const { token, allowances } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = !!token;
+  const isPremiumTier = subscription?.tier === 'premium' || subscription?.tier === 'pro';
+
+  // Upgrade popup state
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [isTopUpLoading, setIsTopUpLoading] = useState(false);
+
+  // Handle top-up purchase
+  const handleTopUp = async (bundle?: TopUpBundle) => {
+    if (!bundle) return;
+    setIsTopUpLoading(true);
+    try {
+      const result = await dispatch(createCheckoutSession({
+        priceId: bundle.priceId,
+        productId: bundle.productId,
+      })).unwrap();
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } catch (err) {
+      console.error('Failed to create checkout session:', err);
+    } finally {
+      setIsTopUpLoading(false);
+    }
+  };
+
+  const handleUpgradePlan = () => {
+    setShowUpgradePopup(false);
+    navigate('/payment');
+  };
 
   // Get sample tracks based on current route (default for /, hashed for other routes)
   const sampleTracks = useMemo(() => getSampleTracksForRoute(location.pathname), [location.pathname]);
@@ -1854,8 +1885,7 @@ const HomePage: React.FC = () => {
                     {/* Token display */}
                     {allowances && (
                       <Button
-                        component={RouterLink}
-                        to="/settings"
+                        onClick={() => setShowUpgradePopup(true)}
                         sx={{
                           borderRadius: '20px',
                           px: 2,
@@ -2019,7 +2049,7 @@ const HomePage: React.FC = () => {
                 <ListItemButton
                   onClick={() => {
                     handleDrawerToggle();
-                    navigate('/settings');
+                    setShowUpgradePopup(true);
                   }}
                   sx={{
                     px: 2,
@@ -4497,6 +4527,18 @@ const HomePage: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* Tokens Upgrade Popup */}
+      <UpgradePopup
+        open={showUpgradePopup}
+        message="Upgrade your subscription or top up to get more tokens!"
+        title="Tokens"
+        isPremiumTier={isPremiumTier}
+        onClose={() => setShowUpgradePopup(false)}
+        onTopUp={handleTopUp}
+        onUpgrade={handleUpgradePlan}
+        isTopUpLoading={isTopUpLoading}
+      />
     </Box>
   );
 };
