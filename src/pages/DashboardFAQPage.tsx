@@ -53,10 +53,13 @@ const DashboardFAQPage: React.FC = () => {
   // Function to handle accordion change
   const handleAccordionChange = useCallback((panel: string) => (_event: React.SyntheticEvent | null, isExpanded: boolean) => {
     setExpandedPanel(isExpanded ? panel : false);
+    // Update hash without navigating away from the current page
     if (isExpanded) {
-      navigate(`/faq#${panel}`, { replace: true });
+      window.history.replaceState(null, '', `#${panel}`);
+    } else {
+      window.history.replaceState(null, '', window.location.pathname);
     }
-  }, [navigate]);
+  }, []);
 
   // Function to handle read more click
   const handleReadMore = useCallback((question: string) => {
@@ -237,7 +240,7 @@ const DashboardFAQPage: React.FC = () => {
                     }}
                     onClick={() => handleAccordionChange(panelId)(null, expandedPanel !== panelId)}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Box sx={{ flex: 1 }}>
                         <Typography 
                           sx={{ 
@@ -265,7 +268,6 @@ const DashboardFAQPage: React.FC = () => {
                           transition: 'transform 0.2s',
                           transform: expandedPanel === panelId ? 'rotate(180deg)' : 'rotate(0deg)',
                           ml: 1,
-                          mt: 0.5
                         }} 
                       />
                     </Box>

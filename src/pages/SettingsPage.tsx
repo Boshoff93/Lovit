@@ -28,6 +28,7 @@ import {
   Bolt as BoltIcon,
   Face as FaceIcon,
   Link as LinkIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -93,7 +94,7 @@ const SettingsPage: React.FC = () => {
     {
       icon: <PersonIcon sx={{ color: '#007AFF' }} />,
       title: 'Account',
-      description: 'View your account details',
+      description: user?.artistName || user?.name || 'View your account details',
       onClick: () => navigate('/account'),
     },
     {
@@ -103,9 +104,15 @@ const SettingsPage: React.FC = () => {
       onClick: () => navigate('/my-cast'),
     },
     {
+      icon: <CloudUploadIcon sx={{ color: '#007AFF' }} />,
+      title: 'Upload Content',
+      description: 'Upload your own songs or videos',
+      onClick: () => navigate('/upload'),
+    },
+    {
       icon: <LinkIcon sx={{ color: '#007AFF' }} />,
       title: 'Connected Accounts',
-      description: 'YouTube, TikTok, Instagram & more',
+      description: 'Manage linked social accounts',
       onClick: () => navigate('/settings/connected-accounts'),
     },
     {
@@ -115,7 +122,7 @@ const SettingsPage: React.FC = () => {
       onClick: handleSubscription,
     },
     {
-      icon: <BoltIcon sx={{ color: '#34C759' }} />,
+      icon: <BoltIcon sx={{ color: '#007AFF' }} />,
       title: 'Top Up Tokens',
       description: `${remainingTokens} tokens remaining`,
       onClick: handleTopUpClick,
@@ -481,7 +488,8 @@ const SettingsPage: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Container>
+
+        </Container>
     </Box>
   );
 };

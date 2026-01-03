@@ -2563,3 +2563,68 @@ export {
   // Brand content / AI promo content exports
   brandContentTypes
 };
+
+// ============================================================
+// MARKETING TAGLINES - For various contexts and campaigns
+// ============================================================
+
+// Marketing taglines for various contexts
+export const marketingTaglines = {
+  artist: [
+    'Now everyone can be an artist',
+    'Your music journey starts here',
+    'From bedroom to billboard',
+    'Create music, not excuses',
+    'No studio? No problem.',
+    'Your talent + Our AI = Magic',
+    'Make music like a pro',
+    'Your sound, your way',
+  ],
+  director: [
+    'Now everyone can be a director',
+    'Your vision, our technology',
+    'Direct your dreams',
+    'Lights, camera, AI!',
+    'No crew? No budget? No limits.',
+    'Hollywood in your pocket',
+    'Your story deserves to be seen',
+    'From script to screen in minutes',
+  ],
+  creator: [
+    'Create without limits',
+    'From idea to video in minutes',
+    'Your creativity, amplified',
+    'The future of music creation',
+    'Create. Share. Repeat.',
+    'Where creativity meets AI',
+    'Unlock your creative potential',
+    'Make something amazing today',
+  ],
+  viral: [
+    'Your next viral hit starts here',
+    'Go viral, go Gruvi',
+    'Born to trend',
+    'Make waves, not excuses',
+    'Trending starts with you',
+    'One video can change everything',
+    'Get ready to blow up',
+  ],
+  professional: [
+    'Professional results, zero experience needed',
+    'Studio quality without the studio',
+    'Level up your content game',
+    'Create like a pro, share like a star',
+    'Professional music videos in minutes',
+  ],
+};
+
+// Get a random tagline from a category
+export const getRandomTagline = (category: keyof typeof marketingTaglines): string => {
+  const taglines = marketingTaglines[category];
+  return taglines[Math.floor(Math.random() * taglines.length)];
+};
+
+// Get all taglines flattened
+export const getAllTaglines = (): string[] => {
+  return Object.values(marketingTaglines).flat();
+};

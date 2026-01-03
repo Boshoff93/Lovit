@@ -42,6 +42,8 @@ import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
 import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
 import TikTokCallbackPage from './pages/TikTokCallbackPage';
+import UploadPage from './pages/UploadPage';
+import TrackDetailPage from './pages/TrackDetailPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -286,6 +288,22 @@ function App() {
             <Layout>
               <CreatePage />
             </Layout>
+          </RequireAuth>
+        } />
+        
+        {/* Upload page - protected route */}
+        <Route path="/upload" element={
+          <RequireAuth>
+            <Layout>
+              <UploadPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        
+        {/* Track detail page - protected route */}
+        <Route path="/track/:songId" element={
+          <RequireAuth>
+            <TrackDetailPage />
           </RequireAuth>
         } />
         

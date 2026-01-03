@@ -12,6 +12,11 @@ export interface User {
     unsubscribedAt?: string;
   };
   isAdmin?: boolean;
+  // Profile names
+  name?: string;           // Full name from Google or manually set
+  artistName?: string;     // Custom artist name for music
+  directorName?: string;   // Custom director name for videos
+  profilePicture?: string; // Profile picture URL from Google
 }
 
 export interface AuthData {

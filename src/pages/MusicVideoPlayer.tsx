@@ -9,13 +9,10 @@ import {
   CircularProgress,
   Chip,
   Paper,
-  Divider,
   Button,
   TextField,
   Alert,
   Tooltip,
-  Switch,
-  FormControlLabel,
   Checkbox,
   Dialog,
   DialogTitle,
@@ -28,10 +25,7 @@ import {
   Pause,
   Fullscreen,
   FullscreenExit,
-  AccessTime,
-  CalendarToday,
   Movie,
-  AspectRatio,
   Download,
   Lyrics,
   Share,
@@ -42,13 +36,14 @@ import {
   ContentCopy,
   CloudUpload,
   Bolt,
+  Delete,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
 import { videosApi, songsApi, youtubeApi, tiktokApi, charactersApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
-import { topUpBundles, TopUpBundle } from '../config/stripe';
+import { TopUpBundle } from '../config/stripe';
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -175,6 +170,13 @@ const MusicVideoPlayer: React.FC = () => {
   // Upgrade popup state
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
+  
+  // Lyrics dropdown state
+  const [showLyrics, setShowLyrics] = useState(false);
+  
+  // Delete state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle top-up purchase
   const handleTopUp = async (bundle?: TopUpBundle) => {
@@ -732,6 +734,24 @@ const MusicVideoPlayer: React.FC = () => {
       console.error('Download failed:', err);
     }
   }, [videoData]);
+  
+  const handleDelete = useCallback(async () => {
+    if (!user?.userId || !videoId) return;
+    
+    setIsDeleting(true);
+    try {
+      await videosApi.deleteVideo(user.userId, videoId);
+      setShowDeleteDialog(false);
+      // Navigate back to library after successful deletion
+      navigate('/my-library?tab=videos');
+    } catch (err: any) {
+      console.error('Failed to delete video:', err);
+      setSocialError(err.response?.data?.error || 'Failed to delete video');
+      setShowDeleteDialog(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [user?.userId, videoId, navigate]);
 
   // Listen for fullscreen changes
   useEffect(() => {
@@ -933,37 +953,33 @@ const MusicVideoPlayer: React.FC = () => {
         </Container>
       </Box>
 
-      <Container maxWidth={videoData.aspectRatio === 'landscape' ? 'md' : 'lg'} sx={{ mt: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            // Landscape videos: always column layout (video on top, info below)
-            // Portrait videos: side-by-side on desktop, column on mobile
-            flexDirection: videoData.aspectRatio === 'landscape' 
-              ? 'column' 
-              : { xs: 'column', md: 'row' },
-            gap: 3,
-          }}
-        >
-          {/* Video Player - Full width for landscape */}
-          <Box sx={{ 
-            flex: videoData.aspectRatio === 'landscape' ? 'none' : 1,
-            width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
-          }}>
-            <Paper
-              ref={containerRef}
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                overflow: 'hidden',
-                background: '#000',
-                position: 'relative',
-                aspectRatio: videoData.aspectRatio === 'landscape' ? '16/9' : '9/16',
-                maxHeight: { xs: '60vh', md: '80vh' },
-                mx: 'auto',
-                width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
-              }}
-            >
+      <Container maxWidth="md" sx={{ mt: 3 }}>
+        {/* Video + Details - Portrait: side-by-side, Landscape: stacked */}
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: videoData.aspectRatio === 'landscape' ? 'column' : 'row',
+          gap: { xs: 2, sm: 3 }, 
+          mb: 3 
+        }}>
+          {/* Video Player */}
+          <Paper
+            ref={containerRef}
+            elevation={0}
+            sx={{
+              borderRadius: 1,
+              overflow: 'hidden',
+              background: '#000',
+              position: 'relative',
+              aspectRatio: videoData.aspectRatio === 'landscape' ? '16/9' : '9/16',
+              height: videoData.aspectRatio === 'landscape' 
+                ? 'auto'
+                : { xs: 320, sm: 380, md: 420 },
+              width: videoData.aspectRatio === 'landscape' 
+                ? '100%'
+                : 'auto',
+              flexShrink: 0,
+            }}
+          >
               {/* Video Element */}
               <video
                 ref={videoRef}
@@ -1053,16 +1069,6 @@ const MusicVideoPlayer: React.FC = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <IconButton 
-                    onClick={() => document.getElementById('social-sharing-section')?.scrollIntoView({ behavior: 'smooth' })} 
-                    sx={{ color: '#fff' }}
-                    title="Share to social media"
-                  >
-                    <Share />
-                  </IconButton>
-                  <IconButton onClick={handleDownload} sx={{ color: '#fff' }}>
-                    <Download />
-                  </IconButton>
                   <IconButton onClick={handleFullscreenToggle} sx={{ color: '#fff' }}>
                     {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
                   </IconButton>
@@ -1098,168 +1104,292 @@ const MusicVideoPlayer: React.FC = () => {
                   }}
                 />
               </Box>
-            </Paper>
-          </Box>
+          </Paper>
 
-          {/* Details & Lyrics - Side by side for landscape, stacked for portrait */}
+          {/* Video Details - Right side, aligned to bottom like TrackDetailPage */}
           <Box sx={{ 
-            flex: videoData.aspectRatio === 'landscape' ? 'none' : 1, 
-            width: videoData.aspectRatio === 'landscape' ? '100%' : 'auto',
-            minWidth: 0, 
+            flex: 1, 
             display: 'flex', 
-            flexDirection: videoData.aspectRatio === 'landscape' 
-              ? { xs: 'column', md: 'row' }  // Landscape: info and lyrics side by side on desktop
-              : 'column',                     // Portrait: stacked
-            gap: videoData.aspectRatio === 'landscape' ? 3 : 0,
-            maxHeight: videoData.aspectRatio === 'landscape' ? 'none' : { md: '80vh' },
+            flexDirection: 'column', 
+            justifyContent: 'flex-end',
+            minWidth: 0, 
           }}>
-            {/* Video Info Card */}
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                p: 3,
-                mb: videoData.aspectRatio === 'landscape' ? 0 : 2,
-                background: '#fff',
-                flexShrink: 0, // Don't shrink
-                flex: videoData.aspectRatio === 'landscape' ? 1 : 'none', // Equal width in landscape row
-              }}
-            >
-              <Typography variant="h5" sx={{ fontWeight: 700, color: '#1d1d1f', mb: 2 }}>
-                {videoData.songTitle || 'Music Video'}
-              </Typography>
-
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                {genreImageUrl && songData?.genre && (
-                  <Chip
-                    icon={
-                      <Box
-                        component="img"
-                        src={genreImageUrl}
-                        alt={songData.genre}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    }
-                    label={songData.genre}
-                    size="small"
-                    sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
-                  />
-                )}
-                {moodImageUrl && songData?.mood && (
-                  <Chip
-                    icon={
-                      <Box
-                        component="img"
-                        src={moodImageUrl}
-                        alt={songData.mood}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    }
-                    label={songData.mood}
-                    size="small"
-                    sx={{ background: 'rgba(88,86,214,0.1)', color: '#5856D6' }}
-                  />
-                )}
-                {videoData.videoType && (
-                  <Chip
-                    icon={<Movie sx={{ fontSize: 16, color: '#FF9500' }} />}
-                    label={videoData.videoType === 'still' ? 'Still' : 'Cinematic'}
-                    size="small"
-                    sx={{ background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
-                  />
-                )}
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <AccessTime sx={{ fontSize: 20, color: '#86868B' }} />
-                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
-                    <strong>Duration:</strong> {formatTime(displayDuration)}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <AspectRatio sx={{ fontSize: 20, color: '#86868B' }} />
-                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
-                    <strong>Aspect Ratio:</strong> {videoData.aspectRatio === 'landscape' ? '16:9 Landscape' : '9:16 Portrait'}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <CalendarToday sx={{ fontSize: 20, color: '#86868B' }} />
-                  <Typography variant="body2" sx={{ color: '#1d1d1f' }}>
-                    <strong>Created:</strong> {formatDate(videoData.createdAt)}
-                  </Typography>
-                </Box>
-              </Box>
-
-            </Paper>
-
-            {/* Lyrics Card - Takes remaining height */}
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                p: 3,
-                background: '#fff',
-                flex: 1, // Take remaining space (or equal width in landscape row)
-                minHeight: { xs: 200, md: 0 }, // Min height on mobile
-                maxHeight: videoData.aspectRatio === 'landscape' ? 400 : 'none', // Limit height for landscape
-                overflow: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexShrink: 0 }}>
-                <Lyrics sx={{ fontSize: 22, color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
-                  Lyrics
-                </Typography>
-              </Box>
-              {lyrics ? (
-                <Typography
-                  sx={{
-                    color: '#1d1d1f',
-                    lineHeight: 1.8,
-                    whiteSpace: 'pre-wrap',
-                    fontSize: '0.95rem',
-                    overflow: 'auto',
-                  }}
-                >
-                  {cleanLyrics(lyrics)}
-                </Typography>
-              ) : (
-                <Typography
-                  sx={{
-                    color: '#86868B',
-                    fontStyle: 'italic',
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  {songData ? 'No lyrics available for this song.' : 'Loading lyrics...'}
-                </Typography>
+            {/* Tags */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 0.5 }}>
+              {genreImageUrl && songData?.genre && (
+                <Chip
+                  icon={
+                    <Box
+                      component="img"
+                      src={genreImageUrl}
+                      alt={songData.genre}
+                      sx={{ width: { xs: 14, sm: 16 }, height: { xs: 14, sm: 16 }, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  }
+                  label={songData.genre}
+                  size="small"
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
+                />
               )}
-            </Paper>
+              {moodImageUrl && songData?.mood && (
+                <Chip
+                  icon={
+                    <Box
+                      component="img"
+                      src={moodImageUrl}
+                      alt={songData.mood}
+                      sx={{ width: { xs: 14, sm: 16 }, height: { xs: 14, sm: 16 }, borderRadius: '50%', objectFit: 'cover', ml: 0.5 }}
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  }
+                  label={songData.mood}
+                  size="small"
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(88,86,214,0.1)', color: '#5856D6' }}
+                />
+              )}
+              {videoData.videoType && (
+                <Chip
+                  icon={<Movie sx={{ fontSize: { xs: 12, sm: 14 }, color: '#FF9500' }} />}
+                  label={videoData.videoType === 'still' ? 'Still' : 'Cinematic'}
+                  size="small"
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
+                />
+              )}
+            </Box>
+            
+            {/* Title */}
+            <Typography 
+              sx={{ 
+                fontWeight: 800, 
+                color: '#1d1d1f', 
+                fontSize: { xs: '1.1rem', sm: '1.5rem' },
+                lineHeight: 1.2,
+                mb: 0.25,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {videoData.songTitle || 'Music Video'}
+            </Typography>
+            
+            {/* Metadata line: Duration • Aspect • Date */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, flexWrap: 'wrap', mb: 1.5 }}>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+                {formatTime(displayDuration)}
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+                {videoData.aspectRatio === 'landscape' ? '16:9' : '9:16'}
+              </Typography>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+                {formatDate(videoData.createdAt)}
+              </Typography>
+            </Box>
+            
+            {/* Action Buttons - Share and Download */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {/* Share Button - Icon on xs/sm, full button on md+ */}
+              <IconButton
+                onClick={() => {
+                  const element = socialSectionRef.current || document.getElementById('social-sharing-section');
+                  if (element) {
+                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
+                  }
+                }}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  bgcolor: '#007AFF',
+                  color: '#fff',
+                  width: 36,
+                  height: 36,
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': { bgcolor: '#0066CC' },
+                }}
+              >
+                <Share sx={{ fontSize: 18 }} />
+              </IconButton>
+              <Button
+                onClick={() => {
+                  const element = socialSectionRef.current || document.getElementById('social-sharing-section');
+                  if (element) {
+                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
+                  }
+                }}
+                variant="contained"
+                startIcon={<Share sx={{ fontSize: 20 }} />}
+                sx={{
+                  display: { xs: 'none', md: 'inline-flex' },
+                  bgcolor: '#007AFF',
+                  color: '#fff',
+                  borderRadius: '10px',
+                  px: 2,
+                  py: 0.75,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': { bgcolor: '#0066CC' },
+                }}
+              >
+                Share
+              </Button>
+              
+              {/* Download Button - Icon on xs/sm, full button on md+ */}
+              <IconButton
+                onClick={handleDownload}
+                disabled={!videoData.videoUrl}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  border: '1px solid rgba(0,0,0,0.15)',
+                  color: '#007AFF',
+                  width: 36,
+                  height: 36,
+                  '&:hover': { borderColor: '#007AFF', bgcolor: 'rgba(0,122,255,0.05)' },
+                  '&:disabled': { opacity: 0.4 },
+                }}
+              >
+                <Download sx={{ fontSize: 18 }} />
+              </IconButton>
+              <Button
+                onClick={handleDownload}
+                disabled={!videoData.videoUrl}
+                variant="outlined"
+                startIcon={<Download sx={{ fontSize: 20, color: '#007AFF' }} />}
+                sx={{
+                  display: { xs: 'none', md: 'inline-flex' },
+                  color: '#007AFF !important',
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  px: 2,
+                  py: 0.75,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  '& .MuiButton-startIcon': { color: '#007AFF' },
+                  '& .MuiSvgIcon-root': { color: '#007AFF' },
+                  '&:hover': { borderColor: '#007AFF', bgcolor: 'rgba(0,122,255,0.05)' },
+                  '&:disabled': { opacity: 0.4, color: '#007AFF !important' },
+                }}
+              >
+                Download
+              </Button>
+              
+              {/* Delete Button - Icon on xs/sm, full button on md+ */}
+              <IconButton
+                onClick={() => setShowDeleteDialog(true)}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  border: '1px solid rgba(255,59,48,0.3)',
+                  color: '#FF3B30',
+                  width: 36,
+                  height: 36,
+                  '&:hover': { borderColor: '#FF3B30', bgcolor: 'rgba(255,59,48,0.05)' },
+                }}
+              >
+                <Delete sx={{ fontSize: 18 }} />
+              </IconButton>
+              <Button
+                onClick={() => setShowDeleteDialog(true)}
+                variant="outlined"
+                startIcon={<Delete sx={{ fontSize: 20, color: '#FF3B30' }} />}
+                sx={{
+                  display: { xs: 'none', md: 'inline-flex' },
+                  color: '#FF3B30 !important',
+                  borderColor: 'rgba(255,59,48,0.3)',
+                  borderRadius: '10px',
+                  px: 2,
+                  py: 0.75,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  '& .MuiButton-startIcon': { color: '#FF3B30' },
+                  '& .MuiSvgIcon-root': { color: '#FF3B30' },
+                  '&:hover': { borderColor: '#FF3B30', bgcolor: 'rgba(255,59,48,0.05)' },
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
           </Box>
         </Box>
-
-        {/* Social Sharing Section */}
-        <Paper
-          ref={socialSectionRef}
-          id="social-sharing-section"
-          elevation={0}
-          sx={{
-            borderRadius: 3,
-            p: 3,
-            mt: 3,
+            
+        {/* Collapsible Lyrics Section - YouTube style dropdown (only show if lyrics exist) */}
+        {lyrics && (
+        <Box 
+          sx={{ 
+            border: '1px solid rgba(0,0,0,0.08)',
+            borderRadius: '12px',
+            overflow: 'hidden',
             background: '#fff',
+            mb: 3,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-            <Share sx={{ fontSize: 24, color: '#FF3B30' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
+          <Box
+            onClick={() => setShowLyrics(!showLyrics)}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: 2,
+              cursor: 'pointer',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.02)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Lyrics sx={{ fontSize: 20, color: '#007AFF' }} />
+              <Typography sx={{ fontWeight: 600, color: '#1d1d1f', fontSize: '0.95rem' }}>
+                Lyrics
+              </Typography>
+              {lyrics && (
+                <Typography sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                  • {lyrics.split('\n').filter(l => l.trim()).length} lines
+                </Typography>
+              )}
+            </Box>
+            <Box
+              sx={{
+                transform: showLyrics ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+                color: '#86868B',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+              </svg>
+            </Box>
+          </Box>
+          
+          {showLyrics && (
+            <Box sx={{ px: 2, pb: 2, maxHeight: 300, overflow: 'auto' }}>
+              <Typography
+                sx={{
+                  color: '#1d1d1f',
+                  lineHeight: 1.8,
+                  whiteSpace: 'pre-wrap',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {cleanLyrics(lyrics)}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        )}
+
+        {/* Social Sharing Section */}
+        <Box
+          ref={socialSectionRef}
+          id="social-sharing-section"
+          sx={{ mt: 4 }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5, ml: 0.5 }}>
+            <Share sx={{ fontSize: 22, color: '#FF3B30' }} />
+            <Typography sx={{ fontWeight: 600, color: '#1d1d1f', fontSize: '1.1rem' }}>
               Share to Social Media
             </Typography>
           </Box>
@@ -1276,9 +1406,18 @@ const MusicVideoPlayer: React.FC = () => {
             </Alert>
           )}
 
-          {/* Platform Selection - At the top */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          {/* Platform Selection - Own Paper Section */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: '16px',
+              p: { xs: 2, sm: 2.5 },
+              mb: 2,
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}
+          >
+            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2, fontSize: '0.95rem' }}>
               Select Platforms
             </Typography>
 
@@ -1513,30 +1652,55 @@ const MusicVideoPlayer: React.FC = () => {
                 Uploaded to YouTube!
               </Alert>
             )}
-          </Box>
+          </Paper>
 
-          <Divider sx={{ mb: 3 }} />
-
-          {/* Metadata Section - Always show editor, with option to generate */}
-          <Box sx={{ mb: 3 }}>
+          {/* Video Details Section - Own Paper */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: '16px',
+              p: { xs: 2, sm: 2.5 },
+              mb: 2,
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}
+          >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Social Media Details
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                Video Details
               </Typography>
               
               {/* Generate with AI button */}
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Button
-                  variant="outlined"
-                  startIcon={isGeneratingMetadata ? <CircularProgress size={18} /> : <AutoAwesome />}
+                  variant="contained"
+                  startIcon={isGeneratingMetadata ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <AutoAwesome />}
                   onClick={handleGenerateMetadata}
                   disabled={isGeneratingMetadata}
                   sx={{
-                    borderRadius: 2,
+                    borderRadius: '10px',
                     textTransform: 'none',
-                    borderColor: '#007AFF',
-                    color: '#007AFF',
-                    '&:hover': { borderColor: '#0066CC', bgcolor: 'rgba(0,122,255,0.05)' },
+                    fontWeight: 600,
+                    color: '#fff',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+                    backgroundSize: '200% 200%',
+                    border: 'none',
+                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                    transition: 'all 0.3s ease',
+                    animation: 'shimmer 3s ease infinite',
+                    '@keyframes shimmer': {
+                      '0%': { backgroundPosition: '0% 50%' },
+                      '50%': { backgroundPosition: '100% 50%' },
+                      '100%': { backgroundPosition: '0% 50%' },
+                    },
+                    '&:hover': { 
+                      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
+                      transform: 'translateY(-1px)',
+                    },
+                    '&:disabled': { 
+                      background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
+                      boxShadow: 'none',
+                    },
                   }}
                 >
                   {isGeneratingMetadata ? 'Generating...' : 'Generate with AI (10 credits)'}
@@ -1676,14 +1840,20 @@ const MusicVideoPlayer: React.FC = () => {
                 </IconButton>
               </Box>
             </Box>
+          </Paper>
 
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Select Thumbnail Section */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          {/* Thumbnail Section - Own Paper */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: '16px',
+              p: { xs: 2, sm: 2.5 },
+              mb: 2,
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}
+          >
+            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2, fontSize: '0.95rem' }}>
               Select Thumbnail
             </Typography>
             
@@ -1785,8 +1955,8 @@ const MusicVideoPlayer: React.FC = () => {
                       },
                     }}
                   >
-                    <AutoAwesome sx={{ fontSize: 20, color: showCreatePanel ? '#007AFF' : '#86868B', mb: 0.5 }} />
-                    <Typography sx={{ fontSize: '8px', color: showCreatePanel ? '#007AFF' : '#86868B', fontWeight: showCreatePanel ? 600 : 500, textAlign: 'center' }}>
+                    <AutoAwesome sx={{ fontSize: 20, color: '#007AFF', mb: 0.5 }} />
+                    <Typography sx={{ fontSize: '8px', color: '#007AFF', fontWeight: 600, textAlign: 'center' }}>
                       Create
                     </Typography>
                   </Box>
@@ -1807,13 +1977,13 @@ const MusicVideoPlayer: React.FC = () => {
                       bgcolor: '#fff',
                       transition: 'all 0.2s',
                       '&:hover': { 
-                        borderColor: '#34C759', 
-                        bgcolor: 'rgba(52,199,89,0.04)',
+                        borderColor: '#007AFF', 
+                        bgcolor: 'rgba(0,122,255,0.04)',
                       },
                     }}
                   >
-                    <CloudUpload sx={{ fontSize: 20, color: '#86868B', mb: 0.5 }} />
-                    <Typography sx={{ fontSize: '8px', color: '#86868B', fontWeight: 500, textAlign: 'center' }}>
+                    <CloudUpload sx={{ fontSize: 20, color: '#007AFF', mb: 0.5 }} />
+                    <Typography sx={{ fontSize: '8px', color: '#007AFF', fontWeight: 600, textAlign: 'center' }}>
                       Upload
                     </Typography>
                     <input type="file" hidden accept="image/*" multiple onChange={handleThumbnailUpload} />
@@ -1984,12 +2154,10 @@ const MusicVideoPlayer: React.FC = () => {
                 })()}
               </Box>
             )}
-          </Box>
-
-          <Divider sx={{ mb: 3 }} />
+          </Paper>
 
           {/* Upload Button */}
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <Button
               variant="contained"
               size="large"
@@ -2019,8 +2187,7 @@ const MusicVideoPlayer: React.FC = () => {
               }
             </Button>
           </Box>
-
-        </Paper>
+        </Box>
 
         {/* Upload Confirmation Modal */}
         <Dialog 
@@ -2209,6 +2376,80 @@ const MusicVideoPlayer: React.FC = () => {
         onUpgrade={handleUpgrade}
         isTopUpLoading={isTopUpLoading}
       />
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog 
+        open={showDeleteDialog} 
+        onClose={() => !isDeleting && setShowDeleteDialog(false)}
+        PaperProps={{
+          sx: { 
+            borderRadius: '24px', 
+            p: 3,
+            maxWidth: 400,
+            mx: 2,
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Box sx={{ 
+            width: 48, 
+            height: 48, 
+            borderRadius: '50%', 
+            bgcolor: 'rgba(255,59,48,0.1)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <Delete sx={{ fontSize: 24, color: '#FF3B30' }} />
+          </Box>
+          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
+            Delete Video?
+          </Typography>
+        </Box>
+        
+        <Typography sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
+          Are you sure you want to delete "<strong>{videoData?.songTitle || 'this video'}</strong>"? This action cannot be undone.
+        </Typography>
+        
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Button 
+            onClick={() => setShowDeleteDialog(false)}
+            disabled={isDeleting}
+            fullWidth
+            sx={{ 
+              borderRadius: '100px',
+              textTransform: 'none',
+              fontWeight: 600,
+              py: 1.5,
+              fontSize: '1rem',
+              color: '#1d1d1f',
+              border: '1px solid rgba(0,0,0,0.15)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            fullWidth
+            variant="contained"
+            sx={{
+              bgcolor: '#007AFF',
+              borderRadius: '100px',
+              textTransform: 'none',
+              fontWeight: 600,
+              py: 1.5,
+              fontSize: '1rem',
+              boxShadow: 'none',
+              '&:hover': { bgcolor: '#0066DD', boxShadow: 'none' },
+              '&:disabled': { bgcolor: '#007AFF', opacity: 0.7 },
+            }}
+          >
+            {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
+          </Button>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

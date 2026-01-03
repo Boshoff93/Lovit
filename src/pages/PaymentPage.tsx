@@ -76,9 +76,9 @@ const plans: PricePlan[] = [
   {
     id: 'starter',
     title: 'Starter',
-    description: 'Ideal for users who just want to create their own music',
-    monthlyPrice: 9.99,
-    yearlyPrice: 107.88, // 10% off ($8.99/mo)
+    description: 'Ideal for users who just want to create and share their own music',
+    monthlyPrice: 14.99,
+    yearlyPrice: 161.88, // 10% off ($13.49/mo)
     tokens: 1000,
     musicVideos: true,
     features: [
@@ -87,6 +87,7 @@ const plans: PricePlan[] = [
       '~10 music videos',
       '~1 cinematic music video',
       '1-click share to all social channels simultaneously',
+      'Upload & distribute your own music & videos',
       'Standard quality audio',
       'Commercial license',
     ],
@@ -99,7 +100,7 @@ const plans: PricePlan[] = [
   {
     id: 'pro',
     title: 'Pro',
-    description: 'Best for regular creators',
+    description: 'Best for regular creators who want to take their music to the next level',
     monthlyPrice: 39.99,
     yearlyPrice: 431.88, // 10% off ($35.99/mo)
     popular: true,
@@ -111,6 +112,7 @@ const plans: PricePlan[] = [
       '~50 music videos',
       '~5 cinematic music videos',
       '1-click share to all social channels simultaneously',
+      'Upload & distribute your own music & videos',
       'High quality audio',
       'Commercial license',
     ],
@@ -123,7 +125,7 @@ const plans: PricePlan[] = [
   {
     id: 'premium',
     title: 'Premium',
-    description: 'Best for serious creators',
+    description: 'Best for serious creators who want to create more music and videos',
     monthlyPrice: 79.99,
     yearlyPrice: 863.88, // 10% off ($71.99/mo)
     tokens: 10000,
@@ -134,6 +136,7 @@ const plans: PricePlan[] = [
       '~100 music videos',
       '~10 cinematic music videos',
       '1-click share to all social channels simultaneously',
+      'Upload & distribute your own music & videos',
       'Highest quality audio',
       'Priority generation',
       'Commercial license',

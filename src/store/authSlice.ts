@@ -126,6 +126,19 @@ export const confirmPasswordReset = createAsyncThunk(
   }
 );
 
+// Refresh user data from the server (used after profile updates)
+export const refreshUserData = createAsyncThunk(
+  'auth/refreshUserData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/user/account');
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to refresh user data');
+    }
+  }
+);
+
 export const loginWithEmail = createAsyncThunk(
   'auth/loginWithEmail',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
@@ -556,6 +569,25 @@ const authSlice = createSlice({
       })
       .addCase(updateEmailPreferences.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Refresh user data
+    builder
+      .addCase(refreshUserData.pending, (state) => {
+        // Don't set loading to avoid UI flicker
+      })
+      .addCase(refreshUserData.fulfilled, (state, action) => {
+        if (action.payload.user) {
+          // Update user with new profile data
+          state.user = {
+            ...state.user,
+            ...action.payload.user,
+            username: action.payload.user.username || state.user?.username,
+          };
+        }
+      })
+      .addCase(refreshUserData.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   }

@@ -55,6 +55,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import PublishIcon from '@mui/icons-material/Publish';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
@@ -232,7 +234,8 @@ const genreImages: Record<string, string> = {
   'gospel': '/genres/gospels.jpeg',
 };
 
-const getGenreImage = (genre: string): string => {
+const getGenreImage = (genre: string | undefined): string => {
+  if (!genre) return '/genres/pop.jpeg';
   const normalizedGenre = genre.toLowerCase().replace(/\s+/g, '-');
   return genreImages[normalizedGenre] || '/genres/pop.jpeg';
 };
@@ -274,6 +277,7 @@ interface Song {
   progress?: number;
   progressMessage?: string;
   audioUrl?: string;
+  coverUrl?: string; // Cover art URL for user-uploaded songs
   lyrics?: string;
   lyricsWithTags?: string;
   songPrompt?: string; // Original prompt used to generate the song
@@ -281,6 +285,8 @@ interface Song {
   customInstructions?: string;
   creativity?: number; // 0-10 scale for prompt adherence
   songLength?: 'short' | 'standard'; // Song duration preference
+  isUserUpload?: boolean; // Flag for user-uploaded content
+  artist?: string; // Artist name for user-uploaded songs
 }
 
 interface Video {
@@ -659,10 +665,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     };
   }, [user?.userId, fetchVideos, startVideoPolling]);
 
-  // Preload genre images when songs load
+  // Preload cover/genre images when songs load
   useEffect(() => {
     songs.forEach(song => {
-      if (song.genre) {
+      if (song.coverUrl) {
+        preloadImage(song.coverUrl);
+      } else if (song.genre) {
         preloadImage(getGenreImage(song.genre));
       }
     });
@@ -1134,7 +1142,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 </ToggleButton>
               </ToggleButtonGroup>
 
-              {/* Mobile: Icon button */}
+              {/* Mobile: Icon buttons */}
+              <Tooltip title="Upload Song" arrow>
+                <IconButton
+                  onClick={() => navigate('/upload?type=song')}
+                  sx={{
+                    display: { xs: 'flex', md: 'none' },
+                    border: '2px solid rgba(0,122,255,0.3)',
+                    background: 'rgba(0,122,255,0.05)',
+                    color: '#007AFF',
+                    width: 38,
+                    height: 38,
+                    flexShrink: 0,
+                    '&:hover': { 
+                      background: 'rgba(0,122,255,0.1)',
+                      borderColor: '#007AFF',
+                    },
+                  }}
+                >
+                  <CloudUploadIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Create New Song" arrow>
                 <IconButton
                   onClick={() => navigate('/create?tab=song')}
@@ -1142,8 +1170,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     display: { xs: 'flex', md: 'none' },
                     background: '#007AFF',
                     color: '#fff',
-                    width: 32,
-                    height: 32,
+                    width: 36,
+                    height: 36,
                     flexShrink: 0,
                     boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                     '&:hover': { background: '#0066CC' },
@@ -1152,7 +1180,29 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   <AddIcon sx={{ fontSize: 18 }} />
                 </IconButton>
               </Tooltip>
-              {/* Desktop: Full button */}
+              {/* Desktop: Full buttons */}
+              <Button
+                variant="outlined"
+                startIcon={<CloudUploadIcon />}
+                onClick={() => navigate('/upload?type=song')}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2,
+                  py: 0.75,
+                  color: '#007AFF !important',
+                  '& .MuiSvgIcon-root': { color: '#007AFF' },
+                  '&:hover': { 
+                    borderColor: '#007AFF',
+                    background: 'rgba(0,122,255,0.05)',
+                  },
+                }}
+              >
+                Upload
+              </Button>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -1577,11 +1627,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       />
                     ) : (
                       <>
-                        {/* Genre image background */}
+                        {/* Cover image or Genre image background */}
                         <Box
                           component="img"
-                          src={getGenreImage(song.genre)}
-                          alt={song.genre}
+                          src={song.coverUrl || getGenreImage(song.genre)}
+                          alt={song.songTitle || song.genre}
                           sx={{
                             width: '100%',
                             height: '100%',
@@ -1896,7 +1946,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 </ToggleButton>
               </ToggleButtonGroup>
 
-              {/* Mobile: Icon button */}
+              {/* Mobile: Icon buttons */}
+              <Tooltip title="Upload Video" arrow>
+                <IconButton
+                  onClick={() => navigate('/upload?type=video')}
+                  sx={{
+                    display: { xs: 'flex', md: 'none' },
+                    border: '2px solid rgba(0,122,255,0.3)',
+                    background: 'rgba(0,122,255,0.05)',
+                    color: '#007AFF',
+                    width: 36,
+                    height: 36,
+                    flexShrink: 0,
+                    '&:hover': { 
+                      background: 'rgba(0,122,255,0.1)',
+                      borderColor: '#007AFF',
+                    },
+                  }}
+                >
+                  <CloudUploadIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Create New Video" arrow>
                 <IconButton
                   onClick={() => navigate('/create?tab=video')}
@@ -1904,8 +1974,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     display: { xs: 'flex', md: 'none' },
                     background: '#007AFF',
                     color: '#fff',
-                    width: 32,
-                    height: 32,
+                    width: 36,
+                    height: 36,
                     flexShrink: 0,
                     boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                     '&:hover': { background: '#0066CC' },
@@ -1914,7 +1984,29 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   <AddIcon sx={{ fontSize: 18 }} />
                 </IconButton>
               </Tooltip>
-              {/* Desktop: Full button */}
+              {/* Desktop: Full buttons */}
+              <Button
+                variant="outlined"
+                startIcon={<CloudUploadIcon />}
+                onClick={() => navigate('/upload?type=video')}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  borderColor: 'rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2,
+                  py: 0.75,
+                  color: '#007AFF !important',
+                  '& .MuiSvgIcon-root': { color: '#007AFF' },
+                  '&:hover': { 
+                    borderColor: '#007AFF',
+                    background: 'rgba(0,122,255,0.05)',
+                  },
+                }}
+              >
+                Upload
+              </Button>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -2657,6 +2749,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </ListItemIcon>
           <ListItemText>Generate Similar</ListItemText>
         </MenuItem>
+        <Divider />
+        <MenuItem 
+          onClick={() => {
+            if (menuSong) {
+              navigate(`/track/${menuSong.songId}`);
+            }
+            setMenuAnchorEl(null);
+            setMenuSong(null);
+          }}
+        >
+          <ListItemIcon>
+            <PublishIcon sx={{ color: '#34C759' }} />
+          </ListItemIcon>
+          <ListItemText>Distribute to Music Channels</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem 
           onClick={() => {
             if (menuSong) handleDeleteSong(menuSong);
@@ -2799,20 +2907,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </MenuItem>
         )}
         {menuVideo?.status === 'completed' && (
-          <MenuItem 
-            onClick={() => {
-              if (menuVideo) {
-                navigate(`/video/${menuVideo.videoId}?scrollTo=social`);
-              }
-              handleVideoMenuClose();
-            }}
-          >
-            <ListItemIcon>
-              <ShareIcon sx={{ color: '#007AFF' }} />
-            </ListItemIcon>
-            <ListItemText>Upload to Social</ListItemText>
-          </MenuItem>
+          <>
+            <Divider />
+            <MenuItem 
+              onClick={() => {
+                if (menuVideo) {
+                  navigate(`/video/${menuVideo.videoId}?scrollTo=social`);
+                }
+                handleVideoMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <ShareIcon sx={{ color: '#34C759' }} />
+              </ListItemIcon>
+              <ListItemText>Distribute to Social Channels</ListItemText>
+            </MenuItem>
+          </>
         )}
+        <Divider />
         <MenuItem 
           onClick={() => {
             if (menuVideo) handleDeleteVideo(menuVideo);

@@ -39,6 +39,15 @@ export const authApi = {
     api.post('/auth/password-reset', { email }),
 };
 
+// User profile API
+export const userApi = {
+  getAccount: () => 
+    api.get('/api/user/account'),
+  
+  updateProfile: (data: { name?: string; artistName?: string; directorName?: string }) => 
+    api.put('/api/user/profile', data),
+};
+
 // User subscription API
 export const subscriptionApi = {
   getUserSubscription: () => 
@@ -134,6 +143,20 @@ export const songsApi = {
    */
   getPublicSampleSongs: (userId: string, songIds: string[]) => 
     api.post('/api/public/songs/batch', { userId, songIds }),
+  
+  /**
+   * Upload a user's own song file
+   */
+  uploadSong: (userId: string, formData: FormData, onProgress?: (progress: number) => void) =>
+    api.post(`/api/gruvi/songs/${userId}/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(progress);
+        }
+      },
+    }),
 };
 
 // Videos API
@@ -200,6 +223,20 @@ export const videosApi = {
   // YouTube Upload
   uploadToYouTube: (userId: string, videoId: string, data?: { addThumbnailIntro?: boolean }) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, data || {}),
+  
+  /**
+   * Upload a user's own video file
+   */
+  uploadVideo: (userId: string, formData: FormData, onProgress?: (progress: number) => void) =>
+    api.post(`/api/gruvi/videos/${userId}/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(progress);
+        }
+      },
+    }),
 };
 
 // YouTube API

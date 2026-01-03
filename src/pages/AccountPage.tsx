@@ -14,11 +14,13 @@ import {
   LinearProgress,
   Paper,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { createPortalSession, createCheckoutSession } from '../store/authSlice';
+import { createPortalSession, createCheckoutSession, refreshUserData } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
@@ -26,7 +28,11 @@ import { reportPurchaseConversion } from '../utils/googleAds';
 import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
 import BoltIcon from '@mui/icons-material/Bolt';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
 import { stripeConfig } from '../config/stripe';
+import { userApi } from '../services/api';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
@@ -45,6 +51,19 @@ const AccountPage: React.FC = () => {
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
+  
+  // Profile editing state - single field for Artist / Director Name
+  const [artistName, setArtistName] = useState(user?.artistName || user?.name || '');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [nameSuccess, setNameSuccess] = useState<string | null>(null);
+  
+  // Update local state when user data changes
+  useEffect(() => {
+    if (user) {
+      setArtistName(user.artistName || user.name || '');
+    }
+  }, [user]);
 
   const handleManageSubscription = useCallback(async () => {
     try {
@@ -120,6 +139,36 @@ const AccountPage: React.FC = () => {
       setEmailPreferencesLoading(false);
     }
   }, [dispatch]);
+
+  const handleSaveName = useCallback(async () => {
+    setIsSavingName(true);
+    setError(null);
+    
+    try {
+      await userApi.updateProfile({
+        name: artistName,
+        artistName: artistName,
+        directorName: artistName,
+      });
+      
+      // Refresh user data to update the store
+      await dispatch(refreshUserData());
+      
+      setNameSuccess('Saved!');
+      setIsEditingName(false);
+      setTimeout(() => setNameSuccess(null), 2000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to update name');
+    } finally {
+      setIsSavingName(false);
+    }
+  }, [artistName, dispatch]);
+
+  const handleCancelEdit = useCallback(() => {
+    setArtistName(user?.artistName || user?.name || '');
+    setIsEditingName(false);
+  }, [user]);
+
 
   return (
     <Box sx={{ 
@@ -440,27 +489,81 @@ const AccountPage: React.FC = () => {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
                 Personal Information
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 }, mt: 1 }}>
-                <TextField 
-                  fullWidth 
-                  label="Username" 
-                  value={user?.username || ''}
-                  size="small"
-                  disabled
-                  InputProps={{
-                    sx: { borderRadius: 2 }
-                  }}
-                />
-                <TextField 
-                  fullWidth 
-                  label="Email Address" 
-                  value={user?.email || ''}
-                  size="small"
-                  disabled
-                  InputProps={{
-                    sx: { borderRadius: 2 }
-                  }}
-                />
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 3, sm: 3.5 }, mt: 1 }}>
+                {/* Artist / Director Name */}
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                    Artist / Director Name
+                  </Typography>
+                  <TextField 
+                    fullWidth 
+                    placeholder="Enter your artist or director name"
+                    value={artistName}
+                    onChange={(e) => setArtistName(e.target.value)}
+                    size="small"
+                    disabled={!isEditingName}
+                    InputProps={{
+                      sx: { borderRadius: '10px' },
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isEditingName ? (
+                            <>
+                              <IconButton 
+                                onClick={handleCancelEdit} 
+                                size="small"
+                                disabled={isSavingName}
+                              >
+                                <CloseIcon fontSize="small" />
+                              </IconButton>
+                              <IconButton 
+                                onClick={handleSaveName} 
+                                size="small"
+                                disabled={isSavingName}
+                                sx={{ color: '#007AFF' }}
+                              >
+                                {isSavingName ? (
+                                  <CircularProgress size={18} />
+                                ) : (
+                                  <SaveIcon fontSize="small" />
+                                )}
+                              </IconButton>
+                            </>
+                          ) : (
+                            <IconButton 
+                              onClick={() => setIsEditingName(true)} 
+                              size="small"
+                              sx={{ color: '#007AFF' }}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ color: nameSuccess ? 'success.main' : '#86868B', mt: 0.5, display: 'block' }}>
+                    {nameSuccess || "Your name as Artist on songs and Director on videos"}
+                  </Typography>
+                </Box>
+
+                {/* Email Address */}
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                    Email Address
+                  </Typography>
+                  <TextField 
+                    fullWidth 
+                    value={user?.email || ''}
+                    size="small"
+                    disabled
+                    InputProps={{
+                      sx: { borderRadius: '10px', bgcolor: 'rgba(0,0,0,0.02)' }
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ color: '#86868B', mt: 0.5, display: 'block' }}>
+                    Email cannot be changed
+                  </Typography>
+                </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="body2" color="text.secondary">
                     Email Notifications:

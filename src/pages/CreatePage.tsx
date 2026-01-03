@@ -102,7 +102,7 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
         left: 0, 
         right: 0, 
         height: 48, 
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0) 100%)',
+        background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)',
         pointerEvents: 'none',
         zIndex: 1,
         opacity: showTopGradient ? 1 : 0,
@@ -121,7 +121,7 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
         left: 0, 
         right: 0, 
         height: 48, 
-        background: 'linear-gradient(to top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0) 100%)',
+        background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)',
         pointerEvents: 'none',
         zIndex: 1,
         opacity: showBottomGradient ? 1 : 0,
@@ -2010,6 +2010,7 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={genrePickerOpen}
           onClose={() => setGenrePickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -2091,6 +2092,7 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={moodPickerOpen}
           onClose={() => setMoodPickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -2172,6 +2174,7 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={languagePickerOpen}
           onClose={() => setLanguagePickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -2331,6 +2334,7 @@ const CreatePage: React.FC = () => {
                 setSongPickerOpen(false);
                 setSongSearchQuery('');
               }}
+              sx={{ zIndex: 1400 }}
               PaperProps={{
                 sx: {
                   borderTopLeftRadius: '20px',
@@ -2949,6 +2953,7 @@ const CreatePage: React.FC = () => {
               anchor="bottom"
               open={stylePickerOpen}
               onClose={() => setStylePickerOpen(false)}
+              sx={{ zIndex: 1400 }}
               PaperProps={{
                 sx: {
                   borderTopLeftRadius: '20px',
