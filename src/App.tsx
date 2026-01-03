@@ -41,6 +41,7 @@ import ConnectedAccountsPage from './pages/ConnectedAccountsPage';
 import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
 import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
+import TikTokCallbackPage from './pages/TikTokCallbackPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -157,6 +158,9 @@ function App() {
         
         {/* YouTube OAuth callback */}
         <Route path="/youtube/callback" element={<YouTubeCallbackPage />} />
+        
+        {/* TikTok OAuth callback */}
+        <Route path="/tiktok/callback" element={<TikTokCallbackPage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={

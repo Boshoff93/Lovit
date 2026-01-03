@@ -45,7 +45,7 @@ import {
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { getTokensFromAllowances } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, charactersApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, charactersApi, Character } from '../services/api';
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -138,6 +138,10 @@ const MusicVideoPlayer: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
+  
+  // TikTok state
+  const [tiktokConnected, setTiktokConnected] = useState(false);
+  const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
   
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -277,6 +281,15 @@ const MusicVideoPlayer: React.FC = () => {
         setYoutubeChannel(ytResponse.data.channelInfo);
       } catch {
         // YouTube not connected
+      }
+      
+      try {
+        // Check TikTok status
+        const ttResponse = await tiktokApi.getStatus(user.userId);
+        setTiktokConnected(ttResponse.data.connected);
+        setTiktokUsername(ttResponse.data.username);
+      } catch {
+        // TikTok not connected
       }
     };
     
@@ -457,36 +470,26 @@ const MusicVideoPlayer: React.FC = () => {
       const response = await youtubeApi.getAuthUrl(user.userId);
       const { authUrl } = response.data;
       
-      const authWindow = window.open(authUrl, 'YouTube Authorization', 'width=600,height=700');
-      
-      const handleMessage = async (event: MessageEvent) => {
-        if (event.data?.type === 'youtube-oauth-callback') {
-          const { code, state } = event.data;
-          window.removeEventListener('message', handleMessage);
-          
-          try {
-            const callbackResponse = await youtubeApi.handleCallback(code, state);
-            setYoutubeConnected(true);
-            setYoutubeChannel(callbackResponse.data.channelInfo);
-            setSocialSuccess('YouTube connected!');
-            setTimeout(() => setSocialSuccess(null), 3000);
-          } catch (err: any) {
-            setSocialError(err.response?.data?.error || 'Failed to connect YouTube');
-          }
-        }
-      };
-      
-      window.addEventListener('message', handleMessage);
-      
-      const checkClosed = setInterval(() => {
-        if (authWindow?.closed) {
-          clearInterval(checkClosed);
-          window.removeEventListener('message', handleMessage);
-        }
-      }, 1000);
+      // Redirect to OAuth - the callback page will handle the response
+      window.location.href = authUrl;
       
     } catch (err: any) {
       setSocialError(err.response?.data?.error || 'Failed to start YouTube authorization');
+    }
+  };
+
+  const handleConnectTikTok = async () => {
+    if (!user?.userId) return;
+    
+    try {
+      const response = await tiktokApi.getAuthUrl(user.userId);
+      const { authUrl } = response.data;
+      
+      // Redirect to OAuth - the callback page will handle the response
+      window.location.href = authUrl;
+      
+    } catch (err: any) {
+      setSocialError(err.response?.data?.error || 'Failed to start TikTok authorization');
     }
   };
 
@@ -1208,8 +1211,19 @@ const MusicVideoPlayer: React.FC = () => {
                 </Box>
               </Box>
 
-              {/* TikTok - Coming Soon */}
+              {/* TikTok - Selectable */}
               <Box
+                onClick={() => {
+                  if (!tiktokConnected) {
+                    handleConnectTikTok();
+                  } else {
+                    setSelectedPlatforms(prev => 
+                      prev.includes('tiktok') 
+                        ? prev.filter(p => p !== 'tiktok')
+                        : [...prev, 'tiktok']
+                    );
+                  }
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -1217,14 +1231,42 @@ const MusicVideoPlayer: React.FC = () => {
                   px: 2,
                   py: 1.5,
                   borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  background: 'rgba(0,0,0,0.02)',
-                  opacity: 0.5,
+                  border: selectedPlatforms.includes('tiktok') 
+                    ? '2px solid #000000' 
+                    : tiktokConnected 
+                      ? '2px solid #34C759' 
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: selectedPlatforms.includes('tiktok') 
+                    ? 'rgba(0,0,0,0.05)' 
+                    : tiktokConnected 
+                      ? 'rgba(52,199,89,0.05)' 
+                      : '#fff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { 
+                    borderColor: tiktokConnected ? '#000000' : '#000000',
+                    background: 'rgba(0,0,0,0.02)',
+                  },
                 }}
               >
+                {tiktokConnected && (
+                  <Checkbox
+                    checked={selectedPlatforms.includes('tiktok')}
+                    size="small"
+                    sx={{ p: 0, mr: -0.5, color: '#000', '&.Mui-checked': { color: '#000' } }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => {
+                      setSelectedPlatforms(prev => 
+                        prev.includes('tiktok') 
+                          ? prev.filter(p => p !== 'tiktok')
+                          : [...prev, 'tiktok']
+                      );
+                    }}
+                  />
+                )}
                 <Box sx={{ 
                   width: 36, height: 36, borderRadius: '10px', 
-                  background: 'rgba(0,0,0,0.06)', 
+                  background: 'rgba(0,0,0,0.1)', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center' 
                 }}>
                   <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
@@ -1232,8 +1274,15 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>TikTok</Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>TikTok</Typography>
+                    {tiktokConnected && (
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                    )}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                    {tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'Connected') : 'Click to connect'}
+                  </Typography>
                 </Box>
               </Box>
 
@@ -1857,6 +1906,19 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                 </Box>
               )}
+              {selectedPlatforms.includes('tiktok') && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.2)' }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#000' }}>
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: 600 }}>TikTok</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      {tiktokUsername ? `@${tiktokUsername}` : 'Your Account'}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
             </Box>
 
             {/* Video Details Summary */}
@@ -1909,16 +1971,25 @@ const MusicVideoPlayer: React.FC = () => {
               startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
               onClick={() => {
                 setShowUploadConfirm(false);
-                handleYouTubeUpload();
+                // For now, only YouTube upload is implemented
+                if (selectedPlatforms.includes('youtube')) {
+                  handleYouTubeUpload();
+                }
+                // TikTok upload will be implemented later
+                if (selectedPlatforms.includes('tiktok') && !selectedPlatforms.includes('youtube')) {
+                  setSocialError('TikTok upload coming soon! For now, please select YouTube.');
+                }
               }}
               disabled={isUploading}
               sx={{
-                bgcolor: '#FF0000',
+                bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
                 borderRadius: '10px',
                 textTransform: 'none',
                 fontWeight: 600,
                 px: 3,
-                '&:hover': { bgcolor: '#CC0000' },
+                '&:hover': { 
+                  bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
+                },
               }}
             >
               {isUploading ? 'Uploading...' : 'Upload Now'}

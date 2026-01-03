@@ -4,18 +4,12 @@ import {
   Container, 
   Typography, 
   Card, 
-  Button, 
-  List,
-  ListItem,
-  ListItemIcon,
   CircularProgress,
   Alert,
-  Chip,
   IconButton,
 } from '@mui/material';
 import { 
   YouTube,
-  Check,
   Link as LinkIcon,
   LinkOff,
   ArrowBack,
@@ -23,7 +17,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { youtubeApi } from '../services/api';
+import { youtubeApi, tiktokApi } from '../services/api';
 
 // Social platform configurations
 const socialPlatforms = [
@@ -51,8 +45,7 @@ const socialPlatforms = [
     color: '#000000',
     bgColor: 'rgba(0,0,0,0.1)',
     description: 'Share videos to TikTok',
-    available: false,
-    comingSoon: true,
+    available: true,
   },
   {
     id: 'instagram',
@@ -220,6 +213,8 @@ interface ConnectionStatus {
     connected: boolean;
     channelName?: string;
     channelId?: string;
+    username?: string;
+    avatarUrl?: string;
     loading: boolean;
   };
 }
@@ -236,23 +231,33 @@ const ConnectedAccountsPage: React.FC = () => {
   // Handle OAuth redirect result from URL params
   useEffect(() => {
     const youtubeResult = searchParams.get('youtube');
+    const tiktokResult = searchParams.get('tiktok');
     const message = searchParams.get('message');
     const channel = searchParams.get('channel');
+    const username = searchParams.get('username');
 
     if (youtubeResult === 'success') {
       setSuccess(`YouTube connected${channel ? ` to ${channel}` : ''}!`);
       setTimeout(() => setSuccess(null), 5000);
-      // Clean up URL params
       setSearchParams({});
     } else if (youtubeResult === 'error') {
       setError(message || 'Failed to connect YouTube');
       setTimeout(() => setError(null), 5000);
-      // Clean up URL params
+      setSearchParams({});
+    }
+
+    if (tiktokResult === 'success') {
+      setSuccess(`TikTok connected${username ? ` as @${username}` : ''}!`);
+      setTimeout(() => setSuccess(null), 5000);
+      setSearchParams({});
+    } else if (tiktokResult === 'error') {
+      setError(message || 'Failed to connect TikTok');
+      setTimeout(() => setError(null), 5000);
       setSearchParams({});
     }
   }, [searchParams, setSearchParams]);
 
-  // Check YouTube connection status on mount
+  // Check connection status on mount
   useEffect(() => {
     const checkConnections = async () => {
       if (!user?.userId) return;
@@ -261,16 +266,18 @@ const ConnectedAccountsPage: React.FC = () => {
       setConnectionStatus(prev => ({
         ...prev,
         youtube: { ...prev.youtube, loading: true, connected: false },
+        tiktok: { ...prev.tiktok, loading: true, connected: false },
       }));
 
+      // Check YouTube status
       try {
         const response = await youtubeApi.getStatus(user.userId);
         setConnectionStatus(prev => ({
           ...prev,
           youtube: {
             connected: response.data.connected,
-            channelName: response.data.channelName,
-            channelId: response.data.channelId,
+            channelName: response.data.channelInfo?.channelTitle,
+            channelId: response.data.channelInfo?.channelId,
             loading: false,
           },
         }));
@@ -278,6 +285,25 @@ const ConnectedAccountsPage: React.FC = () => {
         setConnectionStatus(prev => ({
           ...prev,
           youtube: { connected: false, loading: false },
+        }));
+      }
+
+      // Check TikTok status
+      try {
+        const response = await tiktokApi.getStatus(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          tiktok: {
+            connected: response.data.connected,
+            username: response.data.username,
+            avatarUrl: response.data.avatarUrl,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setConnectionStatus(prev => ({
+          ...prev,
+          tiktok: { connected: false, loading: false },
         }));
       }
     };
@@ -308,6 +334,27 @@ const ConnectedAccountsPage: React.FC = () => {
         }));
       }
     }
+
+    if (platformId === 'tiktok') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        tiktok: { ...prev.tiktok, loading: true },
+      }));
+
+      try {
+        const response = await tiktokApi.getAuthUrl(user.userId);
+        
+        // Redirect to TikTok OAuth
+        window.location.href = response.data.authUrl;
+
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to start TikTok connection');
+        setConnectionStatus(prev => ({
+          ...prev,
+          tiktok: { connected: false, loading: false },
+        }));
+      }
+    }
   };
 
   const handleDisconnect = async (platformId: string) => {
@@ -332,6 +379,29 @@ const ConnectedAccountsPage: React.FC = () => {
         setConnectionStatus(prev => ({
           ...prev,
           youtube: { ...prev.youtube, loading: false },
+        }));
+      }
+    }
+
+    if (platformId === 'tiktok') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        tiktok: { ...prev.tiktok, loading: true },
+      }));
+
+      try {
+        await tiktokApi.disconnect(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          tiktok: { connected: false, loading: false },
+        }));
+        setSuccess('TikTok account disconnected');
+        setTimeout(() => setSuccess(null), 3000);
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to disconnect TikTok');
+        setConnectionStatus(prev => ({
+          ...prev,
+          tiktok: { ...prev.tiktok, loading: false },
         }));
       }
     }
@@ -392,140 +462,142 @@ const ConnectedAccountsPage: React.FC = () => {
           </Typography>
         </Card>
 
-        {/* Social Platforms List */}
-        <Card sx={{ 
-          background: '#fff',
-          border: '1px solid rgba(0,0,0,0.08)',
-          borderRadius: '16px',
-          boxShadow: 'none',
-          overflow: 'hidden',
-        }}>
-          <List sx={{ p: 0 }}>
-            {socialPlatforms.map((platform, index) => {
-              const status = connectionStatus[platform.id];
-              const IconComponent = platform.icon;
-              const isConnected = status?.connected;
-              const isLoading = status?.loading;
+        {/* Social Platforms - Individual Cards */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {socialPlatforms.map((platform) => {
+            const status = connectionStatus[platform.id];
+            const IconComponent = platform.icon;
+            const isConnected = status?.connected;
+            const isLoading = status?.loading;
+            const accountName = status?.channelName || (status?.username ? `@${status.username}` : null);
 
-              return (
-                <React.Fragment key={platform.id}>
-                  <ListItem
-                    sx={{
-                      py: 2.5,
-                      px: 3,
-                      opacity: platform.available ? 1 : 0.6,
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 56 }}>
-                      <Box sx={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '12px',
-                        background: platform.bgColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                        <IconComponent />
-                      </Box>
-                    </ListItemIcon>
-                    <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                        <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                          {platform.name}
-                        </Typography>
-                        {platform.comingSoon && (
-                          <Chip 
-                            label="Coming Soon" 
-                            size="small" 
-                            sx={{ 
-                              fontSize: '0.65rem', 
-                              height: 20,
-                              background: 'rgba(0,122,255,0.1)',
-                              color: '#007AFF',
-                              fontWeight: 600,
-                            }} 
-                          />
-                        )}
-                        {isConnected && (
-                          <Chip 
-                            icon={<Check sx={{ fontSize: 14 }} />}
-                            label="Connected" 
-                            size="small" 
-                            sx={{ 
-                              fontSize: '0.65rem', 
-                              height: 20,
-                              background: 'rgba(52,199,89,0.1)',
-                              color: '#34C759',
-                              fontWeight: 600,
-                              '& .MuiChip-icon': { color: '#34C759' },
-                            }} 
-                          />
-                        )}
-                      </Box>
-                      <Typography variant="body2" sx={{ color: '#86868B' }}>
+            return (
+              <Card
+                key={platform.id}
+                sx={{
+                  background: '#fff',
+                  border: isConnected 
+                    ? '2px solid #34C759' 
+                    : '1px solid rgba(0,0,0,0.08)',
+                  borderRadius: '16px',
+                  boxShadow: 'none',
+                  p: { xs: 2, sm: 2.5 },
+                  opacity: platform.available ? 1 : 0.5,
+                }}
+              >
+                {/* Main Content Row - Responsive */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: { xs: 1.5, sm: 2 },
+                }}>
+                  {/* Left: Icon + Info */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1.5,
+                    flex: 1,
+                    width: '100%',
+                  }}>
+                    <Box sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: '12px',
+                      background: platform.bgColor,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      <IconComponent />
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '1rem' }}>
+                        {platform.name}
+                      </Typography>
+                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mt: 0.25 }}>
                         {platform.description}
                       </Typography>
-                      {isConnected && status?.channelName && (
-                        <Typography variant="body2" sx={{ color: '#007AFF', fontWeight: 500, mt: 0.5 }}>
-                          {status.channelName}
+                      {isConnected && accountName && (
+                        <Typography sx={{ fontSize: '0.8rem', color: '#007AFF', fontWeight: 500, mt: 0.25 }}>
+                          {accountName}
                         </Typography>
                       )}
                     </Box>
-                    
-                    {platform.available && (
-                      <Box>
-                        {isLoading ? (
-                          <CircularProgress size={24} sx={{ color: platform.color }} />
-                        ) : isConnected ? (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<LinkOff />}
-                            onClick={() => handleDisconnect(platform.id)}
-                            sx={{
-                              borderRadius: '10px',
-                              textTransform: 'none',
-                              borderColor: 'rgba(255,59,48,0.3)',
-                              color: '#FF3B30',
-                              '&:hover': {
-                                borderColor: '#FF3B30',
-                                background: 'rgba(255,59,48,0.05)',
-                              },
-                            }}
-                          >
+                  </Box>
+
+                  {/* Right: Action Button */}
+                  {platform.available && (
+                    <Box sx={{ 
+                      flexShrink: 0,
+                      width: { xs: '100%', sm: 'auto' },
+                      mt: { xs: 0.5, sm: 0 },
+                    }}>
+                      {isLoading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 1, px: 3 }}>
+                          <CircularProgress size={20} sx={{ color: platform.color }} />
+                        </Box>
+                      ) : isConnected ? (
+                        <Box
+                          onClick={() => handleDisconnect(platform.id)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 0.75,
+                            py: 1,
+                            px: 2,
+                            borderRadius: '10px',
+                            border: '1px solid rgba(0,0,0,0.12)',
+                            background: '#fff',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              borderColor: '#FF3B30',
+                              background: 'rgba(255,59,48,0.05)',
+                              '& .btn-text': { color: '#FF3B30' },
+                              '& .btn-icon': { color: '#FF3B30' },
+                            },
+                          }}
+                        >
+                          <LinkOff className="btn-icon" sx={{ fontSize: 16, color: '#86868B', transition: 'color 0.2s' }} />
+                          <Typography className="btn-text" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#86868B', transition: 'color 0.2s' }}>
                             Disconnect
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={<LinkIcon />}
-                            onClick={() => handleConnect(platform.id)}
-                            sx={{
-                              borderRadius: '10px',
-                              textTransform: 'none',
-                              background: platform.color,
-                              '&:hover': {
-                                background: platform.color,
-                                opacity: 0.9,
-                              },
-                            }}
-                          >
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <Box
+                          onClick={() => handleConnect(platform.id)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 0.75,
+                            py: 1,
+                            px: 2.5,
+                            borderRadius: '10px',
+                            background: platform.color,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              opacity: 0.9,
+                            },
+                          }}
+                        >
+                          <LinkIcon sx={{ fontSize: 16, color: '#fff' }} />
+                          <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
                             Connect
-                          </Button>
-                        )}
-                      </Box>
-                    )}
-                  </ListItem>
-                  {index < socialPlatforms.length - 1 && (
-                    <Box sx={{ mx: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }} />
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
                   )}
-                </React.Fragment>
-              );
-            })}
-          </List>
-        </Card>
+                </Box>
+              </Card>
+            );
+          })}
+        </Box>
       </Container>
     </Box>
   );

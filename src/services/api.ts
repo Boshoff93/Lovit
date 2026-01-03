@@ -217,6 +217,21 @@ export const youtubeApi = {
     api.delete(`/api/gruvi/youtube/disconnect?userId=${userId}`),
 };
 
+// TikTok API
+export const tiktokApi = {
+  getAuthUrl: (userId: string) =>
+    api.get(`/api/gruvi/tiktok/auth-url?userId=${userId}`),
+  
+  handleCallback: (code: string, state: string) =>
+    api.post('/api/public/tiktok/callback', { code, state }),
+  
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/tiktok/status?userId=${userId}`),
+  
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/tiktok/disconnect?userId=${userId}`),
+};
+
 // Characters API
 export const charactersApi = {
   createCharacter: (data: {
