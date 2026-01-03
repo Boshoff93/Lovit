@@ -20,7 +20,7 @@ import {
   LinkOff,
   ArrowBack,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { youtubeApi } from '../services/api';
@@ -226,11 +226,31 @@ interface ConnectionStatus {
 
 const ConnectedAccountsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector((state: RootState) => state.auth);
   
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Handle OAuth redirect result from URL params
+  useEffect(() => {
+    const youtubeResult = searchParams.get('youtube');
+    const message = searchParams.get('message');
+    const channel = searchParams.get('channel');
+
+    if (youtubeResult === 'success') {
+      setSuccess(`YouTube connected${channel ? ` to ${channel}` : ''}!`);
+      setTimeout(() => setSuccess(null), 5000);
+      // Clean up URL params
+      setSearchParams({});
+    } else if (youtubeResult === 'error') {
+      setError(message || 'Failed to connect YouTube');
+      setTimeout(() => setError(null), 5000);
+      // Clean up URL params
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
 
   // Check YouTube connection status on mount
   useEffect(() => {
@@ -277,87 +297,8 @@ const ConnectedAccountsPage: React.FC = () => {
       try {
         const response = await youtubeApi.getAuthUrl(user.userId);
         
-        // Open OAuth popup
-        const width = 600;
-        const height = 700;
-        const left = window.screenX + (window.outerWidth - width) / 2;
-        const top = window.screenY + (window.outerHeight - height) / 2;
-        
-        const popup = window.open(
-          response.data.authUrl,
-          'youtube-auth',
-          `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`
-        );
-
-        // Listen for OAuth callback
-        const handleMessage = async (event: MessageEvent) => {
-          if (event.data?.type === 'youtube-auth-success') {
-            window.removeEventListener('message', handleMessage);
-            popup?.close();
-            
-            // Refresh connection status
-            try {
-              const statusResponse = await youtubeApi.getStatus(user.userId);
-              setConnectionStatus(prev => ({
-                ...prev,
-                youtube: {
-                  connected: statusResponse.data.connected,
-                  channelName: statusResponse.data.channelName,
-                  channelId: statusResponse.data.channelId,
-                  loading: false,
-                },
-              }));
-              setSuccess('YouTube account connected successfully!');
-              setTimeout(() => setSuccess(null), 3000);
-            } catch (err) {
-              setConnectionStatus(prev => ({
-                ...prev,
-                youtube: { connected: false, loading: false },
-              }));
-            }
-          } else if (event.data?.type === 'youtube-auth-error') {
-            window.removeEventListener('message', handleMessage);
-            popup?.close();
-            setError(event.data.error || 'Failed to connect YouTube');
-            setConnectionStatus(prev => ({
-              ...prev,
-              youtube: { connected: false, loading: false },
-            }));
-          }
-        };
-
-        window.addEventListener('message', handleMessage);
-
-        // Fallback: check status after popup closes
-        const checkPopupClosed = setInterval(async () => {
-          if (popup?.closed) {
-            clearInterval(checkPopupClosed);
-            window.removeEventListener('message', handleMessage);
-            
-            // Check if connection was successful
-            try {
-              const statusResponse = await youtubeApi.getStatus(user.userId);
-              setConnectionStatus(prev => ({
-                ...prev,
-                youtube: {
-                  connected: statusResponse.data.connected,
-                  channelName: statusResponse.data.channelName,
-                  channelId: statusResponse.data.channelId,
-                  loading: false,
-                },
-              }));
-              if (statusResponse.data.connected) {
-                setSuccess('YouTube account connected successfully!');
-                setTimeout(() => setSuccess(null), 3000);
-              }
-            } catch (err) {
-              setConnectionStatus(prev => ({
-                ...prev,
-                youtube: { connected: false, loading: false },
-              }));
-            }
-          }
-        }, 500);
+        // Redirect to Google OAuth - backend will handle the callback and redirect back
+        window.location.href = response.data.authUrl;
 
       } catch (err: any) {
         setError(err.response?.data?.error || 'Failed to start YouTube connection');

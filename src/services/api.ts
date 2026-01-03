@@ -208,7 +208,7 @@ export const youtubeApi = {
     api.get(`/api/gruvi/youtube/auth-url?userId=${userId}`),
   
   handleCallback: (code: string, state: string) =>
-    api.post('/api/gruvi/youtube/callback', { code, state }),
+    api.post('/api/public/youtube/callback', { code, state }),
   
   getStatus: (userId: string) =>
     api.get(`/api/gruvi/youtube/status?userId=${userId}`),

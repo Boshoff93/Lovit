@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { Check, Error } from '@mui/icons-material';
+import axios from 'axios';
 
 /**
  * YouTube OAuth Callback Page
  * 
  * This page handles the OAuth callback from YouTube after user authorization.
- * It extracts the authorization code and state from the URL, then:
- * 1. Sends them back to the parent window (MusicVideoPlayer page)
- * 2. Shows success/error message
- * 3. Auto-closes after a brief delay
+ * Google redirects here with ?code=xxx&state=yyy
+ * We send these to the backend to exchange for tokens.
+ * The parent page polls the status to detect when connection is complete.
  */
 const YouTubeCallbackPage: React.FC = () => {
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [message, setMessage] = useState('Connecting your YouTube account...');
 
   useEffect(() => {
-    const handleCallback = () => {
+    const handleCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       const state = urlParams.get('state');
       const error = urlParams.get('error');
+
+      console.log('[YouTubeCallback] Processing callback...');
+      console.log('[YouTubeCallback] Has code:', !!code);
+      console.log('[YouTubeCallback] Has state:', !!state);
+      console.log('[YouTubeCallback] Error:', error);
 
       if (error) {
         setStatus('error');
@@ -37,24 +42,35 @@ const YouTubeCallbackPage: React.FC = () => {
         return;
       }
 
-      // Send the code and state back to the parent window
-      if (window.opener) {
-        window.opener.postMessage({
-          type: 'youtube-oauth-callback',
-          code,
-          state,
-        }, window.location.origin);
+      try {
+        console.log('[YouTubeCallback] Sending code to backend...');
+        
+        // Call the backend directly (no auth required for this public endpoint)
+        const response = await axios.post(
+          'https://api.gruvimusic.com/api/public/youtube/callback',
+          { code, state }
+        );
 
-        setStatus('success');
-        setMessage('YouTube connected! You can close this window.');
+        console.log('[YouTubeCallback] Backend response:', response.data);
 
-        // Auto-close after a short delay
-        setTimeout(() => {
-          window.close();
-        }, 2000);
-      } else {
+        if (response.data.success) {
+          setStatus('success');
+          const channelName = response.data.channelName || 'your channel';
+          setMessage(`Connected to ${channelName}! Redirecting...`);
+          
+          // Redirect back to connected accounts page
+          setTimeout(() => {
+            window.location.href = '/settings/connected-accounts?youtube=success&channel=' + encodeURIComponent(channelName);
+          }, 1500);
+        } else {
+          setStatus('error');
+          setMessage('Failed to connect YouTube. Please try again.');
+        }
+      } catch (err: any) {
+        console.error('[YouTubeCallback] Error:', err);
+        console.error('[YouTubeCallback] Error response:', err.response?.data);
         setStatus('error');
-        setMessage('Could not communicate with the main window. Please close this and try again.');
+        setMessage(err.response?.data?.error || 'Failed to connect YouTube. Please try again.');
       }
     };
 
@@ -151,4 +167,3 @@ const YouTubeCallbackPage: React.FC = () => {
 };
 
 export default YouTubeCallbackPage;
-
