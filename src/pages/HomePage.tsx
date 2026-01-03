@@ -2540,6 +2540,207 @@ const HomePage: React.FC = () => {
         </Box>
       )}
 
+      {/* Share Everywhere Section */}
+      <Box sx={{ py: { xs: 4, md: 5 }, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 2.5 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+            >
+              Post to All Platforms in One Click
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Skip hours of tedious uploading - publish to YouTube, TikTok, Instagram & more simultaneously
+            </Typography>
+          </Box>
+
+          {/* Platform Icons with real SVG icons */}
+          <Box sx={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: { xs: 2, md: 3 },
+          }}>
+            {/* YouTube */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(255,0,0,0.1) 0%, rgba(255,0,0,0.2) 100%)',
+                  border: '1px solid rgba(255,0,0,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(255,0,0,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#FF0000' }}>
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>YouTube</Typography>
+            </Box>
+
+            {/* TikTok */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%)',
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#000' }}>
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>TikTok</Typography>
+            </Box>
+
+            {/* Instagram */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.15) 100%)',
+                  border: '1px solid rgba(228,64,95,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(228,64,95,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 } }}>
+                  <defs>
+                    <linearGradient id="instagram-gradient-share" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#FFDC80" />
+                      <stop offset="25%" stopColor="#F77737" />
+                      <stop offset="50%" stopColor="#E1306C" />
+                      <stop offset="75%" stopColor="#C13584" />
+                      <stop offset="100%" stopColor="#833AB4" />
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#instagram-gradient-share)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Instagram</Typography>
+            </Box>
+
+            {/* Facebook */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(24,119,242,0.1) 0%, rgba(24,119,242,0.2) 100%)',
+                  border: '1px solid rgba(24,119,242,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(24,119,242,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#1877F2' }}>
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Facebook</Typography>
+            </Box>
+
+            {/* Spotify */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(29,185,84,0.1) 0%, rgba(29,185,84,0.2) 100%)',
+                  border: '1px solid rgba(29,185,84,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(29,185,84,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#1DB954' }}>
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Spotify</Typography>
+            </Box>
+
+            {/* Apple Music */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(250,35,59,0.1) 0%, rgba(250,35,59,0.2) 100%)',
+                  border: '1px solid rgba(250,35,59,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(250,35,59,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#FA233B' }}>
+                  <path d="M18.41 6.931V5.258c0-.47-.287-.739-.738-.71-.263.02-.527.07-.784.12-.379.07-.758.14-1.137.21l-5.49 1.05c-.14.02-.28.05-.42.08-.27.06-.49.25-.59.52-.07.18-.1.37-.1.57v10.08c0 .25-.07.476-.24.65-.26.27-.61.33-.98.37-.36.04-.72.06-1.08.12-.59.09-1.13.31-1.56.71-.65.61-.82 1.54-.5 2.3.39.93 1.28 1.34 2.22 1.29.37-.02.74-.08 1.1-.18.67-.19 1.167-.59 1.46-1.22.206-.44.26-.918.26-1.4V11.46c0-.06.002-.12.005-.18.015-.267.148-.423.405-.487.026-.01.055-.015.082-.02l3.896-.74c.36-.069.72-.139 1.08-.203.463-.082.737.148.737.608v3.028c0 .214-.07.412-.21.554-.253.26-.607.31-.967.35-.36.038-.723.059-1.08.112-.6.09-1.15.31-1.59.74-.626.61-.8 1.56-.46 2.32.385.862 1.22 1.308 2.17 1.266.364-.016.72-.073 1.07-.173.628-.178 1.098-.55 1.388-1.14.186-.379.244-.789.244-1.206V6.931z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Apple Music</Typography>
+            </Box>
+
+            {/* Amazon Music */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: { xs: 56, md: 72 },
+                  height: { xs: 56, md: 72 },
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(37,209,218,0.1) 0%, rgba(37,209,218,0.2) 100%)',
+                  border: '1px solid rgba(37,209,218,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(37,209,218,0.2)' },
+                }}
+              >
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#25D1DA' }}>
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Amazon Music</Typography>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
       {/* More Tracks Section - columns of 3 tracks each */}
       <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth="lg">
@@ -3409,218 +3610,6 @@ const HomePage: React.FC = () => {
           </Box>
         </Container>
       </Box>
-
-      <SectionDivider />
-
-      {/* Share Everywhere Section */}
-      <Box sx={{ py: { xs: 6, md: 8 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="md">
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: '1.5rem', md: '2rem' },
-                fontWeight: 700,
-                color: '#1D1D1F',
-                mb: 1,
-              }}
-            >
-              Share Your Music & Videos Everywhere
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.9rem', md: '1rem' }, maxWidth: 600, mx: 'auto' }}>
-              Publish your AI-generated songs and music videos directly to YouTube, TikTok, Instagram, 
-              and streaming platforms. Auto-generate thumbnails, descriptions, and optimize for each platform.
-            </Typography>
-          </Box>
-
-          {/* Platform Icons with real SVG icons */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            flexWrap: 'wrap', 
-            gap: { xs: 2, md: 3 },
-          }}>
-            {/* YouTube */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(255,0,0,0.1) 0%, rgba(255,0,0,0.2) 100%)',
-                  border: '1px solid rgba(255,0,0,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(255,0,0,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#FF0000' }}>
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>YouTube</Typography>
-            </Box>
-
-            {/* TikTok */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%)',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#000' }}>
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>TikTok</Typography>
-            </Box>
-
-            {/* Instagram */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.15) 100%)',
-                  border: '1px solid rgba(228,64,95,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(228,64,95,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 } }}>
-                  <defs>
-                    <linearGradient id="instagram-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#FFDC80" />
-                      <stop offset="25%" stopColor="#F77737" />
-                      <stop offset="50%" stopColor="#E1306C" />
-                      <stop offset="75%" stopColor="#C13584" />
-                      <stop offset="100%" stopColor="#833AB4" />
-                    </linearGradient>
-                  </defs>
-                  <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Instagram</Typography>
-            </Box>
-
-            {/* Facebook */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(24,119,242,0.1) 0%, rgba(24,119,242,0.2) 100%)',
-                  border: '1px solid rgba(24,119,242,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(24,119,242,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#1877F2' }}>
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Facebook</Typography>
-            </Box>
-
-            {/* Spotify */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(29,185,84,0.1) 0%, rgba(29,185,84,0.2) 100%)',
-                  border: '1px solid rgba(29,185,84,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(29,185,84,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#1DB954' }}>
-                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Spotify</Typography>
-            </Box>
-
-            {/* Apple Music */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(250,35,59,0.1) 0%, rgba(250,35,59,0.2) 100%)',
-                  border: '1px solid rgba(250,35,59,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(250,35,59,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#FA233B' }}>
-                  <path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.785-.404-2.17-1.266-.34-.76-.166-1.71.46-2.32.44-.43.99-.65 1.59-.74.357-.053.72-.074 1.08-.112.36-.04.714-.09.967-.35.14-.142.21-.34.21-.554V8.946c0-.46-.274-.69-.737-.608-.36.064-.72.134-1.08.203l-3.896.74c-.027.005-.056.01-.082.02-.257.064-.39.22-.405.487-.003.06-.005.12-.005.18v7.395c0 .482-.054.96-.26 1.4-.293.63-.79 1.03-1.46 1.22-.36.1-.73.16-1.1.18-.94.05-1.83-.36-2.22-1.29-.32-.76-.15-1.69.5-2.3.43-.4.97-.62 1.56-.71.36-.06.72-.08 1.08-.12.37-.04.72-.1.98-.37.17-.174.24-.4.24-.65V5.97c0-.2.03-.39.1-.57.1-.27.32-.46.59-.52.14-.03.28-.06.42-.08l5.49-1.05c.38-.07.76-.14 1.14-.21.26-.05.52-.1.78-.12.46-.03.74.25.74.71v6z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Apple Music</Typography>
-            </Box>
-
-            {/* Amazon Music */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: { xs: 56, md: 72 },
-                  height: { xs: 56, md: 72 },
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, rgba(0,168,225,0.1) 0%, rgba(0,168,225,0.2) 100%)',
-                  border: '1px solid rgba(0,168,225,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px) scale(1.05)', boxShadow: '0 8px 24px rgba(0,168,225,0.2)' },
-                }}
-              >
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: { xs: 28, md: 36 }, height: { xs: 28, md: 36 }, fill: '#00A8E1' }}>
-                  <path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705a.659.659 0 01-.752.076c-1.057-.878-1.247-1.287-1.826-2.124-1.746 1.779-2.982 2.312-5.243 2.312-2.676 0-4.762-1.651-4.762-4.958 0-2.581 1.401-4.333 3.393-5.19 1.727-.756 4.141-.891 5.983-1.1v-.41c0-.754.058-1.646-.385-2.296-.385-.582-1.124-.822-1.776-.822-1.207 0-2.284.619-2.547 1.9-.054.284-.264.564-.552.578l-3.087-.333c-.26-.057-.548-.266-.475-.659.71-3.738 4.093-4.865 7.12-4.865 1.548 0 3.571.41 4.793 1.583 1.55 1.441 1.402 3.365 1.402 5.458v4.94c0 1.486.618 2.137 1.199 2.94.203.288.248.633-.009.847-.645.538-1.791 1.539-2.422 2.1l-.054-.047z"/>
-                </Box>
-              </Box>
-              <Typography sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' }, fontWeight: 600, color: '#86868B' }}>Amazon Music</Typography>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-
-      <SectionDivider />
 
       {/* Pricing Section */}
       <Box sx={{ py: { xs: 8, md: 12 }, position: 'relative', zIndex: 1 }}>

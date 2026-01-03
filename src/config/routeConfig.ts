@@ -1965,6 +1965,60 @@ const airbnbData: { [key: string]: { name: string; prompts: string[]; subtext: s
   'guest-experience': { name: 'Guest Experience', prompts: ['Welcome guest music', 'Local experience', 'Host hospitality', 'Memorable stay'], subtext: 'Generate guest experience showcase videos.' },
 };
 
+// Brand Content / AI Promo Content Data
+const brandContentData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  'brand-content-creation': { 
+    name: 'Brand Content Creation', 
+    prompts: ['AI brand content music', 'Promotional video soundtrack', 'Marketing content track', 'Brand story music'],
+    subtext: 'Turn AI music into stunning promotional content for your brand. Create 10-20 content variations in minutes, not weeks.'
+  },
+  'cheap-ugc-alternative': { 
+    name: 'Cheap UGC Alternative', 
+    prompts: ['Affordable UGC music', 'Cost-effective brand video', 'AI-generated user content', 'Budget marketing video'],
+    subtext: 'Skip expensive UGC creators ($200-500 per video). Generate unlimited, high-quality content for a fraction of the cost.'
+  },
+  'bulk-social-content': { 
+    name: 'Bulk Social Content Creator', 
+    prompts: ['Mass social media content', 'Multiple video variations', 'A/B testing content', 'High volume social videos'],
+    subtext: 'Create 10-20 variations to find what resonates with your audience. Stop guessing, start testing.'
+  },
+  'copyright-free-brand-music': { 
+    name: 'Copyright-Free Brand Music', 
+    prompts: ['Royalty-free brand music', 'No copyright strike audio', 'Safe marketing music', 'Original brand soundtrack'],
+    subtext: '100% original, copyright-free music. Safe to use across all your marketing channels without fear of strikes.'
+  },
+  'one-click-social-posting': { 
+    name: 'One-Click Social Posting', 
+    prompts: ['Automated social upload music', 'Cross-platform posting', 'Instant social sharing', 'Multi-channel video upload'],
+    subtext: 'Publish your promotional videos to YouTube, TikTok, Instagram, and Facebook with one click. Save hours of tedious uploading.'
+  },
+  'brand-content-at-scale': { 
+    name: 'Brand Content at Scale', 
+    prompts: ['Scalable marketing content', 'High volume brand videos', 'Automated content generation', 'Mass promotional video'],
+    subtext: 'Effortlessly create hundreds of branded videos from a single product description. Scale your marketing without scaling your budget.'
+  },
+  'skip-expensive-ugc': { 
+    name: 'Skip Expensive UGC Creators', 
+    prompts: ['Affordable influencer content', 'AI-powered UGC alternative', 'Cost-saving video marketing', 'Budget-friendly brand content'],
+    subtext: 'Get the same quality as expensive UGC creators, with instant delivery and unlimited revisions. Maximize your ROI.'
+  },
+  'test-before-you-spend': { 
+    name: 'Test Before You Spend', 
+    prompts: ['Ad creative testing music', 'Performance marketing video', 'A/B test ad content', 'Data-driven video ads'],
+    subtext: 'Create 20 variations, test which performs best with your audience, and double down on the winners. Optimize your ad spend.'
+  },
+  'promotional-content-automation': { 
+    name: 'Promotional Content Automation', 
+    prompts: ['Automated marketing video', 'AI content pipeline', 'Hands-free brand promotion', 'Continuous content generation'],
+    subtext: 'Describe your brand once, and get fresh, engaging promotional content automatically generated for all your campaigns.'
+  },
+  'social-media-content-factory': { 
+    name: 'Social Media Content Factory', 
+    prompts: ['Unlimited social videos', 'Content generation machine', 'Never run out of ideas', 'Always-on content stream'],
+    subtext: 'Never run out of content ideas again. Your personal AI content factory generates unlimited branded videos for all your social channels.'
+  },
+};
+
 // =============================================================================
 // HELPER FUNCTIONS FOR NEW ROUTES
 // =============================================================================
@@ -2283,6 +2337,30 @@ function generateSoftwareAppRoute(appType: string): RouteConfig {
   };
 }
 
+function generateBrandContentRoute(contentType: string): RouteConfig {
+  const data = brandContentData[contentType];
+  const name = data?.name || capitalize(contentType);
+  const prompts = data?.prompts || [`${name} music`, `${name} video`, `${name} content`, `${name} marketing`];
+  const subtext = data?.subtext || `Create stunning ${name.toLowerCase()} with AI-generated music and visuals.`;
+  
+  return {
+    path: `/${contentType}-video`,
+    title: `${name} - AI Brand Content & Promo Video Generator | Gruvi`,
+    description: `Create stunning ${name.toLowerCase()} with AI. ${subtext} Fully automated - just describe your brand and get professional videos.`,
+    keywords: `${contentType.replace(/-/g, ' ')} video, brand content, promotional video, ai marketing, ugc alternative`,
+    ogTitle: `${name} | Gruvi`,
+    ogDescription: `Create stunning ${name.toLowerCase()} with AI - streamline your brand marketing.`,
+    twitterTitle: `${name} | Gruvi`,
+    twitterDescription: `AI-powered ${name.toLowerCase()} for your brand.`,
+    breadcrumbName: name,
+    heroTagline: name,
+    heroHeading: `${name}\nAI-powered content for your brand`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'promotional',
+  };
+}
+
 // =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
@@ -2299,6 +2377,7 @@ const occasionMusicTypes = Object.keys(occasionMusicData);
 const ecommerceTypes = Object.keys(ecommerceData);
 const airbnbTypes = Object.keys(airbnbData);
 const softwareAppTypes = Object.keys(softwareAppData);
+const brandContentTypes = Object.keys(brandContentData);
 const genres = Object.keys(genreData);
 const languages = Object.keys(languageData);
 const holidays = Object.keys(holidayData);
@@ -2454,6 +2533,8 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(airbnbTypes.map(a => [generateAirbnbRoute(a).path, generateAirbnbRoute(a)])),
   // NEW: Software & App promo video routes
   ...Object.fromEntries(softwareAppTypes.map(s => [generateSoftwareAppRoute(s).path, generateSoftwareAppRoute(s)])),
+  // NEW: Brand content / AI promo content routes
+  ...Object.fromEntries(brandContentTypes.map(b => [generateBrandContentRoute(b).path, generateBrandContentRoute(b)])),
 };
 
 // Helper function to get route config by path
@@ -2478,5 +2559,7 @@ export {
   // UGC, Ad Testing, Occasions, E-commerce, Airbnb exports
   ugcVideoTypes, adTestingTypes, occasionMusicTypes, ecommerceTypes, airbnbTypes,
   // Software & App promo video exports
-  softwareAppTypes
+  softwareAppTypes,
+  // Brand content / AI promo content exports
+  brandContentTypes
 };
