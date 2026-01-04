@@ -2762,7 +2762,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <ListItemIcon>
             <PublishIcon sx={{ color: '#34C759' }} />
           </ListItemIcon>
-          <ListItemText>Distribute to Music Channels</ListItemText>
+          <ListItemText>Upload to Music Channels</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem 
@@ -2920,7 +2920,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <ListItemIcon>
                 <ShareIcon sx={{ color: '#34C759' }} />
               </ListItemIcon>
-              <ListItemText>Distribute to Social Channels</ListItemText>
+              <ListItemText>Upload to Social Channels</ListItemText>
             </MenuItem>
           </>
         )}
