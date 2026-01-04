@@ -158,16 +158,20 @@ const MusicVideoPlayer: React.FC = () => {
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
+  const [tiktokUploaded, setTiktokUploaded] = useState(false);
   
   // Instagram state
   const [instagramConnected, setInstagramConnected] = useState(false);
   const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
+  const [instagramUploaded, setInstagramUploaded] = useState(false);
   
   // Facebook state (shares auth with Instagram)
   const [facebookConnected, setFacebookConnected] = useState(false);
   const [facebookPageName, setFacebookPageName] = useState<string | null>(null);
+  const [facebookUploaded, setFacebookUploaded] = useState(false);
   const [linkedinConnected, setLinkedinConnected] = useState(false);
   const [linkedinName, setLinkedinName] = useState<string | null>(null);
+  const [linkedinUploaded, setLinkedinUploaded] = useState(false);
   
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -1544,6 +1548,58 @@ const MusicVideoPlayer: React.FC = () => {
               {socialSuccess}
             </Alert>
           )}
+          
+          {/* Platform Upload Success Banners */}
+          {youtubeUrl && (
+            <Alert 
+              severity="success" 
+              onClose={() => setYoutubeUrl(null)}
+              action={<Button color="inherit" size="small" href={youtubeUrl} target="_blank">View</Button>}
+              sx={{ mb: 1.5, borderRadius: '10px' }}
+            >
+              Uploaded to YouTube!
+            </Alert>
+          )}
+          {instagramUploaded && (
+            <Alert 
+              severity="success" 
+              onClose={() => setInstagramUploaded(false)}
+              action={<Button color="inherit" size="small" href={`https://instagram.com/${instagramUsername || ''}`} target="_blank">View</Button>}
+              sx={{ mb: 1.5, borderRadius: '10px' }}
+            >
+              Uploaded to Instagram!
+            </Alert>
+          )}
+          {tiktokUploaded && (
+            <Alert 
+              severity="success" 
+              onClose={() => setTiktokUploaded(false)}
+              action={<Button color="inherit" size="small" href={`https://tiktok.com/@${tiktokUsername || ''}`} target="_blank">View</Button>}
+              sx={{ mb: 1.5, borderRadius: '10px' }}
+            >
+              Uploaded to TikTok!
+            </Alert>
+          )}
+          {facebookUploaded && (
+            <Alert 
+              severity="success" 
+              onClose={() => setFacebookUploaded(false)}
+              action={<Button color="inherit" size="small" href="https://facebook.com" target="_blank">View</Button>}
+              sx={{ mb: 1.5, borderRadius: '10px' }}
+            >
+              Uploaded to Facebook!
+            </Alert>
+          )}
+          {linkedinUploaded && (
+            <Alert 
+              severity="success" 
+              onClose={() => setLinkedinUploaded(false)}
+              action={<Button color="inherit" size="small" href="https://linkedin.com/feed" target="_blank">View</Button>}
+              sx={{ mb: 1.5, borderRadius: '10px' }}
+            >
+              Uploaded to LinkedIn!
+            </Alert>
+          )}
 
           {/* Platform Selection - Own Paper Section */}
           <Paper
@@ -1945,20 +2001,6 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Box>
 
-            {/* YouTube already uploaded success */}
-            {youtubeUrl && (
-              <Alert 
-                severity="success"
-                action={
-                  <Button color="inherit" size="small" href={youtubeUrl} target="_blank">
-                    View
-                  </Button>
-                }
-                sx={{ mt: 2 }}
-              >
-                Uploaded to YouTube!
-              </Alert>
-            )}
           </Paper>
 
           {/* Video Details Section - Own Paper */}
@@ -2759,6 +2801,7 @@ const MusicVideoPlayer: React.FC = () => {
                       try {
                         await tiktokApi.upload(user!.userId, videoId!);
                         results.push('TikTok');
+                        setTiktokUploaded(true);
                         setUploadProgress(prev => ({ ...prev, tiktok: 'success' }));
                       } catch (err: any) {
                         const errorMsg = err.response?.data?.error || 'TikTok upload failed';
@@ -2776,6 +2819,7 @@ const MusicVideoPlayer: React.FC = () => {
                       try {
                         await instagramApi.upload(user!.userId, videoId!);
                         results.push('Instagram');
+                        setInstagramUploaded(true);
                         setUploadProgress(prev => ({ ...prev, instagram: 'success' }));
                       } catch (err: any) {
                         const errorMsg = err.response?.data?.error || 'Instagram upload failed';
@@ -2793,6 +2837,7 @@ const MusicVideoPlayer: React.FC = () => {
                       try {
                         await facebookApi.upload(user!.userId, videoId!);
                         results.push('Facebook');
+                        setFacebookUploaded(true);
                         setUploadProgress(prev => ({ ...prev, facebook: 'success' }));
                       } catch (err: any) {
                         const errorMsg = err.response?.data?.error || 'Facebook upload failed';
@@ -2811,6 +2856,7 @@ const MusicVideoPlayer: React.FC = () => {
                       try {
                         await linkedinApi.upload(user!.userId, videoId!);
                         results.push('LinkedIn');
+                        setLinkedinUploaded(true);
                         setUploadProgress(prev => ({ ...prev, linkedin: 'success' }));
                       } catch (err: any) {
                         const errorMsg = err.response?.data?.error || 'LinkedIn upload failed';
