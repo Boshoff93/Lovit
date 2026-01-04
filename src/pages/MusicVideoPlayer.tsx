@@ -2669,6 +2669,13 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             )}
 
+            {/* YouTube Shorts thumbnail limitation note */}
+            {selectedPlatforms.includes('youtube') && videoData?.aspectRatio === 'portrait' && !isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
+              <Alert severity="info" sx={{ mt: 2, borderRadius: '10px', '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
+                <strong>YouTube Shorts Note:</strong> YouTube doesn't allow custom thumbnails for Shorts via third-party uploads. After uploading, you can set the thumbnail by selecting a frame in the YouTube mobile app.
+              </Alert>
+            )}
+
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 1 }}>
             {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
