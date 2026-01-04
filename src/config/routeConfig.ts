@@ -2020,6 +2020,151 @@ const brandContentData: { [key: string]: { name: string; prompts: string[]; subt
 };
 
 // =============================================================================
+// AI UGC PLATFORM DATA - User Generated Content for Businesses
+// =============================================================================
+const aiUgcPlatformData: { [key: string]: { name: string; prompts: string[]; subtext: string } } = {
+  // Core UGC Platform Routes
+  'ai-ugc-platform': { 
+    name: 'AI UGC Platform', 
+    prompts: ['AI-generated user content', 'Authentic brand videos', 'UGC-style marketing content', 'Creator-quality videos'],
+    subtext: 'The AI-powered UGC platform for businesses. Create unlimited authentic-feeling content without hiring creators.'
+  },
+  'ai-ugc-generator': { 
+    name: 'AI UGC Generator', 
+    prompts: ['Generate UGC instantly', 'AI creator content', 'Authentic video generator', 'UGC automation tool'],
+    subtext: 'Generate unlimited UGC-style content with AI. Authentic, relatable videos that convert - no creators required.'
+  },
+  'ai-ugc-creator': { 
+    name: 'AI UGC Creator', 
+    prompts: ['Virtual UGC creator', 'AI content creator', 'Digital influencer content', 'Automated creator videos'],
+    subtext: 'Your always-available AI UGC creator. Generate creator-style content 24/7 without scheduling, contracts, or revisions.'
+  },
+  'ai-ugc-distribution': { 
+    name: 'AI UGC Distribution', 
+    prompts: ['One-click UGC posting', 'Multi-platform distribution', 'Social media automation', 'Cross-channel publishing'],
+    subtext: 'Create and distribute UGC to all social channels with one click. YouTube, TikTok, Instagram, Facebook - everywhere at once.'
+  },
+  'ugc-for-businesses': { 
+    name: 'UGC for Businesses', 
+    prompts: ['Business UGC content', 'Enterprise creator content', 'B2B UGC marketing', 'Corporate authentic videos'],
+    subtext: 'Enterprise-grade UGC creation for businesses. Scale your authentic content without scaling your creator budget.'
+  },
+  'ugc-for-startups': { 
+    name: 'UGC for Startups', 
+    prompts: ['Startup UGC content', 'Bootstrap marketing videos', 'Lean content creation', 'MVP marketing content'],
+    subtext: 'Startup-friendly UGC creation. Get the content quality of funded competitors without the marketing budget.'
+  },
+  'ugc-for-ecommerce': { 
+    name: 'UGC for E-commerce', 
+    prompts: ['Product UGC videos', 'E-commerce creator content', 'Shopify UGC marketing', 'Product testimonial videos'],
+    subtext: 'AI-generated UGC for e-commerce brands. Product reviews, unboxings, and testimonials - all without hiring creators.'
+  },
+  'ugc-for-agencies': { 
+    name: 'UGC for Agencies', 
+    prompts: ['Agency UGC solution', 'White-label creator content', 'Client UGC service', 'Scalable agency content'],
+    subtext: 'White-label UGC platform for agencies. Deliver unlimited creator content to clients without managing creator relationships.'
+  },
+  
+  // UGC Content Types
+  'ai-testimonial-videos': { 
+    name: 'AI Testimonial Videos', 
+    prompts: ['Authentic testimonial content', 'Customer story videos', 'Review-style content', 'Social proof videos'],
+    subtext: 'Generate authentic-feeling testimonial videos with AI. Build social proof without chasing customers for reviews.'
+  },
+  'ai-product-reviews': { 
+    name: 'AI Product Reviews', 
+    prompts: ['Product review videos', 'Honest product content', 'Review-style UGC', 'Product showcase content'],
+    subtext: 'Create product review content that converts. AI-generated reviews that feel authentic and drive sales.'
+  },
+  'ai-unboxing-videos': { 
+    name: 'AI Unboxing Videos', 
+    prompts: ['Unboxing experience content', 'Package reveal videos', 'First impression videos', 'Product unbox content'],
+    subtext: 'Generate exciting unboxing videos for any product. The thrill of discovery without the creator costs.'
+  },
+  'ai-how-to-content': { 
+    name: 'AI How-To Content', 
+    prompts: ['Tutorial UGC videos', 'How-to creator content', 'Educational product videos', 'Demo-style content'],
+    subtext: 'Create how-to and tutorial content with AI. Educational UGC that helps customers while driving sales.'
+  },
+  'ai-lifestyle-content': { 
+    name: 'AI Lifestyle Content', 
+    prompts: ['Lifestyle product videos', 'Day-in-life content', 'Aspirational brand videos', 'Lifestyle UGC'],
+    subtext: 'Generate lifestyle content that showcases your product in action. Aspirational UGC that connects with audiences.'
+  },
+  
+  // UGC for Specific Platforms
+  'ugc-for-tiktok': { 
+    name: 'UGC for TikTok', 
+    prompts: ['TikTok UGC content', 'Viral TikTok videos', 'TikTok creator content', 'Trending TikTok UGC'],
+    subtext: 'AI-generated UGC optimized for TikTok. Trendy, authentic content designed to go viral on TikTok.'
+  },
+  'ugc-for-instagram': { 
+    name: 'UGC for Instagram', 
+    prompts: ['Instagram Reels UGC', 'IG creator content', 'Instagram-native videos', 'Aesthetic Instagram UGC'],
+    subtext: 'Create Instagram-native UGC with AI. Reels, Stories, and feed content that fits the Instagram aesthetic.'
+  },
+  'ugc-for-facebook': { 
+    name: 'UGC for Facebook', 
+    prompts: ['Facebook UGC ads', 'FB creator content', 'Facebook video content', 'Social proof for Facebook'],
+    subtext: 'Generate Facebook-optimized UGC. Authentic content designed for Facebook\'s audience and algorithm.'
+  },
+  'ugc-for-youtube': { 
+    name: 'UGC for YouTube', 
+    prompts: ['YouTube Shorts UGC', 'YouTube creator content', 'Long-form YouTube UGC', 'YouTube testimonials'],
+    subtext: 'AI-generated UGC for YouTube. From Shorts to long-form content, create authentic YouTube videos at scale.'
+  },
+  
+  // UGC Benefits & Features
+  'unlimited-ugc-content': { 
+    name: 'Unlimited UGC Content', 
+    prompts: ['Endless UGC creation', 'Unlimited video content', 'Never run out of UGC', 'Infinite creator content'],
+    subtext: 'Create unlimited UGC content for one flat price. No per-video fees, no creator negotiations, no content limits.'
+  },
+  'instant-ugc-delivery': { 
+    name: 'Instant UGC Delivery', 
+    prompts: ['Same-day UGC content', 'Instant creator videos', 'No waiting for content', 'Real-time UGC generation'],
+    subtext: 'Get UGC content instantly - no more waiting weeks for creators. Generate, review, and publish in minutes.'
+  },
+  'ugc-at-scale': { 
+    name: 'UGC at Scale', 
+    prompts: ['Scalable UGC creation', 'High-volume creator content', 'Mass UGC production', 'Enterprise UGC scale'],
+    subtext: 'Scale your UGC production without scaling costs. Create hundreds of unique videos from one campaign brief.'
+  },
+  'affordable-ugc': { 
+    name: 'Affordable UGC', 
+    prompts: ['Budget UGC content', 'Cost-effective creator videos', 'Cheap UGC alternative', 'Affordable creator content'],
+    subtext: 'Professional UGC quality at a fraction of creator costs. Skip the $200-500 per video and create unlimited content.'
+  },
+  'ugc-ab-testing': { 
+    name: 'UGC A/B Testing', 
+    prompts: ['Test UGC variations', 'Split test creator content', 'A/B test UGC ads', 'Optimize UGC performance'],
+    subtext: 'Create 20+ UGC variations instantly for A/B testing. Find what converts best before scaling your ad spend.'
+  },
+  
+  // UGC Use Cases
+  'ugc-for-ads': { 
+    name: 'UGC for Ads', 
+    prompts: ['UGC advertising content', 'Ad creative UGC', 'Paid social UGC', 'Performance marketing UGC'],
+    subtext: 'Generate UGC specifically for paid advertising. Authentic-feeling ads that outperform polished brand content.'
+  },
+  'ugc-for-organic': { 
+    name: 'UGC for Organic', 
+    prompts: ['Organic social UGC', 'Non-paid UGC content', 'Community content', 'Organic reach UGC'],
+    subtext: 'Create UGC for organic social media. Build community and engagement with authentic-feeling content.'
+  },
+  'ugc-for-product-launch': { 
+    name: 'UGC for Product Launch', 
+    prompts: ['Launch UGC content', 'Product release UGC', 'New product testimonials', 'Launch campaign UGC'],
+    subtext: 'Generate UGC for product launches - before you even have customers. Build buzz with authentic-feeling content.'
+  },
+  'ugc-for-crowdfunding': { 
+    name: 'UGC for Crowdfunding', 
+    prompts: ['Kickstarter UGC content', 'Crowdfunding testimonials', 'Backer-style content', 'Campaign UGC videos'],
+    subtext: 'Create UGC for crowdfunding campaigns. Build trust and credibility with authentic-feeling supporter content.'
+  },
+};
+
+// =============================================================================
 // HELPER FUNCTIONS FOR NEW ROUTES
 // =============================================================================
 
@@ -2361,6 +2506,30 @@ function generateBrandContentRoute(contentType: string): RouteConfig {
   };
 }
 
+function generateAiUgcPlatformRoute(ugcType: string): RouteConfig {
+  const data = aiUgcPlatformData[ugcType];
+  const name = data?.name || capitalize(ugcType);
+  const prompts = data?.prompts || [`${name} content`, `AI UGC video`, `${name} marketing`, `${name} creator`];
+  const subtext = data?.subtext || `Create ${name.toLowerCase()} with AI. The UGC platform for modern businesses.`;
+  
+  return {
+    path: `/${ugcType}`,
+    title: `${name} - AI UGC Platform for Businesses | Gruvi`,
+    description: `${subtext} Create unlimited UGC-style content without hiring creators. Distribute to all social channels instantly.`,
+    keywords: `${ugcType.replace(/-/g, ' ')}, ai ugc platform, ugc generator, user generated content, ai creator content, ugc for businesses`,
+    ogTitle: `${name} | Gruvi`,
+    ogDescription: `${subtext}`,
+    twitterTitle: `${name} | Gruvi`,
+    twitterDescription: `AI-powered UGC creation and distribution.`,
+    breadcrumbName: name,
+    heroTagline: name,
+    heroHeading: `${name}\nThe AI UGC Platform for Businesses`,
+    heroSubtext: subtext,
+    examplePrompts: prompts,
+    routeCategory: 'ugc',
+  };
+}
+
 // =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
@@ -2378,6 +2547,7 @@ const ecommerceTypes = Object.keys(ecommerceData);
 const airbnbTypes = Object.keys(airbnbData);
 const softwareAppTypes = Object.keys(softwareAppData);
 const brandContentTypes = Object.keys(brandContentData);
+const aiUgcPlatformTypes = Object.keys(aiUgcPlatformData);
 const genres = Object.keys(genreData);
 const languages = Object.keys(languageData);
 const holidays = Object.keys(holidayData);
@@ -2535,6 +2705,8 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(softwareAppTypes.map(s => [generateSoftwareAppRoute(s).path, generateSoftwareAppRoute(s)])),
   // NEW: Brand content / AI promo content routes
   ...Object.fromEntries(brandContentTypes.map(b => [generateBrandContentRoute(b).path, generateBrandContentRoute(b)])),
+  // NEW: AI UGC Platform routes
+  ...Object.fromEntries(aiUgcPlatformTypes.map(u => [generateAiUgcPlatformRoute(u).path, generateAiUgcPlatformRoute(u)])),
 };
 
 // Helper function to get route config by path
@@ -2561,7 +2733,9 @@ export {
   // Software & App promo video exports
   softwareAppTypes,
   // Brand content / AI promo content exports
-  brandContentTypes
+  brandContentTypes,
+  // AI UGC Platform exports
+  aiUgcPlatformTypes
 };
 
 // ============================================================
