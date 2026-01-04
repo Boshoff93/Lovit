@@ -300,6 +300,24 @@ export const facebookApi = {
     api.post(`/api/gruvi/videos/${userId}/${videoId}/facebook-upload`),
 };
 
+// LinkedIn API
+export const linkedinApi = {
+  getAuthUrl: (userId: string) =>
+    api.get(`/api/gruvi/linkedin/auth-url?userId=${userId}`),
+  
+  handleCallback: (code: string, state: string) =>
+    api.post('/api/gruvi/linkedin/callback', { code, state }),
+  
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/linkedin/status?userId=${userId}`),
+  
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/linkedin/disconnect?userId=${userId}`),
+  
+  upload: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/linkedin-upload`),
+};
+
 // Characters API
 export const charactersApi = {
   createCharacter: (data: {

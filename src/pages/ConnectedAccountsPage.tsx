@@ -16,7 +16,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { youtubeApi, tiktokApi, instagramApi, facebookApi } from '../services/api';
+import { youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi } from '../services/api';
 
 // Social platform configurations
 const socialPlatforms = [
@@ -120,6 +120,23 @@ const socialPlatforms = [
     description: 'Share videos to Facebook Page',
     available: true,
     sharedAuth: 'instagram', // Facebook uses same OAuth as Instagram
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    icon: () => (
+      <Box 
+        component="svg" 
+        viewBox="0 0 24 24" 
+        sx={{ width: 24, height: 24, fill: '#0077B5' }}
+      >
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </Box>
+    ),
+    color: '#0077B5',
+    bgColor: 'rgba(0,119,181,0.1)',
+    description: 'Share professional video content',
+    available: true,
   },
   {
     id: 'spotify',
@@ -340,6 +357,25 @@ const ConnectedAccountsPage: React.FC = () => {
           facebook: { connected: false, loading: false },
         }));
       }
+      
+      // Check LinkedIn status
+      try {
+        const response = await linkedinApi.getStatus(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          linkedin: {
+            connected: response.data.connected,
+            channelName: response.data.name,
+            avatarUrl: response.data.profilePictureUrl,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setConnectionStatus(prev => ({
+          ...prev,
+          linkedin: { connected: false, loading: false },
+        }));
+      }
     };
 
     checkConnections();
@@ -431,6 +467,25 @@ const ConnectedAccountsPage: React.FC = () => {
         }));
       }
     }
+
+    if (platformId === 'linkedin') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        linkedin: { ...prev.linkedin, loading: true },
+      }));
+
+      try {
+        const response = await linkedinApi.getAuthUrl(user.userId);
+        window.location.href = response.data.authUrl;
+
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to start LinkedIn connection');
+        setConnectionStatus(prev => ({
+          ...prev,
+          linkedin: { connected: false, loading: false },
+        }));
+      }
+    }
   };
 
   const handleDisconnect = async (platformId: string) => {
@@ -501,6 +556,29 @@ const ConnectedAccountsPage: React.FC = () => {
         setConnectionStatus(prev => ({
           ...prev,
           instagram: { ...prev.instagram, loading: false },
+        }));
+      }
+    }
+
+    if (platformId === 'linkedin') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        linkedin: { ...prev.linkedin, loading: true },
+      }));
+
+      try {
+        await linkedinApi.disconnect(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          linkedin: { connected: false, loading: false },
+        }));
+        setSuccess('LinkedIn account disconnected');
+        setTimeout(() => setSuccess(null), 3000);
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to disconnect LinkedIn');
+        setConnectionStatus(prev => ({
+          ...prev,
+          linkedin: { ...prev.linkedin, loading: false },
         }));
       }
     }

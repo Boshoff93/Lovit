@@ -42,7 +42,7 @@ import {
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, charactersApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import { TopUpBundle } from '../config/stripe';
@@ -166,6 +166,8 @@ const MusicVideoPlayer: React.FC = () => {
   // Facebook state (shares auth with Instagram)
   const [facebookConnected, setFacebookConnected] = useState(false);
   const [facebookPageName, setFacebookPageName] = useState<string | null>(null);
+  const [linkedinConnected, setLinkedinConnected] = useState(false);
+  const [linkedinName, setLinkedinName] = useState<string | null>(null);
   
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -329,6 +331,12 @@ const MusicVideoPlayer: React.FC = () => {
         }
         if (response.data.socialThumbnailUrl) {
           setSocialThumbnailUrl(response.data.socialThumbnailUrl);
+          setSelectedThumbnailUrl(response.data.socialThumbnailUrl);
+        }
+        // Load all previously generated thumbnails
+        if (response.data.generatedThumbnails && response.data.generatedThumbnails.length > 0) {
+          const thumbnailUrls = response.data.generatedThumbnails.map((t: { url: string }) => t.url);
+          setGeneratedThumbnails(thumbnailUrls);
         }
       } catch {
         // No existing metadata, that's okay
@@ -368,6 +376,15 @@ const MusicVideoPlayer: React.FC = () => {
         setFacebookPageName(fbResponse.data.pageName);
       } catch {
         // Facebook not connected
+      }
+      
+      // Check LinkedIn status
+      try {
+        const liResponse = await linkedinApi.getStatus(user.userId);
+        setLinkedinConnected(liResponse.data.connected);
+        setLinkedinName(liResponse.data.name);
+      } catch {
+        // LinkedIn not connected
       }
     };
     
@@ -604,6 +621,27 @@ const MusicVideoPlayer: React.FC = () => {
       
     } catch (err: any) {
       showSocialError(err.response?.data?.error || 'Failed to start Instagram authorization');
+    }
+  };
+
+  const handleConnectLinkedin = async () => {
+    if (!user?.userId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+    
+    try {
+      const response = await linkedinApi.getAuthUrl(user.userId);
+      const { authUrl } = response.data;
+      
+      // Redirect to OAuth - the callback page will handle the response
+      window.location.href = authUrl;
+      
+    } catch (err: any) {
+      showSocialError(err.response?.data?.error || 'Failed to start LinkedIn authorization');
     }
   };
 
@@ -1830,6 +1868,81 @@ const MusicVideoPlayer: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
+
+              {/* LinkedIn */}
+              <Box
+                onClick={() => {
+                  if (!linkedinConnected) {
+                    handleConnectLinkedin();
+                  } else {
+                    setSelectedPlatforms(prev => 
+                      prev.includes('linkedin') 
+                        ? prev.filter(p => p !== 'linkedin')
+                        : [...prev, 'linkedin']
+                    );
+                  }
+                }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  border: selectedPlatforms.includes('linkedin') 
+                    ? '2px solid #0077B5' 
+                    : linkedinConnected 
+                      ? '2px solid #34C759' 
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: selectedPlatforms.includes('linkedin') 
+                    ? 'rgba(0,119,181,0.05)' 
+                    : linkedinConnected 
+                      ? 'rgba(52,199,89,0.05)' 
+                      : '#fff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { 
+                    borderColor: linkedinConnected ? '#0077B5' : '#0077B5',
+                    background: 'rgba(0,119,181,0.02)',
+                  },
+                }}
+              >
+                {linkedinConnected && (
+                  <Checkbox
+                    checked={selectedPlatforms.includes('linkedin')}
+                    size="small"
+                    sx={{ p: 0, mr: -0.5, color: '#0077B5', '&.Mui-checked': { color: '#0077B5' } }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => {
+                      setSelectedPlatforms(prev => 
+                        prev.includes('linkedin') 
+                          ? prev.filter(p => p !== 'linkedin')
+                          : [...prev, 'linkedin']
+                      );
+                    }}
+                  />
+                )}
+                <Box sx={{ 
+                  width: 36, height: 36, borderRadius: '10px', 
+                  background: 'rgba(0,119,181,0.1)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#0077B5' }}>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>LinkedIn</Typography>
+                    {linkedinConnected && (
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                    )}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                    {linkedinConnected ? (linkedinName || 'Connected') : 'Click to connect'}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
 
             {/* YouTube already uploaded success */}
@@ -2507,6 +2620,28 @@ const MusicVideoPlayer: React.FC = () => {
                   {uploadProgress.facebook === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
               )}
+              {selectedPlatforms.includes('linkedin') && (
+                <Box sx={{ 
+                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
+                  bgcolor: uploadProgress.linkedin === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.linkedin === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(0,119,181,0.05)', 
+                  borderRadius: '12px', 
+                  border: `1px solid ${uploadProgress.linkedin === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.linkedin === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(0,119,181,0.2)'}` 
+                }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#0077B5' }}>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography sx={{ fontWeight: 600 }}>LinkedIn</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      {linkedinName || 'Your Profile'}
+                    </Typography>
+                  </Box>
+                  {uploadProgress.linkedin === 'uploading' && <CircularProgress size={20} sx={{ color: '#0077B5' }} />}
+                  {uploadProgress.linkedin === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
+                  {uploadProgress.linkedin === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
+                  {uploadProgress.linkedin === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
+                </Box>
+              )}
             </Box>
 
             {/* Video Details Summary - only show before uploading */}
@@ -2659,6 +2794,24 @@ const MusicVideoPlayer: React.FC = () => {
                         }
                         errors.push(`Facebook: ${errorMsg}`);
                         setUploadProgress(prev => ({ ...prev, facebook: 'error' }));
+                      }
+                    }
+                    
+                    // Upload to LinkedIn if selected
+                    const uploadLinkedin = selectedPlatforms.includes('linkedin');
+                    if (uploadLinkedin) {
+                      setUploadProgress(prev => ({ ...prev, linkedin: 'uploading' }));
+                      try {
+                        await linkedinApi.upload(user!.userId, videoId!);
+                        results.push('LinkedIn');
+                        setUploadProgress(prev => ({ ...prev, linkedin: 'success' }));
+                      } catch (err: any) {
+                        const errorMsg = err.response?.data?.error || 'LinkedIn upload failed';
+                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect') || errorMsg.includes('expired')) {
+                          setLinkedinConnected(false);
+                        }
+                        errors.push(`LinkedIn: ${errorMsg}`);
+                        setUploadProgress(prev => ({ ...prev, linkedin: 'error' }));
                       }
                     }
                     

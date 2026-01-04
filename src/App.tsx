@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearc
 import { Box, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
-import { useAuth } from './hooks/useAuth';
 import api from './utils/axiosConfig';
 
 // Layout
@@ -32,6 +31,7 @@ import GenreDetailPage from './pages/GenreDetailPage';
 import LanguageDetailPage from './pages/LanguageDetailPage';
 import MoodDetailPage from './pages/MoodDetailPage';
 import StyleDetailPage from './pages/StyleDetailPage';
+import SocialDetailPage from './pages/SocialDetailPage';
 import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
 import CreateVideoPage from './pages/CreateVideoPage';
 import CreatePage from './pages/CreatePage';
@@ -43,6 +43,7 @@ import CreateCharacterPage from './pages/CreateCharacterPage';
 import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
 import TikTokCallbackPage from './pages/TikTokCallbackPage';
 import InstagramCallbackPage from './pages/InstagramCallbackPage';
+import LinkedInCallbackPage from './pages/LinkedInCallbackPage';
 import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
 
@@ -151,6 +152,9 @@ function App() {
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
         
+        {/* Social platform detail pages - must be before SEO routes */}
+        <Route path="/platforms/:platformId" element={<SocialDetailPage />} />
+        
         {/* Dynamic SEO routes - all render HomePage with different SEO meta */}
         {seoRoutes.map((path) => (
           <Route key={path} path={path} element={<HomePage />} />
@@ -167,6 +171,9 @@ function App() {
         
         {/* Instagram OAuth callback */}
         <Route path="/instagram/callback" element={<InstagramCallbackPage />} />
+        
+        {/* LinkedIn OAuth callback */}
+        <Route path="/linkedin/callback" element={<LinkedInCallbackPage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={

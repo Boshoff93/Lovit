@@ -2531,6 +2531,69 @@ function generateAiUgcPlatformRoute(ugcType: string): RouteConfig {
 }
 
 // =============================================================================
+// SOCIAL DISTRIBUTION PLATFORM ROUTES
+// =============================================================================
+const socialDistributionData: Record<string, { name: string; description: string; contentType: 'video' | 'music'; prompts: string[] }> = {
+  'youtube': {
+    name: 'YouTube',
+    description: 'Create AI music videos and share directly to YouTube. Perfect for Shorts, music videos, and promotional content.',
+    contentType: 'video',
+    prompts: ['YouTube Shorts music', 'Music video for YouTube', 'Viral YouTube content', 'YouTube premiere track'],
+  },
+  'tiktok': {
+    name: 'TikTok',
+    description: 'Create viral AI content and post directly to TikTok. Short-form videos with original music that stand out.',
+    contentType: 'video',
+    prompts: ['TikTok viral sound', 'TikTok trend music', 'Short-form promo video', 'TikTok hook video'],
+  },
+  'instagram': {
+    name: 'Instagram',
+    description: 'Create AI Reels and Stories for Instagram. Original music videos that drive engagement and reach new audiences.',
+    contentType: 'video',
+    prompts: ['Instagram Reel music', 'Instagram Story promo', 'Reels-ready content', 'Carousel video music'],
+  },
+  'facebook': {
+    name: 'Facebook',
+    description: 'Share AI content to Facebook Pages and Reels. Reach billions with original video content.',
+    contentType: 'video',
+    prompts: ['Facebook Reel video', 'Facebook Page content', 'Social video promo', 'Community engagement video'],
+  },
+  'linkedin': {
+    name: 'LinkedIn',
+    description: 'Share professional video content to LinkedIn. Build your brand with original AI-generated videos.',
+    contentType: 'video',
+    prompts: ['Professional video content', 'Brand video', 'Thought leadership video', 'Business promo'],
+  },
+  'spotify': {
+    name: 'Spotify',
+    description: 'Download your AI tracks and add them to your Spotify library. Create personal playlists with your original music.',
+    contentType: 'music',
+    prompts: ['Workout playlist track', 'Study beats', 'Chill background music', 'Party mix song'],
+  },
+  'apple-music': {
+    name: 'Apple Music',
+    description: 'Upload your AI tracks to iCloud Music Library. Listen to your creations across all your Apple devices.',
+    contentType: 'music',
+    prompts: ['Personal playlist track', 'Workout music', 'Focus beats', 'Road trip song'],
+  },
+  'amazon-music': {
+    name: 'Amazon Music',
+    description: 'Add your AI music to your Amazon library. Play your tracks through Alexa and Fire TV.',
+    contentType: 'music',
+    prompts: ['Smart speaker music', 'Background vibes', 'Party tracks', 'Relaxation beats'],
+  },
+  'soundcloud': {
+    name: 'SoundCloud',
+    description: 'Share your AI tracks with the SoundCloud community. Upload and get feedback from music lovers.',
+    contentType: 'music',
+    prompts: ['Original track', 'Creative demo', 'Community share', 'Experimental beats'],
+  },
+};
+
+// Social distribution platforms list (used by SocialDetailPage and HomePage)
+const socialDistributionPlatforms = Object.keys(socialDistributionData);
+
+// =============================================================================
 // ARRAYS FOR ROUTE GENERATION
 // =============================================================================
 const artists = Object.keys(artistData);
@@ -2707,6 +2770,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   ...Object.fromEntries(brandContentTypes.map(b => [generateBrandContentRoute(b).path, generateBrandContentRoute(b)])),
   // NEW: AI UGC Platform routes
   ...Object.fromEntries(aiUgcPlatformTypes.map(u => [generateAiUgcPlatformRoute(u).path, generateAiUgcPlatformRoute(u)])),
+  // Note: Social distribution platform routes (/platforms/:platformId) are handled by SocialDetailPage component directly
 };
 
 // Helper function to get route config by path
@@ -2735,7 +2799,9 @@ export {
   // Brand content / AI promo content exports
   brandContentTypes,
   // AI UGC Platform exports
-  aiUgcPlatformTypes
+  aiUgcPlatformTypes,
+  // Social distribution platform exports
+  socialDistributionPlatforms,
 };
 
 // ============================================================
