@@ -380,8 +380,7 @@ const MusicVideoPlayer: React.FC = () => {
         setFacebookConnected(fbResponse.data.connected);
         setFacebookPageName(fbResponse.data.pageName);
         setFacebookPageId(fbResponse.data.pageId);
-      } catch (err) {
-        console.error('[Facebook Status] Error:', err);
+      } catch {
         // Facebook not connected
       }
       
