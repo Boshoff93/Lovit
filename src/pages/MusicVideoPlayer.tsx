@@ -1584,14 +1584,14 @@ const MusicVideoPlayer: React.FC = () => {
                   py: 1.5,
                   borderRadius: '12px',
                   border: selectedPlatforms.includes('youtube') 
-                    ? '2px solid #FF0000' 
+                    ? '2px solid #34C759' 
                     : youtubeConnected 
-                      ? '2px solid #34C759' 
+                      ? '2px solid #FF0000' 
                       : '1px solid rgba(0,0,0,0.1)',
                   background: selectedPlatforms.includes('youtube') 
-                    ? 'rgba(255,0,0,0.05)' 
+                    ? 'rgba(52,199,89,0.08)' 
                     : youtubeConnected 
-                      ? 'rgba(52,199,89,0.05)' 
+                      ? 'rgba(255,0,0,0.05)' 
                       : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -1605,7 +1605,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <Checkbox
                     checked={selectedPlatforms.includes('youtube')}
                     size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#FF0000', '&.Mui-checked': { color: '#FF0000' } }}
+                    sx={{ p: 0, mr: -0.5, color: '#FF0000', '&.Mui-checked': { color: '#34C759' } }}
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => {
                       setSelectedPlatforms(prev => 
@@ -1657,14 +1657,14 @@ const MusicVideoPlayer: React.FC = () => {
                   py: 1.5,
                   borderRadius: '12px',
                   border: selectedPlatforms.includes('tiktok') 
-                    ? '2px solid #000000' 
+                    ? '2px solid #34C759' 
                     : tiktokConnected 
-                      ? '2px solid #34C759' 
+                      ? '2px solid #000000' 
                       : '1px solid rgba(0,0,0,0.1)',
                   background: selectedPlatforms.includes('tiktok') 
-                    ? 'rgba(0,0,0,0.05)' 
+                    ? 'rgba(52,199,89,0.08)' 
                     : tiktokConnected 
-                      ? 'rgba(52,199,89,0.05)' 
+                      ? 'rgba(0,0,0,0.05)' 
                       : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -1678,7 +1678,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <Checkbox
                     checked={selectedPlatforms.includes('tiktok')}
                     size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#000', '&.Mui-checked': { color: '#000' } }}
+                    sx={{ p: 0, mr: -0.5, color: '#000', '&.Mui-checked': { color: '#34C759' } }}
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => {
                       setSelectedPlatforms(prev => 
@@ -1732,14 +1732,14 @@ const MusicVideoPlayer: React.FC = () => {
                   py: 1.5,
                   borderRadius: '12px',
                   border: selectedPlatforms.includes('instagram') 
-                    ? '2px solid #E4405F' 
+                    ? '2px solid #34C759' 
                     : instagramConnected 
-                      ? '2px solid #34C759' 
+                      ? '2px solid #E4405F' 
                       : '1px solid rgba(0,0,0,0.1)',
                   background: selectedPlatforms.includes('instagram') 
-                    ? 'rgba(228,64,95,0.05)' 
+                    ? 'rgba(52,199,89,0.08)' 
                     : instagramConnected 
-                      ? 'rgba(52,199,89,0.05)' 
+                      ? 'rgba(228,64,95,0.05)' 
                       : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -1753,7 +1753,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <Checkbox
                     checked={selectedPlatforms.includes('instagram')}
                     size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#E4405F', '&.Mui-checked': { color: '#E4405F' } }}
+                    sx={{ p: 0, mr: -0.5, color: '#E4405F', '&.Mui-checked': { color: '#34C759' } }}
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => {
                       setSelectedPlatforms(prev => 
@@ -1815,14 +1815,14 @@ const MusicVideoPlayer: React.FC = () => {
                   py: 1.5,
                   borderRadius: '12px',
                   border: selectedPlatforms.includes('facebook') 
-                    ? '2px solid #1877F2' 
+                    ? '2px solid #34C759' 
                     : facebookConnected 
-                      ? '2px solid #34C759' 
+                      ? '2px solid #1877F2' 
                       : '1px solid rgba(0,0,0,0.1)',
                   background: selectedPlatforms.includes('facebook') 
-                    ? 'rgba(24,119,242,0.05)' 
+                    ? 'rgba(52,199,89,0.08)' 
                     : facebookConnected 
-                      ? 'rgba(52,199,89,0.05)' 
+                      ? 'rgba(24,119,242,0.05)' 
                       : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -1836,7 +1836,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <Checkbox
                     checked={selectedPlatforms.includes('facebook')}
                     size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#1877F2', '&.Mui-checked': { color: '#1877F2' } }}
+                    sx={{ p: 0, mr: -0.5, color: '#1877F2', '&.Mui-checked': { color: '#34C759' } }}
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => {
                       setSelectedPlatforms(prev => 
@@ -1890,14 +1890,14 @@ const MusicVideoPlayer: React.FC = () => {
                   py: 1.5,
                   borderRadius: '12px',
                   border: selectedPlatforms.includes('linkedin') 
-                    ? '2px solid #0077B5' 
+                    ? '2px solid #34C759' 
                     : linkedinConnected 
-                      ? '2px solid #34C759' 
+                      ? '2px solid #0077B5' 
                       : '1px solid rgba(0,0,0,0.1)',
                   background: selectedPlatforms.includes('linkedin') 
-                    ? 'rgba(0,119,181,0.05)' 
+                    ? 'rgba(52,199,89,0.08)' 
                     : linkedinConnected 
-                      ? 'rgba(52,199,89,0.05)' 
+                      ? 'rgba(0,119,181,0.05)' 
                       : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -1911,7 +1911,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <Checkbox
                     checked={selectedPlatforms.includes('linkedin')}
                     size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#0077B5', '&.Mui-checked': { color: '#0077B5' } }}
+                    sx={{ p: 0, mr: -0.5, color: '#0077B5', '&.Mui-checked': { color: '#34C759' } }}
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => {
                       setSelectedPlatforms(prev => 
