@@ -272,6 +272,34 @@ export const tiktokApi = {
     api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`),
 };
 
+// Instagram API
+export const instagramApi = {
+  getAuthUrl: (userId: string) =>
+    api.get(`/api/gruvi/instagram/auth-url?userId=${userId}`),
+  
+  handleCallback: (code: string, state: string) =>
+    api.post('/api/gruvi/instagram/callback', { code, state }),
+  
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/instagram/status?userId=${userId}`),
+  
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/instagram/disconnect?userId=${userId}`),
+  
+  upload: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/instagram-upload`),
+};
+
+// Facebook API (uses same OAuth as Instagram)
+export const facebookApi = {
+  // Facebook uses same auth flow as Instagram - no separate auth needed
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/facebook/status?userId=${userId}`),
+  
+  upload: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/facebook-upload`),
+};
+
 // Characters API
 export const charactersApi = {
   createCharacter: (data: {

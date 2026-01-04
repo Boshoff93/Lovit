@@ -42,6 +42,7 @@ import CharactersPage from './pages/CharactersPage';
 import CreateCharacterPage from './pages/CreateCharacterPage';
 import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
 import TikTokCallbackPage from './pages/TikTokCallbackPage';
+import InstagramCallbackPage from './pages/InstagramCallbackPage';
 import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
 
@@ -163,6 +164,9 @@ function App() {
         
         {/* TikTok OAuth callback */}
         <Route path="/tiktok/callback" element={<TikTokCallbackPage />} />
+        
+        {/* Instagram OAuth callback */}
+        <Route path="/instagram/callback" element={<InstagramCallbackPage />} />
         
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={

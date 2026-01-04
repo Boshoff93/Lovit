@@ -40,7 +40,7 @@ import {
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, charactersApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, charactersApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import { TopUpBundle } from '../config/stripe';
@@ -156,6 +156,14 @@ const MusicVideoPlayer: React.FC = () => {
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
+  
+  // Instagram state
+  const [instagramConnected, setInstagramConnected] = useState(false);
+  const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
+  
+  // Facebook state (shares auth with Instagram)
+  const [facebookConnected, setFacebookConnected] = useState(false);
+  const [facebookPageName, setFacebookPageName] = useState<string | null>(null);
   
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -339,6 +347,24 @@ const MusicVideoPlayer: React.FC = () => {
         setTiktokUsername(ttResponse.data.username);
       } catch {
         // TikTok not connected
+      }
+      
+      try {
+        // Check Instagram status
+        const igResponse = await instagramApi.getStatus(user.userId);
+        setInstagramConnected(igResponse.data.connected);
+        setInstagramUsername(igResponse.data.username);
+      } catch {
+        // Instagram not connected
+      }
+      
+      try {
+        // Check Facebook status (shares auth with Instagram)
+        const fbResponse = await facebookApi.getStatus(user.userId);
+        setFacebookConnected(fbResponse.data.connected);
+        setFacebookPageName(fbResponse.data.pageName);
+      } catch {
+        // Facebook not connected
       }
     };
     
@@ -557,6 +583,27 @@ const MusicVideoPlayer: React.FC = () => {
     }
   };
 
+  const handleConnectInstagram = async () => {
+    if (!user?.userId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+    
+    try {
+      const response = await instagramApi.getAuthUrl(user.userId);
+      const { authUrl } = response.data;
+      
+      // Redirect to OAuth - the callback page will handle the response
+      window.location.href = authUrl;
+      
+    } catch (err: any) {
+      showSocialError(err.response?.data?.error || 'Failed to start Instagram authorization');
+    }
+  };
+
   const handleYouTubeUpload = async () => {
     if (!user?.userId || !videoId) return;
     
@@ -669,6 +716,57 @@ const MusicVideoPlayer: React.FC = () => {
       const errorMsg = err.response?.data?.error || 'Failed to upload to TikTok';
       if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
         setTiktokConnected(false);
+      }
+      showSocialError(errorMsg);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleInstagramUpload = async () => {
+    if (!user?.userId || !videoId) return;
+    
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+    
+    // Check if video is ready
+    if (!videoData?.videoUrl) {
+      showSocialError('Video is still processing. Please wait until it\'s ready.');
+      return;
+    }
+    
+    if (!instagramConnected) {
+      handleConnectInstagram();
+      return;
+    }
+    
+    if (!editedMetadata?.title) {
+      showSocialError('Please enter a title for your video');
+      return;
+    }
+    
+    setIsUploading(true);
+    setSocialError(null);
+    
+    try {
+      // Save metadata first
+      await videosApi.updateSocialMetadata(user.userId, videoId, {
+        title: editedMetadata.title,
+        description: editedMetadata.description || '',
+        tags: editedMetadata.tags || [],
+        hook: editedMetadata.hook || hookText || '',
+      });
+      
+      // Upload to Instagram
+      const response = await instagramApi.upload(user.userId, videoId);
+      setSocialSuccess(response.data.message || 'Posted to Instagram as a Reel!');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error || 'Failed to upload to Instagram';
+      if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+        setInstagramConnected(false);
       }
       showSocialError(errorMsg);
     } finally {
@@ -1572,8 +1670,19 @@ const MusicVideoPlayer: React.FC = () => {
                 </Box>
               </Box>
 
-              {/* Instagram - Coming Soon */}
+              {/* Instagram */}
               <Box
+                onClick={() => {
+                  if (!instagramConnected) {
+                    handleConnectInstagram();
+                  } else {
+                    setSelectedPlatforms(prev => 
+                      prev.includes('instagram') 
+                        ? prev.filter(p => p !== 'instagram')
+                        : [...prev, 'instagram']
+                    );
+                  }
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -1581,11 +1690,39 @@ const MusicVideoPlayer: React.FC = () => {
                   px: 2,
                   py: 1.5,
                   borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  background: 'rgba(0,0,0,0.02)',
-                  opacity: 0.5,
+                  border: selectedPlatforms.includes('instagram') 
+                    ? '2px solid #E4405F' 
+                    : instagramConnected 
+                      ? '2px solid #34C759' 
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: selectedPlatforms.includes('instagram') 
+                    ? 'rgba(228,64,95,0.05)' 
+                    : instagramConnected 
+                      ? 'rgba(52,199,89,0.05)' 
+                      : '#fff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { 
+                    borderColor: instagramConnected ? '#E4405F' : '#E4405F',
+                    background: 'rgba(228,64,95,0.02)',
+                  },
                 }}
               >
+                {instagramConnected && (
+                  <Checkbox
+                    checked={selectedPlatforms.includes('instagram')}
+                    size="small"
+                    sx={{ p: 0, mr: -0.5, color: '#E4405F', '&.Mui-checked': { color: '#E4405F' } }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => {
+                      setSelectedPlatforms(prev => 
+                        prev.includes('instagram') 
+                          ? prev.filter(p => p !== 'instagram')
+                          : [...prev, 'instagram']
+                      );
+                    }}
+                  />
+                )}
                 <Box sx={{ 
                   width: 36, height: 36, borderRadius: '10px', 
                   background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.1) 100%)', 
@@ -1603,13 +1740,32 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>Instagram</Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>Instagram</Typography>
+                    {instagramConnected && (
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                    )}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                    {instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Connected') : 'Click to connect'}
+                  </Typography>
                 </Box>
               </Box>
 
-              {/* Facebook - Coming Soon */}
+              {/* Facebook */}
               <Box
+                onClick={() => {
+                  if (!facebookConnected) {
+                    // Facebook uses same OAuth as Instagram
+                    handleConnectInstagram();
+                  } else {
+                    setSelectedPlatforms(prev => 
+                      prev.includes('facebook') 
+                        ? prev.filter(p => p !== 'facebook')
+                        : [...prev, 'facebook']
+                    );
+                  }
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -1617,11 +1773,39 @@ const MusicVideoPlayer: React.FC = () => {
                   px: 2,
                   py: 1.5,
                   borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  background: 'rgba(0,0,0,0.02)',
-                  opacity: 0.5,
+                  border: selectedPlatforms.includes('facebook') 
+                    ? '2px solid #1877F2' 
+                    : facebookConnected 
+                      ? '2px solid #34C759' 
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: selectedPlatforms.includes('facebook') 
+                    ? 'rgba(24,119,242,0.05)' 
+                    : facebookConnected 
+                      ? 'rgba(52,199,89,0.05)' 
+                      : '#fff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { 
+                    borderColor: facebookConnected ? '#1877F2' : '#1877F2',
+                    background: 'rgba(24,119,242,0.02)',
+                  },
                 }}
               >
+                {facebookConnected && (
+                  <Checkbox
+                    checked={selectedPlatforms.includes('facebook')}
+                    size="small"
+                    sx={{ p: 0, mr: -0.5, color: '#1877F2', '&.Mui-checked': { color: '#1877F2' } }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => {
+                      setSelectedPlatforms(prev => 
+                        prev.includes('facebook') 
+                          ? prev.filter(p => p !== 'facebook')
+                          : [...prev, 'facebook']
+                      );
+                    }}
+                  />
+                )}
                 <Box sx={{ 
                   width: 36, height: 36, borderRadius: '10px', 
                   background: 'rgba(24,119,242,0.1)', 
@@ -1632,8 +1816,15 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 600, color: '#86868B', fontSize: '0.9rem' }}>Facebook</Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#007AFF', fontWeight: 500 }}>Coming Soon</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>Facebook</Typography>
+                    {facebookConnected && (
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                    )}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
+                    {facebookConnected ? (facebookPageName || 'Page Connected') : 'Click to connect'}
+                  </Typography>
                 </Box>
               </Box>
             </Box>
@@ -2233,6 +2424,39 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                 </Box>
               )}
+              {selectedPlatforms.includes('instagram') && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(228,64,95,0.05)', borderRadius: '12px', border: '1px solid rgba(228,64,95,0.2)' }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32 }}>
+                    <defs>
+                      <linearGradient id="ig-grad-confirm" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FFDC80" />
+                        <stop offset="50%" stopColor="#E1306C" />
+                        <stop offset="100%" stopColor="#833AB4" />
+                      </linearGradient>
+                    </defs>
+                    <path fill="url(#ig-grad-confirm)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: 600 }}>Instagram</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      {instagramUsername ? `@${instagramUsername}` : 'Your Account'}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+              {selectedPlatforms.includes('facebook') && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(24,119,242,0.05)', borderRadius: '12px', border: '1px solid rgba(24,119,242,0.2)' }}>
+                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#1877F2' }}>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: 600 }}>Facebook</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      {facebookPageName || 'Your Page'}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
             </Box>
 
             {/* Video Details Summary */}
@@ -2274,6 +2498,8 @@ const MusicVideoPlayer: React.FC = () => {
                 
                 const uploadYouTube = selectedPlatforms.includes('youtube');
                 const uploadTikTok = selectedPlatforms.includes('tiktok');
+                const uploadInstagram = selectedPlatforms.includes('instagram');
+                const uploadFacebook = selectedPlatforms.includes('facebook');
                 
                 // Track upload results
                 const results: string[] = [];
@@ -2337,6 +2563,64 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                 }
                 
+                // Upload to Instagram if selected
+                if (uploadInstagram) {
+                  try {
+                    if (!uploadYouTube && !uploadTikTok) {
+                      setIsUploading(true);
+                      setSocialError(null);
+                      
+                      // Save metadata if not already saved
+                      if (editedMetadata?.title) {
+                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                          title: editedMetadata.title,
+                          description: editedMetadata.description || '',
+                          tags: editedMetadata.tags || [],
+                          hook: editedMetadata.hook || hookText || '',
+                        });
+                      }
+                    }
+                    
+                    await instagramApi.upload(user!.userId, videoId!);
+                    results.push('Instagram');
+                  } catch (err: any) {
+                    const errorMsg = err.response?.data?.error || 'Instagram upload failed';
+                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                      setInstagramConnected(false);
+                    }
+                    errors.push(`Instagram: ${errorMsg}`);
+                  }
+                }
+                
+                // Upload to Facebook if selected
+                if (uploadFacebook) {
+                  try {
+                    if (!uploadYouTube && !uploadTikTok && !uploadInstagram) {
+                      setIsUploading(true);
+                      setSocialError(null);
+                      
+                      // Save metadata if not already saved
+                      if (editedMetadata?.title) {
+                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                          title: editedMetadata.title,
+                          description: editedMetadata.description || '',
+                          tags: editedMetadata.tags || [],
+                          hook: editedMetadata.hook || hookText || '',
+                        });
+                      }
+                    }
+                    
+                    await facebookApi.upload(user!.userId, videoId!);
+                    results.push('Facebook');
+                  } catch (err: any) {
+                    const errorMsg = err.response?.data?.error || 'Facebook upload failed';
+                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                      setFacebookConnected(false);
+                    }
+                    errors.push(`Facebook: ${errorMsg}`);
+                  }
+                }
+                
                 setIsUploading(false);
                 
                 // Show results
@@ -2349,13 +2633,13 @@ const MusicVideoPlayer: React.FC = () => {
               }}
               disabled={isUploading}
               sx={{
-                bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
+                bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('facebook') ? '#1877F2' : selectedPlatforms.includes('instagram') ? '#E4405F' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
                 borderRadius: '10px',
                 textTransform: 'none',
                 fontWeight: 600,
                 px: 3,
                 '&:hover': { 
-                  bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
+                  bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('facebook') ? '#1558B0' : selectedPlatforms.includes('instagram') ? '#C13584' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
                 },
               }}
             >

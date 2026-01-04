@@ -16,7 +16,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { youtubeApi, tiktokApi } from '../services/api';
+import { youtubeApi, tiktokApi, instagramApi, facebookApi } from '../services/api';
 
 // Social platform configurations
 const socialPlatforms = [
@@ -92,8 +92,7 @@ const socialPlatforms = [
     color: '#E4405F',
     bgColor: 'rgba(228,64,95,0.1)',
     description: 'Share Reels to Instagram',
-    available: false,
-    comingSoon: true,
+    available: true,
   },
   {
     id: 'facebook',
@@ -118,9 +117,9 @@ const socialPlatforms = [
     ),
     color: '#1877F2',
     bgColor: 'rgba(24,119,242,0.1)',
-    description: 'Share videos to Facebook',
-    available: false,
-    comingSoon: true,
+    description: 'Share videos to Facebook Page',
+    available: true,
+    sharedAuth: 'instagram', // Facebook uses same OAuth as Instagram
   },
   {
     id: 'spotify',
@@ -239,6 +238,17 @@ const ConnectedAccountsPage: React.FC = () => {
       setTimeout(() => setError(null), 5000);
       setSearchParams({});
     }
+
+    const instagramResult = searchParams.get('instagram');
+    if (instagramResult === 'success') {
+      setSuccess(`Instagram connected${username ? ` as @${username}` : ''}!`);
+      setTimeout(() => setSuccess(null), 5000);
+      setSearchParams({});
+    } else if (instagramResult === 'error') {
+      setError(message || 'Failed to connect Instagram');
+      setTimeout(() => setError(null), 5000);
+      setSearchParams({});
+    }
   }, [searchParams, setSearchParams]);
 
   // Check connection status on mount
@@ -251,6 +261,8 @@ const ConnectedAccountsPage: React.FC = () => {
         ...prev,
         youtube: { ...prev.youtube, loading: true, connected: false },
         tiktok: { ...prev.tiktok, loading: true, connected: false },
+        instagram: { ...prev.instagram, loading: true, connected: false },
+        facebook: { ...prev.facebook, loading: true, connected: false },
       }));
 
       // Check YouTube status
@@ -288,6 +300,44 @@ const ConnectedAccountsPage: React.FC = () => {
         setConnectionStatus(prev => ({
           ...prev,
           tiktok: { connected: false, loading: false },
+        }));
+      }
+
+      // Check Instagram status
+      try {
+        const response = await instagramApi.getStatus(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          instagram: {
+            connected: response.data.connected,
+            username: response.data.username,
+            avatarUrl: response.data.profilePictureUrl,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setConnectionStatus(prev => ({
+          ...prev,
+          instagram: { connected: false, loading: false },
+        }));
+      }
+      
+      // Check Facebook status (shares auth with Instagram)
+      try {
+        const response = await facebookApi.getStatus(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          facebook: {
+            connected: response.data.connected,
+            channelName: response.data.pageName,
+            channelId: response.data.pageId,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setConnectionStatus(prev => ({
+          ...prev,
+          facebook: { connected: false, loading: false },
         }));
       }
     };
@@ -339,6 +389,48 @@ const ConnectedAccountsPage: React.FC = () => {
         }));
       }
     }
+
+    if (platformId === 'instagram') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        instagram: { ...prev.instagram, loading: true },
+      }));
+
+      try {
+        const response = await instagramApi.getAuthUrl(user.userId);
+        
+        // Redirect to Facebook/Instagram OAuth
+        window.location.href = response.data.authUrl;
+
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to start Instagram connection');
+        setConnectionStatus(prev => ({
+          ...prev,
+          instagram: { connected: false, loading: false },
+        }));
+      }
+    }
+    
+    // Facebook uses same OAuth as Instagram
+    if (platformId === 'facebook') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        facebook: { ...prev.facebook, loading: true },
+      }));
+
+      try {
+        // Use Instagram's auth URL - it grants both Instagram and Facebook permissions
+        const response = await instagramApi.getAuthUrl(user.userId);
+        window.location.href = response.data.authUrl;
+
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to start Facebook connection');
+        setConnectionStatus(prev => ({
+          ...prev,
+          facebook: { connected: false, loading: false },
+        }));
+      }
+    }
   };
 
   const handleDisconnect = async (platformId: string) => {
@@ -386,6 +478,29 @@ const ConnectedAccountsPage: React.FC = () => {
         setConnectionStatus(prev => ({
           ...prev,
           tiktok: { ...prev.tiktok, loading: false },
+        }));
+      }
+    }
+
+    if (platformId === 'instagram') {
+      setConnectionStatus(prev => ({
+        ...prev,
+        instagram: { ...prev.instagram, loading: true },
+      }));
+
+      try {
+        await instagramApi.disconnect(user.userId);
+        setConnectionStatus(prev => ({
+          ...prev,
+          instagram: { connected: false, loading: false },
+        }));
+        setSuccess('Instagram account disconnected');
+        setTimeout(() => setSuccess(null), 3000);
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to disconnect Instagram');
+        setConnectionStatus(prev => ({
+          ...prev,
+          instagram: { ...prev.instagram, loading: false },
         }));
       }
     }
