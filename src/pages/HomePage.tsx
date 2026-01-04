@@ -2225,7 +2225,7 @@ const HomePage: React.FC = () => {
         position: 'relative',
         zIndex: 1,
       }}>
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center' }}>
             {/* Main Headline with Gruvi branding - prevent cutoff */}
           <Typography 

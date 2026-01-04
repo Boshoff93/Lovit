@@ -33,10 +33,12 @@ import {
   AutoAwesome,
   Add,
   Check,
+  CheckCircle,
   ContentCopy,
   CloudUpload,
   Bolt,
   Delete,
+  Error,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
@@ -168,6 +170,7 @@ const MusicVideoPlayer: React.FC = () => {
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [showUploadConfirm, setShowUploadConfirm] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, 'pending' | 'uploading' | 'success' | 'error'>>({});
   
   // Video characters state (for thumbnail selection)
   const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
@@ -2383,7 +2386,7 @@ const MusicVideoPlayer: React.FC = () => {
         {/* Upload Confirmation Modal */}
         <Dialog 
           open={showUploadConfirm} 
-          onClose={() => setShowUploadConfirm(false)}
+          onClose={() => !isUploading && setShowUploadConfirm(false)}
           maxWidth="sm"
           fullWidth
           PaperProps={{
@@ -2391,41 +2394,75 @@ const MusicVideoPlayer: React.FC = () => {
           }}
         >
           <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-            Confirm Upload
+            {isUploading ? 'Uploading...' : Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? 'Upload Complete' : 'Confirm Upload'}
           </DialogTitle>
           <DialogContent>
+            {isUploading && (
+              <Alert severity="info" sx={{ mb: 2, borderRadius: '10px' }}>
+                We've kicked off your upload! Please wait a few moments while your video is being posted to each platform.
+              </Alert>
+            )}
+            
             <Typography variant="body2" sx={{ color: '#86868B', mb: 3 }}>
-              Your video will be uploaded to the following platforms:
+              {isUploading 
+                ? 'Your video is being uploaded to the following platforms:'
+                : Object.values(uploadProgress).some(s => s === 'success' || s === 'error')
+                  ? 'Upload results:'
+                  : 'Your video will be uploaded to the following platforms:'
+              }
             </Typography>
 
-            {/* Selected Platforms */}
+            {/* Selected Platforms with Progress Indicators */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
               {selectedPlatforms.includes('youtube') && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(255,0,0,0.05)', borderRadius: '12px', border: '1px solid rgba(255,0,0,0.2)' }}>
+                <Box sx={{ 
+                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
+                  bgcolor: uploadProgress.youtube === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.youtube === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,0,0,0.05)', 
+                  borderRadius: '12px', 
+                  border: `1px solid ${uploadProgress.youtube === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.youtube === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,0,0,0.2)'}` 
+                }}>
                   <YouTube sx={{ fontSize: 32, color: '#FF0000' }} />
-                  <Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>YouTube</Typography>
                     <Typography variant="caption" sx={{ color: '#86868B' }}>
                       {youtubeChannel?.channelTitle || 'Your Channel'}
                     </Typography>
                   </Box>
+                  {uploadProgress.youtube === 'uploading' && <CircularProgress size={20} sx={{ color: '#FF0000' }} />}
+                  {uploadProgress.youtube === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
+                  {uploadProgress.youtube === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
+                  {uploadProgress.youtube === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
               )}
               {selectedPlatforms.includes('tiktok') && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.2)' }}>
+                <Box sx={{ 
+                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
+                  bgcolor: uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(0,0,0,0.03)', 
+                  borderRadius: '12px', 
+                  border: `1px solid ${uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(0,0,0,0.2)'}` 
+                }}>
                   <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#000' }}>
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                   </Box>
-                  <Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>TikTok</Typography>
                     <Typography variant="caption" sx={{ color: '#86868B' }}>
                       {tiktokUsername ? `@${tiktokUsername}` : 'Your Account'}
                     </Typography>
                   </Box>
+                  {uploadProgress.tiktok === 'uploading' && <CircularProgress size={20} sx={{ color: '#000' }} />}
+                  {uploadProgress.tiktok === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
+                  {uploadProgress.tiktok === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
+                  {uploadProgress.tiktok === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
               )}
               {selectedPlatforms.includes('instagram') && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(228,64,95,0.05)', borderRadius: '12px', border: '1px solid rgba(228,64,95,0.2)' }}>
+                <Box sx={{ 
+                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
+                  bgcolor: uploadProgress.instagram === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.instagram === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(228,64,95,0.05)', 
+                  borderRadius: '12px', 
+                  border: `1px solid ${uploadProgress.instagram === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.instagram === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(228,64,95,0.2)'}` 
+                }}>
                   <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32 }}>
                     <defs>
                       <linearGradient id="ig-grad-confirm" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -2436,78 +2473,108 @@ const MusicVideoPlayer: React.FC = () => {
                     </defs>
                     <path fill="url(#ig-grad-confirm)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
                   </Box>
-                  <Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>Instagram</Typography>
                     <Typography variant="caption" sx={{ color: '#86868B' }}>
                       {instagramUsername ? `@${instagramUsername}` : 'Your Account'}
                     </Typography>
                   </Box>
+                  {uploadProgress.instagram === 'uploading' && <CircularProgress size={20} sx={{ color: '#E4405F' }} />}
+                  {uploadProgress.instagram === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
+                  {uploadProgress.instagram === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
+                  {uploadProgress.instagram === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
               )}
               {selectedPlatforms.includes('facebook') && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'rgba(24,119,242,0.05)', borderRadius: '12px', border: '1px solid rgba(24,119,242,0.2)' }}>
+                <Box sx={{ 
+                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
+                  bgcolor: uploadProgress.facebook === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.facebook === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(24,119,242,0.05)', 
+                  borderRadius: '12px', 
+                  border: `1px solid ${uploadProgress.facebook === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.facebook === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(24,119,242,0.2)'}` 
+                }}>
                   <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#1877F2' }}>
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                   </Box>
-                  <Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>Facebook</Typography>
                     <Typography variant="caption" sx={{ color: '#86868B' }}>
                       {facebookPageName || 'Your Page'}
                     </Typography>
                   </Box>
+                  {uploadProgress.facebook === 'uploading' && <CircularProgress size={20} sx={{ color: '#1877F2' }} />}
+                  {uploadProgress.facebook === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
+                  {uploadProgress.facebook === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
+                  {uploadProgress.facebook === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
               )}
             </Box>
 
-            {/* Video Details Summary */}
-            <Box sx={{ bgcolor: '#f5f5f7', borderRadius: '12px', p: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
-              <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
-                <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5, 
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' 
-              }}>
-                <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
-              </Typography>
-              {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
-                  {editedMetadata.tags.slice(0, 5).map((tag, i) => (
-                    <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
-                  ))}
-                  {editedMetadata.tags.length > 5 && (
-                    <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
-                  )}
-                </Box>
-              )}
-            </Box>
+            {/* Video Details Summary - only show before uploading */}
+            {!isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
+              <Box sx={{ bgcolor: '#f5f5f7', borderRadius: '12px', p: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
+                <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
+                  <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5, 
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' 
+                }}>
+                  <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
+                </Typography>
+                {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                    {editedMetadata.tags.slice(0, 5).map((tag, i) => (
+                      <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
+                    ))}
+                    {editedMetadata.tags.length > 5 && (
+                      <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
+                    )}
+                  </Box>
+                )}
+              </Box>
+            )}
 
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 1 }}>
-            <Button 
-              onClick={() => setShowUploadConfirm(false)}
-              sx={{ borderRadius: '10px', textTransform: 'none', color: '#86868B' }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
-              onClick={async () => {
-                setShowUploadConfirm(false);
-                
-                const uploadYouTube = selectedPlatforms.includes('youtube');
-                const uploadTikTok = selectedPlatforms.includes('tiktok');
-                const uploadInstagram = selectedPlatforms.includes('instagram');
-                const uploadFacebook = selectedPlatforms.includes('facebook');
-                
-                // Track upload results
-                const results: string[] = [];
-                const errors: string[] = [];
-                
-                // Upload to YouTube if selected
-                if (uploadYouTube) {
-                  try {
+            {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
+              <Button 
+                variant="contained"
+                onClick={() => {
+                  setShowUploadConfirm(false);
+                  setUploadProgress({});
+                }}
+                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: '#007AFF' }}
+              >
+                Done
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  onClick={() => {
+                    setShowUploadConfirm(false);
+                    setUploadProgress({});
+                  }}
+                  disabled={isUploading}
+                  sx={{ borderRadius: '10px', textTransform: 'none', color: '#86868B' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
+                  onClick={async () => {
+                    const uploadYouTube = selectedPlatforms.includes('youtube');
+                    const uploadTikTok = selectedPlatforms.includes('tiktok');
+                    const uploadInstagram = selectedPlatforms.includes('instagram');
+                    const uploadFacebook = selectedPlatforms.includes('facebook');
+                    
+                    // Initialize progress for all selected platforms
+                    const initialProgress: Record<string, 'pending' | 'uploading' | 'success' | 'error'> = {};
+                    if (uploadYouTube) initialProgress.youtube = 'pending';
+                    if (uploadTikTok) initialProgress.tiktok = 'pending';
+                    if (uploadInstagram) initialProgress.instagram = 'pending';
+                    if (uploadFacebook) initialProgress.facebook = 'pending';
+                    setUploadProgress(initialProgress);
                     setIsUploading(true);
                     setSocialError(null);
                     
@@ -2521,130 +2588,106 @@ const MusicVideoPlayer: React.FC = () => {
                       });
                     }
                     
-                    const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-                    const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
-                    setYoutubeUrl(response.data.youtubeUrl);
-                    results.push('YouTube');
-                  } catch (err: any) {
-                    const errorMsg = err.response?.data?.error || 'YouTube upload failed';
-                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                      setYoutubeConnected(false);
-                    }
-                    errors.push(`YouTube: ${errorMsg}`);
-                  }
-                }
-                
-                // Upload to TikTok if selected
-                if (uploadTikTok) {
-                  try {
-                    if (!uploadYouTube) {
-                      setIsUploading(true);
-                      setSocialError(null);
-                      
-                      // Save metadata if not already saved
-                      if (editedMetadata?.title) {
-                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
-                          title: editedMetadata.title,
-                          description: editedMetadata.description || '',
-                          tags: editedMetadata.tags || [],
-                          hook: editedMetadata.hook || hookText || '',
-                        });
+                    // Track upload results
+                    const results: string[] = [];
+                    const errors: string[] = [];
+                    
+                    // Upload to YouTube if selected
+                    if (uploadYouTube) {
+                      setUploadProgress(prev => ({ ...prev, youtube: 'uploading' }));
+                      try {
+                        const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+                        const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
+                        setYoutubeUrl(response.data.youtubeUrl);
+                        results.push('YouTube');
+                        setUploadProgress(prev => ({ ...prev, youtube: 'success' }));
+                      } catch (err: any) {
+                        const errorMsg = err.response?.data?.error || 'YouTube upload failed';
+                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                          setYoutubeConnected(false);
+                        }
+                        errors.push(`YouTube: ${errorMsg}`);
+                        setUploadProgress(prev => ({ ...prev, youtube: 'error' }));
                       }
                     }
                     
-                    await tiktokApi.upload(user!.userId, videoId!);
-                    results.push('TikTok (check app to publish)');
-                  } catch (err: any) {
-                    const errorMsg = err.response?.data?.error || 'TikTok upload failed';
-                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                      setTiktokConnected(false);
-                    }
-                    errors.push(`TikTok: ${errorMsg}`);
-                  }
-                }
-                
-                // Upload to Instagram if selected
-                if (uploadInstagram) {
-                  try {
-                    if (!uploadYouTube && !uploadTikTok) {
-                      setIsUploading(true);
-                      setSocialError(null);
-                      
-                      // Save metadata if not already saved
-                      if (editedMetadata?.title) {
-                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
-                          title: editedMetadata.title,
-                          description: editedMetadata.description || '',
-                          tags: editedMetadata.tags || [],
-                          hook: editedMetadata.hook || hookText || '',
-                        });
+                    // Upload to TikTok if selected
+                    if (uploadTikTok) {
+                      setUploadProgress(prev => ({ ...prev, tiktok: 'uploading' }));
+                      try {
+                        await tiktokApi.upload(user!.userId, videoId!);
+                        results.push('TikTok');
+                        setUploadProgress(prev => ({ ...prev, tiktok: 'success' }));
+                      } catch (err: any) {
+                        const errorMsg = err.response?.data?.error || 'TikTok upload failed';
+                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                          setTiktokConnected(false);
+                        }
+                        errors.push(`TikTok: ${errorMsg}`);
+                        setUploadProgress(prev => ({ ...prev, tiktok: 'error' }));
                       }
                     }
                     
-                    await instagramApi.upload(user!.userId, videoId!);
-                    results.push('Instagram');
-                  } catch (err: any) {
-                    const errorMsg = err.response?.data?.error || 'Instagram upload failed';
-                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                      setInstagramConnected(false);
-                    }
-                    errors.push(`Instagram: ${errorMsg}`);
-                  }
-                }
-                
-                // Upload to Facebook if selected
-                if (uploadFacebook) {
-                  try {
-                    if (!uploadYouTube && !uploadTikTok && !uploadInstagram) {
-                      setIsUploading(true);
-                      setSocialError(null);
-                      
-                      // Save metadata if not already saved
-                      if (editedMetadata?.title) {
-                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
-                          title: editedMetadata.title,
-                          description: editedMetadata.description || '',
-                          tags: editedMetadata.tags || [],
-                          hook: editedMetadata.hook || hookText || '',
-                        });
+                    // Upload to Instagram if selected
+                    if (uploadInstagram) {
+                      setUploadProgress(prev => ({ ...prev, instagram: 'uploading' }));
+                      try {
+                        await instagramApi.upload(user!.userId, videoId!);
+                        results.push('Instagram');
+                        setUploadProgress(prev => ({ ...prev, instagram: 'success' }));
+                      } catch (err: any) {
+                        const errorMsg = err.response?.data?.error || 'Instagram upload failed';
+                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                          setInstagramConnected(false);
+                        }
+                        errors.push(`Instagram: ${errorMsg}`);
+                        setUploadProgress(prev => ({ ...prev, instagram: 'error' }));
                       }
                     }
                     
-                    await facebookApi.upload(user!.userId, videoId!);
-                    results.push('Facebook');
-                  } catch (err: any) {
-                    const errorMsg = err.response?.data?.error || 'Facebook upload failed';
-                    if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                      setFacebookConnected(false);
+                    // Upload to Facebook if selected
+                    if (uploadFacebook) {
+                      setUploadProgress(prev => ({ ...prev, facebook: 'uploading' }));
+                      try {
+                        await facebookApi.upload(user!.userId, videoId!);
+                        results.push('Facebook');
+                        setUploadProgress(prev => ({ ...prev, facebook: 'success' }));
+                      } catch (err: any) {
+                        const errorMsg = err.response?.data?.error || 'Facebook upload failed';
+                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                          setFacebookConnected(false);
+                        }
+                        errors.push(`Facebook: ${errorMsg}`);
+                        setUploadProgress(prev => ({ ...prev, facebook: 'error' }));
+                      }
                     }
-                    errors.push(`Facebook: ${errorMsg}`);
-                  }
-                }
-                
-                setIsUploading(false);
-                
-                // Show results
-                if (results.length > 0) {
-                  setSocialSuccess(`Uploaded to ${results.join(' & ')}!`);
-                }
-                if (errors.length > 0) {
-                  showSocialError(errors.join('. '));
-                }
-              }}
-              disabled={isUploading}
-              sx={{
-                bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('facebook') ? '#1877F2' : selectedPlatforms.includes('instagram') ? '#E4405F' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
-                borderRadius: '10px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3,
-                '&:hover': { 
-                  bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('facebook') ? '#1558B0' : selectedPlatforms.includes('instagram') ? '#C13584' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
-                },
-              }}
-            >
-              {isUploading ? 'Uploading...' : 'Upload Now'}
-            </Button>
+                    
+                    setIsUploading(false);
+                    
+                    // Show results
+                    if (results.length > 0) {
+                      setSocialSuccess(`Uploaded to ${results.join(' & ')}!`);
+                    }
+                    if (errors.length > 0) {
+                      showSocialError(errors.join('. '));
+                    }
+                  }}
+                  disabled={isUploading}
+                  sx={{
+                    bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('facebook') ? '#1877F2' : selectedPlatforms.includes('instagram') ? '#E4405F' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    px: 3,
+                    '&:hover': { 
+                      bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('facebook') ? '#1558B0' : selectedPlatforms.includes('instagram') ? '#C13584' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
+                    },
+                  }}
+                >
+                  {isUploading ? 'Uploading...' : 'Upload Now'}
+                </Button>
+              </>
+            )}
           </DialogActions>
         </Dialog>
       </Container>

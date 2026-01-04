@@ -2573,35 +2573,35 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   // Default route
   '/': {
     path: '/',
-    title: 'Gruvi - AI Music Generator & Music Video Creator',
-    description: 'Create original AI-generated music and stunning music videos in any style. Make a song about anything - describe your idea and our AI creates professional quality music instantly.',
-    keywords: 'ai music generator, music video creator, ai songs, create music, ai studio, free music generator',
-    ogTitle: 'Gruvi - AI Music Generator & Music Video Creator',
-    ogDescription: 'Create original AI music and stunning music videos in any style. Make a song about anything with AI.',
-    twitterTitle: 'Gruvi - AI Music Generator',
-    twitterDescription: 'Create original AI music and music videos. Make a song about anything.',
+    title: 'Gruvi - AI UGC Distribution Platform | Create & Schedule Content',
+    description: 'The AI-powered UGC distribution platform for creators and founders. Generate original music and videos, then schedule and distribute to YouTube, TikTok, Instagram, Spotify & all platforms.',
+    keywords: 'ugc platform, content distribution, social media scheduler, ai content creator, music distribution, video scheduling, creator tools',
+    ogTitle: 'Gruvi - The AI UGC Distribution Platform',
+    ogDescription: 'Create AI-generated music & videos, then distribute to all platforms. The social media scheduler built for creators.',
+    twitterTitle: 'Gruvi - AI UGC Distribution Platform',
+    twitterDescription: 'Create AI content and distribute everywhere. The scheduler for creators.',
     breadcrumbName: 'Home',
-    heroTagline: 'The AI Music Generator',
-    heroHeading: 'The AI Music Generator\nEveryone Deserves a Hit Song',
-    heroSubtext: 'Describe your song idea and our AI will create original music. Sign up to download and create more.',
-    examplePrompts: ['An upbeat pop song about summer', 'Relaxing jazz for a rainy day', 'Epic cinematic orchestra', 'Funky disco groove']
+    heroTagline: 'Everyone Deserves a Viral Moment',
+    heroHeading: 'The AI Music Video Generator\nEveryone Deserves a Viral Moment.',
+    heroSubtext: 'Generate AI-powered promo videos and music, then instantly distribute to YouTube, TikTok, Instagram, Facebook & Spotify - no switching apps, no manual uploads.',
+    examplePrompts: ['Upbeat coffee shop vibes', 'Epic gaming montage track', 'Chill lo-fi study beats', 'Hype workout anthem']
   },
 
   // Core feature routes
   '/ai-music-generator': {
     path: '/ai-music-generator',
-    title: 'AI Music Generator - Create Original Songs Instantly | Gruvi',
-    description: 'Generate original music with AI in seconds. Describe your song idea and our advanced AI creates professional quality tracks in any genre.',
-    keywords: 'ai music generator, ai song maker, artificial intelligence music, generate music',
-    ogTitle: 'AI Music Generator | Gruvi',
-    ogDescription: 'Generate original music with AI in seconds. Professional quality tracks in any genre.',
-    twitterTitle: 'AI Music Generator | Gruvi',
-    twitterDescription: 'Generate original music with AI in seconds.',
+    title: 'AI Music Generator - Create Original Songs in Any Genre | Gruvi',
+    description: 'Generate original music with AI in seconds. Describe your song idea and our advanced AI creates studio-quality tracks in any genre - pop, hip-hop, electronic, rock, jazz & more.',
+    keywords: 'ai music generator, ai song maker, artificial intelligence music, generate music, ai composer, music ai, song generator',
+    ogTitle: 'AI Music Generator - Create Songs Instantly | Gruvi',
+    ogDescription: 'Generate original music with AI in seconds. Studio-quality tracks in any genre - describe your idea, get your song.',
+    twitterTitle: 'AI Music Generator | Create Songs with AI',
+    twitterDescription: 'Generate original music in seconds. Any genre, any style. Just describe your idea.',
     breadcrumbName: 'AI Music Generator',
-    heroTagline: 'AI Music Generator',
-    heroHeading: 'AI Music Generator\nCreate music with artificial intelligence',
-    heroSubtext: 'Generate original music with AI in seconds. Describe your song idea and create professional quality tracks in any genre.',
-    examplePrompts: ['Create an energetic workout track', 'Generate a calm meditation piece', 'Make a catchy jingle', 'Compose an emotional ballad']
+    heroTagline: 'Your Ideas, Our AI, Your Music',
+    heroHeading: 'AI Music Generator\nTurn Any Idea Into a Song',
+    heroSubtext: 'Describe what you want to hear and our AI creates studio-quality music in seconds. Any genre, any mood, any style - no musical experience needed.',
+    examplePrompts: ['An upbeat pop song about summer love', 'Dark trap beat with heavy bass', 'Relaxing acoustic guitar for studying', 'Epic orchestral movie soundtrack']
   },
 
   '/free-music-generator': {
