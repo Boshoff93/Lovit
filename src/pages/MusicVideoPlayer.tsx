@@ -18,6 +18,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControl,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -147,6 +150,8 @@ const MusicVideoPlayer: React.FC = () => {
   const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
   const [hookText, setHookText] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [ctaType, setCtaType] = useState<string>('');
+  const [ctaUrl, setCtaUrl] = useState('');
   
   // YouTube state
   const [youtubeConnected, setYoutubeConnected] = useState(false);
@@ -333,6 +338,8 @@ const MusicVideoPlayer: React.FC = () => {
           setSocialMetadata(response.data.socialMetadata);
           setEditedMetadata(response.data.socialMetadata);
           setHookText(response.data.socialMetadata.hook || '');
+          setCtaType(response.data.socialMetadata.ctaType || '');
+          setCtaUrl(response.data.socialMetadata.ctaUrl || '');
         }
         if (response.data.socialThumbnailUrl) {
           setSocialThumbnailUrl(response.data.socialThumbnailUrl);
@@ -705,6 +712,8 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
+        ctaType: ctaType || '',
+        ctaUrl: ctaUrl || '',
       });
       
       // Then upload to YouTube
@@ -759,6 +768,8 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
+        ctaType: ctaType || '',
+        ctaUrl: ctaUrl || '',
       });
       
       // Upload to TikTok
@@ -811,6 +822,8 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
+        ctaType: ctaType || '',
+        ctaUrl: ctaUrl || '',
       });
       
       // Upload to Instagram
@@ -2148,8 +2161,63 @@ const MusicVideoPlayer: React.FC = () => {
               )}
             </Box>
 
-            {/* Tags */}
+            {/* Call to Action */}
             <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+                Call to Action (optional)
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <FormControl size="small" sx={{ minWidth: 180 }}>
+                  <Select
+                    value={ctaType}
+                    onChange={(e) => setCtaType(e.target.value)}
+                    displayEmpty
+                    sx={{
+                      borderRadius: '10px',
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    }}
+                  >
+                    <MenuItem value="">No CTA</MenuItem>
+                    <MenuItem value="Learn More">Learn More</MenuItem>
+                    <MenuItem value="Shop Now">Shop Now</MenuItem>
+                    <MenuItem value="Download">Download</MenuItem>
+                    <MenuItem value="Sign Up">Sign Up</MenuItem>
+                    <MenuItem value="Book Now">Book Now</MenuItem>
+                    <MenuItem value="Get Started">Get Started</MenuItem>
+                    <MenuItem value="Watch More">Watch More</MenuItem>
+                    <MenuItem value="Subscribe">Subscribe</MenuItem>
+                    <MenuItem value="Contact Us">Contact Us</MenuItem>
+                    <MenuItem value="Visit Website">Visit Website</MenuItem>
+                  </Select>
+                </FormControl>
+                {ctaType && (
+                  <TextField
+                    size="small"
+                    placeholder="https://your-website.com"
+                    value={ctaUrl}
+                    onChange={(e) => setCtaUrl(e.target.value)}
+                    sx={{ 
+                      flex: 1,
+                      minWidth: 200,
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '10px',
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      },
+                    }}
+                  />
+                )}
+              </Box>
+              {ctaType && (
+                <Typography variant="caption" sx={{ color: '#86868B', mt: 0.5, display: 'block' }}>
+                  Link will be added to your video description
+                </Typography>
+              )}
+            </Box>
+
+            {/* Tags */}
+            <Box sx={{ mb: 0 }}>
               <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
                 Tags
               </Typography>
@@ -2765,6 +2833,14 @@ const MusicVideoPlayer: React.FC = () => {
                 onClick={() => {
                   setShowUploadConfirm(false);
                   setUploadProgress({});
+                  // Scroll to success banners so user can see them
+                  setTimeout(() => {
+                    const element = socialSectionRef.current;
+                    if (element) {
+                      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                      window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
+                    }
+                  }, 100);
                 }}
                 sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: '#007AFF' }}
               >
@@ -2808,6 +2884,8 @@ const MusicVideoPlayer: React.FC = () => {
                         description: editedMetadata.description || '',
                         tags: editedMetadata.tags || [],
                         hook: editedMetadata.hook || hookText || '',
+                        ctaType: ctaType || '',
+                        ctaUrl: ctaUrl || '',
                       });
                     }
                     

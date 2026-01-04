@@ -206,6 +206,8 @@ export const videosApi = {
     tags?: string[];
     hook?: string;
     location?: string;
+    ctaType?: string;
+    ctaUrl?: string;
   }) => api.put(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`, data),
   
   generateSocialThumbnail: (userId: string, videoId: string, data: {
