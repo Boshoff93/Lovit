@@ -168,6 +168,7 @@ const MusicVideoPlayer: React.FC = () => {
   // Facebook state (shares auth with Instagram)
   const [facebookConnected, setFacebookConnected] = useState(false);
   const [facebookPageName, setFacebookPageName] = useState<string | null>(null);
+  const [facebookPageId, setFacebookPageId] = useState<string | null>(null);
   const [facebookUploaded, setFacebookUploaded] = useState(false);
   const [linkedinConnected, setLinkedinConnected] = useState(false);
   const [linkedinName, setLinkedinName] = useState<string | null>(null);
@@ -378,7 +379,9 @@ const MusicVideoPlayer: React.FC = () => {
         const fbResponse = await facebookApi.getStatus(user.userId);
         setFacebookConnected(fbResponse.data.connected);
         setFacebookPageName(fbResponse.data.pageName);
-      } catch {
+        setFacebookPageId(fbResponse.data.pageId);
+      } catch (err) {
+        console.error('[Facebook Status] Error:', err);
         // Facebook not connected
       }
       
@@ -710,7 +713,7 @@ const MusicVideoPlayer: React.FC = () => {
       const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
       const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro: shouldAddThumbnailIntro });
       setYoutubeUrl(response.data.youtubeUrl);
-      setSocialSuccess(`Uploaded to YouTube!`);
+      // Individual platform banner will show instead of generic socialSuccess
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Failed to upload to YouTube';
       if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
@@ -760,8 +763,9 @@ const MusicVideoPlayer: React.FC = () => {
       });
       
       // Upload to TikTok
-      const response = await tiktokApi.upload(user.userId, videoId);
-      setSocialSuccess(response.data.message || 'Uploaded to TikTok! Check your TikTok app to publish.');
+      await tiktokApi.upload(user.userId, videoId);
+      setTiktokUploaded(true);
+      // Individual platform banner will show instead of generic socialSuccess
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Failed to upload to TikTok';
       if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
@@ -1559,50 +1563,60 @@ const MusicVideoPlayer: React.FC = () => {
             <Alert 
               severity="success" 
               onClose={() => setYoutubeUrl(null)}
-              action={<Button color="inherit" size="small" href={youtubeUrl} target="_blank">View</Button>}
-              sx={{ mb: 1.5, borderRadius: '10px' }}
+              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
             >
-              Uploaded to YouTube!
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>Uploaded to YouTube!</span>
+                <Button color="inherit" size="small" href={youtubeUrl} target="_blank">View</Button>
+              </Box>
             </Alert>
           )}
           {instagramUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setInstagramUploaded(false)}
-              action={<Button color="inherit" size="small" href={`https://instagram.com/${instagramUsername || ''}`} target="_blank">View</Button>}
-              sx={{ mb: 1.5, borderRadius: '10px' }}
+              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
             >
-              Uploaded to Instagram!
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>Uploaded to Instagram!</span>
+                <Button color="inherit" size="small" href={`https://instagram.com/${instagramUsername || ''}`} target="_blank">View</Button>
+              </Box>
             </Alert>
           )}
           {tiktokUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setTiktokUploaded(false)}
-              action={<Button color="inherit" size="small" href={`https://tiktok.com/@${tiktokUsername || ''}`} target="_blank">View</Button>}
-              sx={{ mb: 1.5, borderRadius: '10px' }}
+              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
             >
-              Uploaded to TikTok!
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>Uploaded to TikTok!</span>
+                <Button color="inherit" size="small" href={`https://tiktok.com/@${tiktokUsername || ''}`} target="_blank">View</Button>
+              </Box>
             </Alert>
           )}
           {facebookUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setFacebookUploaded(false)}
-              action={<Button color="inherit" size="small" href="https://facebook.com" target="_blank">View</Button>}
-              sx={{ mb: 1.5, borderRadius: '10px' }}
+              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
             >
-              Uploaded to Facebook!
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>Uploaded to Facebook!</span>
+                <Button color="inherit" size="small" href={facebookPageId ? `https://www.facebook.com/${facebookPageId}` : 'https://www.facebook.com'} target="_blank">View</Button>
+              </Box>
             </Alert>
           )}
           {linkedinUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setLinkedinUploaded(false)}
-              action={<Button color="inherit" size="small" href="https://linkedin.com/feed" target="_blank">View</Button>}
-              sx={{ mb: 1.5, borderRadius: '10px' }}
+              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
             >
-              Uploaded to LinkedIn!
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>Uploaded to LinkedIn!</span>
+                <Button color="inherit" size="small" href="https://linkedin.com/feed" target="_blank">View</Button>
+              </Box>
             </Alert>
           )}
 
@@ -2896,10 +2910,7 @@ const MusicVideoPlayer: React.FC = () => {
                     
                     setIsUploading(false);
                     
-                    // Show results
-                    if (results.length > 0) {
-                      setSocialSuccess(`Uploaded to ${results.join(' & ')}!`);
-                    }
+                    // Show errors (success banners are shown individually per platform)
                     if (errors.length > 0) {
                       showSocialError(errors.join('. '));
                     }
