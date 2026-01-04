@@ -440,7 +440,12 @@ const MusicVideoPlayer: React.FC = () => {
       const selectedImageUrls: string[] = [];
       realSelectedIds.forEach(id => {
         // Handle different ID formats
-        if (id.endsWith('_seedream')) {
+        if (id.startsWith('ai_thumb_')) {
+          // AI-generated thumbnail: ai_thumb_N
+          const idx = parseInt(id.replace('ai_thumb_', ''));
+          const url = generatedThumbnails[idx];
+          if (url) selectedImageUrls.push(url);
+        } else if (id.endsWith('_seedream')) {
           // Seedream reference: characterId_seedream
           const charId = id.replace('_seedream', '');
           const url = videoData?.seedreamReferenceUrls?.[charId];
@@ -451,7 +456,7 @@ const MusicVideoPlayer: React.FC = () => {
           const url = videoData?.sceneImageUrls?.[idx];
           if (url) selectedImageUrls.push(url);
         } else if (id === 'original_thumb') {
-          // Original thumbnail
+          // Original thumbnail (video first frame)
           if (videoData?.thumbnailUrl) selectedImageUrls.push(videoData.thumbnailUrl);
         } else if (id.startsWith('upload_')) {
           // User-uploaded custom thumbnail
@@ -2352,7 +2357,7 @@ const MusicVideoPlayer: React.FC = () => {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Typography variant="body1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                    Create Custom Thumbnail
+                    Generate New Thumbnail
                   </Typography>
                   <IconButton 
                     size="small" 
@@ -2374,6 +2379,15 @@ const MusicVideoPlayer: React.FC = () => {
                 {(() => {
                   const availableImages: { url: string; label: string; id: string }[] = [];
                   
+                  // AI-generated thumbnails (most useful as references since they have the style we want)
+                  generatedThumbnails.forEach((url, idx) => {
+                    availableImages.push({
+                      url,
+                      label: `AI ${idx + 1}`,
+                      id: `ai_thumb_${idx}`,
+                    });
+                  });
+                  
                   // Seedream-generated reference images
                   videoCharacters.forEach((char) => {
                     const seedreamUrl = videoData?.seedreamReferenceUrls?.[char.characterId];
@@ -2391,9 +2405,9 @@ const MusicVideoPlayer: React.FC = () => {
                     availableImages.push({ url, label: `Scene ${idx + 1}`, id: `scene_${idx}` });
                   });
                   
-                  // Original thumbnail fallback
-                  if (!videoData?.sceneImageUrls?.length && videoData?.thumbnailUrl) {
-                    availableImages.push({ url: videoData.thumbnailUrl, label: 'Original', id: 'original_thumb' });
+                  // Original thumbnail (video first frame)
+                  if (videoData?.thumbnailUrl) {
+                    availableImages.push({ url: videoData.thumbnailUrl, label: 'Video Frame', id: 'original_thumb' });
                   }
                   
                   // User-uploaded custom thumbnails
@@ -2409,17 +2423,22 @@ const MusicVideoPlayer: React.FC = () => {
                   
                   return (
                     <>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
-                          Select reference images
-                        </Typography>
-                        <Typography variant="caption" sx={{ 
-                          color: '#007AFF', 
-                          fontWeight: 600,
-                          bgcolor: 'rgba(0,122,255,0.1)',
-                          px: 1.5, py: 0.5, borderRadius: '100px',
-                        }}>
-                          {realSelectedIds.length}/{maxSelections}
+                      <Box sx={{ mb: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
+                            Select reference images
+                          </Typography>
+                          <Typography variant="caption" sx={{ 
+                            color: '#007AFF', 
+                            fontWeight: 600,
+                            bgcolor: 'rgba(0,122,255,0.1)',
+                            px: 1.5, py: 0.5, borderRadius: '100px',
+                          }}>
+                            {realSelectedIds.length}/{maxSelections}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mt: 0.5 }}>
+                          AI will use the selected images as a starting point to generate a new thumbnail
                         </Typography>
                       </Box>
                       
@@ -2711,10 +2730,17 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             )}
 
-            {/* YouTube Shorts thumbnail limitation note */}
+            {/* YouTube Shorts thumbnail note */}
             {selectedPlatforms.includes('youtube') && videoData?.aspectRatio === 'portrait' && !isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
               <Alert severity="info" sx={{ mt: 2, borderRadius: '10px', '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
-                <strong>YouTube Shorts Note:</strong> YouTube doesn't allow custom thumbnails for Shorts via third-party uploads. After uploading, you can set the thumbnail by selecting a frame in the YouTube mobile app.
+                <strong>YouTube Shorts:</strong> Your thumbnail is added as the first frame. To set it as the cover, edit the Short in the YouTube mobile app and scroll to select the first frame.
+              </Alert>
+            )}
+            
+            {/* TikTok sandbox mode disclaimer */}
+            {selectedPlatforms.includes('tiktok') && !isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
+              <Alert severity="warning" sx={{ mt: 2, borderRadius: '10px', '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
+                <strong>TikTok Note:</strong> TikTok posting currently only works for private accounts while we await approval. Full public posting will be available soon!
               </Alert>
             )}
 
