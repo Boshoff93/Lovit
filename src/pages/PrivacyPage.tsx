@@ -40,18 +40,22 @@ const PrivacyPage: React.FC = () => {
         </Button>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Privacy Policy
+            Privacy Policy for Gruvi
           </Typography>
           
           <Typography variant="body1" paragraph>
             Last updated: January 5, 2026
           </Typography>
 
+          <Typography variant="body1" paragraph sx={{ fontWeight: 'bold', bgcolor: 'rgba(0,122,255,0.05)', p: 2, borderRadius: 1, mb: 3 }}>
+            This Privacy Policy describes how <strong>Gruvi</strong> ("we", "us", or "our"), operated by WB Tech Ventures, collects, uses, and protects your personal information when you use the Gruvi application and website (gruvimusic.com). By using Gruvi, you agree to the collection and use of information in accordance with this policy.
+          </Typography>
+
           <Typography variant="h6" gutterBottom>
             1. Information We Collect
           </Typography>
           <Typography variant="body1" paragraph>
-            We collect the following types of information:
+            When you use Gruvi, we collect the following types of information:
           </Typography>
           <ul>
             <li>Account information (email, username, password)</li>
@@ -116,7 +120,14 @@ const PrivacyPage: React.FC = () => {
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            6. YouTube Integration
+            6. Social Media Platform Integrations
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Gruvi allows you to connect your social media accounts to publish your created content directly. The following integrations are available:
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            YouTube Integration
           </Typography>
           <Typography variant="body1" paragraph>
             If you choose to connect your YouTube account, we request access to:
@@ -127,13 +138,34 @@ const PrivacyPage: React.FC = () => {
             <li>View your channel name and profile picture</li>
           </ul>
           <Typography variant="body1" paragraph>
-            We only upload content when you explicitly click "Upload to YouTube". You can disconnect your YouTube account at any time from your settings. We store your YouTube OAuth tokens securely and encrypted. We do not access your existing YouTube videos or any other YouTube data beyond what is necessary for uploads.
+            We only upload content when you explicitly click "Upload to YouTube". You can disconnect your YouTube account at any time. We store your YouTube OAuth tokens securely and encrypted. We do not access your existing YouTube videos.
           </Typography>
           <Typography variant="body1" paragraph>
             Google's use and transfer of information received from Google APIs adheres to the{' '}
             <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
               Google API Services User Data Policy
             </a>, including the Limited Use requirements.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            TikTok Integration
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If you choose to connect your TikTok account, Gruvi requests access to:
+          </Typography>
+          <ul>
+            <li>Post videos to your TikTok account on your behalf</li>
+            <li>View your TikTok username and profile information</li>
+          </ul>
+          <Typography variant="body1" paragraph>
+            We only post content when you explicitly request it. You can disconnect your TikTok account at any time from your settings. Your TikTok access tokens are stored securely and encrypted.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Instagram, Facebook, and LinkedIn Integrations
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Gruvi also supports publishing to Instagram, Facebook, and LinkedIn. Similar to other integrations, we only access these platforms when you explicitly request to publish content, and you can disconnect these accounts at any time.
           </Typography>
 
           <Typography variant="h6" gutterBottom>

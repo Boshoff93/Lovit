@@ -40,18 +40,22 @@ const TermsPage: React.FC = () => {
         </Button>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Terms of Service
+            Terms of Service for Gruvi
           </Typography>
           
           <Typography variant="body1" paragraph>
-            Last updated: January 2, 2026
+            Last updated: January 5, 2026
+          </Typography>
+
+          <Typography variant="body1" paragraph sx={{ fontWeight: 'bold', bgcolor: 'rgba(0,122,255,0.05)', p: 2, borderRadius: 1, mb: 3 }}>
+            These Terms of Service ("Terms") govern your use of <strong>Gruvi</strong>, an AI-powered music and video creation platform operated by WB Tech Ventures. Gruvi is accessible via the website gruvimusic.com and associated services. By accessing or using Gruvi, you agree to be bound by these Terms.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
             1. Acceptance of Terms
           </Typography>
           <Typography variant="body1" paragraph>
-            By accessing and using Gruvi ("the Service"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.
+            By accessing and using Gruvi ("the Service", "the App", or "Gruvi"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use Gruvi.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
@@ -86,12 +90,13 @@ const TermsPage: React.FC = () => {
             6. Third-Party Platform Integration
           </Typography>
           <Typography variant="body1" paragraph>
-            The Service allows you to connect third-party accounts (such as YouTube) to upload content. When you connect these accounts:
+            Gruvi allows you to connect third-party social media accounts (including YouTube, TikTok, Instagram, Facebook, and LinkedIn) to publish your created content. When you connect these accounts:
           </Typography>
           <ul>
-            <li>You authorize us to upload content on your behalf when you explicitly request it</li>
-            <li>You are responsible for ensuring your content complies with the third-party platform's terms</li>
-            <li>You can disconnect these accounts at any time</li>
+            <li>You authorize Gruvi to upload content on your behalf when you explicitly request it</li>
+            <li>You are responsible for ensuring your content complies with each platform's terms of service</li>
+            <li>You can disconnect these accounts at any time from your Gruvi settings</li>
+            <li>Gruvi only accesses these platforms when you explicitly request to publish content</li>
           </ul>
 
           <Typography variant="h6" gutterBottom>
