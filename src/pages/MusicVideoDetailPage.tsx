@@ -934,7 +934,8 @@ const MusicVideoDetailPage: React.FC = () => {
                       alt={currentVideo.title}
                       sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                        e.currentTarget.src = currentVideo.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
+                        // This is inside portrait layout, so always use portrait fallback
+                        e.currentTarget.src = '/gruvi/octopus-portrait-wait.jpeg';
                       }}
                     />
                   )}
@@ -1059,7 +1060,8 @@ const MusicVideoDetailPage: React.FC = () => {
                       objectFit: 'cover',
                     }}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                      e.currentTarget.src = currentVideo.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
+                      // This is inside portrait layout, so always use portrait fallback
+                      e.currentTarget.src = '/gruvi/octopus-portrait-wait.jpeg';
                     }}
                   />
                   {/* Play Button Overlay */}
