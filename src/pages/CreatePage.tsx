@@ -955,6 +955,11 @@ const CreatePage: React.FC = () => {
       // Extract tagged character IDs from prompt
       const characterIds = getTaggedCharacterIds(videoPrompt);
       
+      // Debug: log character matching
+      console.log('[Video Gen] Available characters:', characters.map(c => ({ id: c.characterId, name: c.characterName, type: c.characterType })));
+      console.log('[Video Gen] Video prompt:', videoPrompt);
+      console.log('[Video Gen] Matched character IDs:', characterIds);
+      
       // Call the actual video generation API
       const response = await videosApi.generateVideo({
         userId: user.userId,
