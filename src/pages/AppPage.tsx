@@ -2190,7 +2190,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 component="img"
                                 src={
                                   video.status === 'completed' 
-                                    ? (video.thumbnailUrl || '/gruvi.png')
+                                    ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
                                     : video.status === 'failed'
                                       ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
                                       : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
@@ -2202,7 +2202,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   objectFit: 'cover',
                                 }}
                                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                  e.currentTarget.src = '/gruvi.png';
+                                  e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
                                 }}
                               />
                               
@@ -2384,10 +2384,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 component="img"
                                 src={
                                   video.status === 'completed' 
-                                    ? (video.thumbnailUrl || '/gruvi.png')
+                                    ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
                                     : video.status === 'failed'
-                                      ? '/gruvi/gruvi-fail-landscape.jpeg'
-                                      : '/gruvi/octopus-landscape-wait.jpeg'
+                                      ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
+                                      : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
                                 }
                                 alt={video.songTitle || 'Music Video'}
                                 sx={{
@@ -2396,7 +2396,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   objectFit: 'cover',
                                 }}
                                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                  e.currentTarget.src = '/gruvi.png';
+                                  e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
                                 }}
                               />
                               
