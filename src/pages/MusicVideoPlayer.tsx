@@ -2050,47 +2050,38 @@ const MusicVideoPlayer: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.06)',
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 2 }}>
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', flexShrink: 0 }}>
                 Video Details
               </Typography>
               
               {/* Generate with AI button */}
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                <Button
-                  variant="contained"
-                  startIcon={isGeneratingMetadata ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <AutoAwesome />}
-                  onClick={handleGenerateMetadata}
-                  disabled={isGeneratingMetadata}
-                  sx={{
-                    borderRadius: '10px',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    color: '#fff',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-                    backgroundSize: '200% 200%',
-                    border: 'none',
-                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-                    transition: 'all 0.3s ease',
-                    animation: 'shimmer 3s ease infinite',
-                    '@keyframes shimmer': {
-                      '0%': { backgroundPosition: '0% 50%' },
-                      '50%': { backgroundPosition: '100% 50%' },
-                      '100%': { backgroundPosition: '0% 50%' },
-                    },
-                    '&:hover': { 
-                      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
-                      transform: 'translateY(-1px)',
-                    },
-                    '&:disabled': { 
-                      background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
-                      boxShadow: 'none',
-                    },
-                  }}
-                >
-                  {isGeneratingMetadata ? 'Generating...' : 'Generate with AI (10 credits)'}
-                </Button>
-              </Box>
+              <Button
+                variant="contained"
+                startIcon={isGeneratingMetadata ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <AutoAwesome />}
+                onClick={handleGenerateMetadata}
+                disabled={isGeneratingMetadata}
+                sx={{
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  color: '#fff',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
+                  '&:hover': { 
+                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
+                  },
+                  '&:disabled': { 
+                    background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
+                    boxShadow: 'none',
+                  },
+                }}
+              >
+                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI (10 credits)'}
+              </Button>
             </Box>
             
             <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
