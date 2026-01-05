@@ -18,7 +18,7 @@ const PrivacyPage: React.FC = () => {
       "url": "https://gruvimusic.com"
     },
     "datePublished": "2024-01-01",
-    "dateModified": "2026-01-02"
+    "dateModified": "2026-01-05"
   };
 
   return (
@@ -44,7 +44,7 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           
           <Typography variant="body1" paragraph>
-            Last updated: January 2, 2026
+            Last updated: January 5, 2026
           </Typography>
 
           <Typography variant="h6" gutterBottom>
@@ -93,12 +93,30 @@ const PrivacyPage: React.FC = () => {
             <li>Payment processors (Stripe)</li>
             <li>Authentication providers (Google Sign-In)</li>
             <li>Cloud storage providers (AWS S3)</li>
-            <li>AI generation services (Fal AI, Minimax)</li>
+            <li>AI generation services (Fal AI)</li>
             <li>Analytics services</li>
           </ul>
 
           <Typography variant="h6" gutterBottom>
-            5. YouTube Integration
+            5. Data Sharing and Disclosure
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>Important: We do NOT share, transfer, or disclose any Google user data with third-party AI services.</strong>
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Our data flows are completely segregated:
+          </Typography>
+          <ul>
+            <li><strong>AI Generation (Fal AI):</strong> Only user-uploaded content (images you upload) and user-provided prompts are sent to Fal AI for generating music and videos. No data from Google APIs (including YouTube) is ever sent to AI services.</li>
+            <li><strong>YouTube Integration:</strong> When you upload to YouTube, only your generated video is sent directly to YouTube's API. This is a one-way transfer from our servers to YouTube - YouTube data is never sent to AI services.</li>
+            <li><strong>Google Sign-In:</strong> Authentication data from Google is only used for account login and is stored securely on our servers. It is never shared with AI generation services.</li>
+          </ul>
+          <Typography variant="body1" paragraph>
+            We do not sell, rent, or trade your personal information to third parties. We only share data with service providers as necessary to deliver our services, and each service only receives the minimum data required for its specific function.
+          </Typography>
+
+          <Typography variant="h6" gutterBottom>
+            6. YouTube Integration
           </Typography>
           <Typography variant="body1" paragraph>
             If you choose to connect your YouTube account, we request access to:
@@ -119,14 +137,14 @@ const PrivacyPage: React.FC = () => {
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            6. Cookies and Tracking
+            7. Cookies and Tracking
           </Typography>
           <Typography variant="body1" paragraph>
             We use cookies and similar tracking technologies to improve your experience and analyze usage patterns. You can control cookie settings through your browser.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            7. Your Rights
+            8. Your Rights
           </Typography>
           <Typography variant="body1" paragraph>
             You have the right to:
@@ -140,14 +158,14 @@ const PrivacyPage: React.FC = () => {
           </ul>
 
           <Typography variant="h6" gutterBottom>
-            8. Children's Privacy
+            9. Children's Privacy
           </Typography>
           <Typography variant="body1" paragraph>
             Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            9. Changes to Privacy Policy
+            10. Changes to Privacy Policy
           </Typography>
           <Typography variant="body1" paragraph>
             We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page.
