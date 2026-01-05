@@ -2340,7 +2340,7 @@ const MusicVideoPlayer: React.FC = () => {
                         sx={{
                           position: 'relative',
                           cursor: 'pointer',
-                          borderRadius: 1,
+                          borderRadius: 0.5,
                           overflow: 'hidden',
                           width: thumbWidth,
                           height: thumbHeight,
@@ -2365,11 +2365,11 @@ const MusicVideoPlayer: React.FC = () => {
                           }}
                           sx={{
                             position: 'absolute',
-                            bottom: 4,
-                            left: 4,
+                            bottom: 8,
+                            left: 8,
                             width: 24,
                             height: 24,
-                            borderRadius: '6px',
+                            borderRadius: '4px',
                             bgcolor: 'rgba(0,0,0,0.6)',
                             display: 'flex',
                             alignItems: 'center',
@@ -2396,7 +2396,7 @@ const MusicVideoPlayer: React.FC = () => {
                     sx={{
                       width: thumbWidth,
                       height: thumbHeight,
-                      borderRadius: 1,
+                      borderRadius: 0.5,
                       border: showCreatePanel ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
                       display: 'flex',
                       flexDirection: 'column',
@@ -2425,7 +2425,7 @@ const MusicVideoPlayer: React.FC = () => {
                     sx={{
                       width: thumbWidth,
                       height: thumbHeight,
-                      borderRadius: 1,
+                      borderRadius: 0.5,
                       border: '2px solid rgba(0,0,0,0.1)',
                       display: 'flex',
                       flexDirection: 'column',
@@ -2568,7 +2568,7 @@ const MusicVideoPlayer: React.FC = () => {
                                 sx={{
                                   position: 'relative',
                                   cursor: canSelect ? 'pointer' : 'not-allowed',
-                                  borderRadius: 1,
+                                  borderRadius: 0.5,
                                   overflow: 'hidden',
                                   border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
                                   opacity: canSelect ? 1 : 0.4,
