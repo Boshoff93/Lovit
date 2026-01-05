@@ -2892,98 +2892,111 @@ const MusicVideoPlayer: React.FC = () => {
                     // Track upload results
                     const results: string[] = [];
                     const errors: string[] = [];
-                    
-                    // Upload to YouTube if selected
-                    if (uploadYouTube) {
-                      setUploadProgress(prev => ({ ...prev, youtube: 'uploading' }));
-                      try {
-                        const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-                        const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
-                        setYoutubeUrl(response.data.youtubeUrl);
-                        results.push('YouTube');
-                        setUploadProgress(prev => ({ ...prev, youtube: 'success' }));
-                      } catch (err: any) {
-                        const errorMsg = err.response?.data?.error || 'YouTube upload failed';
-                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                          setYoutubeConnected(false);
-                        }
-                        errors.push(`YouTube: ${errorMsg}`);
-                        setUploadProgress(prev => ({ ...prev, youtube: 'error' }));
-                      }
-                    }
-                    
-                    // Upload to TikTok if selected
-                    if (uploadTikTok) {
-                      setUploadProgress(prev => ({ ...prev, tiktok: 'uploading' }));
-                      try {
-                        await tiktokApi.upload(user!.userId, videoId!);
-                        results.push('TikTok');
-                        setTiktokUploaded(true);
-                        setUploadProgress(prev => ({ ...prev, tiktok: 'success' }));
-                      } catch (err: any) {
-                        const errorMsg = err.response?.data?.error || 'TikTok upload failed';
-                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                          setTiktokConnected(false);
-                        }
-                        errors.push(`TikTok: ${errorMsg}`);
-                        setUploadProgress(prev => ({ ...prev, tiktok: 'error' }));
-                      }
-                    }
-                    
-                    // Upload to Instagram if selected
-                    if (uploadInstagram) {
-                      setUploadProgress(prev => ({ ...prev, instagram: 'uploading' }));
-                      try {
-                        await instagramApi.upload(user!.userId, videoId!);
-                        results.push('Instagram');
-                        setInstagramUploaded(true);
-                        setUploadProgress(prev => ({ ...prev, instagram: 'success' }));
-                      } catch (err: any) {
-                        const errorMsg = err.response?.data?.error || 'Instagram upload failed';
-                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                          setInstagramConnected(false);
-                        }
-                        errors.push(`Instagram: ${errorMsg}`);
-                        setUploadProgress(prev => ({ ...prev, instagram: 'error' }));
-                      }
-                    }
-                    
-                    // Upload to Facebook if selected
-                    if (uploadFacebook) {
-                      setUploadProgress(prev => ({ ...prev, facebook: 'uploading' }));
-                      try {
-                        await facebookApi.upload(user!.userId, videoId!);
-                        results.push('Facebook');
-                        setFacebookUploaded(true);
-                        setUploadProgress(prev => ({ ...prev, facebook: 'success' }));
-                      } catch (err: any) {
-                        const errorMsg = err.response?.data?.error || 'Facebook upload failed';
-                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                          setFacebookConnected(false);
-                        }
-                        errors.push(`Facebook: ${errorMsg}`);
-                        setUploadProgress(prev => ({ ...prev, facebook: 'error' }));
-                      }
-                    }
-                    
-                    // Upload to LinkedIn if selected
                     const uploadLinkedin = selectedPlatforms.includes('linkedin');
-                    if (uploadLinkedin) {
-                      setUploadProgress(prev => ({ ...prev, linkedin: 'uploading' }));
-                      try {
-                        await linkedinApi.upload(user!.userId, videoId!);
-                        results.push('LinkedIn');
-                        setLinkedinUploaded(true);
-                        setUploadProgress(prev => ({ ...prev, linkedin: 'success' }));
-                      } catch (err: any) {
-                        const errorMsg = err.response?.data?.error || 'LinkedIn upload failed';
-                        if (errorMsg.includes('not connected') || errorMsg.includes('reconnect') || errorMsg.includes('expired')) {
-                          setLinkedinConnected(false);
+                    
+                    // Set all selected platforms to uploading state
+                    if (uploadYouTube) setUploadProgress(prev => ({ ...prev, youtube: 'uploading' }));
+                    if (uploadTikTok) setUploadProgress(prev => ({ ...prev, tiktok: 'uploading' }));
+                    if (uploadInstagram) setUploadProgress(prev => ({ ...prev, instagram: 'uploading' }));
+                    if (uploadFacebook) setUploadProgress(prev => ({ ...prev, facebook: 'uploading' }));
+                    if (uploadLinkedin) setUploadProgress(prev => ({ ...prev, linkedin: 'uploading' }));
+                    
+                    // Create upload promises for all selected platforms (run in parallel!)
+                    const uploadPromises: Promise<void>[] = [];
+                    
+                    if (uploadYouTube) {
+                      uploadPromises.push((async () => {
+                        try {
+                          const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+                          const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
+                          setYoutubeUrl(response.data.youtubeUrl);
+                          results.push('YouTube');
+                          setUploadProgress(prev => ({ ...prev, youtube: 'success' }));
+                        } catch (err: any) {
+                          const errorMsg = err.response?.data?.error || 'YouTube upload failed';
+                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                            setYoutubeConnected(false);
+                          }
+                          errors.push(`YouTube: ${errorMsg}`);
+                          setUploadProgress(prev => ({ ...prev, youtube: 'error' }));
                         }
-                        errors.push(`LinkedIn: ${errorMsg}`);
-                        setUploadProgress(prev => ({ ...prev, linkedin: 'error' }));
-                      }
+                      })());
                     }
+                    
+                    if (uploadTikTok) {
+                      uploadPromises.push((async () => {
+                        try {
+                          await tiktokApi.upload(user!.userId, videoId!);
+                          results.push('TikTok');
+                          setTiktokUploaded(true);
+                          setUploadProgress(prev => ({ ...prev, tiktok: 'success' }));
+                        } catch (err: any) {
+                          const errorMsg = err.response?.data?.error || 'TikTok upload failed';
+                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                            setTiktokConnected(false);
+                          }
+                          errors.push(`TikTok: ${errorMsg}`);
+                          setUploadProgress(prev => ({ ...prev, tiktok: 'error' }));
+                        }
+                      })());
+                    }
+                    
+                    if (uploadInstagram) {
+                      uploadPromises.push((async () => {
+                        try {
+                          await instagramApi.upload(user!.userId, videoId!);
+                          results.push('Instagram');
+                          setInstagramUploaded(true);
+                          setUploadProgress(prev => ({ ...prev, instagram: 'success' }));
+                        } catch (err: any) {
+                          const errorMsg = err.response?.data?.error || 'Instagram upload failed';
+                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                            setInstagramConnected(false);
+                          }
+                          errors.push(`Instagram: ${errorMsg}`);
+                          setUploadProgress(prev => ({ ...prev, instagram: 'error' }));
+                        }
+                      })());
+                    }
+                    
+                    if (uploadFacebook) {
+                      uploadPromises.push((async () => {
+                        try {
+                          await facebookApi.upload(user!.userId, videoId!);
+                          results.push('Facebook');
+                          setFacebookUploaded(true);
+                          setUploadProgress(prev => ({ ...prev, facebook: 'success' }));
+                        } catch (err: any) {
+                          const errorMsg = err.response?.data?.error || 'Facebook upload failed';
+                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
+                            setFacebookConnected(false);
+                          }
+                          errors.push(`Facebook: ${errorMsg}`);
+                          setUploadProgress(prev => ({ ...prev, facebook: 'error' }));
+                        }
+                      })());
+                    }
+                    
+                    if (uploadLinkedin) {
+                      uploadPromises.push((async () => {
+                        try {
+                          await linkedinApi.upload(user!.userId, videoId!);
+                          results.push('LinkedIn');
+                          setLinkedinUploaded(true);
+                          setUploadProgress(prev => ({ ...prev, linkedin: 'success' }));
+                        } catch (err: any) {
+                          const errorMsg = err.response?.data?.error || 'LinkedIn upload failed';
+                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect') || errorMsg.includes('expired')) {
+                            setLinkedinConnected(false);
+                          }
+                          errors.push(`LinkedIn: ${errorMsg}`);
+                          setUploadProgress(prev => ({ ...prev, linkedin: 'error' }));
+                        }
+                      })());
+                    }
+                    
+                    // Wait for all uploads to complete in parallel
+                    await Promise.all(uploadPromises);
                     
                     setIsUploading(false);
                     
