@@ -189,6 +189,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [generatedThumbnails, setGeneratedThumbnails] = useState<string[]>([]); // Store all AI-generated thumbnails
   const [selectedThumbnailUrl, setSelectedThumbnailUrl] = useState<string | null>(null); // Currently selected thumbnail
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null); // For viewing thumbnails in full screen
 
   // Upgrade popup state
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
@@ -2326,13 +2327,13 @@ const MusicVideoPlayer: React.FC = () => {
                     const isSelected = thumb.type === 'custom' 
                       ? selectedThumbnailUrl === thumb.dataUrl
                       : selectedThumbnailUrl === thumb.url;
+                    const thumbUrl = thumb.type === 'custom' ? thumb.dataUrl! : thumb.url;
                     return (
                       <Box
                         key={`thumb-${thumb.type}-${idx}`}
                         onClick={() => {
-                          const url = thumb.type === 'custom' ? thumb.dataUrl! : thumb.url;
-                          setSelectedThumbnailUrl(url);
-                          setSocialThumbnailUrl(url);
+                          setSelectedThumbnailUrl(thumbUrl);
+                          setSocialThumbnailUrl(thumbUrl);
                           // Close the Create panel when selecting an existing thumbnail
                           setSelectedCharacterIds([]);
                         }}
@@ -2346,14 +2347,40 @@ const MusicVideoPlayer: React.FC = () => {
                           border: isSelected ? '3px solid #34C759' : '2px solid rgba(0,0,0,0.1)',
                           transition: 'all 0.2s',
                           '&:hover': { transform: 'scale(1.02)', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' },
+                          '&:hover .expand-btn': { opacity: 1 },
                         }}
                       >
                         <Box
                           component="img"
-                          src={thumb.type === 'custom' ? thumb.dataUrl : thumb.url}
+                          src={thumbUrl}
                           alt={thumb.label}
                           sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                         />
+                        {/* Expand button overlay */}
+                        <Box
+                          className="expand-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLightboxUrl(thumbUrl);
+                          }}
+                          sx={{
+                            position: 'absolute',
+                            bottom: 4,
+                            left: 4,
+                            width: 24,
+                            height: 24,
+                            borderRadius: '6px',
+                            bgcolor: 'rgba(0,0,0,0.6)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: { xs: 1, sm: 0 }, // Always visible on mobile, hover on desktop
+                            transition: 'opacity 0.2s',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
+                          }}
+                        >
+                          <Fullscreen sx={{ fontSize: 16, color: '#fff' }} />
+                        </Box>
                         {isSelected && (
                           <Box sx={{ position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: '50%', bgcolor: '#34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Check sx={{ fontSize: 14, color: '#fff' }} />
@@ -3103,6 +3130,96 @@ const MusicVideoPlayer: React.FC = () => {
             }}
           >
             {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
+          </Button>
+        </Box>
+      </Dialog>
+
+      {/* Thumbnail Lightbox Modal */}
+      <Dialog
+        open={!!lightboxUrl}
+        onClose={() => setLightboxUrl(null)}
+        maxWidth={false}
+        PaperProps={{
+          sx: {
+            bgcolor: 'transparent',
+            boxShadow: 'none',
+            m: 0,
+            maxWidth: '95vw',
+            maxHeight: '95vh',
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            bgcolor: 'rgba(0,0,0,0.9)',
+          },
+        }}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {/* Close button */}
+          <IconButton
+            onClick={() => setLightboxUrl(null)}
+            sx={{
+              position: 'absolute',
+              top: -40,
+              right: 0,
+              color: '#fff',
+              bgcolor: 'rgba(255,255,255,0.1)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+            }}
+          >
+            <Typography sx={{ fontSize: 24, lineHeight: 1, fontWeight: 300 }}>×</Typography>
+          </IconButton>
+          
+          {/* Full size image */}
+          {lightboxUrl && (
+            <Box
+              component="img"
+              src={lightboxUrl}
+              alt="Thumbnail preview"
+              sx={{
+                maxWidth: '95vw',
+                maxHeight: '85vh',
+                objectFit: 'contain',
+                borderRadius: '12px',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              }}
+            />
+          )}
+          
+          {/* Select button */}
+          <Button
+            onClick={() => {
+              if (lightboxUrl) {
+                setSelectedThumbnailUrl(lightboxUrl);
+                setSocialThumbnailUrl(lightboxUrl);
+                setLightboxUrl(null);
+              }
+            }}
+            variant="contained"
+            startIcon={<Check />}
+            sx={{
+              position: 'absolute',
+              bottom: -50,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              bgcolor: '#34C759',
+              borderRadius: '100px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 600,
+              boxShadow: '0 4px 20px rgba(52,199,89,0.4)',
+              '&:hover': { bgcolor: '#2DB84E' },
+            }}
+          >
+            Use This Thumbnail
           </Button>
         </Box>
       </Dialog>
