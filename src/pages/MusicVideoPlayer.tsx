@@ -1156,6 +1156,11 @@ const MusicVideoPlayer: React.FC = () => {
                 onEnded={handleVideoEnded}
                 onWaiting={() => setIsBuffering(true)}
                 onPlaying={() => setIsBuffering(false)}
+                onError={(e) => {
+                  console.error('[Video] Failed to load video:', e);
+                  // Video failed to load - likely expired URL, trigger refetch
+                  setError('Video failed to load. Please refresh the page to get a new link.');
+                }}
                 onClick={handlePlayPause}
                 style={{
                   width: '100%',
