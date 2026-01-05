@@ -955,11 +955,6 @@ const CreatePage: React.FC = () => {
       // Extract tagged character IDs from prompt
       const characterIds = getTaggedCharacterIds(videoPrompt);
       
-      // Debug: log character matching
-      console.log('[Video Gen] Available characters:', characters.map(c => ({ id: c.characterId, name: c.characterName, type: c.characterType })));
-      console.log('[Video Gen] Video prompt:', videoPrompt);
-      console.log('[Video Gen] Matched character IDs:', characterIds);
-      
       // Call the actual video generation API
       const response = await videosApi.generateVideo({
         userId: user.userId,
@@ -971,9 +966,7 @@ const CreatePage: React.FC = () => {
         characterIds: characterIds.length > 0 ? characterIds : undefined,
         creativity: videoCreativity,
       });
-      
-      console.log('Video generation response:', response.data);
-      
+
       // Update local token count immediately so UI reflects the spend
       const videoCostToDeduct = VIDEO_COSTS[videoType] || 40;
       dispatch(updateTokensUsed(videoCostToDeduct));
