@@ -534,11 +534,16 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   // Handle generating=true query param (coming from create page)
   useEffect(() => {
     const isGenerating = searchParams.get('generating') === 'true';
+    const activeTab = searchParams.get('tab');
+    
     if (isGenerating) {
-      // Show notification and fetch songs to start polling
+      // Show appropriate notification based on what's being generated
+      const isVideoGeneration = activeTab === 'videos';
       setNotification({
         open: true,
-        message: 'Your song is being created... This usually takes about a minute or two.',
+        message: isVideoGeneration 
+          ? 'Your video is being created... This usually takes a few minutes.'
+          : 'Your song is being created... This usually takes about a minute or two.',
         severity: 'info'
       });
       
