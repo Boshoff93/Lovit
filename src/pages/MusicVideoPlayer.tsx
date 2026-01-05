@@ -3134,32 +3134,22 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
       </Dialog>
 
-      {/* Thumbnail Lightbox Modal */}
-      <Dialog
-        open={!!lightboxUrl}
-        onClose={() => setLightboxUrl(null)}
-        maxWidth={false}
-        PaperProps={{
-          sx: {
-            bgcolor: 'transparent',
-            boxShadow: 'none',
-            m: 0,
-            maxWidth: '95vw',
-            maxHeight: '95vh',
-          }
-        }}
-        sx={{
-          '& .MuiBackdrop-root': {
-            bgcolor: 'rgba(0,0,0,0.9)',
-          },
-        }}
-      >
+      {/* Thumbnail Lightbox Overlay */}
+      {lightboxUrl && (
         <Box
+          onClick={() => setLightboxUrl(null)}
           sx={{
-            position: 'relative',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            bgcolor: 'rgba(0,0,0,0.95)',
+            zIndex: 9999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            cursor: 'pointer',
           }}
         >
           {/* Close button */}
@@ -3167,62 +3157,32 @@ const MusicVideoPlayer: React.FC = () => {
             onClick={() => setLightboxUrl(null)}
             sx={{
               position: 'absolute',
-              top: -40,
-              right: 0,
+              top: 16,
+              right: 16,
               color: '#fff',
-              bgcolor: 'rgba(255,255,255,0.1)',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+              width: 44,
+              height: 44,
+              bgcolor: 'rgba(255,255,255,0.15)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' },
             }}
           >
-            <Typography sx={{ fontSize: 24, lineHeight: 1, fontWeight: 300 }}>×</Typography>
+            <Typography sx={{ fontSize: 28, lineHeight: 1, fontWeight: 300 }}>×</Typography>
           </IconButton>
           
           {/* Full size image */}
-          {lightboxUrl && (
-            <Box
-              component="img"
-              src={lightboxUrl}
-              alt="Thumbnail preview"
-              sx={{
-                maxWidth: '95vw',
-                maxHeight: '85vh',
-                objectFit: 'contain',
-                borderRadius: '12px',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-              }}
-            />
-          )}
-          
-          {/* Select button */}
-          <Button
-            onClick={() => {
-              if (lightboxUrl) {
-                setSelectedThumbnailUrl(lightboxUrl);
-                setSocialThumbnailUrl(lightboxUrl);
-                setLightboxUrl(null);
-              }
-            }}
-            variant="contained"
-            startIcon={<Check />}
+          <Box
+            component="img"
+            src={lightboxUrl}
+            alt="Thumbnail preview"
+            onClick={(e) => e.stopPropagation()}
             sx={{
-              position: 'absolute',
-              bottom: -50,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bgcolor: '#34C759',
-              borderRadius: '100px',
-              px: 4,
-              py: 1,
-              textTransform: 'none',
-              fontWeight: 600,
-              boxShadow: '0 4px 20px rgba(52,199,89,0.4)',
-              '&:hover': { bgcolor: '#2DB84E' },
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              objectFit: 'contain',
             }}
-          >
-            Use This Thumbnail
-          </Button>
+          />
         </Box>
-      </Dialog>
+      )}
     </Box>
   );
 };
