@@ -603,6 +603,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     try {
       const response = await videosApi.getUserVideos(user.userId, { page, limit: videosPerPage });
       const fetchedVideos = response.data.videos || [];
+      
+      // Debug: Log thumbnail URLs
+      console.log('[Videos] Fetched videos with thumbnails:', fetchedVideos.map((v: Video) => ({
+        id: v.videoId,
+        status: v.status,
+        thumbnailUrl: v.thumbnailUrl || 'MISSING',
+        thumbnailKey: (v as any).thumbnailKey || 'NO_KEY',
+      })));
+      
       setVideos(fetchedVideos);
       const pagination = response.data.pagination;
       // Use pagination.totalCount if available, otherwise fallback to videos length
