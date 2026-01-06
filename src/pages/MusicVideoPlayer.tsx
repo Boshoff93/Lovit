@@ -44,7 +44,7 @@ import {
   Error,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
-import { getTokensFromAllowances, createCheckoutSession } from '../store/authSlice';
+import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
 import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
@@ -492,6 +492,10 @@ const MusicVideoPlayer: React.FC = () => {
       setSocialMetadata(newMetadata);
       setEditedMetadata(newMetadata);
       setHookText(newMetadata.hook || '');
+      
+      // Deduct tokens immediately in UI
+      dispatch(updateTokensUsed(10));
+      
       setSocialSuccess('Social metadata generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
@@ -563,6 +567,10 @@ const MusicVideoPlayer: React.FC = () => {
         prev.includes(newThumbnailUrl) ? prev : [...prev, newThumbnailUrl]
       );
       setLocalThumbnailFile(null); // Clear any custom upload
+      
+      // Deduct tokens immediately in UI
+      dispatch(updateTokensUsed(10));
+      
       setSocialSuccess('Thumbnail generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
