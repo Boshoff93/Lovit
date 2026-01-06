@@ -1848,8 +1848,8 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
           )}
           
-          {/* Platform Upload Success Banners */}
-          {youtubeUrl && (
+          {/* Legacy Platform Upload Success Banners - only show when NOT using batch upload status */}
+          {socialUploadStatus === 'idle' && youtubeUrl && (
             <Alert 
               severity="success" 
               onClose={() => setYoutubeUrl(null)}
@@ -1861,7 +1861,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Alert>
           )}
-          {instagramUploaded && (
+          {socialUploadStatus === 'idle' && instagramUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setInstagramUploaded(false)}
@@ -1873,7 +1873,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Alert>
           )}
-          {tiktokUploaded && (
+          {socialUploadStatus === 'idle' && tiktokUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setTiktokUploaded(false)}
@@ -1885,7 +1885,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Alert>
           )}
-          {facebookUploaded && (
+          {socialUploadStatus === 'idle' && facebookUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setFacebookUploaded(false)}
@@ -1897,7 +1897,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Alert>
           )}
-          {linkedinUploaded && (
+          {socialUploadStatus === 'idle' && linkedinUploaded && (
             <Alert 
               severity="success" 
               onClose={() => setLinkedinUploaded(false)}
