@@ -1699,7 +1699,9 @@ const MusicVideoPlayer: React.FC = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {socialUploadPlatforms.map((platform) => {
                   const result = socialUploadResults[platform];
-                  const isComplete = result !== undefined;
+                  // Check if 'success' property exists (not just if result exists)
+                  // Backend stores { status: 'uploading' } initially, then { success: true/false } when done
+                  const isComplete = result !== undefined && 'success' in result;
                   const isSuccess = result?.success;
                   const platformColors: Record<string, string> = {
                     youtube: '#FF0000',
