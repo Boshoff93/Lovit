@@ -1674,6 +1674,7 @@ const MusicVideoPlayer: React.FC = () => {
                 bgcolor: 'rgba(0,122,255,0.08)',
                 border: '1px solid rgba(0,122,255,0.2)',
                 '& .MuiAlert-message': { width: '100%' },
+                '& .MuiAlert-icon': { alignItems: 'center' },
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -2850,16 +2851,13 @@ const MusicVideoPlayer: React.FC = () => {
           </DialogTitle>
           <DialogContent>
             {backgroundUploadStarted && (
-              <Alert severity="success" sx={{ mb: 2, borderRadius: '10px' }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
-                  🎉 Upload started!
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#666' }}>
-                  We're uploading your video to {selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''} in the background. 
-                  You'll receive an email with links to view your video on each platform once it's live (usually 2-5 minutes).
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#666', mt: 1, fontStyle: 'italic' }}>
-                  Feel free to close this dialog and continue using Gruvi!
+              <Alert 
+                severity="success" 
+                icon={<CloudUpload />}
+                sx={{ mb: 2, borderRadius: '10px' }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  We're uploading your video. You'll receive an email when it's ready.
                 </Typography>
               </Alert>
             )}
@@ -3054,6 +3052,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Button>
             ) : backgroundUploadStarted ? (
               <Button 
+                variant="contained"
                 onClick={() => {
                   setShowUploadConfirm(false);
                   setUploadProgress({});
