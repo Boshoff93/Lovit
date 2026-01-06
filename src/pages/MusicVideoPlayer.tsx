@@ -1806,20 +1806,15 @@ const MusicVideoPlayer: React.FC = () => {
                           <IconButton
                             size="small"
                             onClick={async () => {
-                              const newDismissed = new Set(Array.from(dismissedPlatforms).concat(platform));
-                              setDismissedPlatforms(newDismissed);
-                              // If all platforms are dismissed, reset status in backend
-                              if (socialUploadPlatforms.every(p => newDismissed.has(p))) {
-                                setSocialUploadStatus('idle');
-                                setSocialUploadResults({});
-                                setSocialUploadPlatforms([]);
-                                setDismissedPlatforms(new Set());
-                                // Reset in backend so it doesn't come back on refresh
-                                try {
-                                  await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
-                                } catch (err) {
-                                  console.error('Failed to reset social upload status:', err);
-                                }
+                              // Reset backend immediately on any dismiss so it doesn't persist on refresh
+                              setSocialUploadStatus('idle');
+                              setSocialUploadResults({});
+                              setSocialUploadPlatforms([]);
+                              setDismissedPlatforms(new Set());
+                              try {
+                                await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
+                              } catch (err) {
+                                console.error('Failed to reset social upload status:', err);
                               }
                             }}
                             sx={{ p: 0.25 }}
