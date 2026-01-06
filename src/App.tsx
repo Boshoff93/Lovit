@@ -149,7 +149,7 @@ function App() {
   return (
     <AudioPlayerProvider>
       <Router>
-        <AuthInitializer />
+        <AuthInitializer>
         <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
@@ -330,6 +330,7 @@ function App() {
         } />
         </Routes>
         <GlobalAudioPlayer />
+        </AuthInitializer>
       </Router>
     </AudioPlayerProvider>
   );
