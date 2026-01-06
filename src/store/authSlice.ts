@@ -355,10 +355,18 @@ const authSlice = createSlice({
     setAllowances: (state, action: PayloadAction<Allowances>) => {
       state.allowances = action.payload;
     },
-    // Update tokens (used for songs, videos, etc.)
+    // Update tokens (used for songs, videos, etc.) - adds to used count
     updateTokensUsed: (state, action: PayloadAction<number>) => {
       if (state.allowances?.tokens) {
         state.allowances.tokens.used += action.payload;
+      }
+    },
+    // Set tokens remaining to match backend value (calculates the used value)
+    setTokensRemaining: (state, action: PayloadAction<number>) => {
+      if (state.allowances?.tokens) {
+        const { max, topup } = state.allowances.tokens;
+        // used = (max + topup) - remaining
+        state.allowances.tokens.used = (max + topup) - action.payload;
       }
     },
     // Add topup to tokens
@@ -602,6 +610,7 @@ export const {
   clearError,
   setAllowances,
   updateTokensUsed,
+  setTokensRemaining,
   addTopupToAllowance
 } = authSlice.actions;
 

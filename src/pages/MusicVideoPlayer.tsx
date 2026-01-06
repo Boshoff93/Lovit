@@ -44,7 +44,7 @@ import {
   Error,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
-import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
+import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
@@ -493,8 +493,10 @@ const MusicVideoPlayer: React.FC = () => {
       setEditedMetadata(newMetadata);
       setHookText(newMetadata.hook || '');
       
-      // Deduct tokens immediately in UI
-      dispatch(updateTokensUsed(10));
+      // Update tokens in UI with actual value from backend
+      if (response.data.tokensRemaining !== undefined) {
+        dispatch(setTokensRemaining(response.data.tokensRemaining));
+      }
       
       setSocialSuccess('Social metadata generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
@@ -568,8 +570,10 @@ const MusicVideoPlayer: React.FC = () => {
       );
       setLocalThumbnailFile(null); // Clear any custom upload
       
-      // Deduct tokens immediately in UI
-      dispatch(updateTokensUsed(10));
+      // Update tokens in UI with actual value from backend
+      if (response.data.tokensRemaining !== undefined) {
+        dispatch(setTokensRemaining(response.data.tokensRemaining));
+      }
       
       setSocialSuccess('Thumbnail generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
