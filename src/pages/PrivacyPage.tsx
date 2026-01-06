@@ -11,22 +11,22 @@ const PrivacyPage: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Privacy Policy - Gruvi",
-    "description": "Privacy Policy for Gruvi - AI Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information.",
+    "description": "Privacy Policy for Gruvi - Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information.",
     "publisher": {
       "@type": "Organization",
       "name": "Gruvi",
       "url": "https://gruvimusic.com"
     },
     "datePublished": "2024-01-01",
-    "dateModified": "2026-01-05"
+    "dateModified": "2026-01-06"
   };
 
   return (
     <>
       <SEO
         title="Privacy Policy - Gruvi"
-        description="Privacy Policy for Gruvi - AI Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information."
-        keywords="privacy policy, data protection, user privacy, personal information, Gruvi privacy, AI music, video creation"
+        description="Privacy Policy for Gruvi - Music & Video Creation Platform. Learn about how we collect, use, and protect your personal information."
+        keywords="privacy policy, data protection, user privacy, personal information, Gruvi privacy, music, video creation"
         ogType="website"
         structuredData={privacyStructuredData}
       />
@@ -44,11 +44,18 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           
           <Typography variant="body1" paragraph>
-            Last updated: January 5, 2026
+            Last updated: January 6, 2026
           </Typography>
 
-          <Typography variant="body1" paragraph sx={{ fontWeight: 'bold', bgcolor: 'rgba(0,122,255,0.05)', p: 2, borderRadius: 1, mb: 3 }}>
+          <Typography variant="body1" paragraph>
             This Privacy Policy describes how <strong>Gruvi</strong> ("we", "us", or "our"), operated by WB Tech Ventures, collects, uses, and protects your personal information when you use the Gruvi application and website (gruvimusic.com). By using Gruvi, you agree to the collection and use of information in accordance with this policy.
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            Gruvi's use and transfer of information received from Google APIs adheres to the{' '}
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+              Google API Services User Data Policy
+            </a>, including the Limited Use requirements.
           </Typography>
 
           <Typography variant="h6" gutterBottom>
@@ -61,7 +68,7 @@ const PrivacyPage: React.FC = () => {
             <li>Account information (email, username, password)</li>
             <li>Profile information (name)</li>
             <li>Payment information (processed securely through Stripe)</li>
-            <li>User-generated content (uploaded images, AI-generated songs, music videos, thumbnails)</li>
+            <li>User-generated content (images you upload, text prompts you enter, generated songs, music videos, and thumbnails)</li>
             <li>Usage data and analytics</li>
           </ul>
 
@@ -72,7 +79,7 @@ const PrivacyPage: React.FC = () => {
             We use your information to:
           </Typography>
           <ul>
-            <li>Generate AI music and videos based on your prompts and uploaded content</li>
+            <li>Generate music and videos based on your prompts and uploaded content</li>
             <li>Provide and improve our services</li>
             <li>Process your payments and manage credits</li>
             <li>Communicate with you about your account</li>
@@ -88,87 +95,131 @@ const PrivacyPage: React.FC = () => {
           </Typography>
 
           <Typography variant="h6" gutterBottom>
-            4. Third-Party Services
+            4. Third-Party Services and Data Flows
           </Typography>
           <Typography variant="body1" paragraph>
-            We use third-party services including:
-          </Typography>
-          <ul>
-            <li>Payment processors (Stripe)</li>
-            <li>Authentication providers (Google Sign-In)</li>
-            <li>Cloud storage providers (AWS S3)</li>
-            <li>AI generation services (Fal AI)</li>
-            <li>Analytics services</li>
-          </ul>
-
-          <Typography variant="h6" gutterBottom>
-            5. Data Sharing and Disclosure
-          </Typography>
-          <Typography variant="body1" paragraph>
-            <strong>Important: We do NOT share, transfer, or disclose any Google user data with third-party AI services.</strong>
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Our data flows are completely segregated:
-          </Typography>
-          <ul>
-            <li><strong>AI Generation (Fal AI):</strong> Only user-uploaded content (images you upload) and user-provided prompts are sent to Fal AI for generating music and videos. No data from Google APIs (including YouTube) is ever sent to AI services.</li>
-            <li><strong>YouTube Integration:</strong> When you upload to YouTube, only your generated video is sent directly to YouTube's API. This is a one-way transfer from our servers to YouTube - YouTube data is never sent to AI services.</li>
-            <li><strong>Google Sign-In:</strong> Authentication data from Google is only used for account login and is stored securely on our servers. It is never shared with AI generation services.</li>
-          </ul>
-          <Typography variant="body1" paragraph>
-            We do not sell, rent, or trade your personal information to third parties. We only share data with service providers as necessary to deliver our services, and each service only receives the minimum data required for its specific function.
+            We use third-party services to provide our platform. Each service receives only the specific data required for its function. Our systems are designed to keep data flows segregated.
           </Typography>
 
-          <Typography variant="h6" gutterBottom>
-            6. Social Media Platform Integrations
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Content Generation Services (Features and Labels)
           </Typography>
           <Typography variant="body1" paragraph>
-            Gruvi allows you to connect your social media accounts to publish your created content directly. The following integrations are available:
+            We use Features and Labels as our infrastructure provider to generate music, videos, and images. Features and Labels receives only:
+          </Typography>
+          <ul>
+            <li>Text prompts you type into the app (e.g., "create an upbeat pop song about summer")</li>
+            <li>Images you manually upload from your device</li>
+          </ul>
+          <Typography variant="body1" paragraph>
+            Features and Labels does not receive any data from social media platforms, authentication providers, or any connected accounts. There is no data pipeline between social platform APIs and content generation services.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Payment Processing (Stripe)
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Stripe processes your payment information. We do not store your full credit card details on our servers.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Cloud Storage (AWS S3)
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Your generated content (songs, videos, thumbnails) is stored securely on AWS S3.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Analytics Services
+          </Typography>
+          <Typography variant="body1" paragraph>
+            We use analytics to understand how users interact with our platform. This data is anonymized and aggregated.
+          </Typography>
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            5. Social Media Platform Integrations
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Gruvi allows you to connect social media accounts to publish your created content. Each integration is optional and can be disconnected at any time. All integrations are one-way: we send your generated content to these platforms when you request it. We do not retrieve content from these platforms to use elsewhere.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Google Sign-In
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If you choose to sign in with Google, we receive your email address and name for account authentication. This data is stored securely on our servers and is used only for login purposes. It is not shared with content generation services or any other third party.
           </Typography>
 
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
             YouTube Integration
           </Typography>
           <Typography variant="body1" paragraph>
-            If you choose to connect your YouTube account, we request access to:
+            If you connect your YouTube account, we request access to:
           </Typography>
           <ul>
-            <li>Upload videos to your channel on your behalf</li>
-            <li>Set custom thumbnails on uploaded videos</li>
-            <li>View your channel name and profile picture</li>
+            <li>Upload videos to your channel on your behalf (youtube.upload scope)</li>
+            <li>View your channel name and profile picture (youtube.readonly scope)</li>
           </ul>
           <Typography variant="body1" paragraph>
-            We only upload content when you explicitly click "Upload to YouTube". You can disconnect your YouTube account at any time. We store your YouTube OAuth tokens securely and encrypted. We do not access your existing YouTube videos.
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Google's use and transfer of information received from Google APIs adheres to the{' '}
-            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
-              Google API Services User Data Policy
-            </a>, including the Limited Use requirements.
+            We only upload content when you explicitly click "Upload to YouTube." This is a one-way transfer from our servers to YouTube. We do not retrieve videos or data from your YouTube account. YouTube data is never sent to content generation services or any other third party. You can disconnect your YouTube account at any time from your settings.
           </Typography>
 
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
             TikTok Integration
           </Typography>
           <Typography variant="body1" paragraph>
-            If you choose to connect your TikTok account, Gruvi requests access to:
+            If you connect your TikTok account, we request access to:
           </Typography>
           <ul>
             <li>Post videos to your TikTok account on your behalf</li>
-            <li>View your TikTok username and profile information</li>
+            <li>View your TikTok username and profile picture</li>
           </ul>
           <Typography variant="body1" paragraph>
-            We only post content when you explicitly request it. You can disconnect your TikTok account at any time from your settings. Your TikTok access tokens are stored securely and encrypted.
+            We only post content when you explicitly request it. This is a one-way transfer. We do not retrieve videos or data from your TikTok account. TikTok data is never sent to content generation services or any other third party. You can disconnect your TikTok account at any time.
           </Typography>
 
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
-            Instagram, Facebook, and LinkedIn Integrations
+            Instagram Integration
           </Typography>
           <Typography variant="body1" paragraph>
-            Gruvi also supports publishing to Instagram, Facebook, and LinkedIn. Similar to other integrations, we only access these platforms when you explicitly request to publish content, and you can disconnect these accounts at any time.
+            If you connect your Instagram account, we request access to:
+          </Typography>
+          <ul>
+            <li>Post Reels to your Instagram account on your behalf</li>
+            <li>View your Instagram username and profile picture</li>
+          </ul>
+          <Typography variant="body1" paragraph>
+            We only post content when you explicitly request it. This is a one-way transfer. We do not retrieve posts or data from your Instagram account. Instagram data is never sent to content generation services or any other third party. You can disconnect your Instagram account at any time.
           </Typography>
 
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Facebook Integration
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If you connect your Facebook account, we request access to post videos to your Facebook page on your behalf. We only post content when you explicitly request it. This is a one-way transfer. We do not retrieve posts or data from your Facebook account. Facebook data is never sent to content generation services or any other third party. You can disconnect your Facebook account at any time.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+            Music Streaming Platforms (Spotify, Apple Music, Amazon Music, SoundCloud)
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If you choose to distribute your music to streaming platforms, we facilitate the upload of your generated music. This is a one-way transfer. We do not retrieve data from these platforms. Streaming platform data is never sent to content generation services or any other third party.
+          </Typography>
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            6. Data Sharing and Disclosure
+          </Typography>
+          <Typography variant="body1" paragraph>
+            We do not sell, rent, or trade your personal information to third parties. We share data only as follows:
+          </Typography>
+          <ul>
+            <li><strong>Content Generation:</strong> Text prompts you enter and images you upload are sent to Features and Labels to generate content. No social media data, authentication data, or data from connected accounts is sent to content generation services.</li>
+            <li><strong>Social Platforms:</strong> When you choose to publish content, we send your generated videos/music to the platform you select. This is always user-initiated and one-way.</li>
+            <li><strong>Payment Processing:</strong> Payment details are sent to Stripe to process transactions.</li>
+            <li><strong>Legal Requirements:</strong> We may disclose information if required by law or to protect our rights.</li>
+          </ul>
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
             7. Cookies and Tracking
           </Typography>
           <Typography variant="body1" paragraph>
@@ -185,7 +236,7 @@ const PrivacyPage: React.FC = () => {
             <li>Access your personal data</li>
             <li>Correct inaccurate data</li>
             <li>Request deletion of your data and generated content</li>
-            <li>Disconnect connected accounts (YouTube, Google)</li>
+            <li>Disconnect any connected social media accounts</li>
             <li>Opt-out of marketing communications</li>
           </ul>
 
@@ -215,4 +266,4 @@ const PrivacyPage: React.FC = () => {
   );
 };
 
-export default PrivacyPage; 
+export default PrivacyPage;
