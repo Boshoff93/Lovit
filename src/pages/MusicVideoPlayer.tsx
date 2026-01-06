@@ -2676,24 +2676,17 @@ const MusicVideoPlayer: React.FC = () => {
             {isUploading ? 'Uploading...' : Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? 'Upload Complete' : 'Confirm Upload'}
           </DialogTitle>
           <DialogContent>
-            {isUploading && !backgroundUploadStarted && (
-              <Alert severity="info" sx={{ mb: 2, borderRadius: '10px' }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                  Uploading to {selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''}...
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#666' }}>
-                  You can close this and we'll email you when it's done, or wait here to see the results.
-                </Typography>
-              </Alert>
-            )}
-            
             {backgroundUploadStarted && (
               <Alert severity="success" sx={{ mb: 2, borderRadius: '10px' }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                  🎉 Upload started in background!
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+                  🎉 Upload started!
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#666' }}>
-                  We'll email you at your registered email when your video is live on all platforms. This typically takes 2-5 minutes.
+                  We're uploading your video to {selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''} in the background. 
+                  You'll receive an email with links to view your video on each platform once it's live (usually 2-5 minutes).
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666', mt: 1, fontStyle: 'italic' }}>
+                  Feel free to close this dialog and continue using Gruvi!
                 </Typography>
               </Alert>
             )}
@@ -2892,10 +2885,18 @@ const MusicVideoPlayer: React.FC = () => {
                   setShowUploadConfirm(false);
                   setUploadProgress({});
                   setBackgroundUploadStarted(false);
+                  // Scroll to social sharing section
+                  setTimeout(() => {
+                    const element = document.getElementById('social-sharing-section');
+                    if (element) {
+                      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                      window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
+                    }
+                  }, 100);
                 }}
-                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}
+                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: '#007AFF', color: '#fff', '&:hover': { bgcolor: '#0066DD' } }}
               >
-                Done
+                Got it!
               </Button>
             ) : (
               <>
@@ -2910,209 +2911,52 @@ const MusicVideoPlayer: React.FC = () => {
                   Cancel
                 </Button>
                 
-                {/* Upload in Background button - shows when uploading */}
-                {isUploading && (
-                  <Button
-                    variant="outlined"
-                    onClick={async () => {
-                      // Trigger background upload and close dialog
-                      try {
-                        if (editedMetadata?.title) {
-                          await videosApi.updateSocialMetadata(user!.userId, videoId!, {
-                            title: editedMetadata.title,
-                            description: editedMetadata.description || '',
-                            tags: editedMetadata.tags || [],
-                            hook: editedMetadata.hook || hookText || '',
-                            ctaType: ctaType || '',
-                            ctaUrl: ctaUrl || '',
-                          });
-                        }
-                        
-                        const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-                        await videosApi.batchSocialUpload(user!.userId, videoId!, {
-                          platforms: selectedPlatforms,
-                          addThumbnailIntro: shouldAddThumbnailIntro,
-                        });
-                        
-                        setBackgroundUploadStarted(true);
-                        setIsUploading(false);
-                      } catch (err: any) {
-                        console.error('Background upload failed:', err);
-                        showSocialError('Failed to start background upload. Please try again.');
-                      }
-                    }}
-                    sx={{ 
-                      borderRadius: '10px', 
-                      textTransform: 'none',
-                      borderColor: '#007AFF',
-                      color: '#007AFF',
-                      '&:hover': { borderColor: '#0066DD', bgcolor: 'rgba(0,122,255,0.05)' },
-                    }}
-                  >
-                    Email me when done
-                  </Button>
-                )}
-                
                 <Button
                   variant="contained"
                   startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
                   onClick={async () => {
-                    const uploadYouTube = selectedPlatforms.includes('youtube');
-                    const uploadTikTok = selectedPlatforms.includes('tiktok');
-                    const uploadInstagram = selectedPlatforms.includes('instagram');
-                    const uploadFacebook = selectedPlatforms.includes('facebook');
-                    
-                    // Initialize progress for all selected platforms
-                    const initialProgress: Record<string, 'pending' | 'uploading' | 'success' | 'error'> = {};
-                    if (uploadYouTube) initialProgress.youtube = 'pending';
-                    if (uploadTikTok) initialProgress.tiktok = 'pending';
-                    if (uploadInstagram) initialProgress.instagram = 'pending';
-                    if (uploadFacebook) initialProgress.facebook = 'pending';
-                    setUploadProgress(initialProgress);
                     setIsUploading(true);
                     setSocialError(null);
                     
-                    // Save metadata first
-                    if (editedMetadata?.title) {
-                      await videosApi.updateSocialMetadata(user!.userId, videoId!, {
-                        title: editedMetadata.title,
-                        description: editedMetadata.description || '',
-                        tags: editedMetadata.tags || [],
-                        hook: editedMetadata.hook || hookText || '',
-                        ctaType: ctaType || '',
-                        ctaUrl: ctaUrl || '',
+                    try {
+                      // Save metadata first
+                      if (editedMetadata?.title) {
+                        await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                          title: editedMetadata.title,
+                          description: editedMetadata.description || '',
+                          tags: editedMetadata.tags || [],
+                          hook: editedMetadata.hook || hookText || '',
+                          ctaType: ctaType || '',
+                          ctaUrl: ctaUrl || '',
+                        });
+                      }
+                      
+                      // Queue upload to background worker - always emails when done
+                      const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+                      await videosApi.batchSocialUpload(user!.userId, videoId!, {
+                        platforms: selectedPlatforms,
+                        addThumbnailIntro: shouldAddThumbnailIntro,
                       });
-                    }
-                    
-                    // Track upload results
-                    const results: string[] = [];
-                    const errors: string[] = [];
-                    const uploadLinkedin = selectedPlatforms.includes('linkedin');
-                    
-                    // Set all selected platforms to uploading state
-                    if (uploadYouTube) setUploadProgress(prev => ({ ...prev, youtube: 'uploading' }));
-                    if (uploadTikTok) setUploadProgress(prev => ({ ...prev, tiktok: 'uploading' }));
-                    if (uploadInstagram) setUploadProgress(prev => ({ ...prev, instagram: 'uploading' }));
-                    if (uploadFacebook) setUploadProgress(prev => ({ ...prev, facebook: 'uploading' }));
-                    if (uploadLinkedin) setUploadProgress(prev => ({ ...prev, linkedin: 'uploading' }));
-                    
-                    // Create upload promises for all selected platforms (run in parallel!)
-                    const uploadPromises: Promise<void>[] = [];
-                    
-                    if (uploadYouTube) {
-                      uploadPromises.push((async () => {
-                        try {
-                          const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-                          const response = await videosApi.uploadToYouTube(user!.userId, videoId!, { addThumbnailIntro: shouldAddThumbnailIntro });
-                          setYoutubeUrl(response.data.youtubeUrl);
-                          results.push('YouTube');
-                          setUploadProgress(prev => ({ ...prev, youtube: 'success' }));
-                        } catch (err: any) {
-                          const errorMsg = err.response?.data?.error || 'YouTube upload failed';
-                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                            setYoutubeConnected(false);
-                          }
-                          errors.push(`YouTube: ${errorMsg}`);
-                          setUploadProgress(prev => ({ ...prev, youtube: 'error' }));
-                        }
-                      })());
-                    }
-                    
-                    if (uploadTikTok) {
-                      uploadPromises.push((async () => {
-                        try {
-                          await tiktokApi.upload(user!.userId, videoId!);
-                          results.push('TikTok');
-                          setTiktokUploaded(true);
-                          setUploadProgress(prev => ({ ...prev, tiktok: 'success' }));
-                        } catch (err: any) {
-                          const errorMsg = err.response?.data?.error || 'TikTok upload failed';
-                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                            setTiktokConnected(false);
-                          }
-                          errors.push(`TikTok: ${errorMsg}`);
-                          setUploadProgress(prev => ({ ...prev, tiktok: 'error' }));
-                        }
-                      })());
-                    }
-                    
-                    if (uploadInstagram) {
-                      uploadPromises.push((async () => {
-                        try {
-                          await instagramApi.upload(user!.userId, videoId!);
-                          results.push('Instagram');
-                          setInstagramUploaded(true);
-                          setUploadProgress(prev => ({ ...prev, instagram: 'success' }));
-                        } catch (err: any) {
-                          const errorMsg = err.response?.data?.error || 'Instagram upload failed';
-                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                            setInstagramConnected(false);
-                          }
-                          errors.push(`Instagram: ${errorMsg}`);
-                          setUploadProgress(prev => ({ ...prev, instagram: 'error' }));
-                        }
-                      })());
-                    }
-                    
-                    if (uploadFacebook) {
-                      uploadPromises.push((async () => {
-                        try {
-                          await facebookApi.upload(user!.userId, videoId!);
-                          results.push('Facebook');
-                          setFacebookUploaded(true);
-                          setUploadProgress(prev => ({ ...prev, facebook: 'success' }));
-                        } catch (err: any) {
-                          const errorMsg = err.response?.data?.error || 'Facebook upload failed';
-                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect')) {
-                            setFacebookConnected(false);
-                          }
-                          errors.push(`Facebook: ${errorMsg}`);
-                          setUploadProgress(prev => ({ ...prev, facebook: 'error' }));
-                        }
-                      })());
-                    }
-                    
-                    if (uploadLinkedin) {
-                      uploadPromises.push((async () => {
-                        try {
-                          await linkedinApi.upload(user!.userId, videoId!);
-                          results.push('LinkedIn');
-                          setLinkedinUploaded(true);
-                          setUploadProgress(prev => ({ ...prev, linkedin: 'success' }));
-                        } catch (err: any) {
-                          const errorMsg = err.response?.data?.error || 'LinkedIn upload failed';
-                          if (errorMsg.includes('not connected') || errorMsg.includes('reconnect') || errorMsg.includes('expired')) {
-                            setLinkedinConnected(false);
-                          }
-                          errors.push(`LinkedIn: ${errorMsg}`);
-                          setUploadProgress(prev => ({ ...prev, linkedin: 'error' }));
-                        }
-                      })());
-                    }
-                    
-                    // Wait for all uploads to complete in parallel
-                    await Promise.all(uploadPromises);
-                    
-                    setIsUploading(false);
-                    
-                    // Show errors (success banners are shown individually per platform)
-                    if (errors.length > 0) {
-                      showSocialError(errors.join('. '));
+                      
+                      setBackgroundUploadStarted(true);
+                      setIsUploading(false);
+                    } catch (err: any) {
+                      console.error('Upload failed:', err);
+                      setIsUploading(false);
+                      showSocialError(err.response?.data?.error || 'Failed to start upload. Please try again.');
                     }
                   }}
-                  disabled={isUploading}
+                  disabled={isUploading || selectedPlatforms.length === 0}
                   sx={{
-                    bgcolor: selectedPlatforms.length > 1 ? '#007AFF' : selectedPlatforms.includes('facebook') ? '#1877F2' : selectedPlatforms.includes('instagram') ? '#E4405F' : selectedPlatforms.includes('tiktok') ? '#000' : '#FF0000',
+                    bgcolor: '#007AFF',
                     borderRadius: '10px',
                     textTransform: 'none',
                     fontWeight: 600,
                     px: 3,
-                    '&:hover': { 
-                      bgcolor: selectedPlatforms.length > 1 ? '#0066DD' : selectedPlatforms.includes('facebook') ? '#1558B0' : selectedPlatforms.includes('instagram') ? '#C13584' : selectedPlatforms.includes('tiktok') ? '#333' : '#CC0000',
-                    },
+                    '&:hover': { bgcolor: '#0066DD' },
                   }}
                 >
-                  {isUploading ? 'Uploading...' : 'Upload Now'}
+                  {isUploading ? 'Starting...' : 'Upload Now'}
                 </Button>
               </>
             )}
