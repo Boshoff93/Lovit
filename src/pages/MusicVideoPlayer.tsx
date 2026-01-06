@@ -157,6 +157,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [youtubeConnected, setYoutubeConnected] = useState(false);
   const [youtubeChannel, setYoutubeChannel] = useState<{ channelTitle?: string; channelThumbnail?: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [backgroundUploadStarted, setBackgroundUploadStarted] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
   
@@ -2675,9 +2676,25 @@ const MusicVideoPlayer: React.FC = () => {
             {isUploading ? 'Uploading...' : Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? 'Upload Complete' : 'Confirm Upload'}
           </DialogTitle>
           <DialogContent>
-            {isUploading && (
+            {isUploading && !backgroundUploadStarted && (
               <Alert severity="info" sx={{ mb: 2, borderRadius: '10px' }}>
-                We've kicked off your upload! Please wait a few moments while your video is being posted to each platform.
+                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+                  Uploading to {selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''}...
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666' }}>
+                  You can close this and we'll email you when it's done, or wait here to see the results.
+                </Typography>
+              </Alert>
+            )}
+            
+            {backgroundUploadStarted && (
+              <Alert severity="success" sx={{ mb: 2, borderRadius: '10px' }}>
+                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+                  🎉 Upload started in background!
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666' }}>
+                  We'll email you at your registered email when your video is live on all platforms. This typically takes 2-5 minutes.
+                </Typography>
               </Alert>
             )}
             
@@ -2869,6 +2886,17 @@ const MusicVideoPlayer: React.FC = () => {
               >
                 Done
               </Button>
+            ) : backgroundUploadStarted ? (
+              <Button 
+                onClick={() => {
+                  setShowUploadConfirm(false);
+                  setUploadProgress({});
+                  setBackgroundUploadStarted(false);
+                }}
+                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}
+              >
+                Done
+              </Button>
             ) : (
               <>
                 <Button 
@@ -2881,6 +2909,50 @@ const MusicVideoPlayer: React.FC = () => {
                 >
                   Cancel
                 </Button>
+                
+                {/* Upload in Background button - shows when uploading */}
+                {isUploading && (
+                  <Button
+                    variant="outlined"
+                    onClick={async () => {
+                      // Trigger background upload and close dialog
+                      try {
+                        if (editedMetadata?.title) {
+                          await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                            title: editedMetadata.title,
+                            description: editedMetadata.description || '',
+                            tags: editedMetadata.tags || [],
+                            hook: editedMetadata.hook || hookText || '',
+                            ctaType: ctaType || '',
+                            ctaUrl: ctaUrl || '',
+                          });
+                        }
+                        
+                        const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
+                        await videosApi.batchSocialUpload(user!.userId, videoId!, {
+                          platforms: selectedPlatforms,
+                          addThumbnailIntro: shouldAddThumbnailIntro,
+                        });
+                        
+                        setBackgroundUploadStarted(true);
+                        setIsUploading(false);
+                      } catch (err: any) {
+                        console.error('Background upload failed:', err);
+                        showSocialError('Failed to start background upload. Please try again.');
+                      }
+                    }}
+                    sx={{ 
+                      borderRadius: '10px', 
+                      textTransform: 'none',
+                      borderColor: '#007AFF',
+                      color: '#007AFF',
+                      '&:hover': { borderColor: '#0066DD', bgcolor: 'rgba(0,122,255,0.05)' },
+                    }}
+                  >
+                    Email me when done
+                  </Button>
+                )}
+                
                 <Button
                   variant="contained"
                   startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}

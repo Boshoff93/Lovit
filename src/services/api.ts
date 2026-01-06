@@ -226,6 +226,12 @@ export const videosApi = {
   uploadToYouTube: (userId: string, videoId: string, data?: { addThumbnailIntro?: boolean }) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, data || {}),
   
+  // Batch Social Upload (background processing with email notification)
+  batchSocialUpload: (userId: string, videoId: string, data: {
+    platforms: string[];
+    addThumbnailIntro?: boolean;
+  }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/batch-social-upload`, data),
+  
   /**
    * Upload a user's own video file
    */
