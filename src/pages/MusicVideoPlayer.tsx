@@ -1846,67 +1846,6 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
           )}
           
-          {/* Legacy Platform Upload Success Banners - only show when NOT using batch upload status */}
-          {socialUploadStatus === 'idle' && youtubeUrl && (
-            <Alert 
-              severity="success" 
-              onClose={() => setYoutubeUrl(null)}
-              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span>Uploaded to YouTube!</span>
-                <Button color="inherit" size="small" href={youtubeUrl} target="_blank">View</Button>
-              </Box>
-            </Alert>
-          )}
-          {socialUploadStatus === 'idle' && instagramUploaded && (
-            <Alert 
-              severity="success" 
-              onClose={() => setInstagramUploaded(false)}
-              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span>Uploaded to Instagram!</span>
-                <Button color="inherit" size="small" href={`https://instagram.com/${instagramUsername || ''}`} target="_blank">View</Button>
-              </Box>
-            </Alert>
-          )}
-          {socialUploadStatus === 'idle' && tiktokUploaded && (
-            <Alert 
-              severity="success" 
-              onClose={() => setTiktokUploaded(false)}
-              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span>Uploaded to TikTok!</span>
-                <Button color="inherit" size="small" href={`https://tiktok.com/@${tiktokUsername || ''}`} target="_blank">View</Button>
-              </Box>
-            </Alert>
-          )}
-          {socialUploadStatus === 'idle' && facebookUploaded && (
-            <Alert 
-              severity="success" 
-              onClose={() => setFacebookUploaded(false)}
-              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span>Uploaded to Facebook!</span>
-                <Button color="inherit" size="small" href={facebookPageId ? `https://www.facebook.com/${facebookPageId}` : 'https://www.facebook.com'} target="_blank">View</Button>
-              </Box>
-            </Alert>
-          )}
-          {socialUploadStatus === 'idle' && linkedinUploaded && (
-            <Alert 
-              severity="success" 
-              onClose={() => setLinkedinUploaded(false)}
-              sx={{ mb: 1.5, borderRadius: '10px', alignItems: 'center', '& .MuiAlert-message': { flex: 1 }, '& .MuiAlert-action': { pt: 0 } }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span>Uploaded to LinkedIn!</span>
-                <Button color="inherit" size="small" href="https://linkedin.com/feed" target="_blank">View</Button>
-              </Box>
-            </Alert>
-          )}
 
           {/* Platform Selection - Own Paper Section */}
           <Paper
