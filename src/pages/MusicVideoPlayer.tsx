@@ -1686,7 +1686,7 @@ const MusicVideoPlayer: React.FC = () => {
                         setDismissedPlatforms(new Set());
                         // Reset in backend so it doesn't come back on refresh
                         try {
-                          await apiClient.delete(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status`);
+                          await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
                         } catch (err) {
                           console.error('Failed to reset social upload status:', err);
                         }
@@ -1816,7 +1816,7 @@ const MusicVideoPlayer: React.FC = () => {
                                 setDismissedPlatforms(new Set());
                                 // Reset in backend so it doesn't come back on refresh
                                 try {
-                                  await apiClient.delete(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status`);
+                                  await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
                                 } catch (err) {
                                   console.error('Failed to reset social upload status:', err);
                                 }

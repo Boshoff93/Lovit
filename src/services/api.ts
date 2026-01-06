@@ -236,6 +236,10 @@ export const videosApi = {
   getSocialUploadStatus: (userId: string, videoId: string) =>
     api.get(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status`),
   
+  // Reset social upload status to idle (used when dismissing the status banner)
+  resetSocialUploadStatus: (userId: string, videoId: string) =>
+    api.delete(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status`),
+  
   /**
    * Upload a user's own video file
    */
