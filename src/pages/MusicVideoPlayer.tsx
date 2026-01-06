@@ -166,6 +166,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [socialUploadStatus, setSocialUploadStatus] = useState<'idle' | 'queued' | 'uploading' | 'completed' | 'partial' | 'failed'>('idle');
   const [socialUploadResults, setSocialUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({});
   const [socialUploadPlatforms, setSocialUploadPlatforms] = useState<string[]>([]);
+  const [dismissedPlatforms, setDismissedPlatforms] = useState<Set<string>>(new Set());
   
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
@@ -1665,34 +1666,34 @@ const MusicVideoPlayer: React.FC = () => {
           )}
           
           {/* Persistent Upload Status - Individual Platform Cards */}
-          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && socialUploadPlatforms.length > 0 && (
+          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && socialUploadPlatforms.filter(p => !dismissedPlatforms.has(p)).length > 0 && (
             <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  {socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' 
-                    ? `Posting to ${socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}...`
-                    : socialUploadStatus === 'completed' 
-                      ? '✓ All posts complete!' 
-                      : socialUploadStatus === 'partial'
-                        ? 'Some posts completed'
-                        : 'Posting failed'}
-                </Typography>
-                {(socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && (
-                  <IconButton 
-                    size="small" 
-                    onClick={() => {
-                      setSocialUploadStatus('idle');
-                      setSocialUploadResults({});
-                      setSocialUploadPlatforms([]);
-                    }}
-                    sx={{ p: 0.5 }}
-                  >
-                    <Close sx={{ fontSize: 18 }} />
-                  </IconButton>
-                )}
-              </Box>
+              {/* Only show header for in-progress or successful uploads */}
+              {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed') && (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    {socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' 
+                      ? `Posting to ${socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}...`
+                      : '✓ All posts complete!'}
+                  </Typography>
+                  {socialUploadStatus === 'completed' && (
+                    <IconButton 
+                      size="small" 
+                      onClick={() => {
+                        setSocialUploadStatus('idle');
+                        setSocialUploadResults({});
+                        setSocialUploadPlatforms([]);
+                        setDismissedPlatforms(new Set());
+                      }}
+                      sx={{ p: 0.5 }}
+                    >
+                      <Close sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  )}
+                </Box>
+              )}
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {socialUploadPlatforms.map((platform) => {
+                {socialUploadPlatforms.filter(p => !dismissedPlatforms.has(p)).map((platform) => {
                   const result = socialUploadResults[platform];
                   const isComplete = result !== undefined;
                   const isSuccess = result?.success;
@@ -1792,9 +1793,28 @@ const MusicVideoPlayer: React.FC = () => {
                         </>
                       )}
                       {isComplete && !isSuccess && (
-                        <Tooltip title={result.error || 'Upload failed'}>
-                          <Error sx={{ fontSize: 20, color: '#FF3B30' }} />
-                        </Tooltip>
+                        <>
+                          <Typography sx={{ fontSize: '0.8rem', color: '#FF3B30', mr: 1 }}>
+                            Failed to post
+                          </Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              const newDismissed = new Set([...dismissedPlatforms, platform]);
+                              setDismissedPlatforms(newDismissed);
+                              // If all platforms are dismissed, reset to idle
+                              if (socialUploadPlatforms.every(p => newDismissed.has(p))) {
+                                setSocialUploadStatus('idle');
+                                setSocialUploadResults({});
+                                setSocialUploadPlatforms([]);
+                                setDismissedPlatforms(new Set());
+                              }
+                            }}
+                            sx={{ p: 0.25 }}
+                          >
+                            <Close sx={{ fontSize: 16, color: '#FF3B30' }} />
+                          </IconButton>
+                        </>
                       )}
                     </Box>
                   );
@@ -3186,6 +3206,7 @@ const MusicVideoPlayer: React.FC = () => {
                       setSocialUploadStatus('queued');
                       setSocialUploadPlatforms(selectedPlatforms);
                       setSocialUploadResults({});
+                      setDismissedPlatforms(new Set());
                       
                       setBackgroundUploadStarted(true);
                       setIsUploading(false);
