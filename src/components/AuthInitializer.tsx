@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getToken, clearAuthData } from '../utils/storage';
 import { setToken, refreshUserData, fetchSubscription, logout } from '../store/authSlice';
@@ -10,53 +10,73 @@ interface AuthInitializerProps {
 
 /**
  * Component to initialize auth state on application startup.
- * - If redux-persist has a token, use it and fetch user data if needed
- * - If no token in Redux but there's one in cookies, sync it to Redux
- * - Blocks rendering until auth state is fully initialized
+ * Ensures we have valid auth state before rendering the app.
  */
 const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { token: reduxToken, user } = useSelector((state: RootState) => state.auth);
   const [isInitialized, setIsInitialized] = useState(false);
+  const initStarted = useRef(false);
 
   useEffect(() => {
-    const initAuth = async () => {
-      // First, check if we have a token in Redux (from redux-persist)
-      let token = reduxToken;
+    // Prevent double initialization in strict mode
+    if (initStarted.current) return;
+    initStarted.current = true;
 
-      // If no token in Redux, check cookies as fallback
+    const initAuth = async () => {
+      console.log('[AuthInitializer] Starting auth initialization...');
+      console.log('[AuthInitializer] Redux token:', reduxToken ? 'exists' : 'null');
+      console.log('[AuthInitializer] Redux user:', user ? user.email : 'null');
+
+      // Get token from Redux or cookies
+      let token = reduxToken;
       if (!token) {
         const cookieToken = getToken();
+        console.log('[AuthInitializer] Cookie token:', cookieToken ? 'exists' : 'null');
         if (cookieToken) {
           token = cookieToken;
           dispatch(setToken(cookieToken));
         }
       }
 
-      // If we have a token but no user data, fetch it from the server
-      if (token && !user) {
-        try {
-          const result = await dispatch(refreshUserData()).unwrap();
-          // If we got user data, also fetch subscription
-          if (result) {
+      // If we have a token, ensure we have user data
+      if (token) {
+        if (!user) {
+          console.log('[AuthInitializer] Have token but no user, fetching user data...');
+          try {
+            await dispatch(refreshUserData()).unwrap();
+            console.log('[AuthInitializer] User data fetched successfully');
             await dispatch(fetchSubscription());
+            console.log('[AuthInitializer] Subscription fetched successfully');
+          } catch (error) {
+            // Token is invalid - clear everything
+            console.error('[AuthInitializer] Failed to fetch user data, logging out:', error);
+            clearAuthData();
+            dispatch(logout());
           }
-        } catch (error) {
-          // Token is invalid or expired - clear everything and log out
-          console.error('Failed to fetch user data, clearing auth state:', error);
-          clearAuthData();
+        } else {
+          console.log('[AuthInitializer] Already have user data, skipping fetch');
+        }
+      } else {
+        // No token anywhere - ensure clean logged out state
+        console.log('[AuthInitializer] No token found, ensuring logged out state');
+        if (user) {
+          // We have user but no token - inconsistent state, clear it
+          console.log('[AuthInitializer] Found user without token, clearing...');
           dispatch(logout());
         }
       }
 
+      console.log('[AuthInitializer] Initialization complete');
       setIsInitialized(true);
     };
 
     initAuth();
-  }, []); // Run only once on mount
+  }, [dispatch, reduxToken, user]);
 
-  // Don't render children until auth is initialized
+  // Block rendering until initialized
   if (!isInitialized) {
+    console.log('[AuthInitializer] Not yet initialized, blocking render');
     return null;
   }
 
