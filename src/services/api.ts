@@ -232,6 +232,10 @@ export const videosApi = {
     addThumbnailIntro?: boolean;
   }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/batch-social-upload`, data),
   
+  // Get social upload status (for polling)
+  getSocialUploadStatus: (userId: string, videoId: string) =>
+    api.get(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status`),
+  
   /**
    * Upload a user's own video file
    */

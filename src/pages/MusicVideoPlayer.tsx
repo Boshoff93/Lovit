@@ -161,6 +161,11 @@ const MusicVideoPlayer: React.FC = () => {
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
   
+  // Social upload status (persistent across dialog open/close)
+  const [socialUploadStatus, setSocialUploadStatus] = useState<'idle' | 'queued' | 'uploading' | 'completed' | 'partial' | 'failed'>('idle');
+  const [socialUploadResults, setSocialUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({});
+  const [socialUploadPlatforms, setSocialUploadPlatforms] = useState<string[]>([]);
+  
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
@@ -285,6 +290,75 @@ const MusicVideoPlayer: React.FC = () => {
 
     fetchData();
   }, [user?.userId, videoId]);
+
+  // Poll for social upload status when upload is in progress
+  useEffect(() => {
+    if (!user?.userId || !videoId) return;
+    
+    // Only poll if status is queued or uploading
+    if (socialUploadStatus !== 'queued' && socialUploadStatus !== 'uploading') return;
+    
+    const pollStatus = async () => {
+      try {
+        const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
+        const { status, platforms, results } = response.data;
+        
+        setSocialUploadStatus(status);
+        setSocialUploadPlatforms(platforms);
+        setSocialUploadResults(results || {});
+        
+        // If completed, update the uploaded flags for each platform
+        if (status === 'completed' || status === 'partial') {
+          if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
+          if (results?.tiktok?.success) setTiktokUploaded(true);
+          if (results?.instagram?.success) setInstagramUploaded(true);
+          if (results?.facebook?.success) setFacebookUploaded(true);
+          if (results?.linkedin?.success) setLinkedinUploaded(true);
+        }
+      } catch (err) {
+        console.error('Failed to poll upload status:', err);
+      }
+    };
+    
+    // Poll every 5 seconds
+    const interval = setInterval(pollStatus, 5000);
+    
+    // Also poll immediately
+    pollStatus();
+    
+    return () => clearInterval(interval);
+  }, [user?.userId, videoId, socialUploadStatus]);
+
+  // Load initial social upload status when video data is loaded
+  useEffect(() => {
+    if (!user?.userId || !videoId || !videoData) return;
+    
+    const loadInitialStatus = async () => {
+      try {
+        const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
+        const { status, platforms, results } = response.data;
+        
+        if (status && status !== 'idle') {
+          setSocialUploadStatus(status);
+          setSocialUploadPlatforms(platforms || []);
+          setSocialUploadResults(results || {});
+          
+          // If completed, update the uploaded flags
+          if (status === 'completed' || status === 'partial') {
+            if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
+            if (results?.tiktok?.success) setTiktokUploaded(true);
+            if (results?.instagram?.success) setInstagramUploaded(true);
+            if (results?.facebook?.success) setFacebookUploaded(true);
+            if (results?.linkedin?.success) setLinkedinUploaded(true);
+          }
+        }
+      } catch (err) {
+        // Ignore errors - status endpoint might not exist for old videos
+      }
+    };
+    
+    loadInitialStatus();
+  }, [user?.userId, videoId, videoData]);
 
   // Fetch characters used in this video
   useEffect(() => {
@@ -1577,6 +1651,88 @@ const MusicVideoPlayer: React.FC = () => {
             </Alert>
           )}
           
+          {/* Persistent Upload Status Banner */}
+          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
+            <Alert 
+              severity="info" 
+              icon={<CircularProgress size={20} sx={{ color: '#007AFF' }} />}
+              sx={{ 
+                mb: 2, 
+                borderRadius: '12px', 
+                bgcolor: 'rgba(0,122,255,0.08)',
+                border: '1px solid rgba(0,122,255,0.2)',
+                '& .MuiAlert-message': { width: '100%' },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    Uploading to {socialUploadPlatforms.length} platform{socialUploadPlatforms.length > 1 ? 's' : ''}...
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    {socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')} • You'll receive an email when complete
+                  </Typography>
+                </Box>
+              </Box>
+            </Alert>
+          )}
+          
+          {/* Upload Complete Banner */}
+          {(socialUploadStatus === 'completed' || socialUploadStatus === 'partial') && Object.keys(socialUploadResults).length > 0 && (
+            <Alert 
+              severity={socialUploadStatus === 'completed' ? 'success' : 'warning'}
+              onClose={() => {
+                setSocialUploadStatus('idle');
+                setSocialUploadResults({});
+                setSocialUploadPlatforms([]);
+              }}
+              sx={{ 
+                mb: 2, 
+                borderRadius: '12px',
+                '& .MuiAlert-message': { width: '100%' },
+              }}
+            >
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                  {socialUploadStatus === 'completed' ? '🎉 All uploads complete!' : '⚠️ Some uploads completed'}
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {Object.entries(socialUploadResults).map(([platform, result]) => (
+                    <Chip
+                      key={platform}
+                      size="small"
+                      label={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                      color={result.success ? 'success' : 'error'}
+                      onClick={result.success && result.url ? () => window.open(result.url, '_blank') : undefined}
+                      sx={{ 
+                        cursor: result.success && result.url ? 'pointer' : 'default',
+                        '&:hover': result.success && result.url ? { opacity: 0.8 } : {},
+                      }}
+                    />
+                  ))}
+                </Box>
+                {Object.values(socialUploadResults).some(r => !r.success) && (
+                  <Typography variant="caption" sx={{ color: '#666', display: 'block', mt: 1 }}>
+                    Failed: {Object.entries(socialUploadResults).filter(([, r]) => !r.success).map(([p, r]) => `${p}: ${r.error}`).join(', ')}
+                  </Typography>
+                )}
+              </Box>
+            </Alert>
+          )}
+          
+          {/* Upload Failed Banner */}
+          {socialUploadStatus === 'failed' && (
+            <Alert 
+              severity="error"
+              onClose={() => setSocialUploadStatus('idle')}
+              sx={{ mb: 2, borderRadius: '12px' }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                Upload failed. Please try again.
+              </Typography>
+            </Alert>
+          )}
+          
           {/* Platform Upload Success Banners */}
           {youtubeUrl && (
             <Alert 
@@ -2630,13 +2786,18 @@ const MusicVideoPlayer: React.FC = () => {
           </Paper>
 
           {/* Upload Button */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Upload in progress... You can start a new upload once this one completes.
+              </Typography>
+            )}
             <Button
               variant="contained"
               size="large"
               startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <CloudUpload />}
               onClick={() => setShowUploadConfirm(true)}
-              disabled={isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title}
+              disabled={isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading'}
               sx={{
                 bgcolor: '#007AFF',
                 px: 5,
@@ -2938,6 +3099,11 @@ const MusicVideoPlayer: React.FC = () => {
                         addThumbnailIntro: shouldAddThumbnailIntro,
                       });
                       
+                      // Update persistent status
+                      setSocialUploadStatus('queued');
+                      setSocialUploadPlatforms(selectedPlatforms);
+                      setSocialUploadResults({});
+                      
                       setBackgroundUploadStarted(true);
                       setIsUploading(false);
                     } catch (err: any) {
@@ -2946,7 +3112,7 @@ const MusicVideoPlayer: React.FC = () => {
                       showSocialError(err.response?.data?.error || 'Failed to start upload. Please try again.');
                     }
                   }}
-                  disabled={isUploading || selectedPlatforms.length === 0}
+                  disabled={isUploading || selectedPlatforms.length === 0 || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading'}
                   sx={{
                     bgcolor: '#007AFF',
                     borderRadius: '10px',
