@@ -3207,18 +3207,18 @@ const MusicVideoPlayer: React.FC = () => {
                         });
                       }
                       
+                      // Clear any previous failed state immediately before starting new upload
+                      setSocialUploadStatus('queued');
+                      setSocialUploadPlatforms(selectedPlatforms);
+                      setSocialUploadResults({});
+                      setDismissedPlatforms(new Set());
+                      
                       // Queue upload to background worker - always emails when done
                       const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
                       await videosApi.batchSocialUpload(user!.userId, videoId!, {
                         platforms: selectedPlatforms,
                         addThumbnailIntro: shouldAddThumbnailIntro,
                       });
-                      
-                      // Update persistent status
-                      setSocialUploadStatus('queued');
-                      setSocialUploadPlatforms(selectedPlatforms);
-                      setSocialUploadResults({});
-                      setDismissedPlatforms(new Set());
                       
                       setBackgroundUploadStarted(true);
                       setIsUploading(false);
