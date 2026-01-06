@@ -24,15 +24,10 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
     initStarted.current = true;
 
     const initAuth = async () => {
-      console.log('[AuthInitializer] Starting auth initialization...');
-      console.log('[AuthInitializer] Redux token:', reduxToken ? 'exists' : 'null');
-      console.log('[AuthInitializer] Redux user:', user ? user.email : 'null');
-
       // Get token from Redux or cookies
       let token = reduxToken;
       if (!token) {
         const cookieToken = getToken();
-        console.log('[AuthInitializer] Cookie token:', cookieToken ? 'exists' : 'null');
         if (cookieToken) {
           token = cookieToken;
           dispatch(setToken(cookieToken));
@@ -42,41 +37,29 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
       // If we have a token, ensure we have user data
       if (token) {
         if (!user) {
-          console.log('[AuthInitializer] Have token but no user, fetching user data...');
           try {
             await dispatch(refreshUserData()).unwrap();
-            console.log('[AuthInitializer] User data fetched successfully');
             await dispatch(fetchSubscription());
-            console.log('[AuthInitializer] Subscription fetched successfully');
-          } catch (error) {
+          } catch {
             // Token is invalid - clear everything
-            console.error('[AuthInitializer] Failed to fetch user data, logging out:', error);
             clearAuthData();
             dispatch(logout());
           }
-        } else {
-          console.log('[AuthInitializer] Already have user data, skipping fetch');
         }
       } else {
         // No token anywhere - ensure clean logged out state
-        console.log('[AuthInitializer] No token found, ensuring logged out state');
         if (user) {
-          // We have user but no token - inconsistent state, clear it
-          console.log('[AuthInitializer] Found user without token, clearing...');
           dispatch(logout());
         }
       }
 
-      console.log('[AuthInitializer] Initialization complete');
       setIsInitialized(true);
     };
 
     initAuth();
   }, [dispatch, reduxToken, user]);
 
-  // Block rendering until initialized
   if (!isInitialized) {
-    console.log('[AuthInitializer] Not yet initialized, blocking render');
     return null;
   }
 
