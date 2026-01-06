@@ -1800,7 +1800,7 @@ const MusicVideoPlayer: React.FC = () => {
                           <IconButton
                             size="small"
                             onClick={() => {
-                              const newDismissed = new Set([...dismissedPlatforms, platform]);
+                              const newDismissed = new Set(Array.from(dismissedPlatforms).concat(platform));
                               setDismissedPlatforms(newDismissed);
                               // If all platforms are dismissed, reset to idle
                               if (socialUploadPlatforms.every(p => newDismissed.has(p))) {
