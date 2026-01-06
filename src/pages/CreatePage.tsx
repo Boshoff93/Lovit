@@ -34,7 +34,7 @@ import { useAudioPlayer, Song as AudioSong } from '../contexts/AudioPlayerContex
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, videosApi, charactersApi } from '../services/api';
-import { getTokensFromAllowances, createCheckoutSession, updateTokensUsed } from '../store/authSlice';
+import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
 import MentionTextField from '../components/MentionTextField';
@@ -898,8 +898,10 @@ const CreatePage: React.FC = () => {
       
       console.debug('Song generation started:', response.data);
       
-      // Update local token count immediately so UI reflects the spend
-      dispatch(updateTokensUsed(SONG_COST));
+      // Update tokens in UI with actual value from backend
+      if (response.data.tokensRemaining !== undefined) {
+        dispatch(setTokensRemaining(response.data.tokensRemaining));
+      }
       
       // Clear form
       setSongPrompt('');
@@ -967,9 +969,10 @@ const CreatePage: React.FC = () => {
         creativity: videoCreativity,
       });
 
-      // Update local token count immediately so UI reflects the spend
-      const videoCostToDeduct = VIDEO_COSTS[videoType] || 40;
-      dispatch(updateTokensUsed(videoCostToDeduct));
+      // Update tokens in UI with actual value from backend
+      if (response.data.tokensRemaining !== undefined) {
+        dispatch(setTokensRemaining(response.data.tokensRemaining));
+      }
       
       setVideoPrompt('');
       setShowVideoPromptError(false);

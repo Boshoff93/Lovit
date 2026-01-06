@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
+import { setTokensRemaining } from '../store/authSlice';
 import { 
   Box, 
   Container,
@@ -123,6 +125,7 @@ const getCharacterTypeIcon = (characterType?: string) => {
 const CreateVideoPage: React.FC = () => {
   const { songId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
   
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
@@ -229,7 +232,7 @@ const CreateVideoPage: React.FC = () => {
     setIsGenerating(true);
     
     try {
-      await videosApi.generateVideo({
+      const response = await videosApi.generateVideo({
         userId: user.userId,
         songId,
         videoType: videoType as 'still' | 'standard' | 'professional',
@@ -238,6 +241,11 @@ const CreateVideoPage: React.FC = () => {
         aspectRatio: aspectRatio as 'portrait' | 'landscape',
         characterIds: selectedCharacterIds,
       });
+      
+      // Update tokens in UI with actual value from backend
+      if (response.data.tokensRemaining !== undefined) {
+        dispatch(setTokensRemaining(response.data.tokensRemaining));
+      }
       
       setNotification({
         open: true,
