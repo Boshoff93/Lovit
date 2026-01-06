@@ -1678,7 +1678,7 @@ const MusicVideoPlayer: React.FC = () => {
               }}
             >
               <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Uploading...
+                Posting...
               </Typography>
               <Typography variant="caption" sx={{ color: '#666' }}>
                 {socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')} • You'll receive an email when complete
