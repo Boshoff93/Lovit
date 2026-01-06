@@ -9,6 +9,7 @@ import api from './utils/axiosConfig';
 import Layout from './components/Layout';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
+import AuthInitializer from './components/AuthInitializer';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -148,6 +149,7 @@ function App() {
   return (
     <AudioPlayerProvider>
       <Router>
+        <AuthInitializer />
         <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />

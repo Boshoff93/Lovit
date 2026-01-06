@@ -1781,8 +1781,8 @@ const HomePage: React.FC = () => {
             </Box>
 
             {/* Navigation buttons - far right */}
-            {isMobile ? (
-              // Mobile: hamburger menu
+            {isMobile && !isLoggedIn ? (
+              // Mobile and not logged in: hamburger menu
               <IconButton
                 onClick={handleDrawerToggle}
                 sx={{
@@ -1793,8 +1793,8 @@ const HomePage: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             ) : (
-              // Desktop: full buttons - ml: auto forces right alignment
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
+              // Desktop OR logged in: show navigation buttons - ml: auto forces right alignment
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto', flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
                 {isLoggedIn ? (
                   // Logged in user - show same buttons as dashboard Layout
                   <>
@@ -1804,10 +1804,11 @@ const HomePage: React.FC = () => {
                       startIcon={<AddIcon />}
                       sx={{
                         borderRadius: '20px',
-                        px: 2,
+                        px: { xs: 1.5, sm: 2 },
                         py: 1,
                         textTransform: 'none',
                         fontWeight: 600,
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         color: '#007AFF',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(0,0,0,0.1)',
@@ -1825,10 +1826,11 @@ const HomePage: React.FC = () => {
                       startIcon={<LibraryMusicIcon />}
                       sx={{
                         borderRadius: '20px',
-                        px: 2,
+                        px: { xs: 1.5, sm: 2 },
                         py: 1,
                         textTransform: 'none',
                         fontWeight: 600,
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         color: '#1D1D1F',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(0,0,0,0.1)',
@@ -1846,10 +1848,11 @@ const HomePage: React.FC = () => {
                       startIcon={<FolderSpecialIcon />}
                       sx={{
                         borderRadius: '20px',
-                        px: 2,
+                        px: { xs: 1.5, sm: 2 },
                         py: 1,
                         textTransform: 'none',
                         fontWeight: 600,
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         color: '#1D1D1F',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(0,0,0,0.1)',
@@ -1867,10 +1870,11 @@ const HomePage: React.FC = () => {
                       startIcon={<SettingsIcon />}
                       sx={{
                         borderRadius: '20px',
-                        px: 2,
+                        px: { xs: 1.5, sm: 2 },
                         py: 1,
                         textTransform: 'none',
                         fontWeight: 600,
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         color: '#1D1D1F',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(0,0,0,0.1)',
