@@ -1646,7 +1646,7 @@ const MusicVideoPlayer: React.FC = () => {
           sx={{ mt: 4 }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5, ml: 0.5 }}>
-            <Share sx={{ fontSize: 22, color: '#FF3B30' }} />
+            <Share sx={{ fontSize: 22, color: '#007AFF' }} />
             <Typography sx={{ fontWeight: 600, color: '#1d1d1f', fontSize: '1.1rem' }}>
               Share to Social Media
             </Typography>
@@ -1795,6 +1795,33 @@ const MusicVideoPlayer: React.FC = () => {
                               View
                             </Button>
                           )}
+                          <IconButton
+                            size="small"
+                            onClick={async () => {
+                              try {
+                                const response = await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
+                                const remainingPlatforms = response.data.remainingPlatforms || [];
+                                
+                                if (remainingPlatforms.length === 0) {
+                                  setSocialUploadStatus('idle');
+                                  setSocialUploadResults({});
+                                  setSocialUploadPlatforms([]);
+                                } else {
+                                  setSocialUploadPlatforms(remainingPlatforms);
+                                  setSocialUploadResults(prev => {
+                                    const newResults = { ...prev };
+                                    delete newResults[platform];
+                                    return newResults;
+                                  });
+                                }
+                              } catch (err) {
+                                console.error('Failed to dismiss platform:', err);
+                              }
+                            }}
+                            sx={{ p: 0.25 }}
+                          >
+                            <Close sx={{ fontSize: 16, color: '#86868B' }} />
+                          </IconButton>
                         </>
                       )}
                       {isComplete && !isSuccess && (
