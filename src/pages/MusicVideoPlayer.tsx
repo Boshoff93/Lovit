@@ -166,7 +166,6 @@ const MusicVideoPlayer: React.FC = () => {
   const [socialUploadStatus, setSocialUploadStatus] = useState<'idle' | 'queued' | 'uploading' | 'completed' | 'partial' | 'failed'>('idle');
   const [socialUploadResults, setSocialUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({});
   const [socialUploadPlatforms, setSocialUploadPlatforms] = useState<string[]>([]);
-  const [dismissedPlatforms, setDismissedPlatforms] = useState<Set<string>>(new Set());
   
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
@@ -1666,7 +1665,7 @@ const MusicVideoPlayer: React.FC = () => {
           )}
           
           {/* Persistent Upload Status - Individual Platform Cards */}
-          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && socialUploadPlatforms.filter(p => !dismissedPlatforms.has(p)).length > 0 && (
+          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && socialUploadPlatforms.length > 0 && (
             <Box sx={{ mb: 2 }}>
               {/* Only show header for in-progress or successful uploads */}
               {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed') && (
@@ -1683,7 +1682,6 @@ const MusicVideoPlayer: React.FC = () => {
                         setSocialUploadStatus('idle');
                         setSocialUploadResults({});
                         setSocialUploadPlatforms([]);
-                        setDismissedPlatforms(new Set());
                         // Reset in backend so it doesn't come back on refresh
                         try {
                           await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
@@ -1699,7 +1697,7 @@ const MusicVideoPlayer: React.FC = () => {
                 </Box>
               )}
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {socialUploadPlatforms.filter(p => !dismissedPlatforms.has(p)).map((platform) => {
+                {socialUploadPlatforms.map((platform) => {
                   const result = socialUploadResults[platform];
                   const isComplete = result !== undefined;
                   const isSuccess = result?.success;
@@ -1806,15 +1804,27 @@ const MusicVideoPlayer: React.FC = () => {
                           <IconButton
                             size="small"
                             onClick={async () => {
-                              // Reset backend immediately on any dismiss so it doesn't persist on refresh
-                              setSocialUploadStatus('idle');
-                              setSocialUploadResults({});
-                              setSocialUploadPlatforms([]);
-                              setDismissedPlatforms(new Set());
                               try {
-                                await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
+                                // Dismiss this specific platform in backend
+                                const response = await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
+                                const remainingPlatforms = response.data.remainingPlatforms || [];
+                                
+                                if (remainingPlatforms.length === 0) {
+                                  // All dismissed, reset to idle
+                                  setSocialUploadStatus('idle');
+                                  setSocialUploadResults({});
+                                  setSocialUploadPlatforms([]);
+                                } else {
+                                  // Remove this platform from the lists
+                                  setSocialUploadPlatforms(remainingPlatforms);
+                                  setSocialUploadResults(prev => {
+                                    const newResults = { ...prev };
+                                    delete newResults[platform];
+                                    return newResults;
+                                  });
+                                }
                               } catch (err) {
-                                console.error('Failed to reset social upload status:', err);
+                                console.error('Failed to dismiss platform:', err);
                               }
                             }}
                             sx={{ p: 0.25 }}
@@ -3206,7 +3216,6 @@ const MusicVideoPlayer: React.FC = () => {
                       setSocialUploadStatus('queued');
                       setSocialUploadPlatforms(selectedPlatforms);
                       setSocialUploadResults({});
-                      setDismissedPlatforms(new Set());
                       
                       // Queue upload to background worker - always emails when done
                       const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
