@@ -1677,16 +1677,9 @@ const MusicVideoPlayer: React.FC = () => {
                 '& .MuiAlert-icon': { alignItems: 'center' },
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                    Uploading to {socialUploadPlatforms.length} platform{socialUploadPlatforms.length > 1 ? 's' : ''}...
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
-                    {socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')} • You'll receive an email when complete
-                  </Typography>
-                </Box>
-              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Uploading...
+              </Typography>
             </Alert>
           )}
           
@@ -1827,6 +1820,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* YouTube - Selectable */}
               <Box
                 onClick={() => {
+                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!youtubeConnected) {
                     // Connect first
                     handleYouTubeUpload();
@@ -1856,9 +1850,10 @@ const MusicVideoPlayer: React.FC = () => {
                     : youtubeConnected 
                       ? 'rgba(255,0,0,0.05)' 
                       : '#fff',
-                  cursor: 'pointer',
+                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
+                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': { 
+                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
                     borderColor: youtubeConnected ? '#FF0000' : '#FF0000',
                     background: 'rgba(255,0,0,0.02)',
                   },
@@ -1902,6 +1897,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* TikTok - Selectable */}
               <Box
                 onClick={() => {
+                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!tiktokConnected) {
                     handleConnectTikTok();
                   } else {
@@ -1929,9 +1925,10 @@ const MusicVideoPlayer: React.FC = () => {
                     : tiktokConnected 
                       ? 'rgba(0,0,0,0.05)' 
                       : '#fff',
-                  cursor: 'pointer',
+                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
+                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': { 
+                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
                     borderColor: tiktokConnected ? '#000000' : '#000000',
                     background: 'rgba(0,0,0,0.02)',
                   },
@@ -1977,6 +1974,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* Instagram */}
               <Box
                 onClick={() => {
+                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!instagramConnected) {
                     handleConnectInstagram();
                   } else {
@@ -2004,9 +2002,10 @@ const MusicVideoPlayer: React.FC = () => {
                     : instagramConnected 
                       ? 'rgba(228,64,95,0.05)' 
                       : '#fff',
-                  cursor: 'pointer',
+                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
+                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': { 
+                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
                     borderColor: instagramConnected ? '#E4405F' : '#E4405F',
                     background: 'rgba(228,64,95,0.02)',
                   },
@@ -2059,6 +2058,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* Facebook */}
               <Box
                 onClick={() => {
+                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!facebookConnected) {
                     // Facebook uses same OAuth as Instagram
                     handleConnectInstagram();
@@ -2087,9 +2087,10 @@ const MusicVideoPlayer: React.FC = () => {
                     : facebookConnected 
                       ? 'rgba(24,119,242,0.05)' 
                       : '#fff',
-                  cursor: 'pointer',
+                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
+                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': { 
+                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
                     borderColor: facebookConnected ? '#1877F2' : '#1877F2',
                     background: 'rgba(24,119,242,0.02)',
                   },
@@ -2135,6 +2136,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* LinkedIn */}
               <Box
                 onClick={() => {
+                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!linkedinConnected) {
                     handleConnectLinkedin();
                   } else {
@@ -2162,9 +2164,10 @@ const MusicVideoPlayer: React.FC = () => {
                     : linkedinConnected 
                       ? 'rgba(0,119,181,0.05)' 
                       : '#fff',
-                  cursor: 'pointer',
+                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
+                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': { 
+                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
                     borderColor: linkedinConnected ? '#0077B5' : '#0077B5',
                     background: 'rgba(0,119,181,0.02)',
                   },
