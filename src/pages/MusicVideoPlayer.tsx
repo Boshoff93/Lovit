@@ -1670,7 +1670,7 @@ const MusicVideoPlayer: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                   {socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' 
-                    ? 'Posting...' 
+                    ? `Posting to ${socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}...`
                     : socialUploadStatus === 'completed' 
                       ? '✓ All posts complete!' 
                       : socialUploadStatus === 'partial'
