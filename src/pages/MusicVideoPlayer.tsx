@@ -314,11 +314,11 @@ const MusicVideoPlayer: React.FC = () => {
       try {
         const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
         const { status, platforms, results } = response.data;
-        
+
         setSocialUploadStatus(status);
         setSocialUploadPlatforms(platforms);
         setSocialUploadResults(results || {});
-        
+
         // If completed, update the uploaded flags for each platform
         if (status === 'completed' || status === 'partial') {
           if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
@@ -349,12 +349,12 @@ const MusicVideoPlayer: React.FC = () => {
       try {
         const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
         const { status, platforms, results } = response.data;
-        
+
         if (status && status !== 'idle') {
           setSocialUploadStatus(status);
           setSocialUploadPlatforms(platforms || []);
           setSocialUploadResults(results || {});
-          
+
           // If completed, update the uploaded flags
           if (status === 'completed' || status === 'partial') {
             if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
@@ -2282,7 +2282,7 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               >
-                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
+n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
               </Button>
             </Box>
 
