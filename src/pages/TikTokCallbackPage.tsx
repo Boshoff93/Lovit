@@ -93,8 +93,8 @@ const TikTokCallbackPage: React.FC = () => {
     >
       {status === 'processing' && (
         <>
-          <CircularProgress sx={{ color: '#000000', mb: 3 }} size={60} />
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+          <CircularProgress sx={{ color: '#fff', mb: 3 }} size={60} />
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
             Connecting to TikTok
           </Typography>
         </>
@@ -116,7 +116,7 @@ const TikTokCallbackPage: React.FC = () => {
           >
             <Check sx={{ fontSize: 48, color: '#fff' }} />
           </Box>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
             Connected!
           </Typography>
         </>
@@ -138,7 +138,7 @@ const TikTokCallbackPage: React.FC = () => {
           >
             <Error sx={{ fontSize: 48, color: '#fff' }} />
           </Box>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
             Connection Failed
           </Typography>
         </>
@@ -149,18 +149,25 @@ const TikTokCallbackPage: React.FC = () => {
       </Typography>
 
       {status !== 'processing' && (
-        <Typography
-          variant="body2"
-          sx={{
-            color: 'rgba(255,255,255,0.7)',
-            mt: 3,
-            cursor: 'pointer',
-            '&:hover': { color: '#fff' },
-          }}
+        <Box
           onClick={() => window.location.href = '/settings/connected-accounts'}
+          sx={{
+            mt: 4,
+            px: 3,
+            py: 1.5,
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.3)',
+            cursor: 'pointer',
+            '&:hover': {
+              bgcolor: 'rgba(255,255,255,0.1)',
+              borderColor: 'rgba(255,255,255,0.5)',
+            },
+          }}
         >
-          Go back to Connected Accounts
-        </Typography>
+          <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500 }}>
+            Back to Connected Accounts
+          </Typography>
+        </Box>
       )}
     </Box>
   );
