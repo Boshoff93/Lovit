@@ -174,15 +174,30 @@ const MusicVideoPlayer: React.FC = () => {
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
   const [tiktokUploaded, setTiktokUploaded] = useState(false);
 
+  // TikTok creator info (fetched from API per TikTok UX guidelines)
+  const [tiktokCreatorInfo, setTiktokCreatorInfo] = useState<{
+    creatorNickname: string;
+    creatorAvatarUrl: string;
+    privacyLevelOptions: string[];
+    maxVideoPostDurationSec: number;
+    commentDisabled: boolean;
+    duetDisabled: boolean;
+    stitchDisabled: boolean;
+    canPost: boolean;
+  } | null>(null);
+  const [tiktokCreatorInfoLoading, setTiktokCreatorInfoLoading] = useState(false);
+  const [tiktokCreatorInfoError, setTiktokCreatorInfoError] = useState<string | null>(null);
+
   // TikTok posting settings (required by TikTok API guidelines)
-  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>('SELF_ONLY'); // Default to private until approved
+  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>(''); // NO default - user must select (TikTok requirement)
   const [tiktokAllowComment, setTiktokAllowComment] = useState(false); // Unchecked by default
   const [tiktokAllowDuet, setTiktokAllowDuet] = useState(false); // Unchecked by default
   const [tiktokAllowStitch, setTiktokAllowStitch] = useState(false); // Unchecked by default
   const [tiktokDiscloseContent, setTiktokDiscloseContent] = useState(false); // Commercial content toggle
   const [tiktokBrandOrganic, setTiktokBrandOrganic] = useState(false); // "Your brand" option
   const [tiktokBrandedContent, setTiktokBrandedContent] = useState(false); // "Branded content" option
-  
+  const [tiktokPostMode, setTiktokPostMode] = useState<'draft' | 'direct'>('draft'); // Draft (inbox) or Direct post
+
   // Instagram state
   const [instagramConnected, setInstagramConnected] = useState(false);
   const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
@@ -459,6 +474,25 @@ const MusicVideoPlayer: React.FC = () => {
         const ttResponse = await tiktokApi.getStatus(user.userId);
         setTiktokConnected(ttResponse.data.connected);
         setTiktokUsername(ttResponse.data.username);
+
+        // If TikTok is connected, fetch creator info (required by TikTok UX guidelines)
+        if (ttResponse.data.connected) {
+          setTiktokCreatorInfoLoading(true);
+          try {
+            const creatorResponse = await tiktokApi.getCreatorInfo(user.userId);
+            setTiktokCreatorInfo(creatorResponse.data);
+            setTiktokCreatorInfoError(null);
+          } catch (err: any) {
+            console.error('[TikTok] Failed to fetch creator info:', err);
+            setTiktokCreatorInfoError(err.response?.data?.error || 'Failed to load TikTok settings');
+            // If can't post, show error
+            if (err.response?.status === 429) {
+              setTiktokCreatorInfoError('You have reached TikTok\'s posting limit. Please try again later.');
+            }
+          } finally {
+            setTiktokCreatorInfoLoading(false);
+          }
+        }
       } catch {
         // TikTok not connected
       }
@@ -1651,13 +1685,6 @@ const MusicVideoPlayer: React.FC = () => {
           id="social-sharing-section"
           sx={{ mt: 4 }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5, ml: 0.5 }}>
-            <Share sx={{ fontSize: 22, color: '#007AFF' }} />
-            <Typography sx={{ fontWeight: 600, color: '#1d1d1f', fontSize: '1.1rem' }}>
-              Share to Social Media
-            </Typography>
-          </Box>
-
           {/* Alerts */}
           {socialError && (
             <Alert severity="error" onClose={() => setSocialError(null)} sx={{ mb: 2 }}>
@@ -1669,7 +1696,7 @@ const MusicVideoPlayer: React.FC = () => {
               {socialSuccess}
             </Alert>
           )}
-          
+
           {/* Platform Selection - Own Paper Section */}
           <Paper
             elevation={0}
@@ -1682,11 +1709,14 @@ const MusicVideoPlayer: React.FC = () => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
-                {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                  ? 'Posting Video...'
-                  : 'Select Platforms'}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Share sx={{ fontSize: 20, color: '#007AFF' }} />
+                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                  {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                    ? 'Posting Video...'
+                    : 'Share to Social Media'}
+                </Typography>
+              </Box>
               {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
                 <Typography variant="caption" sx={{ color: '#86868B' }}>
                   You'll receive an email when complete
@@ -2835,19 +2865,94 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                 bgcolor: '#fff',
               }}
             >
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', mb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
+              {/* Creator Info Header - Required by TikTok UX Guidelines */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, pb: 2, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: 20, height: 20, fill: '#000' }}>
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                 </Box>
-                TikTok Specific Settings
-              </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#86868B', mb: 2.5 }}>
-                Configure how your video appears on TikTok
-              </Typography>
+                <Box sx={{ flex: 1 }}>
+                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                    Posting to TikTok
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>
+                    {tiktokCreatorInfoLoading ? (
+                      'Loading account info...'
+                    ) : tiktokCreatorInfo?.creatorNickname ? (
+                      `@${tiktokUsername} (${tiktokCreatorInfo.creatorNickname})`
+                    ) : tiktokUsername ? (
+                      `@${tiktokUsername}`
+                    ) : (
+                      'Your TikTok account'
+                    )}
+                  </Typography>
+                </Box>
+                {tiktokCreatorInfoLoading && <CircularProgress size={16} sx={{ color: '#86868B' }} />}
+              </Box>
 
-              {/* Privacy Level */}
+              {/* Error message if can't post */}
+              {tiktokCreatorInfoError && (
+                <Alert severity="error" sx={{ mb: 2, borderRadius: '10px' }}>
+                  {tiktokCreatorInfoError}
+                </Alert>
+              )}
+
+              {/* Video duration warning */}
+              {tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec && (
+                <Alert severity="warning" sx={{ mb: 2, borderRadius: '10px' }}>
+                  Your video ({Math.round(videoData.durationSeconds)}s) exceeds TikTok's maximum duration ({tiktokCreatorInfo.maxVideoPostDurationSec}s). Please use a shorter video.
+                </Alert>
+              )}
+
+              {/* Post Mode Selection */}
               <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
-                Who can view this video
+                Post Mode
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+                <Box
+                  onClick={() => setTiktokPostMode('draft')}
+                  sx={{
+                    flex: 1,
+                    p: 1.5,
+                    borderRadius: '10px',
+                    border: tiktokPostMode === 'draft' ? '2px solid #000' : '1px solid rgba(0,0,0,0.15)',
+                    bgcolor: tiktokPostMode === 'draft' ? 'rgba(0,0,0,0.03)' : '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': { borderColor: '#000' },
+                  }}
+                >
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#1D1D1F' }}>
+                    Save as Draft
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
+                    Video appears in your TikTok inbox to review and post
+                  </Typography>
+                </Box>
+                <Tooltip title="Direct posting will be available once our TikTok integration is approved" arrow>
+                  <Box
+                    sx={{
+                      flex: 1,
+                      p: 1.5,
+                      borderRadius: '10px',
+                      border: '1px solid rgba(0,0,0,0.08)',
+                      bgcolor: 'rgba(0,0,0,0.02)',
+                      cursor: 'not-allowed',
+                      opacity: 0.5,
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#86868B' }}>
+                      Direct Post
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
+                      Coming soon - pending TikTok approval
+                    </Typography>
+                  </Box>
+                </Tooltip>
+              </Box>
+
+              {/* Privacy Level - Options from API, NO default value (TikTok requirement) */}
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+                Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontSize: '0.75rem' }}>*</Typography>
               </Typography>
               <Select
                 fullWidth
@@ -2859,14 +2964,33 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                     setTiktokBrandedContent(false);
                   }
                 }}
-                sx={{ borderRadius: '10px', mb: 2 }}
+                displayEmpty
+                sx={{ borderRadius: '10px', mb: tiktokPrivacyLevel === '' ? 1 : 2 }}
               >
-                <MenuItem value="PUBLIC_TO_EVERYONE">Everyone</MenuItem>
-                <MenuItem value="MUTUAL_FOLLOW_FRIENDS">Friends</MenuItem>
-                <MenuItem value="SELF_ONLY">Only me</MenuItem>
+                <MenuItem value="" disabled>
+                  <Typography sx={{ color: '#86868B' }}>Select privacy level</Typography>
+                </MenuItem>
+                {/* Use options from creator_info API, fallback to defaults */}
+                {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY']).map((option) => (
+                  <MenuItem
+                    key={option}
+                    value={option}
+                    disabled={option === 'SELF_ONLY' && tiktokBrandedContent}
+                  >
+                    {option === 'PUBLIC_TO_EVERYONE' && 'Everyone'}
+                    {option === 'MUTUAL_FOLLOW_FRIENDS' && 'Friends'}
+                    {option === 'SELF_ONLY' && (tiktokBrandedContent ? 'Only me (unavailable for branded content)' : 'Only me')}
+                    {option === 'FOLLOWER_OF_CREATOR' && 'Followers'}
+                  </MenuItem>
+                ))}
               </Select>
+              {tiktokPrivacyLevel === '' && (
+                <Typography sx={{ fontSize: '0.7rem', color: '#FF3B30', mb: 2 }}>
+                  Please select a privacy level to continue
+                </Typography>
+              )}
 
-              {/* Interaction Settings */}
+              {/* Interaction Settings - Disabled if creator has them off in TikTok settings */}
               <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Allow viewers to:
               </Typography>
@@ -2874,17 +2998,18 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={tiktokAllowComment}
+                      checked={tiktokAllowComment && !tiktokCreatorInfo?.commentDisabled}
                       onChange={(e) => setTiktokAllowComment(e.target.checked)}
+                      disabled={tiktokCreatorInfo?.commentDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Comment</Typography>
-                      <Tooltip title="Allow viewers to leave comments on your video" arrow>
-                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.commentDisabled ? '#C7C7CC' : 'inherit' }}>Comment</Typography>
+                      <Tooltip title={tiktokCreatorInfo?.commentDisabled ? 'Comments are disabled in your TikTok settings' : 'Allow viewers to leave comments on your video'} arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.commentDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
                     </Box>
                   }
@@ -2893,17 +3018,18 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={tiktokAllowDuet}
+                      checked={tiktokAllowDuet && !tiktokCreatorInfo?.duetDisabled}
                       onChange={(e) => setTiktokAllowDuet(e.target.checked)}
+                      disabled={tiktokCreatorInfo?.duetDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Duet</Typography>
-                      <Tooltip title="Allow others to create a video side-by-side with yours" arrow>
-                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.duetDisabled ? '#C7C7CC' : 'inherit' }}>Duet</Typography>
+                      <Tooltip title={tiktokCreatorInfo?.duetDisabled ? 'Duet is disabled in your TikTok settings' : 'Allow others to create a video side-by-side with yours'} arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.duetDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
                     </Box>
                   }
@@ -2912,17 +3038,18 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={tiktokAllowStitch}
+                      checked={tiktokAllowStitch && !tiktokCreatorInfo?.stitchDisabled}
                       onChange={(e) => setTiktokAllowStitch(e.target.checked)}
+                      disabled={tiktokCreatorInfo?.stitchDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Stitch</Typography>
-                      <Tooltip title="Allow others to clip up to 5 seconds of your video into theirs" arrow>
-                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.stitchDisabled ? '#C7C7CC' : 'inherit' }}>Stitch</Typography>
+                      <Tooltip title={tiktokCreatorInfo?.stitchDisabled ? 'Stitch is disabled in your TikTok settings' : 'Allow others to clip up to 5 seconds of your video into theirs'} arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.stitchDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
                     </Box>
                   }
@@ -3040,41 +3167,55 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
           )}
 
           {/* Upload Button */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-            {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
-              <Typography variant="caption" sx={{ color: '#666' }}>
-                Upload in progress... You can start a new upload once this one completes.
-              </Typography>
-            )}
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <CloudUpload />}
-              onClick={() => setShowUploadConfirm(true)}
-              disabled={isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading'}
-              sx={{
-                bgcolor: '#007AFF',
-                px: 5,
-                py: 1.5,
-                borderRadius: '12px',
-                fontWeight: 600,
-                fontSize: '1rem',
-                textTransform: 'none',
-                boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
-                '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)', boxShadow: 'none' },
-              }}
-            >
-              {isUploading
-                ? 'Publishing...'
-                : selectedPlatforms.length === 0
-                  ? 'Select a Platform'
-                  : !editedMetadata?.title
-                    ? 'Enter Title First'
-                    : 'Publish Video'
-              }
-            </Button>
-          </Box>
+          {(() => {
+            // TikTok validation checks
+            const tiktokSelected = selectedPlatforms.includes('tiktok');
+            const tiktokPrivacyMissing = tiktokSelected && tiktokPrivacyLevel === '';
+            const tiktokDurationExceeds = tiktokSelected && tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec;
+            const tiktokCommercialIncomplete = tiktokSelected && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent;
+            const tiktokCantPost = tiktokSelected && tiktokCreatorInfo?.canPost === false;
+
+            const isDisabled = isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || tiktokPrivacyMissing || tiktokDurationExceeds || tiktokCommercialIncomplete || tiktokCantPost;
+
+            let buttonText = 'Publish Video';
+            if (isUploading) buttonText = 'Publishing...';
+            else if (selectedPlatforms.length === 0) buttonText = 'Select a Platform';
+            else if (!editedMetadata?.title) buttonText = 'Enter Title First';
+            else if (tiktokPrivacyMissing) buttonText = 'Select TikTok Privacy Level';
+            else if (tiktokDurationExceeds) buttonText = 'Video Too Long for TikTok';
+            else if (tiktokCommercialIncomplete) buttonText = 'Complete Commercial Disclosure';
+
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    Upload in progress... You can start a new upload once this one completes.
+                  </Typography>
+                )}
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <CloudUpload />}
+                  onClick={() => setShowUploadConfirm(true)}
+                  disabled={isDisabled}
+                  sx={{
+                    bgcolor: '#007AFF',
+                    px: 5,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                    '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
+                    '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)', boxShadow: 'none' },
+                  }}
+                >
+                  {buttonText}
+                </Button>
+              </Box>
+            );
+          })()}
         </Box>
 
         {/* Upload Confirmation Modal */}
@@ -3349,6 +3490,7 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                         addThumbnailIntro: shouldAddThumbnailIntro,
                         // TikTok-specific settings (required by TikTok API)
                         tiktokSettings: selectedPlatforms.includes('tiktok') ? {
+                          postMode: tiktokPostMode,
                           privacyLevel: tiktokPrivacyLevel,
                           allowComment: tiktokAllowComment,
                           allowDuet: tiktokAllowDuet,

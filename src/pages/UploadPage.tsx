@@ -296,59 +296,106 @@ const UploadPage: React.FC = () => {
       setError('Please log in to upload');
       return;
     }
-    
+
     if (!selectedFile) {
       setError('Please select a file to upload');
       return;
     }
-    
+
     if (!title.trim()) {
       setError('Please enter a title');
       return;
     }
-    
+
     setIsUploading(true);
     setUploadProgress(0);
     setError(null);
-    
+
     try {
-      // Create FormData
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('title', title.trim());
-      formData.append('type', uploadType);
-      
-      if (artist) formData.append('artist', artist.trim());
-      if (album) formData.append('album', album.trim());
-      if (description) formData.append('description', description.trim());
-      if (coverImage) formData.append('coverImage', coverImage);
       if (uploadType === 'song') {
+        // Songs still use the original upload flow (smaller files)
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('title', title.trim());
+        formData.append('type', uploadType);
+
+        if (artist) formData.append('artist', artist.trim());
+        if (album) formData.append('album', album.trim());
+        if (description) formData.append('description', description.trim());
+        if (coverImage) formData.append('coverImage', coverImage);
         if (selectedGenre) formData.append('genre', selectedGenre);
         if (selectedMood) formData.append('mood', selectedMood);
-      }
-      if (uploadType === 'video') formData.append('aspectRatio', aspectRatio);
-      
-      // Upload based on type
-      if (uploadType === 'song') {
+
         await songsApi.uploadSong(user.userId, formData, (progress) => {
           setUploadProgress(progress);
         });
         setSuccess('Song uploaded successfully!');
       } else {
-        await videosApi.uploadVideo(user.userId, formData, (progress) => {
-          setUploadProgress(progress);
+        // Videos use direct S3 upload (bypasses server for large files)
+        console.log('[Upload] Getting presigned URL for video upload...');
+
+        // Step 1: Get presigned URL from backend
+        const urlResponse = await videosApi.getUploadUrl(user.userId, {
+          fileName: selectedFile.name,
+          fileType: selectedFile.type,
+          fileSize: selectedFile.size,
         });
+
+        const { uploadUrl, videoId, videoKey } = urlResponse.data;
+        console.log(`[Upload] Got presigned URL for video ${videoId}`);
+
+        // Step 2: Upload directly to S3 using presigned URL
+        console.log('[Upload] Uploading video directly to S3...');
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const progress = Math.round((event.loaded / event.total) * 90); // Reserve 10% for finalization
+              setUploadProgress(progress);
+            }
+          });
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error(`S3 upload failed with status ${xhr.status}`));
+            }
+          });
+
+          xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+          xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+
+          xhr.open('PUT', uploadUrl);
+          xhr.setRequestHeader('Content-Type', selectedFile.type);
+          xhr.send(selectedFile);
+        });
+
+        console.log('[Upload] S3 upload complete, finalizing...');
+        setUploadProgress(95);
+
+        // Step 3: Tell backend to finalize (create DB record, extract thumbnail)
+        await videosApi.finalizeUpload(user.userId, {
+          videoId,
+          videoKey,
+          title: title.trim(),
+          description: description?.trim(),
+          aspectRatio,
+        });
+
+        setUploadProgress(100);
         setSuccess('Video uploaded successfully!');
       }
-      
+
       // Navigate back to library after short delay
       setTimeout(() => {
         navigate(`/my-library?tab=${uploadType === 'song' ? 'songs' : 'videos'}`);
       }, 1500);
-      
+
     } catch (err: any) {
       console.error('Upload failed:', err);
-      setError(err.response?.data?.error || 'Failed to upload. Please try again.');
+      setError(err.response?.data?.error || err.message || 'Failed to upload. Please try again.');
     } finally {
       setIsUploading(false);
     }

@@ -231,6 +231,7 @@ export const videosApi = {
     platforms: string[];
     addThumbnailIntro?: boolean;
     tiktokSettings?: {
+      postMode: 'draft' | 'direct';
       privacyLevel: string;
       allowComment: boolean;
       allowDuet: boolean;
@@ -251,11 +252,30 @@ export const videosApi = {
     api.delete(`/api/gruvi/videos/${userId}/${videoId}/social-upload-status${platform ? `?platform=${platform}` : ''}`),
   
   /**
-   * Upload a user's own video file
+   * Get presigned URL for direct S3 video upload
+   */
+  getUploadUrl: (userId: string, data: { fileName: string; fileType: string; fileSize: number }) =>
+    api.post(`/api/gruvi/videos/${userId}/get-upload-url`, data),
+
+  /**
+   * Finalize video upload after direct S3 upload
+   */
+  finalizeUpload: (userId: string, data: {
+    videoId: string;
+    videoKey: string;
+    title: string;
+    description?: string;
+    aspectRatio?: string;
+  }) =>
+    api.post(`/api/gruvi/videos/${userId}/finalize-upload`, data),
+
+  /**
+   * Upload a user's own video file (legacy - through server, for small files)
    */
   uploadVideo: (userId: string, formData: FormData, onProgress?: (progress: number) => void) =>
     api.post(`/api/gruvi/videos/${userId}/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 600000, // 10 minutes for large video uploads
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -284,16 +304,20 @@ export const youtubeApi = {
 export const tiktokApi = {
   getAuthUrl: (userId: string) =>
     api.get(`/api/gruvi/tiktok/auth-url?userId=${userId}`),
-  
+
   handleCallback: (code: string, state: string) =>
     api.post('/api/public/tiktok/callback', { code, state }),
-  
+
   getStatus: (userId: string) =>
     api.get(`/api/gruvi/tiktok/status?userId=${userId}`),
-  
+
+  // Get creator info for posting UI (required by TikTok UX guidelines)
+  getCreatorInfo: (userId: string) =>
+    api.get(`/api/gruvi/tiktok/creator-info?userId=${userId}`),
+
   disconnect: (userId: string) =>
     api.delete(`/api/gruvi/tiktok/disconnect?userId=${userId}`),
-  
+
   upload: (userId: string, videoId: string) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`),
 };
