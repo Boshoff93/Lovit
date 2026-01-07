@@ -3157,14 +3157,17 @@ const MusicVideoPlayer: React.FC = () => {
                 sx={{
                   mt: 2,
                   borderRadius: '10px',
-                  bgcolor: 'rgba(255,149,0,0.08)',
-                  border: '1px solid rgba(255,149,0,0.3)',
-                  '& .MuiAlert-icon': { color: '#FF9500' },
+                  bgcolor: tiktokPostMode === 'direct' ? 'rgba(255,149,0,0.08)' : 'rgba(0,122,255,0.08)',
+                  border: tiktokPostMode === 'direct' ? '1px solid rgba(255,149,0,0.3)' : '1px solid rgba(0,122,255,0.2)',
+                  '& .MuiAlert-icon': { color: tiktokPostMode === 'direct' ? '#FF9500' : '#007AFF' },
                   '& .MuiAlert-message': { color: '#1D1D1F' }
                 }}
               >
                 <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
-                  Videos will be posted as <strong>private</strong> (only visible to you). After posting, it may take a few minutes for your video to appear on your TikTok profile.
+                  {tiktokPostMode === 'direct'
+                    ? <>Videos will be posted as <strong>private</strong> (only visible to you). After posting, it may take a few minutes for your video to appear on your TikTok profile.</>
+                    : <>After posting, it may take a few minutes for your video to appear in your TikTok inbox.</>
+                  }
                 </Typography>
               </Alert>
 
