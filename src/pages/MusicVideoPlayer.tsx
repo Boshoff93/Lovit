@@ -357,27 +357,31 @@ const MusicVideoPlayer: React.FC = () => {
   }, [user?.userId, videoId, socialUploadStatus]);
 
   // Load initial social upload status when video data is loaded
+  // Only restore in-progress uploads, not completed ones (those are stale from previous sessions)
   useEffect(() => {
     if (!user?.userId || !videoId || !videoData) return;
-    
+
     const loadInitialStatus = async () => {
       try {
         const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
         const { status, platforms, results } = response.data;
 
-        if (status && status !== 'idle') {
+        // Only restore if upload is currently in progress (queued/uploading)
+        // Don't show stale completed/partial/failed results from previous sessions
+        if (status === 'queued' || status === 'uploading') {
           setSocialUploadStatus(status);
           setSocialUploadPlatforms(platforms || []);
           setSocialUploadResults(results || {});
+        }
 
-          // If completed, update the uploaded flags
-          if (status === 'completed' || status === 'partial') {
-            if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
-            if (results?.tiktok?.success) setTiktokUploaded(true);
-            if (results?.instagram?.success) setInstagramUploaded(true);
-            if (results?.facebook?.success) setFacebookUploaded(true);
-            if (results?.linkedin?.success) setLinkedinUploaded(true);
-          }
+        // Always update the uploaded flags for platforms that were previously successful
+        // This shows checkmarks on platforms that already have this video
+        if (status === 'completed' || status === 'partial') {
+          if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
+          if (results?.tiktok?.success) setTiktokUploaded(true);
+          if (results?.instagram?.success) setInstagramUploaded(true);
+          if (results?.facebook?.success) setFacebookUploaded(true);
+          if (results?.linkedin?.success) setLinkedinUploaded(true);
         }
       } catch (err) {
         // Ignore errors - status endpoint might not exist for old videos
