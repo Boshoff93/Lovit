@@ -2943,7 +2943,10 @@ const MusicVideoPlayer: React.FC = () => {
                   </Typography>
                 </Box>
                 <Box
-                  onClick={() => setTiktokPostMode('direct')}
+                  onClick={() => {
+                    setTiktokPostMode('direct');
+                    setTiktokPrivacyLevel('SELF_ONLY');
+                  }}
                   sx={{
                     flex: 1,
                     p: 1.5,
@@ -2965,13 +2968,14 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
 
               {/* Privacy Level - Options from API, NO default value (TikTok requirement) */}
+              {/* For Direct Post mode, only SELF_ONLY is allowed (pending TikTok approval) */}
               <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontSize: '0.75rem' }}>*</Typography>
               </Typography>
               <Select
                 fullWidth
                 size="small"
-                value={tiktokPrivacyLevel}
+                value={tiktokPostMode === 'direct' ? 'SELF_ONLY' : tiktokPrivacyLevel}
                 onChange={(e) => {
                   setTiktokPrivacyLevel(e.target.value);
                   if (e.target.value === 'SELF_ONLY' && tiktokBrandedContent) {
@@ -2979,7 +2983,7 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                 }}
                 displayEmpty
-                sx={{ borderRadius: '10px', mb: tiktokPrivacyLevel === '' ? 1 : 2 }}
+                sx={{ borderRadius: '10px', mb: (tiktokPostMode === 'direct' || tiktokPrivacyLevel !== '') ? 2 : 1 }}
               >
                 <MenuItem value="" disabled>
                   <Typography sx={{ color: '#86868B' }}>Select privacy level</Typography>
@@ -2989,7 +2993,7 @@ const MusicVideoPlayer: React.FC = () => {
                   <MenuItem
                     key={option}
                     value={option}
-                    disabled={option === 'SELF_ONLY' && tiktokBrandedContent}
+                    disabled={(tiktokPostMode === 'direct' && option !== 'SELF_ONLY') || (option === 'SELF_ONLY' && tiktokBrandedContent)}
                   >
                     {option === 'PUBLIC_TO_EVERYONE' && 'Everyone'}
                     {option === 'MUTUAL_FOLLOW_FRIENDS' && 'Friends'}
@@ -2998,7 +3002,7 @@ const MusicVideoPlayer: React.FC = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {tiktokPrivacyLevel === '' && (
+              {tiktokPostMode !== 'direct' && tiktokPrivacyLevel === '' && (
                 <Typography sx={{ fontSize: '0.7rem', color: '#FF3B30', mb: 2 }}>
                   Please select a privacy level to continue
                 </Typography>
