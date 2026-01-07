@@ -3135,6 +3135,24 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                 </>
               )}
 
+              {/* Processing Time Notice - TikTok UX Guideline Point 5d */}
+              <Alert
+                severity="info"
+                icon={<InfoOutlined />}
+                sx={{
+                  mt: 2,
+                  borderRadius: '10px',
+                  bgcolor: 'rgba(0,122,255,0.08)',
+                  border: '1px solid rgba(0,122,255,0.2)',
+                  '& .MuiAlert-icon': { color: '#007AFF' },
+                  '& .MuiAlert-message': { color: '#1D1D1F' }
+                }}
+              >
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                  After posting, it may take a few minutes for your video to finish processing and appear on your TikTok profile.
+                </Typography>
+              </Alert>
+
               {/* Consent Declaration */}
               <Typography sx={{ fontSize: '0.75rem', color: '#86868B', lineHeight: 1.5, mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
                 By posting, you agree to TikTok's{' '}
