@@ -144,18 +144,18 @@ const TikTokCallbackPage: React.FC = () => {
         </>
       )}
 
-      <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+      <Typography variant="body1" sx={{ color: '#fff' }}>
         {message}
       </Typography>
 
       {status !== 'processing' && (
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            color: 'rgba(255,255,255,0.5)', 
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'rgba(255,255,255,0.7)',
             mt: 3,
             cursor: 'pointer',
-            '&:hover': { color: 'rgba(255,255,255,0.8)' },
+            '&:hover': { color: '#fff' },
           }}
           onClick={() => window.location.href = '/settings/connected-accounts'}
         >

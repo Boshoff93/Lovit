@@ -230,6 +230,15 @@ export const videosApi = {
   batchSocialUpload: (userId: string, videoId: string, data: {
     platforms: string[];
     addThumbnailIntro?: boolean;
+    tiktokSettings?: {
+      privacyLevel: string;
+      allowComment: boolean;
+      allowDuet: boolean;
+      allowStitch: boolean;
+      discloseContent: boolean;
+      brandOrganic: boolean;
+      brandedContent: boolean;
+    };
   }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/batch-social-upload`, data),
   
   // Get social upload status (for polling)

@@ -19,8 +19,10 @@ import {
   DialogContent,
   DialogActions,
   FormControl,
+  FormControlLabel,
   Select,
   MenuItem,
+  Switch,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -37,12 +39,12 @@ import {
   Add,
   Check,
   CheckCircle,
-  ContentCopy,
   CloudUpload,
   Bolt,
   Delete,
   Error,
   Close,
+  InfoOutlined,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -171,6 +173,15 @@ const MusicVideoPlayer: React.FC = () => {
   const [tiktokConnected, setTiktokConnected] = useState(false);
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
   const [tiktokUploaded, setTiktokUploaded] = useState(false);
+
+  // TikTok posting settings (required by TikTok API guidelines)
+  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>('SELF_ONLY'); // Default to private until approved
+  const [tiktokAllowComment, setTiktokAllowComment] = useState(false); // Unchecked by default
+  const [tiktokAllowDuet, setTiktokAllowDuet] = useState(false); // Unchecked by default
+  const [tiktokAllowStitch, setTiktokAllowStitch] = useState(false); // Unchecked by default
+  const [tiktokDiscloseContent, setTiktokDiscloseContent] = useState(false); // Commercial content toggle
+  const [tiktokBrandOrganic, setTiktokBrandOrganic] = useState(false); // "Your brand" option
+  const [tiktokBrandedContent, setTiktokBrandedContent] = useState(false); // "Branded content" option
   
   // Instagram state
   const [instagramConnected, setInstagramConnected] = useState(false);
@@ -418,19 +429,22 @@ const MusicVideoPlayer: React.FC = () => {
           setCtaType(response.data.socialMetadata.ctaType || '');
           setCtaUrl(response.data.socialMetadata.ctaUrl || '');
         }
-        if (response.data.socialThumbnailUrl) {
-          setSocialThumbnailUrl(response.data.socialThumbnailUrl);
-          setSelectedThumbnailUrl(response.data.socialThumbnailUrl);
-        }
         // Load all previously generated thumbnails
         if (response.data.generatedThumbnails && response.data.generatedThumbnails.length > 0) {
           const thumbnailUrls = response.data.generatedThumbnails.map((t: { url: string }) => t.url);
           setGeneratedThumbnails(thumbnailUrls);
+
+          // Always auto-select first AI generated thumbnail
+          setSocialThumbnailUrl(thumbnailUrls[0]);
+          setSelectedThumbnailUrl(thumbnailUrls[0]);
+        } else if (response.data.socialThumbnailUrl) {
+          setSocialThumbnailUrl(response.data.socialThumbnailUrl);
+          setSelectedThumbnailUrl(response.data.socialThumbnailUrl);
         }
       } catch {
-        // No existing metadata, that's okay
+        // No existing metadata
       }
-      
+
       try {
         // Check YouTube status
         const ytResponse = await youtubeApi.getStatus(user.userId);
@@ -654,14 +668,6 @@ const MusicVideoPlayer: React.FC = () => {
     if (editedMetadata) {
       const updatedTags = editedMetadata.tags.filter(tag => tag !== tagToRemove);
       setEditedMetadata({ ...editedMetadata, tags: updatedTags });
-    }
-  };
-
-  const handleCopyDescription = () => {
-    if (editedMetadata?.description) {
-      navigator.clipboard.writeText(editedMetadata.description);
-      setSocialSuccess('Description copied!');
-      setTimeout(() => setSocialSuccess(null), 2000);
     }
   };
 
@@ -1664,216 +1670,6 @@ const MusicVideoPlayer: React.FC = () => {
             </Alert>
           )}
           
-          {/* Persistent Upload Status - Individual Platform Cards */}
-          {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && socialUploadPlatforms.length > 0 && (
-            <Box sx={{ mb: 2 }}>
-              {/* Only show header for in-progress or successful uploads */}
-              {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || socialUploadStatus === 'completed') && (
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                    {socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' 
-                      ? `Posting to ${socialUploadPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}...`
-                      : '✓ All posts complete!'}
-                  </Typography>
-                  {socialUploadStatus === 'completed' && (
-                    <IconButton 
-                      size="small" 
-                      onClick={async () => {
-                        setSocialUploadStatus('idle');
-                        setSocialUploadResults({});
-                        setSocialUploadPlatforms([]);
-                        // Reset in backend so it doesn't come back on refresh
-                        try {
-                          await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
-                        } catch (err) {
-                          console.error('Failed to reset social upload status:', err);
-                        }
-                      }}
-                      sx={{ p: 0.5 }}
-                    >
-                      <Close sx={{ fontSize: 18 }} />
-                    </IconButton>
-                  )}
-                </Box>
-              )}
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {socialUploadPlatforms.map((platform) => {
-                  const result = socialUploadResults[platform];
-                  // Check if 'success' property exists (not just if result exists)
-                  // Backend stores { status: 'uploading' } initially, then { success: true/false } when done
-                  const isComplete = result !== undefined && 'success' in result;
-                  const isSuccess = result?.success;
-                  const platformColors: Record<string, string> = {
-                    youtube: '#FF0000',
-                    tiktok: '#000000',
-                    instagram: '#E4405F',
-                    facebook: '#1877F2',
-                    linkedin: '#0077B5',
-                  };
-                  const platformNames: Record<string, string> = {
-                    youtube: 'YouTube',
-                    tiktok: 'TikTok',
-                    instagram: 'Instagram',
-                    facebook: 'Facebook',
-                    linkedin: 'LinkedIn',
-                  };
-                  
-                  return (
-                    <Box
-                      key={platform}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1.5,
-                        borderRadius: '10px',
-                        bgcolor: isComplete 
-                          ? isSuccess ? 'rgba(52,199,89,0.08)' : 'rgba(255,59,48,0.08)'
-                          : 'rgba(0,122,255,0.06)',
-                        border: `1px solid ${isComplete 
-                          ? isSuccess ? 'rgba(52,199,89,0.3)' : 'rgba(255,59,48,0.3)'
-                          : 'rgba(0,122,255,0.2)'}`,
-                      }}
-                    >
-                      {/* Platform Icon */}
-                      <Box sx={{ 
-                        width: 32, height: 32, borderRadius: '8px', 
-                        bgcolor: platform === 'youtube' ? 'rgba(255,0,0,0.1)' : platform === 'facebook' ? 'rgba(24,119,242,0.1)' : platform === 'instagram' ? 'rgba(228,64,95,0.1)' : platform === 'tiktok' ? 'rgba(0,0,0,0.08)' : 'rgba(0,119,181,0.1)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0,
-                      }}>
-                        {platform === 'youtube' && <YouTube sx={{ fontSize: 18, color: '#FF0000' }} />}
-                        {platform === 'tiktok' && (
-                          <Box component="svg" viewBox="0 0 24 24" sx={{ width: 16, height: 16, fill: '#000000' }}>
-                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                          </Box>
-                        )}
-                        {platform === 'instagram' && (
-                          <Box component="svg" viewBox="0 0 24 24" sx={{ width: 16, height: 16, fill: '#E4405F' }}>
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-                          </Box>
-                        )}
-                        {platform === 'facebook' && (
-                          <Box component="svg" viewBox="0 0 24 24" sx={{ width: 16, height: 16, fill: '#1877F2' }}>
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                          </Box>
-                        )}
-                        {platform === 'linkedin' && (
-                          <Box component="svg" viewBox="0 0 24 24" sx={{ width: 16, height: 16, fill: '#0077B5' }}>
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                          </Box>
-                        )}
-                      </Box>
-                      
-                      {/* Platform Name */}
-                      <Typography sx={{ flex: 1, fontWeight: 500, fontSize: '0.9rem', color: '#1D1D1F' }}>
-                        {platformNames[platform] || platform}
-                      </Typography>
-                      
-                      {/* Status Indicator */}
-                      {!isComplete && (
-                        <CircularProgress size={18} sx={{ color: platformColors[platform] || '#007AFF' }} />
-                      )}
-                      {isComplete && isSuccess && (
-                        <>
-                          <CheckCircle sx={{ fontSize: 20, color: '#34C759' }} />
-                          {result.url && (
-                            <Button
-                              size="small"
-                              onClick={() => window.open(result.url, '_blank')}
-                              sx={{ 
-                                minWidth: 'auto', 
-                                px: 1.5, 
-                                py: 0.5,
-                                textTransform: 'none', 
-                                fontSize: '0.8rem',
-                                fontWeight: 600,
-                                color: '#34C759',
-                                '&:hover': { bgcolor: 'rgba(52,199,89,0.1)' },
-                              }}
-                            >
-                              View
-                            </Button>
-                          )}
-                          <IconButton
-                            size="small"
-                            onClick={async () => {
-                              try {
-                                const response = await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
-                                const remainingPlatforms = response.data.remainingPlatforms || [];
-                                
-                                if (remainingPlatforms.length === 0) {
-                                  setSocialUploadStatus('idle');
-                                  setSocialUploadResults({});
-                                  setSocialUploadPlatforms([]);
-                                } else {
-                                  setSocialUploadPlatforms(remainingPlatforms);
-                                  setSocialUploadResults(prev => {
-                                    const newResults = { ...prev };
-                                    delete newResults[platform];
-                                    return newResults;
-                                  });
-                                }
-                              } catch (err) {
-                                console.error('Failed to dismiss platform:', err);
-                              }
-                            }}
-                            sx={{ p: 0.25 }}
-                          >
-                            <Close sx={{ fontSize: 16, color: '#86868B' }} />
-                          </IconButton>
-                        </>
-                      )}
-                      {isComplete && !isSuccess && (
-                        <>
-                          <Typography sx={{ fontSize: '0.8rem', color: '#FF3B30', mr: 1 }}>
-                            Failed to post
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={async () => {
-                              try {
-                                // Dismiss this specific platform in backend
-                                const response = await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
-                                const remainingPlatforms = response.data.remainingPlatforms || [];
-                                
-                                if (remainingPlatforms.length === 0) {
-                                  // All dismissed, reset to idle
-                                  setSocialUploadStatus('idle');
-                                  setSocialUploadResults({});
-                                  setSocialUploadPlatforms([]);
-                                } else {
-                                  // Remove this platform from the lists
-                                  setSocialUploadPlatforms(remainingPlatforms);
-                                  setSocialUploadResults(prev => {
-                                    const newResults = { ...prev };
-                                    delete newResults[platform];
-                                    return newResults;
-                                  });
-                                }
-                              } catch (err) {
-                                console.error('Failed to dismiss platform:', err);
-                              }
-                            }}
-                            sx={{ p: 0.25 }}
-                          >
-                            <Close sx={{ fontSize: 16, color: '#FF3B30' }} />
-                          </IconButton>
-                        </>
-                      )}
-                    </Box>
-                  );
-                })}
-              </Box>
-              {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
-                <Typography variant="caption" sx={{ color: '#666', mt: 1, display: 'block' }}>
-                  You'll receive an email when complete
-                </Typography>
-              )}
-            </Box>
-          )}
-          
-
           {/* Platform Selection - Own Paper Section */}
           <Paper
             elevation={0}
@@ -1885,9 +1681,18 @@ const MusicVideoPlayer: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.06)',
             }}
           >
-            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2, fontSize: '0.95rem' }}>
-              Select Platforms
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                  ? 'Posting Video...'
+                  : 'Select Platforms'}
+              </Typography>
+              {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
+                <Typography variant="caption" sx={{ color: '#86868B' }}>
+                  You'll receive an email when complete
+                </Typography>
+              )}
+            </Box>
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
               {/* YouTube - Selectable */}
@@ -1947,12 +1752,16 @@ const MusicVideoPlayer: React.FC = () => {
                     }}
                   />
                 )}
-                <Box sx={{ 
-                  width: 36, height: 36, borderRadius: '10px', 
-                  background: 'rgba(255,0,0,0.1)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <Box sx={{
+                  width: 36, height: 36, borderRadius: '10px',
+                  background: 'rgba(255,0,0,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <YouTube sx={{ fontSize: 22, color: '#FF0000' }} />
+                  {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                    <CircularProgress size={18} sx={{ color: '#FF0000' }} />
+                  ) : (
+                    <YouTube sx={{ fontSize: 22, color: '#FF0000' }} />
+                  )}
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -1962,7 +1771,9 @@ const MusicVideoPlayer: React.FC = () => {
                     )}
                   </Box>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {youtubeConnected ? (youtubeChannel?.channelTitle || 'Connected') : 'Click to connect'}
+                    {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                      ? 'Uploading...'
+                      : youtubeConnected ? (youtubeChannel?.channelTitle || 'Connected') : 'Click to connect'}
                   </Typography>
                 </Box>
               </Box>
@@ -2022,14 +1833,18 @@ const MusicVideoPlayer: React.FC = () => {
                     }}
                   />
                 )}
-                <Box sx={{ 
-                  width: 36, height: 36, borderRadius: '10px', 
-                  background: 'rgba(0,0,0,0.1)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <Box sx={{
+                  width: 36, height: 36, borderRadius: '10px',
+                  background: 'rgba(0,0,0,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                  </Box>
+                  {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                    <CircularProgress size={18} sx={{ color: '#000' }} />
+                  ) : (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </Box>
+                  )}
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -2039,7 +1854,9 @@ const MusicVideoPlayer: React.FC = () => {
                     )}
                   </Box>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'Connected') : 'Click to connect'}
+                    {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                      ? 'Uploading...'
+                      : tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'Connected') : 'Click to connect'}
                   </Typography>
                 </Box>
               </Box>
@@ -2099,21 +1916,25 @@ const MusicVideoPlayer: React.FC = () => {
                     }}
                   />
                 )}
-                <Box sx={{ 
-                  width: 36, height: 36, borderRadius: '10px', 
-                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.1) 100%)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <Box sx={{
+                  width: 36, height: 36, borderRadius: '10px',
+                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.1) 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18 }}>
-                    <defs>
-                      <linearGradient id="ig-grad-select" x1="0%" y1="100%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#FFDC80" />
-                        <stop offset="50%" stopColor="#E1306C" />
-                        <stop offset="100%" stopColor="#833AB4" />
-                      </linearGradient>
-                    </defs>
-                    <path fill="url(#ig-grad-select)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-                  </Box>
+                  {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                    <CircularProgress size={18} sx={{ color: '#E4405F' }} />
+                  ) : (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18 }}>
+                      <defs>
+                        <linearGradient id="ig-grad-select" x1="0%" y1="100%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#FFDC80" />
+                          <stop offset="50%" stopColor="#E1306C" />
+                          <stop offset="100%" stopColor="#833AB4" />
+                        </linearGradient>
+                      </defs>
+                      <path fill="url(#ig-grad-select)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                    </Box>
+                  )}
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -2123,7 +1944,9 @@ const MusicVideoPlayer: React.FC = () => {
                     )}
                   </Box>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Connected') : 'Click to connect'}
+                    {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                      ? 'Uploading...'
+                      : instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Connected') : 'Click to connect'}
                   </Typography>
                 </Box>
               </Box>
@@ -2184,14 +2007,18 @@ const MusicVideoPlayer: React.FC = () => {
                     }}
                   />
                 )}
-                <Box sx={{ 
-                  width: 36, height: 36, borderRadius: '10px', 
-                  background: 'rgba(24,119,242,0.1)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <Box sx={{
+                  width: 36, height: 36, borderRadius: '10px',
+                  background: 'rgba(24,119,242,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#1877F2' }}>
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </Box>
+                  {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                    <CircularProgress size={18} sx={{ color: '#1877F2' }} />
+                  ) : (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#1877F2' }}>
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </Box>
+                  )}
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -2201,7 +2028,9 @@ const MusicVideoPlayer: React.FC = () => {
                     )}
                   </Box>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {facebookConnected ? (facebookPageName || 'Page Connected') : 'Click to connect'}
+                    {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                      ? 'Uploading...'
+                      : facebookConnected ? (facebookPageName || 'Page Connected') : 'Click to connect'}
                   </Typography>
                 </Box>
               </Box>
@@ -2261,14 +2090,18 @@ const MusicVideoPlayer: React.FC = () => {
                     }}
                   />
                 )}
-                <Box sx={{ 
-                  width: 36, height: 36, borderRadius: '10px', 
-                  background: 'rgba(0,119,181,0.1)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <Box sx={{
+                  width: 36, height: 36, borderRadius: '10px',
+                  background: 'rgba(0,119,181,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#0077B5' }}>
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </Box>
+                  {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                    <CircularProgress size={18} sx={{ color: '#0077B5' }} />
+                  ) : (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#0077B5' }}>
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </Box>
+                  )}
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -2278,11 +2111,124 @@ const MusicVideoPlayer: React.FC = () => {
                     )}
                   </Box>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {linkedinConnected ? (linkedinName || 'Connected') : 'Click to connect'}
+                    {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
+                      ? 'Uploading...'
+                      : linkedinConnected ? (linkedinName || 'Connected') : 'Click to connect'}
                   </Typography>
                 </Box>
               </Box>
             </Box>
+
+            {/* Upload Results Summary */}
+            {Object.keys(socialUploadResults).length > 0 && (socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && (
+              <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                      Last Upload
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <CheckCircle sx={{ fontSize: 16, color: '#34C759' }} />
+                        <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>Success</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Error sx={{ fontSize: 16, color: '#FF3B30' }} />
+                        <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>Failed</Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      setSocialUploadResults({});
+                      setSocialUploadStatus('idle');
+                    }}
+                    sx={{
+                      fontSize: '0.75rem',
+                      color: '#86868B',
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      minWidth: 'auto',
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: '8px',
+                      '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', color: '#1D1D1F' }
+                    }}
+                  >
+                    Dismiss all
+                  </Button>
+                </Box>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {Object.entries(socialUploadResults).map(([platform, result]) => (
+                    <Tooltip
+                      key={platform}
+                      title={result.success ? (result.url ? 'Click to view' : 'Posted successfully') : (result.error || 'Upload failed')}
+                      arrow
+                      placement="top"
+                    >
+                      <Box
+                        component={result.success && result.url ? 'a' : 'div'}
+                        href={result.success && result.url ? result.url : undefined}
+                        target={result.success && result.url ? '_blank' : undefined}
+                        rel={result.success && result.url ? 'noopener noreferrer' : undefined}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          px: 1.5,
+                          py: 0.75,
+                          borderRadius: '10px',
+                          border: result.success ? '1px solid rgba(52,199,89,0.3)' : '1px solid rgba(255,59,48,0.25)',
+                          bgcolor: result.success ? 'rgba(52,199,89,0.06)' : 'rgba(255,59,48,0.04)',
+                          textDecoration: 'none',
+                          cursor: result.success && result.url ? 'pointer' : 'default',
+                          transition: 'all 0.15s ease',
+                          '&:hover': result.success && result.url ? {
+                            bgcolor: 'rgba(52,199,89,0.12)',
+                            borderColor: 'rgba(52,199,89,0.5)',
+                          } : {},
+                        }}
+                      >
+                        {result.success ? (
+                          <CheckCircle sx={{ fontSize: 16, color: '#34C759' }} />
+                        ) : (
+                          <Error sx={{ fontSize: 16, color: '#FF3B30' }} />
+                        )}
+                        <Typography sx={{
+                          fontSize: '0.85rem',
+                          fontWeight: 500,
+                          color: '#1D1D1F',
+                          textTransform: 'capitalize',
+                        }}>
+                          {platform}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const newResults = { ...socialUploadResults };
+                            delete newResults[platform];
+                            setSocialUploadResults(newResults);
+                            if (Object.keys(newResults).length === 0) {
+                              setSocialUploadStatus('idle');
+                            }
+                          }}
+                          sx={{
+                            p: 0.25,
+                            color: '#C7C7CC',
+                            '&:hover': { color: '#86868B', bgcolor: 'transparent' }
+                          }}
+                        >
+                          <Close sx={{ fontSize: 14 }} />
+                        </IconButton>
+                      </Box>
+                    </Tooltip>
+                  ))}
+                </Box>
+              </Box>
+            )}
 
           </Paper>
 
@@ -2297,47 +2243,52 @@ const MusicVideoPlayer: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.06)',
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 2 }}>
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', flexShrink: 0 }}>
-                Video Details
-              </Typography>
-              
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, gap: 2 }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', mb: 0.5 }}>
+                  Video Details
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#86868B' }}>
+                  Enter details manually or use AI to generate title, description, and tags
+                </Typography>
+              </Box>
+
               {/* Generate with AI button */}
               <Button
                 variant="contained"
-                startIcon={isGeneratingMetadata ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <AutoAwesome />}
+                size="small"
+                startIcon={isGeneratingMetadata ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <Box sx={{ display: 'flex', alignItems: 'center' }}><Bolt sx={{ fontSize: '1.1rem', color: '#fff' }} /><Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, ml: 0.25, color: '#fff' }}>10</Typography></Box>}
                 onClick={handleGenerateMetadata}
                 disabled={isGeneratingMetadata}
                 sx={{
                   borderRadius: '10px',
                   textTransform: 'none',
                   fontWeight: 600,
+                  fontSize: '0.85rem',
+                  py: { xs: 0.5, sm: 1 },
+                  px: { xs: 1.25, sm: 2 },
                   color: '#fff',
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   border: 'none',
                   boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
                   flexShrink: 0,
                   whiteSpace: 'nowrap',
-                  '&:hover': { 
+                  '&:hover': {
                     boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
                   },
-                  '&:disabled': { 
+                  '&:disabled': {
                     background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
                     boxShadow: 'none',
                   },
                 }}
               >
-                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI (10 credits)'}
+                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
               </Button>
             </Box>
-            
-            <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
-              Enter details manually or use AI to generate title, description, and tags
-            </Typography>
 
             {/* Title */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Title
               </Typography>
               <TextField
@@ -2366,7 +2317,7 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Description */}
             <Box sx={{ position: 'relative', mb: 2 }}>
-              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Description
               </Typography>
               <TextField
@@ -2391,22 +2342,11 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               />
-              {editedMetadata?.description && (
-                <Tooltip title="Copy description">
-                  <IconButton
-                    onClick={handleCopyDescription}
-                    sx={{ position: 'absolute', top: 32, right: 8 }}
-                    size="small"
-                  >
-                    <ContentCopy fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
             </Box>
 
             {/* Call to Action */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Call to Action (optional)
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -2461,26 +2401,28 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Tags */}
             <Box sx={{ mb: 0 }}>
-              <Typography variant="body2" sx={{ mb: 1, color: '#86868B', fontWeight: 500 }}>
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Tags
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
-                {editedMetadata?.tags?.map((tag, index) => (
-                  <Chip
-                    key={index}
-                    label={tag}
-                    size="small"
-                    onDelete={() => handleRemoveTag(tag)}
-                    sx={{
-                      borderRadius: '100px',
-                      bgcolor: 'rgba(0,122,255,0.1)',
-                      color: '#007AFF',
-                      fontWeight: 500,
-                      '& .MuiChip-deleteIcon': { color: '#007AFF' },
-                    }}
-                  />
-                ))}
-              </Box>
+              {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
+                  {editedMetadata.tags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      size="small"
+                      onDelete={() => handleRemoveTag(tag)}
+                      sx={{
+                        borderRadius: '100px',
+                        bgcolor: 'rgba(0,122,255,0.1)',
+                        color: '#007AFF',
+                        fontWeight: 500,
+                        '& .MuiChip-deleteIcon': { color: '#007AFF' },
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                 <TextField
                   size="small"
@@ -2565,7 +2507,14 @@ const MusicVideoPlayer: React.FC = () => {
               });
               
               const showCreatePanel = selectedCharacterIds.length > 0;
-              
+
+              // Auto-select first thumbnail if none selected
+              if (thumbnailOptions.length > 0 && !selectedThumbnailUrl) {
+                const firstUrl = thumbnailOptions[0].type === 'custom' ? thumbnailOptions[0].dataUrl! : thumbnailOptions[0].url;
+                setSelectedThumbnailUrl(firstUrl);
+                setSocialThumbnailUrl(firstUrl);
+              }
+
               return (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}>
                   {/* Existing thumbnail options */}
@@ -2874,6 +2823,222 @@ const MusicVideoPlayer: React.FC = () => {
             )}
           </Paper>
 
+          {/* TikTok Specific Settings - Separate card shown when TikTok is selected */}
+          {selectedPlatforms.includes('tiktok') && (
+            <Paper
+              elevation={0}
+              sx={{
+                mt: 3,
+                p: 2.5,
+                borderRadius: '16px',
+                border: '1px solid rgba(0,0,0,0.08)',
+                bgcolor: '#fff',
+              }}
+            >
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', mb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </Box>
+                TikTok Specific Settings
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#86868B', mb: 2.5 }}>
+                Configure how your video appears on TikTok
+              </Typography>
+
+              {/* Privacy Level */}
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+                Who can view this video
+              </Typography>
+              <Select
+                fullWidth
+                size="small"
+                value={tiktokPrivacyLevel}
+                onChange={(e) => {
+                  setTiktokPrivacyLevel(e.target.value);
+                  if (e.target.value === 'SELF_ONLY' && tiktokBrandedContent) {
+                    setTiktokBrandedContent(false);
+                  }
+                }}
+                sx={{ borderRadius: '10px', mb: 2 }}
+              >
+                <MenuItem value="PUBLIC_TO_EVERYONE">Everyone</MenuItem>
+                <MenuItem value="MUTUAL_FOLLOW_FRIENDS">Friends</MenuItem>
+                <MenuItem value="SELF_ONLY">Only me</MenuItem>
+              </Select>
+
+              {/* Interaction Settings */}
+              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+                Allow viewers to:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tiktokAllowComment}
+                      onChange={(e) => setTiktokAllowComment(e.target.checked)}
+                      size="small"
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                    />
+                  }
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Comment</Typography>
+                      <Tooltip title="Allow viewers to leave comments on your video" arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      </Tooltip>
+                    </Box>
+                  }
+                  sx={{ mr: 2 }}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tiktokAllowDuet}
+                      onChange={(e) => setTiktokAllowDuet(e.target.checked)}
+                      size="small"
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                    />
+                  }
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Duet</Typography>
+                      <Tooltip title="Allow others to create a video side-by-side with yours" arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      </Tooltip>
+                    </Box>
+                  }
+                  sx={{ mr: 2 }}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tiktokAllowStitch}
+                      onChange={(e) => setTiktokAllowStitch(e.target.checked)}
+                      size="small"
+                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                    />
+                  }
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Stitch</Typography>
+                      <Tooltip title="Allow others to clip up to 5 seconds of your video into theirs" arrow>
+                        <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                      </Tooltip>
+                    </Box>
+                  }
+                />
+              </Box>
+
+              {/* Commercial Content Disclosure */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: tiktokDiscloseContent ? 1.5 : 0, ml: -1 }}>
+                <Switch
+                  checked={tiktokDiscloseContent}
+                  onChange={(e) => {
+                    setTiktokDiscloseContent(e.target.checked);
+                    if (!e.target.checked) {
+                      setTiktokBrandOrganic(false);
+                      setTiktokBrandedContent(false);
+                    }
+                  }}
+                  size="small"
+                  sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#000' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#000' } }}
+                />
+                <Box>
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>Content disclosure</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>Indicate if this promotes a brand, product, or service</Typography>
+                </Box>
+              </Box>
+
+              {tiktokDiscloseContent && (
+                <>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={tiktokBrandOrganic}
+                          onChange={(e) => setTiktokBrandOrganic(e.target.checked)}
+                          size="small"
+                          sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                        />
+                      }
+                      label={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Your brand</Typography>
+                          <Tooltip title="You're promoting yourself or your own business" arrow>
+                            <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                          </Tooltip>
+                        </Box>
+                      }
+                      sx={{ mr: 2 }}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={tiktokBrandedContent}
+                          onChange={(e) => {
+                            setTiktokBrandedContent(e.target.checked);
+                            if (e.target.checked && tiktokPrivacyLevel === 'SELF_ONLY') {
+                              setTiktokPrivacyLevel('PUBLIC_TO_EVERYONE');
+                            }
+                          }}
+                          size="small"
+                          disabled={tiktokPrivacyLevel === 'SELF_ONLY'}
+                          sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                        />
+                      }
+                      label={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : 'inherit' }}>Branded content</Typography>
+                          <Tooltip title={tiktokPrivacyLevel === 'SELF_ONLY' ? 'Branded content cannot be private' : "You're promoting another brand or third party"} arrow>
+                            <InfoOutlined sx={{ fontSize: '1rem', color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                          </Tooltip>
+                        </Box>
+                      }
+                    />
+                  </Box>
+                  {(tiktokBrandOrganic || tiktokBrandedContent) && (
+                    <Alert severity="info" sx={{ mt: 1.5, py: 0.5, borderRadius: '8px', '& .MuiAlert-message': { fontSize: '0.75rem' } }}>
+                      Your video will be labeled as "{tiktokBrandedContent ? 'Paid partnership' : 'Promotional content'}"
+                    </Alert>
+                  )}
+                  {!tiktokBrandOrganic && !tiktokBrandedContent && (
+                    <Alert severity="warning" sx={{ mt: 1.5, py: 0.5, borderRadius: '8px', '& .MuiAlert-message': { fontSize: '0.75rem' } }}>
+                      Select at least one option to indicate what you're promoting
+                    </Alert>
+                  )}
+                </>
+              )}
+
+              {/* Consent Declaration */}
+              <Typography sx={{ fontSize: '0.75rem', color: '#86868B', lineHeight: 1.5, mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                By posting, you agree to TikTok's{' '}
+                {tiktokBrandedContent && (
+                  <>
+                    <Typography
+                      component="a"
+                      href="https://www.tiktok.com/legal/bc-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{ fontSize: '0.75rem', color: '#007AFF', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                      Branded Content Policy
+                    </Typography>
+                    {' and '}
+                  </>
+                )}
+                <Typography
+                  component="a"
+                  href="https://www.tiktok.com/legal/music-usage-confirmation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ fontSize: '0.75rem', color: '#007AFF', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                >
+                  Music Usage Confirmation
+                </Typography>
+              </Typography>
+            </Paper>
+          )}
+
           {/* Upload Button */}
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, flexDirection: 'column', alignItems: 'center', gap: 1 }}>
             {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
@@ -2900,13 +3065,13 @@ const MusicVideoPlayer: React.FC = () => {
                 '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)', boxShadow: 'none' },
               }}
             >
-              {isUploading 
-                ? 'Uploading...' 
-                : selectedPlatforms.length === 0 
+              {isUploading
+                ? 'Publishing...'
+                : selectedPlatforms.length === 0
                   ? 'Select a Platform'
-                  : !editedMetadata?.title 
+                  : !editedMetadata?.title
                     ? 'Enter Title First'
-                    : `Upload to ${selectedPlatforms.length} Platform${selectedPlatforms.length > 1 ? 's' : ''}`
+                    : 'Publish Video'
               }
             </Button>
           </Box>
@@ -3098,13 +3263,6 @@ const MusicVideoPlayer: React.FC = () => {
               </Alert>
             )}
             
-            {/* TikTok sandbox mode disclaimer */}
-            {selectedPlatforms.includes('tiktok') && !isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
-              <Alert severity="warning" sx={{ mt: 2, borderRadius: '10px', '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
-                <strong>TikTok Note:</strong> TikTok posting currently only works for private accounts while we await approval. Full public posting will be available soon!
-              </Alert>
-            )}
-
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 1 }}>
             {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
@@ -3189,6 +3347,16 @@ const MusicVideoPlayer: React.FC = () => {
                       await videosApi.batchSocialUpload(user!.userId, videoId!, {
                         platforms: selectedPlatforms,
                         addThumbnailIntro: shouldAddThumbnailIntro,
+                        // TikTok-specific settings (required by TikTok API)
+                        tiktokSettings: selectedPlatforms.includes('tiktok') ? {
+                          privacyLevel: tiktokPrivacyLevel,
+                          allowComment: tiktokAllowComment,
+                          allowDuet: tiktokAllowDuet,
+                          allowStitch: tiktokAllowStitch,
+                          discloseContent: tiktokDiscloseContent,
+                          brandOrganic: tiktokBrandOrganic,
+                          brandedContent: tiktokBrandedContent,
+                        } : undefined,
                       });
                       
                       setBackgroundUploadStarted(true);
@@ -3199,7 +3367,14 @@ const MusicVideoPlayer: React.FC = () => {
                       showSocialError(err.response?.data?.error || 'Failed to start upload. Please try again.');
                     }
                   }}
-                  disabled={isUploading || selectedPlatforms.length === 0 || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading'}
+                  disabled={
+                    isUploading ||
+                    selectedPlatforms.length === 0 ||
+                    socialUploadStatus === 'queued' ||
+                    socialUploadStatus === 'uploading' ||
+                    // TikTok validation: if disclosure is on, must select at least one brand option
+                    (selectedPlatforms.includes('tiktok') && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent)
+                  }
                   sx={{
                     bgcolor: '#007AFF',
                     borderRadius: '10px',
