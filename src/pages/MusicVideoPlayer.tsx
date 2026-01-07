@@ -1618,13 +1618,13 @@ const MusicVideoPlayer: React.FC = () => {
             
         {/* Collapsible Lyrics Section - YouTube style dropdown (only show if lyrics exist) */}
         {lyrics && (
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             border: '1px solid rgba(0,0,0,0.08)',
             borderRadius: '12px',
             overflow: 'hidden',
             background: '#fff',
-            mb: 3,
+            mb: 2,
           }}
         >
           <Box
@@ -1683,7 +1683,6 @@ const MusicVideoPlayer: React.FC = () => {
         <Box
           ref={socialSectionRef}
           id="social-sharing-section"
-          sx={{ mt: 4 }}
         >
           {/* Alerts */}
           {socialError && (
@@ -2877,7 +2876,7 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
                   <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>
                     {tiktokCreatorInfoLoading ? (
                       'Loading account info...'
-                    ) : tiktokCreatorInfo?.creatorNickname ? (
+                    ) : tiktokCreatorInfo?.creatorNickname && tiktokCreatorInfo.creatorNickname !== tiktokUsername ? (
                       `@${tiktokUsername} (${tiktokCreatorInfo.creatorNickname})`
                     ) : tiktokUsername ? (
                       `@${tiktokUsername}`
@@ -3233,13 +3232,16 @@ n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
           </DialogTitle>
           <DialogContent>
             {backgroundUploadStarted && (
-              <Alert 
-                severity="success" 
+              <Alert
+                severity="success"
                 icon={<CloudUpload />}
                 sx={{ mb: 2, borderRadius: '10px' }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                   We're uploading your video. You'll receive an email when it's ready.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#666', display: 'block', mt: 0.5 }}>
+                  After processing, it may take a few minutes for your video to appear on your profile.
                 </Typography>
               </Alert>
             )}
