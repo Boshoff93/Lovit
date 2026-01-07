@@ -2326,7 +2326,7 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               >
-n                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
+                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
               </Button>
             </Box>
 
