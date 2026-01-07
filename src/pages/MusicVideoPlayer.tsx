@@ -196,7 +196,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [tiktokDiscloseContent, setTiktokDiscloseContent] = useState(false); // Commercial content toggle
   const [tiktokBrandOrganic, setTiktokBrandOrganic] = useState(false); // "Your brand" option
   const [tiktokBrandedContent, setTiktokBrandedContent] = useState(false); // "Branded content" option
-  const [tiktokPostMode, setTiktokPostMode] = useState<'draft' | 'direct'>('draft'); // Draft (inbox) or Direct post
+  const [tiktokPostMode, setTiktokPostMode] = useState<'draft' | 'direct'>('direct'); // Draft (inbox) or Direct post
 
   // Instagram state
   const [instagramConnected, setInstagramConnected] = useState(false);
@@ -2942,26 +2942,26 @@ const MusicVideoPlayer: React.FC = () => {
                     Video appears in your TikTok inbox to review and post
                   </Typography>
                 </Box>
-                <Tooltip title="Direct posting will be available once our TikTok integration is approved" arrow>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      p: 1.5,
-                      borderRadius: '10px',
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      bgcolor: 'rgba(0,0,0,0.02)',
-                      cursor: 'not-allowed',
-                      opacity: 0.5,
-                    }}
-                  >
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#86868B' }}>
-                      Direct Post
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
-                      Coming soon - pending TikTok approval
-                    </Typography>
-                  </Box>
-                </Tooltip>
+                <Box
+                  onClick={() => setTiktokPostMode('direct')}
+                  sx={{
+                    flex: 1,
+                    p: 1.5,
+                    borderRadius: '10px',
+                    border: tiktokPostMode === 'direct' ? '2px solid #000' : '1px solid rgba(0,0,0,0.15)',
+                    bgcolor: tiktokPostMode === 'direct' ? 'rgba(0,0,0,0.03)' : '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': { borderColor: '#000' },
+                  }}
+                >
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#1D1D1F' }}>
+                    Direct Post
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
+                    Private only (pending TikTok approval for public posts)
+                  </Typography>
+                </Box>
               </Box>
 
               {/* Privacy Level - Options from API, NO default value (TikTok requirement) */}
@@ -3157,14 +3157,14 @@ const MusicVideoPlayer: React.FC = () => {
                 sx={{
                   mt: 2,
                   borderRadius: '10px',
-                  bgcolor: 'rgba(0,122,255,0.08)',
-                  border: '1px solid rgba(0,122,255,0.2)',
-                  '& .MuiAlert-icon': { color: '#007AFF' },
+                  bgcolor: 'rgba(255,149,0,0.08)',
+                  border: '1px solid rgba(255,149,0,0.3)',
+                  '& .MuiAlert-icon': { color: '#FF9500' },
                   '& .MuiAlert-message': { color: '#1D1D1F' }
                 }}
               >
                 <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
-                  After posting, it may take a few minutes for your video to finish processing and appear on your TikTok profile.
+                  Videos will be posted as <strong>private</strong> (only visible to you). After posting, it may take a few minutes for your video to appear on your TikTok profile.
                 </Typography>
               </Alert>
 
