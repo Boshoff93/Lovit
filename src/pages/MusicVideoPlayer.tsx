@@ -2173,9 +2173,15 @@ const MusicVideoPlayer: React.FC = () => {
                   </Box>
                   <Button
                     size="small"
-                    onClick={() => {
+                    onClick={async () => {
                       setSocialUploadResults({});
                       setSocialUploadStatus('idle');
+                      // Clear backend status so it doesn't show again on page reload
+                      try {
+                        await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
+                      } catch (err) {
+                        console.error('Failed to reset social upload status:', err);
+                      }
                     }}
                     sx={{
                       fontSize: '0.75rem',
@@ -2238,7 +2244,7 @@ const MusicVideoPlayer: React.FC = () => {
                         </Typography>
                         <IconButton
                           size="small"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             const newResults = { ...socialUploadResults };
@@ -2246,6 +2252,12 @@ const MusicVideoPlayer: React.FC = () => {
                             setSocialUploadResults(newResults);
                             if (Object.keys(newResults).length === 0) {
                               setSocialUploadStatus('idle');
+                            }
+                            // Clear this platform's status from backend so it doesn't reappear on page reload
+                            try {
+                              await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
+                            } catch (err) {
+                              console.error(`Failed to reset ${platform} upload status:`, err);
                             }
                           }}
                           sx={{
