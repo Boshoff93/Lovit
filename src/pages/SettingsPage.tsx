@@ -18,7 +18,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { 
+import {
   ChevronRight as ChevronRightIcon,
   HelpOutline as HelpOutlineIcon,
   Logout as LogoutIcon,
@@ -29,6 +29,7 @@ import {
   Face as FaceIcon,
   Link as LinkIcon,
   CloudUpload as CloudUploadIcon,
+  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -114,6 +115,12 @@ const SettingsPage: React.FC = () => {
       title: 'Connected Accounts',
       description: 'Manage linked social accounts',
       onClick: () => navigate('/settings/connected-accounts'),
+    },
+    {
+      icon: <ScheduleIcon sx={{ color: '#007AFF' }} />,
+      title: 'Scheduled Content',
+      description: 'Manage scheduled posts',
+      onClick: () => navigate('/settings/scheduled-content'),
     },
     {
       icon: <SubscriptionIcon sx={{ color: '#007AFF' }} />,

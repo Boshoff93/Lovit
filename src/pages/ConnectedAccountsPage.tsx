@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Card, 
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
   CircularProgress,
   Alert,
   IconButton,
+  Button,
 } from '@mui/material';
-import { 
+import {
   Link as LinkIcon,
   LinkOff,
-  ArrowBack,
+  ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -592,19 +593,32 @@ const ConnectedAccountsPage: React.FC = () => {
       pb: 4,
     }}>
       <Container maxWidth="md">
+        {/* Back Button - matching AccountPage style */}
+        <Box sx={{ width: '100%', mb: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/settings')}
+            sx={{
+              color: '#007AFF',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            Back to Settings
+          </Button>
+        </Box>
+
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <IconButton onClick={() => navigate('/settings')} sx={{ color: '#007AFF' }}>
-            <ArrowBack />
-          </IconButton>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              Connected Accounts
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#86868B' }}>
-              Connect your social accounts to share content directly
-            </Typography>
-          </Box>
+        <Box sx={{ width: '100%', mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            Connected Accounts
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#86868B' }}>
+            Connect your social accounts to share content directly
+          </Typography>
         </Box>
 
         {/* Alerts */}

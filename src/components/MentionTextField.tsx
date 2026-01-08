@@ -82,62 +82,64 @@ const MentionTextField: React.FC<MentionTextFieldProps> = ({
           },
         }}
       />
-      {/* Enhance Button - positioned below input, right aligned */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-        {helperText ? (
-          <FormHelperText error={error} sx={{ mx: '14px', mt: 0 }}>
-            {helperText}
-          </FormHelperText>
-        ) : (
-          <Box />
-        )}
-        {onEnhance && value.trim() && (
-          <IconButton
-            onClick={onEnhance}
-            disabled={isEnhancing}
-            size="small"
-            title="Enhance with AI"
-            sx={{
-              background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(147,51,234,0.1) 100%)',
-              border: '1px solid',
-              borderColor: 'rgba(0,122,255,0.3)',
-              borderRadius: '20px',
-              px: 1.5,
-              py: 0.5,
-              gap: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                background: 'linear-gradient(135deg, rgba(0,122,255,0.15) 0%, rgba(147,51,234,0.15) 100%)',
-                borderColor: 'rgba(0,122,255,0.5)',
-                transform: 'scale(1.02)',
-              },
-              '&.Mui-disabled': {
-                background: 'rgba(0,0,0,0.04)',
-                borderColor: 'rgba(0,0,0,0.1)',
-              },
-            }}
-          >
-            {isEnhancing ? (
-              <CircularProgress size={14} sx={{ color: '#007AFF' }} />
-            ) : (
-              <AutoAwesomeIcon sx={{ fontSize: 14, color: '#007AFF' }} />
-            )}
-            <Box
-              component="span"
+      {/* Bottom row: helper text and/or enhance button */}
+      {(helperText || (onEnhance && value.trim())) && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          {helperText ? (
+            <FormHelperText error={error} sx={{ mx: '14px', mt: 0 }}>
+              {helperText}
+            </FormHelperText>
+          ) : (
+            <Box />
+          )}
+          {onEnhance && value.trim() && (
+            <IconButton
+              onClick={onEnhance}
+              disabled={isEnhancing}
+              size="small"
+              title="Enhance with AI"
               sx={{
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                color: '#007AFF',
-                letterSpacing: '0.02em',
+                background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(147,51,234,0.1) 100%)',
+                border: '1px solid',
+                borderColor: 'rgba(0,122,255,0.3)',
+                borderRadius: '20px',
+                px: 1.5,
+                py: 0.5,
+                gap: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, rgba(0,122,255,0.15) 0%, rgba(147,51,234,0.15) 100%)',
+                  borderColor: 'rgba(0,122,255,0.5)',
+                  transform: 'scale(1.02)',
+                },
+                '&.Mui-disabled': {
+                  background: 'rgba(0,0,0,0.04)',
+                  borderColor: 'rgba(0,0,0,0.1)',
+                },
               }}
             >
-              Enhance
-            </Box>
-          </IconButton>
-        )}
-      </Box>
+              {isEnhancing ? (
+                <CircularProgress size={14} sx={{ color: '#007AFF' }} />
+              ) : (
+                <AutoAwesomeIcon sx={{ fontSize: 14, color: '#007AFF' }} />
+              )}
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: '#007AFF',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                Enhance
+              </Box>
+            </IconButton>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

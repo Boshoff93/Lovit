@@ -405,8 +405,59 @@ export const charactersApi = {
   getUserCharacters: (userId: string) => 
     api.get(`/api/gruvi/characters/${userId}`),
   
-  deleteCharacter: (userId: string, characterId: string) => 
+  deleteCharacter: (userId: string, characterId: string) =>
     api.delete(`/api/gruvi/characters/${userId}/${characterId}`),
+};
+
+// Scheduled Posts interface
+export interface ScheduledPost {
+  userId: string;
+  scheduleId: string;
+  videoId: string;
+  platforms: Array<{
+    platform: string;
+    accountId?: string;
+    accountName?: string;
+  }>;
+  scheduledTime: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  status: 'scheduled' | 'publishing' | 'published' | 'failed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  uploadResults?: Array<{
+    platform: string;
+    status: string;
+    message?: string;
+    error?: string;
+  }>;
+}
+
+// Scheduled Posts API
+export const scheduledPostsApi = {
+  // Create a new scheduled post
+  createScheduledPost: (data: {
+    videoId: string;
+    platforms: Array<{ platform: string; accountId?: string; accountName?: string }>;
+    scheduledTime: string;
+    title?: string;
+    description?: string;
+    thumbnailUrl?: string;
+  }) => api.post('/api/gruvi/scheduled-posts', data),
+
+  // Get all scheduled posts for the current user
+  getScheduledPosts: () =>
+    api.get<{ scheduledPosts: ScheduledPost[] }>('/api/gruvi/scheduled-posts'),
+
+  // Get a specific scheduled post
+  getScheduledPost: (scheduleId: string) =>
+    api.get<{ scheduledPost: ScheduledPost }>(`/api/gruvi/scheduled-posts/${scheduleId}`),
+
+  // Cancel a scheduled post
+  cancelScheduledPost: (scheduleId: string) =>
+    api.delete(`/api/gruvi/scheduled-posts/${scheduleId}`),
 };
 
 export default api; 

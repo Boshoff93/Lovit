@@ -250,7 +250,17 @@ const AccountPage: React.FC = () => {
                 />
               </Box>
               <Box sx={{ mt: 7, textAlign: 'center' }}>
-                <Typography 
+                <Typography
+                  variant="h5"
+                  fontWeight="600"
+                  gutterBottom
+                >
+                  Account
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Manage your profile and subscription
+                </Typography>
+                <Typography
                   variant="subtitle2"
                   fontWeight="600"
                   gutterBottom

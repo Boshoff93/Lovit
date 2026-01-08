@@ -422,14 +422,8 @@ const UploadPage: React.FC = () => {
   return (
     <>
     <Container maxWidth="md" sx={{ pt: 2, pb: 8 }}>
-        {/* Header with Back Button and Toggle */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          mb: 4,
-        }}>
-          {/* Back Button */}
+        {/* Back Button */}
+        <Box sx={{ width: '100%', mb: 2 }}>
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate(-1)}
@@ -444,6 +438,23 @@ const UploadPage: React.FC = () => {
           >
             Back
           </Button>
+        </Box>
+
+        {/* Page Title and Toggle */}
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          mb: 4,
+        }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+              Upload Content
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#86868B' }}>
+              Upload your own music or videos to Gruvi
+            </Typography>
+          </Box>
 
           {/* Toggle - right aligned */}
           <ToggleButtonGroup

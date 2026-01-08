@@ -45,10 +45,11 @@ import {
   Error,
   Close,
   InfoOutlined,
+  Schedule,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import { TopUpBundle } from '../config/stripe';
@@ -216,6 +217,11 @@ const MusicVideoPlayer: React.FC = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [showUploadConfirm, setShowUploadConfirm] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, 'pending' | 'uploading' | 'success' | 'error'>>({});
+
+  // Scheduling state
+  const [uploadMode, setUploadMode] = useState<'now' | 'schedule'>('now');
+  const [scheduledDateTime, setScheduledDateTime] = useState<string>('');
+  const [isScheduling, setIsScheduling] = useState(false);
   
   // Video characters state (for thumbnail selection)
   const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
@@ -3439,13 +3445,90 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             )}
 
+            {/* Publish Now / Schedule Toggle */}
+            {!isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.5, color: '#1D1D1F' }}>
+                  When to publish?
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1.5 }}>
+                  <Box
+                    onClick={() => setUploadMode('now')}
+                    sx={{
+                      flex: 1,
+                      p: 2,
+                      borderRadius: '12px',
+                      border: `2px solid ${uploadMode === 'now' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
+                      bgcolor: uploadMode === 'now' ? 'rgba(0,122,255,0.05)' : '#fff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': { borderColor: uploadMode === 'now' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <CloudUpload sx={{ fontSize: 20, color: uploadMode === 'now' ? '#007AFF' : '#86868B' }} />
+                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'now' ? '#007AFF' : '#1D1D1F' }}>
+                        Publish Now
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      Upload immediately
+                    </Typography>
+                  </Box>
+                  <Box
+                    onClick={() => setUploadMode('schedule')}
+                    sx={{
+                      flex: 1,
+                      p: 2,
+                      borderRadius: '12px',
+                      border: `2px solid ${uploadMode === 'schedule' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
+                      bgcolor: uploadMode === 'schedule' ? 'rgba(0,122,255,0.05)' : '#fff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': { borderColor: uploadMode === 'schedule' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <Schedule sx={{ fontSize: 20, color: uploadMode === 'schedule' ? '#007AFF' : '#86868B' }} />
+                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'schedule' ? '#007AFF' : '#1D1D1F' }}>
+                        Schedule
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: '#86868B' }}>
+                      Pick a date & time
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Date/Time Picker for scheduling */}
+                {uploadMode === 'schedule' && (
+                  <TextField
+                    type="datetime-local"
+                    value={scheduledDateTime}
+                    onChange={(e) => setScheduledDateTime(e.target.value)}
+                    fullWidth
+                    size="small"
+                    inputProps={{
+                      min: new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 16), // At least 5 min from now
+                    }}
+                    sx={{
+                      mt: 2,
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '10px',
+                      },
+                    }}
+                  />
+                )}
+              </Box>
+            )}
+
             {/* YouTube Shorts thumbnail note */}
             {selectedPlatforms.includes('youtube') && videoData?.aspectRatio === 'portrait' && !isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
               <Alert severity="info" sx={{ mt: 2, borderRadius: '10px', '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
                 <strong>YouTube Shorts:</strong> Your thumbnail is added as the first frame. To set it as the cover, edit the Short in the YouTube mobile app and scroll to select the first frame.
               </Alert>
             )}
-            
+
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 1 }}>
             {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
@@ -3502,11 +3585,74 @@ const MusicVideoPlayer: React.FC = () => {
                 
                 <Button
                   variant="contained"
-                  startIcon={isUploading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : <CloudUpload />}
+                  startIcon={(isUploading || isScheduling) ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : uploadMode === 'schedule' ? <Schedule /> : <CloudUpload />}
                   onClick={async () => {
-                    setIsUploading(true);
                     setSocialError(null);
-                    
+
+                    // Handle scheduling
+                    if (uploadMode === 'schedule') {
+                      if (!scheduledDateTime) {
+                        showSocialError('Please select a date and time for scheduling');
+                        return;
+                      }
+
+                      const scheduledDate = new Date(scheduledDateTime);
+                      if (scheduledDate <= new Date()) {
+                        showSocialError('Scheduled time must be in the future');
+                        return;
+                      }
+
+                      setIsScheduling(true);
+                      try {
+                        // Save metadata first
+                        if (editedMetadata?.title) {
+                          await videosApi.updateSocialMetadata(user!.userId, videoId!, {
+                            title: editedMetadata.title,
+                            description: editedMetadata.description || '',
+                            tags: editedMetadata.tags || [],
+                            hook: editedMetadata.hook || hookText || '',
+                            ctaType: ctaType || '',
+                            ctaUrl: ctaUrl || '',
+                          });
+                        }
+
+                        // Create scheduled post
+                        const platformConfigs = selectedPlatforms.map(platform => ({
+                          platform,
+                          accountName: (platform === 'youtube' ? youtubeChannel?.channelTitle :
+                                       platform === 'tiktok' ? tiktokUsername :
+                                       platform === 'instagram' ? instagramUsername :
+                                       platform === 'facebook' ? facebookPageName :
+                                       platform === 'linkedin' ? linkedinName : undefined) || undefined,
+                        }));
+
+                        await scheduledPostsApi.createScheduledPost({
+                          videoId: videoId!,
+                          platforms: platformConfigs,
+                          scheduledTime: scheduledDate.toISOString(),
+                          title: editedMetadata?.title || '',
+                          description: editedMetadata?.description || '',
+                          thumbnailUrl: selectedThumbnailUrl || videoData?.thumbnailUrl || '',
+                        });
+
+                        setIsScheduling(false);
+                        setShowUploadConfirm(false);
+                        // Reset state
+                        setUploadMode('now');
+                        setScheduledDateTime('');
+                        // Show success message (could use a snackbar)
+                        alert(`Post scheduled for ${scheduledDate.toLocaleString()}`);
+                      } catch (err: any) {
+                        console.error('Scheduling failed:', err);
+                        setIsScheduling(false);
+                        showSocialError(err.response?.data?.error || 'Failed to schedule post. Please try again.');
+                      }
+                      return;
+                    }
+
+                    // Handle immediate upload
+                    setIsUploading(true);
+
                     try {
                       // Save metadata first
                       if (editedMetadata?.title) {
@@ -3519,12 +3665,12 @@ const MusicVideoPlayer: React.FC = () => {
                           ctaUrl: ctaUrl || '',
                         });
                       }
-                      
+
                       // Clear any previous failed state immediately before starting new upload
                       setSocialUploadStatus('queued');
                       setSocialUploadPlatforms(selectedPlatforms);
                       setSocialUploadResults({});
-                      
+
                       // Queue upload to background worker - always emails when done
                       const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
                       await videosApi.batchSocialUpload(user!.userId, videoId!, {
@@ -3542,7 +3688,7 @@ const MusicVideoPlayer: React.FC = () => {
                           brandedContent: tiktokBrandedContent,
                         } : undefined,
                       });
-                      
+
                       setBackgroundUploadStarted(true);
                       setIsUploading(false);
                     } catch (err: any) {
@@ -3553,11 +3699,14 @@ const MusicVideoPlayer: React.FC = () => {
                   }}
                   disabled={
                     isUploading ||
+                    isScheduling ||
                     selectedPlatforms.length === 0 ||
                     socialUploadStatus === 'queued' ||
                     socialUploadStatus === 'uploading' ||
                     // TikTok validation: if disclosure is on, must select at least one brand option
-                    (selectedPlatforms.includes('tiktok') && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent)
+                    (selectedPlatforms.includes('tiktok') && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent) ||
+                    // Schedule validation: must have date/time selected
+                    (uploadMode === 'schedule' && !scheduledDateTime)
                   }
                   sx={{
                     bgcolor: '#007AFF',
@@ -3568,7 +3717,7 @@ const MusicVideoPlayer: React.FC = () => {
                     '&:hover': { bgcolor: '#0066DD' },
                   }}
                 >
-                  {isUploading ? 'Starting...' : 'Upload Now'}
+                  {isUploading ? 'Starting...' : isScheduling ? 'Scheduling...' : uploadMode === 'schedule' ? 'Schedule Post' : 'Upload Now'}
                 </Button>
               </>
             )}

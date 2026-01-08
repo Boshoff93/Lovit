@@ -47,6 +47,7 @@ import InstagramCallbackPage from './pages/InstagramCallbackPage';
 import LinkedInCallbackPage from './pages/LinkedInCallbackPage';
 import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
+import ScheduledContentPage from './pages/ScheduledContentPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -219,6 +220,13 @@ function App() {
           <RequireAuth>
             <Layout>
               <ConnectedAccountsPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        <Route path="/settings/scheduled-content" element={
+          <RequireAuth>
+            <Layout>
+              <ScheduledContentPage />
             </Layout>
           </RequireAuth>
         } />
