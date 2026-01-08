@@ -157,6 +157,19 @@ export const songsApi = {
         }
       },
     }),
+
+  /**
+   * Enhance a user's song prompt with AI
+   */
+  enhancePrompt: async (prompt: string, options?: { genre?: string; mood?: string; characters?: Array<{ characterName: string }> }) => {
+    const response = await api.post('/api/gruvi/enhance-prompt', {
+      prompt,
+      genre: options?.genre,
+      mood: options?.mood,
+      characters: options?.characters,
+    });
+    return response.data as { originalPrompt: string; enhancedPrompt: string };
+  },
 };
 
 // Videos API

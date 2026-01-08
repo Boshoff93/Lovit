@@ -459,7 +459,8 @@ const CreatePage: React.FC = () => {
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   const [isGeneratingSong, setIsGeneratingSong] = useState(false);
-  
+  const [isEnhancingPrompt, setIsEnhancingPrompt] = useState(false);
+
   // Video creation state
   const [selectedSong, setSelectedSong] = useState(songIdFromUrl || '');
   const [videoPrompt, setVideoPrompt] = useState('');
@@ -854,6 +855,43 @@ const CreatePage: React.FC = () => {
     }
     
     return ids;
+  };
+
+  // Enhance prompt with AI
+  const handleEnhancePrompt = async () => {
+    if (!songPrompt.trim() || isEnhancingPrompt) return;
+
+    setIsEnhancingPrompt(true);
+    try {
+      // Get tagged character names for context
+      const taggedCharacters = characters
+        .filter(c => songPrompt.toLowerCase().includes(`@${c.characterName.toLowerCase()}`))
+        .map(c => ({ characterName: c.characterName }));
+
+      const response = await songsApi.enhancePrompt(songPrompt.trim(), {
+        genre: autoPickGenre ? undefined : selectedGenre,
+        mood: autoPickMood ? undefined : selectedMood,
+        characters: taggedCharacters.length > 0 ? taggedCharacters : undefined,
+      });
+
+      if (response.enhancedPrompt) {
+        setSongPrompt(response.enhancedPrompt);
+        setNotification({
+          open: true,
+          message: 'Prompt enhanced!',
+          severity: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to enhance prompt:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to enhance prompt',
+        severity: 'error'
+      });
+    } finally {
+      setIsEnhancingPrompt(false);
+    }
   };
 
   // Song generation handler
@@ -1402,8 +1440,10 @@ const CreatePage: React.FC = () => {
                 helperText={showSongPromptError && !songPrompt.trim() ? 'Please describe your song idea' : ''}
                 characterNames={characters.map(c => c.characterName)}
                 onCharacterMatched={(name) => scrollToCharacterChip(name, false)}
+                onEnhance={handleEnhancePrompt}
+                isEnhancing={isEnhancingPrompt}
               />
-              
+
               {/* Creativity Slider - subtle inline control */}
               <Box sx={{ mt: 2.5, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
