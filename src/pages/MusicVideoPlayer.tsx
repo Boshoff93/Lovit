@@ -46,6 +46,7 @@ import {
   Close,
   InfoOutlined,
   Schedule,
+  Public as PublicIcon,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -53,6 +54,10 @@ import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, 
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import { TopUpBundle } from '../config/stripe';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 // Image cache map to avoid reloading
 const imageCache = new Map<string, HTMLImageElement>();
@@ -220,7 +225,7 @@ const MusicVideoPlayer: React.FC = () => {
 
   // Scheduling state
   const [uploadMode, setUploadMode] = useState<'now' | 'schedule'>('now');
-  const [scheduledDateTime, setScheduledDateTime] = useState<string>('');
+  const [scheduledDateTime, setScheduledDateTime] = useState<Dayjs | null>(null);
   const [isScheduling, setIsScheduling] = useState(false);
   
   // Video characters state (for thumbnail selection)
@@ -3502,22 +3507,64 @@ const MusicVideoPlayer: React.FC = () => {
 
                 {/* Date/Time Picker for scheduling */}
                 {uploadMode === 'schedule' && (
-                  <TextField
-                    type="datetime-local"
-                    value={scheduledDateTime}
-                    onChange={(e) => setScheduledDateTime(e.target.value)}
-                    fullWidth
-                    size="small"
-                    inputProps={{
-                      min: new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 16), // At least 5 min from now
-                    }}
-                    sx={{
-                      mt: 2,
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '10px',
-                      },
-                    }}
-                  />
+                  <Box sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, ml: 0.5 }}>
+                      <PublicIcon sx={{ fontSize: 14, color: '#86868B' }} />
+                      <Typography variant="caption" sx={{ color: '#86868B' }}>
+                        {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                      </Typography>
+                    </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateTimePicker
+                        value={scheduledDateTime}
+                        onChange={(newValue) => setScheduledDateTime(newValue)}
+                        minDateTime={dayjs().add(5, 'minute')}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: 'small',
+                            sx: {
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                background: '#fff',
+                                '& fieldset': {
+                                  borderColor: 'rgba(0,0,0,0.1)',
+                                },
+                                '&:hover fieldset': {
+                                  borderColor: 'rgba(0,122,255,0.3)',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: '#007AFF',
+                                },
+                              },
+                              '& input': {
+                                py: 1.5,
+                                px: 1.5,
+                                fontSize: '0.95rem',
+                              },
+                            },
+                          },
+                          popper: {
+                            sx: {
+                              '& .MuiPaper-root': {
+                                borderRadius: '16px',
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                              },
+                              '& .MuiPickersDay-root.Mui-selected': {
+                                backgroundColor: '#007AFF',
+                              },
+                              '& .MuiClock-pin, & .MuiClockPointer-root, & .MuiClockPointer-thumb': {
+                                backgroundColor: '#007AFF',
+                              },
+                              '& .MuiClockPointer-thumb': {
+                                borderColor: '#007AFF',
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Box>
                 )}
               </Box>
             )}
@@ -3596,7 +3643,7 @@ const MusicVideoPlayer: React.FC = () => {
                         return;
                       }
 
-                      const scheduledDate = new Date(scheduledDateTime);
+                      const scheduledDate = scheduledDateTime.toDate();
                       if (scheduledDate <= new Date()) {
                         showSocialError('Scheduled time must be in the future');
                         return;
@@ -3639,7 +3686,7 @@ const MusicVideoPlayer: React.FC = () => {
                         setShowUploadConfirm(false);
                         // Reset state
                         setUploadMode('now');
-                        setScheduledDateTime('');
+                        setScheduledDateTime(null);
                         // Show success message (could use a snackbar)
                         alert(`Post scheduled for ${scheduledDate.toLocaleString()}`);
                       } catch (err: any) {
