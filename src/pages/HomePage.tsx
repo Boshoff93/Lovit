@@ -1781,8 +1781,8 @@ const HomePage: React.FC = () => {
             </Box>
 
             {/* Navigation buttons - far right */}
-            {isMobile && !isLoggedIn ? (
-              // Mobile and not logged in: hamburger menu
+            {isMobile ? (
+              // Mobile: hamburger menu for all users
               <IconButton
                 onClick={handleDrawerToggle}
                 sx={{
@@ -1793,8 +1793,8 @@ const HomePage: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             ) : (
-              // Desktop OR logged in: show navigation buttons - ml: auto forces right alignment
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto', flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
+              // Desktop: show navigation buttons - ml: auto forces right alignment
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
                 {isLoggedIn ? (
                   // Logged in user - show same buttons as dashboard Layout
                   <>
@@ -2277,14 +2277,15 @@ const HomePage: React.FC = () => {
           </Typography>
 
             {/* Prompt Input - Glassy */}
-          <Box sx={{ 
-              maxWidth: '600px', 
+            <Box sx={{
+              maxWidth: '600px',
               mx: 'auto',
               mb: 4,
+              px: { xs: 2, sm: 0 },
             }}>
               <TextField
                 fullWidth
-                placeholder="Type any idea you have into a song..."
+                placeholder={isMobile ? "Type any idea into a song..." : "Type any idea you have into a song..."}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyPress={handlePromptKeyPress}
@@ -2295,7 +2296,8 @@ const HomePage: React.FC = () => {
                       <IconButton
                         onClick={handleGenerateClick}
                         disabled={!prompt.trim()}
-              sx={{
+                        size={isMobile ? "small" : "medium"}
+                        sx={{
                           background: prompt.trim() ? '#007AFF' : 'rgba(0,0,0,0.05)',
                           color: prompt.trim() ? '#fff' : '#86868B',
                           mr: -0.5,
@@ -2307,16 +2309,16 @@ const HomePage: React.FC = () => {
                           },
                         }}
                       >
-                        <SendRoundedIcon />
+                        <SendRoundedIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
-              sx={{ 
+                sx={{
                   '& .MuiOutlinedInput-root': {
                     background: '#fff',
                     borderRadius: '100px',
-                    pr: 1.5,
+                    pr: { xs: 1, sm: 1.5 },
                     boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
                     border: '1px solid rgba(0,0,0,0.08)',
                     '& fieldset': {
@@ -2333,13 +2335,15 @@ const HomePage: React.FC = () => {
                   },
                   '& .MuiInputBase-input': {
                     color: '#1D1D1F',
-                    py: 2.5,
-                    px: 3,
-                    fontSize: '1.1rem',
+                    py: { xs: 1.25, sm: 2 },
+                    px: { xs: 1.5, sm: 2.5 },
+                    fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' },
                     fontWeight: 400,
+                    textOverflow: 'ellipsis',
                     '&::placeholder': {
                       color: '#86868B',
                       opacity: 1,
+                      fontSize: 'inherit',
                     },
                     // Override browser autofill background color
                     '&:-webkit-autofill': {
@@ -2356,34 +2360,37 @@ const HomePage: React.FC = () => {
                     '&:-webkit-autofill:active': {
                       WebkitBoxShadow: '0 0 0 1000px #fff inset !important',
                     },
-                },
-              }}
+                  },
+                }}
               />
-          </Box>
+            </Box>
 
             {/* Quick Prompt Suggestions */}
-            <Box sx={{ 
+            <Box sx={{
               display: 'flex',
-              gap: 1, 
-              flexWrap: 'wrap', 
+              gap: { xs: 0.75, sm: 1 },
+              flexWrap: 'wrap',
               justifyContent: 'center',
               mb: 6,
+              px: { xs: 1, sm: 0 },
             }}>
               {examplePrompts.map((suggestion, index) => (
                 <Chip
                   key={index}
                   label={suggestion}
                   onClick={() => setPrompt(suggestion)}
-                sx={{
+                  sx={{
                     background: 'rgba(255,255,255,0.95)',
                     border: '1px solid rgba(0,0,0,0.06)',
                     color: '#86868B',
-                    fontSize: '0.85rem',
+                    fontSize: { xs: '0.7rem', sm: '0.85rem', md: '0.95rem' },
                     fontWeight: 500,
                     cursor: 'pointer',
                     borderRadius: '100px',
-                    px: 0.5,
-                    height: 36,
+                    height: { xs: '32px', sm: '38px', md: '42px' },
+                    '& .MuiChip-label': {
+                      px: { xs: 1.5, sm: 2, md: 2.5 },
+                    },
                     boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
                     transition: 'all 0.2s ease',
                     '&:hover': {
