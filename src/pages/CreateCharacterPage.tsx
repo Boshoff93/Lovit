@@ -541,14 +541,14 @@ const CreateCharacterPage: React.FC = () => {
             boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-            <PersonIcon sx={{ color: '#007AFF', fontSize: 28 }} />
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+            <PersonIcon sx={{ color: '#007AFF' }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
               What should we call it?
             </Typography>
             <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2.5, fontSize: '0.9rem' }}>
+          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
             Give your asset a memorable name. This is how you'll reference it when creating songs and videos.
           </Typography>
           <TextField
@@ -561,36 +561,14 @@ const CreateCharacterPage: React.FC = () => {
             placeholder="e.g., Luna, Max, Summer Villa, Chuck Taylors"
             error={showCharacterNameError && !characterName.trim()}
             helperText={showCharacterNameError && !characterName.trim() ? 'Please enter a name' : ''}
-            InputProps={{
-              sx: {
-                fontSize: '1.1rem',
-                fontWeight: 500,
-              }
-            }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '16px',
-                background: '#fff',
-                border: '2px solid rgba(0,122,255,0.2)',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  border: '2px solid rgba(0,122,255,0.4)',
-                },
-                '&.Mui-focused': {
-                  border: '2px solid #007AFF',
-                  boxShadow: '0 0 0 4px rgba(0,122,255,0.1)',
-                },
-                '& fieldset': {
-                  border: 'none',
-                },
-              },
-              '& .MuiInputBase-input': {
-                py: 2,
-                px: 2.5,
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: '#86868B',
-                opacity: 1,
+                borderRadius: '10px',
+                backgroundColor: '#fff',
+                height: 52,
+                '& input': { py: 1.5 },
+                '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
+                '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.03)' },
               },
             }}
           />

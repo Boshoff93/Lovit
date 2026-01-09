@@ -264,7 +264,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Sidebar props
   const sidebarProps = {
-    hasActivePlayer,
     hasToken: !!token && !!allowances,
     remainingTokens: getRemainingTokens(),
     isMobile,
@@ -277,7 +276,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const collapsedSidebarProps = {
-    hasActivePlayer,
     onNavigate: handleNavigate,
     onSidebarCollapse: handleSidebarCollapse,
     onLogoutClick: handleLogoutClick,

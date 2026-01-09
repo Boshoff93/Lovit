@@ -67,6 +67,12 @@ const accountItems = [
   { path: '/account', label: 'Account', icon: AccountCircleIcon, gradient: gradients.account },
   { path: '/payment', label: 'Subscription', icon: CreditCardIcon, gradient: gradients.account },
   { path: '/support', label: 'Support & FAQ', icon: HeadsetMicIcon, gradient: gradients.account },
+  { path: 'logout', label: 'Sign Out', icon: LogoutIcon, gradient: gradients.account, isLogout: true },
+];
+
+const footerItems = [
+  { path: '/terms', label: 'Terms', external: false },
+  { path: '/privacy', label: 'Privacy', external: false },
 ];
 
 // Current viewing item info for sub-navigation
@@ -77,7 +83,6 @@ interface CurrentViewingItem {
 }
 
 interface SidebarContentProps {
-  hasActivePlayer: boolean;
   hasToken: boolean;
   remainingTokens: number;
   isMobile: boolean;
@@ -91,7 +96,6 @@ interface SidebarContentProps {
 
 // Memoized sidebar content - only re-renders when props change
 const SidebarContent = memo<SidebarContentProps>(({
-  hasActivePlayer,
   hasToken,
   remainingTokens,
   isMobile,
@@ -111,7 +115,7 @@ const SidebarContent = memo<SidebarContentProps>(({
       flexDirection: 'column',
       height: '100%',
       py: 2,
-      pb: hasActivePlayer ? 10 : 2,
+      pb: 0
     }}>
       {/* Logo and Collapse button row */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, mb: 3 }}>
@@ -610,18 +614,19 @@ const SidebarContent = memo<SidebarContentProps>(({
         <List sx={{ px: 1, pb: 1 }}>
           {accountItems.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            const isLogout = (item as any).isLogout;
+            const active = !isLogout && (location.pathname === item.path || location.pathname.startsWith(item.path + '/'));
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
-                  onClick={() => onNavigate(item.path)}
+                  onClick={() => isLogout ? onLogoutClick() : onNavigate(item.path)}
                   sx={{
                     borderRadius: '10px',
                     py: 1,
                     px: 2,
                     backgroundColor: active ? 'rgba(139,92,246,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: active ? 'rgba(139,92,246,0.15)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: isLogout ? 'rgba(255,59,48,0.08)' : (active ? 'rgba(139,92,246,0.15)' : 'rgba(0,0,0,0.04)'),
                     },
                   }}
                 >
@@ -631,11 +636,11 @@ const SidebarContent = memo<SidebarContentProps>(({
                         width: 28,
                         height: 28,
                         borderRadius: '8px',
-                        background: item.gradient,
+                        background: isLogout ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)' : item.gradient,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(139,92,246,0.25)',
+                        boxShadow: isLogout ? '0 2px 6px rgba(255,59,48,0.25)' : '0 2px 6px rgba(139,92,246,0.25)',
                       }}
                     >
                       <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -646,7 +651,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     primaryTypographyProps={{
                       fontWeight: active ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: '#1D1D1F',
+                      color: isLogout ? '#FF3B30' : '#1D1D1F',
                     }}
                   />
                 </ListItemButton>
@@ -656,32 +661,27 @@ const SidebarContent = memo<SidebarContentProps>(({
         </List>
       </Box>
 
-      {/* Sign Out Button */}
-      <Box sx={{ px: 2, pb: 1, pt: 1 }}>
-        <Divider sx={{ mb: 2 }} />
-        <ListItemButton
-          onClick={onLogoutClick}
-          sx={{
-            borderRadius: '10px',
-            py: 1,
-            px: 2,
-            '&:hover': {
-              backgroundColor: 'rgba(255,59,48,0.08)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 40 }}>
-            <LogoutIcon sx={{ fontSize: 20, color: '#FF3B30' }} />
-          </ListItemIcon>
-          <ListItemText
-            primary="Sign Out"
-            primaryTypographyProps={{
-              fontWeight: 500,
-              fontSize: '0.875rem',
-              color: '#FF3B30',
+      {/* Footer Links - matches GlobalAudioPlayer height */}
+      <Divider sx={{ mx: 2 }} />
+      <Box sx={{display: 'flex', gap: 2, justifyContent: 'center', height: 72, alignItems: 'center' }}>
+        {footerItems.map((item) => (
+          <Typography
+            key={item.path}
+            component="a"
+            href={item.path}
+            sx={{
+              fontSize: '0.75rem',
+              color: '#86868B',
+              textDecoration: 'none',
+              '&:hover': {
+                color: '#007AFF',
+                textDecoration: 'underline',
+              },
             }}
-          />
-        </ListItemButton>
+          >
+            {item.label}
+          </Typography>
+        ))}
       </Box>
     </Box>
   );
@@ -691,14 +691,12 @@ SidebarContent.displayName = 'SidebarContent';
 
 // Collapsed sidebar content
 interface CollapsedSidebarContentProps {
-  hasActivePlayer: boolean;
   onNavigate: (path: string) => void;
   onSidebarCollapse: () => void;
   onLogoutClick: () => void;
 }
 
 const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
-  hasActivePlayer,
   onNavigate,
   onSidebarCollapse,
   onLogoutClick,
@@ -720,7 +718,6 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
       height: '100%',
       py: 2,
       alignItems: 'center',
-      pb: hasActivePlayer ? 10 : 2,
     }}>
       {/* Logo only */}
       <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
@@ -769,12 +766,13 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
         <List sx={{ px: 1 }}>
           {allItems.map((item, index) => {
             const Icon = item.icon;
+            const isLogout = (item as any).isLogout;
             const fullPath = item.path + ((item as any).params || '');
-            const active = location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
+            const active = !isLogout && location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
                 <ListItemButton
-                  onClick={() => onNavigate(fullPath)}
+                  onClick={() => isLogout ? onLogoutClick() : onNavigate(fullPath)}
                   sx={{
                     borderRadius: '10px',
                     py: 1,
@@ -783,7 +781,7 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
                     justifyContent: 'center',
                     backgroundColor: 'transparent',
                     '&:hover': {
-                      backgroundColor: 'rgba(0,0,0,0.04)',
+                      backgroundColor: isLogout ? 'rgba(255,59,48,0.08)' : 'rgba(0,0,0,0.04)',
                     },
                   }}
                 >
@@ -792,7 +790,7 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
                       width: 32,
                       height: 32,
                       borderRadius: '8px',
-                      background: item.gradient,
+                      background: isLogout ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)' : item.gradient,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -808,28 +806,6 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
             );
           })}
         </List>
-      </Box>
-
-      {/* Sign Out Icon */}
-      <Box sx={{ px: 1, pb: 1, pt: 1 }}>
-        <Divider sx={{ mb: 1, mx: 1 }} />
-        <ListItemButton
-          onClick={onLogoutClick}
-          sx={{
-            borderRadius: '10px',
-            py: 1.25,
-            px: 1.25,
-            minWidth: 0,
-            justifyContent: 'center',
-            '&:hover': {
-              backgroundColor: 'rgba(255,59,48,0.08)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
-            <LogoutIcon sx={{ fontSize: 22, color: '#FF3B30' }} />
-          </ListItemIcon>
-        </ListItemButton>
       </Box>
     </Box>
   );
