@@ -18,7 +18,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
 import BoltIcon from '@mui/icons-material/Bolt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createCheckoutSession,
@@ -173,7 +173,6 @@ const DashboardSubscriptionPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -552,8 +551,8 @@ const DashboardSubscriptionPage: React.FC = () => {
         </Box>
 
         {/* Right sidebar: Checkout Card */}
-        <Box sx={{ width: { xs: '100%', lg: 300 } }}>
-          <Card sx={{ borderRadius: '16px', position: 'sticky', top: 20, border: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ width: { xs: '100%', lg: 300 }, flexShrink: 0 }}>
+          <Card sx={{ borderRadius: '16px', position: { lg: 'sticky' }, top: 20, border: '1px solid rgba(0,0,0,0.08)' }}>
             <CardContent sx={{ p: 3 }}>
               {/* Billing Frequency */}
               <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1.5 }}>
@@ -726,11 +725,121 @@ const DashboardSubscriptionPage: React.FC = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Token Top-ups - Only show in sidebar on large screens */}
+          <Box id="topup" sx={{ mt: 3, scrollMarginTop: '80px', display: { xs: 'none', lg: 'block' } }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+              Need More Tokens?
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 2 }}>
+              Top-up tokens never expire!
+            </Typography>
+
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}>
+              {topUpBundles.map((bundle, index) => (
+                <Card
+                  key={bundle.id}
+                  onClick={async () => {
+                    try {
+                      const resultAction = await dispatch(createCheckoutSession({
+                        priceId: bundle.priceId,
+                        productId: bundle.productId
+                      }));
+                      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                        window.location.href = resultAction.payload.url;
+                      }
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to create checkout session');
+                    }
+                  }}
+                  sx={{
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    border: '1px solid rgba(0,0,0,0.08)',
+                    transition: 'all 0.2s ease',
+                    position: 'relative',
+                    overflow: 'visible',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
+                      borderColor: '#007AFF',
+                    },
+                  }}
+                >
+                  {/* Badge */}
+                  {bundle.badge && (
+                    <Chip
+                      label={bundle.badge}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: -10,
+                        right: 16,
+                        background: bundle.badge === 'BEST VALUE'
+                          ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
+                          : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                        color: '#fff',
+                        fontWeight: 600,
+                        fontSize: '0.65rem',
+                      }}
+                    />
+                  )}
+
+                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                    {/* Top row: token amount left, price right */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Box sx={{ display: 'flex' }}>
+                          {Array.from({ length: index + 1 }).map((_, i) => (
+                            <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
+                          ))}
+                        </Box>
+                        <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F' }}>
+                          {bundle.tokens.toLocaleString()}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B', ml: 0.25 }}>
+                          tokens
+                        </Typography>
+                      </Box>
+                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
+                        ${bundle.price}
+                      </Typography>
+                    </Box>
+                    {/* Buy button - full width */}
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      sx={{
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        py: 0.5,
+                        borderColor: '#007AFF',
+                        color: '#007AFF',
+                        '&:hover': {
+                          background: 'rgba(0,122,255,0.08)',
+                          borderColor: '#007AFF',
+                        },
+                      }}
+                    >
+                      Buy Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </Box>
         </Box>
       </Box>
 
-      {/* Token Top-ups - Full width row */}
-      <Box id="topup" sx={{ mt: 4, scrollMarginTop: '80px' }}>
+      {/* Token Top-ups - Show at very bottom on smaller screens */}
+      <Box sx={{ mt: 4, display: { xs: 'block', lg: 'none' } }}>
         <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
           Need More Tokens?
         </Typography>
@@ -760,7 +869,7 @@ const DashboardSubscriptionPage: React.FC = () => {
                 }
               }}
               sx={{
-                borderRadius: '16px',
+                borderRadius: '12px',
                 cursor: 'pointer',
                 border: '1px solid rgba(0,0,0,0.08)',
                 transition: 'all 0.2s ease',
@@ -781,53 +890,59 @@ const DashboardSubscriptionPage: React.FC = () => {
                   sx={{
                     position: 'absolute',
                     top: -10,
-                    right: 16,
+                    right: 12,
                     background: bundle.badge === 'BEST VALUE'
                       ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
                       : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
                     color: '#fff',
                     fontWeight: 600,
-                    fontSize: '0.65rem',
+                    fontSize: '0.6rem',
+                    height: 20,
                   }}
                 />
               )}
 
-              <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <Box sx={{ display: 'flex' }}>
-                    {Array.from({ length: index + 1 }).map((_, i) => (
-                      <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
-                    ))}
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                {/* Top row: token amount left, price right */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex' }}>
+                      {Array.from({ length: index + 1 }).map((_, i) => (
+                        <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
+                      ))}
+                    </Box>
+                    <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F' }}>
+                      {bundle.tokens.toLocaleString()}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', ml: 0.25 }}>
+                      tokens
+                    </Typography>
                   </Box>
-                  <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#1D1D1F' }}>
-                    {bundle.tokens.toLocaleString()}
-                  </Typography>
-                </Box>
-                <Typography sx={{ fontSize: '0.8rem', color: '#86868B', mb: 2 }}>
-                  AI Tokens
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#007AFF' }}>
+                  <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
                     ${bundle.price}
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      borderRadius: '8px',
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      borderColor: '#007AFF',
-                      color: '#007AFF',
-                      '&:hover': {
-                        background: 'rgba(0,122,255,0.08)',
-                        borderColor: '#007AFF',
-                      },
-                    }}
-                  >
-                    Buy Now
-                  </Button>
                 </Box>
+                {/* Buy button - full width */}
+                <Button
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  sx={{
+                    borderRadius: '8px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    py: 0.5,
+                    borderColor: '#007AFF',
+                    color: '#007AFF',
+                    '&:hover': {
+                      background: 'rgba(0,122,255,0.08)',
+                      borderColor: '#007AFF',
+                    },
+                  }}
+                >
+                  Buy Now
+                </Button>
               </CardContent>
             </Card>
           ))}
