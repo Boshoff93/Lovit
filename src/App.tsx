@@ -294,7 +294,7 @@ function App() {
             <Layout>
               <RequireSubscription
                 featureName="Integrations"
-                description="Connect your social media accounts to share your music and videos directly to your favorite platforms."
+                description="Connect your social media accounts to share your videos directly to your favorite platforms, all in one click."
               >
                 <ConnectedAccountsPage />
               </RequireSubscription>

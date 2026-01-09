@@ -380,7 +380,7 @@ const AccountPage: React.FC = () => {
             <Button
               variant="contained"
               size="small"
-              onClick={isFreeTier ? () => navigate('/subscription') : handleManageSubscription}
+              onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
               disabled={isLoading || portalLoading}
               startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
               sx={{

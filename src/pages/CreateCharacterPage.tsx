@@ -577,7 +577,7 @@ const CreateCharacterPage: React.FC = () => {
             Type
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Human, non-human (animals, fantasy creatures), or product
+            This determines how AI generates and showcases your video content
           </Typography>
           <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
             {characterKindOptions.map((kind) => {

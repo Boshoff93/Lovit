@@ -63,7 +63,7 @@ const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
 
 // Mini social icons row
 const SocialPlatformIconsMini: React.FC = () => (
-  <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'center', flexWrap: 'wrap' }}>
+  <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-start', flexWrap: 'wrap' }}>
     {[
       { icon: <InstagramIcon sx={{ fontSize: 18 }} />, bg: 'linear-gradient(135deg, #E4405F, #C13584)' },
       { icon: <FacebookIcon sx={{ fontSize: 18 }} />, bg: '#1877F2' },
