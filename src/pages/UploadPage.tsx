@@ -496,14 +496,13 @@ const UploadPage: React.FC = () => {
           </Alert>
         )}
         
-        {/* File Upload & Cover Art Row (for songs) / File Upload only (for videos) */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 3, flexDirection: { xs: 'column', lg: uploadType === 'song' ? 'row' : 'column' } }}>
-          {/* File Upload Section */}
+        {/* File Upload Section - Full width for videos */}
+        {uploadType === 'video' && (
           <Paper
             elevation={0}
             sx={{
               p: { xs: 2, sm: 3 },
-              flex: uploadType === 'song' ? { lg: 2 } : 1,
+              mb: 3,
               borderRadius: { xs: '16px', sm: '20px' },
               background: 'rgba(255,255,255,0.9)',
               backdropFilter: 'blur(20px)',
@@ -519,9 +518,9 @@ const UploadPage: React.FC = () => {
               <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
             </Box>
             <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-              Upload your {uploadType === 'song' ? 'audio' : 'video'} file
+              Upload your video file
             </Typography>
-            
+
             {/* File Drop Zone */}
             <Box
               onDrop={handleDrop}
@@ -545,11 +544,11 @@ const UploadPage: React.FC = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept={uploadType === 'song' ? acceptedAudioFormats : acceptedVideoFormats}
+                accept={acceptedVideoFormats}
                 onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
                 style={{ display: 'none' }}
               />
-              
+
               {selectedFile ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
                   <CheckCircle sx={{ color: '#34C759', fontSize: 32 }} />
@@ -575,20 +574,20 @@ const UploadPage: React.FC = () => {
                 <>
                   <CloudUpload sx={{ fontSize: 48, color: '#007AFF', mb: 2 }} />
                   <Typography sx={{ fontWeight: 600, color: '#1d1d1f', mb: 1 }}>
-                    Drag and drop your {uploadType === 'song' ? 'audio' : 'video'} file here
+                    Drag and drop your video file here
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
                     or click to browse
                   </Typography>
                   <Chip
-                    label={uploadType === 'song' ? `MP3, WAV, M4A, AAC, FLAC (max ${MAX_AUDIO_SIZE_MB}MB)` : `MP4, MOV, WebM (max ${MAX_VIDEO_SIZE_MB}MB)`}
+                    label={`MP4, MOV, WebM (max ${MAX_VIDEO_SIZE_MB}MB)`}
                     size="small"
                     sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
                   />
                 </>
               )}
             </Box>
-            
+
             {/* Upload Progress */}
             {isUploading && (
               <Box sx={{ mt: 3 }}>
@@ -599,14 +598,245 @@ const UploadPage: React.FC = () => {
               </Box>
             )}
           </Paper>
+        )}
 
-          {/* Cover Art Section - Only for songs, placed next to file upload */}
-          {uploadType === 'song' && (
+        {/* Video Details: Title + Aspect Ratio in two columns on lg+ */}
+        {uploadType === 'video' && (
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+            gap: 3,
+            mb: 3,
+          }}>
+            {/* Video Details (Title) Section */}
             <Paper
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3 },
-                flex: { md: 1 },
+                borderRadius: { xs: '16px', sm: '20px' },
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <VideoLibrary sx={{ color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Video Details
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+                Add basic information about your video
+              </Typography>
+
+              {/* Title Field */}
+              <TextField
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                fullWidth
+                placeholder="Enter video title"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    backgroundColor: '#fff',
+                    height: 52,
+                    '& input': { py: 1.5 },
+                    '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
+                    '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.03)' },
+                  },
+                }}
+              />
+            </Paper>
+
+            {/* Aspect Ratio Section */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2, sm: 3 },
+                borderRadius: { xs: '16px', sm: '20px' },
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <VideoLibrary sx={{ color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Aspect Ratio
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+                Choose the format for your video
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
+                <Box
+                  onClick={() => setAspectRatio('portrait')}
+                  sx={{
+                    flex: { xs: 'none', sm: 1 },
+                    height: 52,
+                    px: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    cursor: 'pointer',
+                    borderRadius: '10px',
+                    background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.08)' : '#fff',
+                    border: aspectRatio === 'portrait' ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                    transition: 'all 0.2s',
+                    '&:hover': { background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                  }}
+                >
+                  <Box sx={{ width: 18, height: 28, border: '2px solid', borderRadius: '3px', borderColor: aspectRatio === 'portrait' ? '#007AFF' : '#86868B', flexShrink: 0 }} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#1D1D1F' }}>Portrait</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 500 }}>9:16</Typography>
+                  </Box>
+                </Box>
+                <Box
+                  onClick={() => setAspectRatio('landscape')}
+                  sx={{
+                    flex: { xs: 'none', sm: 1 },
+                    height: 52,
+                    px: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    cursor: 'pointer',
+                    borderRadius: '10px',
+                    background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.08)' : '#fff',
+                    border: aspectRatio === 'landscape' ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                    transition: 'all 0.2s',
+                    '&:hover': { background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                  }}
+                >
+                  <Box sx={{ width: 28, height: 18, border: '2px solid', borderRadius: '3px', borderColor: aspectRatio === 'landscape' ? '#007AFF' : '#86868B', flexShrink: 0 }} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#1D1D1F' }}>Landscape</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 500 }}>16:9</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        )}
+
+        {/* File Upload Section - For songs only (original grid) */}
+        {uploadType === 'song' && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 2, sm: 3 },
+              mb: 3,
+              borderRadius: { xs: '16px', sm: '20px' },
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <CloudUpload sx={{ color: '#007AFF' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Select File
+              </Typography>
+              <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
+            </Box>
+            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+              Upload your audio file
+            </Typography>
+
+            {/* File Drop Zone */}
+            <Box
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={() => fileInputRef.current?.click()}
+              sx={{
+                border: `2px dashed ${isDragging ? '#007AFF' : 'rgba(0,0,0,0.15)'}`,
+                borderRadius: '12px',
+                p: { xs: 3, sm: 4 },
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: isDragging ? 'rgba(0,122,255,0.05)' : 'rgba(0,0,0,0.02)',
+                '&:hover': {
+                  borderColor: '#007AFF',
+                  background: 'rgba(0,122,255,0.02)',
+                },
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={acceptedAudioFormats}
+                onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+                style={{ display: 'none' }}
+              />
+
+              {selectedFile ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                  <CheckCircle sx={{ color: '#34C759', fontSize: 32 }} />
+                  <Box sx={{ textAlign: 'left', minWidth: 0, flex: 1 }}>
+                    <Typography sx={{ fontWeight: 600, color: '#1d1d1f', wordBreak: 'break-word' }}>
+                      {selectedFile.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#86868B' }}>
+                      {formatFileSize(selectedFile.size)}
+                    </Typography>
+                  </Box>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedFile(null);
+                    }}
+                    sx={{ color: '#86868B' }}
+                  >
+                    <Close />
+                  </IconButton>
+                </Box>
+              ) : (
+                <>
+                  <CloudUpload sx={{ fontSize: 48, color: '#007AFF', mb: 2 }} />
+                  <Typography sx={{ fontWeight: 600, color: '#1d1d1f', mb: 1 }}>
+                    Drag and drop your audio file here
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                    or click to browse
+                  </Typography>
+                  <Chip
+                    label={`MP3, WAV, M4A, AAC, FLAC (max ${MAX_AUDIO_SIZE_MB}MB)`}
+                    size="small"
+                    sx={{ background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
+                  />
+                </>
+              )}
+            </Box>
+
+            {/* Upload Progress */}
+            {isUploading && (
+              <Box sx={{ mt: 3 }}>
+                <LinearProgress variant="determinate" value={uploadProgress} sx={{ borderRadius: 4, height: 8 }} />
+                <Typography variant="body2" sx={{ color: '#86868B', mt: 1, textAlign: 'center' }}>
+                  Uploading... {uploadProgress}%
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        )}
+
+        {/* Songs: Cover Art + Song Details Row */}
+        {uploadType === 'song' && (
+          <Box sx={{ display: 'flex', gap: 3, mb: 3, flexDirection: { xs: 'column', lg: 'row' } }}>
+            {/* Cover Art Section */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2, sm: 3 },
+                flex: { lg: 1 },
                 borderRadius: { xs: '16px', sm: '20px' },
                 background: 'rgba(255,255,255,0.9)',
                 backdropFilter: 'blur(20px)',
@@ -626,7 +856,7 @@ const UploadPage: React.FC = () => {
               <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
                 Add album artwork
               </Typography>
-              
+
               <input
                 ref={coverInputRef}
                 type="file"
@@ -669,219 +899,128 @@ const UploadPage: React.FC = () => {
                 )}
               </Box>
             </Paper>
-          )}
-        </Box>
 
-        {/* Details Section */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 2, sm: 3 },
-            mb: 3,
-            borderRadius: { xs: '16px', sm: '20px' },
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            {uploadType === 'song' ? <MusicNote sx={{ color: '#007AFF' }} /> : <VideoLibrary sx={{ color: '#007AFF' }} />}
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              {uploadType === 'song' ? 'Song' : 'Video'} Details
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Add basic information about your {uploadType}
-          </Typography>
-          
-          {/* Title Field */}
-          <Box sx={{ mb: uploadType === 'song' ? 2 : 0 }}>
-            <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
-              Title
-            </Typography>
-            <TextField
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              fullWidth
-              placeholder={`Enter ${uploadType} title`}
+            {/* Song Details Section */}
+            <Paper
+              elevation={0}
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '10px',
-                  backgroundColor: '#fff',
-                  height: 52,
-                  '& input': { py: 1.5 },
-                  '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
-                  '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.03)' },
-                },
-              }}
-            />
-          </Box>
-          
-          {/* Genre and Mood Selection - Only for songs */}
-          {uploadType === 'song' && (
-            <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-              {/* Genre */}
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
-                  Genre
-                </Typography>
-                <Button
-                  onClick={() => setGenrePickerOpen(true)}
-                  fullWidth
-                  sx={{
-                    py: 1.5,
-                    px: 2,
-                    borderRadius: '10px',
-                    border: '1px solid rgba(0,0,0,0.15)',
-                    background: '#fff',
-                    justifyContent: 'space-between',
-                    textTransform: 'none',
-                    color: '#1D1D1F',
-                    '&:hover': { background: 'rgba(0,0,0,0.02)', borderColor: 'rgba(0,0,0,0.2)' },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box
-                      component="img"
-                      src={genres.find(g => g.id === selectedGenre)?.image}
-                      alt={genres.find(g => g.id === selectedGenre)?.name}
-                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
-                    />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                      {genres.find(g => g.id === selectedGenre)?.name || 'Select Genre'}
-                    </Typography>
-                  </Box>
-                  <KeyboardArrowDown sx={{ color: '#86868B' }} />
-                </Button>
-              </Box>
-              
-              {/* Mood */}
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
-                  Mood
-                </Typography>
-                <Button
-                  onClick={() => setMoodPickerOpen(true)}
-                  fullWidth
-                  sx={{
-                    py: 1.5,
-                    px: 2,
-                    borderRadius: '10px',
-                    border: '1px solid rgba(0,0,0,0.15)',
-                    background: '#fff',
-                    justifyContent: 'space-between',
-                    textTransform: 'none',
-                    color: '#1D1D1F',
-                    '&:hover': { background: 'rgba(0,0,0,0.02)', borderColor: 'rgba(0,0,0,0.2)' },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box
-                      component="img"
-                      src={moods.find(m => m.id === selectedMood)?.image}
-                      alt={moods.find(m => m.id === selectedMood)?.name}
-                      sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
-                    />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                      {moods.find(m => m.id === selectedMood)?.name || 'Select Mood'}
-                    </Typography>
-                  </Box>
-                  <KeyboardArrowDown sx={{ color: '#86868B' }} />
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </Paper>
-
-        {/* Aspect Ratio Section - Only for videos */}
-        {uploadType === 'video' && (
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 2, sm: 3 },
-              mb: 3,
-              borderRadius: { xs: '16px', sm: '20px' },
-              background: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-              <VideoLibrary sx={{ color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Aspect Ratio
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-              Choose the format for your video
-            </Typography>
-            
-            <ToggleButtonGroup
-              value={aspectRatio}
-              exclusive
-              onChange={(_e, value) => value && setAspectRatio(value)}
-              fullWidth
-              orientation="vertical"
-              sx={{
-                gap: 1.5,
-                '& .MuiToggleButtonGroup-grouped': { border: 'none !important', borderRadius: '16px !important', m: 0 },
+                p: { xs: 2, sm: 3 },
+                flex: { lg: 2 },
+                borderRadius: { xs: '16px', sm: '20px' },
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <ToggleButton
-                value="portrait"
-                sx={{
-                  py: 2,
-                  px: 2.5,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  gap: 2,
-                  textTransform: 'none',
-                  background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                  color: '#1D1D1F',
-                  border: aspectRatio === 'portrait' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
-                  boxShadow: aspectRatio === 'portrait' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
-                  '&:hover': { background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)' },
-                  '&.Mui-selected': { background: 'rgba(0,122,255,0.08)', color: '#1D1D1F', '&:hover': { background: 'rgba(0,122,255,0.12)' } },
-                }}
-              >
-                <Box sx={{ width: 20, height: 32, border: '2px solid currentColor', borderRadius: '4px', flexShrink: 0, borderColor: aspectRatio === 'portrait' ? '#007AFF' : '#86868B' }} />
-                <Box sx={{ flex: 1, textAlign: 'left' }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#1D1D1F' }}>Portrait (9:16)</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>Best for TikTok, Reels, Shorts</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <MusicNote sx={{ color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Song Details
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+                Add basic information about your song
+              </Typography>
+
+              {/* Title Field */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
+                  Title
+                </Typography>
+                <TextField
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  fullWidth
+                  placeholder="Enter song title"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      backgroundColor: '#fff',
+                      height: 52,
+                      '& input': { py: 1.5 },
+                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
+                      '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.03)' },
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Genre and Mood Selection */}
+              <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                {/* Genre */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
+                    Genre
+                  </Typography>
+                  <Button
+                    onClick={() => setGenrePickerOpen(true)}
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      px: 2,
+                      borderRadius: '10px',
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      background: '#fff',
+                      justifyContent: 'space-between',
+                      textTransform: 'none',
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,0,0,0.02)', borderColor: 'rgba(0,0,0,0.2)' },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        component="img"
+                        src={genres.find(g => g.id === selectedGenre)?.image}
+                        alt={genres.find(g => g.id === selectedGenre)?.name}
+                        sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                        {genres.find(g => g.id === selectedGenre)?.name || 'Select Genre'}
+                      </Typography>
+                    </Box>
+                    <KeyboardArrowDown sx={{ color: '#86868B' }} />
+                  </Button>
                 </Box>
-              </ToggleButton>
-              <ToggleButton
-                value="landscape"
-                sx={{
-                  py: 2,
-                  px: 2.5,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  gap: 2,
-                  textTransform: 'none',
-                  background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                  color: '#1D1D1F',
-                  border: aspectRatio === 'landscape' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
-                  boxShadow: aspectRatio === 'landscape' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
-                  '&:hover': { background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.04)' },
-                  '&.Mui-selected': { background: 'rgba(0,122,255,0.08)', color: '#1D1D1F', '&:hover': { background: 'rgba(0,122,255,0.12)' } },
-                }}
-              >
-                <Box sx={{ width: 32, height: 20, border: '2px solid currentColor', borderRadius: '4px', flexShrink: 0, borderColor: aspectRatio === 'landscape' ? '#007AFF' : '#86868B' }} />
-                <Box sx={{ flex: 1, textAlign: 'left' }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#1D1D1F' }}>Landscape (16:9)</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>Best for YouTube, Facebook</Typography>
+
+                {/* Mood */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
+                    Mood
+                  </Typography>
+                  <Button
+                    onClick={() => setMoodPickerOpen(true)}
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      px: 2,
+                      borderRadius: '10px',
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      background: '#fff',
+                      justifyContent: 'space-between',
+                      textTransform: 'none',
+                      color: '#1D1D1F',
+                      '&:hover': { background: 'rgba(0,0,0,0.02)', borderColor: 'rgba(0,0,0,0.2)' },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        component="img"
+                        src={moods.find(m => m.id === selectedMood)?.image}
+                        alt={moods.find(m => m.id === selectedMood)?.name}
+                        sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                        {moods.find(m => m.id === selectedMood)?.name || 'Select Mood'}
+                      </Typography>
+                    </Box>
+                    <KeyboardArrowDown sx={{ color: '#86868B' }} />
+                  </Button>
                 </Box>
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Paper>
+              </Box>
+            </Paper>
+          </Box>
         )}
 
         {/* Upload Button Section */}
