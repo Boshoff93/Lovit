@@ -500,12 +500,12 @@ const DashboardSubscriptionPage: React.FC = () => {
                         </Box>
                       </Box>
 
-                      {/* Features row */}
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                        {plan.features.slice(0, 5).map((feature, idx) => (
-                          <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {/* Features list */}
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 2 }}>
+                        {plan.features.slice(0, 6).map((feature, idx) => (
+                          <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                             <CheckCircleIcon sx={{ fontSize: 14, color: plan.badgeColor }} />
-                            <Typography sx={{ fontSize: '0.8rem', color: '#1D1D1F' }}>{feature}</Typography>
+                            <Typography sx={{ fontSize: '0.85rem', color: '#1D1D1F' }}>{feature}</Typography>
                           </Box>
                         ))}
                       </Box>
@@ -628,6 +628,37 @@ const DashboardSubscriptionPage: React.FC = () => {
                   />
                 </Box>
               </Box>
+
+              {/* Tokens display - only show when plan selected */}
+              {selectedPlan && (
+                <>
+                  <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: '12px',
+                    background: plans.find(p => p.id === selectedPlan)?.gradient,
+                    mb: 2,
+                  }}>
+                    <Box
+                      component="img"
+                      src={plans.find(p => p.id === selectedPlan)?.icon}
+                      alt={plans.find(p => p.id === selectedPlan)?.title}
+                      sx={{ width: 40, height: 40, objectFit: 'contain' }}
+                    />
+                    <Box>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+                        {(plans.find(p => p.id === selectedPlan)?.tokens || 0).toLocaleString()}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+                        AI Tokens/mo
+                      </Typography>
+                    </Box>
+                  </Box>
+                </>
+              )}
 
               {/* Divider */}
               <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
