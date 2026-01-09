@@ -55,37 +55,37 @@ export const stripeConfig = {
   // Starter: $39/mo monthly, $29/mo yearly ($348/yr) - 5,000 tokens
   starter: {
     productId: 'prod_SApdzvErjotcRN',
-    monthly: 'price_1SkQkVB6HvdZJCd5O3R8X8ck',
-    yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
+    monthly: 'price_1SndETB6HvdZJCd560ysur06',
+    yearly: 'price_1SndFBB6HvdZJCd5R49zzb2A'
   },
   // Scale (formerly Pro): $99/mo monthly, $74/mo yearly ($888/yr) - 20,000 tokens
   scale: {
     productId: 'prod_SApgUFg3gLoB70',
-    monthly: 'price_1SkQm7B6HvdZJCd58zuxl8DI',
-    yearly: 'price_1SkQm7B6HvdZJCd5IhSkNYIK'
+    monthly: 'price_1SndGRB6HvdZJCd56Vj0oeXq',
+    yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
   },
   // Beast (formerly Hardcore/Premium): $199/mo monthly, $149/mo yearly ($1,788/yr) - 50,000 tokens
   hardcore: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SkQsXB6HvdZJCd5WgeI2SGs',
-    yearly: 'price_1SkQsXB6HvdZJCd5oOjkBNE2'
+    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   },
   // Beast alias (same as hardcore)
   beast: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SkQsXB6HvdZJCd5WgeI2SGs',
-    yearly: 'price_1SkQsXB6HvdZJCd5oOjkBNE2'
+    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   },
   // Legacy aliases for backwards compatibility
   pro: {
     productId: 'prod_SApgUFg3gLoB70',
-    monthly: 'price_1SkQm7B6HvdZJCd58zuxl8DI',
-    yearly: 'price_1SkQm7B6HvdZJCd5IhSkNYIK'
+    monthly: 'price_1SndGRB6HvdZJCd56Vj0oeXq',
+    yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
   },
   premium: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SkQsXB6HvdZJCd5WgeI2SGs',
-    yearly: 'price_1SkQsXB6HvdZJCd5oOjkBNE2'
+    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   }
 };
 
