@@ -187,6 +187,7 @@ const CreateCharacterPage: React.FC = () => {
   const [showCharacterNameError, setShowCharacterNameError] = useState(false);
 
   // Drawer states for action sheets
+  const [typePickerOpen, setTypePickerOpen] = useState(false);
   const [agePickerOpen, setAgePickerOpen] = useState(false);
   const [hairColorPickerOpen, setHairColorPickerOpen] = useState(false);
   const [hairLengthPickerOpen, setHairLengthPickerOpen] = useState(false);
@@ -574,77 +575,18 @@ const CreateCharacterPage: React.FC = () => {
           />
         </Paper>
 
-        {/* Type */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            Type
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            This determines how AI generates and showcases your video content
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-            {characterKindOptions.map((kind) => {
-              const isSelected = characterKind === kind.id;
-              return (
-                <Box
-                  key={kind.id}
-                  onClick={() => setCharacterKind(kind.id)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    px: 2,
-                    py: 1.5,
-                    borderRadius: '100px',
-                    background: isSelected ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
-                    border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    '&:hover': { background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.06)' },
-                  }}
-                >
-                  <Box 
-                    component="img" 
-                    src={kind.image} 
-                    alt={kind.label} 
-                    sx={{ 
-                      width: 28, 
-                      height: 28, 
-                      borderRadius: '50%', 
-                      objectFit: 'cover',
-                    }} 
-                  />
-                  <Typography sx={{ 
-                    fontWeight: isSelected ? 600 : 500, 
-                    color: isSelected ? '#007AFF' : '#1D1D1F',
-                    fontSize: '0.9rem',
-                  }}>
-                    {kind.label}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        </Paper>
-
-        {/* Gender - Only for Human and Non-Human */}
-        {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
+        {/* Type and Gender Row - Two columns on md+ */}
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' ? '1fr 1fr' : '1fr' },
+          gap: 3,
+          mb: 3,
+        }}>
+          {/* Type */}
           <Paper
             elevation={0}
             sx={{
               p: 3,
-              mb: 3,
               borderRadius: '20px',
               background: 'rgba(255,255,255,0.9)',
               backdropFilter: 'blur(20px)',
@@ -653,56 +595,101 @@ const CreateCharacterPage: React.FC = () => {
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-              Gender
+              Type
             </Typography>
             <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-              Select the gender identity for your character
+              This determines how AI generates and showcases your video content
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-              {genderOptions.map((gender) => {
-                const isSelected = characterGender === gender.id;
-                return (
-                  <Box
-                    key={gender.id}
-                    onClick={() => setCharacterGender(gender.id)}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                      px: 2,
-                      py: 1.5,
-                      borderRadius: '100px',
-                      background: isSelected ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
-                      border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      '&:hover': { background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.06)' },
-                    }}
-                  >
-                    <Box 
-                      component="img" 
-                      src={gender.image} 
-                      alt={gender.label} 
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '50%', 
-                        objectFit: 'cover',
-                      }} 
-                    />
-                    <Typography sx={{ 
-                      fontWeight: isSelected ? 600 : 500, 
-                      color: isSelected ? '#007AFF' : '#1D1D1F',
-                      fontSize: '0.9rem',
-                    }}>
-                      {gender.label}
-                    </Typography>
-                  </Box>
-                );
-              })}
-            </Box>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => setTypePickerOpen(true)}
+              sx={{
+                justifyContent: 'space-between',
+                py: 1.5,
+                px: 2,
+                borderRadius: '12px',
+                borderColor: 'rgba(0,0,0,0.15)',
+                color: '#1D1D1F',
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box
+                  component="img"
+                  src={characterKindOptions.find(k => k.id === characterKind)?.image}
+                  alt={characterKind}
+                  sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }}
+                />
+                {characterKindOptions.find(k => k.id === characterKind)?.label}
+              </Box>
+              <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
+            </Button>
           </Paper>
-        )}
+
+          {/* Gender - Only for Human and Non-Human */}
+          {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: '20px',
+                background: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+                Gender
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 'auto', fontSize: '0.85rem' }}>
+                Select the gender identity for your character
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
+                {genderOptions.map((gender) => {
+                  const isSelected = characterGender === gender.id;
+                  const isMale = gender.id === 'Male';
+                  return (
+                    <Box
+                      key={gender.id}
+                      onClick={() => setCharacterGender(gender.id)}
+                      sx={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                        py: 1.5,
+                        borderRadius: '12px',
+                        background: isSelected ? 'rgba(0,122,255,0.08)' : '#fff',
+                        border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        '&:hover': { background: isSelected ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '1.1rem', color: isMale ? '#007AFF' : '#EC4899' }}>
+                        {isMale ? '♂' : '♀'}
+                      </Typography>
+                      <Typography sx={{
+                        fontWeight: isSelected ? 600 : 500,
+                        color: isSelected ? '#007AFF' : '#1D1D1F',
+                        fontSize: '0.9rem',
+                      }}>
+                        {gender.label}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Paper>
+          )}
+        </Box>
 
         {/* Character Attributes Grid - Two columns on md+ */}
         {(characterKind === 'Human' || characterKind === 'Non-Human') && (
@@ -883,12 +870,18 @@ const CreateCharacterPage: React.FC = () => {
           </Box>
         )}
 
+        {/* Reference Images and Description - side by side on lg+ */}
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+          gap: 3,
+          mb: 3
+        }}>
         {/* Reference Images */}
         <Paper
           elevation={0}
           sx={{
             p: 3,
-            mb: 3,
             borderRadius: '20px',
             background: 'rgba(255,255,255,0.9)',
             backdropFilter: 'blur(20px)',
@@ -1020,7 +1013,6 @@ const CreateCharacterPage: React.FC = () => {
           elevation={0}
           sx={{
             p: 3,
-            mb: 3,
             borderRadius: '20px',
             background: 'rgba(255,255,255,0.9)',
             backdropFilter: 'blur(20px)',
@@ -1029,18 +1021,18 @@ const CreateCharacterPage: React.FC = () => {
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-            {characterKind === 'Place' 
-              ? 'Property Details' 
-              : characterKind === 'Product' 
-                ? 'Product Description' 
+            {characterKind === 'Place'
+              ? 'Property Details'
+              : characterKind === 'Product'
+                ? 'Product Description'
                 : characterKind === 'App'
                   ? 'App Description'
                   : 'Description'} (Optional)
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            {characterKind === 'Place' 
+            {characterKind === 'Place'
               ? 'Describe the location, style, key features, amenities, and vibe'
-              : characterKind === 'Product' 
+              : characterKind === 'Product'
                 ? 'Describe the product features, materials, colors, and unique details'
                 : characterKind === 'App'
                   ? 'Describe the app, its key features, target users, and what makes it unique'
@@ -1053,10 +1045,10 @@ const CreateCharacterPage: React.FC = () => {
             multiline
             rows={3}
             placeholder={
-              characterKind === 'Place' 
-                ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms" 
-                : characterKind === 'Product' 
-                  ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side" 
+              characterKind === 'Place'
+                ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms"
+                : characterKind === 'Product'
+                  ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side"
                   : characterKind === 'App'
                     ? "e.g., A fitness tracking app with clean UI, progress charts, workout plans, social features, and gamification elements"
                     : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
@@ -1069,6 +1061,7 @@ const CreateCharacterPage: React.FC = () => {
             }}
           />
         </Paper>
+        </Box>
 
         {/* Create/Update Button */}
         <Button
@@ -1100,6 +1093,87 @@ const CreateCharacterPage: React.FC = () => {
         </Button>
 
         {/* Action Sheets / Bottom Drawers */}
+
+        {/* Type Picker */}
+        <Drawer
+          anchor="bottom"
+          open={typePickerOpen}
+          onClose={() => setTypePickerOpen(false)}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
+          PaperProps={{
+            sx: {
+              borderRadius: '20px 20px 0 0',
+              maxHeight: '70vh',
+              overflow: 'hidden',
+              background: 'rgba(255,255,255,0.98)',
+              backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
+            },
+          }}
+        >
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+              Select Type
+            </Typography>
+          </Box>
+          <List sx={{ px: 1, py: 1 }}>
+            {characterKindOptions.map((kind) => (
+              <ListItem key={kind.id} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    setCharacterKind(kind.id);
+                    setTypePickerOpen(false);
+                  }}
+                  sx={{
+                    borderRadius: '12px',
+                    mb: 0.5,
+                    py: 1.5,
+                    background: characterKind === kind.id ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    border: characterKind === kind.id ? '2px solid #007AFF' : '2px solid transparent',
+                  }}
+                >
+                  <ListItemIcon>
+                    <Box component="img" src={kind.image} alt={kind.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
+                  </ListItemIcon>
+                  <ListItemText primary={kind.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
+                  {characterKind === kind.id && <CheckIcon sx={{ color: '#007AFF' }} />}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant="outlined"
+              onClick={() => setTypePickerOpen(false)}
+              sx={{
+                color: '#86868B',
+                borderColor: 'rgba(0,0,0,0.15)',
+                borderRadius: '12px',
+                px: 4,
+                py: 1,
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                  borderColor: 'rgba(0,0,0,0.3)',
+                  backgroundColor: 'rgba(0,0,0,0.02)',
+                }
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Drawer>
 
         {/* Age Picker */}
         <Drawer

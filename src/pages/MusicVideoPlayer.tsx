@@ -122,6 +122,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [songData, setSongData] = useState<SongData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [videoUrlRetryCount, setVideoUrlRetryCount] = useState(0);
   
   // Player state
   const [isPlaying, setIsPlaying] = useState(false);

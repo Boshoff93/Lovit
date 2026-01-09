@@ -324,11 +324,29 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMenuClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Box
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => {
+        hoverTimeoutRef.current = setTimeout(() => {
+          setIsHovered(true);
+        }, 500);
+      }}
       onMouseLeave={() => {
+        if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+          hoverTimeoutRef.current = null;
+        }
         setIsHovered(false);
         setIsVideoReady(false);
       }}
