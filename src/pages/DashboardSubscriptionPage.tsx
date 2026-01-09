@@ -11,6 +11,7 @@ import {
   Chip,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -275,15 +276,20 @@ const DashboardSubscriptionPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
-          component="img"
-          src="/gruvi/gruvi-subscription.png"
-          alt="Subscription"
           sx={{
-            height: 64,
-            width: 'auto',
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
             flexShrink: 0,
           }}
-        />
+        >
+          <CreditCardIcon sx={{ fontSize: 28, color: '#fff' }} />
+        </Box>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Subscription
@@ -324,37 +330,21 @@ const DashboardSubscriptionPage: React.FC = () => {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '14px',
-                background: subscription.tier === 'premium'
-                  ? 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)'
+              component="img"
+              src={
+                subscription.tier === 'premium'
+                  ? '/gruvi/gruvi-beast.png'
                   : subscription.tier === 'pro'
-                  ? 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)'
-                  : 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                  ? '/gruvi/gruvi-scale.png'
+                  : '/gruvi/gruvi-started.png'
+              }
+              alt={subscription.tier}
+              sx={{
+                height: 56,
+                width: 'auto',
                 flexShrink: 0,
               }}
-            >
-              <Box
-                component="img"
-                src={
-                  subscription.tier === 'premium'
-                    ? '/gruvi/gruvi-beast.png'
-                    : subscription.tier === 'pro'
-                    ? '/gruvi/gruvi-scale.png'
-                    : '/gruvi/gruvi-started.png'
-                }
-                alt={subscription.tier}
-                sx={{
-                  height: 42,
-                  width: 'auto',
-                }}
-              />
-            </Box>
+            />
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}

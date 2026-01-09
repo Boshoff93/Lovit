@@ -43,6 +43,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import MovieIcon from '@mui/icons-material/Movie';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -1070,15 +1071,24 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         {/* Left: Icon + Title + Subtitle */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
-            component="img"
-            src={activeTab === 'songs' ? '/gruvi/gruvi-my-music.png' : '/gruvi/gruvi-my-video.png'}
-            alt={activeTab === 'songs' ? 'My Music' : 'My Videos'}
             sx={{
-              height: 64,
-              width: 'auto',
+              width: 56,
+              height: 56,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
               flexShrink: 0,
             }}
-          />
+          >
+            {activeTab === 'songs' ? (
+              <LibraryMusicIcon sx={{ fontSize: 28, color: '#fff' }} />
+            ) : (
+              <VideoLibraryIcon sx={{ fontSize: 28, color: '#fff' }} />
+            )}
+          </Box>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>

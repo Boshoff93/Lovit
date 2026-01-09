@@ -21,6 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import PersonIcon from '@mui/icons-material/Person';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -451,15 +452,20 @@ const CreateCharacterPage: React.FC = () => {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
-              component="img"
-              src="/gruvi/gruvi-create-cast.png"
-              alt={isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}
               sx={{
-                height: 64,
-                width: 'auto',
+                width: 56,
+                height: 56,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(236,72,153,0.3)',
                 flexShrink: 0,
               }}
-            />
+            >
+              <PersonAddIcon sx={{ fontSize: 28, color: '#fff' }} />
+            </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
                 {isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}

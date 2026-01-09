@@ -22,6 +22,8 @@ import {
 import {
   CloudUpload,
   MusicNote,
+  MusicNote as MusicNoteIcon,
+  Movie as MovieIcon,
   VideoLibrary,
   CheckCircle,
   Close,
@@ -415,15 +417,24 @@ const UploadPage: React.FC = () => {
           {/* Left: Page Title with Icon */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
-              component="img"
-              src={uploadType === 'song' ? '/gruvi/gruvi-upload-music.png' : '/gruvi/gruvi-upload-video.png'}
-              alt={uploadType === 'song' ? 'Upload Music' : 'Upload Video'}
               sx={{
-                height: 64,
-                width: 'auto',
+                width: 56,
+                height: 56,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #F97316 0%, #FBBF24 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(249,115,22,0.3)',
                 flexShrink: 0,
               }}
-            />
+            >
+              {uploadType === 'song' ? (
+                <MusicNoteIcon sx={{ fontSize: 28, color: '#fff' }} />
+              ) : (
+                <MovieIcon sx={{ fontSize: 28, color: '#fff' }} />
+              )}
+            </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
                 Upload {uploadType === 'song' ? 'Music' : 'Video'}

@@ -23,6 +23,7 @@ import { RootState } from '../store/store';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { charactersApi } from '../services/api';
 
 // Avatar with skeleton loading state
@@ -174,15 +175,20 @@ const CharactersPage: React.FC = () => {
         {/* Left: Title with Icon */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
-            component="img"
-            src="/gruvi/gruvi-my-cast.png"
-            alt="My Cast"
             sx={{
-              height: 64,
-              width: 'auto',
+              width: 56,
+              height: 56,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
               flexShrink: 0,
             }}
-          />
+          >
+            <FolderSpecialIcon sx={{ fontSize: 28, color: '#fff' }} />
+          </Box>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>

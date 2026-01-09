@@ -47,6 +47,7 @@ import {
   InfoOutlined,
   Schedule,
   Public as PublicIcon,
+  VideoLibrary as VideoLibraryIcon,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -1216,15 +1217,20 @@ const MusicVideoPlayer: React.FC = () => {
           <ArrowBack />
         </IconButton>
         <Box
-          component="img"
-          src="/gruvi/gruvi-my-video.png"
-          alt="Video"
           sx={{
-            height: 64,
-            width: 'auto',
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
             flexShrink: 0,
           }}
-        />
+        >
+          <VideoLibraryIcon sx={{ fontSize: 28, color: '#fff' }} />
+        </Box>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             {videoData.songTitle || 'Music Video'}

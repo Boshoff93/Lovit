@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { Check, Error } from '@mui/icons-material';
+import { Check, Error, MusicNote } from '@mui/icons-material';
 import axios from 'axios';
 
 /**
  * TikTok OAuth Callback Page
- * 
+ *
  * This page handles the OAuth callback from TikTok after user authorization.
  * TikTok redirects here with ?code=xxx&state=yyy
  * We send these to the backend to exchange for tokens.
@@ -29,7 +29,7 @@ const TikTokCallbackPage: React.FC = () => {
 
       if (error) {
         setStatus('error');
-        setMessage(error === 'access_denied' 
+        setMessage(error === 'access_denied'
           ? 'TikTok authorization was cancelled.'
           : `Authorization failed: ${errorDescription || error}`
         );
@@ -44,7 +44,7 @@ const TikTokCallbackPage: React.FC = () => {
 
       try {
         console.log('[TikTokCallback] Sending code to backend...');
-        
+
         // Call the backend directly (no auth required for this public endpoint)
         const response = await axios.post(
           'https://api.gruvimusic.com/api/public/tiktok/callback',
@@ -57,7 +57,7 @@ const TikTokCallbackPage: React.FC = () => {
           setStatus('success');
           const username = response.data.username || 'your account';
           setMessage(`Connected to ${username}! Redirecting...`);
-          
+
           // Redirect back to connected accounts page
           setTimeout(() => {
             window.location.href = '/settings/connected-accounts?tiktok=success&username=' + encodeURIComponent(username);
@@ -85,18 +85,37 @@ const TikTokCallbackPage: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1D1D1F 0%, #2D2D2F 100%)',
-        color: '#fff',
+        background: '#fff',
         p: 4,
         textAlign: 'center',
       }}
     >
+      {/* Gradient Icon Box */}
+      <Box
+        sx={{
+          width: 80,
+          height: 80,
+          borderRadius: '20px',
+          background: 'linear-gradient(135deg, #00F2EA 0%, #FF0050 50%, #000000 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 24px rgba(255, 0, 80, 0.3)',
+          mb: 3,
+        }}
+      >
+        <MusicNote sx={{ fontSize: 40, color: '#fff' }} />
+      </Box>
+
       {status === 'processing' && (
         <>
-          <CircularProgress sx={{ color: '#fff', mb: 3 }} size={60} />
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
             Connecting to TikTok
           </Typography>
+          <Typography variant="body1" sx={{ color: '#86868B', mb: 3 }}>
+            {message}
+          </Typography>
+          <CircularProgress sx={{ color: '#007AFF' }} size={32} />
         </>
       )}
 
@@ -104,20 +123,23 @@ const TikTokCallbackPage: React.FC = () => {
         <>
           <Box
             sx={{
-              width: 80,
-              height: 80,
+              width: 48,
+              height: 48,
               borderRadius: '50%',
               bgcolor: '#34C759',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 3,
+              mb: 2,
             }}
           >
-            <Check sx={{ fontSize: 48, color: '#fff' }} />
+            <Check sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
             Connected!
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#86868B' }}>
+            {message}
           </Typography>
         </>
       )}
@@ -126,54 +148,44 @@ const TikTokCallbackPage: React.FC = () => {
         <>
           <Box
             sx={{
-              width: 80,
-              height: 80,
+              width: 48,
+              height: 48,
               borderRadius: '50%',
               bgcolor: '#FF3B30',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 3,
+              mb: 2,
             }}
           >
-            <Error sx={{ fontSize: 48, color: '#fff' }} />
+            <Error sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
             Connection Failed
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#86868B' }}>
+            {message}
           </Typography>
         </>
       )}
 
-      <Typography variant="body1" sx={{ color: '#fff' }}>
-        {message}
-      </Typography>
-
       {status !== 'processing' && (
-        <Box
-          onClick={() => window.location.href = '/settings/connected-accounts'}
+        <Typography
+          variant="body2"
           sx={{
+            color: '#007AFF',
             mt: 4,
-            px: 3,
-            py: 1.5,
-            borderRadius: '12px',
-            border: '1px solid rgba(255,255,255,0.3)',
             cursor: 'pointer',
-            '&:hover': {
-              bgcolor: 'rgba(255,255,255,0.1)',
-              borderColor: 'rgba(255,255,255,0.5)',
-            },
+            fontWeight: 500,
+            '&:hover': { textDecoration: 'underline' },
           }}
+          onClick={() => window.location.href = '/settings/connected-accounts'}
         >
-          <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500 }}>
-            Back to Connected Accounts
-          </Typography>
-        </Box>
+          Go back to Connected Accounts
+        </Typography>
       )}
     </Box>
   );
 };
 
 export default TikTokCallbackPage;
-
-
-

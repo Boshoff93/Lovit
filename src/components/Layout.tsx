@@ -3,14 +3,8 @@ import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
   Drawer,
-  List,
   Typography,
-  Divider,
   IconButton,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   useMediaQuery,
   Alert,
   Snackbar,
@@ -22,22 +16,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import MovieIcon from '@mui/icons-material/Movie';
-import BoltIcon from '@mui/icons-material/Bolt';
-import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import LinkIcon from '@mui/icons-material/Link';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -50,6 +28,7 @@ import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+import { SidebarContent, CollapsedSidebarContent } from './SidebarContent';
 
 // Create a context for the Layout functions
 interface LayoutContextType {
@@ -94,39 +73,6 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-// Navigation items configuration - grouped like Followr
-// CREATE section - for creating new content
-const createItems = [
-  { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon },
-  { path: '/create/video', label: 'Create Video', icon: MovieIcon },
-  { path: '/my-cast/create', label: 'Create Cast', icon: PersonAddIcon },
-];
-
-// UPLOAD section - for uploading content
-const uploadItems = [
-  { path: '/upload', label: 'Upload Music', icon: MusicNoteIcon, params: '?type=song' },
-  { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '?type=video' },
-];
-
-// CONTENT section - for viewing your content
-const contentItems = [
-  { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon },
-  { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon },
-  { path: '/my-cast', label: 'My Cast', icon: FolderSpecialIcon },
-];
-
-const publishItems = [
-  { path: '/settings/connected-accounts', label: 'Integrations', icon: LinkIcon },
-  { path: '/settings/scheduled-content', label: 'Scheduled Posts', icon: CalendarMonthIcon },
-];
-
-const accountItems = [
-  { path: '/account', label: 'Account', icon: AccountCircleIcon },
-  { path: '/payment', label: 'Subscription', icon: CreditCardIcon },
-  { path: '/support', label: 'Support', icon: HeadsetMicIcon },
-  { path: '/faq', label: 'Help & FAQ', icon: HelpOutlineIcon },
-];
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -137,8 +83,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { currentSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
 
-  // Helper to check if path is active
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/') || location.pathname.startsWith(path + '?');
   const dispatch = useDispatch<AppDispatch>();
   const { token } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
@@ -175,6 +119,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const handleLogout = useCallback(() => {
     dispatch(logoutAllState());
     navigate('/');
@@ -202,13 +151,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [navigate, isMobile]);
 
-  const handleNavigate = useCallback((path: string, e?: React.MouseEvent) => {
-    // Pass state for FAQ to indicate it's from dashboard
-    if (path === '/faq') {
-      navigate(path, { state: { fromDashboard: true } });
-    } else {
-      navigate(path);
-    }
+  const handleNavigate = useCallback((path: string) => {
+    navigate(path);
     if (isMobile) {
       setMobileOpen(false);
     }
@@ -299,567 +243,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
   };
 
-  // Sidebar content component
-  const SidebarContent = () => (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      py: 2,
-      // Add bottom padding when audio player is visible to prevent Sign Out from being hidden
-      pb: hasActivePlayer ? 10 : 2,
-    }}>
-      {/* Logo and Collapse button row */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, mb: 3 }}>
-        {/* Logo - links to homepage for SEO */}
-        <Box
-          component="a"
-          href="/"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            cursor: 'pointer',
-            textDecoration: 'none',
-          }}
-        >
-          <Box
-            component="img"
-            src="/gruvi.png"
-            alt="Gruvi"
-            sx={{
-              height: 36,
-              width: 36,
-              objectFit: 'contain',
-            }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            sx={{
-              fontFamily: '"Fredoka", "Inter", sans-serif',
-              fontWeight: 600,
-              fontSize: '1.4rem',
-              letterSpacing: '-0.01em',
-              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Gruvi
-          </Typography>
-        </Box>
+  // Props for sidebar components
+  const handleTokensClick = useCallback(() => {
+    if (isMobile) setMobileOpen(false);
+    setUpgradePopup({
+      open: true,
+      type: 'credits',
+      message: 'Upgrade your subscription or top up to get more tokens!',
+      title: 'Tokens'
+    });
+  }, [isMobile]);
 
-        {/* Collapse button - only on desktop */}
-        {!isMobile && (
-          <IconButton
-            onClick={handleSidebarCollapse}
-            size="small"
-            sx={{
-              color: '#86868B',
-              '&:hover': {
-                color: '#007AFF',
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-        )}
-      </Box>
+  const handleLogoutClick = useCallback(() => {
+    if (isMobile) setMobileOpen(false);
+    setLogoutDialogOpen(true);
+  }, [isMobile]);
 
-      {/* Tokens Display */}
-      {token && allowances && (
-        <Box sx={{ px: 2, mb: 2 }}>
-          <Button
-            fullWidth
-            onClick={() => {
-              if (isMobile) setMobileOpen(false);
-              setUpgradePopup({
-                open: true,
-                type: 'credits',
-                message: 'Upgrade your subscription or top up to get more tokens!',
-                title: 'Tokens'
-              });
-            }}
-            sx={{
-              borderRadius: '12px',
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600,
-              color: '#fff',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 1,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              }
-            }}
-          >
-            <BoltIcon sx={{ fontSize: 20, color: '#fff' }} />
-            <span style={{ color: '#fff' }}>{getRemainingTokens().toLocaleString()} Tokens</span>
-          </Button>
-        </Box>
-      )}
+  // Sidebar props
+  const sidebarProps = {
+    hasActivePlayer,
+    hasToken: !!token && !!allowances,
+    remainingTokens: getRemainingTokens(),
+    isMobile,
+    hasSubscription: !!hasSubscription,
+    onNavigate: handleNavigate,
+    onSidebarCollapse: handleSidebarCollapse,
+    onTokensClick: handleTokensClick,
+    onLogoutClick: handleLogoutClick,
+  };
 
-      {/* Scrollable content area */}
-      <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-        {/* CREATE Section */}
-        <Typography
-          variant="caption"
-          sx={{
-            px: 3,
-            py: 1,
-            display: 'block',
-            color: '#86868B',
-            fontWeight: 600,
-            fontSize: '0.65rem',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Create
-        </Typography>
-        <List sx={{ px: 1, pb: 1 }}>
-          {createItems.map((item, index) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-            const isLocked = !hasSubscription && item.path === '/create/video';
-            return (
-              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Icon sx={{
-                      fontSize: 20,
-                      color: active ? '#007AFF' : '#86868B',
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: active ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: active ? '#007AFF' : '#1D1D1F',
-                    }}
-                  />
-                  {isLocked && (
-                    <LockIcon sx={{ fontSize: 14, color: '#86868B', ml: 1 }} />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-
-        {/* UPLOAD Section */}
-        <Typography
-          variant="caption"
-          sx={{
-            px: 3,
-            py: 1,
-            display: 'block',
-            color: '#86868B',
-            fontWeight: 600,
-            fontSize: '0.65rem',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Upload
-        </Typography>
-        <List sx={{ px: 1, pb: 1 }}>
-          {uploadItems.map((item, index) => {
-            const Icon = item.icon;
-            const fullPath = item.path + (item.params || '');
-            const active = location.pathname === item.path && (item.params ? location.search === item.params : true);
-            return (
-              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => handleNavigate(fullPath)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Icon sx={{
-                      fontSize: 20,
-                      color: active ? '#007AFF' : '#86868B',
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: active ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: active ? '#007AFF' : '#1D1D1F',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-
-        {/* CONTENT Section */}
-        <Typography
-          variant="caption"
-          sx={{
-            px: 3,
-            py: 1,
-            display: 'block',
-            color: '#86868B',
-            fontWeight: 600,
-            fontSize: '0.65rem',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Content
-        </Typography>
-        <List sx={{ px: 1, pb: 1 }}>
-          {contentItems.map((item, index) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path;
-            // Show "My Videos" as active when viewing a video
-            const isViewingVideo = item.path === '/my-videos' && location.pathname.startsWith('/video/');
-            // Show "My Cast" as active when editing a cast member
-            const isEditingCast = item.path === '/my-cast' && location.pathname.startsWith('/my-cast/edit/');
-            const isHighlighted = active || isViewingVideo || isEditingCast;
-            const showIndicator = isViewingVideo || isEditingCast;
-            return (
-              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: isHighlighted ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: isHighlighted ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Icon sx={{
-                      fontSize: 20,
-                      color: isHighlighted ? '#007AFF' : '#86868B',
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: isHighlighted ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: isHighlighted ? '#007AFF' : '#1D1D1F',
-                    }}
-                  />
-                  {showIndicator && (
-                    <Box
-                      sx={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        backgroundColor: '#007AFF',
-                        ml: 1,
-                      }}
-                    />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-
-        {/* PUBLISHING Section */}
-        <Typography
-          variant="caption"
-          sx={{
-            px: 3,
-            py: 1,
-            display: 'block',
-            color: '#86868B',
-            fontWeight: 600,
-            fontSize: '0.65rem',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Publishing
-        </Typography>
-        <List sx={{ px: 1, pb: 1 }}>
-          {publishItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            const isLocked = !hasSubscription;
-            return (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Icon sx={{
-                      fontSize: 20,
-                      color: active ? '#007AFF' : '#86868B',
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: active ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: active ? '#007AFF' : '#1D1D1F',
-                    }}
-                  />
-                  {isLocked && (
-                    <LockIcon sx={{ fontSize: 14, color: '#86868B', ml: 1 }} />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-
-        {/* ACCOUNT Section */}
-        <Typography
-          variant="caption"
-          sx={{
-            px: 3,
-            py: 1,
-            display: 'block',
-            color: '#86868B',
-            fontWeight: 600,
-            fontSize: '0.65rem',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Account
-        </Typography>
-        <List sx={{ px: 1 }}>
-          {accountItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Icon sx={{
-                      fontSize: 20,
-                      color: active ? '#007AFF' : '#86868B',
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: active ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: active ? '#007AFF' : '#1D1D1F',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-
-      {/* Sign Out Button - Fixed at bottom */}
-      <Box sx={{ px: 1, pb: 1, pt: 1 }}>
-        <Divider sx={{ mb: 1 }} />
-        <ListItemButton
-          onClick={() => {
-            if (isMobile) setMobileOpen(false);
-            setLogoutDialogOpen(true);
-          }}
-          sx={{
-            borderRadius: '10px',
-            py: 1,
-            px: 2,
-            '&:hover': {
-              backgroundColor: 'rgba(255,59,48,0.08)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <LogoutIcon sx={{ fontSize: 20, color: '#FF3B30' }} />
-          </ListItemIcon>
-          <ListItemText
-            primary="Sign Out"
-            primaryTypographyProps={{
-              fontWeight: 500,
-              fontSize: '0.875rem',
-              color: '#FF3B30',
-            }}
-          />
-        </ListItemButton>
-      </Box>
-    </Box>
-  );
-
-  // Collapsed sidebar content - icons only (for desktop)
-  const CollapsedSidebarContent = () => {
-    // All items combined for collapsed view
-    const allItems = [
-      ...createItems,
-      ...uploadItems,
-      ...contentItems,
-      ...publishItems,
-      ...accountItems,
-    ];
-
-    return (
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        py: 2,
-        alignItems: 'center',
-        // Add bottom padding when audio player is visible to prevent Sign Out from being hidden
-        pb: hasActivePlayer ? 10 : 2,
-      }}>
-        {/* Logo only */}
-        <Box
-          component="a"
-          href="/"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 2,
-            cursor: 'pointer',
-            textDecoration: 'none',
-          }}
-        >
-          <Box
-            component="img"
-            src="/gruvi.png"
-            alt="Gruvi"
-            sx={{
-              height: 32,
-              width: 32,
-              objectFit: 'contain',
-            }}
-          />
-        </Box>
-
-        {/* Expand button */}
-        <IconButton
-          onClick={handleSidebarCollapse}
-          sx={{
-            mb: 2,
-            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-            color: '#fff',
-            width: 40,
-            height: 40,
-            '&:hover': {
-              background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-            },
-          }}
-        >
-          <ChevronRightIcon />
-        </IconButton>
-
-        {/* Scrollable icons */}
-        <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', width: '100%' }}>
-          <List sx={{ px: 1 }}>
-            {allItems.map((item, index) => {
-              const Icon = item.icon;
-              const fullPath = item.path + ((item as any).params || '');
-              const active = location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
-              return (
-                <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
-                  <ListItemButton
-                    onClick={() => handleNavigate(fullPath)}
-                    sx={{
-                      borderRadius: '10px',
-                      py: 1.25,
-                      px: 1.25,
-                      minWidth: 0,
-                      justifyContent: 'center',
-                      backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
-                      '&:hover': {
-                        backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
-                      },
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
-                      <Icon sx={{
-                        fontSize: 22,
-                        color: active ? '#007AFF' : '#86868B',
-                      }} />
-                    </ListItemIcon>
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
-
-        {/* Sign Out Icon */}
-        <Box sx={{ px: 1, pb: 1, pt: 1 }}>
-          <Divider sx={{ mb: 1, mx: 1 }} />
-          <ListItemButton
-            onClick={() => setLogoutDialogOpen(true)}
-            sx={{
-              borderRadius: '10px',
-              py: 1.25,
-              px: 1.25,
-              minWidth: 0,
-              justifyContent: 'center',
-              '&:hover': {
-                backgroundColor: 'rgba(255,59,48,0.08)',
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
-              <LogoutIcon sx={{ fontSize: 22, color: '#FF3B30' }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </Box>
-      </Box>
-    );
+  const collapsedSidebarProps = {
+    hasActivePlayer,
+    onNavigate: handleNavigate,
+    onSidebarCollapse: handleSidebarCollapse,
+    onLogoutClick: handleLogoutClick,
   };
 
   return (
@@ -893,7 +310,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               },
             }}
           >
-            {sidebarCollapsed ? <CollapsedSidebarContent /> : <SidebarContent />}
+            {sidebarCollapsed ? <CollapsedSidebarContent {...collapsedSidebarProps} /> : <SidebarContent {...sidebarProps} />}
           </Drawer>
         )}
 
@@ -987,7 +404,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <ChevronLeftIcon />
               </IconButton>
             </Box>
-            <SidebarContent />
+            <SidebarContent {...sidebarProps} />
           </Drawer>
         )}
 

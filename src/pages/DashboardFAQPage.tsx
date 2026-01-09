@@ -11,6 +11,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import EmailIcon from '@mui/icons-material/Email';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { faqItems } from './FAQPage';
 
@@ -75,15 +76,20 @@ const DashboardFAQPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
-          component="img"
-          src="/gruvi/gruvi-faq.png"
-          alt="Help & FAQ"
           sx={{
-            height: 64,
-            width: 'auto',
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
             flexShrink: 0,
           }}
-        />
+        >
+          <HelpOutlineIcon sx={{ fontSize: 28, color: '#fff' }} />
+        </Box>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Help & FAQ
