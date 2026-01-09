@@ -313,6 +313,223 @@ const getVideoCategoryLabel = (category?: string): string => {
   }
 };
 
+// VideoCard component with hover preview
+interface VideoCardProps {
+  video: Video;
+  isDeleting: boolean;
+  onWatch: (video: Video) => void;
+  onMenuClick: (e: React.MouseEvent<HTMLElement>, video: Video) => void;
+}
+
+const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMenuClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+
+  return (
+    <Box
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsVideoReady(false);
+      }}
+      onClick={() => video.status === 'completed' && onWatch(video)}
+      sx={{
+        position: 'relative',
+        aspectRatio: video.aspectRatio === 'landscape' ? '16/9' : '9/16',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        cursor: video.status === 'completed' ? 'pointer' : 'default',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        opacity: isDeleting ? 0.5 : 1,
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': video.status === 'completed' ? {
+          transform: 'translateY(-4px) scale(1.02)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        } : {},
+      }}
+    >
+      {/* Thumbnail Image - hidden when video is ready and playing */}
+      <Box
+        component="img"
+        src={
+          video.status === 'completed'
+            ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
+            : video.status === 'failed'
+              ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
+              : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
+        }
+        alt={video.songTitle || 'Music Video'}
+        sx={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: isVideoReady ? 'none' : 'block',
+        }}
+        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+          e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
+        }}
+      />
+
+      {/* Video Preview on Hover */}
+      {video.status === 'completed' && video.videoUrl && isHovered && (
+        <Box
+          component="video"
+          src={video.videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          onCanPlay={() => setIsVideoReady(true)}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      )}
+
+      {/* Info overlay at bottom */}
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          p: 1.5,
+          pt: 4,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+        }}
+      >
+        <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {video.songTitle || 'Music Video'}
+        </Typography>
+        {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
+          <Tooltip title={video.status === 'queued'
+            ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
+            : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
+          } arrow>
+            <Box
+              sx={{
+                position: 'relative',
+                height: 28,
+                width: '100%',
+                borderRadius: '100px',
+                background: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Progress fill with shimmer */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
+                  background: video.status === 'queued'
+                    ? 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 100%)'
+                    : 'linear-gradient(90deg, #10B981 0%, #34D399 100%)',
+                  transition: 'width 0.5s ease',
+                  animation: video.status === 'queued' ? 'shimmer 2s infinite' : 'none',
+                  '@keyframes shimmer': {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' },
+                  },
+                  backgroundSize: video.status === 'queued' ? '200% 100%' : '100% 100%',
+                }}
+              />
+              {/* Progress text */}
+              <Box sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Typography sx={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: '#fff',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                }}>
+                  {video.status === 'queued'
+                    ? `In Queue${video.queuePosition ? ` (#${video.queuePosition})` : ''}`
+                    : `${video.progress || 0}%`
+                  }
+                </Typography>
+              </Box>
+            </Box>
+          </Tooltip>
+        ) : video.status === 'failed' ? (
+          <Chip
+            label="Failed"
+            size="small"
+            sx={{
+              background: 'rgba(239,68,68,0.9)',
+              color: '#fff',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              height: 24,
+              borderRadius: '100px',
+              border: '1px solid rgba(255,255,255,0.2)',
+            }}
+          />
+        ) : (
+          <Chip
+            label={getVideoCategoryLabel(video.videoCategory)}
+            size="small"
+            sx={{
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+              color: '#fff',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              height: 24,
+              borderRadius: '100px',
+              border: '1px solid rgba(255,255,255,0.2)',
+            }}
+          />
+        )}
+      </Box>
+
+      {/* More Menu Button - Top right */}
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          onMenuClick(e, video);
+        }}
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          background: 'rgba(0,0,0,0.3)',
+          backdropFilter: 'blur(10px)',
+          color: '#fff',
+          width: 32,
+          height: 32,
+          '&:hover': {
+            background: 'rgba(0,0,0,0.5)',
+          },
+        }}
+      >
+        {isDeleting ? (
+          <CircularProgress size={16} sx={{ color: '#fff' }} />
+        ) : (
+          <MoreVertIcon sx={{ fontSize: 18 }} />
+        )}
+      </IconButton>
+    </Box>
+  );
+};
+
 interface AppPageProps {
   defaultTab?: 'songs' | 'videos';
 }
@@ -1864,76 +2081,103 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         <Box
           sx={{
             background: 'transparent',
-            overflow: 'hidden',
+            overflow: 'visible',
           }}
         >
           {/* Videos Grid - Grouped by Date */}
           {isLoadingVideos ? (
             <Box>
+              {/* First date group */}
+              <Skeleton variant="text" width={120} height={24} sx={{ mb: 2 }} />
               {/* First row - 4 portrait video skeletons */}
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+              <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' },
                 gap: 2,
-                mb: 3,
+                mb: 5,
               }}>
                 {[1, 2, 3, 4].map((i) => (
                   <Box key={`portrait-1-${i}`} sx={{ position: 'relative' }}>
-                    <Skeleton 
-                      variant="rounded" 
-                      sx={{ 
-                        width: '100%', 
+                    <Skeleton
+                      variant="rounded"
+                      sx={{
+                        width: '100%',
                         paddingTop: '177.78%', // 9:16 aspect ratio for portrait
-                        borderRadius: '16px',
-                      }} 
+                        borderRadius: '20px',
+                      }}
                     />
+                    {/* More menu button skeleton */}
+                    <Skeleton
+                      variant="circular"
+                      width={32}
+                      height={32}
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                      }}
+                    />
+                    {/* Title overlay skeleton */}
+                    <Box sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      p: 1.5,
+                    }}>
+                      <Skeleton variant="text" width="70%" height={20} sx={{ bgcolor: 'rgba(255,255,255,0.15)' }} />
+                      <Skeleton variant="rounded" width="50%" height={24} sx={{ borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.1)' }} />
+                    </Box>
                   </Box>
                 ))}
               </Box>
-              
-              {/* Second row - 2 landscape video skeletons */}
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, 
-                gap: 2,
-                mb: 3,
-              }}>
-                {[1, 2].map((i) => (
-                  <Box key={`landscape-${i}`} sx={{ position: 'relative' }}>
-                    <Skeleton 
-                      variant="rounded" 
-                      sx={{ 
-                        width: '100%', 
-                        paddingTop: '56.25%', // 16:9 aspect ratio for landscape
-                        borderRadius: '16px',
-                      }} 
-                    />
-                  </Box>
-                ))}
-              </Box>
-              
-              {/* Third row - 4 more portrait video skeletons */}
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+
+              {/* Second date group */}
+              <Skeleton variant="text" width={140} height={24} sx={{ mb: 2 }} />
+              {/* Second row - 4 portrait video skeletons */}
+              <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' },
                 gap: 2,
               }}>
                 {[1, 2, 3, 4].map((i) => (
                   <Box key={`portrait-2-${i}`} sx={{ position: 'relative' }}>
-                    <Skeleton 
-                      variant="rounded" 
-                      sx={{ 
-                        width: '100%', 
+                    <Skeleton
+                      variant="rounded"
+                      sx={{
+                        width: '100%',
                         paddingTop: '177.78%', // 9:16 aspect ratio for portrait
-                        borderRadius: '16px',
-                      }} 
+                        borderRadius: '20px',
+                      }}
                     />
+                    {/* More menu button skeleton */}
+                    <Skeleton
+                      variant="circular"
+                      width={32}
+                      height={32}
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                      }}
+                    />
+                    {/* Title overlay skeleton */}
+                    <Box sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      p: 1.5,
+                    }}>
+                      <Skeleton variant="text" width="70%" height={20} sx={{ bgcolor: 'rgba(255,255,255,0.15)' }} />
+                      <Skeleton variant="rounded" width="50%" height={24} sx={{ borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.1)' }} />
+                    </Box>
                   </Box>
                 ))}
               </Box>
             </Box>
           ) : totalVideosCount > 0 ? (
-            <Box>
+            <Box sx={{ overflow: 'visible' }}>
               {/* Group displayed videos by date */}
               {(() => {
                 // Group displayed videos by date (paginated)
@@ -1972,7 +2216,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   const displayDate = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
                   
                   return (
-                    <Box key={dateKey} sx={{ mb: 4 }}>
+                    <Box key={dateKey} sx={{ mb: 4, overflow: 'visible' }}>
                       {/* Date Section Header */}
                       <Typography 
                         variant="subtitle2" 
@@ -1998,191 +2242,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                             gap: 2,
                             overflow: 'visible',
                           }}>
-                            {dateVideos.filter(v => v.aspectRatio !== 'landscape').map((video) => {
-                              const isDeleting = deletingVideoId === video.videoId;
-
-                              return (
-                                <Box
-                                  key={video.videoId}
-                                  onClick={() => video.status === 'completed' && handleWatchVideo(video)}
-                                  sx={{
-                                    position: 'relative',
-                                    aspectRatio: '9/16',
-                                    borderRadius: '20px',
-                                    overflow: 'hidden',
-                                    cursor: video.status === 'completed' ? 'pointer' : 'default',
-                                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                                    opacity: isDeleting ? 0.5 : 1,
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                    '&:hover': video.status === 'completed' ? {
-                                      transform: 'translateY(-4px) scale(1.02)',
-                                      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                                    } : {},
-                                  }}
-                                >
-                              {/* Thumbnail Image */}
-                              <Box
-                                component="img"
-                                src={
-                                  video.status === 'completed'
-                                    ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
-                                    : video.status === 'failed'
-                                      ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
-                                      : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
-                                }
-                                alt={video.songTitle || 'Music Video'}
-                                sx={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                }}
-                                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                  e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
-                                }}
+                            {dateVideos.filter(v => v.aspectRatio !== 'landscape').map((video) => (
+                              <VideoCard
+                                key={video.videoId}
+                                video={video}
+                                isDeleting={deletingVideoId === video.videoId}
+                                onWatch={handleWatchVideo}
+                                onMenuClick={handleVideoMenuClick}
                               />
-                              
-                              
-                              {/* Info overlay at bottom */}
-                              <Box 
-                                sx={{ 
-                                  position: 'absolute',
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  p: 1.5,
-                                  pt: 4,
-                                  background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                                }}
-                              >
-                                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                  {video.songTitle || 'Music Video'}
-                                </Typography>
-                                {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
-                                  <Tooltip title={video.status === 'queued' 
-                                    ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
-                                    : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
-                                  } arrow>
-                                    <Box
-                                      sx={{
-                                        position: 'relative',
-                                        height: 28,
-                                        width: '100%',
-                                        borderRadius: '100px',
-                                        background: 'rgba(255,255,255,0.2)',
-                                        backdropFilter: 'blur(10px)',
-                                        border: '1px solid rgba(255,255,255,0.3)',
-                                        overflow: 'hidden',
-                                      }}
-                                    >
-                                      {/* Progress fill with shimmer */}
-                                      <Box
-                                        sx={{
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          bottom: 0,
-                                          width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
-                                          background: video.status === 'queued' 
-                                            ? 'linear-gradient(90deg, #FF9500 0%, #FFCC00 100%)' 
-                                            : 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
-                                          borderRadius: '100px',
-                                          transition: 'width 0.5s ease-out',
-                                          overflow: 'hidden',
-                                          opacity: video.status === 'queued' ? 0.5 : 1,
-                                          '&::after': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-                                            animation: 'shimmer 1.5s infinite',
-                                          },
-                                          '@keyframes shimmer': {
-                                            '0%': { transform: 'translateX(-100%)' },
-                                            '100%': { transform: 'translateX(100%)' },
-                                          },
-                                        }}
-                                      />
-                                      {/* Text label */}
-                                      <Box
-                                        sx={{
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          right: 0,
-                                          bottom: 0,
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          px: 1.5,
-                                        }}
-                                      >
-                                        <Typography
-                                          sx={{
-                                            fontSize: '0.7rem',
-                                            fontWeight: 600,
-                                            color: '#fff',
-                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                          }}
-                                        >
-                                          {video.status === 'queued' 
-                                            ? `⏳ Queued${video.queuePosition ? ` #${video.queuePosition}` : ''}` 
-                                            : `${video.progress || 0}% · ${video.progressMessage || 'Creating...'}`}
-                                        </Typography>
-                                      </Box>
-                                    </Box>
-                                  </Tooltip>
-                                ) : (
-                                  <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
-                                    <Chip
-                                      label={video.status === 'failed' ? 'Failed' : getVideoCategoryLabel(video.videoCategory)}
-                                      size="small"
-                                      sx={{
-                                        background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
-                                        backdropFilter: 'blur(10px)',
-                                        color: '#fff',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 500,
-                                        height: 24,
-                                        borderRadius: '100px',
-                                        border: '1px solid rgba(255,255,255,0.2)',
-                                      }}
-                                    />
-                                  </Tooltip>
-                                )}
-                              </Box>
-                              
-                              {/* More Menu Button - Top right */}
-                                  <IconButton
-                                    onClick={(e) => handleVideoMenuClick(e, video)}
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 8,
-                                      right: 8,
-                                      background: 'rgba(0,0,0,0.3)',
-                                      backdropFilter: 'blur(10px)',
-                                      color: '#fff',
-                                      width: 32,
-                                      height: 32,
-                                      '&:hover': {
-                                        background: 'rgba(0,0,0,0.5)',
-                                      },
-                                    }}
-                                  >
-                                    {isDeleting ? (
-                                      <CircularProgress size={16} sx={{ color: '#fff' }} />
-                                    ) : (
-                                      <MoreVertIcon sx={{ fontSize: 18 }} />
-                                    )}
-                                  </IconButton>
-                                </Box>
-                              );
-                            })}
+                            ))}
                           </Box>
                         )}
                         
@@ -2193,190 +2261,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           gap: 2,
                           overflow: 'visible',
                         }}>
-                        {dateVideos.filter(v => v.aspectRatio === 'landscape').map((video) => {
-                          const isDeleting = deletingVideoId === video.videoId;
-
-                          return (
-                            <Box
+                          {dateVideos.filter(v => v.aspectRatio === 'landscape').map((video) => (
+                            <VideoCard
                               key={video.videoId}
-                              onClick={() => video.status === 'completed' && handleWatchVideo(video)}
-                              sx={{
-                                position: 'relative',
-                                aspectRatio: '16/9',
-                                borderRadius: '20px',
-                                overflow: 'hidden',
-                                cursor: video.status === 'completed' ? 'pointer' : 'default',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                                opacity: isDeleting ? 0.5 : 1,
-                                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                '&:hover': video.status === 'completed' ? {
-                                  transform: 'translateY(-4px) scale(1.02)',
-                                  boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                                } : {},
-                              }}
-                            >
-                              {/* Thumbnail Image */}
-                              <Box
-                                component="img"
-                                src={
-                                  video.status === 'completed'
-                                    ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
-                                    : video.status === 'failed'
-                                      ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
-                                      : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
-                                }
-                                alt={video.songTitle || 'Music Video'}
-                                sx={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                }}
-                                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                  e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
-                                }}
-                              />
-
-                              {/* Info overlay at bottom */}
-                              <Box 
-                                sx={{ 
-                                  position: 'absolute',
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  p: 1.5,
-                                  pt: 4,
-                                  background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-                                }}
-                              >
-                                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                  {video.songTitle || 'Music Video'}
-                                </Typography>
-                                {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
-                                  <Tooltip title={video.status === 'queued' 
-                                    ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
-                                    : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
-                                  } arrow>
-                                    <Box
-                                      sx={{
-                                        position: 'relative',
-                                        height: 28,
-                                        width: '100%',
-                                        borderRadius: '100px',
-                                        background: 'rgba(255,255,255,0.2)',
-                                        backdropFilter: 'blur(10px)',
-                                        border: '1px solid rgba(255,255,255,0.3)',
-                                        overflow: 'hidden',
-                                      }}
-                                    >
-                                      {/* Progress fill with shimmer */}
-                                      <Box
-                                        sx={{
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          bottom: 0,
-                                          width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
-                                          background: video.status === 'queued' 
-                                            ? 'linear-gradient(90deg, #FF9500 0%, #FFCC00 100%)' 
-                                            : 'linear-gradient(90deg, #007AFF 0%, #5AC8FA 100%)',
-                                          borderRadius: '100px',
-                                          transition: 'width 0.5s ease-out',
-                                          overflow: 'hidden',
-                                          opacity: video.status === 'queued' ? 0.5 : 1,
-                                          '&::after': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-                                            animation: 'shimmer 1.5s infinite',
-                                          },
-                                          '@keyframes shimmer': {
-                                            '0%': { transform: 'translateX(-100%)' },
-                                            '100%': { transform: 'translateX(100%)' },
-                                          },
-                                        }}
-                                      />
-                                      {/* Text label */}
-                                      <Box
-                                        sx={{
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          right: 0,
-                                          bottom: 0,
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          px: 1.5,
-                                        }}
-                                      >
-                                        <Typography
-                                          sx={{
-                                            fontSize: '0.7rem',
-                                            fontWeight: 600,
-                                            color: '#fff',
-                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                          }}
-                                        >
-                                          {video.status === 'queued' 
-                                            ? `⏳ Queued${video.queuePosition ? ` #${video.queuePosition}` : ''}` 
-                                            : `${video.progress || 0}% · ${video.progressMessage || 'Creating...'}`}
-                                        </Typography>
-                                      </Box>
-                                    </Box>
-                                  </Tooltip>
-                                ) : (
-                                  <Tooltip title={video.status === 'failed' ? 'Failed to generate' : 'Click to view'}>
-                                    <Chip
-                                      label={video.status === 'failed' ? 'Failed' : getVideoCategoryLabel(video.videoCategory)}
-                                      size="small"
-                                      sx={{
-                                        background: video.status === 'failed' ? 'rgba(255,59,48,0.6)' : 'rgba(255,255,255,0.25)',
-                                        backdropFilter: 'blur(10px)',
-                                        color: '#fff',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 500,
-                                        height: 24,
-                                        borderRadius: '100px',
-                                        border: '1px solid rgba(255,255,255,0.2)',
-                                      }}
-                                    />
-                                  </Tooltip>
-                                )}
-                              </Box>
-                              
-                              {/* More Menu Button - Top right */}
-                              <IconButton
-                                onClick={(e) => handleVideoMenuClick(e, video)}
-                                sx={{
-                                  position: 'absolute',
-                                  top: 8,
-                                  right: 8,
-                                  background: 'rgba(0,0,0,0.3)',
-                                  backdropFilter: 'blur(10px)',
-                                  color: '#fff',
-                                  width: 32,
-                                  height: 32,
-                                  '&:hover': {
-                                    background: 'rgba(0,0,0,0.5)',
-                                  },
-                                }}
-                              >
-                                {isDeleting ? (
-                                  <CircularProgress size={16} sx={{ color: '#fff' }} />
-                                ) : (
-                                  <MoreVertIcon sx={{ fontSize: 18 }} />
-                                )}
-                              </IconButton>
-                            </Box>
-                          );
-                        })}
+                              video={video}
+                              isDeleting={deletingVideoId === video.videoId}
+                              onWatch={handleWatchVideo}
+                              onMenuClick={handleVideoMenuClick}
+                            />
+                          ))}
                         </Box>
                       </Box>
                     </Box>
