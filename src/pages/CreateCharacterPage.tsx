@@ -25,8 +25,6 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckIcon from '@mui/icons-material/Check';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import EditIcon from '@mui/icons-material/Edit';
 import { charactersApi } from '../services/api';
 
 // Character kind options
@@ -451,27 +449,17 @@ const CreateCharacterPage: React.FC = () => {
           gap: 2,
           flexWrap: 'wrap',
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
+              component="img"
+              src="/gruvi/gruvi-create-cast.png"
+              alt={isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                background: isEditMode
-                  ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
-                  : 'linear-gradient(135deg, #FF9500 0%, #FF3B30 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                height: 64,
+                width: 'auto',
                 flexShrink: 0,
               }}
-            >
-              {isEditMode ? (
-                <EditIcon sx={{ color: '#fff', fontSize: 24 }} />
-              ) : (
-                <PersonAddIcon sx={{ color: '#fff', fontSize: 24 }} />
-              )}
-            </Box>
+            />
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
                 {isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}
@@ -1103,6 +1091,7 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={agePickerOpen}
           onClose={() => setAgePickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -1169,6 +1158,7 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={hairColorPickerOpen}
           onClose={() => setHairColorPickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -1238,6 +1228,7 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={hairLengthPickerOpen}
           onClose={() => setHairLengthPickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',
@@ -1309,6 +1300,7 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={eyeColorPickerOpen}
           onClose={() => setEyeColorPickerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: '20px',

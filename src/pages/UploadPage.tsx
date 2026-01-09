@@ -27,7 +27,6 @@ import {
   Close,
   Image as ImageIcon,
   KeyboardArrowDown,
-  FileUpload as FileUploadIcon,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { songsApi, videosApi } from '../services/api';
@@ -435,21 +434,17 @@ const UploadPage: React.FC = () => {
           flexWrap: 'wrap',
         }}>
           {/* Left: Page Title with Icon */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
+              component="img"
+              src={uploadType === 'song' ? '/gruvi/gruvi-upload-music.png' : '/gruvi/gruvi-upload-video.png'}
+              alt={uploadType === 'song' ? 'Upload Music' : 'Upload Video'}
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                height: 64,
+                width: 'auto',
                 flexShrink: 0,
               }}
-            >
-              <FileUploadIcon sx={{ color: '#fff', fontSize: 24 }} />
-            </Box>
+            />
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
                 Upload {uploadType === 'song' ? 'Music' : 'Video'}

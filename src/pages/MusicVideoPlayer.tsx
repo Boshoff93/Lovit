@@ -1203,64 +1203,39 @@ const MusicVideoPlayer: React.FC = () => {
   const displayDuration = videoData?.durationSeconds || songData?.actualDuration || songData?.estimatedDuration || duration;
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#f5f5f7', pb: 16 }}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%', pb: 16 }}>
       {/* Header */}
-      <Box
-        sx={{
-          background: '#fff',
-          borderBottom: '1px solid rgba(0,0,0,0.08)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <IconButton onClick={handleGoBack} sx={{ color: '#007AFF' }}>
-                <ArrowBack />
-              </IconButton>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1d1d1f' }}>
-                {videoData.songTitle || 'Music Video'}
-              </Typography>
-            </Box>
-            
-            {/* Right side buttons */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Tokens Button */}
-              {user && allowances && (
-                <Button
-                  onClick={() => setShowUpgradePopup(true)}
-                  sx={{
-                    borderRadius: '20px',
-                    px: 2,
-                    py: 0.75,
-                    minWidth: 'auto',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    color: '#fff',
-                    background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                      boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                    }
-                  }}
-                >
-                  <Bolt sx={{ fontSize: 18, color: '#fff' }} />
-                  <span style={{ color: '#fff' }}>{remainingTokens}</span>
-                </Button>
-              )}
-            </Box>
-          </Box>
-        </Container>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <IconButton
+          onClick={handleGoBack}
+          sx={{
+            color: '#007AFF',
+            mr: 0.5,
+          }}
+        >
+          <ArrowBack />
+        </IconButton>
+        <Box
+          component="img"
+          src="/gruvi/gruvi-my-video.png"
+          alt="Video"
+          sx={{
+            height: 64,
+            width: 'auto',
+            flexShrink: 0,
+          }}
+        />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            {videoData.songTitle || 'Music Video'}
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Watch, edit, and share your video
+          </Typography>
+        </Box>
       </Box>
 
-      <Container maxWidth="md" sx={{ mt: 3 }}>
+      <Container maxWidth="md" sx={{ px: 0 }} disableGutters>
         {/* Video + Details - Portrait: side-by-side, Landscape: stacked */}
         <Box sx={{ 
           display: 'flex', 

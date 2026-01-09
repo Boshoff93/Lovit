@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { 
-  Box, 
+import {
+  Box,
   Container,
   Typography,
   TextField,
@@ -17,6 +17,9 @@ import {
   FormControlLabel,
   InputAdornment,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -31,8 +34,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-import PersonIcon from '@mui/icons-material/Person';
-import { stripeConfig } from '../config/stripe';
+import { stripeConfig, topUpBundles } from '../config/stripe';
 import { userApi } from '../services/api';
 
 const AccountPage: React.FC = () => {
@@ -52,6 +54,7 @@ const AccountPage: React.FC = () => {
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
+  const [topUpModalOpen, setTopUpModalOpen] = useState(false);
   
   // Profile editing state - single field for Artist / Director Name
   const [artistName, setArtistName] = useState(user?.artistName || user?.name || '');
@@ -174,21 +177,17 @@ const AccountPage: React.FC = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
+          component="img"
+          src="/gruvi/grui-account.png"
+          alt="Account"
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            height: 64,
+            width: 'auto',
             flexShrink: 0,
           }}
-        >
-          <PersonIcon sx={{ color: '#fff', fontSize: 24 }} />
-        </Box>
+        />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Account
@@ -284,7 +283,7 @@ const AccountPage: React.FC = () => {
               <Button
                 variant="contained"
                 size="small"
-                onClick={() => navigate('/subscription#topup')}
+                onClick={() => setTopUpModalOpen(true)}
                 sx={{
                   borderRadius: '10px',
                   px: 2.5,
@@ -529,6 +528,120 @@ const AccountPage: React.FC = () => {
         </Box>
         </CardContent>
       </Card>
+      {/* Top Up Modal */}
+      <Dialog
+        open={topUpModalOpen}
+        onClose={() => setTopUpModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            p: 1,
+          }
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+              Need More Tokens?
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+              Top-up tokens never expire!
+            </Typography>
+          </Box>
+          <IconButton onClick={() => setTopUpModalOpen(false)} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ overflow: 'visible', pt: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            {topUpBundles.map((bundle, index) => (
+              <Card
+                key={bundle.id}
+                onClick={async () => {
+                  try {
+                    setCheckoutLoading(bundle.id);
+                    const resultAction = await dispatch(createCheckoutSession({
+                      priceId: bundle.priceId,
+                      productId: bundle.productId
+                    }));
+                    if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                      window.location.href = resultAction.payload.url;
+                    }
+                  } catch (err: any) {
+                    setError(err.message || 'Failed to create checkout session');
+                  } finally {
+                    setCheckoutLoading(null);
+                  }
+                }}
+                sx={{
+                  borderRadius: '16px',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  transition: 'all 0.2s ease',
+                  position: 'relative',
+                  overflow: 'visible',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
+                    borderColor: '#007AFF',
+                  },
+                }}
+              >
+                {bundle.badge && (
+                  <Chip
+                    label={bundle.badge}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -10,
+                      right: 16,
+                      background: bundle.badge === 'BEST VALUE'
+                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
+                        : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                      color: '#fff',
+                      fontWeight: 600,
+                      fontSize: '0.65rem',
+                    }}
+                  />
+                )}
+                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex' }}>
+                        {Array.from({ length: index + 1 }).map((_, i) => (
+                          <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
+                        ))}
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1D1D1F' }}>
+                          {bundle.tokens.toLocaleString()} tokens
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                          Never expires
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#007AFF' }}>
+                        ${bundle.price}
+                      </Typography>
+                      {checkoutLoading === bundle.id ? (
+                        <CircularProgress size={16} sx={{ color: '#007AFF' }} />
+                      ) : (
+                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                          One-time
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

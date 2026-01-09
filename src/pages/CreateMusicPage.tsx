@@ -445,21 +445,17 @@ const CreateMusicPage: React.FC = () => {
         gap: 2,
         flexWrap: 'wrap',
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            component="img"
+            src="/gruvi/gruvi-create-music.png"
+            alt="Create Music"
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: 64,
+              width: 'auto',
               flexShrink: 0,
             }}
-          >
-            <MusicNoteIcon sx={{ color: '#fff', fontSize: 24 }} />
-          </Box>
+          />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
               Create Music
@@ -1096,6 +1092,7 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={genrePickerOpen}
         onClose={() => setGenrePickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -1141,6 +1138,27 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setGenrePickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Mood Picker Drawer */}
@@ -1148,6 +1166,7 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={moodPickerOpen}
         onClose={() => setMoodPickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -1193,6 +1212,27 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setMoodPickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Language Picker Drawer */}
@@ -1200,6 +1240,7 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={languagePickerOpen}
         onClose={() => setLanguagePickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -1245,6 +1286,27 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setLanguagePickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Cast Picker Drawer */}
@@ -1252,6 +1314,7 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={castPickerOpen}
         onClose={() => setCastPickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -1361,6 +1424,27 @@ const CreateMusicPage: React.FC = () => {
             </Box>
           )}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setCastPickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Notification */}

@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import EmailIcon from '@mui/icons-material/Email';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { faqItems } from './FAQPage';
@@ -74,21 +73,17 @@ const DashboardFAQPage: React.FC = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
+          component="img"
+          src="/gruvi/gruvi-faq.png"
+          alt="Help & FAQ"
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #AF52DE 0%, #BF5AF2 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            height: 64,
+            width: 'auto',
             flexShrink: 0,
           }}
-        >
-          <HelpOutlineIcon sx={{ color: '#fff', fontSize: 24 }} />
-        </Box>
+        />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Help & FAQ
@@ -102,7 +97,7 @@ const DashboardFAQPage: React.FC = () => {
       {/* Category Filter Card */}
       <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
         <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 650, mx: 'auto' }}>
             <Chip
               label="All"
               onClick={() => setActiveCategory(null)}

@@ -26,7 +26,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import MovieIcon from '@mui/icons-material/Movie';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import VideocamIcon from '@mui/icons-material/Videocam';
 import PaletteIcon from '@mui/icons-material/Palette';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
@@ -227,11 +226,29 @@ const CreateVideoPage: React.FC = () => {
   
   // Toggle character selection
   const handleCharacterToggle = (characterId: string) => {
-    setSelectedCharacterIds(prev => 
-      prev.includes(characterId)
+    const character = characters.find(c => c.characterId === characterId);
+    const isCurrentlySelected = selectedCharacterIds.includes(characterId);
+
+    setSelectedCharacterIds(prev =>
+      isCurrentlySelected
         ? prev.filter(id => id !== characterId)
         : [...prev, characterId]
     );
+
+    // Also update the prompt with @CharacterName
+    if (character) {
+      const mentionText = `@${character.characterName}`;
+      if (isCurrentlySelected) {
+        // Remove from prompt
+        setVideoPrompt(prev => prev.replace(mentionText, '').replace(/\s+/g, ' ').trim());
+      } else {
+        // Add to prompt if not already there
+        setVideoPrompt(prev => {
+          if (prev.includes(mentionText)) return prev;
+          return prev ? `${prev} ${mentionText}` : mentionText;
+        });
+      }
+    }
   };
 
   // Get credits for selected video type
@@ -313,21 +330,17 @@ const CreateVideoPage: React.FC = () => {
         gap: 2,
         flexWrap: 'wrap',
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            component="img"
+            src="/gruvi/gruvi-create-video.png"
+            alt="Create Video"
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #FF2D55 0%, #FF9500 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: 64,
+              width: 'auto',
               flexShrink: 0,
             }}
-          >
-            <VideocamIcon sx={{ color: '#fff', fontSize: 24 }} />
-          </Box>
+          />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
               Create Music Video
@@ -930,6 +943,7 @@ const CreateVideoPage: React.FC = () => {
         anchor="bottom"
         open={stylePickerOpen}
         onClose={() => setStylePickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -975,6 +989,27 @@ const CreateVideoPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setStylePickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Cast Picker Drawer */}
@@ -982,6 +1017,7 @@ const CreateVideoPage: React.FC = () => {
         anchor="bottom"
         open={castPickerOpen}
         onClose={() => setCastPickerOpen(false)}
+        sx={{ zIndex: 1400 }}
         PaperProps={{
           sx: {
             borderTopLeftRadius: '20px',
@@ -1089,6 +1125,27 @@ const CreateVideoPage: React.FC = () => {
             })
           )}
         </ScrollableListWrapper>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setCastPickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Drawer>
 
       {/* Notification */}

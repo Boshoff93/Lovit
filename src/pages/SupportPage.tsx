@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import FAQIcon from '@mui/icons-material/QuestionAnswer';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useNavigate } from 'react-router-dom';
 
 const SupportPage: React.FC = () => {
@@ -20,7 +19,7 @@ const SupportPage: React.FC = () => {
   };
 
   const handleFAQClick = () => {
-    navigate('/faq');
+    navigate('/faq', { state: { fromDashboard: true } });
   };
 
   const faqItems = [
@@ -53,21 +52,17 @@ const SupportPage: React.FC = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
+          component="img"
+          src="/gruvi/gruvi-support.png"
+          alt="Support"
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            height: 64,
+            width: 'auto',
             flexShrink: 0,
           }}
-        >
-          <SupportAgentIcon sx={{ color: '#fff', fontSize: 24 }} />
-        </Box>
+        />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Support
@@ -153,7 +148,7 @@ const SupportPage: React.FC = () => {
             </Box>
             <Button
               variant="outlined"
-              startIcon={<FAQIcon />}
+              startIcon={<FAQIcon sx={{ color: '#007AFF' }} />}
               onClick={handleFAQClick}
               sx={{
                 borderRadius: '10px',
@@ -163,6 +158,9 @@ const SupportPage: React.FC = () => {
                 textTransform: 'none',
                 borderColor: '#007AFF',
                 color: '#007AFF',
+                '& .MuiButton-startIcon': {
+                  color: '#007AFF',
+                },
                 '&:hover': {
                   borderColor: '#0066DD',
                   backgroundColor: 'rgba(0,122,255,0.05)',

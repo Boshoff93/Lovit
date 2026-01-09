@@ -34,7 +34,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinkIcon from '@mui/icons-material/Link';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -534,6 +533,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {contentItems.map((item, index) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
+            // Show "My Videos" as active when viewing a video
+            const isViewingVideo = item.path === '/my-videos' && location.pathname.startsWith('/video/');
+            const isHighlighted = active || isViewingVideo;
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
@@ -542,26 +544,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     borderRadius: '10px',
                     py: 1,
                     px: 2,
-                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    backgroundColor: isHighlighted ? 'rgba(0,122,255,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: isHighlighted ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
                     },
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 36 }}>
                     <Icon sx={{
                       fontSize: 20,
-                      color: active ? '#007AFF' : '#86868B',
+                      color: isHighlighted ? '#007AFF' : '#86868B',
                     }} />
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
-                      fontWeight: active ? 600 : 500,
+                      fontWeight: isHighlighted ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: active ? '#007AFF' : '#1D1D1F',
+                      color: isHighlighted ? '#007AFF' : '#1D1D1F',
                     }}
                   />
+                  {isViewingVideo && (
+                    <Box
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        backgroundColor: '#007AFF',
+                        ml: 1,
+                      }}
+                    />
+                  )}
                 </ListItemButton>
               </ListItem>
             );

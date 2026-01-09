@@ -2645,7 +2645,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     twitterDescription: 'Create AI content and distribute everywhere. The scheduler for creators.',
     breadcrumbName: 'Home',
     heroTagline: 'Everyone Deserves a Viral Moment',
-    heroHeading: 'The AI Music Video Generator\nEveryone Deserves a Viral Moment.',
+    heroHeading: 'The Music Promo Generator\nEveryone Deserves a Viral Moment.',
     heroSubtext: 'Generate AI-powered promo videos and music, then instantly distribute to YouTube, TikTok, Instagram, Facebook & Spotify - no switching apps, no manual uploads.',
     examplePrompts: ['Upbeat coffee shop vibes', 'Epic gaming montage track', 'Chill lo-fi study beats', 'Hype workout anthem']
   },

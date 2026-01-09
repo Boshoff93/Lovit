@@ -11,7 +11,6 @@ import {
   Chip,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import SecurityIcon from '@mui/icons-material/Security';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -19,7 +18,6 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
 import BoltIcon from '@mui/icons-material/Bolt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -41,6 +39,7 @@ interface PricePlan {
   tokens: number;
   gradient: string;
   badgeColor: string;
+  icon: string;
   stripePrices: {
     monthly: string;
     yearly: string;
@@ -53,7 +52,7 @@ const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
   <Box
     component="svg"
     viewBox="0 0 24 24"
-    sx={{ width: 14, height: 14, ...sx }}
+    sx={{ width: 18, height: 18, ...sx }}
   >
     <path
       fill="currentColor"
@@ -64,20 +63,20 @@ const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
 
 // Mini social icons row
 const SocialPlatformIconsMini: React.FC = () => (
-  <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap' }}>
+  <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'center', flexWrap: 'wrap' }}>
     {[
-      { icon: <InstagramIcon sx={{ fontSize: 12 }} />, bg: 'linear-gradient(135deg, #E4405F, #C13584)' },
-      { icon: <FacebookIcon sx={{ fontSize: 12 }} />, bg: '#1877F2' },
-      { icon: <XIcon sx={{ fontSize: 10 }} />, bg: '#000' },
-      { icon: <LinkedInIcon sx={{ fontSize: 12 }} />, bg: '#0A66C2' },
+      { icon: <InstagramIcon sx={{ fontSize: 18 }} />, bg: 'linear-gradient(135deg, #E4405F, #C13584)' },
+      { icon: <FacebookIcon sx={{ fontSize: 18 }} />, bg: '#1877F2' },
+      { icon: <XIcon sx={{ fontSize: 15 }} />, bg: '#000' },
+      { icon: <LinkedInIcon sx={{ fontSize: 18 }} />, bg: '#0A66C2' },
       { icon: <TikTokIcon sx={{ color: '#fff' }} />, bg: '#000' },
-      { icon: <YouTubeIcon sx={{ fontSize: 12 }} />, bg: '#FF0000' },
+      { icon: <YouTubeIcon sx={{ fontSize: 18 }} />, bg: '#FF0000' },
     ].map((item, idx) => (
       <Box
         key={idx}
         sx={{
-          width: 20,
-          height: 20,
+          width: 30,
+          height: 30,
           borderRadius: '50%',
           background: item.bg,
           display: 'flex',
@@ -102,6 +101,7 @@ const plans: PricePlan[] = [
     tokens: 5000,
     gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     badgeColor: '#3B82F6',
+    icon: '/gruvi/gruvi-started.png',
     features: [
       '~50 music promo videos',
       '~5 cinematic music videos',
@@ -125,6 +125,7 @@ const plans: PricePlan[] = [
     tokens: 20000,
     gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
     badgeColor: '#EC4899',
+    icon: '/gruvi/gruvi-scale.png',
     features: [
       '~200 music promo videos',
       '~20 cinematic music videos',
@@ -147,6 +148,7 @@ const plans: PricePlan[] = [
     tokens: 50000,
     gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
     badgeColor: '#F97316',
+    icon: '/gruvi/gruvi-beast.png',
     features: [
       '~500 music promo videos',
       '~50 cinematic music videos',
@@ -269,20 +271,28 @@ const DashboardSubscriptionPage: React.FC = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+            width: 64,
+            height: 64,
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
           }}
         >
-          <CreditCardIcon sx={{ color: '#fff', fontSize: 24 }} />
+          <Box
+            component="img"
+            src="/gruvi/gruvi-subscription.png"
+            alt="Subscription"
+            sx={{
+              height: 48,
+              width: 'auto',
+            }}
+          />
         </Box>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
@@ -325,20 +335,39 @@ const DashboardSubscriptionPage: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                width: 56,
+                height: 56,
+                borderRadius: '14px',
+                background: subscription.tier === 'premium'
+                  ? 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)'
+                  : subscription.tier === 'pro'
+                  ? 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)'
+                  : 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
               }}
             >
-              <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
+              <Box
+                component="img"
+                src={
+                  subscription.tier === 'premium'
+                    ? '/gruvi/gruvi-beast.png'
+                    : subscription.tier === 'pro'
+                    ? '/gruvi/gruvi-scale.png'
+                    : '/gruvi/gruvi-started.png'
+                }
+                alt={subscription.tier}
+                sx={{
+                  height: 42,
+                  width: 'auto',
+                }}
+              />
             </Box>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Current Plan: {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
+                Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
               </Typography>
               {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
                 <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
@@ -428,17 +457,27 @@ const DashboardSubscriptionPage: React.FC = () => {
                         borderRadius: { xs: '14px 14px 0 0', md: '14px 0 0 14px' },
                       }}
                     >
-                      <Box sx={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: '10px',
-                        background: 'rgba(255,255,255,0.2)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 1,
-                      }}>
-                        <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
+                      <Box
+                        sx={{
+                          width: 64,
+                          height: 64,
+                          borderRadius: '14px',
+                          background: 'rgba(255,255,255,0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mb: 1,
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={plan.icon}
+                          alt={plan.title}
+                          sx={{
+                            height: 48,
+                            width: 'auto',
+                          }}
+                        />
                       </Box>
                       <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                         {plan.tokens.toLocaleString()}

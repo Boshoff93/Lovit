@@ -11,7 +11,6 @@ import {
 import {
   Link as LinkIcon,
   LinkOff,
-  Share as ShareIcon,
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -610,21 +609,17 @@ const ConnectedAccountsPage: React.FC = () => {
       maxWidth: '100%',
     }}>
         {/* Header */}
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            component="img"
+            src="/gruvi/gruv-connect-socials.png"
+            alt="Connected Accounts"
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: 64,
+              width: 'auto',
               flexShrink: 0,
             }}
-          >
-            <ShareIcon sx={{ color: '#fff', fontSize: 24 }} />
-          </Box>
+          />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
               Connected Accounts

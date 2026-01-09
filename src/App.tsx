@@ -319,7 +319,9 @@ function App() {
         {/* Music Video Player - protected route */}
         <Route path="/video/:videoId" element={
           <RequireAuth>
-            <MusicVideoPlayer />
+            <Layout>
+              <MusicVideoPlayer />
+            </Layout>
           </RequireAuth>
         } />
         

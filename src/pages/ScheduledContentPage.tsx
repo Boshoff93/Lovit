@@ -24,7 +24,6 @@ import {
   Error as ErrorIcon,
   Cancel as CancelIcon,
   Public as PublicIcon,
-  CalendarMonth as CalendarMonthIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { scheduledPostsApi, ScheduledPost, videosApi } from '../services/api';
@@ -202,21 +201,17 @@ const ScheduledContentPage: React.FC = () => {
       maxWidth: '100%',
     }}>
         {/* Page Title */}
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            component="img"
+            src="/gruvi/gruvi-schedule.png"
+            alt="Scheduled Content"
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #5856D6 0%, #007AFF 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: 64,
+              width: 'auto',
               flexShrink: 0,
             }}
-          >
-            <CalendarMonthIcon sx={{ color: '#fff', fontSize: 24 }} />
-          </Box>
+          />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
               Scheduled Content

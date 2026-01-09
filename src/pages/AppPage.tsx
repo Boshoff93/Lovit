@@ -42,7 +42,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import MovieIcon from '@mui/icons-material/Movie';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
@@ -1069,27 +1068,17 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         flexWrap: 'wrap',
       }}>
         {/* Left: Icon + Title + Subtitle */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            component="img"
+            src={activeTab === 'songs' ? '/gruvi/gruvi-my-music.png' : '/gruvi/gruvi-my-video.png'}
+            alt={activeTab === 'songs' ? 'My Music' : 'My Videos'}
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: activeTab === 'songs'
-                ? 'linear-gradient(135deg, #FF2D55 0%, #FF6B6B 100%)'
-                : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: 64,
+              width: 'auto',
               flexShrink: 0,
             }}
-          >
-            {activeTab === 'songs' ? (
-              <QueueMusicIcon sx={{ color: '#fff', fontSize: 24 }} />
-            ) : (
-              <VideoLibraryIcon sx={{ color: '#fff', fontSize: 24 }} />
-            )}
-          </Box>
+          />
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
@@ -2551,21 +2540,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             <ContentCopyIcon sx={{ color: '#007AFF' }} />
           </ListItemIcon>
           <ListItemText>Generate Similar</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem 
-          onClick={() => {
-            if (menuSong) {
-              navigate(`/track/${menuSong.songId}`);
-            }
-            setMenuAnchorEl(null);
-            setMenuSong(null);
-          }}
-        >
-          <ListItemIcon>
-            <PublishIcon sx={{ color: '#34C759' }} />
-          </ListItemIcon>
-          <ListItemText>Upload to Music Channels</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem 
