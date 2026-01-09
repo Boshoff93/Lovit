@@ -37,6 +37,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -115,7 +116,7 @@ const contentItems = [
 ];
 
 const publishItems = [
-  { path: '/settings/connected-accounts', label: 'Connected Accounts', icon: LinkIcon },
+  { path: '/settings/connected-accounts', label: 'Integrations', icon: LinkIcon },
   { path: '/settings/scheduled-content', label: 'Scheduled Posts', icon: CalendarMonthIcon },
 ];
 
@@ -172,6 +173,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
+  const hasSubscription = subscription?.tier && subscription.tier !== 'free';
 
   const handleLogout = useCallback(() => {
     dispatch(logoutAllState());
@@ -424,6 +426,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {createItems.map((item, index) => {
             const Icon = item.icon;
             const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            const isLocked = !hasSubscription && item.path === '/create/video';
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
@@ -452,6 +455,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       color: active ? '#007AFF' : '#1D1D1F',
                     }}
                   />
+                  {isLocked && (
+                    <LockIcon sx={{ fontSize: 14, color: '#86868B', ml: 1 }} />
+                  )}
                 </ListItemButton>
               </ListItem>
             );
@@ -601,6 +607,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {publishItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const isLocked = !hasSubscription;
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
@@ -629,6 +636,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       color: active ? '#007AFF' : '#1D1D1F',
                     }}
                   />
+                  {isLocked && (
+                    <LockIcon sx={{ fontSize: 14, color: '#86868B', ml: 1 }} />
+                  )}
                 </ListItemButton>
               </ListItem>
             );

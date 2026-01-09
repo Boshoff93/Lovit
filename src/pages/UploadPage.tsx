@@ -160,17 +160,8 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
 const UploadPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, subscription } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   
-  // Check if user has an active subscription (not free tier)
-  const isFreeTier = !subscription?.tier || subscription.tier === 'free';
-  
-  // Redirect to payment page if user is on free tier
-  useEffect(() => {
-    if (isFreeTier) {
-      navigate('/payment', { replace: true });
-    }
-  }, [isFreeTier, navigate]);
   
   // Get type from URL params - update when URL changes
   const urlType = searchParams.get('type') === 'video' ? 'video' : 'song';
@@ -409,18 +400,6 @@ const UploadPage: React.FC = () => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
   
-  // Show loading state while redirecting free users
-  if (isFreeTier) {
-    return (
-      <Box sx={{ py: 8, textAlign: 'center', px: { xs: 2, sm: 3, md: 4 }, width: '100%' }}>
-        <CircularProgress sx={{ color: '#007AFF', mb: 2 }} />
-        <Typography variant="body1" sx={{ color: '#86868B' }}>
-          Redirecting to subscription page...
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <>
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>

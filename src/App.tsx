@@ -4,6 +4,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import api from './utils/axiosConfig';
+import FeatureLockedModal from './components/FeatureLockedModal';
 
 // Layout
 import Layout from './components/Layout';
@@ -144,6 +145,59 @@ const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Route guard to check subscription status - shows modal for free users
+const RequireSubscription = ({
+  children,
+  featureName,
+  description
+}: {
+  children: React.ReactNode;
+  featureName: string;
+  description?: string;
+}) => {
+  const { subscription } = useSelector((state: RootState) => state.auth);
+  const location = useLocation();
+  const [showModal, setShowModal] = useState(false);
+
+  const hasSubscription = subscription?.tier && subscription.tier !== 'free';
+
+  // Reset and show modal when navigating to a different locked page
+  useEffect(() => {
+    if (!hasSubscription) {
+      setShowModal(true);
+    }
+  }, [hasSubscription, location.pathname]);
+
+  if (!hasSubscription) {
+    return (
+      <Box sx={{ position: 'relative', width: '100%', minHeight: '100%' }}>
+        {/* Blur overlay - only covers content area */}
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: { xs: 0, md: 240 },
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(241, 245, 249, 0.8) 50%, rgba(219, 234, 254, 0.7) 100%)',
+            backdropFilter: 'blur(3px)',
+            zIndex: 1300,
+          }}
+        />
+        <FeatureLockedModal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          featureName={featureName}
+          description={description}
+        />
+        {children}
+      </Box>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 // Get all SEO routes from config
 const seoRoutes = getAllRoutePaths().filter(path => path !== '/');
 
@@ -238,14 +292,24 @@ function App() {
         <Route path="/settings/connected-accounts" element={
           <RequireAuth>
             <Layout>
-              <ConnectedAccountsPage />
+              <RequireSubscription
+                featureName="Integrations"
+                description="Connect your social media accounts to share your music and videos directly to your favorite platforms."
+              >
+                <ConnectedAccountsPage />
+              </RequireSubscription>
             </Layout>
           </RequireAuth>
         } />
         <Route path="/settings/scheduled-content" element={
           <RequireAuth>
             <Layout>
-              <ScheduledContentPage />
+              <RequireSubscription
+                featureName="Scheduled Posts"
+                description="Schedule your content to be automatically posted to your connected social media accounts."
+              >
+                <ScheduledContentPage />
+              </RequireSubscription>
             </Layout>
           </RequireAuth>
         } />
@@ -337,7 +401,12 @@ function App() {
         <Route path="/create/video" element={
            <RequireAuth>
             <Layout>
-              <CreateVideoPage />
+              <RequireSubscription
+                featureName="Create Video"
+                description="Create stunning AI-powered music promo videos and cinematic music videos for your tracks."
+              >
+                <CreateVideoPage />
+              </RequireSubscription>
             </Layout>
           </RequireAuth>
         } />
@@ -362,7 +431,12 @@ function App() {
         <Route path="/create-video/:songId" element={
            <RequireAuth>
             <Layout>
-              <CreateVideoPage />
+              <RequireSubscription
+                featureName="Create Video"
+                description="Create stunning AI-powered music promo videos and cinematic music videos for your tracks."
+              >
+                <CreateVideoPage />
+              </RequireSubscription>
             </Layout>
            </RequireAuth>
         } />

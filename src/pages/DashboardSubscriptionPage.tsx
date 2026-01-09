@@ -107,6 +107,7 @@ const plans: PricePlan[] = [
       '~5 cinematic music videos',
       '~250 AI songs',
       'AI Music Generation',
+      'Scheduled Posts',
       'Commercial license',
     ],
     stripePrices: {
@@ -131,6 +132,7 @@ const plans: PricePlan[] = [
       '~20 cinematic music videos',
       '~1,000 AI songs',
       'Priority generation',
+      'Scheduled Posts',
       'Commercial license',
     ],
     stripePrices: {
@@ -154,6 +156,7 @@ const plans: PricePlan[] = [
       '~50 cinematic music videos',
       '~2,500 AI songs',
       'Dedicated support',
+      'Scheduled Posts',
       'Commercial license',
     ],
     stripePrices: {
@@ -273,27 +276,15 @@ const DashboardSubscriptionPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
+          component="img"
+          src="/gruvi/gruvi-subscription.png"
+          alt="Subscription"
           sx={{
-            width: 64,
             height: 64,
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            width: 'auto',
             flexShrink: 0,
           }}
-        >
-          <Box
-            component="img"
-            src="/gruvi/gruvi-subscription.png"
-            alt="Subscription"
-            sx={{
-              height: 48,
-              width: 'auto',
-            }}
-          />
-        </Box>
+        />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
             Subscription
@@ -458,27 +449,15 @@ const DashboardSubscriptionPage: React.FC = () => {
                       }}
                     >
                       <Box
+                        component="img"
+                        src={plan.icon}
+                        alt={plan.title}
                         sx={{
-                          width: 64,
                           height: 64,
-                          borderRadius: '14px',
-                          background: 'rgba(255,255,255,0.2)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          width: 'auto',
                           mb: 1,
                         }}
-                      >
-                        <Box
-                          component="img"
-                          src={plan.icon}
-                          alt={plan.title}
-                          sx={{
-                            height: 48,
-                            width: 'auto',
-                          }}
-                        />
-                      </Box>
+                      />
                       <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                         {plan.tokens.toLocaleString()}
                       </Typography>
@@ -523,7 +502,7 @@ const DashboardSubscriptionPage: React.FC = () => {
 
                       {/* Features row */}
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                        {plan.features.slice(0, 4).map((feature, idx) => (
+                        {plan.features.slice(0, 5).map((feature, idx) => (
                           <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <CheckCircleIcon sx={{ fontSize: 14, color: plan.badgeColor }} />
                             <Typography sx={{ fontSize: '0.8rem', color: '#1D1D1F' }}>{feature}</Typography>

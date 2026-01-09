@@ -155,74 +155,6 @@ const socialPlatforms = [
     available: false,
     comingSoon: true,
   },
-  {
-    id: 'spotify',
-    name: 'Spotify',
-    icon: () => (
-      <Box 
-        component="img" 
-        src="/music-apps/spotify.png" 
-        alt="Spotify"
-        sx={{ width: 28, height: 28, objectFit: 'contain' }}
-      />
-    ),
-    color: '#1DB954',
-    bgColor: 'rgba(29,185,84,0.1)',
-    description: 'Distribute music to Spotify',
-    available: false,
-    comingSoon: true,
-  },
-  {
-    id: 'apple-music',
-    name: 'Apple Music',
-    icon: () => (
-      <Box 
-        component="img" 
-        src="/music-apps/apple.png" 
-        alt="Apple Music"
-        sx={{ width: 28, height: 28, objectFit: 'contain' }}
-      />
-    ),
-    color: '#FA233B',
-    bgColor: 'rgba(250,35,59,0.1)',
-    description: 'Distribute music to Apple Music',
-    available: false,
-    comingSoon: true,
-  },
-  {
-    id: 'amazon-music',
-    name: 'Amazon Music',
-    icon: () => (
-      <Box 
-        component="img" 
-        src="/music-apps/amazon.png" 
-        alt="Amazon Music"
-        sx={{ width: 28, height: 28, objectFit: 'contain' }}
-      />
-    ),
-    color: '#00A8E1',
-    bgColor: 'rgba(0,168,225,0.1)',
-    description: 'Distribute music to Amazon Music',
-    available: false,
-    comingSoon: true,
-  },
-  {
-    id: 'soundcloud',
-    name: 'SoundCloud',
-    icon: () => (
-      <Box 
-        component="img" 
-        src="/music-apps/sound.png" 
-        alt="SoundCloud"
-        sx={{ width: 28, height: 28, objectFit: 'contain' }}
-      />
-    ),
-    color: '#FF5500',
-    bgColor: 'rgba(255,85,0,0.1)',
-    description: 'Distribute music to SoundCloud',
-    available: false,
-    comingSoon: true,
-  },
 ];
 
 interface ConnectionStatus {
@@ -613,7 +545,7 @@ const ConnectedAccountsPage: React.FC = () => {
           <Box
             component="img"
             src="/gruvi/gruv-connect-socials.png"
-            alt="Connected Accounts"
+            alt="Social Media Integrations"
             sx={{
               height: 64,
               width: 'auto',
@@ -622,7 +554,7 @@ const ConnectedAccountsPage: React.FC = () => {
           />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
-              Connected Accounts
+              Social Media Integrations
             </Typography>
             <Typography sx={{ color: '#86868B' }}>
               Connect your social accounts to share content directly
@@ -652,7 +584,7 @@ const ConnectedAccountsPage: React.FC = () => {
           p: 3,
         }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
-            About Connected Accounts
+            About Social Media Integrations
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', lineHeight: 1.6 }}>
             Connecting your social accounts allows you to share your AI-generated music and videos directly 
