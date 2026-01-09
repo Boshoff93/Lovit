@@ -49,6 +49,20 @@ const SupportPage: React.FC = () => {
             justifyContent: 'center',
             boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
             flexShrink: 0,
+            animation: 'iconEntrance 0.5s ease-out',
+            '@keyframes iconEntrance': {
+              '0%': {
+                opacity: 0,
+                transform: 'scale(0.5) rotate(-10deg)',
+              },
+              '50%': {
+                transform: 'scale(1.1) rotate(5deg)',
+              },
+              '100%': {
+                opacity: 1,
+                transform: 'scale(1) rotate(0deg)',
+              },
+            },
           }}
         >
           <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />

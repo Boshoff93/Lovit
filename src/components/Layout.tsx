@@ -28,13 +28,14 @@ import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
-import { SidebarContent, CollapsedSidebarContent } from './SidebarContent';
+import { SidebarContent, CollapsedSidebarContent, CurrentViewingItem } from './SidebarContent';
 
 // Create a context for the Layout functions
 interface LayoutContextType {
   openCharacter: () => void;
   isDrawerOpen: boolean;
   drawerWidth: number;
+  setCurrentViewingItem: (item: CurrentViewingItem | null) => void;
 }
 
 export const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -115,13 +116,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
   const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [currentViewingItem, setCurrentViewingItem] = useState<CurrentViewingItem | null>(null);
 
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
 
-  // Scroll to top on route change
+  // Scroll to top on route change and clear current viewing item
   useEffect(() => {
     window.scrollTo(0, 0);
+    setCurrentViewingItem(null);
   }, [location.pathname]);
 
   const handleLogout = useCallback(() => {
@@ -266,6 +269,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     remainingTokens: getRemainingTokens(),
     isMobile,
     hasSubscription: !!hasSubscription,
+    currentViewingItem,
     onNavigate: handleNavigate,
     onSidebarCollapse: handleSidebarCollapse,
     onTokensClick: handleTokensClick,
@@ -283,7 +287,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <LayoutContext.Provider value={{
       openCharacter,
       isDrawerOpen: mobileOpen,
-      drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth
+      drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
+      setCurrentViewingItem
     }}>
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
         {/* Desktop Permanent Sidebar */}

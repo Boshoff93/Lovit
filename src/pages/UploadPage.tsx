@@ -417,6 +417,7 @@ const UploadPage: React.FC = () => {
           {/* Left: Page Title with Icon */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
+              key={uploadType}
               sx={{
                 width: 56,
                 height: 56,
@@ -427,6 +428,20 @@ const UploadPage: React.FC = () => {
                 justifyContent: 'center',
                 boxShadow: '0 4px 12px rgba(249,115,22,0.3)',
                 flexShrink: 0,
+                animation: 'iconEntrance 0.5s ease-out',
+                '@keyframes iconEntrance': {
+                  '0%': {
+                    opacity: 0,
+                    transform: 'scale(0.5) rotate(-10deg)',
+                  },
+                  '50%': {
+                    transform: 'scale(1.1) rotate(5deg)',
+                  },
+                  '100%': {
+                    opacity: 1,
+                    transform: 'scale(1) rotate(0deg)',
+                  },
+                },
               }}
             >
               {uploadType === 'song' ? (

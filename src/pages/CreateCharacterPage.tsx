@@ -21,12 +21,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import PersonIcon from '@mui/icons-material/Person';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckIcon from '@mui/icons-material/Check';
 import { charactersApi } from '../services/api';
+import { useLayout } from '../components/Layout';
 
 // Character kind options
 const characterKindOptions = [
@@ -164,6 +164,7 @@ const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId?: string }>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { setCurrentViewingItem } = useLayout();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit mode state
@@ -266,6 +267,17 @@ const CreateCharacterPage: React.FC = () => {
   useEffect(() => {
     fetchCharacter();
   }, [fetchCharacter]);
+
+  // Set the current viewing item for sidebar navigation when editing
+  useEffect(() => {
+    if (isEditMode && characterId && characterName) {
+      setCurrentViewingItem({
+        type: 'cast',
+        title: characterName,
+        path: `/my-cast/edit/${characterId}`,
+      });
+    }
+  }, [isEditMode, characterId, characterName, setCurrentViewingItem]);
 
   // Max images: 20 for Places, 10 for others
   const maxImages = characterKind === 'Place' ? MAX_IMAGES_PLACE : MAX_IMAGES_DEFAULT;
@@ -456,15 +468,33 @@ const CreateCharacterPage: React.FC = () => {
                 width: 56,
                 height: 56,
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                background: isEditMode
+                  ? 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)'
+                  : 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(236,72,153,0.3)',
+                boxShadow: isEditMode
+                  ? '0 4px 12px rgba(16,185,129,0.3)'
+                  : '0 4px 12px rgba(236,72,153,0.3)',
                 flexShrink: 0,
+                animation: 'iconEntrance 0.5s ease-out',
+                '@keyframes iconEntrance': {
+                  '0%': {
+                    opacity: 0,
+                    transform: 'scale(0.5) rotate(-10deg)',
+                  },
+                  '50%': {
+                    transform: 'scale(1.1) rotate(5deg)',
+                  },
+                  '100%': {
+                    opacity: 1,
+                    transform: 'scale(1) rotate(0deg)',
+                  },
+                },
               }}
             >
-              <PersonAddIcon sx={{ fontSize: 28, color: '#fff' }} />
+              <PersonIcon sx={{ fontSize: 28, color: '#fff' }} />
             </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>

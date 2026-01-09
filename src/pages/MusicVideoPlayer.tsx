@@ -55,6 +55,7 @@ import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, 
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import { TopUpBundle } from '../config/stripe';
+import { useLayout } from '../components/Layout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -106,6 +107,7 @@ const MusicVideoPlayer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [searchParams] = useSearchParams();
   const { user, allowances, subscription } = useSelector((state: RootState) => state.auth);
+  const { setCurrentViewingItem } = useLayout();
   const socialSectionRef = useRef<HTMLDivElement>(null);
   
   // Calculate remaining tokens
@@ -329,6 +331,17 @@ const MusicVideoPlayer: React.FC = () => {
 
     fetchData();
   }, [user?.userId, videoId]);
+
+  // Set the current viewing item for sidebar navigation
+  useEffect(() => {
+    if (videoData && videoId) {
+      setCurrentViewingItem({
+        type: 'video',
+        title: videoData.songTitle || 'Video',
+        path: `/video/${videoId}`,
+      });
+    }
+  }, [videoData, videoId, setCurrentViewingItem]);
 
   // Poll for social upload status when upload is in progress
   useEffect(() => {
@@ -1207,15 +1220,6 @@ const MusicVideoPlayer: React.FC = () => {
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%', pb: 16 }}>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <IconButton
-          onClick={handleGoBack}
-          sx={{
-            color: '#007AFF',
-            mr: 0.5,
-          }}
-        >
-          <ArrowBack />
-        </IconButton>
         <Box
           sx={{
             width: 56,
@@ -1227,6 +1231,20 @@ const MusicVideoPlayer: React.FC = () => {
             justifyContent: 'center',
             boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
             flexShrink: 0,
+            animation: 'iconEntrance 0.5s ease-out',
+            '@keyframes iconEntrance': {
+              '0%': {
+                opacity: 0,
+                transform: 'scale(0.5) rotate(-10deg)',
+              },
+              '50%': {
+                transform: 'scale(1.1) rotate(5deg)',
+              },
+              '100%': {
+                opacity: 1,
+                transform: 'scale(1) rotate(0deg)',
+              },
+            },
           }}
         >
           <VideoLibraryIcon sx={{ fontSize: 28, color: '#fff' }} />
@@ -1241,7 +1259,7 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
       </Box>
 
-      <Container maxWidth="md" sx={{ px: 0 }} disableGutters>
+      <Container maxWidth={false} sx={{ px: 0 }} disableGutters>
         {/* Video + Details - Portrait: side-by-side, Landscape: stacked */}
         <Box sx={{ 
           display: 'flex', 

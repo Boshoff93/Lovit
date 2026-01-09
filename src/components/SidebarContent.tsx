@@ -27,6 +27,8 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LockIcon from '@mui/icons-material/Lock';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PersonIcon from '@mui/icons-material/Person';
 import { useLocation } from 'react-router-dom';
 
 // Gradient colors for each navigation group
@@ -67,12 +69,20 @@ const accountItems = [
   { path: '/support', label: 'Support & FAQ', icon: HeadsetMicIcon, gradient: gradients.account },
 ];
 
+// Current viewing item info for sub-navigation
+interface CurrentViewingItem {
+  type: 'video' | 'music' | 'cast';
+  title: string;
+  path: string;
+}
+
 interface SidebarContentProps {
   hasActivePlayer: boolean;
   hasToken: boolean;
   remainingTokens: number;
   isMobile: boolean;
   hasSubscription: boolean;
+  currentViewingItem?: CurrentViewingItem | null;
   onNavigate: (path: string) => void;
   onSidebarCollapse: () => void;
   onTokensClick: () => void;
@@ -86,6 +96,7 @@ const SidebarContent = memo<SidebarContentProps>(({
   remainingTokens,
   isMobile,
   hasSubscription,
+  currentViewingItem,
   onNavigate,
   onSidebarCollapse,
   onTokensClick,
@@ -351,59 +362,163 @@ const SidebarContent = memo<SidebarContentProps>(({
             // Show "My Cast" as active when editing a cast member
             const isEditingCast = item.path === '/my-cast' && location.pathname.startsWith('/my-cast/edit/');
             const isHighlighted = active || isViewingVideo || isViewingMusic || isEditingCast;
-            // Only show indicator dot when viewing a specific item (not on the list page)
-            const showIndicator = isViewingVideo || isViewingMusic || isEditingCast;
+
+            // Check if this item should show a sub-item
+            const showSubItem = currentViewingItem && (
+              (item.path === '/my-videos' && currentViewingItem.type === 'video') ||
+              (item.path === '/my-music' && currentViewingItem.type === 'music') ||
+              (item.path === '/my-cast' && currentViewingItem.type === 'cast')
+            );
+
             return (
-              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
-                <ListItemButton
-                  onClick={() => onNavigate(item.path)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1,
-                    px: 2,
-                    backgroundColor: isHighlighted ? 'rgba(16,185,129,0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: isHighlighted ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.04)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    <Box
-                      sx={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '8px',
-                        background: item.gradient,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
-                      }}
-                    >
-                      <Icon sx={{ fontSize: 16, color: '#fff' }} />
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: isHighlighted ? 600 : 500,
-                      fontSize: '0.875rem',
-                      color: '#1D1D1F',
+              <React.Fragment key={`${item.path}-${index}`}>
+                <ListItem disablePadding sx={{ mb: showSubItem ? 0 : 0.25 }}>
+                  <ListItemButton
+                    onClick={() => onNavigate(item.path)}
+                    sx={{
+                      borderRadius: '10px',
+                      py: 1,
+                      px: 2,
+                      backgroundColor: isHighlighted ? 'rgba(16,185,129,0.1)' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: isHighlighted ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.04)',
+                      },
                     }}
-                  />
-                  {showIndicator && (
-                    <Box
-                      sx={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        backgroundColor: '#10B981',
-                        ml: 1,
+                  >
+                    <ListItemIcon sx={{ minWidth: 40 }}>
+                      <Box
+                        sx={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '8px',
+                          background: item.gradient,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
+                        }}
+                      >
+                        <Icon sx={{ fontSize: 16, color: '#fff' }} />
+                      </Box>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontWeight: isHighlighted ? 600 : 500,
+                        fontSize: '0.875rem',
+                        color: '#1D1D1F',
                       }}
                     />
-                  )}
-                </ListItemButton>
-              </ListItem>
+                  </ListItemButton>
+                </ListItem>
+                {/* Sub-item for currently viewing video/music/cast */}
+                {showSubItem && currentViewingItem && (
+                  <ListItem disablePadding sx={{ mb: 0.25, pt: 1, pl: 2, pr: 0, overflow: 'hidden' }}>
+                    {/* Tree connector with pulsing dot */}
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: 24,
+                        height: 32,
+                        flexShrink: 0,
+                        mt: 0.5,
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          left: 10,
+                          top: -4,
+                          width: 2,
+                          height: 18,
+                          backgroundColor: '#10B981',
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          left: 10,
+                          top: 12,
+                          width: 16,
+                          height: 2,
+                          backgroundColor: '#10B981',
+                        },
+                      }}
+                    >
+                      {/* Pulsing dot at end of connector */}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: 20,
+                          top: 9,
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: '#10B981',
+                          animation: 'pulse 2s ease-in-out infinite',
+                          '@keyframes pulse': {
+                            '0%, 100%': {
+                              transform: 'scale(1)',
+                            },
+                            '50%': {
+                              transform: 'scale(1.2)',
+                            },
+                          },
+                        }}
+                      />
+                    </Box>
+                    <ListItemButton
+                      onClick={() => onNavigate(currentViewingItem.path)}
+                      sx={{
+                        borderRadius: '10px',
+                        py: 0.75,
+                        px: 1.5,
+                        ml: 1.5,
+                        mr: 0,
+                        minWidth: 0,
+                        flex: 1,
+                        overflow: 'hidden',
+                        backgroundColor: 'rgba(16,185,129,0.1)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(16,185,129,0.15)',
+                        },
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 32, flexShrink: 0 }}>
+                        <Box
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: '6px',
+                            background: gradients.content,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(16,185,129,0.25)',
+                          }}
+                        >
+                          {currentViewingItem.type === 'cast' ? (
+                            <PersonIcon sx={{ fontSize: 14, color: '#fff' }} />
+                          ) : currentViewingItem.type === 'music' ? (
+                            <MusicNoteIcon sx={{ fontSize: 14, color: '#fff' }} />
+                          ) : (
+                            <PlayCircleOutlineIcon sx={{ fontSize: 14, color: '#fff' }} />
+                          )}
+                        </Box>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={currentViewingItem.title}
+                        primaryTypographyProps={{
+                          fontWeight: 600,
+                          fontSize: '0.8rem',
+                          color: '#10B981',
+                          noWrap: true,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                        sx={{ minWidth: 0, flex: 1 }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                )}
+              </React.Fragment>
             );
           })}
         </List>
@@ -720,3 +835,4 @@ CollapsedSidebarContent.displayName = 'CollapsedSidebarContent';
 
 export { SidebarContent, CollapsedSidebarContent };
 export { createItems, uploadItems, contentItems, publishItems, accountItems, gradients };
+export type { CurrentViewingItem };
