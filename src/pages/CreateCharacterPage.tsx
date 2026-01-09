@@ -273,9 +273,9 @@ const CreateCharacterPage: React.FC = () => {
   useEffect(() => {
     if (isEditMode && characterId && characterName) {
       setCurrentViewingItem({
-        type: 'cast',
+        type: 'asset',
         title: characterName,
-        path: `/my-cast/edit/${characterId}`,
+        path: `/ai-assets/edit/${characterId}`,
       });
     }
   }, [isEditMode, characterId, characterName, setCurrentViewingItem]);
@@ -427,8 +427,8 @@ const CreateCharacterPage: React.FC = () => {
         });
       }
 
-      // Navigate back to characters page after a short delay
-      setTimeout(() => navigate('/my-cast'), 1500);
+      // Navigate back to AI assets page after a short delay
+      setTimeout(() => navigate('/ai-assets'), 1500);
     } catch (error: any) {
       console.error('Character save error:', error);
       const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'create'} character. Please try again.`;
@@ -499,16 +499,16 @@ const CreateCharacterPage: React.FC = () => {
             </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
-                {isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}
+                {isEditMode ? 'Edit AI Asset' : 'Create AI Asset'}
               </Typography>
               <Typography sx={{ color: '#86868B' }}>
-                {isEditMode ? 'Update your character details' : 'Add a character, product, or place to your cast'}
+                {isEditMode ? 'Update your asset details' : 'Add a character, product, or place to your AI assets'}
               </Typography>
             </Box>
           </Box>
           <Button
             variant="contained"
-            onClick={() => navigate('/my-cast')}
+            onClick={() => navigate('/ai-assets')}
             sx={{
               background: '#007AFF',
               color: '#fff',
@@ -524,7 +524,7 @@ const CreateCharacterPage: React.FC = () => {
               },
             }}
           >
-            View My Cast
+            View AI Assets
           </Button>
         </Box>
 

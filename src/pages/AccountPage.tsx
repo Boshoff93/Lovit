@@ -30,7 +30,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from '../components/GruviCoin';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -279,18 +279,7 @@ const AccountPage: React.FC = () => {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Box sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mr: 1.5
-                }}>
-                  <BoltIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
-                </Box>
+                <GruviCoin size={40} sx={{ mr: 1.5 }} />
                 <Box>
                   <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                     Tokens
@@ -628,20 +617,13 @@ const AccountPage: React.FC = () => {
                 )}
                 <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ display: 'flex' }}>
-                        {Array.from({ length: index + 1 }).map((_, i) => (
-                          <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
-                        ))}
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1D1D1F' }}>
-                          {bundle.tokens.toLocaleString()} tokens
-                        </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
-                          Never expires
-                        </Typography>
-                      </Box>
+                    <Box>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        {bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                        Never expires
+                      </Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#007AFF' }}>

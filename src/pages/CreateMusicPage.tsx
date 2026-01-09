@@ -37,6 +37,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import Avatar from '@mui/material/Avatar';
+import GruviCoin from '../components/GruviCoin';
 
 // Genre options
 const genres = [
@@ -673,7 +674,7 @@ const CreateMusicPage: React.FC = () => {
                     }}
                   >
                     {selectedCastMembers.length === 0
-                      ? 'Select Cast Members'
+                      ? 'Select AI Assets'
                       : `${selectedCastMembers.length} selected`}
                   </Box>
                 </Box>
@@ -682,7 +683,7 @@ const CreateMusicPage: React.FC = () => {
 
               {/* Create button - dotted outline square */}
               <Button
-                onClick={() => navigate('/my-cast/create')}
+                onClick={() => navigate('/ai-assets/create')}
                 sx={{
                   minWidth: 48,
                   width: 48,
@@ -1116,10 +1117,11 @@ const CreateMusicPage: React.FC = () => {
                 Summary
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
                 <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   {SONG_COST}
                 </Typography>
+                <Typography sx={{ color: 'rgba(0,0,0,0.2)' }}>|</Typography>
+                <GruviCoin size={20} />
               </Box>
             </Box>
             <Box sx={{ mb: 3 }}>
@@ -1522,7 +1524,7 @@ const CreateMusicPage: React.FC = () => {
         <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-            Select Cast Members
+            Select AI Assets
           </Typography>
           <Typography variant="caption" sx={{ color: '#86868B' }}>
             {selectedCastMembers.length}/{MAX_CAST_MEMBERS} selected
@@ -1601,12 +1603,12 @@ const CreateMusicPage: React.FC = () => {
           {characters.length === 0 && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <Typography sx={{ color: '#86868B', mb: 2 }}>
-                No cast members yet
+                No AI assets yet
               </Typography>
               <Button
                 onClick={() => {
                   setCastPickerOpen(false);
-                  navigate('/my-cast/create');
+                  navigate('/ai-assets/create');
                 }}
                 sx={{
                   color: '#007AFF',

@@ -40,6 +40,7 @@ import { RootState } from '../store/store';
 import { videosApi, charactersApi, songsApi } from '../services/api';
 import MentionTextField from '../components/MentionTextField';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import GruviCoin from '../components/GruviCoin';
 
 // Character type matching the API response
 interface Character {
@@ -806,7 +807,7 @@ const CreateVideoPage: React.FC = () => {
                         }}
                       >
                         {selectedCastMembers.length === 0
-                          ? 'Select Cast Members'
+                          ? 'Select AI Assets'
                           : `${selectedCastMembers.length} selected`}
                       </Box>
                     </Box>
@@ -816,7 +817,7 @@ const CreateVideoPage: React.FC = () => {
 
                 {/* Create button - dotted outline square */}
                 <Button
-                  onClick={() => navigate('/my-cast/create')}
+                  onClick={() => navigate('/ai-assets/create')}
                   sx={{
                     minWidth: 48,
                     width: 48,
@@ -872,7 +873,7 @@ const CreateVideoPage: React.FC = () => {
                 if (value.trim()) setShowPromptError(false);
               }}
               characterNames={characters.map(c => c.characterName)}
-              placeholder="Describe the scenes, setting, and story for your music video... Type @charactername to add cast members."
+              placeholder="Describe the scenes, setting, and story for your music video... Type @name to add AI assets."
               rows={4}
               error={showPromptError && !videoPrompt.trim()}
               helperText={showPromptError && !videoPrompt.trim() ? 'Please describe your music video' : ''}
@@ -1140,7 +1141,7 @@ const CreateVideoPage: React.FC = () => {
                 Summary
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                <GruviCoin size={18} />
                 <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   {getCredits()}
                 </Typography>
@@ -1351,7 +1352,7 @@ const CreateVideoPage: React.FC = () => {
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              Select Cast Members
+              Select AI Assets
             </Typography>
             <Typography variant="caption" sx={{ color: '#86868B' }}>
               {selectedCastMembers.length}/{MAX_CAST_MEMBERS} selected
@@ -1362,13 +1363,13 @@ const CreateVideoPage: React.FC = () => {
           {characters.length === 0 ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
               <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
-                No cast members yet. Create your first character!
+                No AI assets yet. Create your first one!
               </Typography>
               <Button
                 variant="outlined"
                 onClick={() => {
                   setCastPickerOpen(false);
-                  navigate('/my-cast/create');
+                  navigate('/ai-assets/create');
                 }}
                 sx={{
                   borderRadius: '12px',

@@ -206,7 +206,7 @@ const CharactersPage: React.FC = () => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
-                My Cast
+                AI Assets
               </Typography>
               <Chip
                 label={`${characters.length}`}
@@ -231,7 +231,7 @@ const CharactersPage: React.FC = () => {
           {/* Mobile: Icon button */}
           <Tooltip title="Create New" arrow>
             <IconButton
-              onClick={() => navigate('/my-cast/create')}
+              onClick={() => navigate('/ai-assets/create')}
               sx={{
                 display: { xs: 'flex', md: 'none' },
                 background: '#007AFF',
@@ -250,7 +250,7 @@ const CharactersPage: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => navigate('/my-cast/create')}
+            onClick={() => navigate('/ai-assets/create')}
             sx={{
               display: { xs: 'none', md: 'flex' },
               background: '#007AFF',
@@ -290,7 +290,7 @@ const CharactersPage: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => navigate('/my-cast/create')}
+            onClick={() => navigate('/ai-assets/create')}
             sx={{
               borderRadius: '10px',
               textTransform: 'none',
@@ -330,7 +330,7 @@ const CharactersPage: React.FC = () => {
           const renderCharacterItem = (character: Character) => (
             <Box
               key={character.characterId}
-              onClick={() => navigate(`/my-cast/edit/${character.characterId}`)}
+              onClick={() => navigate(`/ai-assets/edit/${character.characterId}`)}
               sx={{
                 display: 'flex',
                 alignItems: 'center',

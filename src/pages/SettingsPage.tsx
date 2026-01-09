@@ -25,7 +25,6 @@ import {
   Person as PersonIcon,
   HeadsetMic as SupportIcon,
   CreditCard as SubscriptionIcon,
-  Bolt as BoltIcon,
   Face as FaceIcon,
   Link as LinkIcon,
   CloudUpload as CloudUploadIcon,
@@ -39,6 +38,7 @@ import { RootState, AppDispatch } from '../store/store';
 import { logoutAllState } from '../store/actions';
 import { createCheckoutSession, getTokensFromAllowances } from '../store/authSlice';
 import { topUpBundles } from '../config/stripe';
+import GruviCoin from '../components/GruviCoin';
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -101,9 +101,9 @@ const SettingsPage: React.FC = () => {
     },
     {
       icon: <FaceIcon sx={{ color: '#007AFF' }} />,
-      title: 'My Cast',
+      title: 'AI Assets',
       description: 'Characters, products & places for your videos',
-      onClick: () => navigate('/my-cast'),
+      onClick: () => navigate('/ai-assets'),
     },
     {
       icon: <CloudUploadIcon sx={{ color: '#007AFF' }} />,
@@ -130,9 +130,9 @@ const SettingsPage: React.FC = () => {
       onClick: handleSubscription,
     },
     {
-      icon: <BoltIcon sx={{ color: '#007AFF' }} />,
-      title: 'Top Up Tokens',
-      description: `${remainingTokens} tokens remaining`,
+      icon: <GruviCoin size={24} />,
+      title: 'Top Up',
+      description: `${remainingTokens} remaining`,
       onClick: handleTopUpClick,
       loading: false, // Loading state shown in dialog
     },
@@ -223,7 +223,7 @@ const SettingsPage: React.FC = () => {
               borderRadius: '20px',
               flexShrink: 0,
             }}>
-              <BoltIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <GruviCoin size={20} />
               <Typography variant="body1" sx={{ color: '#fff', fontWeight: 600 }}>
                 {remainingTokens}
               </Typography>
@@ -395,20 +395,10 @@ const SettingsPage: React.FC = () => {
           }}
         >
           <DialogTitle sx={{ fontWeight: 600, textAlign: 'center', pt: 3 }}>
-            <Box sx={{ 
-              width: 56, 
-              height: 56, 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mx: 'auto',
-              mb: 2,
-            }}>
-              <BoltIcon sx={{ fontSize: 28, color: '#007AFF' }} />
+            <Box sx={{ mx: 'auto', mb: 2, display: 'flex', justifyContent: 'center' }}>
+              <GruviCoin size={64} />
             </Box>
-            Top Up Tokens
+            Top Up
           </DialogTitle>
           <DialogContent>
             <Typography sx={{ color: '#86868B', textAlign: 'center', mb: 3 }}>
@@ -467,14 +457,8 @@ const SettingsPage: React.FC = () => {
                       {bundle.badge}
                     </Box>
                   )}
-                  {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
-                  <Box sx={{ display: 'flex', gap: 0.25, mb: 0.5 }}>
-                    {Array.from({ length: index + 1 }).map((_, i) => (
-                      <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF' }} />
-                    ))}
-                  </Box>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F' }}>
-                    {bundle.tokens.toLocaleString()}
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
                   </Typography>
                   <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
                     ${bundle.price}
@@ -502,7 +486,7 @@ const SettingsPage: React.FC = () => {
               {isTopUpLoading ? (
                 <CircularProgress size={20} sx={{ color: '#fff' }} />
               ) : (
-                `Purchase ${topUpBundles.find(b => b.id === selectedBundle)?.tokens.toLocaleString()} Tokens`
+                `Purchase ${topUpBundles.find(b => b.id === selectedBundle)?.tokens.toLocaleString()}`
               )}
             </Button>
             <Button 

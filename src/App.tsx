@@ -314,8 +314,8 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* My Cast page - protected route */}
-        <Route path="/my-cast" element={
+        {/* AI Assets page - protected route */}
+        <Route path="/ai-assets" element={
           <RequireAuth>
             <Layout>
               <CharactersPage />
@@ -323,8 +323,8 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* Create Character page - protected route */}
-        <Route path="/my-cast/create" element={
+        {/* Create AI Asset page - protected route */}
+        <Route path="/ai-assets/create" element={
           <RequireAuth>
             <Layout>
               <CreateCharacterPage />
@@ -332,8 +332,8 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* Edit Character page - protected route */}
-        <Route path="/my-cast/edit/:characterId" element={
+        {/* Edit AI Asset page - protected route */}
+        <Route path="/ai-assets/edit/:characterId" element={
           <RequireAuth>
             <Layout>
               <CreateCharacterPage />
@@ -344,9 +344,12 @@ function App() {
         {/* Redirects for old routes */}
         <Route path="/dashboard" element={<Navigate to="/my-music" replace />} />
         <Route path="/my-library" element={<Navigate to="/my-music" replace />} />
-        <Route path="/characters" element={<Navigate to="/my-cast" replace />} />
-        <Route path="/characters/create" element={<Navigate to="/my-cast/create" replace />} />
-        <Route path="/characters/edit/:characterId" element={<Navigate to="/my-cast/edit/:characterId" replace />} />
+        <Route path="/characters" element={<Navigate to="/ai-assets" replace />} />
+        <Route path="/characters/create" element={<Navigate to="/ai-assets/create" replace />} />
+        <Route path="/characters/edit/:characterId" element={<Navigate to="/ai-assets/edit/:characterId" replace />} />
+        <Route path="/my-cast" element={<Navigate to="/ai-assets" replace />} />
+        <Route path="/my-cast/create" element={<Navigate to="/ai-assets/create" replace />} />
+        <Route path="/my-cast/edit/:characterId" element={<Navigate to="/ai-assets/edit/:characterId" replace />} />
         
         {/* Verify email page */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />

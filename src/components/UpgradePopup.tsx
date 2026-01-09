@@ -12,7 +12,7 @@ import {
   ToggleButtonGroup,
   ToggleButton
 } from '@mui/material';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from './GruviCoin';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 
 interface UpgradePopupProps {
@@ -79,19 +79,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
           gap: 2,
           py: 1
         }}>
-          <Box
-            sx={{
-              width: 64,
-              height: 64,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(90,200,250,0.1) 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <BoltIcon sx={{ fontSize: 32, color: '#007AFF' }} />
-          </Box>
+          <GruviCoin size={64} />
           
           <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
             {message}
@@ -154,14 +142,8 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                       {bundle.badge}
                     </Box>
                   )}
-                  {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
-                  <Box sx={{ display: 'flex', gap: 0.25, mb: 0.5 }}>
-                    {Array.from({ length: index + 1 }).map((_, i) => (
-                      <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF' }} />
-                    ))}
-                  </Box>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F' }}>
-                    {bundle.tokens.toLocaleString()}
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
                   </Typography>
                   <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
                     ${bundle.price}
@@ -215,7 +197,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
           {isTopUpLoading ? (
             <CircularProgress size={24} color="inherit" />
           ) : (
-            `Top Up ${topUpBundles.find(b => b.id === selectedBundle)?.tokens.toLocaleString()} Tokens`
+            `Top Up ${topUpBundles.find(b => b.id === selectedBundle)?.tokens.toLocaleString()}`
           )}
         </Button>
         {!isPremiumTier && (

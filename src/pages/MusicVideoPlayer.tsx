@@ -40,7 +40,6 @@ import {
   Check,
   CheckCircle,
   CloudUpload,
-  Bolt,
   Delete,
   Error,
   Close,
@@ -54,6 +53,7 @@ import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } fr
 import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
+import GruviCoin from '../components/GruviCoin';
 import { TopUpBundle } from '../config/stripe';
 import { useLayout } from '../components/Layout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -2312,7 +2312,7 @@ const MusicVideoPlayer: React.FC = () => {
               <Button
                 variant="contained"
                 size="small"
-                startIcon={isGeneratingMetadata ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <Box sx={{ display: 'flex', alignItems: 'center' }}><Bolt sx={{ fontSize: '1.1rem', color: '#fff' }} /><Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, ml: 0.25, color: '#fff' }}>10</Typography></Box>}
+                startIcon={isGeneratingMetadata ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <Box sx={{ display: 'flex', alignItems: 'center' }}><Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, mr: 0.5, color: '#fff' }}>10</Typography><GruviCoin size={16} /></Box>}
                 onClick={handleGenerateMetadata}
                 disabled={isGeneratingMetadata}
                 sx={{

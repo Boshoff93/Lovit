@@ -17,7 +17,7 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import MovieIcon from '@mui/icons-material/Movie';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from './GruviCoin';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -44,7 +44,7 @@ const gradients = {
 const createItems = [
   { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon, gradient: gradients.create },
   { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
-  { path: '/my-cast/create', label: 'Create Cast', icon: PersonAddIcon, gradient: gradients.create },
+  { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
 ];
 
 const uploadItems = [
@@ -55,7 +55,7 @@ const uploadItems = [
 const contentItems = [
   { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon, gradient: gradients.content },
   { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon, gradient: gradients.content },
-  { path: '/my-cast', label: 'My Cast', icon: FolderSpecialIcon, gradient: gradients.content },
+  { path: '/ai-assets', label: 'AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
 ];
 
 const publishItems = [
@@ -77,7 +77,7 @@ const footerItems = [
 
 // Current viewing item info for sub-navigation
 interface CurrentViewingItem {
-  type: 'video' | 'music' | 'cast';
+  type: 'video' | 'music' | 'asset';
   title: string;
   path: string;
 }
@@ -198,8 +198,9 @@ const SidebarContent = memo<SidebarContentProps>(({
               }
             }}
           >
-            <BoltIcon sx={{ fontSize: 20, color: '#fff' }} />
-            <span style={{ color: '#fff' }}>{remainingTokens.toLocaleString()} Tokens</span>
+            <span style={{ color: '#fff' }}>{remainingTokens.toLocaleString()}</span>
+            <span style={{ color: 'rgba(255,255,255,0.5)' }}>|</span>
+            <GruviCoin size={20} />
           </Button>
         </Box>
       )}
@@ -363,15 +364,15 @@ const SidebarContent = memo<SidebarContentProps>(({
             const isViewingVideo = item.path === '/my-videos' && location.pathname.startsWith('/video/');
             // Show "My Music" as active when viewing a music item
             const isViewingMusic = item.path === '/my-music' && location.pathname.startsWith('/music/');
-            // Show "My Cast" as active when editing a cast member
-            const isEditingCast = item.path === '/my-cast' && location.pathname.startsWith('/my-cast/edit/');
+            // Show "AI Assets" as active when editing an AI asset
+            const isEditingCast = item.path === '/ai-assets' && location.pathname.startsWith('/ai-assets/edit/');
             const isHighlighted = active || isViewingVideo || isViewingMusic || isEditingCast;
 
             // Check if this item should show a sub-item
             const showSubItem = currentViewingItem && (
               (item.path === '/my-videos' && currentViewingItem.type === 'video') ||
               (item.path === '/my-music' && currentViewingItem.type === 'music') ||
-              (item.path === '/my-cast' && currentViewingItem.type === 'cast')
+              (item.path === '/ai-assets' && currentViewingItem.type === 'asset')
             );
 
             return (
@@ -498,7 +499,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                             boxShadow: '0 2px 4px rgba(16,185,129,0.25)',
                           }}
                         >
-                          {currentViewingItem.type === 'cast' ? (
+                          {currentViewingItem.type === 'asset' ? (
                             <PersonIcon sx={{ fontSize: 14, color: '#fff' }} />
                           ) : currentViewingItem.type === 'music' ? (
                             <MusicNoteIcon sx={{ fontSize: 14, color: '#fff' }} />

@@ -17,7 +17,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from '../components/GruviCoin';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -607,7 +607,6 @@ const DashboardSubscriptionPage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>Yearly</Typography>
                     <Chip
-                      icon={<BoltIcon sx={{ fontSize: 12, color: '#fff !important' }} />}
                       label="Save 25%"
                       size="small"
                       sx={{
@@ -616,7 +615,6 @@ const DashboardSubscriptionPage: React.FC = () => {
                         fontWeight: 600,
                         fontSize: '0.7rem',
                         height: 22,
-                        '& .MuiChip-icon': { ml: '4px' },
                       }}
                     />
                   </Box>
@@ -796,19 +794,9 @@ const DashboardSubscriptionPage: React.FC = () => {
                   <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                     {/* Top row: token amount left, price right */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Box sx={{ display: 'flex' }}>
-                          {Array.from({ length: index + 1 }).map((_, i) => (
-                            <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
-                          ))}
-                        </Box>
-                        <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F' }}>
-                          {bundle.tokens.toLocaleString()}
-                        </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B', ml: 0.25 }}>
-                          tokens
-                        </Typography>
-                      </Box>
+                      <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        {bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
+                      </Typography>
                       <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
                         ${bundle.price}
                       </Typography>
@@ -912,14 +900,11 @@ const DashboardSubscriptionPage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Box sx={{ display: 'flex' }}>
                       {Array.from({ length: index + 1 }).map((_, i) => (
-                        <BoltIcon key={i} sx={{ fontSize: 16, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
+                        <GruviCoin key={i} size={16} sx={{ ml: i > 0 ? -0.5 : 0 }} />
                       ))}
                     </Box>
-                    <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F' }}>
-                      {bundle.tokens.toLocaleString()}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', ml: 0.25 }}>
-                      tokens
+                    <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {bundle.tokens.toLocaleString()} <GruviCoin size={14} />
                     </Typography>
                   </Box>
                   <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>

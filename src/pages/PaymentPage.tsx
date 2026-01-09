@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from '../components/GruviCoin';
 import SecurityIcon from '@mui/icons-material/Security';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -504,7 +504,7 @@ const PaymentPage: React.FC = () => {
               justifyContent: 'center',
             }}
           >
-            <BoltIcon sx={{ fontSize: 24, color: '#fff' }} />
+            <GruviCoin size={24} />
           </Box>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
@@ -992,14 +992,8 @@ const PaymentPage: React.FC = () => {
                     />
                   )}
                   <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
-                    {/* Lightning bolts - 1, 2, or 3 based on bundle size */}
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mb: 1 }}>
-                      {Array.from({ length: index + 1 }).map((_, i) => (
-                        <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF' }} />
-                      ))}
-                    </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                      {bundle.tokens.toLocaleString()} Tokens
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                      {bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#007AFF' }}>
                       ${bundle.price}

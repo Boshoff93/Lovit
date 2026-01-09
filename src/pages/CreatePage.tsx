@@ -54,7 +54,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
-import BoltIcon from '@mui/icons-material/Bolt';
+import GruviCoin from '../components/GruviCoin';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import TvIcon from '@mui/icons-material/Tv';
@@ -1327,7 +1327,7 @@ const CreatePage: React.FC = () => {
                       {/* Create Character chip - always first */}
                       <Chip
                         label="+ Create"
-                        onClick={() => navigate('/my-cast/create')}
+                        onClick={() => navigate('/ai-assets/create')}
                         size="small"
                         sx={{
                           borderRadius: '100px',
@@ -1420,7 +1420,7 @@ const CreatePage: React.FC = () => {
                 ) : (
                   <Chip
                     label="+ Create a character"
-                    onClick={() => navigate('/my-cast/create')}
+                    onClick={() => navigate('/ai-assets/create')}
                     size="small"
                     sx={{
                       borderRadius: '100px',
@@ -1915,7 +1915,7 @@ const CreatePage: React.FC = () => {
                   Summary
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                  <GruviCoin size={18} />
                   <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     20
                   </Typography>
@@ -2813,7 +2813,7 @@ const CreatePage: React.FC = () => {
                       {/* Create Character chip - always first */}
                       <Chip
                         label="+ Create"
-                        onClick={() => navigate('/my-cast/create')}
+                        onClick={() => navigate('/ai-assets/create')}
                         size="small"
                         sx={{
                           borderRadius: '100px',
@@ -2906,7 +2906,7 @@ const CreatePage: React.FC = () => {
                 ) : (
                   <Chip
                     label="+ Create a character"
-                    onClick={() => navigate('/my-cast/create')}
+                    onClick={() => navigate('/ai-assets/create')}
                     size="small"
                     sx={{
                       borderRadius: '100px',
@@ -3208,7 +3208,7 @@ const CreatePage: React.FC = () => {
                           <Typography sx={{ fontSize: '0.75rem', color: '#86868B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{type.description}</Typography>
                         </Box>
                         <Chip 
-                          icon={<BoltIcon sx={{ fontSize: 14, color: '#007AFF !important' }} />}
+                          icon={<GruviCoin size={14} />}
                           label={`${type.credits}`} 
                           size="small" 
                           sx={{ fontWeight: 700, background: 'rgba(0,122,255,0.1)', color: '#007AFF', flexShrink: 0 }} 
@@ -3345,7 +3345,7 @@ const CreatePage: React.FC = () => {
                   Summary
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                  <GruviCoin size={18} />
                   <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     {getCredits()}
                   </Typography>
