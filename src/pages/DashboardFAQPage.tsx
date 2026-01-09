@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Container,
-  Typography,
   Box,
+  Typography,
   Paper,
   Button,
   Card,
   CardContent,
-  Divider,
   Chip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import EmailIcon from '@mui/icons-material/Email';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { faqItems } from './FAQPage';
 
@@ -68,281 +67,232 @@ const DashboardFAQPage: React.FC = () => {
   }, [navigate, createSlug]);
 
   // Filter FAQs by category
-  const filteredFAQs = activeCategory 
+  const filteredFAQs = activeCategory
     ? faqItems.filter(item => item.category === activeCategory)
     : faqItems;
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: 0
-    }}>
-      <Container maxWidth="md" sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        width: '100%',
-        p: 0
-      }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2}}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
-            sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
-            }}
-          >
-            Back to Settings
-          </Button>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #AF52DE 0%, #BF5AF2 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <HelpOutlineIcon sx={{ color: '#fff', fontSize: 24 }} />
         </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            Help & FAQ
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Everything you need to know about Gruvi
+          </Typography>
+        </Box>
+      </Box>
 
-        <Card sx={{ 
-          width: '100%', 
-          borderRadius: { xs: 2, sm: 3 },
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-          overflow: 'visible',
-          position: 'relative',
-          mt: 4,
-        }}>
-          <CardContent sx={{ p: 0 }}>
-            {/* Header with icon */}
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              pt: { xs: 5, sm: 6 },
-              pb: { xs: 3, sm: 4 },
-              position: 'relative'
-            }}>
-              <Box 
-                sx={{ 
-                  width: { xs: 80, sm: 100 }, 
-                  height: { xs: 80, sm: 100 }, 
-                  mb: 2,
-                  position: 'absolute',
-                  top: { xs: -40, sm: -50 },
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 3,
-                  overflow: 'hidden',
+      {/* Category Filter Card */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Chip
+              label="All"
+              onClick={() => setActiveCategory(null)}
+              sx={{
+                fontWeight: 500,
+                borderRadius: '20px',
+                px: 0.5,
+                ...(activeCategory === null ? {
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                  color: '#fff',
+                } : {
+                  background: 'rgba(0,0,0,0.05)',
+                  color: '#1D1D1F',
+                  '&:hover': { background: 'rgba(0,122,255,0.1)' }
+                })
+              }}
+            />
+            {categories.map(category => (
+              <Chip
+                key={category}
+                label={category}
+                onClick={() => setActiveCategory(category)}
+                sx={{
+                  fontWeight: 500,
+                  borderRadius: '20px',
+                  px: 0.5,
+                  ...(activeCategory === category ? {
+                    background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                    color: '#fff',
+                  } : {
+                    background: 'rgba(0,0,0,0.05)',
+                    color: '#1D1D1F',
+                    '&:hover': { background: 'rgba(0,122,255,0.1)' }
+                  })
                 }}
-              >
-                <Box
-                  component="img"
-                  src="/gruvi-faq.png"
-                  alt="FAQ"
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
+              />
+            ))}
+          </Box>
+          <Typography sx={{ color: '#86868B', mt: 2, fontSize: '0.85rem', textAlign: 'center' }}>
+            Showing {filteredFAQs.length} of {faqItems.length} questions
+          </Typography>
+        </CardContent>
+      </Card>
+
+      {/* FAQ List Card */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {filteredFAQs.map((item, index) => {
+              const panelId = createSlug(item.question);
+              const globalIndex = faqItems.findIndex(faq => faq.question === item.question);
+              return (
+                <Paper
+                  key={index}
+                  elevation={0}
+                  ref={(el: HTMLDivElement | null) => {
+                    accordionRefs.current[globalIndex] = el;
                   }}
-                />
-              </Box>
-              <Box sx={{ mt: 7, textAlign: 'center' }}>
-                <Typography 
-                  variant="h5"
-                  fontWeight="600"
-                  gutterBottom
+                  id={panelId}
+                  sx={{
+                    p: 2.5,
+                    borderRadius: '12px',
+                    border: '1px solid',
+                    borderColor: expandedPanel === panelId ? '#007AFF' : 'rgba(0,0,0,0.08)',
+                    background: expandedPanel === panelId
+                      ? 'rgba(0,122,255,0.02)'
+                      : 'transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderColor: '#007AFF',
+                      background: 'rgba(0,122,255,0.02)',
+                    }
+                  }}
+                  onClick={() => handleAccordionChange(panelId)(null, expandedPanel !== panelId)}
                 >
-                  Frequently Asked Questions
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Everything you need to know about Gruvi
-                </Typography>
-              </Box>
-            </Box>
-            
-            <Divider />
-
-            {/* Category Filter */}
-            <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Chip
-                  label="All"
-                  onClick={() => setActiveCategory(null)}
-                  sx={{
-                    fontWeight: 500,
-                    ...(activeCategory === null ? {
-                      background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                      color: '#fff',
-                    } : {
-                      background: 'rgba(0,0,0,0.05)',
-                      color: '#1D1D1F',
-                      '&:hover': { background: 'rgba(0,122,255,0.1)' }
-                    })
-                  }}
-                />
-                {categories.map(category => (
-                  <Chip
-                    key={category}
-                    label={category}
-                    onClick={() => setActiveCategory(category)}
-                    sx={{
-                      fontWeight: 500,
-                      ...(activeCategory === category ? {
-                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                        color: '#fff',
-                      } : {
-                        background: 'rgba(0,0,0,0.05)',
-                        color: '#1D1D1F',
-                        '&:hover': { background: 'rgba(0,122,255,0.1)' }
-                      })
-                    }}
-                  />
-                ))}
-              </Box>
-              <Typography sx={{ textAlign: 'center', color: '#86868B', mt: 2, fontSize: '0.85rem' }}>
-                Showing {filteredFAQs.length} of {faqItems.length} questions
-              </Typography>
-            </Box>
-
-            <Divider />
-
-            {/* FAQ List */}
-            <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              {filteredFAQs.map((item, index) => {
-                const panelId = createSlug(item.question);
-                const globalIndex = faqItems.findIndex(faq => faq.question === item.question);
-                return (
-                  <Paper
-                    key={index}
-                    elevation={0}
-                    ref={(el: HTMLDivElement | null) => {
-                      accordionRefs.current[globalIndex] = el;
-                    }}
-                    id={panelId}
-                    sx={{
-                      p: { xs: 2, sm: 3 },
-                      mb: 2,
-                      borderRadius: 3,
-                      border: '1px solid',
-                      borderColor: expandedPanel === panelId ? 'primary.main' : 'divider',
-                      background: expandedPanel === panelId 
-                        ? 'linear-gradient(135deg, rgba(0,122,255,0.02) 0%, rgba(0,122,255,0.05) 100%)'
-                        : 'transparent',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        borderColor: 'primary.light',
-                        background: 'rgba(0,122,255,0.02)',
-                      }
-                    }}
-                    onClick={() => handleAccordionChange(panelId)(null, expandedPanel !== panelId)}
-                  >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography 
-                          sx={{ 
-                            fontSize: '0.7rem',
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: '#007AFF',
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          mb: 0.5
+                        }}
+                      >
+                        {item.category}
+                      </Typography>
+                      <Typography
+                        sx={{ fontWeight: 600, color: '#1D1D1F' }}
+                      >
+                        {item.question}
+                      </Typography>
+                    </Box>
+                    <ExpandMoreIcon
+                      sx={{
+                        color: '#007AFF',
+                        transition: 'transform 0.2s',
+                        transform: expandedPanel === panelId ? 'rotate(180deg)' : 'rotate(0deg)',
+                        ml: 1,
+                      }}
+                    />
+                  </Box>
+                  {expandedPanel === panelId && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography
+                        sx={{ color: '#86868B', lineHeight: 1.7, mb: 2, fontSize: '0.9rem' }}
+                      >
+                        {item.answer}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                          variant="text"
+                          size="small"
+                          endIcon={<ArrowForwardIcon />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleReadMore(item.question);
+                          }}
+                          sx={{
+                            textTransform: 'none',
+                            fontWeight: 500,
                             color: '#007AFF',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            mb: 0.5
+                            '&:hover': {
+                              background: 'rgba(0,122,255,0.05)',
+                            }
                           }}
                         >
-                          {item.category}
-                        </Typography>
-                        <Typography 
-                          variant="subtitle1" 
-                          fontWeight={600}
-                          sx={{ color: '#1D1D1F' }}
-                        >
-                          {item.question}
-                        </Typography>
+                          Read Full Answer
+                        </Button>
                       </Box>
-                      <ExpandMoreIcon 
-                        sx={{ 
-                          color: '#007AFF',
-                          transition: 'transform 0.2s',
-                          transform: expandedPanel === panelId ? 'rotate(180deg)' : 'rotate(0deg)',
-                          ml: 1,
-                        }} 
-                      />
                     </Box>
-                    {expandedPanel === panelId && (
-                      <Box sx={{ mt: 2 }}>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ color: '#86868B', lineHeight: 1.7, mb: 2 }}
-                        >
-                          {item.answer}
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                          <Button
-                            variant="text"
-                            size="small"
-                            endIcon={<ArrowForwardIcon />}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleReadMore(item.question);
-                            }}
-                            sx={{ 
-                              textTransform: 'none',
-                              fontWeight: 500,
-                              color: '#007AFF',
-                              '&:hover': {
-                                background: 'rgba(0,122,255,0.05)',
-                              }
-                            }}
-                          >
-                            Read Full Answer
-                          </Button>
-                        </Box>
-                      </Box>
-                    )}
-                  </Paper>
-                );
-              })}
+                  )}
+                </Paper>
+              );
+            })}
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Contact Support Card */}
+      <Card sx={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box sx={{
+              width: 40,
+              height: 40,
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <EmailIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
             </Box>
-
-            <Divider />
-
-            {/* Contact Support */}
-            <Box sx={{ p: { xs: 3, sm: 4 }, textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Still Have Questions?
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
                 Can't find what you're looking for? Our support team is here to help.
               </Typography>
-              <Button 
-                variant="contained"
-                onClick={() => window.location.href = 'mailto:support@gruvi.ai'}
-                sx={{ 
-                  borderRadius: '100px',
-                  px: 4,
-                  py: 1,
-                  fontWeight: 600,
-                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                  boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
-                    boxShadow: '0 6px 20px rgba(0,122,255,0.4)',
-                    transform: 'translateY(-1px)',
-                  }
-                }}
-              >
-                Contact Support
-              </Button>
             </Box>
-          </CardContent>
-        </Card>
-      </Container>
+          </Box>
+          <Button
+            variant="contained"
+            onClick={() => window.location.href = 'mailto:support@gruvi.ai'}
+            sx={{
+              borderRadius: '10px',
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
+              textTransform: 'none',
+              width: { xs: '100%', sm: 'auto' },
+              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              }
+            }}
+          >
+            Contact Support
+          </Button>
+        </CardContent>
+      </Card>
     </Box>
   );
 };
 
 export default DashboardFAQPage;
-

@@ -1,38 +1,42 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { setTokensRemaining } from '../store/authSlice';
-import { 
-  Box, 
-  Container,
+import {
+  Box,
   Typography,
   Button,
   Paper,
   TextField,
   Chip,
-  IconButton,
   CircularProgress,
   Snackbar,
   Alert,
   ToggleButton,
   ToggleButtonGroup,
   Checkbox,
-  Avatar
+  Avatar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import AddIcon from '@mui/icons-material/Add';
 import MovieIcon from '@mui/icons-material/Movie';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import VideocamIcon from '@mui/icons-material/Videocam';
 import PaletteIcon from '@mui/icons-material/Palette';
-import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckIcon from '@mui/icons-material/Check';
+import SmartphoneIcon from '@mui/icons-material/Smartphone';
+import TvIcon from '@mui/icons-material/Tv';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import PersonIcon from '@mui/icons-material/Person';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import HomeIcon from '@mui/icons-material/Home';
-import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import { RootState } from '../store/store';
 import { videosApi, charactersApi } from '../services/api';
 
@@ -77,49 +81,83 @@ const videoTypes = [
 
 // Aspect ratio options
 const aspectRatios = [
-  { id: 'portrait', label: 'Portrait', icon: '📱', ratio: '9:16', description: 'Best for mobile & social' },
-  { id: 'landscape', label: 'Landscape', icon: '🖥️', ratio: '16:9', description: 'Best for TV & YouTube' },
+  { id: 'portrait', label: 'Portrait', Icon: SmartphoneIcon, ratio: '9:16', description: 'Best for mobile & social' },
+  { id: 'landscape', label: 'Landscape', Icon: TvIcon, ratio: '16:9', description: 'Best for TV & YouTube' },
 ];
 
-// Genres/Moods for music video
-const genres = [
-  { id: 'pop', label: 'Pop', emoji: '🎵' },
-  { id: 'rock', label: 'Rock', emoji: '🎸' },
-  { id: 'hip-hop', label: 'Hip Hop', emoji: '🎤' },
-  { id: 'rnb', label: 'R&B', emoji: '💜' },
-  { id: 'electronic', label: 'Electronic', emoji: '🎧' },
-  { id: 'jazz', label: 'Jazz', emoji: '🎷' },
-  { id: 'classical', label: 'Classical', emoji: '🎻' },
-  { id: 'country', label: 'Country', emoji: '🤠' },
-  { id: 'folk', label: 'Folk', emoji: '🪕' },
-  { id: 'reggae', label: 'Reggae', emoji: '🌴' },
-  { id: 'metal', label: 'Metal', emoji: '🤘' },
-  { id: 'indie', label: 'Indie', emoji: '🌟' },
-];
-
-const moods = [
-  { id: 'happy', label: 'Happy', emoji: '😊' },
-  { id: 'sad', label: 'Sad', emoji: '😢' },
-  { id: 'energetic', label: 'Energetic', emoji: '⚡' },
-  { id: 'romantic', label: 'Romantic', emoji: '💕' },
-  { id: 'chill', label: 'Chill', emoji: '😌' },
-  { id: 'epic', label: 'Epic', emoji: '🔥' },
-  { id: 'dreamy', label: 'Dreamy', emoji: '✨' },
-  { id: 'dark', label: 'Dark', emoji: '🌙' },
-  { id: 'uplifting', label: 'Uplifting', emoji: '🌈' },
-  { id: 'nostalgic', label: 'Nostalgic', emoji: '📻' },
-  { id: 'promotional', label: 'Promotional', emoji: '📣' },
-];
-
-// Helper to get character type icon
-const getCharacterTypeIcon = (characterType?: string) => {
+// Helper to get character type image
+const getCharacterTypeImage = (characterType?: string) => {
   switch (characterType) {
-    case 'Product': return <ShoppingBagIcon sx={{ fontSize: 16 }} />;
-    case 'Place': return <HomeIcon sx={{ fontSize: 16 }} />;
-    case 'App': return <PhoneIphoneIcon sx={{ fontSize: 16 }} />;
-    case 'Non-Human': return '🐕';
-    default: return <PersonIcon sx={{ fontSize: 16 }} />;
+    case 'Product': return '/characters/product.jpeg';
+    case 'Place': return '/characters/house.jpeg';
+    case 'App': return '/gruvi/app.jpeg';
+    case 'Non-Human': return '/characters/dog.jpeg';
+    default: return '/characters/human.jpeg';
   }
+};
+
+// Scrollable list wrapper with dynamic fade gradients
+interface ScrollableListProps {
+  children: React.ReactNode;
+  maxHeight?: string;
+}
+
+const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHeight = '50vh' }) => {
+  const listRef = useRef<HTMLUListElement>(null);
+  const [showTopGradient, setShowTopGradient] = useState(false);
+  const [showBottomGradient, setShowBottomGradient] = useState(true);
+
+  const handleScroll = useCallback(() => {
+    if (listRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+      setShowTopGradient(scrollTop > 10);
+      setShowBottomGradient(scrollTop + clientHeight < scrollHeight - 10);
+    }
+  }, []);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (list) {
+      list.addEventListener('scroll', handleScroll);
+      handleScroll();
+      return () => list.removeEventListener('scroll', handleScroll);
+    }
+  }, [handleScroll]);
+
+  return (
+    <Box sx={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+      <Box sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 48,
+        background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)',
+        pointerEvents: 'none',
+        zIndex: 1,
+        opacity: showTopGradient ? 1 : 0,
+        transition: 'opacity 0.2s ease',
+      }} />
+      <List
+        ref={listRef}
+        sx={{ px: 1, py: 1, maxHeight, overflowY: 'auto' }}
+      >
+        {children}
+      </List>
+      <Box sx={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 48,
+        background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)',
+        pointerEvents: 'none',
+        zIndex: 1,
+        opacity: showBottomGradient ? 1 : 0,
+        transition: 'opacity 0.2s ease',
+      }} />
+    </Box>
+  );
 };
 
 const CreateVideoPage: React.FC = () => {
@@ -131,16 +169,15 @@ const CreateVideoPage: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
   const [aspectRatio, setAspectRatio] = useState<string>('portrait');
-  const [selectedGenre, setSelectedGenre] = useState<string>('pop');
-  const [selectedMood, setSelectedMood] = useState<string>('happy');
   const [videoPrompt, setVideoPrompt] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
-  
+  const [showPromptError, setShowPromptError] = useState(false);
+
   // Character selection state
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
-  
+
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -150,7 +187,25 @@ const CreateVideoPage: React.FC = () => {
     message: '',
     severity: 'info'
   });
-  
+
+  // Picker drawer states
+  const [stylePickerOpen, setStylePickerOpen] = useState(false);
+  const [castPickerOpen, setCastPickerOpen] = useState(false);
+
+  // Max cast members allowed
+  const MAX_CAST_MEMBERS = 5;
+
+  // Group characters by type
+  const groupedCharacters = characters.reduce((acc, char) => {
+    const type = char.characterType || 'Human';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(char);
+    return acc;
+  }, {} as Record<string, Character[]>);
+
+  // Order of character types for display
+  const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App'];
+
   // Fetch user's characters on mount
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -184,34 +239,9 @@ const CreateVideoPage: React.FC = () => {
     return videoTypes.find(t => t.id === videoType)?.credits || 0;
   };
 
-  const handleStyleChange = (styleId: string) => {
-    setSelectedStyle(styleId);
-  };
-
-  const handleVideoTypeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newType: string | null
-  ) => {
-    if (newType !== null) {
-      setVideoType(newType);
-    }
-  };
-
-  const handleGenreChange = (genreId: string) => {
-    setSelectedGenre(genreId);
-  };
-
-  const handleMoodChange = (moodId: string) => {
-    setSelectedMood(moodId);
-  };
-
-  const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVideoPrompt(event.target.value);
-  };
-
-
   const handleGenerate = async () => {
     if (!songId || !videoPrompt.trim()) {
+      setShowPromptError(true);
       setNotification({
         open: true,
         message: 'Please describe your music video concept',
@@ -254,7 +284,7 @@ const CreateVideoPage: React.FC = () => {
       });
       
       setTimeout(() => {
-        navigate('/my-library?tab=videos');
+        navigate('/my-videos');
       }, 2000);
     } catch (error: any) {
       console.error('Video generation error:', error);
@@ -273,44 +303,69 @@ const CreateVideoPage: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3, px: { xs: 2, sm: 3 } }}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto' }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, gap: 2 }}>
-        <IconButton 
-          onClick={() => navigate(-1)}
-          sx={{
-            background: 'rgba(255,255,255,0.9)',
-            border: '1px solid rgba(0,122,255,0.2)',
-            color: '#007AFF',
-            '&:hover': { 
-              background: 'rgba(0,122,255,0.1)',
-              border: '1px solid rgba(0,122,255,0.3)',
-            }
-          }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <Box>
-          <Typography 
-            variant="h4" 
-            component="h1"
-            sx={{ 
-              fontWeight: 700,
-              color: '#1D1D1F'
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        mb: 4,
+        gap: 2,
+        flexWrap: 'wrap',
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #FF2D55 0%, #FF9500 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            Create Music Video
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Song ID: {songId}
-          </Typography>
+            <VideocamIcon sx={{ color: '#fff', fontSize: 24 }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+              Create Music Video
+            </Typography>
+            <Typography sx={{ color: '#86868B' }}>
+              Transform your song into a stunning video
+            </Typography>
+          </Box>
         </Box>
+
+        {/* View My Videos button */}
+        <Button
+          variant="contained"
+          onClick={() => navigate('/my-videos')}
+          sx={{
+            background: '#007AFF',
+            color: '#fff',
+            textTransform: 'none',
+            fontWeight: 600,
+            borderRadius: '10px',
+            px: 2.5,
+            py: 1,
+            boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+            whiteSpace: 'nowrap',
+            '&:hover': {
+              background: '#0066CC',
+              boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+            },
+          }}
+        >
+          View My Videos
+        </Button>
       </Box>
 
-      {/* Main Content */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+      {/* Main Content - Two Column Layout */}
+      <Box sx={{ display: 'flex', flexDirection: { xs:'column', sm: 'column', md: "column", lg: "row"  }, gap: 3, width: '100%', minWidth: 0 }}>
         {/* Left Column - Settings */}
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           {/* Video Description - FIRST (mandatory) */}
           <Paper
             elevation={0}
@@ -342,117 +397,123 @@ const CreateVideoPage: React.FC = () => {
               />
             </Box>
             
-            {/* Character Selection */}
-            {isLoadingCharacters ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <CircularProgress size={16} />
-                <Typography variant="caption" color="text.secondary">Loading your characters...</Typography>
-              </Box>
-            ) : characters.length > 0 ? (
-              <Box sx={{ mb: 3 }}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: '#1D1D1F', 
-                    fontWeight: 600,
-                    display: 'block', 
-                    mb: 1.5,
+            {/* Cast Selection - Dropdown + Create Button */}
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 1 }}>
+                Add characters to your video (max {MAX_CAST_MEMBERS}):
+              </Typography>
+
+              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+                {/* Dropdown button */}
+                <Button
+                  onClick={() => setCastPickerOpen(true)}
+                  disabled={isLoadingCharacters}
+                  sx={{
+                    flex: 1,
+                    justifyContent: 'space-between',
+                    background: '#fff',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    borderRadius: '12px',
+                    py: 1.5,
+                    px: 2,
+                    color: '#1D1D1F',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    '&:hover': {
+                      background: 'rgba(0,122,255,0.05)',
+                    },
+                    '&.Mui-disabled': {
+                      background: 'rgba(0,0,0,0.02)',
+                      color: '#86868B',
+                    },
                   }}
                 >
-                  🎭 Select Characters, Products, Places, or Apps for your video:
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-                  {characters.map((char) => {
-                    const isSelected = selectedCharacterIds.includes(char.characterId);
-                    const hasImage = char.imageUrls && char.imageUrls.length > 0;
+                  {isLoadingCharacters ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={16} />
+                      <span>Loading...</span>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {selectedCharacterIds.length === 0 ? (
+                        <PersonIcon sx={{ fontSize: 20, color: '#86868B' }} />
+                      ) : (
+                        <Box sx={{ display: 'flex', ml: -0.5 }}>
+                          {selectedCharacterIds.slice(0, 3).map((id, idx) => {
+                            const char = characters.find(c => c.characterId === id);
+                            return (
+                              <Avatar
+                                key={id}
+                                src={char?.imageUrls?.[0] || getCharacterTypeImage(char?.characterType)}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  border: '2px solid #fff',
+                                  ml: idx > 0 ? -1 : 0,
+                                }}
+                              />
+                            );
+                          })}
+                        </Box>
+                      )}
+                      <span>
+                        {selectedCharacterIds.length === 0
+                          ? 'Select Cast Members'
+                          : `${selectedCharacterIds.length} selected`}
+                      </span>
+                    </Box>
+                  )}
+                  <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
+                </Button>
+
+                {/* Create button - dotted outline square */}
+                <Button
+                  onClick={() => navigate('/my-cast/create')}
+                  sx={{
+                    minWidth: 48,
+                    width: 48,
+                    height: 48,
+                    p: 0,
+                    border: '2px dashed rgba(0,122,255,0.4)',
+                    borderRadius: '12px',
+                    color: '#007AFF',
+                    '&:hover': {
+                      background: 'rgba(0,122,255,0.05)',
+                      border: '2px dashed #007AFF',
+                    },
+                  }}
+                >
+                  <AddIcon />
+                </Button>
+              </Box>
+
+              {/* Selected cast preview */}
+              {selectedCharacterIds.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1.5 }}>
+                  {selectedCharacterIds.map((id) => {
+                    const char = characters.find(c => c.characterId === id);
+                    if (!char) return null;
                     return (
-                      <Box
-                        key={char.characterId}
-                        onClick={() => handleCharacterToggle(char.characterId)}
+                      <Chip
+                        key={id}
+                        avatar={char.imageUrls?.[0] ? <Avatar src={char.imageUrls[0]} /> : undefined}
+                        label={char.characterName}
+                        onDelete={() => handleCharacterToggle(id)}
+                        size="small"
                         sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1,
-                          p: 1,
-                          pr: 1.5,
-                          borderRadius: '12px',
-                          border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
-                          background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.9)',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            borderColor: '#007AFF',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
+                          background: 'rgba(0,122,255,0.1)',
+                          color: '#007AFF',
+                          '& .MuiChip-deleteIcon': {
+                            color: '#007AFF',
+                            '&:hover': { color: '#0056CC' },
                           },
                         }}
-                      >
-                        {/* Checkbox or Avatar */}
-                        {hasImage ? (
-                          <Box sx={{ position: 'relative' }}>
-                            <Avatar 
-                              src={char.imageUrls![0]} 
-                              alt={char.characterName}
-                              sx={{ width: 40, height: 40, borderRadius: '8px' }}
-                            />
-                            {isSelected && (
-                              <CheckCircleIcon 
-                                sx={{ 
-                                  position: 'absolute', 
-                                  bottom: -4, 
-                                  right: -4, 
-                                  fontSize: 18, 
-                                  color: '#007AFF',
-                                  background: 'white',
-                                  borderRadius: '50%'
-                                }} 
-                              />
-                            )}
-                          </Box>
-                        ) : (
-                          <Checkbox 
-                            checked={isSelected} 
-                            size="small"
-                            sx={{ p: 0, color: '#007AFF' }}
-                          />
-                        )}
-                        
-                        {/* Name and Type */}
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', lineHeight: 1.2 }}>
-                            {char.characterName}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            {getCharacterTypeIcon(char.characterType)}
-                            <Typography variant="caption" sx={{ color: '#86868B', fontSize: '0.7rem' }}>
-                              {char.characterType || 'Character'}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
+                      />
                     );
                   })}
                 </Box>
-                {selectedCharacterIds.length > 0 && (
-                  <Typography variant="caption" sx={{ color: '#007AFF', mt: 1, display: 'block' }}>
-                    ✓ {selectedCharacterIds.length} selected - these will appear in your video
-                  </Typography>
-                )}
-              </Box>
-            ) : (
-              <Box sx={{ mb: 2, p: 2, background: 'rgba(0,122,255,0.05)', borderRadius: '12px', border: '1px dashed rgba(0,122,255,0.3)' }}>
-                <Typography variant="body2" sx={{ color: '#86868B' }}>
-                  💡 <strong>No characters yet?</strong> Create characters, products, places, or apps to feature them in your videos!
-                </Typography>
-                <Button 
-                  size="small" 
-                  onClick={() => navigate('/characters/new')}
-                  sx={{ mt: 1, textTransform: 'none', color: '#007AFF' }}
-                >
-                  + Create Your First Character
-                </Button>
-              </Box>
-            )}
+              )}
+            </Box>
             
             <TextField
               fullWidth
@@ -460,22 +521,25 @@ const CreateVideoPage: React.FC = () => {
               rows={4}
               placeholder="Describe the scenes, setting, and story for your music video... Selected characters above will automatically appear in your video."
               value={videoPrompt}
-              onChange={handlePromptChange}
+              onChange={(e) => {
+                setVideoPrompt(e.target.value);
+                if (e.target.value.trim()) setShowPromptError(false);
+              }}
               required
-              error={!videoPrompt.trim()}
-              helperText={!videoPrompt.trim() ? 'Please describe your music video' : ''}
+              error={showPromptError && !videoPrompt.trim()}
+              helperText={showPromptError && !videoPrompt.trim() ? 'Please describe your music video' : ''}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '16px',
                   background: '#fff',
                   '& fieldset': {
-                    borderColor: !videoPrompt.trim() ? 'rgba(255,59,48,0.5)' : 'rgba(0,0,0,0.1)',
+                    borderColor: (showPromptError && !videoPrompt.trim()) ? 'rgba(255,59,48,0.5)' : 'rgba(0,0,0,0.1)',
                   },
                   '&:hover fieldset': {
-                    borderColor: !videoPrompt.trim() ? 'rgba(255,59,48,0.7)' : 'rgba(0,122,255,0.3)',
+                    borderColor: (showPromptError && !videoPrompt.trim()) ? 'rgba(255,59,48,0.7)' : 'rgba(0,122,255,0.3)',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: !videoPrompt.trim() ? '#FF3B30' : '#007AFF',
+                    borderColor: (showPromptError && !videoPrompt.trim()) ? '#FF3B30' : '#007AFF',
                   },
                 },
                 '& .MuiInputBase-input': {
@@ -484,18 +548,6 @@ const CreateVideoPage: React.FC = () => {
                 },
               }}
             />
-            
-            <Typography 
-              variant="caption" 
-              sx={{ 
-                display: 'block', 
-                mt: 1.5, 
-                color: '#86868B',
-                ml: 0.5
-              }}
-            >
-              Example: "A summer adventure with @Luna and @Max exploring a magical forest, dancing under twinkling lights"
-            </Typography>
           </Paper>
 
           {/* Visual Style Selection */}
@@ -511,81 +563,43 @@ const CreateVideoPage: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <PaletteIcon sx={{ color: '#007AFF' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Visual Style
               </Typography>
             </Box>
-            
-            <Box 
-              sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', 
-                gap: 1.5 
+
+            <Button
+              onClick={() => setStylePickerOpen(true)}
+              fullWidth
+              sx={{
+                justifyContent: 'space-between',
+                textTransform: 'none',
+                py: 1.5,
+                px: 2,
+                borderRadius: '12px',
+                border: '1px solid rgba(0,0,0,0.1)',
+                background: '#fff',
+                color: '#1D1D1F',
+                fontWeight: 500,
+                '&:hover': { background: 'rgba(0,122,255,0.05)' },
               }}
             >
-              {artStyles.map((style) => (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <Box
-                  key={style.id}
-                  onClick={() => handleStyleChange(style.id)}
-                  sx={{
-                    aspectRatio: '1',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    border: selectedStyle === style.id 
-                      ? '3px solid #007AFF' 
-                      : '2px solid rgba(0,0,0,0.06)',
-                    transition: 'all 0.2s ease',
-                    position: 'relative',
-                    boxShadow: selectedStyle === style.id 
-                      ? '0 4px 16px rgba(0,122,255,0.25)'
-                      : '0 2px 8px rgba(0,0,0,0.06)',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
-                    },
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={style.image}
-                    alt={style.label}
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                      p: 0.75,
-                      pt: 2,
-                    }}
-                  >
-                    <Typography 
-                      sx={{ 
-                        color: '#fff', 
-                        fontSize: '0.65rem', 
-                        fontWeight: 600,
-                        textAlign: 'center'
-                      }}
-                    >
-                      {style.label}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
+                  component="img"
+                  src={artStyles.find(s => s.id === selectedStyle)?.image}
+                  alt={artStyles.find(s => s.id === selectedStyle)?.label}
+                  sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                />
+                <span>{artStyles.find(s => s.id === selectedStyle)?.label}</span>
+              </Box>
+              <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
+            </Button>
           </Paper>
 
-          {/* Video Type Toggle */}
+          {/* Video Type Selection - Toggle Style */}
           <Paper
             elevation={0}
             sx={{
@@ -598,23 +612,25 @@ const CreateVideoPage: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <MovieIcon sx={{ color: '#007AFF' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Video Type
               </Typography>
             </Box>
-            
+
             <ToggleButtonGroup
               value={videoType}
               exclusive
-              onChange={handleVideoTypeChange}
+              onChange={(_event, newValue) => {
+                if (newValue !== null) setVideoType(newValue);
+              }}
               fullWidth
               sx={{
-                gap: 1.5,
+                gap: 1,
                 '& .MuiToggleButtonGroup-grouped': {
                   border: 'none !important',
-                  borderRadius: '16px !important',
+                  borderRadius: '12px !important',
                   m: 0,
                 },
               }}
@@ -627,53 +643,49 @@ const CreateVideoPage: React.FC = () => {
                     value={type.id}
                     sx={{
                       flex: 1,
-                      py: 2,
-                      px: 2,
+                      py: 1.5,
+                      px: 1.5,
                       flexDirection: 'column',
-                      gap: 1,
+                      gap: 0.5,
                       textTransform: 'none',
-                      background: videoType === type.id 
-                        ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
+                      background: videoType === type.id
+                        ? 'rgba(0,122,255,0.1)'
                         : 'rgba(0,0,0,0.03)',
-                      color: videoType === type.id ? '#fff' : '#1D1D1F',
-                      border: videoType === type.id 
-                        ? '2px solid transparent' 
+                      color: videoType === type.id ? '#007AFF' : '#1D1D1F',
+                      border: videoType === type.id
+                        ? '2px solid #007AFF'
                         : '2px solid rgba(0,0,0,0.08)',
-                      boxShadow: videoType === type.id 
-                        ? '0 4px 16px rgba(0,122,255,0.3)' 
-                        : 'none',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transition: 'all 0.2s ease',
                       '&:hover': {
-                        background: videoType === type.id 
-                          ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
+                        background: videoType === type.id
+                          ? 'rgba(0,122,255,0.15)'
                           : 'rgba(0,0,0,0.06)',
                       },
                       '&.Mui-selected': {
-                        background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                        color: '#fff',
+                        background: 'rgba(0,122,255,0.1)',
+                        color: '#007AFF',
                         '&:hover': {
-                          background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
+                          background: 'rgba(0,122,255,0.15)',
                         },
                       },
                     }}
                   >
-                    <IconComponent sx={{ fontSize: 28 }} />
-                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                    <IconComponent sx={{ fontSize: 24 }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
                       {type.label}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                      {type.description}
-                    </Typography>
-                    <Chip 
+                    <Chip
                       label={`${type.credits} credits`}
                       size="small"
                       sx={{
                         mt: 0.5,
-                        fontWeight: 700,
-                        background: videoType === type.id 
-                          ? 'rgba(255,255,255,0.2)' 
-                          : 'rgba(0,122,255,0.1)',
-                        color: videoType === type.id ? '#fff' : '#007AFF',
+                        fontWeight: 600,
+                        fontSize: '0.65rem',
+                        height: 20,
+                        background: videoType === type.id
+                          ? 'rgba(0,122,255,0.15)'
+                          : 'rgba(0,0,0,0.06)',
+                        color: videoType === type.id ? '#007AFF' : '#86868B',
                       }}
                     />
                   </ToggleButton>
@@ -696,12 +708,12 @@ const CreateVideoPage: React.FC = () => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-              <Typography sx={{ fontSize: '1.2rem' }}>📐</Typography>
+              <AspectRatioIcon sx={{ color: '#007AFF' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Aspect Ratio
               </Typography>
             </Box>
-            
+
             <ToggleButtonGroup
               value={aspectRatio}
               exclusive
@@ -718,173 +730,69 @@ const CreateVideoPage: React.FC = () => {
                 },
               }}
             >
-              {aspectRatios.map((ar) => (
-                <ToggleButton
-                  key={ar.id}
-                  value={ar.id}
-                  sx={{
-                    flex: 1,
-                    py: 2,
-                    px: 2,
-                    flexDirection: 'column',
-                    gap: 0.5,
-                    textTransform: 'none',
-                    background: aspectRatio === ar.id 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
-                      : 'rgba(0,0,0,0.03)',
-                    color: aspectRatio === ar.id ? '#fff' : '#1D1D1F',
-                    border: aspectRatio === ar.id 
-                      ? '2px solid transparent' 
-                      : '2px solid rgba(0,0,0,0.08)',
-                    boxShadow: aspectRatio === ar.id 
-                      ? '0 4px 16px rgba(0,122,255,0.3)' 
-                      : 'none',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      background: aspectRatio === ar.id 
-                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
-                        : 'rgba(0,0,0,0.06)',
-                    },
-                    '&.Mui-selected': {
-                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                      color: '#fff',
+              {aspectRatios.map((ar) => {
+                const IconComponent = ar.Icon;
+                return (
+                  <ToggleButton
+                    key={ar.id}
+                    value={ar.id}
+                    sx={{
+                      flex: 1,
+                      py: 1.5,
+                      px: 1.5,
+                      flexDirection: 'column',
+                      gap: 0.5,
+                      textTransform: 'none',
+                      background: aspectRatio === ar.id
+                        ? 'rgba(0,122,255,0.1)'
+                        : 'rgba(0,0,0,0.03)',
+                      color: aspectRatio === ar.id ? '#007AFF' : '#1D1D1F',
+                      border: aspectRatio === ar.id
+                        ? '2px solid #007AFF'
+                        : '2px solid rgba(0,0,0,0.08)',
+                      transition: 'all 0.2s ease',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)',
+                        background: aspectRatio === ar.id
+                          ? 'rgba(0,122,255,0.15)'
+                          : 'rgba(0,0,0,0.06)',
                       },
-                    },
-                  }}
-                >
-                  <Typography sx={{ fontSize: '1.5rem' }}>{ar.icon}</Typography>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
-                    {ar.label}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                    {ar.ratio}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, mt: 0.5 }}>
-                    {ar.description}
-                  </Typography>
-                </ToggleButton>
-              ))}
+                      '&.Mui-selected': {
+                        background: 'rgba(0,122,255,0.1)',
+                        color: '#007AFF',
+                        '&:hover': {
+                          background: 'rgba(0,122,255,0.15)',
+                        },
+                      },
+                    }}
+                  >
+                    <IconComponent sx={{ fontSize: 24 }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                      {ar.label}
+                    </Typography>
+                    <Chip
+                      label={ar.ratio}
+                      size="small"
+                      sx={{
+                        mt: 0.5,
+                        fontWeight: 600,
+                        fontSize: '0.65rem',
+                        height: 20,
+                        background: aspectRatio === ar.id
+                          ? 'rgba(0,122,255,0.15)'
+                          : 'rgba(0,0,0,0.06)',
+                        color: aspectRatio === ar.id ? '#007AFF' : '#86868B',
+                      }}
+                    />
+                  </ToggleButton>
+                );
+              })}
             </ToggleButtonGroup>
-          </Paper>
-
-          {/* Genre Selection */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              mb: 3,
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-              <MusicNoteIcon sx={{ color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Genre
-              </Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {genres.map((genre) => (
-                <Chip
-                  key={genre.id}
-                  label={`${genre.emoji} ${genre.label}`}
-                  onClick={() => handleGenreChange(genre.id)}
-                  sx={{
-                    px: 1,
-                    py: 2.5,
-                    fontSize: '0.85rem',
-                    fontWeight: selectedGenre === genre.id ? 600 : 500,
-                    borderRadius: '100px',
-                    background: selectedGenre === genre.id 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
-                      : 'rgba(0,0,0,0.03)',
-                    color: selectedGenre === genre.id ? '#fff' : '#1D1D1F',
-                    border: selectedGenre === genre.id 
-                      ? 'none' 
-                      : '1px solid rgba(0,0,0,0.08)',
-                    boxShadow: selectedGenre === genre.id 
-                      ? '0 4px 12px rgba(0,122,255,0.25)' 
-                      : 'none',
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      background: selectedGenre === genre.id 
-                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
-                        : 'rgba(0,0,0,0.06)',
-                      transform: 'translateY(-1px)',
-                    },
-                  }}
-                />
-              ))}
-            </Box>
-          </Paper>
-
-          {/* Mood Selection */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              mb: 3,
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-              <TheaterComedyIcon sx={{ color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Mood
-              </Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {moods.map((mood) => (
-                <Chip
-                  key={mood.id}
-                  label={`${mood.emoji} ${mood.label}`}
-                  onClick={() => handleMoodChange(mood.id)}
-                  sx={{
-                    px: 1,
-                    py: 2.5,
-                    fontSize: '0.85rem',
-                    fontWeight: selectedMood === mood.id ? 600 : 500,
-                    borderRadius: '100px',
-                    background: selectedMood === mood.id 
-                      ? 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)' 
-                      : 'rgba(0,0,0,0.03)',
-                    color: selectedMood === mood.id ? '#fff' : '#1D1D1F',
-                    border: selectedMood === mood.id 
-                      ? 'none' 
-                      : '1px solid rgba(0,0,0,0.08)',
-                    boxShadow: selectedMood === mood.id 
-                      ? '0 4px 12px rgba(0,122,255,0.25)' 
-                      : 'none',
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      background: selectedMood === mood.id 
-                        ? 'linear-gradient(135deg, #0056CC 0%, #4240B0 100%)' 
-                        : 'rgba(0,0,0,0.06)',
-                      transform: 'translateY(-1px)',
-                    },
-                  }}
-                />
-              ))}
-            </Box>
           </Paper>
 
         </Box>
 
         {/* Right Column - Summary & Generate */}
-        <Box sx={{ width: { xs: '100%', md: 320 } }}>
+        <Box sx={{ width: { xs: '100%', lg: 320 }, flexShrink: 0 }}>
           <Paper
             elevation={0}
             sx={{
@@ -901,47 +809,71 @@ const CreateVideoPage: React.FC = () => {
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
               Summary
             </Typography>
-            
+
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Style</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                  {artStyles.find(s => s.id === selectedStyle)?.label}
-                </Typography>
+              <Box sx={{ display: 'flex', mb: 1.5 }}>
+                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Style</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                  <Box
+                    component="img"
+                    src={artStyles.find(s => s.id === selectedStyle)?.image}
+                    alt={artStyles.find(s => s.id === selectedStyle)?.label}
+                    sx={{ width: 22, height: 22, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
+                  />
+                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {artStyles.find(s => s.id === selectedStyle)?.label}
+                  </Typography>
+                </Box>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Type</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                  {videoTypes.find(t => t.id === videoType)?.label}
-                </Typography>
+              <Box sx={{ display: 'flex', mb: 1.5 }}>
+                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Type</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                  {(() => {
+                    const typeInfo = videoTypes.find(t => t.id === videoType);
+                    const TypeIcon = typeInfo?.icon;
+                    return (
+                      <>
+                        {TypeIcon && <TypeIcon sx={{ fontSize: 18, color: '#007AFF' }} />}
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                          {typeInfo?.label}
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                </Box>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Genre</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                  {genres.find(g => g.id === selectedGenre)?.emoji} {genres.find(g => g.id === selectedGenre)?.label}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>Mood</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                  {moods.find(m => m.id === selectedMood)?.emoji} {moods.find(m => m.id === selectedMood)?.label}
-                </Typography>
+              <Box sx={{ display: 'flex', mb: 1.5 }}>
+                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Aspect Ratio</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                  {(() => {
+                    const arInfo = aspectRatios.find(ar => ar.id === aspectRatio);
+                    const ArIcon = arInfo?.Icon;
+                    return (
+                      <>
+                        {ArIcon && <ArIcon sx={{ fontSize: 18, color: aspectRatio === 'portrait' ? '#FF9500' : '#34C759' }} />}
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                          {arInfo?.label} ({arInfo?.ratio})
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                </Box>
               </Box>
             </Box>
-            
-            <Box 
-              sx={{ 
-                p: 2, 
-                borderRadius: '12px', 
+
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: '12px',
                 background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)',
                 mb: 3
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Credits</Typography>
-                <Typography 
-                  sx={{ 
-                    fontWeight: 700, 
+                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: 700,
                     fontSize: '1.5rem',
                     background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
                     backgroundClip: 'text',
@@ -953,7 +885,7 @@ const CreateVideoPage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            
+
             <Button
               fullWidth
               variant="contained"
@@ -981,10 +913,10 @@ const CreateVideoPage: React.FC = () => {
                 </>
               )}
             </Button>
-            
-            <Typography 
-              variant="caption" 
-              color="text.secondary" 
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
               sx={{ display: 'block', textAlign: 'center', mt: 2 }}
             >
               Generation typically takes 5-10 minutes
@@ -992,6 +924,172 @@ const CreateVideoPage: React.FC = () => {
           </Paper>
         </Box>
       </Box>
+
+      {/* Visual Style Picker Drawer */}
+      <Drawer
+        anchor="bottom"
+        open={stylePickerOpen}
+        onClose={() => setStylePickerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            maxHeight: '70vh',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+          },
+        }}
+      >
+        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            Select Visual Style
+          </Typography>
+        </Box>
+        <ScrollableListWrapper>
+          {artStyles.map((style) => (
+            <ListItem key={style.id} disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  setSelectedStyle(style.id);
+                  setStylePickerOpen(false);
+                }}
+                sx={{
+                  borderRadius: '12px',
+                  mb: 0.5,
+                  py: 1.5,
+                  background: selectedStyle === style.id ? 'rgba(0,122,255,0.1)' : 'transparent',
+                  border: selectedStyle === style.id ? '2px solid #007AFF' : '2px solid transparent',
+                }}
+              >
+                <Box
+                  component="img"
+                  src={style.image}
+                  alt={style.label}
+                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                />
+                <ListItemText primary={style.label} primaryTypographyProps={{ fontWeight: 600 }} />
+                {selectedStyle === style.id && <CheckIcon sx={{ color: '#007AFF' }} />}
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </ScrollableListWrapper>
+      </Drawer>
+
+      {/* Cast Picker Drawer */}
+      <Drawer
+        anchor="bottom"
+        open={castPickerOpen}
+        onClose={() => setCastPickerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            maxHeight: '70vh',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+          },
+        }}
+      >
+        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+              Select Cast Members
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#86868B' }}>
+              {selectedCharacterIds.length}/{MAX_CAST_MEMBERS} selected
+            </Typography>
+          </Box>
+        </Box>
+        <ScrollableListWrapper maxHeight="55vh">
+          {characters.length === 0 ? (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                No cast members yet. Create your first character!
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setCastPickerOpen(false);
+                  navigate('/my-cast/create');
+                }}
+                sx={{
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  borderColor: '#007AFF',
+                  color: '#007AFF',
+                }}
+              >
+                <AddIcon sx={{ mr: 1 }} />
+                Create Character
+              </Button>
+            </Box>
+          ) : (
+            characterTypeOrder.map((type) => {
+              const typeCharacters = groupedCharacters[type];
+              if (!typeCharacters || typeCharacters.length === 0) return null;
+              return (
+                <Box key={type}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'block',
+                      px: 2,
+                      py: 1,
+                      color: '#86868B',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {type === 'Non-Human' ? 'Non-Humans' : type === 'Place' ? 'Places / Businesses' : type + 's'}
+                  </Typography>
+                  {typeCharacters.map((char) => {
+                    const isSelected = selectedCharacterIds.includes(char.characterId);
+                    const isDisabled = !isSelected && selectedCharacterIds.length >= MAX_CAST_MEMBERS;
+                    return (
+                      <ListItem key={char.characterId} disablePadding>
+                        <ListItemButton
+                          onClick={() => {
+                            if (!isDisabled || isSelected) {
+                              handleCharacterToggle(char.characterId);
+                            }
+                          }}
+                          disabled={isDisabled}
+                          sx={{
+                            borderRadius: '12px',
+                            mx: 1,
+                            mb: 0.5,
+                            py: 1.5,
+                            background: isSelected ? 'rgba(0,122,255,0.1)' : 'transparent',
+                            border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                            opacity: isDisabled ? 0.5 : 1,
+                          }}
+                        >
+                          <Avatar
+                            src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
+                            sx={{ width: 40, height: 40, borderRadius: '8px', mr: 2 }}
+                          />
+                          <ListItemText
+                            primary={char.characterName}
+                            secondary={char.description?.slice(0, 50) || type}
+                            primaryTypographyProps={{ fontWeight: 600 }}
+                            secondaryTypographyProps={{ fontSize: '0.75rem', noWrap: true }}
+                          />
+                          {isSelected && <CheckIcon sx={{ color: '#007AFF' }} />}
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </Box>
+              );
+            })
+          )}
+        </ScrollableListWrapper>
+      </Drawer>
 
       {/* Notification */}
       <Snackbar
@@ -1004,7 +1102,7 @@ const CreateVideoPage: React.FC = () => {
           {notification.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 

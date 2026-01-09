@@ -30,6 +30,7 @@ import {
   Link as LinkIcon,
   CloudUpload as CloudUploadIcon,
   Schedule as ScheduleIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -150,15 +151,36 @@ const SettingsPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      pt: 2,
-      pb: { xs: 2, sm: 4 },
-    }}>
-      <Container maxWidth="md" sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #8E8E93 0%, #636366 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <SettingsIcon sx={{ color: '#fff', fontSize: 24 }} />
+        </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            Settings
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Manage your account and preferences
+          </Typography>
+        </Box>
+      </Box>
+
+      <Container maxWidth="md" sx={{
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
         p: 0

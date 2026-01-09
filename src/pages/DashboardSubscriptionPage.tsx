@@ -1,0 +1,791 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Alert,
+  Snackbar,
+  Chip,
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SecurityIcon from '@mui/icons-material/Security';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import XIcon from '@mui/icons-material/X';
+import BoltIcon from '@mui/icons-material/Bolt';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  createCheckoutSession,
+  createPortalSession,
+} from '../store/authSlice';
+import { RootState, AppDispatch } from '../store/store';
+import { useAccountData } from '../hooks/useAccountData';
+import { stripeConfig, topUpBundles } from '../config/stripe';
+
+interface PricePlan {
+  id: string;
+  title: string;
+  tagline: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  popular?: boolean;
+  features: string[];
+  tokens: number;
+  gradient: string;
+  badgeColor: string;
+  stripePrices: {
+    monthly: string;
+    yearly: string;
+  };
+  productId: string;
+}
+
+// TikTok icon component
+const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
+  <Box
+    component="svg"
+    viewBox="0 0 24 24"
+    sx={{ width: 14, height: 14, ...sx }}
+  >
+    <path
+      fill="currentColor"
+      d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"
+    />
+  </Box>
+);
+
+// Mini social icons row
+const SocialPlatformIconsMini: React.FC = () => (
+  <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap' }}>
+    {[
+      { icon: <InstagramIcon sx={{ fontSize: 12 }} />, bg: 'linear-gradient(135deg, #E4405F, #C13584)' },
+      { icon: <FacebookIcon sx={{ fontSize: 12 }} />, bg: '#1877F2' },
+      { icon: <XIcon sx={{ fontSize: 10 }} />, bg: '#000' },
+      { icon: <LinkedInIcon sx={{ fontSize: 12 }} />, bg: '#0A66C2' },
+      { icon: <TikTokIcon sx={{ color: '#fff' }} />, bg: '#000' },
+      { icon: <YouTubeIcon sx={{ fontSize: 12 }} />, bg: '#FF0000' },
+    ].map((item, idx) => (
+      <Box
+        key={idx}
+        sx={{
+          width: 20,
+          height: 20,
+          borderRadius: '50%',
+          background: item.bg,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+        }}
+      >
+        {item.icon}
+      </Box>
+    ))}
+  </Box>
+);
+
+const plans: PricePlan[] = [
+  {
+    id: 'starter',
+    title: 'Starter',
+    tagline: 'Create videos while others are still writing scripts',
+    monthlyPrice: 39,
+    yearlyPrice: 348,
+    tokens: 5000,
+    gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+    badgeColor: '#3B82F6',
+    features: [
+      '~50 music promo videos',
+      '~5 cinematic music videos',
+      '~250 AI songs',
+      'AI Music Generation',
+      'Commercial license',
+    ],
+    stripePrices: {
+      monthly: stripeConfig.starter.monthly,
+      yearly: stripeConfig.starter.yearly
+    },
+    productId: stripeConfig.starter.productId
+  },
+  {
+    id: 'scale',
+    title: 'Scale',
+    tagline: 'Go viral while competitors are still planning',
+    monthlyPrice: 99,
+    yearlyPrice: 828,
+    popular: true,
+    tokens: 20000,
+    gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+    badgeColor: '#EC4899',
+    features: [
+      '~200 music promo videos',
+      '~20 cinematic music videos',
+      '~1,000 AI songs',
+      'Priority generation',
+      'Commercial license',
+    ],
+    stripePrices: {
+      monthly: stripeConfig.scale.monthly,
+      yearly: stripeConfig.scale.yearly
+    },
+    productId: stripeConfig.scale.productId
+  },
+  {
+    id: 'beast',
+    title: 'Beast',
+    tagline: 'Flood the feed while the competition falls behind',
+    monthlyPrice: 199,
+    yearlyPrice: 1788,
+    tokens: 50000,
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
+    badgeColor: '#F97316',
+    features: [
+      '~500 music promo videos',
+      '~50 cinematic music videos',
+      '~2,500 AI songs',
+      'Dedicated support',
+      'Commercial license',
+    ],
+    stripePrices: {
+      monthly: stripeConfig.hardcore.monthly,
+      yearly: stripeConfig.hardcore.yearly
+    },
+    productId: stripeConfig.hardcore.productId
+  }
+];
+
+const DashboardSubscriptionPage: React.FC = () => {
+  const [isYearly, setIsYearly] = useState<boolean>(true);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, subscription } = useSelector((state: RootState) => state.auth);
+  const { fetchAccountData } = useAccountData(false);
+
+  useEffect(() => {
+    if (subscription?.tier && subscription.tier !== 'free' && !selectedPlan) {
+      setSelectedPlan(subscription.tier);
+    }
+  }, [subscription, selectedPlan]);
+
+  useEffect(() => {
+    fetchAccountData(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Scroll to topup section if hash is present
+  useEffect(() => {
+    if (location.hash === '#topup') {
+      setTimeout(() => {
+        const element = document.getElementById('topup');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.hash]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const successParam = params.get('success');
+
+    if (successParam === 'true') {
+      setSuccess('Payment successful! Your subscription has been updated.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      fetchAccountData(true);
+    } else if (successParam === 'false') {
+      setError('Payment was not completed. Please try again.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSelectPlan = useCallback((planId: string) => {
+    setSelectedPlan(planId);
+  }, []);
+
+  const handleProceedToPayment = useCallback(async () => {
+    if (!selectedPlan) return;
+
+    const plan = plans.find(p => p.id === selectedPlan);
+    if (!plan) return;
+
+    const priceId = isYearly ? plan.stripePrices.yearly : plan.stripePrices.monthly;
+    const productId = plan.productId;
+
+    try {
+      setError(null);
+
+      const resultAction = await dispatch(createCheckoutSession({ priceId, productId }));
+
+      if (createCheckoutSession.fulfilled.match(resultAction)) {
+        if (resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        }
+      } else if (createCheckoutSession.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to create checkout session');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    }
+  }, [dispatch, selectedPlan, isYearly]);
+
+  const handleManageSubscription = useCallback(async () => {
+    try {
+      setError(null);
+      setIsManagingSubscription(true);
+
+      const resultAction = await dispatch(createPortalSession());
+
+      if (createPortalSession.fulfilled.match(resultAction)) {
+        if (resultAction.payload.url) {
+          window.location.href = resultAction.payload.url;
+        }
+      } else if (createPortalSession.rejected.match(resultAction)) {
+        setError(resultAction.payload as string || 'Failed to access subscription management');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setIsManagingSubscription(false);
+    }
+  }, [dispatch]);
+
+  const isSubscribed = subscription && subscription.tier !== 'free';
+
+  return (
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <CreditCardIcon sx={{ color: '#fff', fontSize: 24 }} />
+        </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            Subscription
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Manage your plan and billing
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Error/Success alerts */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
+      <Snackbar
+        open={!!success}
+        autoHideDuration={6000}
+        onClose={() => setSuccess(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSuccess(null)} severity="success" sx={{ borderRadius: '12px' }}>
+          {success}
+        </Alert>
+      </Snackbar>
+
+      {/* Current subscription info - styled like header, not card */}
+      {isSubscribed && (
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 4,
+          flexWrap: 'wrap',
+          gap: 2,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Current Plan: {subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
+              </Typography>
+              {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
+                <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
+                  Next billing: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+          <Button
+            variant="contained"
+            onClick={handleManageSubscription}
+            disabled={isManagingSubscription}
+            sx={{
+              background: '#007AFF',
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': {
+                background: '#0066CC',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              },
+            }}
+          >
+            {isManagingSubscription ? <CircularProgress size={20} color="inherit" /> : 'Manage Subscription'}
+          </Button>
+        </Box>
+      )}
+
+      {/* Main content: Plans + Checkout Sidebar */}
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column-reverse', lg: 'row' } }}>
+        {/* Plans list */}
+        <Box sx={{ flex: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {plans.map((plan) => (
+              <Card
+                key={plan.id}
+                onClick={() => handleSelectPlan(plan.id)}
+                sx={{
+                  borderRadius: '16px',
+                  cursor: 'pointer',
+                  border: selectedPlan === plan.id
+                    ? `2px solid ${plan.badgeColor}`
+                    : '1px solid rgba(0,0,0,0.08)',
+                  boxShadow: selectedPlan === plan.id
+                    ? `0 8px 24px ${plan.badgeColor}30`
+                    : '0 2px 8px rgba(0,0,0,0.04)',
+                  transition: 'all 0.2s ease',
+                  position: 'relative',
+                  overflow: 'visible',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                  },
+                }}
+              >
+                {/* Most Popular badge */}
+                {plan.popular && (
+                  <Chip
+                    label="Most Popular"
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -10,
+                      right: 16,
+                      background: plan.gradient,
+                      color: '#fff',
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                    }}
+                  />
+                )}
+
+                <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+                    {/* Left: Gradient header with tokens */}
+                    <Box
+                      sx={{
+                        background: plan.gradient,
+                        p: 2.5,
+                        minWidth: { md: 180 },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: { xs: '14px 14px 0 0', md: '14px 0 0 14px' },
+                      }}
+                    >
+                      <Box sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '10px',
+                        background: 'rgba(255,255,255,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 1,
+                      }}>
+                        <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
+                      </Box>
+                      <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+                        {plan.tokens.toLocaleString()}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+                        AI Tokens/mo
+                      </Typography>
+                    </Box>
+
+                    {/* Right: Plan details */}
+                    <Box sx={{ flex: 1, p: 2.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
+                        <Box>
+                          <Chip
+                            label={plan.title}
+                            size="small"
+                            sx={{
+                              background: plan.gradient,
+                              color: '#fff',
+                              fontWeight: 700,
+                              fontSize: '0.8rem',
+                              mb: 0.5,
+                            }}
+                          />
+                          <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                            {plan.tagline}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#1D1D1F', lineHeight: 1 }}>
+                            ${isYearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice}
+                            <Typography component="span" sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#86868B' }}>
+                              /mo
+                            </Typography>
+                          </Typography>
+                          {isYearly && (
+                            <Typography sx={{ fontSize: '0.75rem', color: '#34C759', fontWeight: 600 }}>
+                              Billed ${plan.yearlyPrice}/yr
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
+
+                      {/* Features row */}
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                        {plan.features.slice(0, 4).map((feature, idx) => (
+                          <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CheckCircleIcon sx={{ fontSize: 14, color: plan.badgeColor }} />
+                            <Typography sx={{ fontSize: '0.8rem', color: '#1D1D1F' }}>{feature}</Typography>
+                          </Box>
+                        ))}
+                      </Box>
+
+                      {/* Bottom: Social platforms + Select button */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+                        <Box>
+                          <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mb: 0.5 }}>
+                            Publish to All Platforms
+                          </Typography>
+                          <SocialPlatformIconsMini />
+                        </Box>
+                        <Button
+                          variant={selectedPlan === plan.id ? 'contained' : 'outlined'}
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectPlan(plan.id);
+                          }}
+                          sx={{
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            px: 2,
+                            minWidth: 100,
+                            background: selectedPlan === plan.id ? plan.gradient : 'transparent',
+                            borderColor: selectedPlan === plan.id ? 'transparent' : plan.badgeColor,
+                            color: selectedPlan === plan.id ? '#fff' : plan.badgeColor,
+                            '&:hover': {
+                              background: selectedPlan === plan.id ? plan.gradient : `${plan.badgeColor}10`,
+                              borderColor: plan.badgeColor,
+                            },
+                          }}
+                        >
+                          {isSubscribed && subscription?.tier === plan.id ? 'Current' : (selectedPlan === plan.id ? 'Selected' : 'Select')}
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        </Box>
+
+        {/* Right sidebar: Checkout Card */}
+        <Box sx={{ width: { xs: '100%', lg: 300 } }}>
+          <Card sx={{ borderRadius: '16px', position: 'sticky', top: 20, border: '1px solid rgba(0,0,0,0.08)' }}>
+            <CardContent sx={{ p: 3 }}>
+              {/* Billing Frequency */}
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1.5 }}>
+                Billing Frequency
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                {/* Monthly option */}
+                <Box
+                  onClick={() => setIsYearly(false)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    p: 1.5,
+                    borderRadius: '10px',
+                    border: !isYearly ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                    background: !isYearly ? 'rgba(0,122,255,0.04)' : '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>Monthly</Typography>
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      border: !isYearly ? '6px solid #007AFF' : '2px solid rgba(0,0,0,0.2)',
+                      background: '#fff',
+                    }}
+                  />
+                </Box>
+                {/* Yearly option */}
+                <Box
+                  onClick={() => setIsYearly(true)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    p: 1.5,
+                    borderRadius: '10px',
+                    border: isYearly ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                    background: isYearly ? 'rgba(0,122,255,0.04)' : '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>Yearly</Typography>
+                    <Chip
+                      icon={<BoltIcon sx={{ fontSize: 12, color: '#fff !important' }} />}
+                      label="Save 25%"
+                      size="small"
+                      sx={{
+                        background: '#34C759',
+                        color: '#fff',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                        height: 22,
+                        '& .MuiChip-icon': { ml: '4px' },
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      border: isYearly ? '6px solid #007AFF' : '2px solid rgba(0,0,0,0.2)',
+                      background: '#fff',
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Divider */}
+              <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+
+              {/* Monthly Total */}
+              {selectedPlan ? (
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 0.5 }}>
+                    <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>Monthly total</Typography>
+                    <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: '#1D1D1F' }}>
+                      ${isYearly
+                        ? Math.round((plans.find(p => p.id === selectedPlan)?.yearlyPrice || 0) / 12)
+                        : plans.find(p => p.id === selectedPlan)?.monthlyPrice || 0}
+                    </Typography>
+                  </Box>
+                  {isYearly && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>Billed yearly</Typography>
+                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                        ${plans.find(p => p.id === selectedPlan)?.yearlyPrice || 0}
+                      </Typography>
+                    </Box>
+                  )}
+                  {!isYearly && <Box sx={{ mb: 2 }} />}
+                </>
+              ) : (
+                <Box sx={{ mb: 2 }}>
+                  <Typography sx={{ color: '#86868B', fontSize: '0.9rem', textAlign: 'center' }}>
+                    Select a plan to continue
+                  </Typography>
+                </Box>
+              )}
+
+              {/* CTA Button */}
+              <Button
+                fullWidth
+                variant="contained"
+                disabled={!selectedPlan || isLoading || isManagingSubscription}
+                onClick={isSubscribed ? handleManageSubscription : handleProceedToPayment}
+                endIcon={!isLoading && !isManagingSubscription && <ChevronRightIcon />}
+                sx={{
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
+                    boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+                  },
+                  '&.Mui-disabled': {
+                    background: 'rgba(0,0,0,0.1)',
+                    color: 'rgba(0,0,0,0.3)',
+                  },
+                }}
+              >
+                {isLoading || isManagingSubscription ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : isSubscribed ? (
+                  'Change Plan'
+                ) : (
+                  'Continue to Payment'
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
+      {/* Token Top-ups - Full width row */}
+      <Box id="topup" sx={{ mt: 4, scrollMarginTop: '80px' }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+          Need More Tokens?
+        </Typography>
+        <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 2 }}>
+          Top-up tokens never expire!
+        </Typography>
+
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+          gap: 2,
+        }}>
+          {topUpBundles.map((bundle, index) => (
+            <Card
+              key={bundle.id}
+              onClick={async () => {
+                try {
+                  const resultAction = await dispatch(createCheckoutSession({
+                    priceId: bundle.priceId,
+                    productId: bundle.productId
+                  }));
+                  if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                    window.location.href = resultAction.payload.url;
+                  }
+                } catch (err: any) {
+                  setError(err.message || 'Failed to create checkout session');
+                }
+              }}
+              sx={{
+                borderRadius: '16px',
+                cursor: 'pointer',
+                border: '1px solid rgba(0,0,0,0.08)',
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                overflow: 'visible',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
+                  borderColor: '#007AFF',
+                },
+              }}
+            >
+              {/* Badge */}
+              {bundle.badge && (
+                <Chip
+                  label={bundle.badge}
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    top: -10,
+                    right: 16,
+                    background: bundle.badge === 'BEST VALUE'
+                      ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
+                      : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '0.65rem',
+                  }}
+                />
+              )}
+
+              <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Box sx={{ display: 'flex' }}>
+                    {Array.from({ length: index + 1 }).map((_, i) => (
+                      <BoltIcon key={i} sx={{ fontSize: 20, color: '#007AFF', ml: i > 0 ? -0.5 : 0 }} />
+                    ))}
+                  </Box>
+                  <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#1D1D1F' }}>
+                    {bundle.tokens.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.8rem', color: '#86868B', mb: 2 }}>
+                  AI Tokens
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#007AFF' }}>
+                    ${bundle.price}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      borderRadius: '8px',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      borderColor: '#007AFF',
+                      color: '#007AFF',
+                      '&:hover': {
+                        background: 'rgba(0,122,255,0.08)',
+                        borderColor: '#007AFF',
+                      },
+                    }}
+                  >
+                    Buy Now
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default DashboardSubscriptionPage;

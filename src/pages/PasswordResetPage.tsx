@@ -178,7 +178,7 @@ const PasswordResetPage: React.FC = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => navigate(isPremiumMember ? '/my-library' : '/payment')}
+                onClick={() => navigate(isPremiumMember ? '/my-music' : '/payment')}
                 sx={{ mt: 2 }}
               >
                 Continue

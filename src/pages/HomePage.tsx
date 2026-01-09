@@ -1449,7 +1449,7 @@ const HomePage: React.FC = () => {
   const handleClickOpen = useCallback(async () => {
     if (user) {
       // Navigate to dashboard - token check happens when user tries to generate
-      navigate('/my-library');
+      navigate('/my-music');
       return;
     }
     setOpen(true);
@@ -1552,7 +1552,7 @@ const HomePage: React.FC = () => {
             console.error('Failed to resend verification email:', err);
           }
         } else {
-          navigate('/my-library');
+          navigate('/my-music');
         }
       } else {
         setError(result.payload || 'Google login failed.');
@@ -1596,7 +1596,7 @@ const HomePage: React.FC = () => {
           }
         } else {
           showSnackbar('Logged in successfully!');
-          navigate('/my-library');
+          navigate('/my-music');
         }
       } else {
         setError(result.payload || 'Login failed. Please check your credentials.');
@@ -1637,7 +1637,7 @@ const HomePage: React.FC = () => {
     if (isLoggedIn) {
       // If already subscribed (not free tier), go to dashboard
       if (subscription && subscription.tier !== 'free') {
-        navigate('/my-library');
+        navigate('/my-music');
         return;
       }
 
@@ -1717,7 +1717,7 @@ const HomePage: React.FC = () => {
         ]}
       />
 
-      {/* Header - Glassy White */}
+      {/* Header - Followr-style dark header */}
       <Box
         component="header"
         sx={{
@@ -1726,266 +1726,190 @@ const HomePage: React.FC = () => {
           left: 0,
           right: 0,
           zIndex: 100,
-          background: 'rgba(255, 255, 255, 0.8)',
+          background: isLoggedIn ? 'rgba(255, 255, 255, 0.95)' : '#1D1D1F',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+          borderBottom: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : 'none',
           px: { xs: 2, sm: 3, md: 4 },
         }}
       >
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          py: 2,
+          py: 1.5,
           width: '100%',
+          maxWidth: '1400px',
+          mx: 'auto',
         }}>
-            {/* Logo - far left */}
-            <Box 
-              component={RouterLink}
-              to="/"
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 1.5,
-                textDecoration: 'none',
-                flexShrink: 0,
+          {/* Logo - left */}
+          <Box
+            component={RouterLink}
+            to="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              component="img"
+              src="/gruvi.png"
+              alt="Gruvi"
+              sx={{
+                height: 36,
+                width: 36,
+                objectFit: 'contain',
+              }}
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{
+                fontFamily: '"Fredoka", "Inter", sans-serif',
+                fontWeight: 600,
+                fontSize: '1.4rem',
+                letterSpacing: '-0.01em',
+                background: isLoggedIn
+                  ? 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                  : 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
             >
-              <Box
-                component="img"
-                src="/gruvi.png"
-                alt="Gruvi"
-                sx={{
-                  height: 40,
-                  width: 40,
-                  objectFit: 'contain',
-                }}
-              />
-              <Typography 
-                variant="h6" 
-                noWrap
-                component="div"
-                sx={{ 
-                  fontFamily: '"Fredoka", "Inter", sans-serif',
-                  fontWeight: 600,
-                  fontSize: '1.5rem',
-                  letterSpacing: '-0.01em',
-                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Gruvi
-              </Typography>
-            </Box>
+              Gruvi
+            </Typography>
+          </Box>
 
-            {/* Navigation buttons - far right */}
-            {isMobile ? (
-              // Mobile: hamburger menu for all users
-              <IconButton
-                onClick={handleDrawerToggle}
-                sx={{
-                  color: '#007AFF',
-                  ml: 'auto',
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            ) : (
-              // Desktop: show navigation buttons - ml: auto forces right alignment
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
-                {isLoggedIn ? (
-                  // Logged in user - show same buttons as dashboard Layout
-                  <>
-                    <Button 
-                      component={RouterLink}
-                      to="/create"
-                      startIcon={<AddIcon />}
-                      sx={{
-                        borderRadius: '20px',
-                        px: { xs: 1.5, sm: 2 },
-                        py: 1,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                        color: '#007AFF',
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0,122,255,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                        }
-                      }}
-                    >
-                      Create
-                    </Button>
-                    <Button 
-                      component={RouterLink}
-                      to="/my-library"
-                      startIcon={<LibraryMusicIcon />}
-                      sx={{
-                        borderRadius: '20px',
-                        px: { xs: 1.5, sm: 2 },
-                        py: 1,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                        color: '#1D1D1F',
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0,122,255,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                        }
-                      }}
-                    >
-                      My Library
-                    </Button>
-                    <Button 
-                      component={RouterLink}
-                      to="/my-cast"
-                      startIcon={<FolderSpecialIcon />}
-                      sx={{
-                        borderRadius: '20px',
-                        px: { xs: 1.5, sm: 2 },
-                        py: 1,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                        color: '#1D1D1F',
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0,122,255,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                        }
-                      }}
-                    >
-                      My Cast
-                    </Button>
-                    <Button 
-                      component={RouterLink}
-                      to="/settings"
-                      startIcon={<SettingsIcon />}
-                      sx={{
-                        borderRadius: '20px',
-                        px: { xs: 1.5, sm: 2 },
-                        py: 1,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                        color: '#1D1D1F',
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0,122,255,0.08)',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                        }
-                      }}
-                    >
-                      Settings
-                    </Button>
-                    {/* Token display */}
-                    {allowances && (
+          {/* Mobile: hamburger menu */}
+          {isMobile ? (
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{
+                color: isLoggedIn ? '#007AFF' : '#fff',
+                ml: 'auto',
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <>
+              {isLoggedIn ? (
+                // Logged in - go to dashboard button
+                <Button
+                  component={RouterLink}
+                  to="/my-music"
+                  variant="contained"
+                  sx={{
+                    ml: 'auto',
+                    background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                    color: '#fff',
+                    px: 3,
+                    py: 1,
+                    borderRadius: '100px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                      boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                    },
+                  }}
+                >
+                  Go to Dashboard
+                </Button>
+              ) : (
+                // Not logged in - Followr-style centered nav
+                <>
+                  {/* Center navigation links */}
+                  <Box sx={{
+                    display: 'flex',
+                    gap: 1,
+                    alignItems: 'center',
+                    position: 'absolute',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                  }}>
+                    {[
+                      { label: 'AI Music', href: '#music' },
+                      { label: 'AI Video Shorts', href: '#shorts' },
+                      { label: 'Cinematic Promos', href: '#cinematic' },
+                      { label: 'Social Media', href: '#social' },
+                      { label: 'Pricing', href: '/payment' },
+                      { label: 'FAQ', href: '/faq' },
+                    ].map((item) => (
                       <Button
-                        onClick={() => setShowUpgradePopup(true)}
+                        key={item.label}
+                        component={item.href.startsWith('/') ? RouterLink : 'a'}
+                        to={item.href.startsWith('/') ? item.href : undefined}
+                        href={!item.href.startsWith('/') ? item.href : undefined}
                         sx={{
-                          borderRadius: '20px',
-                          px: 2,
-                          py: 1,
-                          minWidth: 'auto',
+                          color: 'rgba(255,255,255,0.85)',
                           textTransform: 'none',
-                          fontWeight: 600,
-                          color: '#fff',
-                          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                          border: 'none',
-                          boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5,
+                          fontWeight: 500,
+                          fontSize: '0.9rem',
+                          px: 1.5,
+                          py: 0.75,
+                          borderRadius: '8px',
+                          minWidth: 'auto',
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                            boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                          }
+                            color: '#fff',
+                            background: 'rgba(255,255,255,0.1)',
+                          },
                         }}
                       >
-                        <BoltIcon sx={{ fontSize: 18, color: '#fff' }} />
-                        <span style={{ color: '#fff' }}>
-                          {(() => {
-                            const tokens = allowances.tokens;
-                            if (!tokens) return 0;
-                            const total = (tokens.max || 0) + (tokens.topup || 0);
-                            const used = tokens.used || 0;
-                            return (total - used).toLocaleString();
-                          })()}
-                        </span>
+                        {item.label}
                       </Button>
-                    )}
-                  </>
-                ) : (
-                  // Not logged in - show auth buttons
-                  <>
-                    <Button 
-                      variant="outlined"
-                      component={RouterLink} 
-                      to="/faq"
-                      startIcon={<HelpOutlineIcon />}
+                    ))}
+                  </Box>
+
+                  {/* Right side: Login + CTA */}
+                  <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', ml: 'auto' }}>
+                    <Button
+                      onClick={handleClickOpen}
                       sx={{
-                        borderColor: 'rgba(0,0,0,0.15)',
-                        color: '#1D1D1F',
-                        px: 3,
-                        borderRadius: '100px',
+                        color: 'rgba(255,255,255,0.9)',
+                        textTransform: 'none',
                         fontWeight: 500,
+                        fontSize: '0.9rem',
                         '&:hover': {
-                          borderColor: '#007AFF',
-                          color: '#007AFF',
-                          background: 'rgba(0,122,255,0.05)',
+                          color: '#fff',
+                          background: 'transparent',
                         },
                       }}
                     >
-                      FAQ
+                      Log in
                     </Button>
-                    <Button 
-                      variant="outlined"
+                    <Button
+                      variant="contained"
                       onClick={handleClickOpen}
                       sx={{
-                        borderColor: 'rgba(0,0,0,0.15)',
-                        color: '#1D1D1F',
-                        px: 3,
-                        borderRadius: '100px',
-                        fontWeight: 500,
-                        '&:hover': {
-                          borderColor: 'rgba(0,0,0,0.3)',
-                          background: 'rgba(0,0,0,0.03)',
-                        },
-                      }}
-                    >
-                      Sign In
-                    </Button>
-                    <Button 
-                      variant="contained" 
-                      onClick={handleClickOpen}
-                      sx={{
-                        background: '#1D1D1F',
+                        background: 'linear-gradient(135deg, #00D4AA 0%, #00B894 100%)',
                         color: '#fff',
-                        px: 3,
+                        px: 2.5,
+                        py: 1,
                         borderRadius: '100px',
                         fontWeight: 600,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        textTransform: 'none',
+                        fontSize: '0.9rem',
+                        boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
                         '&:hover': {
-                          background: '#000',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                          background: 'linear-gradient(135deg, #00B894 0%, #009B7D 100%)',
+                          boxShadow: '0 4px 12px rgba(0,212,170,0.4)',
                         },
                       }}
                     >
-                      Sign Up
+                      Start Free Trial
                     </Button>
-                  </>
-                )}
-              </Box>
-            )}
-          </Box>
+                  </Box>
+                </>
+              )}
+            </>
+          )}
+        </Box>
       </Box>
 
       {/* Mobile Drawer */}
@@ -2001,22 +1925,22 @@ const HomePage: React.FC = () => {
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': {
             width: 280,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: isLoggedIn ? 'rgba(255, 255, 255, 0.95)' : '#1D1D1F',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px 0 0 16px',
             boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.1)',
-            borderLeft: '1px solid rgba(0, 0, 0, 0.06)',
+            borderLeft: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : 'none',
           },
         }}
       >
         {/* Drawer Header */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'space-between',
           p: 2,
-          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+          borderBottom: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : '1px solid rgba(255,255,255,0.1)',
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box
@@ -2025,12 +1949,14 @@ const HomePage: React.FC = () => {
               alt="Gruvi"
               sx={{ height: 32, width: 32, objectFit: 'contain' }}
             />
-            <Typography 
-              sx={{ 
+            <Typography
+              sx={{
                 fontFamily: '"Fredoka", "Inter", sans-serif',
                 fontWeight: 600,
                 fontSize: '1.25rem',
-                background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                background: isLoggedIn
+                  ? 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                  : 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -2038,7 +1964,7 @@ const HomePage: React.FC = () => {
               Gruvi
             </Typography>
           </Box>
-          <IconButton onClick={handleDrawerToggle}>
+          <IconButton onClick={handleDrawerToggle} sx={{ color: isLoggedIn ? 'inherit' : '#fff' }}>
             <ChevronRightIcon />
           </IconButton>
         </Box>
@@ -2046,114 +1972,68 @@ const HomePage: React.FC = () => {
         {/* Drawer Content */}
         <List sx={{ px: 1, py: 2 }}>
           {isLoggedIn ? (
-            // Logged in menu items - matching the Layout.tsx drawer
+            // Logged in - go to dashboard
+            <ListItemButton
+              component={RouterLink}
+              to="/my-music"
+              onClick={handleDrawerToggle}
+              sx={{
+                borderRadius: 2,
+                mb: 1,
+                backgroundColor: 'rgba(0,122,255,0.08)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0,122,255,0.12)',
+                }
+              }}
+            >
+              <ListItemIcon sx={{ color: '#007AFF' }}>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Go to Dashboard" primaryTypographyProps={{ fontWeight: 600, color: '#007AFF' }} />
+            </ListItemButton>
+          ) : (
+            // Logged out menu items - matching header nav
             <>
-              {/* Tokens display */}
-              {allowances && (
+              {[
+                { label: 'AI Music', href: '#music' },
+                { label: 'AI Video Shorts', href: '#shorts' },
+                { label: 'Cinematic Promos', href: '#cinematic' },
+                { label: 'Social Media', href: '#social' },
+                { label: 'Pricing', href: '/payment' },
+                { label: 'FAQ', href: '/faq' },
+              ].map((item) => (
                 <ListItemButton
-                  onClick={() => {
-                    handleDrawerToggle();
-                    setShowUpgradePopup(true);
-                  }}
+                  key={item.label}
+                  component={item.href.startsWith('/') ? RouterLink : 'a'}
+                  to={item.href.startsWith('/') ? item.href : undefined}
+                  href={!item.href.startsWith('/') ? item.href : undefined}
+                  onClick={handleDrawerToggle}
                   sx={{
-                    px: 2,
                     borderRadius: 2,
-                    mb: 1,
-                    backgroundColor: 'rgba(0,122,255,0.08)',
+                    mb: 0.5,
                     '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.12)',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
                     }
                   }}
                 >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <BoltIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary={`${(() => {
-                      const tokens = allowances.tokens;
-                      return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
-                    })()} Tokens`}
-                    primaryTypographyProps={{ 
-                      fontWeight: 600,
-                      color: '#007AFF'
-                    }} 
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: 500,
+                      color: 'rgba(255,255,255,0.9)',
+                    }}
                   />
                 </ListItemButton>
-              )}
-
-              {/* Create */}
-              <ListItemButton
-                component={RouterLink}
-                to="/create"
-                onClick={handleDrawerToggle}
-                sx={{ borderRadius: 2, mb: 1 }}
-              >
-                <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <AddIcon />
-                </ListItemIcon>
-                <ListItemText primary="Create" primaryTypographyProps={{ fontWeight: 600 }} />
-              </ListItemButton>
-
-              {/* My Library */}
-              <ListItemButton
-                component={RouterLink}
-                to="/my-library"
-                onClick={handleDrawerToggle}
-                sx={{ borderRadius: 2, mb: 1 }}
-              >
-                <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <LibraryMusicIcon />
-                </ListItemIcon>
-                <ListItemText primary="My Library" primaryTypographyProps={{ fontWeight: 600 }} />
-              </ListItemButton>
-
-              {/* My Cast */}
-              <ListItemButton
-                component={RouterLink}
-                to="/my-cast"
-                onClick={handleDrawerToggle}
-                sx={{ borderRadius: 2, mb: 1 }}
-              >
-                <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <VideoLibraryIcon />
-                </ListItemIcon>
-                <ListItemText primary="My Cast" primaryTypographyProps={{ fontWeight: 600 }} />
-              </ListItemButton>
-
-              {/* Settings */}
-              <ListItemButton
-                component={RouterLink}
-                to="/settings"
-                onClick={handleDrawerToggle}
-                sx={{ borderRadius: 2, mb: 1 }}
-              >
-                <ListItemIcon sx={{ color: '#007AFF' }}>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Settings" primaryTypographyProps={{ fontWeight: 600 }} />
-              </ListItemButton>
+              ))}
             </>
-          ) : (
-            // Logged out menu items
-            <ListItemButton
-              component={RouterLink}
-              to="/faq"
-              onClick={handleDrawerToggle}
-              sx={{ borderRadius: 2, mb: 1 }}
-            >
-              <ListItemIcon sx={{ color: '#007AFF' }}>
-                <HelpOutlineIcon />
-              </ListItemIcon>
-              <ListItemText primary="FAQ" />
-            </ListItemButton>
           )}
         </List>
 
         {/* Bottom buttons */}
-        <Box sx={{ 
-          mt: 'auto', 
-          p: 2, 
-          borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+        <Box sx={{
+          mt: 'auto',
+          p: 2,
+          borderTop: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : '1px solid rgba(255,255,255,0.1)',
           display: 'flex',
           flexDirection: 'column',
           gap: 1.5,
@@ -2191,13 +2071,17 @@ const HomePage: React.FC = () => {
                   handleClickOpen();
                 }}
                 sx={{
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  color: 'rgba(255,255,255,0.9)',
                   borderRadius: '100px',
                   py: 1.5,
+                  '&:hover': {
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    background: 'rgba(255,255,255,0.1)',
+                  }
                 }}
               >
-                Sign In
+                Log in
               </Button>
               <Button
                 fullWidth
@@ -2208,14 +2092,17 @@ const HomePage: React.FC = () => {
                   setAuthTab(1);
                 }}
                 sx={{
-                  background: '#1D1D1F',
+                  background: 'linear-gradient(135deg, #00D4AA 0%, #00B894 100%)',
                   color: '#fff',
                   borderRadius: '100px',
                   py: 1.5,
                   fontWeight: 600,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #00B894 0%, #009B7D 100%)',
+                  }
                 }}
               >
-                Sign Up
+                Start Free Trial
               </Button>
             </>
           )}

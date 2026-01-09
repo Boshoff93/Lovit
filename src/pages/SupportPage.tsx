@@ -1,18 +1,15 @@
 import React from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Paper, 
-  Button, 
-  Grid,
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
   Card,
   CardContent,
-  Divider,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import FAQIcon from '@mui/icons-material/QuestionAnswer';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useNavigate } from 'react-router-dom';
 
 const SupportPage: React.FC = () => {
@@ -54,192 +51,157 @@ const SupportPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: 0
-    }}>
-      <Container maxWidth="md" sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        width: '100%',
-        p: 0
-      }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2}}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <SupportAgentIcon sx={{ color: '#fff', fontSize: 24 }} />
+        </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            Support
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Get help and find answers to your questions
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Contact Support Card */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box sx={{
+              width: 40,
+              height: 40,
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <EmailIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Contact Support
+              </Typography>
+              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                We typically respond within 24 hours
+              </Typography>
+            </Box>
+          </Box>
           <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
+            variant="contained"
+            startIcon={<EmailIcon />}
+            onClick={handleEmailClick}
             sx={{
-              color: '#007AFF',
+              borderRadius: '10px',
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
               textTransform: 'none',
-              fontWeight: 500,
+              width: { xs: '100%', sm: 'auto' },
+              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
               '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
+                background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              }
             }}
           >
-            Back to Settings
+            Email Support Team
           </Button>
-        </Box>
+        </CardContent>
+      </Card>
 
-        <Card sx={{ 
-          width: '100%', 
-          borderRadius: { xs: 2, sm: 3 },
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-          overflow: 'visible',
-          position: 'relative',
-          mt: 4,
-        }}>
-          <CardContent sx={{ p: 0 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              pt: { xs: 5, sm: 6 },
-              pb: { xs: 3, sm: 4 },
-              position: 'relative'
-            }}>
-              <Box 
-                sx={{ 
-                  width: { xs: 100, sm: 120 }, 
-                  height: { xs: 100, sm: 120 }, 
-                  mb: 2,
-                  position: 'absolute',
-                  top: { xs: -50, sm: -60 },
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <img 
-                  src="/gruvi-support.png" 
-                  alt="Support"
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'contain',
-                  }}
-                />
+      {/* FAQ Section Card */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{
+                width: 40,
+                height: 40,
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #AF52DE, #BF5AF2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <FAQIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
               </Box>
-              <Box sx={{ mt: 7, textAlign: 'center' }}>
-                <Typography variant="h5" gutterBottom>
-                  Support Center
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Frequently Asked Questions
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mb: 2 }}>
-                  We're here to help! Get in touch with our support team or browse our FAQ section.
+                <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                  Quick answers to common questions
                 </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<FAQIcon />}
-                  onClick={handleFAQClick}
-                  sx={{ 
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    px: 3
-                  }}
-                >
-                  View All FAQs
-                </Button>
               </Box>
             </Box>
+            <Button
+              variant="outlined"
+              startIcon={<FAQIcon />}
+              onClick={handleFAQClick}
+              sx={{
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                fontWeight: 600,
+                textTransform: 'none',
+                borderColor: '#007AFF',
+                color: '#007AFF',
+                '&:hover': {
+                  borderColor: '#0066DD',
+                  backgroundColor: 'rgba(0,122,255,0.05)',
+                }
+              }}
+            >
+              View All FAQs
+            </Button>
+          </Box>
 
-            <Divider />
-
-            <Box sx={{ p: { xs: 3, sm: 4 }}}>
-              <Paper 
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {faqItems.map((item, index) => (
+              <Paper
+                key={index}
                 elevation={0}
-                sx={{ 
-                  p: { xs: 2, sm: 3 },
-                  borderRadius: 2,
-                  backgroundColor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                  mb: 4
+                sx={{
+                  p: 2.5,
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: '#007AFF',
+                    backgroundColor: 'rgba(0,122,255,0.02)',
+                  }
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <EmailIcon color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="h6">Contact Support</Typography>
-                </Box>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  startIcon={<EmailIcon />}
-                  onClick={handleEmailClick}
-                  sx={{ 
-                    py: 1.5,
-                    mb: 2,
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    maxWidth: '400px',
-                    mx: 'auto',
-                    display: 'flex',
-                    
-                  }}
-                >
-                  Email Support Team
-                </Button>
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-                  We typically respond within 24 hours
+                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+                  {item.question}
+                </Typography>
+                <Typography sx={{ fontSize: '0.9rem', color: '#86868B', lineHeight: 1.6 }}>
+                  {item.answer}
                 </Typography>
               </Paper>
-
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                Frequently Asked Questions
-              </Typography>
-              <Grid container spacing={2}>
-                {faqItems.map((item, index) => (
-                  <Grid size={12} key={index}>
-                    <Paper 
-                      elevation={0}
-                      sx={{ 
-                        p: { xs: 2, sm: 2.5 },
-                        borderRadius: 2,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        '&:hover': {
-                          borderColor: 'primary.main',
-                          backgroundColor: 'action.hover'
-                        }
-                      }}
-                    >
-                      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                        {item.question}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {item.answer}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <Button
-                  variant="contained"
-                  startIcon={<FAQIcon />}
-                  onClick={handleFAQClick}
-                  sx={{ 
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    px: 4,
-                    py: 1.5
-                  }}
-                >
-                  View All FAQs
-                </Button>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Container>
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 };
 
-export default SupportPage; 
+export default SupportPage;

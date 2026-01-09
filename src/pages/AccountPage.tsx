@@ -31,6 +31,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import PersonIcon from '@mui/icons-material/Person';
 import { stripeConfig } from '../config/stripe';
 import { userApi } from '../services/api';
 
@@ -171,449 +172,363 @@ const AccountPage: React.FC = () => {
 
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: 0
-    }}>
-      <Container maxWidth="md" sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        width: '100%',
-        p:0
-      }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2}}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
-            sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
-            }}
-          >
-            Back to Settings
-          </Button>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <PersonIcon sx={{ color: '#fff', fontSize: 24 }} />
         </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            Account
+          </Typography>
+          <Typography sx={{ color: '#86868B' }}>
+            Manage your profile and subscription
+          </Typography>
+        </Box>
+      </Box>
 
-        {(error || fetchError) && (
-          <Alert severity="error" sx={{ mb: 4, width: '100%' }}>
-            {error || fetchError}
-          </Alert>
-        )}
-        
-        <Card sx={{ 
-          width: '100%', 
-          borderRadius: { xs: 2, sm: 3 },
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-          overflow: 'visible',
-          position: 'relative',
-          mt: 4,
-        }}>
-          <CardContent sx={{ p: 0 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              pt: { xs: 5, sm: 6 },
-              pb: { xs: 3, sm: 4 },
-              position: 'relative'
-            }}>
-              <Box 
-                sx={{ 
-                  width: { xs: 100, sm: 120 }, 
-                  height: { xs: 100, sm: 120 }, 
-                  mb: 2,
-                  position: 'absolute',
-                  top: { xs: -50, sm: -60 },
+      {(error || fetchError) && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }} onClose={() => setError(null)}>
+          {error || fetchError}
+        </Alert>
+      )}
+
+      {/* User Info Card */}
+      <Card sx={{
+        mb: 3,
+        borderRadius: '16px',
+        border: '1px solid rgba(0,0,0,0.08)',
+        boxShadow: 'none',
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ flex: 1, minWidth: 200 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  {user?.username || 'Loading...'}
+                </Typography>
+                <Chip
+                  label={user?.isVerified ? 'Verified' : 'Unverified'}
+                  size="small"
+                  sx={{
+                    fontWeight: 500,
+                    background: user?.isVerified ? 'rgba(52,199,89,0.1)' : 'rgba(255,149,0,0.1)',
+                    color: user?.isVerified ? '#34C759' : '#FF9500',
+                  }}
+                />
+              </Box>
+              <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
+                {user?.artistName || user?.name || 'No artist name set'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 0.5 }}>Plan</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#007AFF' }}>
+                  {formatTier(subscription?.tier || 'free')}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Tokens Section */}
+      {allowances && (
+        <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+              Your Tokens
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  mr: 1.5
+                }}>
+                  <BoltIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    Tokens
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                    Use tokens across all Gruvi features
+                  </Typography>
+                </Box>
+              </Box>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => navigate('/subscription#topup')}
+                sx={{
+                  borderRadius: '10px',
+                  px: 2.5,
+                  py: 1,
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  width: { xs: '100%', sm: 'auto' },
+                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
+                    boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                  }
                 }}
               >
-                <img 
-                  src="/gruvi.png" 
-                  alt={user?.username || 'User Profile'}
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'contain',
-                  }}
-                />
-              </Box>
-              <Box sx={{ mt: 7, textAlign: 'center' }}>
-                <Typography
-                  variant="h5"
-                  fontWeight="600"
-                  gutterBottom
-                >
-                  Account
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Manage your profile and subscription
-                </Typography>
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="600"
-                  gutterBottom
-                  sx={{
-                    wordBreak: 'break-word',
-                    overflowWrap: 'break-word',
-                    maxWidth: '100%',
-                    textAlign: 'center'
-                  }}
-                >
-                  {user?.username || 'Loading...'}
-                </Typography>
-                <Chip 
-                  label={user?.isVerified ? 'Verified' : 'Unverified'} 
-                  color={user?.isVerified ? 'success' : 'warning'}
-                  size="small"
-                  sx={{ 
-                    mb: 1,
-                    fontWeight: 500,
-                    backgroundColor: user?.isVerified ? 'success.light' : 'warning.light',
-                    color: 'black',
-                    '&:hover': {
-                      backgroundColor: user?.isVerified ? 'success.light' : 'warning.light'
-                    }
-                  }}
-                />
-
-                <Box sx={{ mt: 3, mb: 1, display: 'flex', justifyContent: 'center', gap: { xs: 3, sm: 2 }, flexWrap: 'wrap' }}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Member Since
-                    </Typography>
-                    <Typography variant="subtitle2" fontWeight="600">
-                      {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
-                    </Typography>
-                  </Box>
-                  
-                  <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />
-                  
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Subscription
-                    </Typography>
-                    <Typography variant="subtitle2" fontWeight="600">
-                      {formatTier(subscription?.tier || 'free')}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
+                Top Up Tokens
+              </Button>
             </Box>
-            
-            <Divider />
-
-            {/* Tokens Section */}
-            {allowances && (
-              <Box sx={{ p: { xs: 3, sm: 4 } }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                  Your Tokens
-                </Typography>
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    borderRadius: 3, 
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    background: 'linear-gradient(135deg, rgba(0,122,255,0.02) 0%, rgba(0,122,255,0.05) 100%)'
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Box sx={{ 
-                        width: 40, 
-                        height: 40, 
-                        borderRadius: 2, 
-                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mr: 1.5
-                      }}>
-                        <BoltIcon sx={{ fontSize: '1.5rem', color: '#fff' }} />
-                      </Box>
-                      <Box>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          Tokens
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Use tokens across all Gruvi features
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      size="medium"
-                      onClick={() => handleTopUp('photos')}
-                      disabled={!!checkoutLoading}
-                      startIcon={checkoutLoading === 'photos' ? <CircularProgress size={16} /> : undefined}
-                      sx={{ 
-                        borderRadius: '100px',
-                        px: 4,
-                        py: 1,
-                        fontWeight: 600,
-                        width: { xs: '100%', sm: 'auto' },
-                        background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                        boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
-                          boxShadow: '0 6px 20px rgba(0,122,255,0.4)',
-                          transform: 'translateY(-1px)',
-                        }
-                      }}
-                    >
-                      {checkoutLoading === 'photos' ? 'Loading...' : 'Top Up Tokens'}
-                    </Button>
-                  </Box>
-                  {(() => {
-                    const tokens = getTokensFromAllowances(allowances);
-                    const total = (tokens?.max || 0) + (tokens?.topup || 0);
-                    const used = tokens?.used || 0;
-                    const remaining = total - used;
-                    return (
-                      <>
-                        <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                          <Typography variant="h4" fontWeight={700} color="primary.main">
-                            {remaining}
-                            <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
-                              tokens remaining
-                            </Typography>
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {used} / {total} used
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={calculateAllowancePercentage(used, total)}
-                          sx={{ 
-                            height: 10, 
-                            borderRadius: 5,
-                            my: 1,
-                            backgroundColor: 'rgba(0,122,255,0.1)',
-                            '& .MuiLinearProgress-bar': {
-                              borderRadius: 5,
-                              background: used >= total 
-                                ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
-                                : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
-                            }
-                          }}
-                        />
-                      </>
-                    );
-                  })()}
-                </Paper>
-              </Box>
-            )}
-            
-            <Divider />
-            
-            <Box sx={{ p: { xs: 3, sm: 4 } }}>
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                  Subscription Details
-                </Typography>
-                <Paper sx={{ 
-                  display: 'flex', 
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  justifyContent: 'space-between', 
-                  alignItems: { xs: 'flex-start', sm: 'center' }, 
-                  mb: 3,
-                  p: { xs: 2, sm: 3 },
-                  borderRadius: 2,
-                  backgroundColor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                  gap: { xs: 2, sm: 0 }
-                }}>
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-                      {formatTier(subscription?.tier || 'free')} Plan
+            {(() => {
+              const tokens = getTokensFromAllowances(allowances);
+              const total = (tokens?.max || 0) + (tokens?.topup || 0);
+              const used = tokens?.used || 0;
+              const remaining = total - used;
+              return (
+                <>
+                  <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#007AFF' }}>
+                      {remaining.toLocaleString()}
+                      <Typography component="span" sx={{ fontSize: '0.9rem', color: '#86868B', ml: 1 }}>
+                        tokens remaining
+                      </Typography>
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, display: 'flex', alignItems: 'center' }}>
-                      <Box component="span" sx={{ 
-                        display: 'inline-block',
-                        width: 6, 
-                        height: 6, 
-                        borderRadius: '50%',
-                        bgcolor: subscription?.status === 'active' ? 'success.main' : 'warning.main',
-                        mr: 1 
-                      }} />
-                      Status: {subscription?.status || 'Active'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                      Subscription Renews: {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0 
-                        ? new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { 
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })
-                        : 'No end date'}
+                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                      {used.toLocaleString()} / {total.toLocaleString()} used
                     </Typography>
                   </Box>
-                  <Button 
-                    variant="contained" 
-                    size="medium"
-                    onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
-                    disabled={isLoading || portalLoading}
-                    startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
-                    sx={{ 
-                      borderRadius: 8,
-                      px: 3,
-                      fontWeight: 600,
-                      width: { xs: '100%', sm: 'auto' },
-                      background: isFreeTier 
-                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' 
-                        : undefined,
-                      boxShadow: isFreeTier 
-                        ? '0 4px 12px rgba(0,122,255,0.3)' 
-                        : undefined,
-                      '&:hover': {
-                        background: isFreeTier 
-                          ? 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)' 
-                          : undefined,
-                        boxShadow: isFreeTier 
-                          ? '0 6px 16px rgba(0,122,255,0.4)' 
-                          : '0 2px 8px rgba(0,0,0,0.05)',
+                  <LinearProgress
+                    variant="determinate"
+                    value={calculateAllowancePercentage(used, total)}
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      my: 1,
+                      backgroundColor: 'rgba(0,122,255,0.1)',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: used >= total
+                          ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
+                          : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
                       }
                     }}
-                  >
-                    {portalLoading ? 'Loading...' : (isFreeTier ? 'Upgrade' : 'Manage')}
-                  </Button>
-                </Paper>
-              </Box>
-
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-                Personal Information
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 3, sm: 3.5 }, mt: 1 }}>
-                {/* Artist / Director Name */}
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
-                    Artist / Director Name
-                  </Typography>
-                  <TextField 
-                    fullWidth 
-                    placeholder="Enter your artist or director name"
-                    value={artistName}
-                    onChange={(e) => setArtistName(e.target.value)}
-                    size="small"
-                    disabled={!isEditingName}
-                    InputProps={{
-                      sx: { borderRadius: '10px' },
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isEditingName ? (
-                            <>
-                              <IconButton 
-                                onClick={handleCancelEdit} 
-                                size="small"
-                                disabled={isSavingName}
-                              >
-                                <CloseIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton 
-                                onClick={handleSaveName} 
-                                size="small"
-                                disabled={isSavingName}
-                                sx={{ color: '#007AFF' }}
-                              >
-                                {isSavingName ? (
-                                  <CircularProgress size={18} />
-                                ) : (
-                                  <SaveIcon fontSize="small" />
-                                )}
-                              </IconButton>
-                            </>
-                          ) : (
-                            <IconButton 
-                              onClick={() => setIsEditingName(true)} 
-                              size="small"
-                              sx={{ color: '#007AFF' }}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
                   />
-                  <Typography variant="caption" sx={{ color: nameSuccess ? 'success.main' : '#86868B', mt: 0.5, display: 'block' }}>
-                    {nameSuccess || "Your name as Artist on songs and Director on videos"}
-                  </Typography>
-                </Box>
-
-                {/* Email Address */}
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
-                    Email Address
-                  </Typography>
-                  <TextField 
-                    fullWidth 
-                    value={user?.email || ''}
-                    size="small"
-                    disabled
-                    InputProps={{
-                      sx: { borderRadius: '10px', bgcolor: 'rgba(0,0,0,0.02)' }
-                    }}
-                  />
-                  <Typography variant="caption" sx={{ color: '#86868B', mt: 0.5, display: 'block' }}>
-                    Email cannot be changed
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Email Notifications:
-                  </Typography>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={user?.emailPreferences?.notifications ?? false}
-                        onChange={(e) => handleToggleNotifications(e.target.checked)}
-                        disabled={isLoading}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      emailPreferencesLoading ? (
-                        <CircularProgress size={16} color="inherit" />
-                      ) : (
-                        <Chip 
-                          label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'} 
-                          color={user?.emailPreferences?.notifications ? 'success' : 'default'}
-                          size="small"
-                          sx={{ 
-                            fontWeight: 500,
-                            backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200',
-                            color: user?.emailPreferences?.notifications ? 'black' : 'text.secondary',
-                            '&:hover': {
-                              backgroundColor: user?.emailPreferences?.notifications ? 'success.light' : 'grey.200'
-                            }
-                          }}
-                        />
-                      )
-                    }
-                    sx={{ m: 0 }}
-                  />
-                </Box>
-              </Box>
-            </Box>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
-      </Container>
+      )}
+
+      {/* Subscription Details */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+            Subscription Details
+          </Typography>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            gap: 2,
+          }}>
+            <Box>
+              <Typography sx={{ fontWeight: 600, color: '#007AFF', mb: 0.5 }}>
+                {formatTier(subscription?.tier || 'free')} Plan
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                <Box sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
+                }} />
+                <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                  Status: {subscription?.status || 'Active'}
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
+                  ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                  : 'No renewal date'}
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={isFreeTier ? () => navigate('/subscription') : handleManageSubscription}
+              disabled={isLoading || portalLoading}
+              startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
+              sx={{
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                fontWeight: 600,
+                textTransform: 'none',
+                width: { xs: '100%', sm: 'auto' },
+                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                }
+              }}
+            >
+              {portalLoading ? 'Loading...' : (isFreeTier ? 'Upgrade Plan' : 'Manage Subscription')}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Personal Information */}
+      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
+            Personal Information
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Artist / Director Name */}
+            <Box>
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, fontSize: '0.9rem' }}>
+                Artist / Director Name
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder="Enter your artist or director name"
+                value={artistName}
+                onChange={(e) => setArtistName(e.target.value)}
+                size="small"
+                disabled={!isEditingName}
+                InputProps={{
+                  sx: { borderRadius: '10px' },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {isEditingName ? (
+                        <>
+                          <IconButton
+                            onClick={handleCancelEdit}
+                            size="small"
+                            disabled={isSavingName}
+                          >
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            onClick={handleSaveName}
+                            size="small"
+                            disabled={isSavingName}
+                            sx={{ color: '#007AFF' }}
+                          >
+                            {isSavingName ? (
+                              <CircularProgress size={18} />
+                            ) : (
+                              <SaveIcon fontSize="small" />
+                            )}
+                          </IconButton>
+                        </>
+                      ) : (
+                        <IconButton
+                          onClick={() => setIsEditingName(true)}
+                          size="small"
+                          sx={{ color: '#007AFF' }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Typography sx={{ color: nameSuccess ? '#34C759' : '#86868B', mt: 0.5, fontSize: '0.8rem' }}>
+                {nameSuccess || "Your name as Artist on songs and Director on videos"}
+              </Typography>
+            </Box>
+
+            {/* Email Address */}
+            <Box>
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, fontSize: '0.9rem' }}>
+                Email Address
+              </Typography>
+              <TextField
+                fullWidth
+                value={user?.email || ''}
+                size="small"
+                disabled
+                InputProps={{
+                  sx: { borderRadius: '10px', bgcolor: 'rgba(0,0,0,0.02)' }
+                }}
+              />
+              <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: '0.8rem' }}>
+                Email cannot be changed
+              </Typography>
+            </Box>
+
+            {/* Email Notifications */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography sx={{ fontSize: '0.9rem', color: '#86868B' }}>
+              Email Notifications:
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={user?.emailPreferences?.notifications ?? false}
+                  onChange={(e) => handleToggleNotifications(e.target.checked)}
+                  disabled={isLoading}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#34C759',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#34C759',
+                    },
+                  }}
+                />
+              }
+              label={
+                emailPreferencesLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <Chip
+                    label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'}
+                    size="small"
+                    sx={{
+                      fontWeight: 500,
+                      background: user?.emailPreferences?.notifications ? 'rgba(52,199,89,0.1)' : 'rgba(0,0,0,0.05)',
+                      color: user?.emailPreferences?.notifications ? '#34C759' : '#86868B',
+                    }}
+                  />
+                )
+              }
+              sx={{ m: 0 }}
+            />
+          </Box>
+        </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 };

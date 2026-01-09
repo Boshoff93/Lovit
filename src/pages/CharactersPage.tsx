@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Box, 
-  Container,
+import {
+  Box,
   Typography,
   Chip,
   Button,
@@ -24,6 +23,7 @@ import { RootState } from '../store/store';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
 import { charactersApi } from '../services/api';
 
 // Avatar with skeleton loading state
@@ -162,33 +162,53 @@ const CharactersPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ pt: 2, pb: 3, px: { xs: 0, sm: 3 } }}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header Row: Title + Create Button */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
-        mb: 1,
+        mb: 4,
         gap: 2,
         flexWrap: 'wrap',
       }}>
-        {/* Left: Title and count */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-          <PersonIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-            My Cast
-          </Typography>
-          <Chip 
-            label={`${characters.length}`}
-            size="small" 
-            sx={{ 
-              backgroundColor: 'rgba(0,122,255,0.1)',
-              color: '#007AFF',
-              fontWeight: 500,
-              height: 24,
-              '& .MuiChip-label': { px: 1.5 },
-            }} 
-          />
+        {/* Left: Title with Icon */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #FF9500 0%, #FF3B30 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <PeopleIcon sx={{ color: '#fff', fontSize: 24 }} />
+          </Box>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+                My Cast
+              </Typography>
+              <Chip
+                label={`${characters.length}`}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(0,122,255,0.1)',
+                  color: '#007AFF',
+                  fontWeight: 500,
+                  height: 24,
+                  '& .MuiChip-label': { px: 1.5 },
+                }}
+              />
+            </Box>
+            <Typography sx={{ color: '#86868B', mt: 0.5 }}>
+              Manage your characters, products, and places
+            </Typography>
+          </Box>
         </Box>
 
         {/* Right: Create Button */}
@@ -478,7 +498,7 @@ const CharactersPage: React.FC = () => {
             {notification.message}
           </Alert>
         </Snackbar>
-    </Container>
+    </Box>
   );
 };
 

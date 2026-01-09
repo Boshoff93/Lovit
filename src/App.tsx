@@ -35,7 +35,7 @@ import StyleDetailPage from './pages/StyleDetailPage';
 import SocialDetailPage from './pages/SocialDetailPage';
 import MusicVideoDetailPage from './pages/MusicVideoDetailPage';
 import CreateVideoPage from './pages/CreateVideoPage';
-import CreatePage from './pages/CreatePage';
+import CreateMusicPage from './pages/CreateMusicPage';
 import MusicVideoPlayer from './pages/MusicVideoPlayer';
 import SettingsPage from './pages/SettingsPage';
 import ConnectedAccountsPage from './pages/ConnectedAccountsPage';
@@ -48,6 +48,7 @@ import LinkedInCallbackPage from './pages/LinkedInCallbackPage';
 import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
 import ScheduledContentPage from './pages/ScheduledContentPage';
+import DashboardSubscriptionPage from './pages/DashboardSubscriptionPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -154,7 +155,10 @@ function App() {
         <Routes>
         {/* Public landing page */}
         <Route path="/" element={<HomePage />} />
-        
+
+        {/* Public pricing page - for non-logged in users */}
+        <Route path="/pricing" element={<PaymentPage />} />
+
         {/* Social platform detail pages - must be before SEO routes */}
         <Route path="/platforms/:platformId" element={<SocialDetailPage />} />
         
@@ -187,14 +191,29 @@ function App() {
           </RequireAdmin>
         } />
         
-        {/* Payment page */}
-        <Route path="/payment" element={<PaymentPage />} />
-        
-        {/* App library with layout and tabs - protected route */}
-        <Route path="/my-library" element={
+        {/* Dashboard subscription page - with sidebar for logged in users */}
+        <Route path="/payment" element={
           <RequireAuth>
             <Layout>
-              <AppPage />
+              <DashboardSubscriptionPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        
+        {/* Dedicated My Music route */}
+        <Route path="/my-music" element={
+          <RequireAuth>
+            <Layout>
+              <AppPage defaultTab="songs" />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Dedicated My Videos route */}
+        <Route path="/my-videos" element={
+          <RequireAuth>
+            <Layout>
+              <AppPage defaultTab="videos" />
             </Layout>
           </RequireAuth>
         } />
@@ -259,7 +278,8 @@ function App() {
         } />
         
         {/* Redirects for old routes */}
-        <Route path="/dashboard" element={<Navigate to="/my-library" replace />} />
+        <Route path="/dashboard" element={<Navigate to="/my-music" replace />} />
+        <Route path="/my-library" element={<Navigate to="/my-music" replace />} />
         <Route path="/characters" element={<Navigate to="/my-cast" replace />} />
         <Route path="/characters/create" element={<Navigate to="/my-cast/create" replace />} />
         <Route path="/characters/edit/:characterId" element={<Navigate to="/my-cast/edit/:characterId" replace />} />
@@ -303,11 +323,19 @@ function App() {
           </RequireAuth>
         } />
         
-        {/* Create page - protected route */}
-        <Route path="/create" element={
+        {/* Create pages - protected routes */}
+        <Route path="/create" element={<Navigate to="/create/music" replace />} />
+        <Route path="/create/music" element={
            <RequireAuth>
             <Layout>
-              <CreatePage />
+              <CreateMusicPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        <Route path="/create/video" element={
+           <RequireAuth>
+            <Layout>
+              <CreateVideoPage />
             </Layout>
           </RequireAuth>
         } />

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   Box,
-  Container,
   Typography,
   Button,
   Paper,
@@ -27,8 +26,8 @@ import {
   CheckCircle,
   Close,
   Image as ImageIcon,
-  ArrowBack as ArrowBackIcon,
   KeyboardArrowDown,
+  FileUpload as FileUploadIcon,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { songsApi, videosApi } from '../services/api';
@@ -174,10 +173,22 @@ const UploadPage: React.FC = () => {
     }
   }, [isFreeTier, navigate]);
   
-  // Get initial type from URL params
-  const initialType = searchParams.get('type') === 'video' ? 'video' : 'song';
-  
-  const [uploadType, setUploadType] = useState<'song' | 'video'>(initialType);
+  // Get type from URL params - update when URL changes
+  const urlType = searchParams.get('type') === 'video' ? 'video' : 'song';
+
+  const [uploadType, setUploadType] = useState<'song' | 'video'>(urlType);
+
+  // Sync uploadType with URL when URL changes (e.g., sidebar navigation)
+  useEffect(() => {
+    setUploadType(urlType);
+    // Reset form when switching types
+    setSelectedFile(null);
+    setCoverImage(null);
+    setCoverImagePreview(null);
+    setTitle('');
+    setError(null);
+    setSuccess(null);
+  }, [urlType]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -205,17 +216,9 @@ const UploadPage: React.FC = () => {
   
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
-  
+
   const acceptedAudioFormats = '.mp3,.wav,.m4a,.aac,.flac';
   const acceptedVideoFormats = '.mp4,.mov,.webm';
-  
-  const handleTypeChange = (_event: React.MouseEvent<HTMLElement>, newType: 'song' | 'video' | null) => {
-    if (newType !== null) {
-      setUploadType(newType);
-      setSelectedFile(null);
-      setError(null);
-    }
-  };
   
   // File size limits
   const MAX_AUDIO_SIZE_MB = 50; // 50MB for audio
@@ -390,7 +393,7 @@ const UploadPage: React.FC = () => {
 
       // Navigate back to library after short delay
       setTimeout(() => {
-        navigate(`/my-library?tab=${uploadType === 'song' ? 'songs' : 'videos'}`);
+        navigate(uploadType === 'song' ? '/my-music' : '/my-videos');
       }, 1500);
 
     } catch (err: any) {
@@ -410,90 +413,75 @@ const UploadPage: React.FC = () => {
   // Show loading state while redirecting free users
   if (isFreeTier) {
     return (
-      <Container maxWidth="md" sx={{ pt: 8, pb: 8, textAlign: 'center' }}>
+      <Box sx={{ py: 8, textAlign: 'center', px: { xs: 2, sm: 3, md: 4 }, width: '100%' }}>
         <CircularProgress sx={{ color: '#007AFF', mb: 2 }} />
         <Typography variant="body1" sx={{ color: '#86868B' }}>
           Redirecting to subscription page...
         </Typography>
-      </Container>
+      </Box>
     );
   }
-  
+
   return (
     <>
-    <Container maxWidth="md" sx={{ pt: 2, pb: 8 }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
-            sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
-            }}
-          >
-            Back
-          </Button>
-        </Box>
-
-        {/* Page Title and Toggle */}
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+        {/* Page Header with Title and Toggle */}
         <Box sx={{
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           mb: 4,
+          gap: 2,
+          flexWrap: 'wrap',
         }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              Upload Content
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#86868B' }}>
-              Upload your own music or videos to Gruvi
-            </Typography>
+          {/* Left: Page Title with Icon */}
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #34C759 0%, #30D158 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <FileUploadIcon sx={{ color: '#fff', fontSize: 24 }} />
+            </Box>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+                Upload {uploadType === 'song' ? 'Music' : 'Video'}
+              </Typography>
+              <Typography sx={{ color: '#86868B' }}>
+                Upload your own {uploadType === 'song' ? 'music' : 'videos'} to Gruvi
+              </Typography>
+            </Box>
           </Box>
 
-          {/* Toggle - right aligned */}
-          <ToggleButtonGroup
-            value={uploadType}
-            exclusive
-            onChange={handleTypeChange}
+          {/* View My Music / View My Video button */}
+          <Button
+            variant="contained"
+            onClick={() => navigate(uploadType === 'song' ? '/my-music' : '/my-videos')}
             sx={{
-              background: 'rgba(0,0,0,0.04)',
+              background: '#007AFF',
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 600,
               borderRadius: '10px',
-              p: '3px',
-              '& .MuiToggleButton-root': {
-                border: 'none',
-                borderRadius: '8px !important',
-                px: { xs: 1.5, md: 2 },
-                py: '7px',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.875rem',
-                color: '#86868B',
-                gap: 0.75,
-                '&.Mui-selected': {
-                  background: '#fff',
-                  color: '#007AFF',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  '&:hover': { background: '#fff' },
-                },
-                '&:hover': { background: 'rgba(0,0,0,0.02)' },
+              px: 2.5,
+              py: 1,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              whiteSpace: 'nowrap',
+              '&:hover': {
+                background: '#0066CC',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
               },
             }}
           >
-            <ToggleButton value="song">
-              <MusicNote sx={{ fontSize: 18 }} />
-              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
-            </ToggleButton>
-            <ToggleButton value="video">
-              <VideoLibrary sx={{ fontSize: 18 }} />
-              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Video</Box>
-            </ToggleButton>
-          </ToggleButtonGroup>
+            {uploadType === 'song' ? 'View My Music' : 'View My Videos'}
+          </Button>
         </Box>
         
         {/* Alerts */}
@@ -509,13 +497,13 @@ const UploadPage: React.FC = () => {
         )}
         
         {/* File Upload & Cover Art Row (for songs) / File Upload only (for videos) */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 3, flexDirection: { xs: 'column', md: uploadType === 'song' ? 'row' : 'column' } }}>
+        <Box sx={{ display: 'flex', gap: 3, mb: 3, flexDirection: { xs: 'column', lg: uploadType === 'song' ? 'row' : 'column' } }}>
           {/* File Upload Section */}
           <Paper
             elevation={0}
             sx={{
               p: { xs: 2, sm: 3 },
-              flex: uploadType === 'song' ? { md: 2 } : 1,
+              flex: uploadType === 'song' ? { lg: 2 } : 1,
               borderRadius: { xs: '16px', sm: '20px' },
               background: 'rgba(255,255,255,0.9)',
               backdropFilter: 'blur(20px)',
@@ -952,7 +940,7 @@ const UploadPage: React.FC = () => {
             </Box>
           </Box>
         </Paper>
-      </Container>
+      </Box>
 
       {/* Genre Picker Drawer */}
       <SwipeableDrawer

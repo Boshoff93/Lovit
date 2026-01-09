@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
-import { 
-  Box, 
-  Container,
+import {
+  Box,
   Typography,
   Snackbar,
   Alert,
@@ -10,8 +9,6 @@ import {
   Paper,
   Chip,
   Pagination,
-  ToggleButton,
-  ToggleButtonGroup,
   Button,
   useMediaQuery,
   useTheme,
@@ -55,8 +52,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PublishIcon from '@mui/icons-material/Publish';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
@@ -1038,15 +1035,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     fetchSongs(true, page);
   };
 
-  const handleTabChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newTab: 'songs' | 'videos' | null
-  ) => {
-    if (newTab !== null) {
-      setActiveTab(newTab);
-    }
-  };
-
   // Filter songs based on search query, genre, and mood
   // Check if any filters are active (for UI display purposes)
   const hasActiveFilters = searchQuery || genreFilter || moodFilter;
@@ -1070,7 +1058,118 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ pt: 2, pb: 3, px: { xs: 0, md: 3 } }}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+      {/* Persistent Header - Always visible */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        mb: 4,
+        gap: 2,
+        flexWrap: 'wrap',
+      }}>
+        {/* Left: Icon + Title + Subtitle */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              background: activeTab === 'songs'
+                ? 'linear-gradient(135deg, #FF2D55 0%, #FF6B6B 100%)'
+                : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            {activeTab === 'songs' ? (
+              <QueueMusicIcon sx={{ color: '#fff', fontSize: 24 }} />
+            ) : (
+              <VideoLibraryIcon sx={{ color: '#fff', fontSize: 24 }} />
+            )}
+          </Box>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+                {activeTab === 'songs' ? 'My Music' : 'My Videos'}
+              </Typography>
+              <Chip
+                label={activeTab === 'songs' ? totalSongsCount : totalVideosCount}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(0,122,255,0.1)',
+                  color: '#007AFF',
+                  fontWeight: 500,
+                  height: 24,
+                  '& .MuiChip-label': { px: 1.5 },
+                }}
+              />
+            </Box>
+            <Typography sx={{ color: '#86868B', mt: 0.5 }}>
+              {activeTab === 'songs' ? 'Your generated and uploaded tracks' : 'Your generated and uploaded videos'}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Right: Upload and Create Buttons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
+          {/* Upload Button */}
+          <Button
+            variant="outlined"
+            startIcon={<CloudUploadIcon />}
+            onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
+            sx={{
+              borderColor: '#007AFF',
+              color: '#007AFF',
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: { xs: 1.5, md: 2 },
+              py: 0.75,
+              fontSize: { xs: '0.8rem', md: '0.875rem' },
+              '& .MuiSvgIcon-root': {
+                color: '#007AFF',
+              },
+              '&:hover': {
+                borderColor: '#0066CC',
+                color: '#0066CC',
+                background: 'rgba(0,122,255,0.08)',
+                '& .MuiSvgIcon-root': {
+                  color: '#0066CC',
+                },
+              },
+            }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              Upload {activeTab === 'songs' ? 'Music' : 'Video'}
+            </Box>
+            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Upload</Box>
+          </Button>
+          {/* Create New Button */}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate(activeTab === 'songs' ? '/create?tab=song' : '/create?tab=video')}
+            sx={{
+              background: '#007AFF',
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: { xs: 1.5, md: 2 },
+              py: 0.75,
+              fontSize: { xs: '0.8rem', md: '0.875rem' },
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': { background: '#0066CC' },
+            }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Create New</Box>
+            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Create</Box>
+          </Button>
+        </Box>
+      </Box>
+
       {/* Songs Tracklist */}
       {activeTab === 'songs' && (
       <Box
@@ -1079,157 +1178,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           overflow: 'hidden',
         }}
       >
-        {/* Header Row: Title + Toggle + Create Button */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          mb: 3,
-          gap: 2,
-          flexWrap: 'wrap',
-        }}>
-            {/* Left: Title and count */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <QueueMusicIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Your Songs
-              </Typography>
-              <Chip 
-                label={`${totalSongsCount}`} 
-                size="small" 
-                sx={{ 
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  color: '#007AFF',
-                  fontWeight: 500,
-                  height: 24,
-                  '& .MuiChip-label': { px: 1.5 },
-                }} 
-              />
-            </Box>
-
-            {/* Right: Toggle + Create Button */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              {/* Toggle - same size on mobile and desktop */}
-              <ToggleButtonGroup
-                value={activeTab}
-                exclusive
-                onChange={handleTabChange}
-                sx={{
-                  background: 'rgba(0,0,0,0.04)',
-                  borderRadius: '10px',
-                  p: '3px',
-                  '& .MuiToggleButton-root': {
-                    border: 'none',
-                    borderRadius: '8px !important',
-                    px: { xs: 1.5, md: 2 },
-                    py: '7px',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    color: '#86868B',
-                    gap: 0.75,
-                    '&.Mui-selected': {
-                      background: '#fff',
-                      color: '#007AFF',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                      '&:hover': { background: '#fff' },
-                    },
-                    '&:hover': { background: 'rgba(0,0,0,0.02)' },
-                  },
-                }}
-              >
-                <ToggleButton value="songs">
-                  <MusicNoteIcon sx={{ fontSize: 18 }} />
-                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
-                </ToggleButton>
-                <ToggleButton value="videos">
-                  <VideoLibraryIcon sx={{ fontSize: 18 }} />
-                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Videos</Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              {/* Mobile: Icon buttons */}
-              <Tooltip title="Upload Song" arrow>
-                <IconButton
-                  onClick={() => navigate('/upload?type=song')}
-                  sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    border: '2px solid rgba(0,122,255,0.3)',
-                    background: 'rgba(0,122,255,0.05)',
-                    color: '#007AFF',
-                    width: 38,
-                    height: 38,
-                    flexShrink: 0,
-                    '&:hover': { 
-                      background: 'rgba(0,122,255,0.1)',
-                      borderColor: '#007AFF',
-                    },
-                  }}
-                >
-                  <CloudUploadIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Create New Song" arrow>
-                <IconButton
-                  onClick={() => navigate('/create?tab=song')}
-                  sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    background: '#007AFF',
-                    color: '#fff',
-                    width: 36,
-                    height: 36,
-                    flexShrink: 0,
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    '&:hover': { background: '#0066CC' },
-                  }}
-                >
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-              {/* Desktop: Full buttons */}
-              <Button
-                variant="outlined"
-                startIcon={<CloudUploadIcon />}
-                onClick={() => navigate('/upload?type=song')}
-                sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
-                  color: '#007AFF !important',
-                  '& .MuiSvgIcon-root': { color: '#007AFF' },
-                  '&:hover': { 
-                    borderColor: '#007AFF',
-                    background: 'rgba(0,122,255,0.05)',
-                  },
-                }}
-              >
-                Upload
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/create?tab=song')}
-                sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  background: '#007AFF',
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': { background: '#0066CC' },
-                }}
-              >
-                Create New
-              </Button>
-            </Box>
-          </Box>
-
         {/* Search and Filters */}
         <Box
           sx={{
@@ -1883,157 +1831,6 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             overflow: 'hidden',
           }}
         >
-          {/* Header Row: Title + Toggle + Create Button */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            mb: 3,
-            gap: 2,
-            flexWrap: 'wrap',
-          }}>
-            {/* Left: Title and count */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <VideoLibraryIcon sx={{ color: '#007AFF', flexShrink: 0, display: { xs: 'none', sm: 'block' } }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', whiteSpace: 'nowrap', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Your Videos
-              </Typography>
-              <Chip 
-                label={`${totalVideosCount}`} 
-                size="small" 
-                sx={{ 
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  color: '#007AFF',
-                  fontWeight: 500,
-                  height: 24,
-                  '& .MuiChip-label': { px: 1.5 },
-                }} 
-              />
-            </Box>
-
-            {/* Right: Toggle + Create Button */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              {/* Toggle - same size on mobile and desktop */}
-              <ToggleButtonGroup
-                value={activeTab}
-                exclusive
-                onChange={handleTabChange}
-                sx={{
-                  background: 'rgba(0,0,0,0.04)',
-                  borderRadius: '10px',
-                  p: '3px',
-                  '& .MuiToggleButton-root': {
-                    border: 'none',
-                    borderRadius: '8px !important',
-                    px: { xs: 1.5, md: 2 },
-                    py: '7px',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    color: '#86868B',
-                    gap: 0.75,
-                    '&.Mui-selected': {
-                      background: '#fff',
-                      color: '#007AFF',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                      '&:hover': { background: '#fff' },
-                    },
-                    '&:hover': { background: 'rgba(0,0,0,0.02)' },
-                  },
-                }}
-              >
-                <ToggleButton value="songs">
-                  <MusicNoteIcon sx={{ fontSize: 18 }} />
-                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Music</Box>
-                </ToggleButton>
-                <ToggleButton value="videos">
-                  <VideoLibraryIcon sx={{ fontSize: 18 }} />
-                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Videos</Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              {/* Mobile: Icon buttons */}
-              <Tooltip title="Upload Video" arrow>
-                <IconButton
-                  onClick={() => navigate('/upload?type=video')}
-                  sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    border: '2px solid rgba(0,122,255,0.3)',
-                    background: 'rgba(0,122,255,0.05)',
-                    color: '#007AFF',
-                    width: 36,
-                    height: 36,
-                    flexShrink: 0,
-                    '&:hover': { 
-                      background: 'rgba(0,122,255,0.1)',
-                      borderColor: '#007AFF',
-                    },
-                  }}
-                >
-                  <CloudUploadIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Create New Video" arrow>
-                <IconButton
-                  onClick={() => navigate('/create?tab=video')}
-                  sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    background: '#007AFF',
-                    color: '#fff',
-                    width: 36,
-                    height: 36,
-                    flexShrink: 0,
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    '&:hover': { background: '#0066CC' },
-                  }}
-                >
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </Tooltip>
-              {/* Desktop: Full buttons */}
-              <Button
-                variant="outlined"
-                startIcon={<CloudUploadIcon />}
-                onClick={() => navigate('/upload?type=video')}
-                sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
-                  color: '#007AFF !important',
-                  '& .MuiSvgIcon-root': { color: '#007AFF' },
-                  '&:hover': { 
-                    borderColor: '#007AFF',
-                    background: 'rgba(0,122,255,0.05)',
-                  },
-                }}
-              >
-                Upload
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/create?tab=video')}
-                sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  background: '#007AFF',
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 0.75,
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': { background: '#0066CC' },
-                }}
-              >
-                Create New
-              </Button>
-            </Box>
-          </Box>
-          
           {/* Videos Grid - Grouped by Date */}
           {isLoadingVideos ? (
             <Box>
@@ -3024,7 +2821,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       </Dialog>
 
       {/* Audio player is now global - see GlobalAudioPlayer component */}
-    </Container>
+    </Box>
   );
 };
 

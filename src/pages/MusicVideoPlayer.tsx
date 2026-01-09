@@ -984,7 +984,7 @@ const MusicVideoPlayer: React.FC = () => {
   };
 
   const handleGoBack = useCallback(() => {
-    navigate('/my-library?tab=videos');
+    navigate('/my-videos');
   }, [navigate]);
 
   const handlePlayPause = useCallback(() => {
@@ -1050,7 +1050,7 @@ const MusicVideoPlayer: React.FC = () => {
       await videosApi.deleteVideo(user.userId, videoId);
       setShowDeleteDialog(false);
       // Navigate back to library after successful deletion
-      navigate('/my-library?tab=videos');
+      navigate('/my-videos');
     } catch (err: any) {
       console.error('Failed to delete video:', err);
       setSocialError(err.response?.data?.error || 'Failed to delete video');

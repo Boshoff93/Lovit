@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Paper,
   TextField,
@@ -21,12 +20,13 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckIcon from '@mui/icons-material/Check';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import EditIcon from '@mui/icons-material/Edit';
 import { charactersApi } from '../services/api';
 
 // Character kind options
@@ -441,40 +441,69 @@ const CreateCharacterPage: React.FC = () => {
   });
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: 0
-    }}>
-      <Container maxWidth="md" sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        width: '100%',
-        p: 0
-      }}>
-        {/* Back Button */}
-        <Box sx={{ width: '100%', mb: 2, px: { xs: 0, sm: 0 } }}>
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto'}}>
+        {/* Header */}
+        <Box sx={{
+          mb: 4,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 2,
+          flexWrap: 'wrap',
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '12px',
+                background: isEditMode
+                  ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
+                  : 'linear-gradient(135deg, #FF9500 0%, #FF3B30 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {isEditMode ? (
+                <EditIcon sx={{ color: '#fff', fontSize: 24 }} />
+              ) : (
+                <PersonAddIcon sx={{ color: '#fff', fontSize: 24 }} />
+              )}
+            </Box>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+                {isEditMode ? 'Edit Cast Member' : 'Create Cast Member'}
+              </Typography>
+              <Typography sx={{ color: '#86868B' }}>
+                {isEditMode ? 'Update your character details' : 'Add a character, product, or place to your cast'}
+              </Typography>
+            </Box>
+          </Box>
           <Button
-            startIcon={<ArrowBackIcon />}
+            variant="contained"
             onClick={() => navigate('/my-cast')}
             sx={{
-              color: '#007AFF',
+              background: '#007AFF',
+              color: '#fff',
               textTransform: 'none',
-              fontWeight: 500,
+              fontWeight: 600,
+              borderRadius: '10px',
+              px: 2.5,
+              py: 1,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
               '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
+                background: '#0066CC',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
               },
             }}
           >
-            Back to My Cast
+            View My Cast
           </Button>
         </Box>
 
-        <Box sx={{ width: '100%', px: { xs: 0, sm: 0 } }}>
+        <Box sx={{ width: '100%' }}>
         {/* Name */}
         <Paper
           elevation={0}
@@ -1361,7 +1390,6 @@ const CreateCharacterPage: React.FC = () => {
             {notification.message}
           </Alert>
         </Snackbar>
-      </Container>
     </Box>
   );
 };

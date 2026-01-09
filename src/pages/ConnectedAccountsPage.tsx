@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CircularProgress,
@@ -12,7 +11,7 @@ import {
 import {
   Link as LinkIcon,
   LinkOff,
-  ArrowBack as ArrowBackIcon,
+  Share as ShareIcon,
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -126,9 +125,9 @@ const socialPlatforms = [
     id: 'linkedin',
     name: 'LinkedIn',
     icon: () => (
-      <Box 
-        component="svg" 
-        viewBox="0 0 24 24" 
+      <Box
+        component="svg"
+        viewBox="0 0 24 24"
         sx={{ width: 24, height: 24, fill: '#0077B5' }}
       >
         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -138,6 +137,24 @@ const socialPlatforms = [
     bgColor: 'rgba(0,119,181,0.1)',
     description: 'Share professional video content',
     available: true,
+  },
+  {
+    id: 'x',
+    name: 'X (Twitter)',
+    icon: () => (
+      <Box
+        component="svg"
+        viewBox="0 0 24 24"
+        sx={{ width: 20, height: 20, fill: '#000000' }}
+      >
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </Box>
+    ),
+    color: '#000000',
+    bgColor: 'rgba(0,0,0,0.08)',
+    description: 'Share videos to X',
+    available: false,
+    comingSoon: true,
   },
   {
     id: 'spotify',
@@ -586,39 +603,36 @@ const ConnectedAccountsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      background: '#f5f5f7',
-      pt: 2,
-      pb: 4,
+    <Box sx={{
+      py: 4,
+      px: { xs: 2, sm: 3, md: 4 },
+      width: '100%',
+      maxWidth: '100%',
     }}>
-      <Container maxWidth="md">
-        {/* Back Button - matching AccountPage style */}
-        <Box sx={{ width: '100%', mb: 2 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
+        {/* Header */}
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box
             sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            Back to Settings
-          </Button>
-        </Box>
-
-        {/* Header */}
-        <Box sx={{ width: '100%', mb: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-            Connected Accounts
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B' }}>
-            Connect your social accounts to share content directly
-          </Typography>
+            <ShareIcon sx={{ color: '#fff', fontSize: 24 }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+              Connected Accounts
+            </Typography>
+            <Typography sx={{ color: '#86868B' }}>
+              Connect your social accounts to share content directly
+            </Typography>
+          </Box>
         </Box>
 
         {/* Alerts */}
@@ -718,9 +732,23 @@ const ConnectedAccountsPage: React.FC = () => {
                     </Box>
                   </Box>
 
-                  {/* Right: Action Button */}
+                  {/* Right: Action Button or Coming Soon Badge */}
+                  {platform.comingSoon && !platform.available && (
+                    <Box sx={{
+                      flexShrink: 0,
+                      py: 0.75,
+                      px: 2,
+                      borderRadius: '10px',
+                      background: 'rgba(0,0,0,0.05)',
+                      border: '1px solid rgba(0,0,0,0.08)',
+                    }}>
+                      <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#86868B' }}>
+                        Coming Soon
+                      </Typography>
+                    </Box>
+                  )}
                   {platform.available && (
-                    <Box sx={{ 
+                    <Box sx={{
                       flexShrink: 0,
                       width: { xs: '100%', sm: 'auto' },
                       mt: { xs: 0.5, sm: 0 },
@@ -789,7 +817,6 @@ const ConnectedAccountsPage: React.FC = () => {
             );
           })}
         </Box>
-      </Container>
     </Box>
   );
 };

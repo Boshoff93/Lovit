@@ -13,47 +13,70 @@ export interface TopUpBundle {
 
 // Top-up bundles (slightly more expensive than subscription value)
 // Description: "Instant token boost. Add X tokens to your account. Never expires, use for songs, videos, or any generation."
+// NOTE: Create new Stripe products for these bundles and update the priceId/productId
 export const topUpBundles: TopUpBundle[] = [
   {
-    id: 'topup-1000',
-    tokens: 1000,
-    price: 12.99,
-    priceId: 'price_1SkQupB6HvdZJCd5q3km6imx',
+    id: 'topup-2500',
+    tokens: 2500,
+    price: 19,
+    priceId: 'price_1SnUjOB6HvdZJCd55v24fmPe',
     productId: 'prod_SDuZQfG5jCbfwZ',
-    description: 'Instant token boost. Add 1,000 tokens to your account. Never expires, use for songs, videos, or any generation.',
-  },
-  {
-    id: 'topup-5000',
-    tokens: 5000,
-    price: 49.99,
-    priceId: 'price_1SkQwGB6HvdZJCd5bt3D6XZP',
-    productId: 'prod_ThqdsQBYBfbACF',
-    badge: 'MOST POPULAR',
-    description: 'Instant token boost. Add 5,000 tokens to your account. Never expires, use for songs, videos, or any generation.',
+    description: 'Instant token boost. Add 2,500 tokens to your account. Never expires, use for songs, videos, or any generation.',
   },
   {
     id: 'topup-10000',
     tokens: 10000,
-    price: 89.99,
-    priceId: 'price_1SkQyxB6HvdZJCd5rqi8buXl',
+    price: 69,
+    priceId: 'price_1SnUlAB6HvdZJCd5T1pufEBE',
+    productId: 'prod_ThqdsQBYBfbACF',
+    badge: 'MOST POPULAR',
+    description: 'Instant token boost. Add 10,000 tokens to your account. Never expires, use for songs, videos, or any generation.',
+  },
+  {
+    id: 'topup-25000',
+    tokens: 25000,
+    price: 149,
+    priceId: 'price_1SnUm9B6HvdZJCd5qPqqRlQ8',
     productId: 'prod_Thqgf4M9iCHzxj',
     badge: 'BEST VALUE',
-    description: 'Instant token boost. Add 10,000 tokens to your account. Never expires, use for songs, videos, or any generation.',
+    description: 'Instant token boost. Add 25,000 tokens to your account. Never expires, use for songs, videos, or any generation.',
   },
 ];
 
 // Production Stripe IDs (used everywhere including localhost)
+// NOTE: When creating new Stripe products, update these IDs
+// New pricing: Starter $39/$29, Scale $99/$74, Hardcore $199/$149
 export const stripeConfig = {
   // Legacy single top-up (keeping for backwards compatibility)
   topUp: {
     priceId: 'price_1SkQupB6HvdZJCd5q3km6imx',
     productId: 'prod_SDuZQfG5jCbfwZ'
   },
+  // Starter: $39/mo monthly, $29/mo yearly ($348/yr) - 5,000 tokens
   starter: {
     productId: 'prod_SApdzvErjotcRN',
     monthly: 'price_1SkQkVB6HvdZJCd5O3R8X8ck',
     yearly: 'price_1RQOkxB6HvdZJCd5un20D2Y2'
   },
+  // Scale (formerly Pro): $99/mo monthly, $74/mo yearly ($888/yr) - 20,000 tokens
+  scale: {
+    productId: 'prod_SApgUFg3gLoB70',
+    monthly: 'price_1SkQm7B6HvdZJCd58zuxl8DI',
+    yearly: 'price_1SkQm7B6HvdZJCd5IhSkNYIK'
+  },
+  // Beast (formerly Hardcore/Premium): $199/mo monthly, $149/mo yearly ($1,788/yr) - 50,000 tokens
+  hardcore: {
+    productId: 'prod_SAphmL67DhziEI',
+    monthly: 'price_1SkQsXB6HvdZJCd5WgeI2SGs',
+    yearly: 'price_1SkQsXB6HvdZJCd5oOjkBNE2'
+  },
+  // Beast alias (same as hardcore)
+  beast: {
+    productId: 'prod_SAphmL67DhziEI',
+    monthly: 'price_1SkQsXB6HvdZJCd5WgeI2SGs',
+    yearly: 'price_1SkQsXB6HvdZJCd5oOjkBNE2'
+  },
+  // Legacy aliases for backwards compatibility
   pro: {
     productId: 'prod_SApgUFg3gLoB70',
     monthly: 'price_1SkQm7B6HvdZJCd58zuxl8DI',
@@ -76,5 +99,5 @@ export const getTopUpBundle = (bundleId: string) => topUpBundles.find(b => b.id 
 export const getTopUpConfig = () => stripeConfig.topUp;
 
 // Helper to get plan prices
-export const getPlanConfig = (planId: 'starter' | 'pro' | 'premium') => stripeConfig[planId];
+export const getPlanConfig = (planId: 'starter' | 'scale' | 'hardcore' | 'beast' | 'pro' | 'premium') => stripeConfig[planId];
 

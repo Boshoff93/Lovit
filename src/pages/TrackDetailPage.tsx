@@ -287,7 +287,7 @@ const TrackDetailPage: React.FC = () => {
   };
   
   const handleGoBack = useCallback(() => {
-    navigate('/my-library?tab=songs');
+    navigate('/my-music');
   }, [navigate]);
   
   const handleDelete = useCallback(async () => {
@@ -298,7 +298,7 @@ const TrackDetailPage: React.FC = () => {
       await songsApi.deleteSong(user.userId, songId);
       setShowDeleteDialog(false);
       // Navigate back to library after successful deletion
-      navigate('/my-library?tab=songs');
+      navigate('/my-music');
     } catch (err: any) {
       console.error('Failed to delete track:', err);
       setUploadError(err.response?.data?.error || 'Failed to delete track');

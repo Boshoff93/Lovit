@@ -3,8 +3,6 @@ import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
   Drawer,
-  AppBar,
-  Toolbar,
   List,
   Typography,
   Divider,
@@ -17,20 +15,35 @@ import {
   Alert,
   Snackbar,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import SettingsIcon from '@mui/icons-material/Settings';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-import AddIcon from '@mui/icons-material/Add';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import MovieIcon from '@mui/icons-material/Movie';
 import BoltIcon from '@mui/icons-material/Bolt';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LinkIcon from '@mui/icons-material/Link';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { Allowances, getTokensFromAllowances } from '../store/authSlice';
+import { logoutAllState } from '../store/actions';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
 import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
@@ -56,101 +69,83 @@ export const useLayout = () => {
   return context;
 };
 
-// Responsive drawer width
-const drawerWidth = 360;
+// Sidebar dimensions
+const sidebarWidth = 240;
+const sidebarCollapsedWidth = 72;
+const mobileTopBarHeight = 56;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-  open?: boolean;
-}>(({ theme }) => ({
+const Main = styled('main', { shouldForwardProp: (prop) => !['sidebarOpen', 'isMobile', 'sidebarCollapsed'].includes(prop as string) })<{
+  sidebarOpen?: boolean;
+  isMobile?: boolean;
+  sidebarCollapsed?: boolean;
+}>(({ theme, isMobile }) => ({
   flexGrow: 1,
   width: '100%',
+  minWidth: 0,
   padding: theme.spacing(2),
-  marginLeft: 0,
-}));
-
-const AppBarStyled = styled(AppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<{
-  open?: boolean;
-}>(({ theme }) => ({
-  width: '100%',
-  marginLeft: 0,
-  backgroundColor: 'rgba(255,255,255,0.9)',
-  backdropFilter: 'blur(20px)',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-  justifyContent: 'space-between',
+  marginTop: isMobile ? mobileTopBarHeight : 0,
+  transition: theme.transitions.create(['margin', 'width'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
 }));
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const AllowanceDisplay: React.FC<{ 
-  allowances: Allowances | null;
-  onUpgrade: (type: 'credits') => void;
-}> = ({ allowances, onUpgrade }) => {
-  if (!allowances) return null;
-  
-  // Use helper function to get tokens (handles legacy aiPhotos field)
-  const tokens = getTokensFromAllowances(allowances);
-  const totalCredits = (tokens?.max || 0) + (tokens?.topup || 0);
-  const usedCredits = tokens?.used || 0;
-  const remainingCredits = totalCredits - usedCredits;
+// Navigation items configuration - grouped like Followr
+// CREATE section - for creating new content
+const createItems = [
+  { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon },
+  { path: '/create/video', label: 'Create Video', icon: MovieIcon },
+  { path: '/my-cast/create', label: 'Create Cast', icon: PersonAddIcon },
+];
 
-  return (
-    <Button
-      onClick={() => onUpgrade('credits')}
-      sx={{
-        borderRadius: '20px',
-        px: 2,
-        py: 1,
-        minWidth: 'auto',
-        textTransform: 'none',
-        fontWeight: 600,
-        color: '#fff',
-        background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-        border: 'none',
-        boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 0.5,
-        '&:hover': {
-          background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-          boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-        }
-      }}
-    >
-      <BoltIcon sx={{ fontSize: 18, color: '#fff' }} />
-      <span style={{ color: '#fff' }}>{remainingCredits}</span>
-    </Button>
-  );
-};
+// UPLOAD section - for uploading content
+const uploadItems = [
+  { path: '/upload', label: 'Upload Music', icon: MusicNoteIcon, params: '?type=song' },
+  { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '?type=video' },
+];
+
+// CONTENT section - for viewing your content
+const contentItems = [
+  { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon },
+  { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon },
+  { path: '/my-cast', label: 'My Cast', icon: FolderSpecialIcon },
+];
+
+const publishItems = [
+  { path: '/settings/connected-accounts', label: 'Connected Accounts', icon: LinkIcon },
+  { path: '/settings/scheduled-content', label: 'Scheduled Posts', icon: CalendarMonthIcon },
+];
+
+const accountItems = [
+  { path: '/account', label: 'Account', icon: AccountCircleIcon },
+  { path: '/payment', label: 'Subscription', icon: CreditCardIcon },
+  { path: '/support', label: 'Support', icon: HeadsetMicIcon },
+  { path: '/faq', label: 'Help & FAQ', icon: HelpOutlineIcon },
+];
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   // Check if audio player is active to add bottom padding
   const { currentSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
-  
+
   // Helper to check if path is active
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '?');
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/') || location.pathname.startsWith(path + '?');
   const dispatch = useDispatch<AppDispatch>();
   const { token } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
-  
-  const [open, setOpen] = useState(false);
-  
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -175,31 +170,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
   const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
 
-  // Auto-close drawer when screen becomes large (full header visible)
+  const handleLogout = useCallback(() => {
+    dispatch(logoutAllState());
+    navigate('/');
+  }, [dispatch, navigate]);
+
+  // Auto-close mobile drawer when screen becomes large
   useEffect(() => {
-    if (!isMobile && open) {
-      setOpen(false);
+    if (!isMobile && mobileOpen) {
+      setMobileOpen(false);
     }
   }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleMobileDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
 
-  const handleDrawerClose = () => {
-    setOpen(false);
+  const handleSidebarCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   const openCharacter = useCallback(() => {
     navigate('/create?tab=character');
     if (isMobile) {
-      setOpen(false);
+      setMobileOpen(false);
     }
   }, [navigate, isMobile]);
-  
+
   const handleNavigate = useCallback((path: string, e?: React.MouseEvent) => {
     // Pass state for FAQ to indicate it's from dashboard
     if (path === '/faq') {
@@ -207,11 +208,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } else {
       navigate(path);
     }
-    if (isMobile && (!e || !(e.target instanceof Element) || !e.target.closest('.MuiSelect-select'))) {
-      setOpen(false);
+    if (isMobile) {
+      setMobileOpen(false);
     }
   }, [navigate, isMobile]);
-  
+
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({
       ...prev,
@@ -227,10 +228,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const allowances = useSelector((state: RootState) => state.auth.allowances);
-  
+
   // Fetch account data on route changes (with 60s cache built into useAccountData)
   const { fetchAccountData } = useAccountData();
-  
+
   // Fetch on route change - the hook's internal cache prevents excessive API calls
   useEffect(() => {
     if (!token) return;
@@ -241,11 +242,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     try {
       setIsTopUpLoading(true);
       await reportPurchaseConversion();
-      
+
       // Use selected bundle or default to first bundle
       const selectedBundle = bundle || topUpBundles[0];
-      
-      const resultAction = await dispatch(createCheckoutSession({ 
+
+      const resultAction = await dispatch(createCheckoutSession({
         priceId: selectedBundle.priceId,
         productId: selectedBundle.productId
       }));
@@ -271,7 +272,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       navigate('/payment');
       return;
     }
-    
+
     try {
       setIsUpgradeLoading(true);
       const resultAction = await dispatch(createPortalSession());
@@ -290,43 +291,635 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [dispatch, isPremiumTier, navigate]);
 
-  return (
-    <LayoutContext.Provider value={{ 
-      openCharacter, 
-      isDrawerOpen: open, 
-      drawerWidth 
+  // Calculate remaining tokens
+  const getRemainingTokens = () => {
+    if (!allowances) return 0;
+    const tokens = getTokensFromAllowances(allowances);
+    return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
+  };
+
+  // Sidebar content component
+  const SidebarContent = () => (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      py: 2,
     }}>
-      <Box sx={{ display: 'flex' }}>
-        <AppBarStyled position="fixed" open={isMobile ? false : open}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }}>
-            {/* Logo on left */}
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 1.5, 
-                cursor: 'pointer' 
+      {/* Logo and Collapse button row */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, mb: 3 }}>
+        {/* Logo - links to homepage for SEO */}
+        <Box
+          component="a"
+          href="/"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            cursor: 'pointer',
+            textDecoration: 'none',
+          }}
+        >
+          <Box
+            component="img"
+            src="/gruvi.png"
+            alt="Gruvi"
+            sx={{
+              height: 36,
+              width: 36,
+              objectFit: 'contain',
+            }}
+          />
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{
+              fontFamily: '"Fredoka", "Inter", sans-serif',
+              fontWeight: 600,
+              fontSize: '1.4rem',
+              letterSpacing: '-0.01em',
+              background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Gruvi
+          </Typography>
+        </Box>
+
+        {/* Collapse button - only on desktop */}
+        {!isMobile && (
+          <IconButton
+            onClick={handleSidebarCollapse}
+            size="small"
+            sx={{
+              color: '#86868B',
+              '&:hover': {
+                color: '#007AFF',
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+        )}
+      </Box>
+
+      {/* Tokens Display */}
+      {token && allowances && (
+        <Box sx={{ px: 2, mb: 2 }}>
+          <Button
+            fullWidth
+            onClick={() => {
+              if (isMobile) setMobileOpen(false);
+              setUpgradePopup({
+                open: true,
+                type: 'credits',
+                message: 'Upgrade your subscription or top up to get more tokens!',
+                title: 'Tokens'
+              });
+            }}
+            sx={{
+              borderRadius: '12px',
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600,
+              color: '#fff',
+              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              }
+            }}
+          >
+            <BoltIcon sx={{ fontSize: 20, color: '#fff' }} />
+            <span style={{ color: '#fff' }}>{getRemainingTokens().toLocaleString()} Tokens</span>
+          </Button>
+        </Box>
+      )}
+
+      {/* Scrollable content area */}
+      <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+        {/* CREATE Section */}
+        <Typography
+          variant="caption"
+          sx={{
+            px: 3,
+            py: 1,
+            display: 'block',
+            color: '#86868B',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Create
+        </Typography>
+        <List sx={{ px: 1, pb: 1 }}>
+          {createItems.map((item, index) => {
+            const Icon = item.icon;
+            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            return (
+              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: '10px',
+                    py: 1,
+                    px: 2,
+                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Icon sx={{
+                      fontSize: 20,
+                      color: active ? '#007AFF' : '#86868B',
+                    }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '0.875rem',
+                      color: active ? '#007AFF' : '#1D1D1F',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {/* UPLOAD Section */}
+        <Typography
+          variant="caption"
+          sx={{
+            px: 3,
+            py: 1,
+            display: 'block',
+            color: '#86868B',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Upload
+        </Typography>
+        <List sx={{ px: 1, pb: 1 }}>
+          {uploadItems.map((item, index) => {
+            const Icon = item.icon;
+            const fullPath = item.path + (item.params || '');
+            const active = location.pathname === item.path && (item.params ? location.search === item.params : true);
+            return (
+              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
+                <ListItemButton
+                  onClick={() => handleNavigate(fullPath)}
+                  sx={{
+                    borderRadius: '10px',
+                    py: 1,
+                    px: 2,
+                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Icon sx={{
+                      fontSize: 20,
+                      color: active ? '#007AFF' : '#86868B',
+                    }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '0.875rem',
+                      color: active ? '#007AFF' : '#1D1D1F',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {/* CONTENT Section */}
+        <Typography
+          variant="caption"
+          sx={{
+            px: 3,
+            py: 1,
+            display: 'block',
+            color: '#86868B',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Content
+        </Typography>
+        <List sx={{ px: 1, pb: 1 }}>
+          {contentItems.map((item, index) => {
+            const Icon = item.icon;
+            const active = location.pathname === item.path;
+            return (
+              <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: '10px',
+                    py: 1,
+                    px: 2,
+                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Icon sx={{
+                      fontSize: 20,
+                      color: active ? '#007AFF' : '#86868B',
+                    }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '0.875rem',
+                      color: active ? '#007AFF' : '#1D1D1F',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {/* PUBLISHING Section */}
+        <Typography
+          variant="caption"
+          sx={{
+            px: 3,
+            py: 1,
+            display: 'block',
+            color: '#86868B',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Publishing
+        </Typography>
+        <List sx={{ px: 1, pb: 1 }}>
+          {publishItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            return (
+              <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: '10px',
+                    py: 1,
+                    px: 2,
+                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Icon sx={{
+                      fontSize: 20,
+                      color: active ? '#007AFF' : '#86868B',
+                    }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '0.875rem',
+                      color: active ? '#007AFF' : '#1D1D1F',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {/* ACCOUNT Section */}
+        <Typography
+          variant="caption"
+          sx={{
+            px: 3,
+            py: 1,
+            display: 'block',
+            color: '#86868B',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Account
+        </Typography>
+        <List sx={{ px: 1 }}>
+          {accountItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            return (
+              <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: '10px',
+                    py: 1,
+                    px: 2,
+                    backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Icon sx={{
+                      fontSize: 20,
+                      color: active ? '#007AFF' : '#86868B',
+                    }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '0.875rem',
+                      color: active ? '#007AFF' : '#1D1D1F',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
+
+      {/* Sign Out Button - Fixed at bottom */}
+      <Box sx={{ px: 1, pb: 1, pt: 1 }}>
+        <Divider sx={{ mb: 1 }} />
+        <ListItemButton
+          onClick={() => {
+            if (isMobile) setMobileOpen(false);
+            setLogoutDialogOpen(true);
+          }}
+          sx={{
+            borderRadius: '10px',
+            py: 1,
+            px: 2,
+            '&:hover': {
+              backgroundColor: 'rgba(255,59,48,0.08)',
+            },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 36 }}>
+            <LogoutIcon sx={{ fontSize: 20, color: '#FF3B30' }} />
+          </ListItemIcon>
+          <ListItemText
+            primary="Sign Out"
+            primaryTypographyProps={{
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              color: '#FF3B30',
+            }}
+          />
+        </ListItemButton>
+      </Box>
+    </Box>
+  );
+
+  // Collapsed sidebar content - icons only (for desktop)
+  const CollapsedSidebarContent = () => {
+    // All items combined for collapsed view
+    const allItems = [
+      ...createItems,
+      ...uploadItems,
+      ...contentItems,
+      ...publishItems,
+      ...accountItems,
+    ];
+
+    return (
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        py: 2,
+        alignItems: 'center',
+      }}>
+        {/* Logo only */}
+        <Box
+          component="a"
+          href="/"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2,
+            cursor: 'pointer',
+            textDecoration: 'none',
+          }}
+        >
+          <Box
+            component="img"
+            src="/gruvi.png"
+            alt="Gruvi"
+            sx={{
+              height: 32,
+              width: 32,
+              objectFit: 'contain',
+            }}
+          />
+        </Box>
+
+        {/* Expand button */}
+        <IconButton
+          onClick={handleSidebarCollapse}
+          sx={{
+            mb: 2,
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            color: '#fff',
+            width: 40,
+            height: 40,
+            '&:hover': {
+              background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+            },
+          }}
+        >
+          <ChevronRightIcon />
+        </IconButton>
+
+        {/* Scrollable icons */}
+        <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', width: '100%' }}>
+          <List sx={{ px: 1 }}>
+            {allItems.map((item, index) => {
+              const Icon = item.icon;
+              const fullPath = item.path + ((item as any).params || '');
+              const active = location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
+              return (
+                <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
+                  <ListItemButton
+                    onClick={() => handleNavigate(fullPath)}
+                    sx={{
+                      borderRadius: '10px',
+                      py: 1.25,
+                      px: 1.25,
+                      minWidth: 0,
+                      justifyContent: 'center',
+                      backgroundColor: active ? 'rgba(0,122,255,0.1)' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: active ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.04)',
+                      },
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
+                      <Icon sx={{
+                        fontSize: 22,
+                        color: active ? '#007AFF' : '#86868B',
+                      }} />
+                    </ListItemIcon>
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+
+        {/* Sign Out Icon */}
+        <Box sx={{ px: 1, pb: 1, pt: 1 }}>
+          <Divider sx={{ mb: 1, mx: 1 }} />
+          <ListItemButton
+            onClick={() => setLogoutDialogOpen(true)}
+            sx={{
+              borderRadius: '10px',
+              py: 1.25,
+              px: 1.25,
+              minWidth: 0,
+              justifyContent: 'center',
+              '&:hover': {
+                backgroundColor: 'rgba(255,59,48,0.08)',
+              },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
+              <LogoutIcon sx={{ fontSize: 22, color: '#FF3B30' }} />
+            </ListItemIcon>
+          </ListItemButton>
+        </Box>
+      </Box>
+    );
+  };
+
+  return (
+    <LayoutContext.Provider value={{
+      openCharacter,
+      isDrawerOpen: mobileOpen,
+      drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth
+    }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        {/* Desktop Permanent Sidebar */}
+        {!isMobile && (
+          <Drawer
+            variant="permanent"
+            sx={{
+              width: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
+              flexShrink: 0,
+              transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
+              '& .MuiDrawer-paper': {
+                width: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
+                boxSizing: 'border-box',
+                borderRight: '1px solid rgba(0,0,0,0.08)',
+                backgroundColor: '#FAFAFA',
+                transition: theme.transitions.create('width', {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
+                overflowX: 'hidden',
+              },
+            }}
+          >
+            {sidebarCollapsed ? <CollapsedSidebarContent /> : <SidebarContent />}
+          </Drawer>
+        )}
+
+        {/* Mobile Top Bar with Menu Button */}
+        {isMobile && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 56,
+              backgroundColor: '#FAFAFA',
+              borderBottom: '1px solid rgba(0,0,0,0.08)',
+              zIndex: theme.zIndex.drawer,
+              display: 'flex',
+              alignItems: 'center',
+              px: 2,
+              gap: 2,
+            }}
+          >
+            <IconButton
+              onClick={handleMobileDrawerToggle}
+              sx={{
+                color: '#007AFF',
               }}
-              onClick={() => navigate('/')}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box
+              component="a"
+              href="/"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                textDecoration: 'none',
+              }}
             >
               <Box
                 component="img"
                 src="/gruvi.png"
                 alt="Gruvi"
                 sx={{
-                  height: 40,
-                  width: 40,
+                  height: 28,
+                  width: 28,
                   objectFit: 'contain',
                 }}
               />
-              <Typography 
-                variant="h6" 
-                noWrap 
-                component="div" 
-                sx={{ 
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
                   fontFamily: '"Fredoka", "Inter", sans-serif',
                   fontWeight: 600,
-                  fontSize: '1.5rem',
+                  fontSize: '1.2rem',
                   letterSpacing: '-0.01em',
                   background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                   WebkitBackgroundClip: 'text',
@@ -336,379 +929,72 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 Gruvi
               </Typography>
             </Box>
-
-            {/* Right side - navigation and actions */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Desktop navigation */}
-              {!isMobile && (
-                <>
-                  <Button
-                    onClick={() => handleNavigate('/create')}
-                    startIcon={<AddIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/create') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/create') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/create') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/create') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    Create
-                  </Button>
-                  <Button
-                    onClick={() => handleNavigate('/my-library')}
-                    startIcon={<LibraryMusicIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/my-library') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/my-library') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/my-library') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/my-library') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    My Library
-                  </Button>
-                  <Button
-                    onClick={() => handleNavigate('/my-cast')}
-                    startIcon={<FolderSpecialIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/my-cast') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/my-cast') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/my-cast') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/my-cast') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    My Cast
-                  </Button>
-                  <Button
-                    onClick={() => handleNavigate('/settings')}
-                    startIcon={<SettingsIcon />}
-                    sx={{
-                      borderRadius: '20px',
-                      px: 2,
-                      py: 1,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      color: isActive('/settings') ? '#007AFF' : '#1D1D1F',
-                      backgroundColor: isActive('/settings') ? 'rgba(0,122,255,0.12)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: isActive('/settings') ? 'rgba(0,122,255,0.3)' : 'rgba(0,0,0,0.1)',
-                      boxShadow: isActive('/settings') ? '0 2px 8px rgba(0,122,255,0.2)' : 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.08)',
-                        boxShadow: '0 2px 8px rgba(0,122,255,0.15)',
-                      }
-                    }}
-                  >
-                    Settings
-                  </Button>
-                </>
-              )}
-              
-              {/* Mobile hamburger menu */}
-              {isMobile && (
-                <IconButton
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  sx={{ 
-                    color: '#007AFF',
-                  }}
-                >
-                  <MenuIcon />
-                </IconButton>
-              )}
-              
-              {/* Credits display - only on desktop */}
-              {!isMobile && token && allowances && (
-                <AllowanceDisplay 
-                  allowances={allowances} 
-                  onUpgrade={(type) => {
-                    setUpgradePopup({
-                      open: true,
-                      type,
-                      message: 'Upgrade your subscription or top up to get more tokens!',
-                      title: 'Tokens'
-                    });
-                  }}
-                />
-              )}
-
-            </Box>
-          </Toolbar>
-        </AppBarStyled>
-        {/* Mobile drawer - only shows on small screens */}
-        <Drawer
-          sx={{
-            display: { xs: 'block', lg: 'none' },
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              boxSizing: 'border-box',
-              borderLeft: 'none',
-              boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
-              backgroundColor: theme.palette.background.paper,
-              borderRadius: '16px 0 0 16px',
-            },
-          }}
-          variant="temporary"
-          anchor="right"
-          open={open}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: false,
-            disableScrollLock: true,
-            disableEnforceFocus: true,
-            disableAutoFocus: true
-          }}
-          SlideProps={{
-            timeout: {
-              enter: theme.transitions.duration.enteringScreen,
-              exit: theme.transitions.duration.leavingScreen
-            }
-          }}
-        >
-          <DrawerHeader>
-            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'left', width: '100%' }}>
-                Menu
-              </Typography>
-            </Box>
-            <IconButton onClick={handleDrawerClose} color="primary">
-              {theme.direction === 'ltr' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            height: 'calc(100vh - 64px)',
-            overflowY: 'auto',
-          }}>
-            <List sx={{ px: 1 }}>
-              {/* Tokens display - FIRST at top */}
-              {token && allowances && (
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => {
-                      handleDrawerClose();
-                      setUpgradePopup({
-                        open: true,
-                        type: 'credits',
-                        message: 'Upgrade your subscription or top up to get more tokens!',
-                        title: 'Tokens'
-                      });
-                    }}
-                    sx={{
-                      px: 2,
-                      borderRadius: 2,
-                      mb: 1,
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,122,255,0.12)',
-                      }
-                    }}
-                  >
-                    <ListItemIcon sx={{ color: '#007AFF' }}>
-                      <BoltIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={`${(() => {
-                        const tokens = getTokensFromAllowances(allowances);
-                        return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
-                      })()} Tokens`}
-                      primaryTypographyProps={{ 
-                        fontWeight: 600,
-                        color: '#007AFF'
-                      }} 
-                    />
-                  </ListItemButton>
-                </ListItem>
-              )}
-
-              {/* Create Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/create') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/create') ? '2px solid #007AFF' : '2px solid transparent',
-                    color: isActive('/create') ? '#007AFF' : '#1D1D1F',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/create')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <AddIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Create" 
-                    primaryTypographyProps={{ 
-                      fontWeight: 600,
-                      color: isActive('/create') ? '#007AFF' : '#1D1D1F'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-
-              {/* My Library Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/my-library') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/my-library') ? '2px solid #007AFF' : '2px solid transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/my-library')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <LibraryMusicIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="My Library" 
-                    primaryTypographyProps={{ 
-                      fontWeight: isActive('/my-library') ? 600 : 400,
-                      color: isActive('/my-library') ? '#007AFF' : 'inherit'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-
-              {/* Studio Assets Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/my-cast') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/my-cast') ? '2px solid #007AFF' : '2px solid transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/my-cast')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <FolderSpecialIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="My Cast" 
-                    primaryTypographyProps={{ 
-                      fontWeight: isActive('/my-cast') ? 600 : 400,
-                      color: isActive('/my-cast') ? '#007AFF' : 'inherit'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-
-              {/* Settings Section */}
-              <ListItem disablePadding>
-                <ListItemButton 
-                  sx={{ 
-                    px: 2, 
-                    borderRadius: 2, 
-                    mb: 1,
-                    backgroundColor: isActive('/settings') ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: isActive('/settings') ? '2px solid #007AFF' : '2px solid transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.08)',
-                    }
-                  }}
-                  onClick={() => handleNavigate('/settings')}
-                >
-                  <ListItemIcon sx={{ color: '#007AFF' }}>
-                    <SettingsIcon />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Settings" 
-                    primaryTypographyProps={{ 
-                      fontWeight: isActive('/settings') ? 600 : 400,
-                      color: isActive('/settings') ? '#007AFF' : 'inherit'
-                    }} 
-                  />
-                </ListItemButton>
-              </ListItem>
-            </List>
           </Box>
-        </Drawer>
-        <Main open={open}>
-          <DrawerHeader />
-          <Box 
-            sx={{ 
-              display: 'flex', 
+        )}
+
+        {/* Mobile Drawer Sidebar */}
+        {isMobile && (
+          <Drawer
+            variant="temporary"
+            anchor="left"
+            open={mobileOpen}
+            onClose={handleMobileDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better mobile performance
+            }}
+            sx={{
+              '& .MuiDrawer-paper': {
+                width: sidebarWidth,
+                boxSizing: 'border-box',
+                backgroundColor: '#FAFAFA',
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+              <IconButton onClick={handleMobileDrawerToggle}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </Box>
+            <SidebarContent />
+          </Drawer>
+        )}
+
+        {/* Main Content */}
+        <Main sidebarOpen={!isMobile} isMobile={isMobile} sidebarCollapsed={sidebarCollapsed}>
+          <Box
+            sx={{
+              display: 'flex',
               flexDirection: 'column',
-              gap: 3, 
-              width: '100%', 
-              px: { xs: 2, sm: 3, md: 4 },
+              gap: 3,
+              width: '100%',
+              minWidth: 0,
+              maxWidth: 1200, // lg breakpoint max width
+              mx: 'auto', // center horizontally
+              px: { xs: 1, sm: 2, md: 3 },
               py: 2,
               // Add bottom padding when audio player is visible to prevent content from being hidden
               pb: hasActivePlayer ? 12 : 2,
             }}
           >
-            <Box sx={{ flexGrow: 1, width: '100%' }}>
+            <Box sx={{ flexGrow: 1, width: '100%', minWidth: 0 }}>
               {children}
             </Box>
           </Box>
         </Main>
-        
+
         {/* Notification */}
-        <Snackbar 
-          open={notification.open} 
-          autoHideDuration={6000} 
+        <Snackbar
+          open={notification.open}
+          autoHideDuration={6000}
           onClose={handleCloseNotification}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          sx={{
-            mt: 7,
-            [theme.breakpoints.up('md')]: {
-              ...(open && {
-                marginLeft: `${drawerWidth/2}px`
-              })
-            }
-          }}
+          sx={{ mt: isMobile ? 7 : 2 }}
         >
           <Alert onClose={handleCloseNotification} severity={notification.severity}>
             {notification.message}
           </Alert>
         </Snackbar>
-        
+
         {/* Subscription Upgrade Popup */}
         <UpgradePopup
           open={upgradePopup.open}
@@ -722,6 +1008,39 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           isTopUpLoading={isTopUpLoading}
           isUpgradeLoading={isUpgradeLoading}
         />
+
+        {/* Logout Confirmation Dialog */}
+        <Dialog
+          open={logoutDialogOpen}
+          onClose={() => setLogoutDialogOpen(false)}
+          PaperProps={{
+            sx: {
+              borderRadius: '16px',
+              p: 1,
+            }
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 600 }}>Sign Out</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to sign out?</Typography>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={() => setLogoutDialogOpen(false)}
+              sx={{ borderRadius: '10px' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="contained"
+              color="error"
+              sx={{ borderRadius: '10px' }}
+            >
+              Sign Out
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </LayoutContext.Provider>
   );

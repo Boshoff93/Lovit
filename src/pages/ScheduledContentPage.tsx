@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -15,7 +14,6 @@ import {
   Button,
 } from '@mui/material';
 import {
-  ArrowBack as ArrowBackIcon,
   Delete as DeleteIcon,
   Schedule as ScheduleIcon,
   YouTube as YouTubeIcon,
@@ -26,6 +24,7 @@ import {
   Error as ErrorIcon,
   Cancel as CancelIcon,
   Public as PublicIcon,
+  CalendarMonth as CalendarMonthIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { scheduledPostsApi, ScheduledPost, videosApi } from '../services/api';
@@ -197,49 +196,37 @@ const ScheduledContentPage: React.FC = () => {
 
   return (
     <Box sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      pt: 4,
-      pb: { xs: 4, sm: 8 },
-      px: 2,
-      bgcolor: '#F5F5F7'
+      py: 4,
+      px: { xs: 2, sm: 3, md: 4 },
+      width: '100%',
+      maxWidth: '100%',
     }}>
-      <Container maxWidth="md" sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        p: 0
-      }}>
-        {/* Back Button - matching AccountPage style */}
-        <Box sx={{ width: '100%', mb: 2 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/settings')}
+        {/* Page Title */}
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box
             sx={{
-              color: '#007AFF',
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(0,122,255,0.08)',
-              },
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #5856D6 0%, #007AFF 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            Back to Settings
-          </Button>
-        </Box>
-
-        {/* Page Title */}
-        <Box sx={{ width: '100%', mb: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-            Scheduled Content
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-            <PublicIcon sx={{ fontSize: 14, color: '#86868B' }} />
-            <Typography variant="body2" sx={{ color: '#86868B' }}>
-              Times shown in {userTimezone}
+            <CalendarMonthIcon sx={{ color: '#fff', fontSize: 24 }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+              Scheduled Content
             </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <PublicIcon sx={{ fontSize: 14, color: '#86868B' }} />
+              <Typography sx={{ color: '#86868B' }}>
+                Times shown in {userTimezone}
+              </Typography>
+            </Box>
           </Box>
         </Box>
 
@@ -286,7 +273,7 @@ const ScheduledContentPage: React.FC = () => {
               </Typography>
               <Button
                 variant="contained"
-                onClick={() => navigate('/my-library')}
+                onClick={() => navigate('/my-videos')}
                 sx={{
                   borderRadius: '12px',
                   textTransform: 'none',
@@ -303,7 +290,7 @@ const ScheduledContentPage: React.FC = () => {
                   transition: 'all 0.2s ease',
                 }}
               >
-                Go to Library
+                Go to My Videos
               </Button>
             </Box>
           ) : (
@@ -430,7 +417,6 @@ const ScheduledContentPage: React.FC = () => {
             </Box>
           )}
         </Card>
-      </Container>
 
       {/* Cancel Confirmation Dialog */}
       <Dialog
