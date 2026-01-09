@@ -1482,16 +1482,39 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
         {/* Tracklist */}
         {isLoadingSongs ? (
-          <Box sx={{ p: 3 }}>
+          <Box>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Skeleton variant="rounded" width={48} height={48} />
-                <Box sx={{ flex: 1 }}>
-                  <Skeleton variant="text" width="60%" />
-                  <Skeleton variant="text" width="40%" />
+              <Box
+                key={i}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: { xs: 1.5, sm: 2 },
+                  p: { xs: 1.5, sm: 2 },
+                  px: { xs: 2, sm: 3 },
+                  borderBottom: i < 10 ? '1px solid rgba(0,0,0,0.04)' : 'none',
+                }}
+              >
+                {/* Track Number */}
+                <Box sx={{ width: { xs: 24, sm: 32 }, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                  <Skeleton variant="rounded" width={16} height={24} sx={{ borderRadius: '6px' }} />
                 </Box>
-                <Skeleton variant="circular" width={32} height={32} />
-                <Skeleton variant="text" width={12} height={32} />
+                {/* Album Art */}
+                <Skeleton variant="rounded" width={48} height={48} sx={{ borderRadius: '6px', flexShrink: 0 }} />
+                {/* Title and Info */}
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Skeleton variant="text" width="45%" height={22} />
+                  <Skeleton variant="text" width="30%" height={18} />
+                </Box>
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1 } }}>
+                  {/* Play Button */}
+                  <Skeleton variant="circular" width={40} height={40} />
+                  {/* More Menu - vertical dots */}
+                  <Box sx={{ width: 28, display: 'flex', justifyContent: 'center' }}>
+                    <Skeleton variant="rounded" width={6} height={18} sx={{ borderRadius: '3px' }} />
+                  </Box>
+                </Box>
               </Box>
             ))}
           </Box>
@@ -1524,7 +1547,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             {displayedSongs.map((song, index) => {
               const isProcessing = song.status === 'processing';
               const isFailed = song.status === 'failed';
-              
+
               return (
                 <Box
                   key={song.songId}
@@ -1966,17 +1989,18 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       </Typography>
                       
                       {/* Videos Grid for this date - separate portrait and landscape */}
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'visible' }}>
                         {/* Portrait videos in grid */}
                         {dateVideos.filter(v => v.aspectRatio !== 'landscape').length > 0 && (
-                          <Box sx={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, 
+                          <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' },
                             gap: 2,
+                            overflow: 'visible',
                           }}>
                             {dateVideos.filter(v => v.aspectRatio !== 'landscape').map((video) => {
                               const isDeleting = deletingVideoId === video.videoId;
-                              
+
                               return (
                                 <Box
                                   key={video.videoId}
@@ -1987,9 +2011,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                     borderRadius: '20px',
                                     overflow: 'hidden',
                                     cursor: video.status === 'completed' ? 'pointer' : 'default',
-                                    transition: 'all 0.3s ease',
                                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                                     opacity: isDeleting ? 0.5 : 1,
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                     '&:hover': video.status === 'completed' ? {
                                       transform: 'translateY(-4px) scale(1.02)',
                                       boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
@@ -2000,7 +2024,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                               <Box
                                 component="img"
                                 src={
-                                  video.status === 'completed' 
+                                  video.status === 'completed'
                                     ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
                                     : video.status === 'failed'
                                       ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
@@ -2163,14 +2187,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         )}
                         
                         {/* Landscape videos - 2 per row on larger screens, full width on mobile */}
-                        <Box sx={{ 
-                          display: 'grid', 
-                          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, 
+                        <Box sx={{
+                          display: 'grid',
+                          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
                           gap: 2,
+                          overflow: 'visible',
                         }}>
                         {dateVideos.filter(v => v.aspectRatio === 'landscape').map((video) => {
                           const isDeleting = deletingVideoId === video.videoId;
-                          
+
                           return (
                             <Box
                               key={video.videoId}
@@ -2181,9 +2206,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                 borderRadius: '20px',
                                 overflow: 'hidden',
                                 cursor: video.status === 'completed' ? 'pointer' : 'default',
-                                transition: 'all 0.3s ease',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                                 opacity: isDeleting ? 0.5 : 1,
+                                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                 '&:hover': video.status === 'completed' ? {
                                   transform: 'translateY(-4px) scale(1.02)',
                                   boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
@@ -2194,7 +2219,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                               <Box
                                 component="img"
                                 src={
-                                  video.status === 'completed' 
+                                  video.status === 'completed'
                                     ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
                                     : video.status === 'failed'
                                       ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
@@ -2210,7 +2235,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                                   e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
                                 }}
                               />
-                              
+
                               {/* Info overlay at bottom */}
                               <Box 
                                 sx={{ 
