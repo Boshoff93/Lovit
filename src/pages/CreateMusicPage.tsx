@@ -583,7 +583,7 @@ const CreateMusicPage: React.FC = () => {
       </Box>
 
       {/* Main Content - Two Column Layout */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: "column", lg: "row" }, gap: 3, width: '100%', minWidth: 0 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: "column", lg: "row" }, gap: { xs: 0, lg: 3 }, width: '100%', minWidth: 0 }}>
         {/* Left Column - Settings */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
           {/* Song Prompt */}
@@ -1108,7 +1108,7 @@ const CreateMusicPage: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.08)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               position: 'sticky',
-              top: 100,
+              top: 28,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>

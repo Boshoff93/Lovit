@@ -1288,6 +1288,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         {/* Left: Icon + Title + Subtitle */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
+            key={activeTab}
             sx={{
               width: 56,
               height: 56,
@@ -1372,10 +1373,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               },
             }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: '#007AFF' }}>
               Upload {activeTab === 'songs' ? 'Music' : 'Video'}
             </Box>
-            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Upload</Box>
+            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' }, color: '#007AFF' }}>Upload</Box>
           </Button>
           {/* Create New Button */}
           <Button

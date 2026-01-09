@@ -572,7 +572,7 @@ const UploadPage: React.FC = () => {
                 </Box>
               ) : (
                 <>
-                  <CloudUpload sx={{ fontSize: 48, color: '#007AFF', mb: 2 }} />
+                  <CloudUpload sx={{ fontSize: 48, color: '#86868B', mb: 2 }} />
                   <Typography sx={{ fontWeight: 600, color: '#1d1d1f', mb: 1 }}>
                     Drag and drop your video file here
                   </Typography>
@@ -800,7 +800,7 @@ const UploadPage: React.FC = () => {
                 </Box>
               ) : (
                 <>
-                  <CloudUpload sx={{ fontSize: 48, color: '#007AFF', mb: 2 }} />
+                  <CloudUpload sx={{ fontSize: 48, color: '#86868B', mb: 2 }} />
                   <Typography sx={{ fontWeight: 600, color: '#1d1d1f', mb: 1 }}>
                     Drag and drop your audio file here
                   </Typography>
