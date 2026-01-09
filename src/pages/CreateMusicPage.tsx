@@ -17,6 +17,7 @@ import {
   ListItemButton,
   ListItemText,
   Slider,
+  IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -304,10 +305,11 @@ const CreateMusicPage: React.FC = () => {
     return acc;
   }, {} as Record<string, Character[]>);
 
-  // Get characters that are mentioned in the prompt
-  const selectedCastMembers = characters.filter(char =>
-    songPrompt.includes(`@${char.characterName}`)
-  );
+  // Get characters that are mentioned in the prompt (case-insensitive)
+  const selectedCastMembers = characters.filter(char => {
+    const mentionPattern = new RegExp(`@${char.characterName}\\b`, 'i');
+    return mentionPattern.test(songPrompt);
+  });
 
   // Handle upgrade popup actions
   const handleTopUp = useCallback(async (bundle?: TopUpBundle) => {
@@ -344,9 +346,12 @@ const CreateMusicPage: React.FC = () => {
 
     setIsEnhancingPrompt(true);
     try {
-      // Get tagged character names for context
+      // Get tagged character names for context (case-insensitive)
       const taggedCharacters = characters
-        .filter(c => songPrompt.toLowerCase().includes(`@${c.characterName.toLowerCase()}`))
+        .filter(c => {
+          const pattern = new RegExp(`@${c.characterName}\\b`, 'i');
+          return pattern.test(songPrompt);
+        })
         .map(c => ({ characterName: c.characterName }));
 
       const response = await songsApi.enhancePrompt(songPrompt.trim(), {
@@ -396,7 +401,10 @@ const CreateMusicPage: React.FC = () => {
     setIsGeneratingSong(true);
     try {
       const characterIds = characters
-        .filter(c => songPrompt.includes(`@${c.characterName}`))
+        .filter(c => {
+          const pattern = new RegExp(`@${c.characterName}\\b`, 'i');
+          return pattern.test(songPrompt);
+        })
         .map(c => c.characterId);
 
       const response = await songsApi.generateSong({
@@ -611,8 +619,9 @@ const CreateMusicPage: React.FC = () => {
                     key={char.characterId}
                     label={char.characterName}
                     onDelete={() => {
-                      // Remove from prompt
-                      setSongPrompt(prev => prev.replace(`@${char.characterName}`, '').replace(/\s+/g, ' ').trim());
+                      // Remove from prompt (case-insensitive)
+                      const mentionPattern = new RegExp(`@${char.characterName}\\b`, 'gi');
+                      setSongPrompt(prev => prev.replace(mentionPattern, '').replace(/\s+/g, ' ').trim());
                     }}
                     avatar={
                       <Avatar
@@ -708,18 +717,43 @@ const CreateMusicPage: React.FC = () => {
                 Select a genre for your song
               </Typography>
             </Box>
-            <Chip
-              icon={<AutoAwesomeIcon sx={{ fontSize: 14 }} />}
-              label="Auto"
+            <IconButton
               onClick={() => setAutoPickGenre(!autoPickGenre)}
+              size="small"
               sx={{
                 background: autoPickGenre ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' : 'transparent',
-                color: autoPickGenre ? '#fff' : '#007AFF',
-                border: autoPickGenre ? 'none' : '1.5px solid #007AFF',
-                fontWeight: 600,
-                cursor: 'pointer',
+                border: '1.5px solid #007AFF',
+                borderColor: autoPickGenre ? 'transparent' : '#007AFF',
+                borderRadius: '20px',
+                px: 1.5,
+                py: 0.5,
+                gap: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                  borderColor: 'transparent',
+                  '& .auto-icon, & .auto-text': {
+                    color: '#fff',
+                  },
+                },
               }}
-            />
+            >
+              <AutoAwesomeIcon className="auto-icon" sx={{ fontSize: 14, color: autoPickGenre ? '#fff' : '#007AFF', transition: 'color 0.2s ease' }} />
+              <Box
+                component="span"
+                className="auto-text"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: autoPickGenre ? '#fff' : '#007AFF',
+                  transition: 'color 0.2s ease',
+                }}
+              >
+                Auto
+              </Box>
+            </IconButton>
           </Box>
           <Button
             onClick={() => !autoPickGenre && setGenrePickerOpen(true)}
@@ -783,18 +817,43 @@ const CreateMusicPage: React.FC = () => {
                 What mood should the song have?
               </Typography>
             </Box>
-            <Chip
-              icon={<AutoAwesomeIcon sx={{ fontSize: 14 }} />}
-              label="Auto"
+            <IconButton
               onClick={() => setAutoPickMood(!autoPickMood)}
+              size="small"
               sx={{
                 background: autoPickMood ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)' : 'transparent',
-                color: autoPickMood ? '#fff' : '#007AFF',
-                border: autoPickMood ? 'none' : '1.5px solid #007AFF',
-                fontWeight: 600,
-                cursor: 'pointer',
+                border: '1.5px solid #007AFF',
+                borderColor: autoPickMood ? 'transparent' : '#007AFF',
+                borderRadius: '20px',
+                px: 1.5,
+                py: 0.5,
+                gap: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                  borderColor: 'transparent',
+                  '& .auto-icon-mood, & .auto-text-mood': {
+                    color: '#fff',
+                  },
+                },
               }}
-            />
+            >
+              <AutoAwesomeIcon className="auto-icon-mood" sx={{ fontSize: 14, color: autoPickMood ? '#fff' : '#007AFF', transition: 'color 0.2s ease' }} />
+              <Box
+                component="span"
+                className="auto-text-mood"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: autoPickMood ? '#fff' : '#007AFF',
+                  transition: 'color 0.2s ease',
+                }}
+              >
+                Auto
+              </Box>
+            </IconButton>
           </Box>
           <Button
             onClick={() => !autoPickMood && setMoodPickerOpen(true)}
@@ -1355,15 +1414,17 @@ const CreateMusicPage: React.FC = () => {
                   {type === 'Non-Human' ? 'Non-Humans' : type === 'Place' ? 'Places / Businesses' : type + 's'}
                 </Typography>
                 {chars.map((char) => {
-                  const isSelected = songPrompt.includes(`@${char.characterName}`);
+                  const mentionPattern = new RegExp(`@${char.characterName}\\b`, 'i');
+                  const isSelected = mentionPattern.test(songPrompt);
                   const isDisabled = !isSelected && selectedCastMembers.length >= MAX_CAST_MEMBERS;
                   return (
                     <ListItem key={char.characterId} disablePadding>
                       <ListItemButton
                         onClick={() => {
                           if (isSelected) {
-                            // Remove from prompt
-                            setSongPrompt(prev => prev.replace(`@${char.characterName}`, '').replace(/\s+/g, ' ').trim());
+                            // Remove from prompt (case-insensitive)
+                            const removePattern = new RegExp(`@${char.characterName}\\b`, 'gi');
+                            setSongPrompt(prev => prev.replace(removePattern, '').replace(/\s+/g, ' ').trim());
                           } else if (!isDisabled) {
                             // Add to prompt
                             insertCharacter(char);

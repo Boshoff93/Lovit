@@ -7,21 +7,22 @@ import {
   Typography,
   Button,
   Paper,
-  TextField,
   Chip,
   CircularProgress,
   Snackbar,
   Alert,
   ToggleButton,
   ToggleButtonGroup,
-  Checkbox,
   Avatar,
   Drawer,
   List,
   ListItem,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { useParams, useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import MovieIcon from '@mui/icons-material/Movie';
@@ -29,7 +30,6 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PaletteIcon from '@mui/icons-material/Palette';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckIcon from '@mui/icons-material/Check';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import TvIcon from '@mui/icons-material/Tv';
@@ -37,7 +37,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import PersonIcon from '@mui/icons-material/Person';
 import { RootState } from '../store/store';
-import { videosApi, charactersApi } from '../services/api';
+import { videosApi, charactersApi, songsApi } from '../services/api';
+import MentionTextField from '../components/MentionTextField';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 // Character type matching the API response
 interface Character {
@@ -47,6 +49,63 @@ interface Character {
   description?: string;
   imageUrls?: string[];
 }
+
+// Song type for selection
+interface Song {
+  songId: string;
+  songTitle: string;
+  genre: string;
+  mood?: string;
+  status: 'processing' | 'completed' | 'failed';
+  audioUrl?: string;
+  actualDuration?: number;
+}
+
+// Genre to image mapping - same as AppPage
+const genreImages: Record<string, string> = {
+  'pop': '/genres/pop.jpeg',
+  'hip-hop': '/genres/hip-hop.jpeg',
+  'rnb': '/genres/rnb.jpeg',
+  'electronic': '/genres/electronic.jpeg',
+  'dance': '/genres/dance.jpeg',
+  'house': '/genres/house.jpeg',
+  'edm': '/genres/edm.jpeg',
+  'techno': '/genres/techno.jpeg',
+  'rock': '/genres/rock.jpeg',
+  'alternative': '/genres/alternative.jpeg',
+  'indie': '/genres/indie.jpeg',
+  'punk': '/genres/punk.jpeg',
+  'metal': '/genres/metal.jpeg',
+  'jazz': '/genres/jazz.jpeg',
+  'blues': '/genres/blues.jpeg',
+  'soul': '/genres/soul.jpeg',
+  'funk': '/genres/funk.jpeg',
+  'classical': '/genres/classic.jpeg',
+  'orchestral': '/genres/orchestral.jpeg',
+  'cinematic': '/genres/cinematic.jpeg',
+  'country': '/genres/country.jpeg',
+  'folk': '/genres/folk.jpeg',
+  'acoustic': '/genres/acoustic.jpeg',
+  'latin': '/genres/latin.jpeg',
+  'reggaeton': '/genres/raggaeton.jpeg',
+  'kpop': '/genres/kpop.jpeg',
+  'k-pop': '/genres/kpop.jpeg',
+  'jpop': '/genres/jpop.jpeg',
+  'j-pop': '/genres/jpop.jpeg',
+  'reggae': '/genres/raggae.jpeg',
+  'lofi': '/genres/lofi.jpeg',
+  'ambient': '/genres/ambient.jpeg',
+  'chillout': '/genres/chillout.jpeg',
+  'chill': '/genres/chillout.jpeg',
+  'tropical-house': '/genres/chillout.jpeg',
+  'gospel': '/genres/gospels.jpeg',
+};
+
+const getGenreImage = (genre: string | undefined): string => {
+  if (!genre) return '/genres/pop.jpeg';
+  const normalizedGenre = genre.toLowerCase().replace(/\s+/g, '-');
+  return genreImages[normalizedGenre] || '/genres/pop.jpeg';
+};
 
 // Art styles for music videos - matching HomePage styles
 const artStyles = [
@@ -124,7 +183,7 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
   }, [handleScroll]);
 
   return (
-    <Box sx={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+    <Box sx={{ position: 'relative', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{
         position: 'absolute',
         top: 0,
@@ -139,7 +198,7 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
       }} />
       <List
         ref={listRef}
-        sx={{ px: 1, py: 1, maxHeight, overflowY: 'auto' }}
+        sx={{ px: 1, py: 1, flex: 1, overflowY: 'auto', maxHeight: maxHeight !== '100%' ? maxHeight : undefined }}
       >
         {children}
       </List>
@@ -160,11 +219,11 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
 };
 
 const CreateVideoPage: React.FC = () => {
-  const { songId } = useParams();
+  const { songId: urlSongId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
-  
+
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
   const [aspectRatio, setAspectRatio] = useState<string>('portrait');
@@ -172,10 +231,17 @@ const CreateVideoPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPromptError, setShowPromptError] = useState(false);
 
+  // Song selection state
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [selectedSongId, setSelectedSongId] = useState<string | null>(urlSongId || null);
+  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+
   // Character selection state
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
+  // Track which characters were added via @mention (for auto-removal when mention is deleted)
+  const mentionAddedCharactersRef = useRef<Set<string>>(new Set());
 
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -190,9 +256,23 @@ const CreateVideoPage: React.FC = () => {
   // Picker drawer states
   const [stylePickerOpen, setStylePickerOpen] = useState(false);
   const [castPickerOpen, setCastPickerOpen] = useState(false);
+  const [songPickerOpen, setSongPickerOpen] = useState(false);
+
+  // Song picker search and pagination (server-side)
+  const [songSearchQuery, setSongSearchQuery] = useState('');
+  const [songPickerPage, setSongPickerPage] = useState(1);
+  const [songPickerTotalCount, setSongPickerTotalCount] = useState(0);
+  const [isLoadingMoreSongs, setIsLoadingMoreSongs] = useState(false);
+  const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const SONGS_PAGE_SIZE = 10;
 
   // Max cast members allowed
   const MAX_CAST_MEMBERS = 5;
+
+  // Derived: selected cast members with full character data
+  const selectedCastMembers = characters.filter(char =>
+    selectedCharacterIds.includes(char.characterId)
+  );
 
   // Group characters by type
   const groupedCharacters = characters.reduce((acc, char) => {
@@ -205,11 +285,78 @@ const CreateVideoPage: React.FC = () => {
   // Order of character types for display
   const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App'];
 
+  // Fetch songs for picker with server-side search/pagination
+  const fetchSongsForPicker = useCallback(async (page = 1, search = '', append = false) => {
+    if (!user?.userId) return;
+
+    if (append) {
+      setIsLoadingMoreSongs(true);
+    } else {
+      setIsLoadingSongs(true);
+    }
+
+    try {
+      const response = await songsApi.getUserSongs(user.userId, {
+        page,
+        limit: SONGS_PAGE_SIZE,
+        search: search || undefined,
+      });
+
+      // Filter to only completed songs with audio
+      const fetchedSongs = (response.data?.songs || []).filter(
+        (song: Song) => song.status === 'completed' && song.audioUrl
+      );
+      const pagination = response.data?.pagination;
+
+      if (append) {
+        setSongs(prev => [...prev, ...fetchedSongs]);
+      } else {
+        setSongs(fetchedSongs);
+      }
+
+      if (pagination?.totalCount !== undefined) {
+        setSongPickerTotalCount(pagination.totalCount);
+      } else {
+        setSongPickerTotalCount(fetchedSongs.length);
+      }
+      setSongPickerPage(page);
+    } catch (error) {
+      console.error('Failed to fetch songs:', error);
+    } finally {
+      setIsLoadingSongs(false);
+      setIsLoadingMoreSongs(false);
+    }
+  }, [user?.userId]);
+
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchSongsForPicker(1, '');
+  }, [fetchSongsForPicker]);
+
+  // Debounced search for song picker
+  useEffect(() => {
+    if (!songPickerOpen) return;
+
+    if (songSearchDebounceRef.current) {
+      clearTimeout(songSearchDebounceRef.current);
+    }
+
+    songSearchDebounceRef.current = setTimeout(() => {
+      fetchSongsForPicker(1, songSearchQuery);
+    }, 300);
+
+    return () => {
+      if (songSearchDebounceRef.current) {
+        clearTimeout(songSearchDebounceRef.current);
+      }
+    };
+  }, [songSearchQuery, songPickerOpen, fetchSongsForPicker]);
+
   // Fetch user's characters on mount
   useEffect(() => {
     const fetchCharacters = async () => {
       if (!user?.userId) return;
-      
+
       setIsLoadingCharacters(true);
       try {
         const response = await charactersApi.getUserCharacters(user.userId);
@@ -220,14 +367,55 @@ const CreateVideoPage: React.FC = () => {
         setIsLoadingCharacters(false);
       }
     };
-    
+
     fetchCharacters();
   }, [user?.userId]);
+
+  // Auto-select/deselect characters when @mention is typed or removed (case-insensitive)
+  useEffect(() => {
+    if (characters.length === 0) return;
+
+    // Find all @mentions in the prompt
+    const mentionMatches = videoPrompt.match(/@(\w+)/g) || [];
+    const mentionedNames = mentionMatches.map((m) => m.slice(1).toLowerCase());
+
+    // Find which characters are currently mentioned in the prompt
+    const mentionedCharacterIds = characters
+      .filter((char) => mentionedNames.includes(char.characterName.toLowerCase()))
+      .map((char) => char.characterId);
+
+    // Add characters that are mentioned but not selected
+    mentionedCharacterIds.forEach((charId) => {
+      if (!selectedCharacterIds.includes(charId) && selectedCharacterIds.length < MAX_CAST_MEMBERS) {
+        mentionAddedCharactersRef.current.add(charId);
+        setSelectedCharacterIds((prev) => [...prev, charId]);
+      }
+    });
+
+    // Remove characters that were added via @mention but are no longer mentioned
+    const toRemove = selectedCharacterIds.filter((charId) => {
+      // Only auto-remove if it was added via @mention and is no longer mentioned
+      if (mentionAddedCharactersRef.current.has(charId) && !mentionedCharacterIds.includes(charId)) {
+        mentionAddedCharactersRef.current.delete(charId);
+        return true;
+      }
+      return false;
+    });
+
+    if (toRemove.length > 0) {
+      setSelectedCharacterIds((prev) => prev.filter((id) => !toRemove.includes(id)));
+    }
+  }, [videoPrompt, characters, selectedCharacterIds]);
   
   // Toggle character selection
   const handleCharacterToggle = (characterId: string) => {
     const character = characters.find(c => c.characterId === characterId);
     const isCurrentlySelected = selectedCharacterIds.includes(characterId);
+
+    if (isCurrentlySelected) {
+      // Remove from tracking if it was mention-added
+      mentionAddedCharactersRef.current.delete(characterId);
+    }
 
     setSelectedCharacterIds(prev =>
       isCurrentlySelected
@@ -237,14 +425,16 @@ const CreateVideoPage: React.FC = () => {
 
     // Also update the prompt with @CharacterName
     if (character) {
-      const mentionText = `@${character.characterName}`;
       if (isCurrentlySelected) {
-        // Remove from prompt
-        setVideoPrompt(prev => prev.replace(mentionText, '').replace(/\s+/g, ' ').trim());
+        // Remove @mention from prompt (case-insensitive)
+        const mentionPattern = new RegExp(`@${character.characterName}\\b`, 'gi');
+        setVideoPrompt(prev => prev.replace(mentionPattern, '').replace(/\s+/g, ' ').trim());
       } else {
-        // Add to prompt if not already there
+        // Add to prompt if not already there (case-insensitive check)
+        const mentionText = `@${character.characterName}`;
         setVideoPrompt(prev => {
-          if (prev.includes(mentionText)) return prev;
+          const mentionPattern = new RegExp(`@${character.characterName}\\b`, 'i');
+          if (mentionPattern.test(prev)) return prev;
           return prev ? `${prev} ${mentionText}` : mentionText;
         });
       }
@@ -257,7 +447,16 @@ const CreateVideoPage: React.FC = () => {
   };
 
   const handleGenerate = async () => {
-    if (!songId || !videoPrompt.trim()) {
+    if (!selectedSongId) {
+      setNotification({
+        open: true,
+        message: 'Please select a song first',
+        severity: 'error'
+      });
+      return;
+    }
+
+    if (!videoPrompt.trim()) {
       setShowPromptError(true);
       setNotification({
         open: true,
@@ -266,7 +465,7 @@ const CreateVideoPage: React.FC = () => {
       });
       return;
     }
-    
+
     if (!user?.userId) {
       setNotification({
         open: true,
@@ -275,13 +474,13 @@ const CreateVideoPage: React.FC = () => {
       });
       return;
     }
-    
+
     setIsGenerating(true);
-    
+
     try {
       const response = await videosApi.generateVideo({
         userId: user.userId,
-        songId,
+        songId: selectedSongId,
         videoType: videoType as 'still' | 'standard' | 'professional',
         style: selectedStyle,
         videoPrompt: videoPrompt.trim(),
@@ -379,7 +578,121 @@ const CreateVideoPage: React.FC = () => {
       <Box sx={{ display: 'flex', flexDirection: { xs:'column', sm: 'column', md: "column", lg: "row"  }, gap: 3, width: '100%', minWidth: 0 }}>
         {/* Left Column - Settings */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          {/* Video Description - FIRST (mandatory) */}
+          {/* Song Selection - FIRST (mandatory) */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              mb: 3,
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <MusicNoteIcon sx={{ color: '#007AFF' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Select Song
+              </Typography>
+              <Chip
+                label="Required"
+                size="small"
+                sx={{
+                  ml: 1,
+                  background: 'rgba(255,59,48,0.1)',
+                  color: '#FF3B30',
+                  fontWeight: 600,
+                  fontSize: '0.7rem'
+                }}
+              />
+            </Box>
+
+            <Button
+              onClick={() => setSongPickerOpen(true)}
+              disabled={isLoadingSongs}
+              fullWidth
+              sx={{
+                justifyContent: 'space-between',
+                textTransform: 'none',
+                py: 1.5,
+                px: 2,
+                borderRadius: '12px',
+                border: selectedSongId ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                background: selectedSongId ? 'rgba(0,122,255,0.05)' : '#fff',
+                color: '#1D1D1F',
+                fontWeight: 500,
+                '&:hover': { background: 'rgba(0,122,255,0.08)' },
+              }}
+            >
+              {isLoadingSongs ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={16} />
+                  <span>Loading songs...</span>
+                </Box>
+              ) : (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
+                  {selectedSongId ? (
+                    <Box
+                      component="img"
+                      src={getGenreImage(songs.find(s => s.songId === selectedSongId)?.genre)}
+                      alt="Song genre"
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '6px',
+                        objectFit: 'cover',
+                        flexShrink: 0,
+                      }}
+                    />
+                  ) : (
+                    <MusicNoteIcon sx={{ fontSize: 20, color: '#86868B' }} />
+                  )}
+                  <Box sx={{ textAlign: 'left', overflow: 'hidden' }}>
+                    {selectedSongId ? (
+                      <>
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {songs.find(s => s.songId === selectedSongId)?.songTitle || 'Selected Song'}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                          {songs.find(s => s.songId === selectedSongId)?.genre}
+                        </Typography>
+                      </>
+                    ) : (
+                      <Typography sx={{ color: '#86868B' }}>
+                        Choose a song for your video
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              )}
+              <KeyboardArrowDownIcon sx={{ color: '#86868B', flexShrink: 0 }} />
+            </Button>
+
+            {songs.length === 0 && !isLoadingSongs && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 1 }}>
+                  No songs yet. Create your first song!
+                </Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate('/create/music')}
+                  sx={{
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                    borderColor: '#007AFF',
+                    color: '#007AFF',
+                  }}
+                >
+                  Create Music
+                </Button>
+              </Box>
+            )}
+          </Paper>
+
+          {/* Video Description */}
           <Paper
             elevation={0}
             sx={{
@@ -397,16 +710,16 @@ const CreateVideoPage: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Video Description
               </Typography>
-              <Chip 
-                label="Required" 
-                size="small" 
-                sx={{ 
-                  ml: 1, 
-                  background: 'rgba(255,59,48,0.1)', 
+              <Chip
+                label="Required"
+                size="small"
+                sx={{
+                  ml: 1,
+                  background: 'rgba(255,59,48,0.1)',
                   color: '#FF3B30',
                   fontWeight: 600,
                   fontSize: '0.7rem'
-                }} 
+                }}
               />
             </Box>
             
@@ -448,31 +761,28 @@ const CreateVideoPage: React.FC = () => {
                     </Box>
                   ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {selectedCharacterIds.length === 0 ? (
+                      {selectedCastMembers.length === 0 ? (
                         <PersonIcon sx={{ fontSize: 20, color: '#86868B' }} />
                       ) : (
                         <Box sx={{ display: 'flex', ml: -0.5 }}>
-                          {selectedCharacterIds.slice(0, 3).map((id, idx) => {
-                            const char = characters.find(c => c.characterId === id);
-                            return (
-                              <Avatar
-                                key={id}
-                                src={char?.imageUrls?.[0] || getCharacterTypeImage(char?.characterType)}
-                                sx={{
-                                  width: 24,
-                                  height: 24,
-                                  border: '2px solid #fff',
-                                  ml: idx > 0 ? -1 : 0,
-                                }}
-                              />
-                            );
-                          })}
+                          {selectedCastMembers.slice(0, 3).map((char, idx) => (
+                            <Avatar
+                              key={char.characterId}
+                              src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
+                              sx={{
+                                width: 24,
+                                height: 24,
+                                border: '2px solid #fff',
+                                ml: idx > 0 ? -1 : 0,
+                              }}
+                            />
+                          ))}
                         </Box>
                       )}
                       <span>
-                        {selectedCharacterIds.length === 0
+                        {selectedCastMembers.length === 0
                           ? 'Select Cast Members'
-                          : `${selectedCharacterIds.length} selected`}
+                          : `${selectedCastMembers.length} selected`}
                       </span>
                     </Box>
                   )}
@@ -501,65 +811,46 @@ const CreateVideoPage: React.FC = () => {
               </Box>
 
               {/* Selected cast preview */}
-              {selectedCharacterIds.length > 0 && (
+              {selectedCastMembers.length > 0 && (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1.5 }}>
-                  {selectedCharacterIds.map((id) => {
-                    const char = characters.find(c => c.characterId === id);
-                    if (!char) return null;
-                    return (
-                      <Chip
-                        key={id}
-                        avatar={char.imageUrls?.[0] ? <Avatar src={char.imageUrls[0]} /> : undefined}
-                        label={char.characterName}
-                        onDelete={() => handleCharacterToggle(id)}
-                        size="small"
-                        sx={{
-                          background: 'rgba(0,122,255,0.1)',
+                  {selectedCastMembers.map((char) => (
+                    <Chip
+                      key={char.characterId}
+                      label={char.characterName}
+                      onDelete={() => handleCharacterToggle(char.characterId)}
+                      avatar={
+                        <Avatar
+                          src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
+                          alt={char.characterName}
+                          sx={{ width: 24, height: 24 }}
+                        />
+                      }
+                      sx={{
+                        background: 'rgba(0,122,255,0.1)',
+                        border: '1.5px solid #007AFF',
+                        fontWeight: 500,
+                        '& .MuiChip-deleteIcon': {
                           color: '#007AFF',
-                          '& .MuiChip-deleteIcon': {
-                            color: '#007AFF',
-                            '&:hover': { color: '#0056CC' },
-                          },
-                        }}
-                      />
-                    );
-                  })}
+                          '&:hover': { color: '#0056b3' },
+                        },
+                      }}
+                    />
+                  ))}
                 </Box>
               )}
             </Box>
             
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              placeholder="Describe the scenes, setting, and story for your music video... Selected characters above will automatically appear in your video."
+            <MentionTextField
               value={videoPrompt}
-              onChange={(e) => {
-                setVideoPrompt(e.target.value);
-                if (e.target.value.trim()) setShowPromptError(false);
+              onChange={(value) => {
+                setVideoPrompt(value);
+                if (value.trim()) setShowPromptError(false);
               }}
-              required
+              characterNames={characters.map(c => c.characterName)}
+              placeholder="Describe the scenes, setting, and story for your music video... Type @charactername to add cast members."
+              rows={4}
               error={showPromptError && !videoPrompt.trim()}
               helperText={showPromptError && !videoPrompt.trim() ? 'Please describe your music video' : ''}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '16px',
-                  background: '#fff',
-                  '& fieldset': {
-                    borderColor: (showPromptError && !videoPrompt.trim()) ? 'rgba(255,59,48,0.5)' : 'rgba(0,0,0,0.1)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: (showPromptError && !videoPrompt.trim()) ? 'rgba(255,59,48,0.7)' : 'rgba(0,122,255,0.3)',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: (showPromptError && !videoPrompt.trim()) ? '#FF3B30' : '#007AFF',
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  fontSize: '0.95rem',
-                  lineHeight: 1.6,
-                },
-              }}
             />
           </Paper>
 
@@ -1036,7 +1327,7 @@ const CreateVideoPage: React.FC = () => {
               Select Cast Members
             </Typography>
             <Typography variant="caption" sx={{ color: '#86868B' }}>
-              {selectedCharacterIds.length}/{MAX_CAST_MEMBERS} selected
+              {selectedCastMembers.length}/{MAX_CAST_MEMBERS} selected
             </Typography>
           </Box>
         </Box>
@@ -1085,7 +1376,7 @@ const CreateVideoPage: React.FC = () => {
                   </Typography>
                   {typeCharacters.map((char) => {
                     const isSelected = selectedCharacterIds.includes(char.characterId);
-                    const isDisabled = !isSelected && selectedCharacterIds.length >= MAX_CAST_MEMBERS;
+                    const isDisabled = !isSelected && selectedCastMembers.length >= MAX_CAST_MEMBERS;
                     return (
                       <ListItem key={char.characterId} disablePadding>
                         <ListItemButton
@@ -1129,6 +1420,196 @@ const CreateVideoPage: React.FC = () => {
           <Button
             variant="outlined"
             onClick={() => setCastPickerOpen(false)}
+            sx={{
+              color: '#86868B',
+              borderColor: 'rgba(0,0,0,0.15)',
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: 'rgba(0,0,0,0.3)',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Drawer>
+
+      {/* Song Picker Drawer */}
+      <Drawer
+        anchor="bottom"
+        open={songPickerOpen}
+        onClose={() => {
+          setSongPickerOpen(false);
+          setSongSearchQuery('');
+        }}
+        sx={{ zIndex: 1400 }}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            height: '65vh',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
+      >
+        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)', flexShrink: 0 }}>
+          <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1.5 }}>
+            Select a Song
+          </Typography>
+          {/* Search input */}
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search songs..."
+            value={songSearchQuery}
+            onChange={(e) => setSongSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#86868B', fontSize: 20 }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '10px',
+                backgroundColor: 'rgba(0,0,0,0.03)',
+                '& fieldset': { border: 'none' },
+              },
+            }}
+          />
+        </Box>
+        <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          {/* Loading overlay - shows spinner centered while keeping content visible */}
+          {isLoadingSongs && songSearchQuery && (
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255,255,255,0.8)',
+              zIndex: 1,
+            }}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
+          <ScrollableListWrapper maxHeight="100%">
+          {songs.length === 0 && !songSearchQuery ? (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                No songs yet. Create your first song!
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setSongPickerOpen(false);
+                  navigate('/create/music');
+                }}
+                sx={{
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  borderColor: '#007AFF',
+                  color: '#007AFF',
+                }}
+              >
+                <MusicNoteIcon sx={{ mr: 1 }} />
+                Create Music
+              </Button>
+            </Box>
+          ) : songs.length === 0 && songSearchQuery ? (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#86868B' }}>
+                No songs match "{songSearchQuery}"
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              {songs.map((song) => {
+                const isSelected = selectedSongId === song.songId;
+                return (
+                  <ListItem key={song.songId} disablePadding>
+                    <ListItemButton
+                      onClick={() => {
+                        setSelectedSongId(song.songId);
+                        setSongPickerOpen(false);
+                        setSongSearchQuery('');
+                      }}
+                      sx={{
+                        borderRadius: '12px',
+                        mx: 1,
+                        mb: 0.5,
+                        py: 1.5,
+                        background: isSelected ? 'rgba(0,122,255,0.1)' : 'transparent',
+                        border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={getGenreImage(song.genre)}
+                        alt={song.genre}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          mr: 2,
+                        }}
+                      />
+                      <ListItemText
+                        primary={song.songTitle}
+                        secondary={`${song.genre}${song.mood ? ` • ${song.mood}` : ''}${song.actualDuration ? ` • ${Math.floor(song.actualDuration / 60)}:${String(Math.floor(song.actualDuration % 60)).padStart(2, '0')}` : ''}`}
+                        primaryTypographyProps={{ fontWeight: 600 }}
+                        secondaryTypographyProps={{ fontSize: '0.75rem' }}
+                      />
+                      {isSelected && <CheckIcon sx={{ color: '#007AFF' }} />}
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+              {songs.length < songPickerTotalCount && (
+                <Box sx={{ p: 2, textAlign: 'center' }}>
+                  <Button
+                    variant="text"
+                    onClick={() => fetchSongsForPicker(songPickerPage + 1, songSearchQuery, true)}
+                    disabled={isLoadingMoreSongs}
+                    sx={{
+                      color: '#007AFF',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {isLoadingMoreSongs ? (
+                      <CircularProgress size={16} sx={{ mr: 1 }} />
+                    ) : null}
+                    Load More
+                  </Button>
+                </Box>
+              )}
+            </>
+          )}
+        </ScrollableListWrapper>
+        </Box>
+        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setSongPickerOpen(false);
+              setSongSearchQuery('');
+            }}
             sx={{
               color: '#86868B',
               borderColor: 'rgba(0,0,0,0.15)',

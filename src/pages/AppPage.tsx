@@ -1140,7 +1140,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => navigate(activeTab === 'songs' ? '/create?tab=song' : '/create?tab=video')}
+            onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
             sx={{
               background: '#007AFF',
               borderRadius: '10px',
