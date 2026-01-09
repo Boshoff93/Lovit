@@ -749,10 +749,14 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
           onClick={onSidebarCollapse}
           size="small"
           sx={{
-            color: '#86868B',
+            width: 36,
+            height: 36,
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            color: '#fff',
+            boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
             '&:hover': {
-              color: '#007AFF',
-              backgroundColor: 'rgba(0,122,255,0.08)',
+              background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
+              boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
             },
           }}
         >

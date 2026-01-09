@@ -29,7 +29,7 @@ import {
 import CheckIcon from '@mui/icons-material/Check';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseIcon from '@mui/icons-material/Pause';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAudioPlayer, Song as AudioSong } from '../contexts/AudioPlayerContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
@@ -379,6 +379,7 @@ type TabType = 'song' | 'video';
 const CreatePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const initialTab = (searchParams.get('tab') as TabType) || 'song';
@@ -603,31 +604,34 @@ const CreatePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const tab = searchParams.get('tab') as TabType;
+    // Parse params directly from location.search for reliable updates
+    const params = new URLSearchParams(location.search);
+
+    const tab = params.get('tab') as TabType;
     if (tab && ['song', 'video'].includes(tab)) {
       setActiveTab(tab);
     }
-    const song = searchParams.get('song');
+    const song = params.get('song');
     if (song) {
       setSelectedSong(song);
     } else {
       // Clear selected song if no song param in URL (e.g., navigating to /create?tab=video directly)
       setSelectedSong('');
     }
-    
+
     // Initialize song prompt from URL parameter
-    const promptFromUrl = searchParams.get('prompt');
+    const promptFromUrl = params.get('prompt');
     if (promptFromUrl) {
       setSongPrompt(promptFromUrl);
     }
-    
+
     // Handle "Generate Similar" - pre-fill form with original song's data
-    const isSimilar = searchParams.get('similar') === 'true';
+    const isSimilar = params.get('similar') === 'true';
     if (isSimilar) {
-      const genreFromUrl = searchParams.get('genre');
-      const moodFromUrl = searchParams.get('mood');
-      const languageFromUrl = searchParams.get('language');
-      
+      const genreFromUrl = params.get('genre');
+      const moodFromUrl = params.get('mood');
+      const languageFromUrl = params.get('language');
+
       // Genre normalization - map legacy IDs to current ones
       const normalizeGenre = (genre: string): string => {
         const genreAliases: Record<string, string> = {
@@ -639,7 +643,7 @@ const CreatePage: React.FC = () => {
         const normalized = genre.toLowerCase();
         return genreAliases[normalized] || normalized;
       };
-      
+
       // Pre-fill genre and mood - handle "auto" values correctly
       if (genreFromUrl) {
         if (genreFromUrl.toLowerCase() === 'auto') {
@@ -660,11 +664,11 @@ const CreatePage: React.FC = () => {
       if (languageFromUrl) {
         setSelectedLanguage(languageFromUrl);
       }
-      
+
       // Pre-fill creativity and song length
-      const creativityFromUrl = searchParams.get('creativity');
-      const songLengthFromUrl = searchParams.get('songLength');
-      
+      const creativityFromUrl = params.get('creativity');
+      const songLengthFromUrl = params.get('songLength');
+
       if (creativityFromUrl) {
         const creativityValue = parseInt(creativityFromUrl, 10);
         if (!isNaN(creativityValue) && creativityValue >= 0 && creativityValue <= 10) {
@@ -675,13 +679,15 @@ const CreatePage: React.FC = () => {
         setSongLength(songLengthFromUrl);
       }
     }
-  }, [searchParams]);
+  }, [location.search]);
 
   // Fetch user's characters and songs
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+
     const fetchCharacters = async () => {
       if (!user?.userId) return;
-      
+
       setIsLoadingCharacters(true);
       try {
         const response = await charactersApi.getUserCharacters(user.userId);
@@ -692,10 +698,10 @@ const CreatePage: React.FC = () => {
         setIsLoadingCharacters(false);
       }
     };
-    
+
     const fetchSongs = async () => {
       if (!user?.userId) return;
-      
+
       setIsLoadingSongs(true);
       setSongsPage(1);
       try {
@@ -705,13 +711,13 @@ const CreatePage: React.FC = () => {
         const completedSongs = (response.data.songs || [])
           .filter((s: Song) => s.status === 'completed');
         setSongs(completedSongs);
-        
+
         // Check if there are more songs
         const pagination = response.data.pagination;
         setHasMoreSongs(pagination?.hasNextPage ?? completedSongs.length >= 20);
-        
+
         // If a song is pre-selected (from URL) but not in the list, fetch it separately
-        const preSelectedSong = searchParams.get('song');
+        const preSelectedSong = params.get('song');
         if (preSelectedSong && !completedSongs.find((s: Song) => s.songId === preSelectedSong)) {
           try {
             const singleSongResponse = await songsApi.getSongsByIds(user.userId, [preSelectedSong]);
@@ -733,10 +739,10 @@ const CreatePage: React.FC = () => {
         setIsLoadingSongs(false);
       }
     };
-    
+
     fetchCharacters();
     fetchSongs();
-  }, [user?.userId, searchParams]);
+  }, [user?.userId, location.search]);
 
   // Server-side song search with debounce
   useEffect(() => {

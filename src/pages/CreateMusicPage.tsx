@@ -19,7 +19,7 @@ import {
   Slider,
   IconButton,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, charactersApi } from '../services/api';
@@ -217,6 +217,7 @@ const SONG_COST = 20;
 
 const CreateMusicPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
 
   // Get user and allowances from Redux store
@@ -287,6 +288,70 @@ const CreateMusicPage: React.FC = () => {
     };
     loadCharacters();
   }, [user?.userId]);
+
+  // Handle URL parameters for "Generate Similar" functionality
+  useEffect(() => {
+    // Initialize song prompt from URL parameter
+    const promptFromUrl = searchParams.get('prompt');
+    if (promptFromUrl) {
+      setSongPrompt(promptFromUrl);
+    }
+
+    // Handle "Generate Similar" - pre-fill form with original song's data
+    const isSimilar = searchParams.get('similar') === 'true';
+    if (isSimilar) {
+      const genreFromUrl = searchParams.get('genre');
+      const moodFromUrl = searchParams.get('mood');
+      const languageFromUrl = searchParams.get('language');
+
+      // Genre normalization - map legacy IDs to current ones
+      const normalizeGenre = (genre: string): string => {
+        const genreAliases: Record<string, string> = {
+          'chillout': 'tropical-house',
+          'chill': 'tropical-house',
+          'j-pop': 'jpop',
+          'k-pop': 'kpop',
+        };
+        const normalized = genre.toLowerCase();
+        return genreAliases[normalized] || normalized;
+      };
+
+      // Pre-fill genre and mood - handle "auto" values correctly
+      if (genreFromUrl) {
+        if (genreFromUrl.toLowerCase() === 'auto') {
+          setAutoPickGenre(true);
+        } else {
+          setSelectedGenre(normalizeGenre(genreFromUrl));
+          setAutoPickGenre(false);
+        }
+      }
+      if (moodFromUrl) {
+        if (moodFromUrl.toLowerCase() === 'auto') {
+          setAutoPickMood(true);
+        } else {
+          setSelectedMood(moodFromUrl.toLowerCase());
+          setAutoPickMood(false);
+        }
+      }
+      if (languageFromUrl) {
+        setSelectedLanguage(languageFromUrl);
+      }
+
+      // Pre-fill creativity and song length
+      const creativityFromUrl = searchParams.get('creativity');
+      const songLengthFromUrl = searchParams.get('songLength');
+
+      if (creativityFromUrl) {
+        const creativityValue = parseInt(creativityFromUrl, 10);
+        if (!isNaN(creativityValue) && creativityValue >= 0 && creativityValue <= 10) {
+          setCreativity(creativityValue);
+        }
+      }
+      if (songLengthFromUrl === 'short' || songLengthFromUrl === 'standard') {
+        setSongLength(songLengthFromUrl);
+      }
+    }
+  }, [searchParams]);
 
   // Insert character into prompt
   const insertCharacter = useCallback((character: Character) => {

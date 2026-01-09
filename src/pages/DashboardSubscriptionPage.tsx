@@ -555,8 +555,8 @@ const DashboardSubscriptionPage: React.FC = () => {
         </Box>
 
         {/* Right sidebar: Checkout Card */}
-        <Box sx={{ width: { xs: '100%', lg: 300 }, flexShrink: 0 }}>
-          <Card sx={{ borderRadius: '16px', position: { lg: 'sticky' }, top: 20, border: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ width: { xs: '100%', lg: 300 }, flexShrink: 0, position: { lg: 'sticky' }, top: 20, alignSelf: 'flex-start' }}>
+          <Card sx={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)' }}>
             <CardContent sx={{ p: 3 }}>
               {/* Billing Frequency */}
               <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1.5 }}>

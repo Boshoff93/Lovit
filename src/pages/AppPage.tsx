@@ -1113,7 +1113,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     params.set('similar', 'true');
     params.set('originalTitle', song.songTitle);
     
-    navigate(`/create?${params.toString()}`);
+    navigate(`/create/music?${params.toString()}`);
   };
 
   const confirmDeleteSong = async () => {
