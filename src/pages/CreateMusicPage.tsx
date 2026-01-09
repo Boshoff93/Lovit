@@ -193,7 +193,7 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
       }} />
       <List
         ref={listRef}
-        sx={{ px: 1, py: 1, maxHeight, overflowY: 'auto' }}
+        sx={{ py: 1, maxHeight, overflowY: 'auto' }}
       >
         {children}
       </List>
@@ -665,11 +665,17 @@ const CreateMusicPage: React.FC = () => {
                       ))}
                     </Box>
                   )}
-                  <span>
+                  <Box
+                    component="span"
+                    sx={{
+                      fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+                      color: selectedCastMembers.length === 0 ? '#86868B' : 'inherit',
+                    }}
+                  >
                     {selectedCastMembers.length === 0
                       ? 'Select Cast Members'
                       : `${selectedCastMembers.length} selected`}
-                  </span>
+                  </Box>
                 </Box>
                 <KeyboardArrowDownIcon sx={{ color: '#86868B' }} />
               </Button>
@@ -1105,9 +1111,17 @@ const CreateMusicPage: React.FC = () => {
               top: 100,
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
-              Summary
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                Summary
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  {SONG_COST}
+                </Typography>
+              </Box>
+            </Box>
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', mb: 1.5 }}>
                 <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Genre</Typography>
@@ -1192,16 +1206,7 @@ const CreateMusicPage: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-            <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {SONG_COST}
-                </Typography>
-              </Box>
-            </Box>
             <Button
-              fullWidth
               variant="contained"
               onClick={handleGenerateSong}
               disabled={isGeneratingSong}
@@ -1213,6 +1218,9 @@ const CreateMusicPage: React.FC = () => {
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '1rem',
+                width: { xs: '100%', sm: 'fit-content', lg: '100%' },
+                mx: 'auto',
+                display: 'flex',
                 '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
                 '&.Mui-disabled': { background: 'rgba(0,0,0,0.1)' },
               }}
@@ -1220,10 +1228,7 @@ const CreateMusicPage: React.FC = () => {
               {isGeneratingSong ? (
                 <CircularProgress size={24} sx={{ color: '#fff' }} />
               ) : (
-                <>
-                  <MusicNoteIcon sx={{ mr: 1 }} />
-                  Generate Song
-                </>
+                'Generate Song'
               )}
             </Button>
           </Paper>
@@ -1235,19 +1240,34 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={genrePickerOpen}
         onClose={() => setGenrePickerOpen(false)}
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: '20px',
-            borderTopRightRadius: '20px',
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
             overflow: 'hidden',
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
+            // Match the page content container exactly
+            // Layout adds: px: { xs: 1, sm: 2, md: 3 } (8px, 16px, 24px)
+            // Page adds: px: { xs: 2, sm: 3, md: 4 } (16px, 24px, 32px)
+            // Total padding from edges: 24px, 40px, 56px
+            // On desktop, also offset by sidebar (240px)
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           },
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Genre
@@ -1281,7 +1301,7 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
-        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
             onClick={() => setGenrePickerOpen(false)}
@@ -1309,19 +1329,29 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={moodPickerOpen}
         onClose={() => setMoodPickerOpen(false)}
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: '20px',
-            borderTopRightRadius: '20px',
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
             overflow: 'hidden',
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           },
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Mood
@@ -1355,7 +1385,7 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
-        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
             onClick={() => setMoodPickerOpen(false)}
@@ -1383,19 +1413,29 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={languagePickerOpen}
         onClose={() => setLanguagePickerOpen(false)}
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: '20px',
-            borderTopRightRadius: '20px',
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
             overflow: 'hidden',
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           },
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Language
@@ -1429,7 +1469,7 @@ const CreateMusicPage: React.FC = () => {
             </ListItem>
           ))}
         </ScrollableListWrapper>
-        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
             onClick={() => setLanguagePickerOpen(false)}
@@ -1457,19 +1497,29 @@ const CreateMusicPage: React.FC = () => {
         anchor="bottom"
         open={castPickerOpen}
         onClose={() => setCastPickerOpen(false)}
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: '20px',
-            borderTopRightRadius: '20px',
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
             overflow: 'hidden',
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           },
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Cast Members
@@ -1569,7 +1619,7 @@ const CreateMusicPage: React.FC = () => {
             </Box>
           )}
         </ScrollableListWrapper>
-        <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
             onClick={() => setCastPickerOpen(false)}

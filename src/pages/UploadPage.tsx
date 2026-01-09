@@ -949,16 +949,29 @@ const UploadPage: React.FC = () => {
         onClose={() => setGenrePickerOpen(false)}
         onOpen={() => setGenrePickerOpen(true)}
         disableSwipeToOpen
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           }
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Genre
@@ -1023,16 +1036,29 @@ const UploadPage: React.FC = () => {
         onClose={() => setMoodPickerOpen(false)}
         onOpen={() => setMoodPickerOpen(true)}
         disableSwipeToOpen
-        sx={{ zIndex: 1400 }}
+        sx={{
+          zIndex: 1400,
+          '& .MuiBackdrop-root': {
+            left: { xs: 0, md: 240 },
+          },
+        }}
         PaperProps={{
           sx: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            borderRadius: '20px 20px 0 0',
             maxHeight: '70vh',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+            left: { xs: 0, sm: 0, md: 310 },
+            right: { xs: 0, sm: 0, md: 70 },
+            width: 'auto',
+            maxWidth: 1100,
+            mx: 'auto',
+            px: { xs: 2, sm: 3, md: 4 },
           }
         }}
       >
-        <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
             Select Mood

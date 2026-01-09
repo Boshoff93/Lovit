@@ -1092,7 +1092,6 @@ const CreateCharacterPage: React.FC = () => {
 
         {/* Create/Update Button */}
         <Button
-          fullWidth
           variant="contained"
           onClick={handleCreateCharacter}
           disabled={isCreatingCharacter || isLoadingCharacter}
@@ -1104,6 +1103,9 @@ const CreateCharacterPage: React.FC = () => {
             textTransform: 'none',
             fontWeight: 600,
             fontSize: '1.1rem',
+            width: { xs: '100%', sm: 'fit-content' },
+            mx: 'auto',
+            display: 'flex',
             '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
             '&.Mui-disabled': { background: 'rgba(0,0,0,0.1)' },
           }}
@@ -1111,12 +1113,9 @@ const CreateCharacterPage: React.FC = () => {
           {isCreatingCharacter ? (
             <CircularProgress size={24} sx={{ color: '#fff' }} />
           ) : (
-            <>
-              <PersonIcon sx={{ mr: 1 }} />
-              {isEditMode 
-                ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}` 
-                : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`}
-            </>
+            isEditMode
+              ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`
+              : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`
           )}
         </Button>
 
@@ -1127,18 +1126,29 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={agePickerOpen}
           onClose={() => setAgePickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Age
@@ -1194,18 +1204,29 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={hairColorPickerOpen}
           onClose={() => setHairColorPickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Hair Color
@@ -1264,18 +1285,29 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={hairLengthPickerOpen}
           onClose={() => setHairLengthPickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Hair Length
@@ -1336,18 +1368,29 @@ const CreateCharacterPage: React.FC = () => {
           anchor="bottom"
           open={eyeColorPickerOpen}
           onClose={() => setEyeColorPickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Eye Color

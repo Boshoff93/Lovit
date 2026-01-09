@@ -156,7 +156,8 @@ const GlobalAudioPlayer: React.FC = () => {
       sx={{
         position: 'fixed',
         bottom: 0,
-        left: 0,
+        // On mobile: full width. On desktop (md+): start after sidebar
+        left: { xs: 0, md: 240 },
         right: 0,
         zIndex: 1300,
         background: '#fff',

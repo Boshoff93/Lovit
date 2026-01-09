@@ -1910,9 +1910,17 @@ const CreatePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
-                Summary
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Summary
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    20
+                  </Typography>
+                </Box>
+              </Box>
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Genre</Typography>
@@ -2011,19 +2019,7 @@ const CreatePage: React.FC = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <BoltIcon sx={{ color: '#007AFF', fontSize: 20 }} />
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
-                  </Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    20
-                  </Typography>
-                </Box>
-              </Box>
               <Button
-                fullWidth
                 variant="contained"
                 onClick={handleGenerateSong}
                 disabled={isGeneratingSong}
@@ -2035,6 +2031,9 @@ const CreatePage: React.FC = () => {
                   textTransform: 'none',
                   fontWeight: 600,
                   fontSize: '1rem',
+                  width: { xs: '100%', sm: 'fit-content', lg: '100%' },
+                  mx: 'auto',
+                  display: 'flex',
                   '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
                   '&.Mui-disabled': { background: 'rgba(0,0,0,0.1)' },
                 }}
@@ -2042,10 +2041,7 @@ const CreatePage: React.FC = () => {
                 {isGeneratingSong ? (
                   <CircularProgress size={24} sx={{ color: '#fff' }} />
                 ) : (
-                  <>
-                    <MusicNoteIcon sx={{ mr: 1 }} />
-                    Generate Song
-                  </>
+                  'Generate Song'
                 )}
               </Button>
             </Paper>
@@ -2057,18 +2053,29 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={genrePickerOpen}
           onClose={() => setGenrePickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Genre
@@ -2139,18 +2146,29 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={moodPickerOpen}
           onClose={() => setMoodPickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Mood
@@ -2221,18 +2239,29 @@ const CreatePage: React.FC = () => {
           anchor="bottom"
           open={languagePickerOpen}
           onClose={() => setLanguagePickerOpen(false)}
-          sx={{ zIndex: 1400 }}
+          sx={{
+            zIndex: 1400,
+            '& .MuiBackdrop-root': {
+              left: { xs: 0, md: 240 },
+            },
+          }}
           PaperProps={{
             sx: {
-              borderTopLeftRadius: '20px',
-              borderTopRightRadius: '20px',
+              borderRadius: '20px 20px 0 0',
               maxHeight: '70vh',
+              overflow: 'hidden',
               background: 'rgba(255,255,255,0.98)',
               backdropFilter: 'blur(20px)',
+              left: { xs: 0, sm: 0, md: 310 },
+              right: { xs: 0, sm: 0, md: 70 },
+              width: 'auto',
+              maxWidth: 1100,
+              mx: 'auto',
+              px: { xs: 2, sm: 3, md: 4 },
             },
           }}
         >
-          <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
               Select Language
@@ -2381,18 +2410,29 @@ const CreatePage: React.FC = () => {
                 setSongPickerOpen(false);
                 setSongSearchQuery('');
               }}
-              sx={{ zIndex: 1400 }}
+              sx={{
+                zIndex: 1400,
+                '& .MuiBackdrop-root': {
+                  left: { xs: 0, md: 240 },
+                },
+              }}
               PaperProps={{
                 sx: {
-                  borderTopLeftRadius: '20px',
-                  borderTopRightRadius: '20px',
+                  borderRadius: '20px 20px 0 0',
                   maxHeight: '70vh',
+                  overflow: 'hidden',
                   background: 'rgba(255,255,255,0.98)',
                   backdropFilter: 'blur(20px)',
+                  left: { xs: 0, sm: 0, md: 310 },
+                  right: { xs: 0, sm: 0, md: 70 },
+                  width: 'auto',
+                  maxWidth: 1100,
+                  mx: 'auto',
+                  px: { xs: 2, sm: 3, md: 4 },
                 },
               }}
             >
-              <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+              <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                 <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left', mb: 2 }}>
                   Select Song
@@ -3000,18 +3040,29 @@ const CreatePage: React.FC = () => {
               anchor="bottom"
               open={stylePickerOpen}
               onClose={() => setStylePickerOpen(false)}
-              sx={{ zIndex: 1400 }}
+              sx={{
+                zIndex: 1400,
+                '& .MuiBackdrop-root': {
+                  left: { xs: 0, md: 240 },
+                },
+              }}
               PaperProps={{
                 sx: {
-                  borderTopLeftRadius: '20px',
-                  borderTopRightRadius: '20px',
+                  borderRadius: '20px 20px 0 0',
                   maxHeight: '70vh',
+                  overflow: 'hidden',
                   background: 'rgba(255,255,255,0.98)',
                   backdropFilter: 'blur(20px)',
+                  left: { xs: 0, sm: 0, md: 310 },
+                  right: { xs: 0, sm: 0, md: 70 },
+                  width: 'auto',
+                  maxWidth: 1100,
+                  mx: 'auto',
+                  px: { xs: 2, sm: 3, md: 4 },
                 },
               }}
             >
-              <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+              <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                 <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
                   Select Visual Style
@@ -3289,9 +3340,17 @@ const CreatePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
-                Summary
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  Summary
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>🪙</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    {getCredits()}
+                  </Typography>
+                </Box>
+              </Box>
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Song</Typography>
@@ -3348,19 +3407,7 @@ const CreatePage: React.FC = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box sx={{ p: 2, borderRadius: '12px', background: 'linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(88,86,214,0.1) 100%)', mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <BoltIcon sx={{ color: '#007AFF', fontSize: 20 }} />
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>Total Tokens</Typography>
-                  </Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    {getCredits()}
-                  </Typography>
-                </Box>
-              </Box>
               <Button
-                fullWidth
                 variant="contained"
                 onClick={handleGenerateVideo}
                 disabled={isGeneratingVideo || !selectedSong || !videoPrompt.trim()}
@@ -3372,14 +3419,16 @@ const CreatePage: React.FC = () => {
                   textTransform: 'none',
                   fontWeight: 600,
                   fontSize: '1rem',
+                  width: { xs: '100%', sm: 'fit-content', lg: '100%' },
+                  mx: 'auto',
+                  display: 'flex',
                   '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
                 }}
               >
-                {isGeneratingVideo ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : (
-                  <>
-                    <MovieIcon sx={{ mr: 1 }} />
-                    Generate Music Video
-                  </>
+                {isGeneratingVideo ? (
+                  <CircularProgress size={24} sx={{ color: '#fff' }} />
+                ) : (
+                  'Generate Music Video'
                 )}
               </Button>
             </Paper>
