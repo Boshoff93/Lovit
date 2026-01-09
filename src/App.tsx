@@ -171,11 +171,11 @@ const RequireSubscription = ({
   if (!hasSubscription) {
     return (
       <Box sx={{ position: 'relative', width: '100%', minHeight: '100%' }}>
-        {/* Blur overlay - only covers content area */}
+        {/* Blur overlay - only covers content area, accounts for mobile top bar */}
         <Box
           sx={{
             position: 'fixed',
-            top: 0,
+            top: { xs: 56, md: 0 }, // Account for mobile top bar (56px)
             left: { xs: 0, md: 240 },
             right: 0,
             bottom: 0,
@@ -186,7 +186,7 @@ const RequireSubscription = ({
         />
         <FeatureLockedModal
           open={showModal}
-          onClose={() => setShowModal(false)}
+          onClose={() => {}} // Modal cannot be dismissed - only way out is to subscribe
           featureName={featureName}
           description={description}
         />

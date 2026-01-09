@@ -39,8 +39,9 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      // No onClose - modal cannot be dismissed on locked pages
       hideBackdrop
+      disableEscapeKeyDown
       PaperProps={{
         sx: {
           borderRadius: '20px',
@@ -53,7 +54,8 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
       sx={{
         position: 'fixed',
         zIndex: 1301,
-        top: 0,
+        // Account for mobile top bar (56px) on small screens
+        top: { xs: 56, md: 0 },
         left: { xs: 0, md: 240 },
         right: 0,
         bottom: 0,

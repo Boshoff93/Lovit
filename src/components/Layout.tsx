@@ -306,6 +306,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       flexDirection: 'column',
       height: '100%',
       py: 2,
+      // Add bottom padding when audio player is visible to prevent Sign Out from being hidden
+      pb: hasActivePlayer ? 10 : 2,
     }}>
       {/* Logo and Collapse button row */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, mb: 3 }}>
@@ -541,7 +543,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             const active = location.pathname === item.path;
             // Show "My Videos" as active when viewing a video
             const isViewingVideo = item.path === '/my-videos' && location.pathname.startsWith('/video/');
-            const isHighlighted = active || isViewingVideo;
+            // Show "My Cast" as active when editing a cast member
+            const isEditingCast = item.path === '/my-cast' && location.pathname.startsWith('/my-cast/edit/');
+            const isHighlighted = active || isViewingVideo || isEditingCast;
+            const showIndicator = isViewingVideo || isEditingCast;
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
@@ -570,7 +575,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       color: isHighlighted ? '#007AFF' : '#1D1D1F',
                     }}
                   />
-                  {isViewingVideo && (
+                  {showIndicator && (
                     <Box
                       sx={{
                         width: 6,
@@ -751,6 +756,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         height: '100%',
         py: 2,
         alignItems: 'center',
+        // Add bottom padding when audio player is visible to prevent Sign Out from being hidden
+        pb: hasActivePlayer ? 10 : 2,
       }}>
         {/* Logo only */}
         <Box
@@ -966,6 +973,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               keepMounted: true, // Better mobile performance
             }}
             sx={{
+              // Z-index must be higher than FeatureLockedModal overlay (1300) and modal (1301)
+              zIndex: 1400,
               '& .MuiDrawer-paper': {
                 width: sidebarWidth,
                 boxSizing: 'border-box',
