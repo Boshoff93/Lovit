@@ -1368,7 +1368,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             {/* Upload Button */}
             <Button
               variant="outlined"
-              startIcon={<CloudUploadIcon />}
+              startIcon={<CloudUploadIcon sx={{ color: '#007AFF' }} />}
               onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
               sx={{
                 borderColor: '#007AFF',
@@ -1378,6 +1378,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 fontWeight: 600,
                 px: 2,
                 py: 0.75,
+                '& .MuiButton-startIcon': {
+                  color: '#007AFF',
+                },
                 '&:hover': {
                   borderColor: '#0066CC',
                   color: '#0066CC',
@@ -1422,7 +1425,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 },
               }}
             >
-              <CloudUploadIcon sx={{ fontSize: 22 }} />
+              <CloudUploadIcon sx={{ fontSize: 22, color: '#007AFF' }} />
             </IconButton>
             <IconButton
               onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
