@@ -166,14 +166,13 @@ const CharactersPage: React.FC = () => {
       {/* Header Row: Title + Create Button */}
       <Box sx={{
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'space-between',
         mb: 4,
         gap: 2,
-        flexWrap: 'wrap',
       }}>
         {/* Left: Title with Icon */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
           <Box
             sx={{
               width: 56,
@@ -203,9 +202,9 @@ const CharactersPage: React.FC = () => {
           >
             <FolderSpecialIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 AI Assets
               </Typography>
               <Chip
@@ -220,30 +219,29 @@ const CharactersPage: React.FC = () => {
                 }}
               />
             </Box>
-            <Typography sx={{ color: '#86868B', mt: 0.5 }}>
+            <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Manage your characters, products, and places
             </Typography>
           </Box>
         </Box>
 
         {/* Right: Create Button */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ flexShrink: 0 }}>
           {/* Mobile: Icon button */}
           <Tooltip title="Create New" arrow>
             <IconButton
               onClick={() => navigate('/ai-assets/create')}
               sx={{
-                display: { xs: 'flex', md: 'none' },
+                display: { xs: 'flex', sm: 'none' },
                 background: '#007AFF',
                 color: '#fff',
-                width: 32,
-                height: 32,
-                flexShrink: 0,
+                width: 44,
+                height: 44,
                 boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                 '&:hover': { background: '#0066CC' },
               }}
             >
-              <AddIcon sx={{ fontSize: 18 }} />
+              <AddIcon sx={{ fontSize: 22 }} />
             </IconButton>
           </Tooltip>
           {/* Desktop: Full button */}
@@ -252,7 +250,7 @@ const CharactersPage: React.FC = () => {
             startIcon={<AddIcon />}
             onClick={() => navigate('/ai-assets/create')}
             sx={{
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: 'none', sm: 'flex' },
               background: '#007AFF',
               borderRadius: '10px',
               textTransform: 'none',

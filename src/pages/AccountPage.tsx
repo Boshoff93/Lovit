@@ -57,7 +57,7 @@ const AccountPage: React.FC = () => {
   const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
   
-  // Profile editing state - single field for Artist / Director Name
+  // Profile editing state - single field for Profile Name
   const [artistName, setArtistName] = useState(user?.artistName || user?.name || '');
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
@@ -277,7 +277,7 @@ const AccountPage: React.FC = () => {
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
               Your Tokens
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
+            <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <GruviCoin size={40} sx={{ mr: 1.5 }} />
                 <Box>
@@ -365,7 +365,14 @@ const AccountPage: React.FC = () => {
             alignItems: { xs: 'flex-start', sm: 'center' },
             gap: 2,
           }}>
-            <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                component="img"
+                src={subscription?.tier === 'premium' ? '/gruvi/gruvi-beast.png' : subscription?.tier === 'pro' ? '/gruvi/gruvi-scale.png' : '/gruvi/gruvi-started.png'}
+                alt={subscription?.tier || 'free'}
+                sx={{ height: 72, width: 'auto', flexShrink: 0 }}
+              />
+              <Box>
               <Typography sx={{ fontWeight: 600, color: '#007AFF', mb: 0.5 }}>
                 {formatTier(subscription?.tier || 'free')} Plan
               </Typography>
@@ -385,6 +392,7 @@ const AccountPage: React.FC = () => {
                   ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
                   : 'No renewal date'}
               </Typography>
+              </Box>
             </Box>
             <Button
               variant="contained"
@@ -420,10 +428,10 @@ const AccountPage: React.FC = () => {
             Personal Information
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Artist / Director Name */}
+            {/* Profile Name */}
             <Box>
               <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, fontSize: '0.9rem' }}>
-                Artist / Director Name
+                Profile Name
               </Typography>
               <TextField
                 fullWidth
@@ -472,7 +480,7 @@ const AccountPage: React.FC = () => {
                 }}
               />
               <Typography sx={{ color: nameSuccess ? '#34C759' : '#86868B', mt: 0.5, fontSize: '0.8rem' }}>
-                {nameSuccess || "Your name as Artist on songs and Director on videos"}
+                {nameSuccess || "Your display name across Gruvi"}
               </Typography>
             </Box>
 

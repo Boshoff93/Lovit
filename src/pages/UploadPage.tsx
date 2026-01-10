@@ -408,14 +408,13 @@ const UploadPage: React.FC = () => {
         {/* Page Header with Title and Toggle */}
         <Box sx={{
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'space-between',
           mb: 4,
           gap: 2,
-          flexWrap: 'wrap',
         }}>
           {/* Left: Page Title with Icon */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
             <Box
               key={uploadType}
               sx={{
@@ -450,38 +449,62 @@ const UploadPage: React.FC = () => {
                 <MovieIcon sx={{ fontSize: 28, color: '#fff' }} />
               )}
             </Box>
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 Upload {uploadType === 'song' ? 'Music' : 'Video'}
               </Typography>
-              <Typography sx={{ color: '#86868B' }}>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
                 Upload your own {uploadType === 'song' ? 'music' : 'videos'} to Gruvi
               </Typography>
             </Box>
           </Box>
 
           {/* View My Music / View My Video button */}
-          <Button
-            variant="contained"
-            onClick={() => navigate(uploadType === 'song' ? '/my-music' : '/my-videos')}
-            sx={{
-              background: '#007AFF',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: '10px',
-              px: 2.5,
-              py: 1,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              whiteSpace: 'nowrap',
-              '&:hover': {
-                background: '#0066CC',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              },
-            }}
-          >
-            {uploadType === 'song' ? 'View My Music' : 'View My Videos'}
-          </Button>
+          <Box sx={{ flexShrink: 0 }}>
+            <Button
+              variant="contained"
+              onClick={() => navigate(uploadType === 'song' ? '/my-music' : '/my-videos')}
+              sx={{
+                display: { xs: 'none', sm: 'flex' },
+                background: '#007AFF',
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                whiteSpace: 'nowrap',
+                '&:hover': {
+                  background: '#0066CC',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+              }}
+            >
+              {uploadType === 'song' ? 'View My Music' : 'View My Videos'}
+            </Button>
+            <IconButton
+              onClick={() => navigate(uploadType === 'song' ? '/my-music' : '/my-videos')}
+              sx={{
+                display: { xs: 'flex', sm: 'none' },
+                width: 44,
+                height: 44,
+                background: '#007AFF',
+                color: '#fff',
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+              }}
+            >
+              {uploadType === 'song' ? (
+                <MusicNote sx={{ fontSize: 22 }} />
+              ) : (
+                <VideoLibrary sx={{ fontSize: 22 }} />
+              )}
+            </IconButton>
+          </Box>
         </Box>
         
         {/* Alerts */}

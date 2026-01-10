@@ -1297,14 +1297,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       {/* Persistent Header - Always visible */}
       <Box sx={{
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'space-between',
         mb: 4,
         gap: 2,
-        flexWrap: 'wrap',
       }}>
         {/* Left: Icon + Title + Subtitle */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
           <Box
             key={activeTab}
             sx={{
@@ -1339,9 +1338,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <VideoLibraryIcon sx={{ fontSize: 28, color: '#fff' }} />
             )}
           </Box>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 {activeTab === 'songs' ? 'My Music' : 'My Videos'}
               </Typography>
               <Chip
@@ -1356,66 +1355,91 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 }}
               />
             </Box>
-            <Typography sx={{ color: '#86868B', mt: 0.5 }}>
+            <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               {activeTab === 'songs' ? 'Your generated and uploaded tracks' : 'Your generated and uploaded videos'}
             </Typography>
           </Box>
         </Box>
 
         {/* Right: Upload and Create Buttons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
-          {/* Upload Button */}
-          <Button
-            variant="outlined"
-            startIcon={<CloudUploadIcon />}
-            onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
-            sx={{
-              borderColor: '#007AFF',
-              color: '#007AFF',
-              borderRadius: '10px',
-              textTransform: 'none',
-              fontWeight: 600,
-              px: { xs: 1.5, md: 2 },
-              py: 0.75,
-              fontSize: { xs: '0.8rem', md: '0.875rem' },
-              '& .MuiSvgIcon-root': {
+        <Box sx={{ flexShrink: 0 }}>
+          {/* Full buttons on sm+ screens */}
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5 }}>
+            {/* Upload Button */}
+            <Button
+              variant="outlined"
+              startIcon={<CloudUploadIcon />}
+              onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
+              sx={{
+                borderColor: '#007AFF',
                 color: '#007AFF',
-              },
-              '&:hover': {
-                borderColor: '#0066CC',
-                color: '#0066CC',
-                background: 'rgba(0,122,255,0.08)',
-                '& .MuiSvgIcon-root': {
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 2,
+                py: 0.75,
+                '&:hover': {
+                  borderColor: '#0066CC',
                   color: '#0066CC',
+                  background: 'rgba(0,122,255,0.08)',
                 },
-              },
-            }}
-          >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: '#007AFF' }}>
-              Upload {activeTab === 'songs' ? 'Music' : 'Video'}
-            </Box>
-            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' }, color: '#007AFF' }}>Upload</Box>
-          </Button>
-          {/* Create New Button */}
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
-            sx={{
-              background: '#007AFF',
-              borderRadius: '10px',
-              textTransform: 'none',
-              fontWeight: 600,
-              px: { xs: 1.5, md: 2 },
-              py: 0.75,
-              fontSize: { xs: '0.8rem', md: '0.875rem' },
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              '&:hover': { background: '#0066CC' },
-            }}
-          >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Create New</Box>
-            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Create</Box>
-          </Button>
+              }}
+            >
+              Upload
+            </Button>
+            {/* Create New Button */}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
+              sx={{
+                background: '#007AFF',
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 2,
+                py: 0.75,
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': { background: '#0066CC' },
+              }}
+            >
+              Create New
+            </Button>
+          </Box>
+          {/* Circle icon buttons on xs screens */}
+          <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center', gap: 1 }}>
+            <IconButton
+              onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
+              sx={{
+                width: 44,
+                height: 44,
+                border: '2px solid #007AFF',
+                color: '#007AFF',
+                '&:hover': {
+                  borderColor: '#0066CC',
+                  color: '#0066CC',
+                  background: 'rgba(0,122,255,0.08)',
+                },
+              }}
+            >
+              <CloudUploadIcon sx={{ fontSize: 22 }} />
+            </IconButton>
+            <IconButton
+              onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
+              sx={{
+                width: 44,
+                height: 44,
+                background: '#007AFF',
+                color: '#fff',
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                },
+              }}
+            >
+              <AddIcon sx={{ fontSize: 22 }} />
+            </IconButton>
+          </Box>
         </Box>
       </Box>
 

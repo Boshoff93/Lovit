@@ -575,11 +575,11 @@ const ConnectedAccountsPage: React.FC = () => {
           >
             <LinkIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               Social Media Integrations
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.95rem' }}>
+            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Connect your social accounts to share content directly
             </Typography>
           </Box>

@@ -21,6 +21,7 @@ import {
   ListItemText,
   TextField,
   InputAdornment,
+  IconButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -40,6 +41,7 @@ import { RootState } from '../store/store';
 import { videosApi, charactersApi, songsApi } from '../services/api';
 import MentionTextField from '../components/MentionTextField';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import GruviCoin from '../components/GruviCoin';
 
 // Character type matching the API response
@@ -524,13 +526,12 @@ const CreateVideoPage: React.FC = () => {
       {/* Header */}
       <Box sx={{
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'space-between',
         mb: 4,
         gap: 2,
-        flexWrap: 'wrap',
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
           <Box
             sx={{
               width: 56,
@@ -542,39 +543,26 @@ const CreateVideoPage: React.FC = () => {
               justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(236,72,153,0.3)',
               flexShrink: 0,
-              animation: 'iconEntrance 0.5s ease-out',
-              '@keyframes iconEntrance': {
-                '0%': {
-                  opacity: 0,
-                  transform: 'scale(0.5) rotate(-10deg)',
-                },
-                '50%': {
-                  transform: 'scale(1.1) rotate(5deg)',
-                },
-                '100%': {
-                  opacity: 1,
-                  transform: 'scale(1) rotate(0deg)',
-                },
-              },
             }}
           >
             <MovieIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               Create Music Video
             </Typography>
-            <Typography sx={{ color: '#86868B' }}>
+            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Transform your song into a stunning video
             </Typography>
           </Box>
         </Box>
 
-        {/* View My Videos button */}
+        {/* View My Videos button - Full on large, icon on small */}
         <Button
           variant="contained"
           onClick={() => navigate('/my-videos')}
           sx={{
+            display: { xs: 'none', sm: 'flex' },
             background: '#007AFF',
             color: '#fff',
             textTransform: 'none',
@@ -584,6 +572,7 @@ const CreateVideoPage: React.FC = () => {
             py: 1,
             boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
             whiteSpace: 'nowrap',
+            flexShrink: 0,
             '&:hover': {
               background: '#0066CC',
               boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
@@ -592,6 +581,24 @@ const CreateVideoPage: React.FC = () => {
         >
           View My Videos
         </Button>
+        {/* Circle icon button for small screens */}
+        <IconButton
+          onClick={() => navigate('/my-videos')}
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            width: 44,
+            height: 44,
+            background: '#007AFF',
+            color: '#fff',
+            flexShrink: 0,
+            boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+            '&:hover': {
+              background: '#0066CC',
+            },
+          }}
+        >
+          <VideoLibraryIcon sx={{ fontSize: 22 }} />
+        </IconButton>
       </Box>
 
       {/* Main Content - Two Column Layout */}

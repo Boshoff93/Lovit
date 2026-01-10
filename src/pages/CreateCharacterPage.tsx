@@ -25,6 +25,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckIcon from '@mui/icons-material/Check';
+import PeopleIcon from '@mui/icons-material/People';
 import { charactersApi } from '../services/api';
 import { useLayout } from '../components/Layout';
 
@@ -459,11 +460,10 @@ const CreateCharacterPage: React.FC = () => {
           mb: 4,
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           gap: 2,
-          flexWrap: 'wrap',
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
             <Box
               sx={{
                 width: 56,
@@ -497,35 +497,55 @@ const CreateCharacterPage: React.FC = () => {
             >
               <PersonIcon sx={{ fontSize: 28, color: '#fff' }} />
             </Box>
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 {isEditMode ? 'Edit AI Asset' : 'Create AI Asset'}
               </Typography>
-              <Typography sx={{ color: '#86868B' }}>
+              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
                 {isEditMode ? 'Update your asset details' : 'Add a character, product, or place to your AI assets'}
               </Typography>
             </Box>
           </Box>
-          <Button
-            variant="contained"
-            onClick={() => navigate('/ai-assets')}
-            sx={{
-              background: '#007AFF',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: '10px',
-              px: 2.5,
-              py: 1,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              '&:hover': {
-                background: '#0066CC',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              },
-            }}
-          >
-            View AI Assets
-          </Button>
+          <Box sx={{ flexShrink: 0 }}>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/ai-assets')}
+              sx={{
+                display: { xs: 'none', sm: 'flex' },
+                background: '#007AFF',
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+              }}
+            >
+              View AI Assets
+            </Button>
+            <IconButton
+              onClick={() => navigate('/ai-assets')}
+              sx={{
+                display: { xs: 'flex', sm: 'none' },
+                width: 44,
+                height: 44,
+                background: '#007AFF',
+                color: '#fff',
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: '#0066CC',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+              }}
+            >
+              <PeopleIcon sx={{ fontSize: 22 }} />
+            </IconButton>
+          </Box>
         </Box>
 
         <Box sx={{ width: '100%' }}>

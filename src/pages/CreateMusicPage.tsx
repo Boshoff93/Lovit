@@ -36,6 +36,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
+import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import Avatar from '@mui/material/Avatar';
 import GruviCoin from '../components/GruviCoin';
 
@@ -513,13 +514,12 @@ const CreateMusicPage: React.FC = () => {
       {/* Header */}
       <Box sx={{
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'space-between',
         mb: 4,
         gap: 2,
-        flexWrap: 'wrap',
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
           <Box
             sx={{
               width: 56,
@@ -531,39 +531,26 @@ const CreateMusicPage: React.FC = () => {
               justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(236,72,153,0.3)',
               flexShrink: 0,
-              animation: 'iconEntrance 0.5s ease-out',
-              '@keyframes iconEntrance': {
-                '0%': {
-                  opacity: 0,
-                  transform: 'scale(0.5) rotate(-10deg)',
-                },
-                '50%': {
-                  transform: 'scale(1.1) rotate(5deg)',
-                },
-                '100%': {
-                  opacity: 1,
-                  transform: 'scale(1) rotate(0deg)',
-                },
-              },
             }}
           >
             <MusicNoteIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               Create Music
             </Typography>
-            <Typography sx={{ color: '#86868B' }}>
+            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Generate AI-powered music with custom lyrics
             </Typography>
           </Box>
         </Box>
 
-        {/* View My Music button */}
+        {/* View My Music button - Full on large, icon on small */}
         <Button
           variant="contained"
           onClick={() => navigate('/my-music')}
           sx={{
+            display: { xs: 'none', sm: 'flex' },
             background: '#007AFF',
             color: '#fff',
             textTransform: 'none',
@@ -573,6 +560,7 @@ const CreateMusicPage: React.FC = () => {
             py: 1,
             boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
             whiteSpace: 'nowrap',
+            flexShrink: 0,
             '&:hover': {
               background: '#0066CC',
               boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
@@ -581,6 +569,24 @@ const CreateMusicPage: React.FC = () => {
         >
           View My Music
         </Button>
+        {/* Circle icon button for small screens */}
+        <IconButton
+          onClick={() => navigate('/my-music')}
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            width: 44,
+            height: 44,
+            background: '#007AFF',
+            color: '#fff',
+            flexShrink: 0,
+            boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+            '&:hover': {
+              background: '#0066CC',
+            },
+          }}
+        >
+          <LibraryMusicIcon sx={{ fontSize: 22 }} />
+        </IconButton>
       </Box>
 
       {/* Main Content - Two Column Layout */}

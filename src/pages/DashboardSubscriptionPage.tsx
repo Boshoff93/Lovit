@@ -274,44 +274,83 @@ const DashboardSubscriptionPage: React.FC = () => {
   return (
     <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box
-          sx={{
-            width: 56,
-            height: 56,
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: { xs: '1 0 100%', sm: 1 } }}>
+          <Box
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
+              flexShrink: 0,
+              animation: 'iconEntrance 0.5s ease-out',
+              '@keyframes iconEntrance': {
+                '0%': {
+                  opacity: 0,
+                  transform: 'scale(0.5) rotate(-10deg)',
+                },
+                '50%': {
+                  transform: 'scale(1.1) rotate(5deg)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'scale(1) rotate(0deg)',
+                },
+              },
+            }}
+          >
+            <CreditCardIcon sx={{ fontSize: 28, color: '#fff' }} />
+          </Box>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+              Subscription
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+              Manage your plan and billing
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Current Plan - Right side of header, wraps below on xs */}
+        {isSubscribed && (
+          <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
+            gap: 2,
             flexShrink: 0,
-            animation: 'iconEntrance 0.5s ease-out',
-            '@keyframes iconEntrance': {
-              '0%': {
-                opacity: 0,
-                transform: 'scale(0.5) rotate(-10deg)',
-              },
-              '50%': {
-                transform: 'scale(1.1) rotate(5deg)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'scale(1) rotate(0deg)',
-              },
-            },
-          }}
-        >
-          <CreditCardIcon sx={{ fontSize: 28, color: '#fff' }} />
-        </Box>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
-            Subscription
-          </Typography>
-          <Typography sx={{ color: '#86868B' }}>
-            Manage your plan and billing
-          </Typography>
-        </Box>
+          }}>
+            <Box
+              component="img"
+              src={
+                subscription.tier === 'premium'
+                  ? '/gruvi/gruvi-beast.png'
+                  : subscription.tier === 'pro'
+                  ? '/gruvi/gruvi-scale.png'
+                  : '/gruvi/gruvi-started.png'
+              }
+              alt={subscription.tier}
+              sx={{
+                height: 48,
+                width: 'auto',
+                flexShrink: 0,
+              }}
+            />
+            <Box>
+              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
+              </Typography>
+              {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
+                <Typography sx={{ color: '#86868B', fontSize: { xs: '0.8rem', sm: '0.85rem' } }}>
+                  Next billing: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+        )}
       </Box>
 
       {/* Error/Success alerts */}
@@ -331,66 +370,6 @@ const DashboardSubscriptionPage: React.FC = () => {
           {success}
         </Alert>
       </Snackbar>
-
-      {/* Current subscription info - styled like header, not card */}
-      {isSubscribed && (
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: 4,
-          flexWrap: 'wrap',
-          gap: 2,
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              component="img"
-              src={
-                subscription.tier === 'premium'
-                  ? '/gruvi/gruvi-beast.png'
-                  : subscription.tier === 'pro'
-                  ? '/gruvi/gruvi-scale.png'
-                  : '/gruvi/gruvi-started.png'
-              }
-              alt={subscription.tier}
-              sx={{
-                height: 56,
-                width: 'auto',
-                flexShrink: 0,
-              }}
-            />
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
-              </Typography>
-              {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
-                <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
-                  Next billing: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}
-                </Typography>
-              )}
-            </Box>
-          </Box>
-          <Button
-            variant="contained"
-            onClick={handleManageSubscription}
-            disabled={isManagingSubscription}
-            sx={{
-              background: '#007AFF',
-              borderRadius: '10px',
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 3,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              '&:hover': {
-                background: '#0066CC',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              },
-            }}
-          >
-            {isManagingSubscription ? <CircularProgress size={20} color="inherit" /> : 'Manage Subscription'}
-          </Button>
-        </Box>
-      )}
 
       {/* Main content: Plans + Checkout Sidebar */}
       <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column-reverse', lg: 'row' } }}>
@@ -720,9 +699,9 @@ const DashboardSubscriptionPage: React.FC = () => {
                 {isLoading || isManagingSubscription ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : isSubscribed ? (
-                  'Change Plan'
+                  'Manage Subscription'
                 ) : (
-                  'Continue to Payment'
+                  'Unlock Gruvi'
                 )}
               </Button>
             </CardContent>
