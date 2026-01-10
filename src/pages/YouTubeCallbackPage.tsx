@@ -91,21 +91,35 @@ const YouTubeCallbackPage: React.FC = () => {
         textAlign: 'center',
       }}
     >
-      {/* Gradient Icon Box */}
+      {/* Status Icon */}
       <Box
         sx={{
           width: 80,
           height: 80,
           borderRadius: '20px',
-          background: 'linear-gradient(135deg, #FF0000 0%, #CC0000 100%)',
+          background: status === 'success'
+            ? 'linear-gradient(135deg, #34C759 0%, #2DB14E 100%)'
+            : status === 'error'
+            ? 'linear-gradient(135deg, #FF3B30 0%, #E02020 100%)'
+            : 'linear-gradient(135deg, #FF0000 0%, #CC0000 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 24px rgba(255, 0, 0, 0.3)',
+          boxShadow: status === 'success'
+            ? '0 8px 24px rgba(52, 199, 89, 0.3)'
+            : status === 'error'
+            ? '0 8px 24px rgba(255, 59, 48, 0.3)'
+            : '0 8px 24px rgba(255, 0, 0, 0.3)',
           mb: 3,
         }}
       >
-        <YouTubeIcon sx={{ fontSize: 40, color: '#fff' }} />
+        {status === 'success' ? (
+          <Check sx={{ fontSize: 40, color: '#fff' }} />
+        ) : status === 'error' ? (
+          <Error sx={{ fontSize: 40, color: '#fff' }} />
+        ) : (
+          <YouTubeIcon sx={{ fontSize: 40, color: '#fff' }} />
+        )}
       </Box>
 
       {status === 'processing' && (
@@ -122,20 +136,6 @@ const YouTubeCallbackPage: React.FC = () => {
 
       {status === 'success' && (
         <>
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              bgcolor: '#34C759',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mb: 2,
-            }}
-          >
-            <Check sx={{ fontSize: 28, color: '#fff' }} />
-          </Box>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
             Connected!
           </Typography>
@@ -147,20 +147,6 @@ const YouTubeCallbackPage: React.FC = () => {
 
       {status === 'error' && (
         <>
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              bgcolor: '#FF3B30',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mb: 2,
-            }}
-          >
-            <Error sx={{ fontSize: 28, color: '#fff' }} />
-          </Box>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
             Connection Failed
           </Typography>
