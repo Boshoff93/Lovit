@@ -340,7 +340,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
       onMouseEnter={() => {
         hoverTimeoutRef.current = setTimeout(() => {
           setIsHovered(true);
-        }, 500);
+        }, 300);
       }}
       onMouseLeave={() => {
         if (hoverTimeoutRef.current) {
