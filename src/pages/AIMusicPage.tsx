@@ -122,6 +122,22 @@ const sampleTracks = [
   { id: '40a9ad54-b56d-4cfe-a3be-e19ea85aedee', title: 'Rise Into the Light', genre: 'electronic', duration: '2:55' },
   { id: '10b9b6fa-811c-421f-8ca6-31ac93d25d88', title: 'Concrete Veins', genre: 'alternative', duration: '2:14' },
   { id: '5dab088b-779f-4ae3-a3ef-1c206066f01a', title: 'Pulse of the Infinite', genre: 'techno', duration: '2:25' },
+  // Additional genre tracks
+  { id: '49995520-1898-4675-9657-3fd93142fd99', title: 'Neon Confessions', genre: 'pop', duration: '2:49' },
+  { id: '93e99651-7173-49b3-bc47-37e6b33dc15b', title: 'City Lights On My Heart', genre: 'pop', duration: '2:02' },
+  { id: '801063e2-df5e-4abf-87b4-5fbfb49cb103', title: 'From the Concrete', genre: 'hip-hop', duration: '1:45' },
+  { id: 'a9b292d1-0215-4e5c-a87d-17a9e7654c0c', title: 'Candlelight Promise', genre: 'rnb', duration: '2:55' },
+  { id: '79b6d662-b0cd-4a8d-9924-b4e3ba16d7d3', title: 'Crystalline Drift', genre: 'electronic', duration: '2:56' },
+  { id: 'b5774873-ea24-49c3-8ff7-4f3ab4f49740', title: 'Rise Into The Light', genre: 'dance', duration: '2:02' },
+  { id: '9c31f3fa-f744-4cfd-b549-b6d754393de4', title: 'Feel the Groove Tonight', genre: 'house', duration: '2:36' },
+  { id: 'a1cf722f-4ec1-45a6-923d-d26b9647ecdb', title: 'Rise Into The Light', genre: 'edm', duration: '2:08' },
+  { id: 'a10e20cb-3d1c-4ba3-ade6-14c970ba2974', title: 'Machine Heart Protocol', genre: 'techno', duration: '2:26' },
+  { id: 'dc096869-8a5e-4c9f-a664-53da6e55966c', title: 'Burn The Night', genre: 'rock', duration: '2:32' },
+  { id: 'b2cf2690-797b-4d79-96a1-b75a61d58bb9', title: 'Empty Rooms', genre: 'alternative', duration: '2:50' },
+  { id: 'abbde752-0560-40dc-858c-75fbc5e5d2b6', title: 'Golden Hour Getaway', genre: 'indie', duration: '1:57' },
+  { id: '394e6756-92c5-4f55-8ec4-f7a83f09b580', title: 'Not Your Puppet', genre: 'punk', duration: '1:55' },
+  { id: 'dcfcae83-63a5-4975-8496-7b97e04fc7d4', title: 'Teeth of the Void', genre: 'metal', duration: '3:46' },
+  { id: 'd00b4220-bc57-43f8-836d-cae5089da865', title: 'Midnight at the Blue Room', genre: 'jazz', duration: '2:50' },
 ];
 
 // Genres list for filtering
@@ -149,11 +165,79 @@ const genreShowcase = [
   { id: 'classical', name: 'Classical', color: '#9D8DF1' },
 ];
 
+// Languages - All 24 supported languages with images
+const languages = [
+  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
+  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
+  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
+  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
+  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
+  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
+  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
+  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
+  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
+  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
+  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
+  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
+  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
+  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
+  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
+  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
+  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
+  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
+  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
+  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
+  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
+  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
+  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
+  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
+];
+
+// Language sample tracks - using the same tracks as LanguageDetailPage (one per language)
+const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
+  'english': [{ id: 'ca9e75ed-551e-4f0e-b939-2130ac0fcdc3', title: 'Wide Open Sky', duration: '2:19' }],
+  'spanish': [{ id: '1faa7d07-51ef-4bbd-841c-67d0e78a1add', title: 'Fuego en la Piel', duration: '1:38' }],
+  'french': [{ id: 'a67bee12-fab5-45ef-aa3a-1c846c60e4d9', title: 'Sous le Ciel de Paris', duration: '2:21' }],
+  'german': [{ id: 'b6413f7f-31fc-4cf4-b9f9-49a0d6c75a14', title: 'Sternenstaub', duration: '2:16' }],
+  'japanese': [{ id: '2a1ff05d-cc16-4a81-b2ff-e4df1b14a14a', title: 'Sakura no Yume', duration: '2:08' }],
+  'korean': [{ id: '74f73f7a-ddbb-4b7a-9e6b-3157e6dd7e0c', title: 'Neo-Seoul Nights', duration: '2:22' }],
+  'chinese': [{ id: 'b9826c0a-ec29-4f59-8d3b-19f9f1e9e7d0', title: 'Yue Xia Du Xing', duration: '2:17' }],
+  'portuguese': [{ id: '7e52e4b2-7c61-4afc-8c77-0f4e2cd3c7fd', title: 'Saudade do Mar', duration: '2:33' }],
+  'italian': [{ id: 'a2bc2d41-41e6-4a28-a7ef-96a19cc5db75', title: 'Sotto le Stelle', duration: '2:23' }],
+  'hindi': [{ id: '6d17acca-6915-491a-a38a-23b5f03f2f43', title: 'Dil Ki Awaaz', duration: '2:28' }],
+  'arabic': [{ id: 'ad6b6c30-e2f9-42b5-b0b9-e5b66d1f6d74', title: 'Layl Al-Qamar', duration: '2:13' }],
+  'russian': [{ id: 'db6ee7c8-55c7-4b03-86ed-89d38d1fa0f4', title: 'Snezhnaya Noch', duration: '2:30' }],
+  'turkish': [{ id: 'f2614c35-ce09-458d-b647-4ff84ed37ac6', title: 'Istanbul Rüyası', duration: '2:18' }],
+  'thai': [{ id: 'e4c8a4a7-5e3c-4b8e-b3f5-3a7c8d9e0f1b', title: 'Khwam Rak Nai Jai', duration: '2:07' }],
+  'vietnamese': [{ id: '771d81bd-b99f-4ebb-bae7-3ce05013f134', title: 'Lần Đầu Yêu', duration: '2:13' }],
+};
+
+// Language display order for the carousel
+const languageOrder = ['english', 'spanish', 'french', 'german', 'japanese', 'korean', 'chinese', 'portuguese', 'italian', 'hindi', 'arabic', 'russian', 'turkish', 'thai', 'vietnamese'];
+
+// Language name to image code mapping
+const languageToImageCode: Record<string, string> = {
+  'english': 'en', 'spanish': 'es', 'french': 'fr', 'german': 'de',
+  'japanese': 'js', 'korean': 'ko', 'chinese': 'zh', 'portuguese': 'pt',
+  'italian': 'it', 'hindi': 'hi', 'arabic': 'ar', 'russian': 'ru',
+  'turkish': 'tr', 'thai': 'th', 'vietnamese': 'vi',
+};
+
+// Function to get language tracks
+function getLanguageTracksForRoute(): Array<{id: string; title: string; language: string; duration: string; image: string}> {
+  return languageOrder.map(lang => {
+    const track = languageSampleTracks[lang][0];
+    const langName = lang.charAt(0).toUpperCase() + lang.slice(1);
+    const imageCode = languageToImageCode[lang] || lang.slice(0, 2);
+    return { ...track, language: langName, image: `/locales/${imageCode}.jpeg` };
+  });
+}
+
 // Animated Equalizer Component
 const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({
   isPlaying,
   size = 20,
-  color = '#4ECDC4'
+  color = '#3B82F6'
 }) => {
   const barWidth = size / 5;
   const gap = size / 10;
@@ -204,6 +288,43 @@ const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: stri
   );
 };
 
+// Blue-themed Section Divider for AI Music page - absolute positioned style
+const SectionDivider: React.FC = () => (
+  <Box
+    sx={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 10,
+    }}
+  >
+    <Box
+      sx={{
+        width: '100%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, transparent 15%, rgba(59,130,246,0.2) 35%, rgba(6,182,212,0.25) 50%, rgba(59,130,246,0.2) 65%, transparent 85%, transparent 100%)',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-2px',
+          left: '30%',
+          right: '30%',
+          height: '4px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.05) 30%, rgba(6,182,212,0.08) 50%, rgba(59,130,246,0.05) 70%, transparent 100%)',
+          filter: 'blur(2px)',
+        },
+      }}
+    />
+  </Box>
+);
+
 const AIMusicPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.auth);
@@ -215,6 +336,7 @@ const AIMusicPage: React.FC = () => {
   const { ref: featuredRef, inView: featuredInView } = useInView({ threshold: 0.1 });
   const { ref: whyRef, inView: whyInView } = useInView({ threshold: 0.1 });
   const { ref: genresRef, inView: genresInView } = useInView({ threshold: 0.1 });
+  const { ref: languagesRef, inView: languagesInView } = useInView({ threshold: 0.1 });
   const { ref: exploreRef, inView: exploreInView } = useInView({ threshold: 0.1 });
 
   const [selectedGenre, setSelectedGenre] = useState('all');
@@ -401,9 +523,9 @@ const AIMusicPage: React.FC = () => {
         sx={{
           pt: { xs: 14, md: 20 },
           pb: { xs: 10, md: 16 },
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 100%)',
+          background: 'linear-gradient(180deg, #0D0D0F 0%, #0A0E18 30%, #101828 60%, #152038 100%)',
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'visible',
         }}
       >
         {/* Gradient orbs */}
@@ -413,7 +535,7 @@ const AIMusicPage: React.FC = () => {
           left: '5%',
           width: '50%',
           height: '70%',
-          background: 'radial-gradient(ellipse at center, rgba(78, 205, 196, 0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.12) 0%, transparent 70%)',
           filter: 'blur(100px)',
           pointerEvents: 'none',
         }} />
@@ -436,8 +558,8 @@ const AIMusicPage: React.FC = () => {
                 size="small"
                 sx={{
                   mb: 3,
-                  background: 'rgba(78, 205, 196, 0.15)',
-                  color: '#4ECDC4',
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  color: '#3B82F6',
                   fontWeight: 600,
                   fontSize: '0.8rem',
                   height: 32,
@@ -457,7 +579,7 @@ const AIMusicPage: React.FC = () => {
               >
                 Create Music in{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -482,7 +604,7 @@ const AIMusicPage: React.FC = () => {
                   onClick={() => isLoggedIn ? navigate('/create/music') : handleOpenAuth()}
                   endIcon={<ArrowForwardRoundedIcon />}
                   sx={{
-                    background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                    background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                     color: '#fff',
                     px: 4,
                     py: 1.75,
@@ -490,10 +612,10 @@ const AIMusicPage: React.FC = () => {
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
-                    boxShadow: '0 8px 32px rgba(78, 205, 196, 0.4)',
+                    boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4)',
                     '&:hover': {
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 40px rgba(78, 205, 196, 0.5)',
+                      boxShadow: '0 12px 40px rgba(59, 130, 246, 0.5)',
                     },
                   }}
                 >
@@ -538,7 +660,7 @@ const AIMusicPage: React.FC = () => {
                     width: '100%',
                     maxWidth: 380,
                     height: 'auto',
-                    filter: 'drop-shadow(0 30px 60px rgba(78, 205, 196, 0.3))',
+                    filter: 'drop-shadow(0 30px 60px rgba(59, 130, 246, 0.3))',
                     animation: 'float 6s ease-in-out infinite',
                     '@keyframes float': {
                       '0%, 100%': { transform: 'translateY(0px)' },
@@ -550,6 +672,7 @@ const AIMusicPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Featured Tracks Section - Gradient transition */}
@@ -557,7 +680,7 @@ const AIMusicPage: React.FC = () => {
         ref={featuredRef}
         sx={{
           py: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #1A1A2E 100%)',
+          background: 'linear-gradient(180deg, #152038 0%, #0E1525 40%, #0A0E18 60%, #0E1525 100%)',
           position: 'relative',
         }}
       >
@@ -635,19 +758,19 @@ const AIMusicPage: React.FC = () => {
                         }}
                       >
                         {isLoadingThis ? (
-                          <CircularProgress size={40} sx={{ color: '#4ECDC4' }} />
+                          <CircularProgress size={40} sx={{ color: '#3B82F6' }} />
                         ) : isThisPlaying ? (
-                          <AudioEqualizer isPlaying={true} size={40} color="#4ECDC4" />
+                          <AudioEqualizer isPlaying={true} size={40} color="#3B82F6" />
                         ) : (
                           <Box sx={{
                             width: 64,
                             height: 64,
                             borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                            background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: '0 8px 24px rgba(78, 205, 196, 0.4)',
+                            boxShadow: '0 8px 24px rgba(59, 130, 246, 0.4)',
                           }}>
                             <PlayArrowRoundedIcon sx={{ fontSize: 36, color: '#fff', ml: 0.5 }} />
                           </Box>
@@ -672,7 +795,7 @@ const AIMusicPage: React.FC = () => {
                         {track.title}
                       </Typography>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ fontSize: '0.85rem', color: '#4ECDC4', textTransform: 'capitalize' }}>
+                        <Typography sx={{ fontSize: '0.85rem', color: '#3B82F6', textTransform: 'capitalize' }}>
                           {track.genre}
                         </Typography>
                         <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
@@ -686,6 +809,7 @@ const AIMusicPage: React.FC = () => {
             })}
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Why Choose Gruvi - Feature Cards with Mascot */}
@@ -693,7 +817,7 @@ const AIMusicPage: React.FC = () => {
         ref={whyRef}
         sx={{
           py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #1A1A2E 0%, #0F0F1A 100%)',
+          background: 'linear-gradient(180deg, #0E1525 0%, #121A2D 40%, #182540 60%, #121A2D 100%)',
           position: 'relative',
         }}
       >
@@ -728,7 +852,7 @@ const AIMusicPage: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {[
-                  { icon: AutoAwesomeIcon, title: 'AI-Powered Creation', desc: 'Generate unique songs from text descriptions. Our AI understands music theory and creates professional-quality tracks.', color: '#4ECDC4' },
+                  { icon: AutoAwesomeIcon, title: 'AI-Powered Creation', desc: 'Generate unique songs from text descriptions. Our AI understands music theory and creates professional-quality tracks.', color: '#3B82F6' },
                   { icon: VerifiedIcon, title: '100% Copyright Free', desc: 'Every song you create is yours to use commercially. No royalties, no licensing fees, full ownership.', color: '#8B5CF6' },
                   { icon: SpeedIcon, title: 'Ready in Seconds', desc: 'From idea to finished track in under a minute. Create, iterate, and perfect your sound instantly.', color: '#FF6B9D' },
                   { icon: LanguageIcon, title: '24 Languages', desc: 'Generate lyrics and vocals in English, Spanish, Japanese, Korean, and 20+ more languages.', color: '#FFB347' },
@@ -786,6 +910,7 @@ const AIMusicPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Create Music in Any Genre */}
@@ -793,7 +918,7 @@ const AIMusicPage: React.FC = () => {
         ref={genresRef}
         sx={{
           py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%)',
+          background: 'linear-gradient(180deg, #121A2D 0%, #0E1525 40%, #0A0E18 60%, #0E1828 100%)',
           position: 'relative',
         }}
       >
@@ -881,13 +1006,14 @@ const AIMusicPage: React.FC = () => {
             ))}
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Upload Your Own Music Section */}
       <Box
         sx={{
           py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #16213E 0%, #1A1A2E 100%)',
+          background: 'linear-gradient(180deg, #0E1828 0%, #142035 40%, #1A2845 60%, #142035 100%)',
           position: 'relative',
         }}
       >
@@ -973,10 +1099,11 @@ const AIMusicPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Explore All Tracks Section */}
-      <Box ref={exploreRef} id="explore-tracks" sx={{ background: 'linear-gradient(180deg, #1A1A2E 0%, #0D0D0F 100%)', py: { xs: 8, md: 12 } }}>
+      <Box ref={exploreRef} id="explore-tracks" sx={{ background: 'linear-gradient(180deg, #142035 0%, #0E1525 40%, #0A0E18 60%, #0D0D0F 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 5 }}>
             <Typography
@@ -1003,7 +1130,7 @@ const AIMusicPage: React.FC = () => {
                   onClick={() => setSelectedGenre(genre.id)}
                   sx={{
                     background: selectedGenre === genre.id
-                      ? 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)'
+                      ? 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)'
                       : 'rgba(255,255,255,0.08)',
                     color: selectedGenre === genre.id ? '#fff' : 'rgba(255,255,255,0.7)',
                     fontWeight: 600,
@@ -1064,7 +1191,7 @@ const AIMusicPage: React.FC = () => {
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       background: 'rgba(255,255,255,0.07)',
-                      borderColor: 'rgba(78, 205, 196, 0.3)',
+                      borderColor: 'rgba(59, 130, 246, 0.3)',
                       '& .play-overlay': { opacity: 1 },
                     },
                   }}
@@ -1090,9 +1217,9 @@ const AIMusicPage: React.FC = () => {
                       }}
                     >
                       {isLoadingThis ? (
-                        <CircularProgress size={32} sx={{ color: '#4ECDC4' }} />
+                        <CircularProgress size={32} sx={{ color: '#3B82F6' }} />
                       ) : isThisPlaying ? (
-                        <AudioEqualizer isPlaying={true} size={32} color="#4ECDC4" />
+                        <AudioEqualizer isPlaying={true} size={32} color="#3B82F6" />
                       ) : (
                         <Box sx={{
                           width: 48,
@@ -1147,6 +1274,7 @@ const AIMusicPage: React.FC = () => {
             })}
           </Box>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* CTA Section */}
@@ -1187,8 +1315,8 @@ const AIMusicPage: React.FC = () => {
             sx={{
               mb: 3,
               '& .MuiTab-root': { color: 'rgba(255,255,255,0.6)', fontWeight: 600 },
-              '& .Mui-selected': { color: '#4ECDC4' },
-              '& .MuiTabs-indicator': { backgroundColor: '#4ECDC4' },
+              '& .Mui-selected': { color: '#3B82F6' },
+              '& .MuiTabs-indicator': { backgroundColor: '#3B82F6' },
             }}
           >
             <Tab label="Log In" />
@@ -1300,7 +1428,7 @@ const AIMusicPage: React.FC = () => {
               onClick={authTab === 0 ? handleEmailLogin : handleEmailSignup}
               disabled={isLoading}
               sx={{
-                background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                 py: 1.5,
                 borderRadius: '12px',
                 fontWeight: 600,

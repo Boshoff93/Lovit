@@ -569,8 +569,8 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
               endIcon={<ArrowForwardRoundedIcon />}
               sx={{
                 background: darkMode
-                  ? 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)'
-                  : 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                  ? 'linear-gradient(135deg, #F97316 0%, #EF4444 100%) !important'
+                  : 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%) !important',
                 color: '#fff',
                 px: { xs: 4, sm: 5 },
                 py: { xs: 1.5, sm: 1.75 },

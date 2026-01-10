@@ -228,29 +228,41 @@ const bounceAnimation = keyframes`
   }
 `;
 
-// Purple-themed Section Divider for dark pricing page
+// Purple-blue themed Section Divider matching SocialMediaPage style
 const SectionDivider: React.FC = () => (
-  <Container maxWidth="md">
+  <Box
+    sx={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 10,
+    }}
+  >
     <Box
       sx={{
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.4) 20%, rgba(168,85,247,0.2) 50%, rgba(139,92,246,0.4) 80%, transparent 100%)',
-        my: { xs: 6, md: 10 },
+        width: '100%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, transparent 15%, rgba(139,92,246,0.2) 35%, rgba(139,92,246,0.25) 50%, rgba(139,92,246,0.2) 65%, transparent 85%, transparent 100%)',
         position: 'relative',
         '&::before': {
           content: '""',
           position: 'absolute',
-          top: '-10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '20px',
-          background: 'radial-gradient(ellipse at center, rgba(139,92,246,0.2) 0%, transparent 70%)',
-          filter: 'blur(8px)',
+          top: '-2px',
+          left: '30%',
+          right: '30%',
+          height: '4px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.05) 30%, rgba(139,92,246,0.08) 50%, rgba(139,92,246,0.05) 70%, transparent 100%)',
+          filter: 'blur(2px)',
         },
       }}
     />
-  </Container>
+  </Box>
 );
 
 const PaymentPage: React.FC = () => {
@@ -486,7 +498,7 @@ const PaymentPage: React.FC = () => {
   return (
     <Box sx={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 30%, #2E1A2E 50%, #1A1A2E 70%, #0D0D0F 100%)',
+      background: '#0D0D0F',
       color: '#fff',
       position: 'relative',
       // Add bottom padding when audio player is visible
@@ -540,13 +552,19 @@ const PaymentPage: React.FC = () => {
         canonicalUrl="https://gruvimusic.com/payment"
       />
 
-      <Container maxWidth="lg" sx={{ pb: 4 }}>
-        {/* Hero Section - Followr Style */}
-        <Box sx={{
-          textAlign: 'center',
-          mb: { xs: 6, md: 8 },
-          pt: { xs: 4, md: 8 },
-        }}>
+      {/* Hero Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #0D0D0F 0%, #0F0A14 30%, #1A1028 60%, #1E1435 100%)',
+        position: 'relative',
+        pb: { xs: 10, md: 10 },
+      }}>
+        <Container maxWidth="lg">
+          {/* Hero Section - Followr Style */}
+          <Box sx={{
+            textAlign: 'center',
+            mb: { xs: 2, md: 3 },
+            pt: { xs: 4, md: 8 },
+          }}>
           <Typography
             variant="h1"
             sx={{
@@ -592,10 +610,19 @@ const PaymentPage: React.FC = () => {
             Choose the perfect plan for your creative needs.
           </Typography>
         </Box>
-
+        </Container>
         <SectionDivider />
+      </Box>
 
-        {/* Plans Section Header */}
+      {/* Plans Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #1E1435 0%, #140E1A 30%, #0E0A10 50%, #140E1A 70%, #1A1230 100%)',
+        position: 'relative',
+        pt: { xs: 6, md: 10 },
+        pb: { xs: 10, md: 10 },
+      }}>
+        <Container maxWidth="lg">
+          {/* Plans Section Header */}
         <Box ref={plansSectionRef} sx={{ textAlign: 'center', mb: { xs: 4, md: 5 }, mt: { xs: 2, md: 4 } }}>
           <Typography
             variant="h2"
@@ -1036,10 +1063,19 @@ const PaymentPage: React.FC = () => {
             </Card>
           ))}
         </Box>
-
+        </Container>
         <SectionDivider />
+      </Box>
 
-        {/* Feature Highlights Section */}
+      {/* Feature Highlights Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #1A1230 0%, #1E1438 40%, #251840 60%, #1E1438 100%)',
+        position: 'relative',
+        pt: { xs: 10, md: 10 },
+        pb: { xs: 10, md: 10 },
+      }}>
+        <Container maxWidth="lg">
+          {/* Feature Highlights Section */}
         <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 5 } }}>
           <Chip
             label="PLATFORM FEATURES"
@@ -1170,10 +1206,19 @@ const PaymentPage: React.FC = () => {
             </Box>
           ))}
         </Box>
-
+        </Container>
         <SectionDivider />
+      </Box>
 
-        {/* Feature Comparison Table */}
+      {/* Feature Comparison Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #1E1438 0%, #140E18 40%, #0E0A10 60%, #140E18 100%)',
+        position: 'relative',
+        pt: { xs: 6, md: 10 },
+        pb: { xs: 10, md: 10 },
+      }}>
+        <Container maxWidth="lg">
+          {/* Feature Comparison Table */}
         <Box sx={{ maxWidth: '1100px', mx: 'auto' }}>
           <FeatureComparison defaultExpanded={true} darkMode />
         </Box>
@@ -1282,10 +1327,18 @@ const PaymentPage: React.FC = () => {
             </Button>
           </Box>
         )}
+        </Container>
+        <SectionDivider />
+      </Box>
 
-        <Box sx={{ mt: 4 }}>
-          <SectionDivider />
-
+      {/* Token Top-ups Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #140E18 0%, #1A1230 40%, #201538 60%, #1A1230 100%)',
+        position: 'relative',
+        pt: { xs: 6, md: 10 },
+        pb: { xs: 10, md: 10 },
+      }}>
+        <Container maxWidth="lg">
           {/* Token Top-ups */}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, fontFamily: '"Fredoka", "Nunito", sans-serif', color: '#fff', mb: 1, textAlign: 'center' }}>
@@ -1393,11 +1446,18 @@ const PaymentPage: React.FC = () => {
               Top-ups available in your account settings after subscribing
             </Typography>
           </Box>
-        </Box>
-
+        </Container>
         <SectionDivider />
+      </Box>
 
-        {/* FAQ Section */}
+      {/* FAQ Section with gradient */}
+      <Box sx={{
+        background: 'linear-gradient(180deg, #1A1230 0%, #120C18 50%, #0D0D0F 100%)',
+        position: 'relative',
+        py: { xs: 6, md: 10 },
+      }}>
+        <Container maxWidth="lg">
+          {/* FAQ Section */}
         <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Chip
@@ -1505,7 +1565,8 @@ const PaymentPage: React.FC = () => {
             </Box>
           ))}
         </Box>
-      </Container>
+        </Container>
+      </Box>
 
       {/* Only show arrow when "Proceed to Payment" button is not visible */}
       {isMobile && selectedPlan && !isButtonVisible && (

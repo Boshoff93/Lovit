@@ -39,7 +39,81 @@ import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
 import { SEO } from '../utils/seoHelper';
-import { MarketingHeader, CTASection } from '../components/marketing';
+import { MarketingHeader } from '../components/marketing';
+
+// Green-themed Section Divider for green zone sections
+const SectionDivider: React.FC = () => (
+  <Box
+    sx={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 10,
+    }}
+  >
+    <Box
+      sx={{
+        width: '100%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, transparent 15%, rgba(34,197,94,0.2) 35%, rgba(34,197,94,0.25) 50%, rgba(34,197,94,0.2) 65%, transparent 85%, transparent 100%)',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-2px',
+          left: '30%',
+          right: '30%',
+          height: '4px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(34,197,94,0.05) 30%, rgba(34,197,94,0.08) 50%, rgba(34,197,94,0.05) 70%, transparent 100%)',
+          filter: 'blur(2px)',
+        },
+      }}
+    />
+  </Box>
+);
+
+// Purple-themed Section Divider for purple zone sections
+const PurpleSectionDivider: React.FC = () => (
+  <Box
+    sx={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 10,
+    }}
+  >
+    <Box
+      sx={{
+        width: '100%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, transparent 15%, rgba(139,92,246,0.2) 35%, rgba(139,92,246,0.25) 50%, rgba(139,92,246,0.2) 65%, transparent 85%, transparent 100%)',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-2px',
+          left: '30%',
+          right: '30%',
+          height: '4px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.05) 30%, rgba(139,92,246,0.08) 50%, rgba(139,92,246,0.05) 70%, transparent 100%)',
+          filter: 'blur(2px)',
+        },
+      }}
+    />
+  </Box>
+);
 
 // TikTok icon
 const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
@@ -201,7 +275,7 @@ const SocialMediaPage: React.FC = () => {
   }, [googleLogin, getGoogleIdToken, resendVerificationEmail, navigate, handleCloseAuth, authError]);
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#0D0D0F' }}>
+    <Box sx={{ minHeight: '100vh', background: '#0D0D0F', overflow: 'hidden' }}>
       <SEO
         title="Social Media Publishing | Share Music to All Platforms | Gruvi"
         description="Publish your AI-generated music and videos to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X. One-click sharing with smart scheduling."
@@ -219,7 +293,7 @@ const SocialMediaPage: React.FC = () => {
         sx={{
           pt: { xs: 14, md: 20 },
           pb: { xs: 10, md: 16 },
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 100%)',
+          background: 'linear-gradient(180deg, #0D0D0F 0%, #0F1A14 60%, #142620 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -231,7 +305,7 @@ const SocialMediaPage: React.FC = () => {
           left: '5%',
           width: '45%',
           height: '60%',
-          background: 'radial-gradient(ellipse at center, rgba(255, 107, 107, 0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(34, 197, 94, 0.1) 0%, transparent 70%)',
           filter: 'blur(100px)',
           pointerEvents: 'none',
         }} />
@@ -241,7 +315,7 @@ const SocialMediaPage: React.FC = () => {
           right: '10%',
           width: '40%',
           height: '50%',
-          background: 'radial-gradient(ellipse at center, rgba(78, 205, 196, 0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
           filter: 'blur(100px)',
           pointerEvents: 'none',
         }} />
@@ -254,8 +328,8 @@ const SocialMediaPage: React.FC = () => {
                 size="small"
                 sx={{
                   mb: 3,
-                  background: 'rgba(255, 107, 107, 0.15)',
-                  color: '#FF6B6B',
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  color: '#22C55E',
                   fontWeight: 600,
                   fontSize: '0.8rem',
                   height: 32,
@@ -275,7 +349,7 @@ const SocialMediaPage: React.FC = () => {
               >
                 Publish to{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                  background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -300,7 +374,7 @@ const SocialMediaPage: React.FC = () => {
                   onClick={() => isLoggedIn ? navigate('/settings/connected-accounts') : handleOpenAuth()}
                   endIcon={<ArrowForwardRoundedIcon />}
                   sx={{
-                    background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                    background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%) !important',
                     color: '#fff',
                     px: 4,
                     py: 1.75,
@@ -308,10 +382,10 @@ const SocialMediaPage: React.FC = () => {
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
-                    boxShadow: '0 8px 32px rgba(255, 107, 107, 0.4)',
+                    boxShadow: '0 8px 32px rgba(34, 197, 94, 0.4)',
                     '&:hover': {
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 40px rgba(255, 107, 107, 0.5)',
+                      boxShadow: '0 12px 40px rgba(34, 197, 94, 0.5)',
                     },
                   }}
                 >
@@ -329,7 +403,7 @@ const SocialMediaPage: React.FC = () => {
                     width: '100%',
                     maxWidth: 380,
                     height: 'auto',
-                    filter: 'drop-shadow(0 30px 60px rgba(255, 107, 107, 0.25))',
+                    filter: 'drop-shadow(0 30px 60px rgba(34, 197, 94, 0.25))',
                     animation: 'float 6s ease-in-out infinite',
                     '@keyframes float': {
                       '0%, 100%': { transform: 'translateY(0px)' },
@@ -341,17 +415,21 @@ const SocialMediaPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* Platforms Grid */}
       <Box
         ref={platformsRef}
         sx={{
-          py: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #1A1A2E 100%)',
+          pt: { xs: 4, md: 6 },
+          pb: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #142620 0%, #0F1A14 50%, #0D1210 100%)',
+          position: 'relative',
         }}
       >
-        <Container maxWidth="lg">
+    
+        <Container maxWidth="lg" sx={{ pt: { xs: 4, md: 6 } }}>
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -433,18 +511,21 @@ const SocialMediaPage: React.FC = () => {
             })}
           </Grid>
         </Container>
+        <SectionDivider />
       </Box>
 
       {/* One-Click Distribution Section */}
       <Box
         ref={featuresRef}
         sx={{
-          py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #1A1A2E 0%, #0F0F1A 100%)',
+          pt: { xs: 4, md: 6 },
+          pb: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #0D1210 0%, #0D0D12 50%, #12101A 100%)',
           position: 'relative',
         }}
       >
-        <Container maxWidth="lg">
+  
+        <Container maxWidth="lg" sx={{ pt: { xs: 4, md: 6 } }}>
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
@@ -457,7 +538,7 @@ const SocialMediaPage: React.FC = () => {
                   height: 'auto',
                   mx: 'auto',
                   display: 'block',
-                  filter: 'drop-shadow(0 20px 40px rgba(78, 205, 196, 0.2))',
+                  filter: 'drop-shadow(0 20px 40px rgba(34, 197, 94, 0.2))',
                 }}
               />
             </Grid>
@@ -465,7 +546,7 @@ const SocialMediaPage: React.FC = () => {
               <Chip
                 label="One-Click Distribution"
                 size="small"
-                sx={{ mb: 2, background: 'rgba(78, 205, 196, 0.15)', color: '#4ECDC4', fontWeight: 600 }}
+                sx={{ mb: 2, background: 'rgba(34, 197, 94, 0.15)', color: '#22C55E', fontWeight: 600 }}
               />
               <Typography
                 variant="h2"
@@ -478,7 +559,7 @@ const SocialMediaPage: React.FC = () => {
               >
                 No More{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                  background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -490,7 +571,7 @@ const SocialMediaPage: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {[
-                  { icon: TouchAppIcon, title: 'One-Click Publish', desc: 'Post to all connected platforms simultaneously', color: '#4ECDC4' },
+                  { icon: TouchAppIcon, title: 'One-Click Publish', desc: 'Post to all connected platforms simultaneously', color: '#22C55E' },
                   { icon: ScheduleIcon, title: 'Smart Scheduling', desc: 'Schedule posts for optimal engagement times', color: '#8B5CF6' },
                   { icon: AutoAwesomeIcon, title: 'Auto-Formatting', desc: 'Content automatically optimized for each platform', color: '#FF6B9D' },
                 ].map((feature, index) => (
@@ -547,34 +628,37 @@ const SocialMediaPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <PurpleSectionDivider />
       </Box>
 
       {/* Upload Your Content Section */}
       <Box
         sx={{
-          py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%)',
+          pt: { xs: 4, md: 6 },
+          pb: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #12101A 0%, #1A142E 60%, #1A142E 100%)',
           position: 'relative',
         }}
       >
+  
         <Box sx={{
           position: 'absolute',
           top: '20%',
           right: '10%',
           width: '30%',
           height: '40%',
-          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%)',
           filter: 'blur(80px)',
           pointerEvents: 'none',
         }} />
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, pt: { xs: 4, md: 6 } }}>
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Chip
                 label="Content Upload"
                 size="small"
-                sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6', fontWeight: 600 }}
+                sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', fontWeight: 600 }}
               />
               <Typography
                 variant="h2"
@@ -587,7 +671,7 @@ const SocialMediaPage: React.FC = () => {
               >
                 Upload Your Own{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                  background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -605,17 +689,17 @@ const SocialMediaPage: React.FC = () => {
                   'Distribute to all platforms instantly',
                 ].map((item, i) => (
                   <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <CheckCircleIcon sx={{ color: '#8B5CF6', fontSize: 22 }} />
+                    <CheckCircleIcon sx={{ color: '#A78BFA', fontSize: 22 }} />
                     <Typography sx={{ color: 'rgba(255,255,255,0.8)' }}>{item}</Typography>
                   </Box>
                 ))}
               </Box>
               <Button
                 variant="contained"
-                onClick={() => isLoggedIn ? navigate('/create/video') : handleOpenAuth()}
+                onClick={() => isLoggedIn ? navigate('/upload') : handleOpenAuth()}
                 startIcon={<CloudUploadIcon />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                  background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%) !important',
                   color: '#fff',
                   px: 4,
                   py: 1.75,
@@ -625,7 +709,8 @@ const SocialMediaPage: React.FC = () => {
                   fontSize: '1.05rem',
                   boxShadow: '0 8px 32px rgba(139, 92, 246, 0.4)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                    background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important',
+                    boxShadow: '0 12px 40px rgba(139, 92, 246, 0.5)',
                   },
                 }}
               >
@@ -643,24 +728,26 @@ const SocialMediaPage: React.FC = () => {
                   height: 'auto',
                   mx: 'auto',
                   display: 'block',
-                  filter: 'drop-shadow(0 25px 50px rgba(139, 92, 246, 0.25))',
+                  filter: 'drop-shadow(0 25px 50px rgba(34, 197, 94, 0.25))',
                 }}
               />
             </Grid>
           </Grid>
         </Container>
+        <PurpleSectionDivider />
       </Box>
 
       {/* Multi-Platform Reach Section */}
       <Box
         ref={reachRef}
         sx={{
-          py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #16213E 0%, #1A1A2E 100%)',
+          pt: { xs: 4, md: 6 },
+          pb: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #1A142E 0%, #18142A 50%, #14101E 100%)',
           position: 'relative',
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ pt: { xs: 4, md: 6 } }}>
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
@@ -672,23 +759,23 @@ const SocialMediaPage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(78, 205, 196, 0.1)' }}>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>Platforms</Typography>
-                    <Typography sx={{ color: '#4ECDC4', fontSize: '2rem', fontWeight: 800 }}>6+</Typography>
-                  </Box>
                   <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(139, 92, 246, 0.1)' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>Platforms</Typography>
+                    <Typography sx={{ color: '#A78BFA', fontSize: '2rem', fontWeight: 800 }}>6+</Typography>
+                  </Box>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(168, 85, 247, 0.1)' }}>
                     <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>One Click</Typography>
-                    <Typography sx={{ color: '#8B5CF6', fontSize: '2rem', fontWeight: 800 }}>Publish</Typography>
+                    <Typography sx={{ color: '#A855F7', fontSize: '2rem', fontWeight: 800 }}>Publish</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(255, 107, 157, 0.1)' }}>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(236, 72, 153, 0.1)' }}>
                     <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>AI Content</Typography>
-                    <Typography sx={{ color: '#FF6B9D', fontSize: '2rem', fontWeight: 800 }}>100%</Typography>
+                    <Typography sx={{ color: '#EC4899', fontSize: '2rem', fontWeight: 800 }}>100%</Typography>
                   </Box>
-                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(255, 179, 71, 0.1)' }}>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(192, 132, 252, 0.1)' }}>
                     <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>Copyright</Typography>
-                    <Typography sx={{ color: '#FFB347', fontSize: '2rem', fontWeight: 800 }}>Free</Typography>
+                    <Typography sx={{ color: '#C084FC', fontSize: '2rem', fontWeight: 800 }}>Free</Typography>
                   </Box>
                 </Box>
               </Box>
@@ -697,7 +784,7 @@ const SocialMediaPage: React.FC = () => {
               <Chip
                 label="Multi-Platform Reach"
                 size="small"
-                sx={{ mb: 2, background: 'rgba(255, 179, 71, 0.15)', color: '#FFB347', fontWeight: 600 }}
+                sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', fontWeight: 600 }}
               />
               <Typography
                 variant="h2"
@@ -710,7 +797,7 @@ const SocialMediaPage: React.FC = () => {
               >
                 Grow Your{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #FFB347 0%, #FF8E53 100%)',
+                  background: 'linear-gradient(135deg, #C084FC 0%, #A78BFA 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -722,7 +809,7 @@ const SocialMediaPage: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {[
-                  { icon: AnalyticsIcon, text: 'Publish to 6+ platforms at once', color: '#4ECDC4' },
+                  { icon: AnalyticsIcon, text: 'Publish to 6+ platforms at once', color: '#A78BFA' },
                   { icon: TrendingUpIcon, text: 'Maximize your content reach', color: '#8B5CF6' },
                   { icon: AutoAwesomeIcon, text: 'AI-optimized for each platform', color: '#FF6B9D' },
                 ].map((item, i) => (
@@ -735,17 +822,46 @@ const SocialMediaPage: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
+        <PurpleSectionDivider />
       </Box>
 
-      {/* Benefits List */}
+      {/* Benefits List + CTA - single seamless gradient section */}
       <Box
         ref={benefitsRef}
         sx={{
-          py: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, #1A1A2E 0%, #0D0D0F 100%)',
+          pt: { xs: 4, md: 6 },
+          pb: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #14101E 0%, #100D18 40%, #0D0D0F 100%)',
+          position: 'relative',
         }}
       >
-        <Container maxWidth="md">
+        {/* Decorative purple glow elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '60%',
+            right: '-10%',
+            width: '40%',
+            height: '150%',
+            background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.1) 0%, transparent 60%)',
+            filter: 'blur(60px)',
+            pointerEvents: 'none',
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '-20%',
+            left: '-10%',
+            width: '35%',
+            height: '120%',
+            background: 'radial-gradient(ellipse at center, rgba(167, 139, 250, 0.06) 0%, transparent 60%)',
+            filter: 'blur(60px)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <Container maxWidth="md" sx={{ pt: { xs: 4, md: 6 }, position: 'relative', zIndex: 1 }}>
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="h2"
@@ -785,26 +901,68 @@ const SocialMediaPage: React.FC = () => {
                   transition: 'background 0.3s ease, border-color 0.3s ease',
                   '&:hover': {
                     background: 'rgba(255,255,255,0.05)',
-                    borderColor: 'rgba(78, 205, 196, 0.3)',
+                    borderColor: 'rgba(34, 197, 94, 0.3)',
                   },
                 }}
               >
-                <CheckCircleIcon sx={{ color: '#4ECDC4', fontSize: 26 }} />
+                <CheckCircleIcon sx={{ color: '#22C55E', fontSize: 26 }} />
                 <Typography sx={{ color: '#fff', fontWeight: 500, fontSize: '1.05rem' }}>{benefit}</Typography>
               </Box>
             ))}
           </Box>
+
+          {/* CTA content - embedded in same section for seamless gradient */}
+          <Box sx={{ textAlign: 'center', mt: { xs: 8, md: 12 } }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+                fontWeight: 700,
+                color: '#fff',
+                mb: 2,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2,
+              }}
+            >
+              Ready to Go Viral?
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: '1rem', md: '1.15rem' },
+                color: 'rgba(255,255,255,0.8)',
+                maxWidth: '500px',
+                mx: 'auto',
+                mb: 4,
+                lineHeight: 1.6,
+              }}
+            >
+              Connect your accounts and start publishing AI content today.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => isLoggedIn ? navigate('/settings/connected-accounts') : handleOpenAuth()}
+              sx={{
+                background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%) !important',
+                color: '#fff',
+                px: { xs: 4, sm: 5 },
+                py: { xs: 1.5, sm: 1.75 },
+                borderRadius: '100px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: { xs: '1rem', sm: '1.1rem' },
+                boxShadow: '0 4px 20px rgba(34, 197, 94, 0.4)',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.5)',
+                },
+              }}
+            >
+              Get Started Free
+            </Button>
+          </Box>
         </Container>
       </Box>
-
-      {/* CTA Section */}
-      <CTASection
-        title="Ready to Go Viral?"
-        subtitle="Connect your accounts and start publishing AI content today."
-        primaryButtonText="Get Started Free"
-        primaryButtonAction={() => isLoggedIn ? navigate('/settings/connected-accounts') : handleOpenAuth()}
-        variant="dark"
-      />
 
       {/* Auth Modal */}
       <Dialog
@@ -835,8 +993,8 @@ const SocialMediaPage: React.FC = () => {
             sx={{
               mb: 3,
               '& .MuiTab-root': { color: 'rgba(255,255,255,0.6)', fontWeight: 600 },
-              '& .Mui-selected': { color: '#FF6B6B' },
-              '& .MuiTabs-indicator': { backgroundColor: '#FF6B6B' },
+              '& .Mui-selected': { color: '#22C55E' },
+              '& .MuiTabs-indicator': { backgroundColor: '#22C55E' },
             }}
           >
             <Tab label="Log In" />
@@ -844,7 +1002,7 @@ const SocialMediaPage: React.FC = () => {
           </Tabs>
 
           {error && (
-            <Typography sx={{ color: '#FF6B6B', fontSize: '0.85rem', mb: 2, textAlign: 'center' }}>
+            <Typography sx={{ color: '#22C55E', fontSize: '0.85rem', mb: 2, textAlign: 'center' }}>
               {error}
             </Typography>
           )}
@@ -932,7 +1090,7 @@ const SocialMediaPage: React.FC = () => {
               onClick={authTab === 0 ? handleEmailLogin : handleEmailSignup}
               disabled={isLoading}
               sx={{
-                background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
                 py: 1.5,
                 borderRadius: '12px',
                 fontWeight: 600,

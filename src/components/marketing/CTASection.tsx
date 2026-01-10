@@ -10,7 +10,7 @@ interface CTASectionProps {
   primaryButtonAction?: () => void;
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
-  variant?: 'gradient' | 'light' | 'dark' | 'orange';
+  variant?: 'gradient' | 'light' | 'dark' | 'orange' | 'green';
   /** Custom gradient background - overrides variant background */
   gradientBackground?: string;
 }
@@ -50,10 +50,16 @@ const CTASection: React.FC<CTASectionProps> = ({
           titleColor: '#fff',
           subtitleColor: 'rgba(255,255,255,0.8)',
         };
+      case 'green':
+        return {
+          background: 'linear-gradient(135deg, #0D0D0F 0%, #0F1A14 50%, #1A1A2E 100%)',
+          titleColor: '#fff',
+          subtitleColor: 'rgba(255,255,255,0.8)',
+        };
       case 'gradient':
       default:
         return {
-          background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+          background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
           titleColor: '#fff',
           subtitleColor: 'rgba(255,255,255,0.9)',
         };
@@ -67,24 +73,32 @@ const CTASection: React.FC<CTASectionProps> = ({
       if (variant === 'gradient') {
         return {
           background: '#fff',
-          color: '#44A08D',
+          color: '#06B6D4',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
           hoverShadow: '0 8px 32px rgba(0,0,0,0.2)',
         };
       }
       if (variant === 'orange') {
         return {
-          background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+          background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%) !important',
           color: '#fff',
           boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)',
           hoverShadow: '0 8px 32px rgba(249, 115, 22, 0.5)',
         };
       }
+      if (variant === 'green') {
+        return {
+          background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%) !important',
+          color: '#fff',
+          boxShadow: '0 4px 20px rgba(34, 197, 94, 0.4)',
+          hoverShadow: '0 8px 32px rgba(34, 197, 94, 0.5)',
+        };
+      }
       return {
-        background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+        background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
         color: '#fff',
-        boxShadow: '0 4px 20px rgba(78, 205, 196, 0.4)',
-        hoverShadow: '0 8px 32px rgba(78, 205, 196, 0.5)',
+        boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
+        hoverShadow: '0 8px 32px rgba(59, 130, 246, 0.5)',
       };
     };
 
@@ -175,8 +189,37 @@ const CTASection: React.FC<CTASectionProps> = ({
               top: '-30%',
               right: '-10%',
               width: '40%',
+              height: '100%',
+              background: 'radial-gradient(ellipse at center, rgba(249, 115, 22, 0.12) 0%, transparent 60%)',
+              filter: 'blur(60px)',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '20%',
+              left: '-10%',
+              width: '35%',
+              height: '80%',
+              background: 'radial-gradient(ellipse at center, rgba(239, 68, 68, 0.08) 0%, transparent 60%)',
+              filter: 'blur(60px)',
+              pointerEvents: 'none',
+            }}
+          />
+        </>
+      )}
+      {/* Decorative elements for green variant */}
+      {variant === 'green' && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '-30%',
+              right: '-10%',
+              width: '40%',
               height: '150%',
-              background: 'radial-gradient(ellipse at center, rgba(249, 115, 22, 0.15) 0%, transparent 60%)',
+              background: 'radial-gradient(ellipse at center, rgba(34, 197, 94, 0.15) 0%, transparent 60%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -188,7 +231,7 @@ const CTASection: React.FC<CTASectionProps> = ({
               left: '-10%',
               width: '35%',
               height: '120%',
-              background: 'radial-gradient(ellipse at center, rgba(239, 68, 68, 0.1) 0%, transparent 60%)',
+              background: 'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.1) 0%, transparent 60%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -256,8 +299,8 @@ const CTASection: React.FC<CTASectionProps> = ({
                   fontSize: { xs: '1rem', sm: '1.1rem' },
                   transition: 'all 0.25s ease',
                   '&:hover': {
-                    borderColor: variant === 'gradient' ? '#fff' : '#4ECDC4',
-                    background: variant === 'gradient' ? 'rgba(255,255,255,0.1)' : 'rgba(78, 205, 196, 0.08)',
+                    borderColor: variant === 'gradient' ? '#fff' : '#3B82F6',
+                    background: variant === 'gradient' ? 'rgba(255,255,255,0.1)' : 'rgba(59, 130, 246, 0.08)',
                     transform: 'translateY(-2px)',
                   },
                 }}

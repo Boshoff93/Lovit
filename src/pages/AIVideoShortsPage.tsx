@@ -535,6 +535,50 @@ const LandscapeVideoCard: React.FC<{
   );
 };
 
+// Orange-themed Section Divider for AI Video page - absolute positioned style
+const SectionDivider: React.FC<{ color?: 'orange' | 'blue' }> = ({ color = 'orange' }) => {
+  const isBlue = color === 'blue';
+  const r = isBlue ? 99 : 249;
+  const g = isBlue ? 102 : 115;
+  const b = isBlue ? 241 : 22;
+
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '5px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+        zIndex: 10,
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          height: '1px',
+          background: `linear-gradient(90deg, transparent 0%, transparent 15%, rgba(${r},${g},${b},0.2) 35%, rgba(${r},${g},${b},0.25) 50%, rgba(${r},${g},${b},0.2) 65%, transparent 85%, transparent 100%)`,
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-2px',
+            left: '30%',
+            right: '30%',
+            height: '4px',
+            background: `linear-gradient(90deg, transparent 0%, rgba(${r},${g},${b},0.05) 30%, rgba(${r},${g},${b},0.08) 50%, rgba(${r},${g},${b},0.05) 70%, transparent 100%)`,
+            filter: 'blur(2px)',
+          },
+        }}
+      />
+    </Box>
+  );
+};
+
 const AIVideoShortsPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.auth);
@@ -751,8 +795,8 @@ const AIVideoShortsPage: React.FC = () => {
       <Box
         sx={{
           pt: { xs: 14, md: 18 },
-          pb: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #2E1A1A 100%)',
+          pb: { xs: 6, md: 6 },
+          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1210 30%, #201510 60%, #1A1008 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -862,7 +906,7 @@ const AIVideoShortsPage: React.FC = () => {
               onClick={() => isLoggedIn ? navigate('/create/video') : handleOpenAuth()}
               endIcon={<ArrowForwardRoundedIcon />}
               sx={{
-                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%) !important',
                 color: '#fff',
                 px: 5,
                 py: 2,
@@ -881,35 +925,44 @@ const AIVideoShortsPage: React.FC = () => {
             </Button>
           </Box>
         </Container>
+        <SectionDivider />
       </Box>
 
-      {/* Featured Videos Showcase - continues from Hero's end color (#2E1A1A) to More Videos (#0D0D0F) */}
-      <VideoShowcase
-        videos={promoVideos}
-        videoUrls={videoUrls}
-        title={
-          <>
-            <Box component="span" sx={{
-              background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              AI-Powered
-            </Box>
-            {' '}Product Presentations
-          </>
-        }
-        subtitle="Hover to preview. Create stunning product videos with AI avatars, custom music, and cinematic effects."
-        badge="UGC Content"
-        ctaText="Start Creating"
-        ctaLink={isLoggedIn ? '/create/video' : undefined}
-        onVideoClick={(video) => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
-        darkMode
-        gradientBackground="linear-gradient(180deg, #2E1A1A 0%, #0D0D0F 100%)"
-      />
+      {/* Featured Videos Showcase - wrapped with divider */}
+      <Box sx={{ position: 'relative', background: '#140E0A' }}>
+        <VideoShowcase
+          videos={promoVideos}
+          videoUrls={videoUrls}
+          title={
+            <>
+              <Box component="span" sx={{
+                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                AI-Powered
+              </Box>
+              {' '}Product Presentations
+            </>
+          }
+          subtitle="Hover to preview. Create stunning product videos with AI avatars, custom music, and cinematic effects."
+          badge="UGC Content"
+          ctaText="Start Creating"
+          ctaLink={isLoggedIn ? '/create/video' : undefined}
+          onVideoClick={(video) => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
+          darkMode
+          gradientBackground="linear-gradient(180deg, #1A1008 0%, #18100A 50%, #140E0A 100%)"
+        />
+        <SectionDivider />
+      </Box>
 
       {/* More Videos Grid - with overlay title like VideoShowcase */}
-      <Box ref={moreVideosAnimRef} sx={{ background: '#0D0D0F', py: { xs: 6, md: 10 } }}>
+      <Box ref={moreVideosAnimRef} sx={{
+        background: 'linear-gradient(180deg, #140E0A 0%, #120C08 50%, #100A08 100%)',
+        pt: { xs: 8, md: 10 },
+        pb: { xs: 8, md: 10 },
+        position: 'relative',
+      }}>
         <Container maxWidth="lg">
           {/* Section Header with Badge */}
           <Box sx={{ textAlign: 'center', mb: 5 }}>
@@ -1053,10 +1106,15 @@ const AIVideoShortsPage: React.FC = () => {
             </Box>
           </Box>
         </Container>
+        <SectionDivider color="blue" />
       </Box>
 
       {/* Product Video Section - Side by side layout */}
-      <Box ref={landscapeVideosRef} sx={{ background: '#0D0D0F', py: { xs: 6, md: 10 } }}>
+      <Box ref={landscapeVideosRef} sx={{
+        background: 'linear-gradient(180deg, #100A08 0%, #0E0A0A 50%, #0C0A0C 100%)',
+        pt: { xs: 10, md: 12 },
+        pb: { xs: 8, md: 10 },
+      }}>
         <Container maxWidth="lg">
           <Box
             sx={{
@@ -1067,12 +1125,13 @@ const AIVideoShortsPage: React.FC = () => {
             }}
           >
             {/* Text Content - always first on mobile for context */}
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Chip
                 label="Promo Videos"
                 size="small"
                 sx={{
                   mb: 2,
+                  width: 'fit-content',
                   background: 'rgba(139, 92, 246, 0.2)',
                   color: '#A78BFA',
                   fontWeight: 600,
@@ -1137,7 +1196,10 @@ const AIVideoShortsPage: React.FC = () => {
       </Box>
 
       {/* Airbnb/Property Video Section - Side by side layout (video on left on desktop) */}
-      <Box sx={{ background: '#0D0D0F', py: { xs: 6, md: 10 } }}>
+      <Box sx={{
+        background: 'linear-gradient(180deg, #0C0A0C 0%, #0C0A10 50%, #0C0C14 100%)',
+        py: { xs: 6, md: 8 },
+      }}>
         <Container maxWidth="lg">
           <Box
             sx={{
@@ -1148,12 +1210,13 @@ const AIVideoShortsPage: React.FC = () => {
             }}
           >
             {/* Text Content - first on mobile, second on desktop */}
-            <Box sx={{ flex: 1, order: { xs: 0, md: 1 } }}>
+            <Box sx={{ flex: 1, order: { xs: 0, md: 1 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Chip
                 label="Property Videos"
                 size="small"
                 sx={{
                   mb: 2,
+                  width: 'fit-content',
                   background: 'rgba(78, 205, 196, 0.2)',
                   color: '#4ECDC4',
                   fontWeight: 600,
@@ -1218,7 +1281,12 @@ const AIVideoShortsPage: React.FC = () => {
       </Box>
 
       {/* Music Video Section - Turn any song into a music video */}
-      <Box ref={musicVideoRef} sx={{ background: '#0D0D0F', py: { xs: 6, md: 10 } }}>
+      <Box ref={musicVideoRef} sx={{
+        background: 'linear-gradient(180deg, #0C0C14 0%, #0D0D18 50%, #0E0E1C 100%)',
+        pt: { xs: 6, md: 8 },
+        pb: { xs: 10, md: 10 },
+        position: 'relative',
+      }}>
         <Container maxWidth="lg">
           <Box
             sx={{
@@ -1229,12 +1297,13 @@ const AIVideoShortsPage: React.FC = () => {
             }}
           >
             {/* Text Content - first on mobile */}
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Chip
                 label="Music Videos"
                 size="small"
                 sx={{
                   mb: 2,
+                  width: 'fit-content',
                   background: 'rgba(251, 146, 60, 0.2)',
                   color: '#FB923C',
                   fontWeight: 600,
@@ -1296,14 +1365,17 @@ const AIVideoShortsPage: React.FC = () => {
             </Box>
           </Box>
         </Container>
+        <SectionDivider color="blue" />
       </Box>
 
-      {/* Use Cases Section - continues from Cinematic Videos (#0D0D0F) to CTA (#1A1A2E) */}
+      {/* Use Cases Section with embedded CTA - continues from Cinematic Videos to dark */}
       <Box
         ref={useCasesRef}
         sx={{
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 100%)',
-          py: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #0E0E1C 0%, #101020 30%, #0D0D0F 100%)',
+          pt: { xs: 10, md: 12 },
+          pb: { xs: 8, md: 12 },
+          position: 'relative',
         }}
       >
         <Container maxWidth="lg">
@@ -1376,18 +1448,60 @@ const AIVideoShortsPage: React.FC = () => {
               </Box>
             ))}
           </Box>
+
+          {/* CTA content - embedded in same section for seamless gradient */}
+          <Box sx={{ textAlign: 'center', mt: { xs: 8, md: 12 } }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+                fontWeight: 700,
+                fontFamily: '"Fredoka", "Nunito", sans-serif',
+                color: '#fff',
+                mb: 2,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2,
+              }}
+            >
+              Ready to Create Viral Content?
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: '1rem', md: '1.15rem' },
+                color: 'rgba(255,255,255,0.8)',
+                maxWidth: '500px',
+                mx: 'auto',
+                mb: 4,
+                lineHeight: 1.6,
+              }}
+            >
+              Join thousands of creators using AI to produce engaging video content.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => isLoggedIn ? navigate('/create/video') : handleOpenAuth()}
+              sx={{
+                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%) !important',
+                color: '#fff',
+                px: { xs: 4, sm: 5 },
+                py: { xs: 1.5, sm: 1.75 },
+                borderRadius: '100px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: { xs: '1rem', sm: '1.1rem' },
+                boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 32px rgba(249, 115, 22, 0.5)',
+                },
+              }}
+            >
+              Start Creating Free
+            </Button>
+          </Box>
         </Container>
       </Box>
-
-      {/* CTA Section - continues from Use Cases (#1A1A2E) */}
-      <CTASection
-        title="Ready to Create Viral Content?"
-        subtitle="Join thousands of creators using AI to produce engaging video content."
-        primaryButtonText="Start Creating Free"
-        primaryButtonAction={() => isLoggedIn ? navigate('/create/video') : handleOpenAuth()}
-        variant="orange"
-        gradientBackground="linear-gradient(180deg, #1A1A2E 0%, #0D0D0F 100%)"
-      />
 
       {/* Auth Modal */}
       <Dialog

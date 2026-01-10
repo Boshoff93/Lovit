@@ -160,11 +160,16 @@ const RequireSubscription = ({
   featureName: string;
   description?: string;
 }) => {
-  const { subscription } = useSelector((state: RootState) => state.auth);
+  const { subscription, user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
 
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
+  const isTrialing = subscription?.status === 'trialing';
+
+  // Check if TrialPaywallModal would be shown (same logic as Layout.tsx)
+  // If so, don't show FeatureLockedModal to avoid double modals
+  const showTrialPaywall = !!user && !hasSubscription && !isTrialing;
 
   // Reset and show modal when navigating to a different locked page
   useEffect(() => {
@@ -172,6 +177,12 @@ const RequireSubscription = ({
       setShowModal(true);
     }
   }, [hasSubscription, location.pathname]);
+
+  // If trial paywall is showing, don't show feature locked modal - just render children
+  // The TrialPaywallModal from Layout will handle the blocking
+  if (showTrialPaywall) {
+    return <>{children}</>;
+  }
 
   if (!hasSubscription) {
     return (
