@@ -76,6 +76,7 @@ import UpgradePopup from '../components/UpgradePopup';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 // PauseRoundedIcon replaced with AudioEqualizer component
 import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
+import { AvatarShowcase, CTASection, MarketingSection, MarketingHeader } from '../components/marketing';
 
 // Owner user ID for the seed songs
 const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
@@ -1143,20 +1144,59 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
   );
 };
 
-// Video Card Component for reuse
+// Video Card Component for reuse - with hover-to-play
 interface VideoCardProps {
   video: VideoItem;
   onClick: () => void;
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const isLandscape = video.aspectRatio === 'landscape';
   const portraitWidth = { xs: 150, sm: 175, md: 200 };
   const landscapeWidth = { xs: 280, sm: 320, md: 360 };
 
+  // Handle hover start - 300ms delay before playing
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setShowVideo(true);
+    }, 300);
+  }, []);
+
+  // Handle hover end - stop video immediately
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setShowVideo(false);
+    // Reset video to start
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <Box
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       sx={{
         width: isLandscape ? landscapeWidth : portraitWidth,
         minWidth: isLandscape ? landscapeWidth : portraitWidth,
@@ -1166,10 +1206,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
         overflow: 'hidden',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        boxShadow: isHovered ? '0 12px 32px rgba(0,0,0,0.18)' : '0 2px 12px rgba(0,0,0,0.08)',
         '&:hover': {
-          transform: 'translateY(-2px) scale(1.02)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          transform: 'translateY(-4px) scale(1.03)',
         },
       }}
     >
@@ -1181,12 +1220,43 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
           borderRadius: '10px',
         }}
       >
+        {/* Thumbnail Image */}
         <Box
           component="img"
           src={video.thumbnail}
           alt={video.title}
-          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: showVideo ? 0 : 1,
+            transition: 'opacity 0.3s ease',
+          }}
         />
+
+        {/* Video - only visible on hover after delay */}
+        {video.videoUrl && (
+          <Box
+            component="video"
+            ref={videoRef}
+            src={video.videoUrl}
+            autoPlay={showVideo}
+            muted
+            loop
+            playsInline
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              opacity: showVideo ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
         {/* Tag - top right with glassy blur (brand tag or style) */}
         <Box
           sx={{
@@ -1214,7 +1284,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
             {video.tag || video.style}
           </Typography>
         </Box>
-        {/* Play button - center with glassy blur */}
+        {/* Play button - center with glassy blur, hidden when video is playing */}
         <Box
           sx={{
             position: 'absolute',
@@ -1222,25 +1292,29 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            opacity: showVideo ? 0 : 1,
+            transition: 'opacity 0.3s ease',
+            pointerEvents: showVideo ? 'none' : 'auto',
           }}
         >
           <Box
             sx={{
-              background: 'rgba(255,255,255,0.7)',
+              background: 'rgba(255,255,255,0.85)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               borderRadius: '50%',
-              width: isLandscape ? 52 : 40,
-              height: isLandscape ? 52 : 40,
+              width: isLandscape ? 56 : 44,
+              height: isLandscape ? 56 : 44,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid rgba(255,255,255,0.5)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
-              transition: 'all 0.2s ease',
+              border: '1px solid rgba(255,255,255,0.6)',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9)',
+              transition: 'all 0.25s ease',
+              transform: isHovered && !showVideo ? 'scale(1.1)' : 'scale(1)',
             }}
           >
-            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#007AFF' }} />
+            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 30 : 24, color: '#007AFF', ml: 0.25 }} />
           </Box>
         </Box>
         {/* Info overlay - centered title only */}
@@ -1308,6 +1382,7 @@ const HomePage: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
   const [expandedFAQ, setExpandedFAQ] = useState<string | false>(false);
   const promptInputRef = useRef<HTMLInputElement>(null);
@@ -1413,6 +1488,20 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
+
+  // Track scroll progress for header blur effect (0 = top, 1 = scrolled 100px+)
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const progress = Math.min(scrollY / 100, 1);
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initial scroll position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Navigate to create page with prompt
   const handleGenerateClick = useCallback(() => {
@@ -1717,433 +1806,71 @@ const HomePage: React.FC = () => {
         ]}
       />
 
-      {/* Header - Followr-style dark header */}
-      <Box
-        component="header"
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-          background: isLoggedIn ? 'rgba(255, 255, 255, 0.95)' : '#1D1D1F',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : 'none',
-          px: { xs: 2, sm: 3, md: 4 },
-        }}
-      >
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          py: 1.5,
-          width: '100%',
-          maxWidth: '1400px',
-          mx: 'auto',
-        }}>
-          {/* Logo - left */}
-          <Box
-            component={RouterLink}
-            to="/"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              textDecoration: 'none',
-              flexShrink: 0,
-            }}
-          >
-            <Box
-              component="img"
-              src="/gruvi.png"
-              alt="Gruvi"
-              sx={{
-                height: 36,
-                width: 36,
-                objectFit: 'contain',
-              }}
-            />
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{
-                fontFamily: '"Fredoka", "Inter", sans-serif',
-                fontWeight: 600,
-                fontSize: '1.4rem',
-                letterSpacing: '-0.01em',
-                background: isLoggedIn
-                  ? 'linear-gradient(135deg, #007AFF, #5AC8FA)'
-                  : 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Gruvi
-            </Typography>
-          </Box>
-
-          {/* Mobile: hamburger menu */}
-          {isMobile ? (
-            <IconButton
-              onClick={handleDrawerToggle}
-              sx={{
-                color: isLoggedIn ? '#007AFF' : '#fff',
-                ml: 'auto',
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-          ) : (
-            <>
-              {isLoggedIn ? (
-                // Logged in - go to dashboard button
-                <Button
-                  component={RouterLink}
-                  to="/my-music"
-                  variant="contained"
-                  sx={{
-                    ml: 'auto',
-                    background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                    color: '#fff',
-                    px: 3,
-                    py: 1,
-                    borderRadius: '100px',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                      boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                    },
-                  }}
-                >
-                  Go to Dashboard
-                </Button>
-              ) : (
-                // Not logged in - Followr-style centered nav
-                <>
-                  {/* Center navigation links */}
-                  <Box sx={{
-                    display: 'flex',
-                    gap: 1,
-                    alignItems: 'center',
-                    position: 'absolute',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                  }}>
-                    {[
-                      { label: 'AI Music', href: '#music' },
-                      { label: 'AI Video Shorts', href: '#shorts' },
-                      { label: 'Cinematic Promos', href: '#cinematic' },
-                      { label: 'Social Media', href: '#social' },
-                      { label: 'Pricing', href: '/payment' },
-                      { label: 'FAQ', href: '/faq' },
-                    ].map((item) => (
-                      <Button
-                        key={item.label}
-                        component={item.href.startsWith('/') ? RouterLink : 'a'}
-                        to={item.href.startsWith('/') ? item.href : undefined}
-                        href={!item.href.startsWith('/') ? item.href : undefined}
-                        sx={{
-                          color: 'rgba(255,255,255,0.85)',
-                          textTransform: 'none',
-                          fontWeight: 500,
-                          fontSize: '0.9rem',
-                          px: 1.5,
-                          py: 0.75,
-                          borderRadius: '8px',
-                          minWidth: 'auto',
-                          '&:hover': {
-                            color: '#fff',
-                            background: 'rgba(255,255,255,0.1)',
-                          },
-                        }}
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
-                  </Box>
-
-                  {/* Right side: Login + CTA */}
-                  <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', ml: 'auto' }}>
-                    <Button
-                      onClick={handleClickOpen}
-                      sx={{
-                        color: 'rgba(255,255,255,0.9)',
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        fontSize: '0.9rem',
-                        '&:hover': {
-                          color: '#fff',
-                          background: 'transparent',
-                        },
-                      }}
-                    >
-                      Log in
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleClickOpen}
-                      sx={{
-                        background: 'linear-gradient(135deg, #00D4AA 0%, #00B894 100%)',
-                        color: '#fff',
-                        px: 2.5,
-                        py: 1,
-                        borderRadius: '100px',
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #00B894 0%, #009B7D 100%)',
-                          boxShadow: '0 4px 12px rgba(0,212,170,0.4)',
-                        },
-                      }}
-                    >
-                      Start Free Trial
-                    </Button>
-                  </Box>
-                </>
-              )}
-            </>
-          )}
-        </Box>
-      </Box>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: false,
-          disableScrollLock: true,
-        }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
-            width: 280,
-            background: isLoggedIn ? 'rgba(255, 255, 255, 0.95)' : '#1D1D1F',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: '16px 0 0 16px',
-            boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.1)',
-            borderLeft: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : 'none',
-          },
-        }}
-      >
-        {/* Drawer Header */}
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          p: 2,
-          borderBottom: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : '1px solid rgba(255,255,255,0.1)',
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              component="img"
-              src="/gruvi.png"
-              alt="Gruvi"
-              sx={{ height: 32, width: 32, objectFit: 'contain' }}
-            />
-            <Typography
-              sx={{
-                fontFamily: '"Fredoka", "Inter", sans-serif',
-                fontWeight: 600,
-                fontSize: '1.25rem',
-                background: isLoggedIn
-                  ? 'linear-gradient(135deg, #007AFF, #5AC8FA)'
-                  : 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Gruvi
-            </Typography>
-          </Box>
-          <IconButton onClick={handleDrawerToggle} sx={{ color: isLoggedIn ? 'inherit' : '#fff' }}>
-            <ChevronRightIcon />
-          </IconButton>
-        </Box>
-
-        {/* Drawer Content */}
-        <List sx={{ px: 1, py: 2 }}>
-          {isLoggedIn ? (
-            // Logged in - go to dashboard
-            <ListItemButton
-              component={RouterLink}
-              to="/my-music"
-              onClick={handleDrawerToggle}
-              sx={{
-                borderRadius: 2,
-                mb: 1,
-                backgroundColor: 'rgba(0,122,255,0.08)',
-                '&:hover': {
-                  backgroundColor: 'rgba(0,122,255,0.12)',
-                }
-              }}
-            >
-              <ListItemIcon sx={{ color: '#007AFF' }}>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Go to Dashboard" primaryTypographyProps={{ fontWeight: 600, color: '#007AFF' }} />
-            </ListItemButton>
-          ) : (
-            // Logged out menu items - matching header nav
-            <>
-              {[
-                { label: 'AI Music', href: '#music' },
-                { label: 'AI Video Shorts', href: '#shorts' },
-                { label: 'Cinematic Promos', href: '#cinematic' },
-                { label: 'Social Media', href: '#social' },
-                { label: 'Pricing', href: '/payment' },
-                { label: 'FAQ', href: '/faq' },
-              ].map((item) => (
-                <ListItemButton
-                  key={item.label}
-                  component={item.href.startsWith('/') ? RouterLink : 'a'}
-                  to={item.href.startsWith('/') ? item.href : undefined}
-                  href={!item.href.startsWith('/') ? item.href : undefined}
-                  onClick={handleDrawerToggle}
-                  sx={{
-                    borderRadius: 2,
-                    mb: 0.5,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                    }
-                  }}
-                >
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: 500,
-                      color: 'rgba(255,255,255,0.9)',
-                    }}
-                  />
-                </ListItemButton>
-              ))}
-            </>
-          )}
-        </List>
-
-        {/* Bottom buttons */}
-        <Box sx={{
-          mt: 'auto',
-          p: 2,
-          borderTop: isLoggedIn ? '1px solid rgba(0, 0, 0, 0.06)' : '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-        }}>
-          {isLoggedIn ? (
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => {
-                handleDrawerToggle();
-                logout();
-              }}
-              startIcon={<LogoutIcon />}
-              sx={{
-                borderColor: 'rgba(0,0,0,0.15)',
-                color: '#1D1D1F',
-                borderRadius: '100px',
-                py: 1.5,
-                '&:hover': {
-                  borderColor: '#FF3B30',
-                  color: '#FF3B30',
-                  background: 'rgba(255,59,48,0.05)',
-                },
-              }}
-            >
-              Sign Out
-            </Button>
-          ) : (
-            <>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => {
-                  handleDrawerToggle();
-                  handleClickOpen();
-                }}
-                sx={{
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  color: 'rgba(255,255,255,0.9)',
-                  borderRadius: '100px',
-                  py: 1.5,
-                  '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    background: 'rgba(255,255,255,0.1)',
-                  }
-                }}
-              >
-                Log in
-              </Button>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={() => {
-                  handleDrawerToggle();
-                  handleClickOpen();
-                  setAuthTab(1);
-                }}
-                sx={{
-                  background: 'linear-gradient(135deg, #00D4AA 0%, #00B894 100%)',
-                  color: '#fff',
-                  borderRadius: '100px',
-                  py: 1.5,
-                  fontWeight: 600,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #00B894 0%, #009B7D 100%)',
-                  }
-                }}
-              >
-                Start Free Trial
-              </Button>
-            </>
-          )}
-        </Box>
-      </Drawer>
+      <MarketingHeader onOpenAuth={handleClickOpen} transparent alwaysBlurred lightMode />
 
       {/* Hero Section with Prompt Input */}
-      <Box sx={{ 
+      <Box sx={{
         pt: { xs: 14, md: 18 },
         pb: { xs: 2 },
         position: 'relative',
         zIndex: 1,
+        overflow: 'hidden',
+        // Subtle gradient accent on edges
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: '-10%',
+          width: '40%',
+          height: '100%',
+          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: '20%',
+          right: '-10%',
+          width: '40%',
+          height: '80%',
+          background: 'radial-gradient(ellipse at center, rgba(236, 72, 153, 0.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        },
       }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center' }}>
-            {/* Main Headline with Gruvi branding - prevent cutoff */}
-          <Typography 
-            variant="h1" 
-            sx={{ 
-                fontSize: { xs: '2rem', sm: '3rem', md: '3.5rem' },
-                fontWeight: 700,
+          <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            {/* Main Headline with Gruvi branding - animated gradient */}
+          <Typography
+            variant="h1"
+            sx={{
+                fontSize: { xs: '2.25rem', sm: '3.25rem', md: '4rem' },
+                fontWeight: 800,
                 color: '#1D1D1F',
-              lineHeight: 1.15,
+              lineHeight: 1.1,
                 mb: 1.5,
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.03em',
                 px: { xs: 1, sm: 0 },
               }}
             >
-              <Box 
+              <Box
                 component="span"
                 sx={{ color: '#1D1D1F' }}
               >
                 Gruvi:
               </Box>{' '}
-              <Box 
-                component="span" 
-            sx={{ 
-                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+              <Box
+                component="span"
+            sx={{
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%)',
+                  backgroundSize: '200% 200%',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
+                  animation: 'gradientShift 4s ease infinite',
+                  '@keyframes gradientShift': {
+                    '0%, 100%': { backgroundPosition: '0% 50%' },
+                    '50%': { backgroundPosition: '100% 50%' },
+                  },
                 }}
               >
                 {heroHeadingParts[0]}
@@ -2151,13 +1878,13 @@ const HomePage: React.FC = () => {
           </Typography>
 
             {/* Tagline */}
-          <Typography 
-            sx={{ 
+          <Typography
+            sx={{
                 fontFamily: '"Fredoka", "Inter", sans-serif',
-                fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+                fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.85rem' },
                 fontWeight: 600,
-                color: '#1D1D1F',
-                mb: 2,
+                color: '#48484A',
+                mb: 3,
             }}
           >
               {heroHeadingParts[1] || 'Everyone Deserves a Hit Song'}
@@ -2291,29 +2018,80 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </Box>
+
+            {/* Dual CTA Buttons */}
+            <Box sx={{
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}>
+              <Button
+                variant="contained"
+                onClick={handleClickOpen}
+                sx={{
+                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                  color: '#fff',
+                  px: { xs: 3, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  borderRadius: '100px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                  boxShadow: '0 4px 20px rgba(78, 205, 196, 0.4)',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #45B7AA 0%, #3D9480 100%)',
+                    boxShadow: '0 8px 32px rgba(78, 205, 196, 0.5)',
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                Start Your Free Trial
+              </Button>
+              <Button
+                variant="outlined"
+                component={RouterLink}
+                to="/pricing"
+                sx={{
+                  borderColor: 'rgba(0, 0, 0, 0.15)',
+                  color: '#1D1D1F',
+                  px: { xs: 3, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  borderRadius: '100px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    borderColor: '#4ECDC4',
+                    color: '#44A08D',
+                    background: 'rgba(78, 205, 196, 0.08)',
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                View Pricing
+              </Button>
+            </Box>
           </Box>
         </Container>
 
-        
+
       </Box>
 
       <SectionDivider />
 
 {/* Featured Tracks Section - columns of 3 tracks each */}
-      <Box sx={{ pt: { xs: 4, md: 6 }, pb: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              {carouselTitles.featuredTracks.title}
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              {carouselTitles.featuredTracks.subtitle}
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title={carouselTitles.featuredTracks.title}
+        subtitle={carouselTitles.featuredTracks.subtitle}
+        badge="AI-Generated"
+        badgeColor="primary"
+        background="gradient-subtle"
+        ctaText="Create Your Own Song"
+        ctaLink="/create"
+      >
           {/* Single carousel with columns of 3 tracks each - first 15 tracks (5 columns × 3 rows) */}
           <ScrollableCarousel id="featured-tracks-carousel">
             {(() => {
@@ -2437,24 +2215,19 @@ const HomePage: React.FC = () => {
               ));
             })()}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Promo Videos - Portrait */}
       {promoVideosPortrait.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                {carouselTitles.promoVideos.title}
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.promoVideos.subtitle}
-              </Typography>
-            </Box>
+        <MarketingSection
+          title={carouselTitles.promoVideos.title}
+          subtitle={carouselTitles.promoVideos.subtitle}
+          badge="Hover to Preview"
+          badgeColor="secondary"
+          background="white"
+          ctaText="View All Videos"
+          ctaLink="/ai-video-shorts"
+        >
             <ScrollableCarousel id="promo-videos-portrait">
               {promoVideosPortrait.map((video) => (
                 <VideoCard
@@ -2464,25 +2237,20 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </ScrollableCarousel>
-          </Container>
-        </Box>
+        </MarketingSection>
       )}
 
       {/* Share Everywhere Section - Carousel */}
-      <Box sx={{ py: { xs: 4, md: 5 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              The AI Music Promo Generator
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              Your AI-generated content is 100% original - post to YouTube, TikTok, Instagram & more without strikes or claims
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title="The AI Music Promo Generator"
+        subtitle="Your AI-generated content is 100% original - post to YouTube, TikTok, Instagram & more without strikes or claims"
+        badge="Platform Ready"
+        badgeColor="success"
+        background="gradient-teal"
+        gradientTitle
+        ctaText="See Supported Platforms"
+        ctaLink="/social-media"
+      >
           {/* Platform Icons Carousel */}
           <ScrollableCarousel id="platforms-carousel">
             {[
@@ -2564,24 +2332,16 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* More Tracks Section - columns of 3 tracks each */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              {carouselTitles.moreTracks.title}
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              {carouselTitles.moreTracks.subtitle}
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title={carouselTitles.moreTracks.title}
+        subtitle={carouselTitles.moreTracks.subtitle}
+        badge="100% Original"
+        badgeColor="warning"
+        background="white"
+      >
           {/* Single carousel with columns of 3 tracks each - tracks 15-30 (5 columns × 3 rows) */}
           <ScrollableCarousel id="more-tracks-carousel">
             {(() => {
@@ -2705,24 +2465,19 @@ const HomePage: React.FC = () => {
               ));
             })()}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Promo Videos - Landscape */}
       {promoVideosLandscape.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                Cinematic Brand Videos
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                Widescreen promo videos with AI-generated music for your brand
-              </Typography>
-            </Box>
+        <MarketingSection
+          title="Cinematic Brand Videos"
+          subtitle="Widescreen promo videos with AI-generated music for your brand"
+          badge="Hover to Preview"
+          badgeColor="secondary"
+          background="gradient-purple"
+          ctaText="Create Brand Videos"
+          ctaLink="/ai-music-videos"
+        >
             <ScrollableCarousel id="promo-videos-landscape">
               {promoVideosLandscape.map((video) => (
                 <VideoCard
@@ -2732,25 +2487,19 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </ScrollableCarousel>
-          </Container>
-        </Box>
+        </MarketingSection>
       )}
 
       {/* Genres Section - Strong hook */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              {carouselTitles.genres.title}
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              {carouselTitles.genres.subtitle}
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title={carouselTitles.genres.title}
+        subtitle={carouselTitles.genres.subtitle}
+        badge="30+ Genres"
+        badgeColor="primary"
+        background="white"
+        ctaText="Explore All Genres"
+        ctaLink="/genres"
+      >
           <ScrollableCarousel id="genres-carousel">
             {genres.map((genre) => (
               <Box 
@@ -2794,24 +2543,20 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Music Videos - Landscape (Create Your Very Own Music Video) */}
       {musicVideosLandscape.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                Create Your Very Own Music Video with AI
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.cinematicVideos.subtitle}
-              </Typography>
-            </Box>
+        <MarketingSection
+          title="Create Your Very Own Music Video with AI"
+          subtitle={carouselTitles.cinematicVideos.subtitle}
+          badge="Cinematic"
+          badgeColor="secondary"
+          background="gradient-subtle"
+          gradientTitle
+          ctaText="Explore Music Videos"
+          ctaLink="/ai-music-videos"
+        >
             <ScrollableCarousel id="music-videos-landscape">
               {musicVideosLandscape.map((video) => (
                 <VideoCard
@@ -2821,25 +2566,17 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </ScrollableCarousel>
-          </Container>
-        </Box>
+        </MarketingSection>
       )}
 
       {/* Discover More Tracks Section - remaining 3 tracks + 12 additional genre tracks = 15 total */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              {carouselTitles.moreGenres.title}
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              {carouselTitles.moreGenres.subtitle}
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title={carouselTitles.moreGenres.title}
+        subtitle={carouselTitles.moreGenres.subtitle}
+        badge="Discover"
+        badgeColor="primary"
+        background="white"
+      >
           {/* Single carousel with columns of 3 tracks each - remaining + additional tracks (5 columns × 3 rows) */}
           <ScrollableCarousel id="discover-tracks-carousel">
             {(() => {
@@ -2964,24 +2701,19 @@ const HomePage: React.FC = () => {
               ));
             })()}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Music Videos - Portrait (Turn Songs Into Music Videos) */}
       {musicVideosPortrait.length > 0 && (
-        <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-          <Container maxWidth="lg">
-            <Box sx={{ mb: 2.5 }}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-              >
-                {carouselTitles.musicVideos.title}
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-                {carouselTitles.musicVideos.subtitle}
-              </Typography>
-            </Box>
+        <MarketingSection
+          title={carouselTitles.musicVideos.title}
+          subtitle={carouselTitles.musicVideos.subtitle}
+          badge="Hover to Preview"
+          badgeColor="secondary"
+          background="gradient-purple"
+          ctaText="Create Music Videos"
+          ctaLink="/ai-music-videos"
+        >
             <ScrollableCarousel id="music-videos-portrait">
               {musicVideosPortrait.map((video) => (
                 <VideoCard
@@ -2991,25 +2723,19 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </ScrollableCarousel>
-          </Container>
-        </Box>
+        </MarketingSection>
       )}
 
       {/* Art Styles Section - Strong hook */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              {carouselTitles.videoStyles.title}
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              {carouselTitles.videoStyles.subtitle}
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title={carouselTitles.videoStyles.title}
+        subtitle={carouselTitles.videoStyles.subtitle}
+        badge="20+ Styles"
+        badgeColor="warning"
+        background="white"
+        ctaText="View All Styles"
+        ctaLink="/ai-assets-landing"
+      >
           <ScrollableCarousel id="styles-carousel">
             {artStyles.map((style, index) => (
               <Box
@@ -3047,27 +2773,22 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Languages Section - Strong hook */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              Make Music in Any Language
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              24+ languages with native-quality vocals - reach a global audience
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title="Make Music in Any Language"
+        subtitle="24+ languages with native-quality vocals - reach a global audience"
+        badge="Global Reach"
+        badgeColor="success"
+        background="gradient-teal"
+        gradientTitle
+        ctaText="Explore Languages"
+        ctaLink="/languages"
+      >
           <ScrollableCarousel id="languages-carousel">
             {languages.map((lang) => (
-              <Box 
+              <Box
                 key={lang.id}
                 onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
                 sx={{
@@ -3111,24 +2832,16 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Language Tracks Section - 15 tracks in different languages (below Make Music in Any Language) */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              Enjoy Music from Around the World
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              AI-generated songs in 15+ languages - from English to Japanese to Arabic
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title="Enjoy Music from Around the World"
+        subtitle="AI-generated songs in 15+ languages - from English to Japanese to Arabic"
+        badge="Multilingual"
+        badgeColor="primary"
+        background="white"
+      >
           {/* Single carousel with columns of 3 tracks each - 15 language tracks (5 columns × 3 rows) */}
           <ScrollableCarousel id="language-tracks-carousel">
             {(() => {
@@ -3262,27 +2975,21 @@ const HomePage: React.FC = () => {
               ));
             })()}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Moods Section - Strong hook */}
-      <Box sx={{ py: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 2.5 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              Set the Perfect Mood
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              Uplifting, melancholic, energetic - music that captures any emotion
-            </Typography>
-          </Box>
-
+      <MarketingSection
+        title="Set the Perfect Mood"
+        subtitle="Uplifting, melancholic, energetic - music that captures any emotion"
+        badge="Emotional"
+        badgeColor="secondary"
+        background="gradient-purple"
+        ctaText="Browse Moods"
+        ctaLink="/moods"
+      >
           <ScrollableCarousel id="moods-carousel">
             {moods.map((mood) => (
-              <Box 
+              <Box
                 key={mood.id}
                 onClick={() => navigate(`/moods/${mood.id}`)}
                 sx={{
@@ -3323,23 +3030,17 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </ScrollableCarousel>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Features Section - Strong hook */}
-      <Box sx={{ py: { xs: 4, md: 6 }, position: 'relative', zIndex: 1, marginBottom: 12 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
-            >
-              Everything You Need to Create
-            </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
-              Professional music and video generation at your fingertips
-            </Typography>
-          </Box>
+      <MarketingSection
+        title="Everything You Need to Create"
+        subtitle="Professional music and video generation at your fingertips"
+        badge="All-In-One"
+        badgeColor="primary"
+        background="gradient-subtle"
+        align="center"
+      >
 
           <Box
             sx={{
@@ -3434,8 +3135,7 @@ const HomePage: React.FC = () => {
               </Box>
             ))}
           </Box>
-        </Container>
-      </Box>
+      </MarketingSection>
 
       {/* Pricing Section */}
       <Box sx={{ py: { xs: 8, md: 12 }, position: 'relative', zIndex: 1 }}>

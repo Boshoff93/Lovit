@@ -5,7 +5,19 @@ import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CloseIcon from '@mui/icons-material/Close';
+import { useLocation } from 'react-router-dom';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+
+// Marketing pages that should show full-width player (no sidebar offset)
+const MARKETING_PATHS = [
+  '/',
+  '/ai-music',
+  '/ai-video-shorts',
+  '/ai-music-videos',
+  '/social-media',
+  '/pricing',
+  '/blog',
+];
 
 // Genre to image mapping
 const genreImages: Record<string, string> = {
@@ -117,6 +129,7 @@ const formatTime = (seconds: number): string => {
 };
 
 const GlobalAudioPlayer: React.FC = () => {
+  const location = useLocation();
   const {
     currentSong,
     isPlaying,
@@ -130,6 +143,11 @@ const GlobalAudioPlayer: React.FC = () => {
   } = useAudioPlayer();
 
   const [localProgress, setLocalProgress] = useState<number | null>(null);
+
+  // Check if we're on a marketing page (no sidebar)
+  const isMarketingPage = MARKETING_PATHS.some(path =>
+    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+  );
 
   const handleSliderChange = useCallback((_event: Event, value: number | number[]) => {
     const newValue = Array.isArray(value) ? value[0] : value;
@@ -156,8 +174,8 @@ const GlobalAudioPlayer: React.FC = () => {
       sx={{
         position: 'fixed',
         bottom: 0,
-        // On mobile: full width. On desktop (md+): start after sidebar
-        left: { xs: 0, md: 240 },
+        // On mobile or marketing pages: full width. On desktop dashboard: start after sidebar
+        left: isMarketingPage ? 0 : { xs: 0, md: 240 },
         right: 0,
         zIndex: 1300,
         background: '#fff',

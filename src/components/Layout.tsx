@@ -24,6 +24,7 @@ import { Allowances, getTokensFromAllowances } from '../store/authSlice';
 import { logoutAllState } from '../store/actions';
 import { createCheckoutSession, createPortalSession } from '../store/authSlice';
 import UpgradePopup from './UpgradePopup';
+import TrialPaywallModal from './TrialPaywallModal';
 import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
@@ -85,7 +86,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const hasActivePlayer = !!currentSong;
 
   const dispatch = useDispatch<AppDispatch>();
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
   const { subscription } = useSelector((state: RootState) => state.auth);
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -120,6 +121,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
+  const isTrialing = subscription?.status === 'trialing';
+  // Show paywall for all free users (no active subscription/trial)
+  // - hasUsedTrial === true means trial expired → show "Trial Expired" messaging
+  // - hasUsedTrial === false or undefined means new user → show "Start Trial" messaging
+  const showPaywall = !!user && !hasSubscription && !isTrialing;
+  const trialExpired = user?.hasUsedTrial === true;
 
   // Scroll to top on route change and clear current viewing item
   useEffect(() => {
@@ -460,6 +467,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           isTopUpLoading={isTopUpLoading}
           isUpgradeLoading={isUpgradeLoading}
         />
+
+        {/* Trial Paywall Modal - shown for free users (new or trial expired) */}
+        <TrialPaywallModal open={showPaywall} trialExpired={trialExpired} />
 
         {/* Logout Confirmation Dialog */}
         <Dialog

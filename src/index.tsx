@@ -19,6 +19,75 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+// Gruvi Gradient Definitions - Used across marketing and pricing pages
+export const gruviGradients = {
+  // Primary brand gradients
+  purplePink: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+  blueCyan: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+  redOrange: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
+
+  // Pricing card gradients
+  starter: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+  scale: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+  beast: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
+
+  // Hero and accent gradients
+  heroAccent: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)',
+  textGradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%)',
+
+  // Header gradient (dark)
+  header: 'linear-gradient(135deg, #1D1D1F 0%, #2D2D30 100%)',
+
+  // Glass effects
+  glassLight: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)',
+  glassDark: 'linear-gradient(135deg, rgba(29, 29, 31, 0.95) 0%, rgba(45, 45, 48, 0.9) 100%)',
+};
+
+// Animation keyframe definitions for reuse
+export const gruviAnimations = {
+  // Gradient shift for text
+  gradientShift: `
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+  `,
+  // Pulse animation for badges
+  pulse: `
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4), 0 0 0 0 rgba(236, 72, 153, 0.4);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4), 0 0 0 8px rgba(236, 72, 153, 0);
+        transform: scale(1.02);
+      }
+    }
+  `,
+  // Fade in up animation
+  fadeInUp: `
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `,
+  // Scale in animation
+  scaleIn: `
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  `,
+  // Count up shimmer
+  shimmer: `
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+  `,
+};
+
 // Apple-Inspired Light Glassy Theme - Clean Blue Accents
 const theme = createTheme({
   palette: {

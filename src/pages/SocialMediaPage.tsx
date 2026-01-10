@@ -1,0 +1,977 @@
+import React, { useState, useCallback } from 'react';
+import {
+  Box,
+  Typography,
+  Container,
+  Button,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Tabs,
+  Tab,
+  InputAdornment,
+  IconButton,
+  CircularProgress,
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+import PersonIcon from '@mui/icons-material/Person';
+import GoogleIcon from '@mui/icons-material/Google';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { useAuth } from '../hooks/useAuth';
+import { useInView } from '../hooks/useInView';
+import { SEO } from '../utils/seoHelper';
+import { MarketingHeader, CTASection } from '../components/marketing';
+
+// TikTok icon
+const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
+  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 24, height: 24, ...sx }}>
+    <path
+      fill="currentColor"
+      d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"
+    />
+  </Box>
+);
+
+// X/Twitter icon
+const XIcon: React.FC<{ sx?: any }> = ({ sx }) => (
+  <Box component="svg" viewBox="0 0 24 24" sx={{ width: 24, height: 24, ...sx }}>
+    <path
+      fill="currentColor"
+      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+    />
+  </Box>
+);
+
+const platforms = [
+  { id: 'youtube', name: 'YouTube', icon: YouTubeIcon, color: '#FF0000', desc: 'Reach billions of viewers' },
+  { id: 'tiktok', name: 'TikTok', icon: TikTokIcon, color: '#000000', desc: 'Go viral with trending sounds' },
+  { id: 'instagram', name: 'Instagram', icon: InstagramIcon, color: '#E4405F', desc: 'Engage your visual audience', gradient: true },
+  { id: 'facebook', name: 'Facebook', icon: FacebookIcon, color: '#1877F2', desc: 'Connect with communities' },
+  { id: 'linkedin', name: 'LinkedIn', icon: LinkedInIcon, color: '#0A66C2', desc: 'Build your professional brand' },
+  { id: 'x', name: 'X (Twitter)', icon: XIcon, color: '#000000', desc: 'Join the conversation' },
+];
+
+const SocialMediaPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { token } = useSelector((state: RootState) => state.auth);
+  const isLoggedIn = !!token;
+  const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
+
+  // Scroll-triggered animation refs
+  const { ref: platformsRef, inView: platformsInView } = useInView({ threshold: 0.1 });
+  const { ref: featuresRef, inView: featuresInView } = useInView({ threshold: 0.1 });
+  const { ref: reachRef, inView: reachInView } = useInView({ threshold: 0.1 });
+  const { ref: benefitsRef, inView: benefitsInView } = useInView({ threshold: 0.1 });
+
+  // Auth modal state
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authTab, setAuthTab] = useState(0);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleOpenAuth = useCallback(() => {
+    setAuthOpen(true);
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setUsername('');
+    setError(null);
+  }, []);
+
+  const handleCloseAuth = useCallback(() => {
+    setAuthOpen(false);
+    setIsLoading(false);
+    setIsGoogleLoading(false);
+  }, []);
+
+  const handleEmailLogin = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      if (!email || !password) {
+        setError('Please enter your email and password');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await login(email, password);
+      if (result.type === 'auth/login/fulfilled') {
+        handleCloseAuth();
+        navigate('/settings/connected-accounts');
+      } else {
+        setError(result.payload || 'Login failed');
+      }
+    } catch (err: any) {
+      setError(authError || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [login, email, password, authError, handleCloseAuth, navigate]);
+
+  const handleEmailSignup = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      if (!email || !password || !username) {
+        setError('Please fill in all fields');
+        setIsLoading(false);
+        return;
+      }
+
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        setError('Password must be 8+ chars with uppercase, number, and special character');
+        setIsLoading(false);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await signup(email, password, username);
+      if (result.type.endsWith('/fulfilled')) {
+        handleCloseAuth();
+      } else {
+        setError(result.payload || 'Signup failed');
+      }
+    } catch (err: any) {
+      setError(authError || 'Signup failed');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [signup, email, password, confirmPassword, username, authError, handleCloseAuth]);
+
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      setIsGoogleLoading(true);
+      setError(null);
+
+      const accessToken = await getGoogleIdToken();
+      const result = await googleLogin(accessToken);
+
+      if (result.type === 'auth/loginWithGoogle/fulfilled') {
+        const userData = result.payload.user;
+        if (!userData.isVerified) {
+          await resendVerificationEmail(userData.email);
+        } else {
+          navigate('/settings/connected-accounts');
+        }
+        handleCloseAuth();
+      } else {
+        setError(result.payload || 'Google login failed');
+      }
+    } catch (err: any) {
+      if (err.error === 'popup_closed_by_user') {
+        setError('Google sign-in was cancelled');
+      } else {
+        setError(authError || 'Google sign-in failed');
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [googleLogin, getGoogleIdToken, resendVerificationEmail, navigate, handleCloseAuth, authError]);
+
+  return (
+    <Box sx={{ minHeight: '100vh', background: '#0D0D0F' }}>
+      <SEO
+        title="Social Media Publishing | Share Music to All Platforms | Gruvi"
+        description="Publish your AI-generated music and videos to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X. One-click sharing with smart scheduling."
+        keywords="social media publishing, music sharing, YouTube shorts, TikTok music, Instagram reels, social media scheduler"
+        ogTitle="Social Media Publishing | Gruvi"
+        ogDescription="Publish AI music and videos to all social platforms with one click."
+        ogType="website"
+        ogUrl="https://gruvimusic.com/social-media"
+      />
+
+      <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />
+
+      {/* Hero Section */}
+      <Box
+        sx={{
+          pt: { xs: 14, md: 20 },
+          pb: { xs: 10, md: 16 },
+          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 100%)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Gradient orbs */}
+        <Box sx={{
+          position: 'absolute',
+          top: '10%',
+          left: '5%',
+          width: '45%',
+          height: '60%',
+          background: 'radial-gradient(ellipse at center, rgba(255, 107, 107, 0.1) 0%, transparent 70%)',
+          filter: 'blur(100px)',
+          pointerEvents: 'none',
+        }} />
+        <Box sx={{
+          position: 'absolute',
+          bottom: '0%',
+          right: '10%',
+          width: '40%',
+          height: '50%',
+          background: 'radial-gradient(ellipse at center, rgba(78, 205, 196, 0.1) 0%, transparent 70%)',
+          filter: 'blur(100px)',
+          pointerEvents: 'none',
+        }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Grid container spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Chip
+                label="Social Media Publishing"
+                size="small"
+                sx={{
+                  mb: 3,
+                  background: 'rgba(255, 107, 107, 0.15)',
+                  color: '#FF6B6B',
+                  fontWeight: 600,
+                  fontSize: '0.8rem',
+                  height: 32,
+                  borderRadius: '100px',
+                }}
+              />
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: { xs: '2.75rem', sm: '3.5rem', md: '4.25rem' },
+                  fontWeight: 800,
+                  color: '#fff',
+                  mb: 3,
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1.05,
+                }}
+              >
+                Publish to{' '}
+                <Box component="span" sx={{
+                  background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  All Platforms
+                </Box>
+                {' '}in One Click
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: '1.1rem', md: '1.3rem' },
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.7,
+                  mb: 4,
+                  maxWidth: '540px',
+                }}
+              >
+                Stop manually posting to each platform. Connect your accounts once, then share your music and videos everywhere with a single click.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Button
+                  variant="contained"
+                  onClick={() => isLoggedIn ? navigate('/settings/connected-accounts') : handleOpenAuth()}
+                  endIcon={<ArrowForwardRoundedIcon />}
+                  sx={{
+                    background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                    color: '#fff',
+                    px: 4,
+                    py: 1.75,
+                    borderRadius: '100px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    fontSize: '1.05rem',
+                    boxShadow: '0 8px 32px rgba(255, 107, 107, 0.4)',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 12px 40px rgba(255, 107, 107, 0.5)',
+                    },
+                  }}
+                >
+                  Connect Your Accounts
+                </Button>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                <Box
+                  component="img"
+                  src="/gruvi/gruv-connect-socials.png"
+                  alt="Connect Social Media Accounts"
+                  sx={{
+                    width: '100%',
+                    maxWidth: 380,
+                    height: 'auto',
+                    filter: 'drop-shadow(0 30px 60px rgba(255, 107, 107, 0.25))',
+                    animation: 'float 6s ease-in-out infinite',
+                    '@keyframes float': {
+                      '0%, 100%': { transform: 'translateY(0px)' },
+                      '50%': { transform: 'translateY(-15px)' },
+                    },
+                  }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Platforms Grid */}
+      <Box
+        ref={platformsRef}
+        sx={{
+          py: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #1A1A2E 100%)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '2rem', md: '2.75rem' },
+                fontWeight: 800,
+                color: '#fff',
+                mb: 2,
+              }}
+            >
+              Supported Platforms
+            </Typography>
+            <Typography sx={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', maxWidth: '550px', mx: 'auto' }}>
+              Connect all your social accounts and publish content everywhere with a single click.
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3} justifyContent="center">
+            {platforms.map((platform, index) => {
+              const IconComponent = platform.icon;
+              return (
+                <Grid size={{ xs: 6, sm: 4, md: 2 }} key={platform.id}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      borderRadius: '20px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      // Start at opacity 0, animate to visible when inView
+                      opacity: 0,
+                      transform: 'translateY(20px)',
+                      ...(platformsInView && {
+                        animation: `fadeInUp 0.4s ease ${index * 60}ms forwards`,
+                      }),
+                      '@keyframes fadeInUp': {
+                        to: { opacity: 1, transform: 'translateY(0)' },
+                      },
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: `0 16px 40px ${platform.color}20`,
+                        borderColor: `${platform.color}40`,
+                        background: 'rgba(255,255,255,0.05)',
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: '16px',
+                        background: platform.gradient
+                          ? 'linear-gradient(135deg, #FFDC80, #F77737, #E1306C, #C13584, #833AB4)'
+                          : platform.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mx: 'auto',
+                        mb: 2,
+                      }}
+                    >
+                      <IconComponent sx={{ color: '#fff', fontSize: 28 }} />
+                    </Box>
+                    <Typography sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                      {platform.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                      {platform.desc}
+                    </Typography>
+                  </Box>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* One-Click Distribution Section */}
+      <Box
+        ref={featuresRef}
+        sx={{
+          py: { xs: 10, md: 14 },
+          background: 'linear-gradient(180deg, #1A1A2E 0%, #0F0F1A 100%)',
+          position: 'relative',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Box
+                component="img"
+                src="/gruvi/gruvi-schedule.png"
+                alt="Schedule Posts"
+                sx={{
+                  width: '100%',
+                  maxWidth: 350,
+                  height: 'auto',
+                  mx: 'auto',
+                  display: 'block',
+                  filter: 'drop-shadow(0 20px 40px rgba(78, 205, 196, 0.2))',
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Chip
+                label="One-Click Distribution"
+                size="small"
+                sx={{ mb: 2, background: 'rgba(78, 205, 196, 0.15)', color: '#4ECDC4', fontWeight: 600 }}
+              />
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2rem', md: '2.75rem' },
+                  fontWeight: 800,
+                  color: '#fff',
+                  mb: 3,
+                }}
+              >
+                No More{' '}
+                <Box component="span" sx={{
+                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  Manual Posting
+                </Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.15rem', lineHeight: 1.7, mb: 4 }}>
+                Say goodbye to logging into each platform separately. Create your content once, then distribute it everywhere instantly. Gruvi handles the formatting for each platform automatically.
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  { icon: TouchAppIcon, title: 'One-Click Publish', desc: 'Post to all connected platforms simultaneously', color: '#4ECDC4' },
+                  { icon: ScheduleIcon, title: 'Smart Scheduling', desc: 'Schedule posts for optimal engagement times', color: '#8B5CF6' },
+                  { icon: AutoAwesomeIcon, title: 'Auto-Formatting', desc: 'Content automatically optimized for each platform', color: '#FF6B9D' },
+                ].map((feature, index) => (
+                  <Box
+                    key={feature.title}
+                    sx={{
+                      display: 'flex',
+                      gap: 3,
+                      p: 3,
+                      borderRadius: '16px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      transition: 'background 0.3s ease, border-color 0.3s ease',
+                      // Start at opacity 0, animate to visible when inView
+                      opacity: 0,
+                      transform: 'translateX(30px)',
+                      ...(featuresInView && {
+                        animation: `slideIn 0.5s ease ${index * 100}ms forwards`,
+                      }),
+                      '@keyframes slideIn': {
+                        to: { opacity: 1, transform: 'translateX(0)' },
+                      },
+                      '&:hover': {
+                        background: 'rgba(255,255,255,0.05)',
+                        borderColor: `${feature.color}40`,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 52,
+                        height: 52,
+                        borderRadius: '14px',
+                        background: `${feature.color}15`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <feature.icon sx={{ color: feature.color, fontSize: 26 }} />
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '1.1rem', mb: 0.5 }}>
+                        {feature.title}
+                      </Typography>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+                        {feature.desc}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Upload Your Content Section */}
+      <Box
+        sx={{
+          py: { xs: 10, md: 14 },
+          background: 'linear-gradient(180deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%)',
+          position: 'relative',
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '20%',
+          right: '10%',
+          width: '30%',
+          height: '40%',
+          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+        }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Grid container spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Chip
+                label="Content Upload"
+                size="small"
+                sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6', fontWeight: 600 }}
+              />
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2rem', md: '2.75rem' },
+                  fontWeight: 800,
+                  color: '#fff',
+                  mb: 3,
+                }}
+              >
+                Upload Your Own{' '}
+                <Box component="span" sx={{
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  Music & Videos
+                </Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.15rem', lineHeight: 1.7, mb: 4 }}>
+                Already have content? Upload your existing music and videos directly to Gruvi. We'll help you create engaging social media posts and distribute them to all your connected platforms.
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
+                {[
+                  'Upload MP3, WAV, MP4, MOV, and more',
+                  'AI generates captions and hashtags',
+                  'Create video content from audio files',
+                  'Distribute to all platforms instantly',
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <CheckCircleIcon sx={{ color: '#8B5CF6', fontSize: 22 }} />
+                    <Typography sx={{ color: 'rgba(255,255,255,0.8)' }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+              <Button
+                variant="contained"
+                onClick={() => isLoggedIn ? navigate('/create/video') : handleOpenAuth()}
+                startIcon={<CloudUploadIcon />}
+                sx={{
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                  color: '#fff',
+                  px: 4,
+                  py: 1.75,
+                  borderRadius: '100px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: '1.05rem',
+                  boxShadow: '0 8px 32px rgba(139, 92, 246, 0.4)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                  },
+                }}
+              >
+                Upload Content
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Box
+                component="img"
+                src="/gruvi/gruvi-upload-music.png"
+                alt="Upload Content"
+                sx={{
+                  width: '100%',
+                  maxWidth: 350,
+                  height: 'auto',
+                  mx: 'auto',
+                  display: 'block',
+                  filter: 'drop-shadow(0 25px 50px rgba(139, 92, 246, 0.25))',
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Multi-Platform Reach Section */}
+      <Box
+        ref={reachRef}
+        sx={{
+          py: { xs: 10, md: 14 },
+          background: 'linear-gradient(180deg, #16213E 0%, #1A1A2E 100%)',
+          position: 'relative',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Box
+                sx={{
+                  p: 4,
+                  borderRadius: '24px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(78, 205, 196, 0.1)' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>Platforms</Typography>
+                    <Typography sx={{ color: '#4ECDC4', fontSize: '2rem', fontWeight: 800 }}>6+</Typography>
+                  </Box>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(139, 92, 246, 0.1)' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>One Click</Typography>
+                    <Typography sx={{ color: '#8B5CF6', fontSize: '2rem', fontWeight: 800 }}>Publish</Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(255, 107, 157, 0.1)' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>AI Content</Typography>
+                    <Typography sx={{ color: '#FF6B9D', fontSize: '2rem', fontWeight: 800 }}>100%</Typography>
+                  </Box>
+                  <Box sx={{ flex: 1, p: 3, borderRadius: '16px', background: 'rgba(255, 179, 71, 0.1)' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 1 }}>Copyright</Typography>
+                    <Typography sx={{ color: '#FFB347', fontSize: '2rem', fontWeight: 800 }}>Free</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Chip
+                label="Multi-Platform Reach"
+                size="small"
+                sx={{ mb: 2, background: 'rgba(255, 179, 71, 0.15)', color: '#FFB347', fontWeight: 600 }}
+              />
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2rem', md: '2.75rem' },
+                  fontWeight: 800,
+                  color: '#fff',
+                  mb: 3,
+                }}
+              >
+                Grow Your{' '}
+                <Box component="span" sx={{
+                  background: 'linear-gradient(135deg, #FFB347 0%, #FF8E53 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  Audience
+                </Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.15rem', lineHeight: 1.7, mb: 4 }}>
+                Expand your reach by publishing to all major platforms simultaneously. Build your presence on YouTube, TikTok, Instagram, and more from one place.
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {[
+                  { icon: AnalyticsIcon, text: 'Publish to 6+ platforms at once', color: '#4ECDC4' },
+                  { icon: TrendingUpIcon, text: 'Maximize your content reach', color: '#8B5CF6' },
+                  { icon: AutoAwesomeIcon, text: 'AI-optimized for each platform', color: '#FF6B9D' },
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <item.icon sx={{ color: item.color, fontSize: 24 }} />
+                    <Typography sx={{ color: 'rgba(255,255,255,0.8)' }}>{item.text}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Benefits List */}
+      <Box
+        ref={benefitsRef}
+        sx={{
+          py: { xs: 8, md: 12 },
+          background: 'linear-gradient(180deg, #1A1A2E 0%, #0D0D0F 100%)',
+        }}
+      >
+        <Container maxWidth="md">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 800, color: '#fff', mb: 2 }}
+            >
+              Why Use Gruvi for Publishing?
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {[
+              '100% original AI content - no copyright strikes',
+              'One-click publishing to multiple platforms',
+              'AI-generated captions and hashtags',
+              'Optimal posting times for each platform',
+              'Build your audience everywhere',
+              'Commercial license included',
+            ].map((benefit, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  p: 3,
+                  borderRadius: '16px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  // Start at opacity 0, animate to visible when inView
+                  opacity: 0,
+                  transform: 'translateX(30px)',
+                  ...(benefitsInView && {
+                    animation: `slideIn 0.4s ease ${index * 80}ms forwards`,
+                  }),
+                  '@keyframes slideIn': {
+                    to: { opacity: 1, transform: 'translateX(0)' },
+                  },
+                  transition: 'background 0.3s ease, border-color 0.3s ease',
+                  '&:hover': {
+                    background: 'rgba(255,255,255,0.05)',
+                    borderColor: 'rgba(78, 205, 196, 0.3)',
+                  },
+                }}
+              >
+                <CheckCircleIcon sx={{ color: '#4ECDC4', fontSize: 26 }} />
+                <Typography sx={{ color: '#fff', fontWeight: 500, fontSize: '1.05rem' }}>{benefit}</Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* CTA Section */}
+      <CTASection
+        title="Ready to Go Viral?"
+        subtitle="Connect your accounts and start publishing AI content today."
+        primaryButtonText="Get Started Free"
+        primaryButtonAction={() => isLoggedIn ? navigate('/settings/connected-accounts') : handleOpenAuth()}
+        variant="dark"
+      />
+
+      {/* Auth Modal */}
+      <Dialog
+        open={authOpen}
+        onClose={handleCloseAuth}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            background: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff' }}>
+          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
+            {authTab === 0 ? 'Welcome Back' : 'Create Account'}
+          </Typography>
+          <IconButton onClick={handleCloseAuth} sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Tabs
+            value={authTab}
+            onChange={(_, v) => { setAuthTab(v); setError(null); }}
+            sx={{
+              mb: 3,
+              '& .MuiTab-root': { color: 'rgba(255,255,255,0.6)', fontWeight: 600 },
+              '& .Mui-selected': { color: '#FF6B6B' },
+              '& .MuiTabs-indicator': { backgroundColor: '#FF6B6B' },
+            }}
+          >
+            <Tab label="Log In" />
+            <Tab label="Sign Up" />
+          </Tabs>
+
+          {error && (
+            <Typography sx={{ color: '#FF6B6B', fontSize: '0.85rem', mb: 2, textAlign: 'center' }}>
+              {error}
+            </Typography>
+          )}
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {authTab === 1 && (
+              <TextField
+                fullWidth
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: 'rgba(255,255,255,0.5)' }} /></InputAdornment>,
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                  },
+                }}
+              />
+            )}
+            <TextField
+              fullWidth
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><EmailIcon sx={{ color: 'rgba(255,255,255,0.5)' }} /></InputAdornment>,
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
+                  color: '#fff',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                },
+              }}
+            />
+            <TextField
+              fullWidth
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: 'rgba(255,255,255,0.5)' }} /></InputAdornment>,
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
+                  color: '#fff',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                },
+              }}
+            />
+            {authTab === 1 && (
+              <TextField
+                fullWidth
+                placeholder="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: 'rgba(255,255,255,0.5)' }} /></InputAdornment>,
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                  },
+                }}
+              />
+            )}
+
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={authTab === 0 ? handleEmailLogin : handleEmailSignup}
+              disabled={isLoading}
+              sx={{
+                background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                py: 1.5,
+                borderRadius: '12px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '1rem',
+              }}
+            >
+              {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : (authTab === 0 ? 'Log In' : 'Sign Up')}
+            </Button>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 1 }}>
+              <Box sx={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>or</Typography>
+              <Box sx={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+            </Box>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleGoogleLogin}
+              disabled={isGoogleLoading}
+              startIcon={isGoogleLoading ? <CircularProgress size={20} /> : <GoogleIcon />}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.2)',
+                color: '#fff',
+                py: 1.5,
+                borderRadius: '12px',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' },
+              }}
+            >
+              Continue with Google
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default SocialMediaPage;

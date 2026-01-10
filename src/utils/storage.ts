@@ -17,6 +17,8 @@ export interface User {
   artistName?: string;     // Custom artist name for music
   directorName?: string;   // Custom director name for videos
   profilePicture?: string; // Profile picture URL from Google
+  // Trial status
+  hasUsedTrial?: boolean;  // Whether user has used their free trial
 }
 
 export interface AuthData {

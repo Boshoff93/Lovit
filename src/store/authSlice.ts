@@ -245,19 +245,19 @@ export const fetchSubscription = createAsyncThunk(
 // Create checkout session thunk
 export const createCheckoutSession = createAsyncThunk(
   'auth/createCheckoutSession',
-  async ({ priceId, productId }: { priceId: string; productId: string }, { getState, rejectWithValue }) => {
+  async ({ priceId, productId, withTrial }: { priceId: string; productId: string; withTrial?: boolean }, { getState, rejectWithValue }) => {
     try {
       const { auth } = getState() as { auth: AuthState };
-      
+
       if (!auth.token) {
         return rejectWithValue('No auth token available');
       }
-      
+
       const response = await api.post(
         `/api/create-checkout-session`,
-        { priceId, productId }
+        { priceId, productId, withTrial }
       );
-      
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to create checkout session');

@@ -15,6 +15,7 @@ import {
   ToggleButtonGroup,
   Avatar,
   Drawer,
+  Tooltip,
   List,
   ListItem,
   ListItemButton,
@@ -834,7 +835,7 @@ const CreateVideoPage: React.FC = () => {
             {/* Cast Selection - Dropdown + Create Button */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 1 }}>
-                Add characters to your video (max {MAX_CAST_MEMBERS}):
+                Add AI assets to your video (max {MAX_CAST_MEMBERS}):
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
@@ -904,24 +905,26 @@ const CreateVideoPage: React.FC = () => {
                 </Button>
 
                 {/* Create button - dotted outline square */}
-                <Button
-                  onClick={() => navigate('/ai-assets/create')}
-                  sx={{
-                    minWidth: 48,
-                    width: 48,
-                    height: 48,
-                    p: 0,
-                    border: '2px dashed rgba(0,122,255,0.4)',
-                    borderRadius: '12px',
-                    color: '#007AFF',
-                    '&:hover': {
-                      background: 'rgba(0,122,255,0.05)',
-                      border: '2px dashed #007AFF',
-                    },
-                  }}
-                >
-                  <AddIcon />
-                </Button>
+                <Tooltip title="Create new AI asset" arrow>
+                  <Button
+                    onClick={() => navigate('/ai-assets/create')}
+                    sx={{
+                      minWidth: 48,
+                      width: 48,
+                      height: 48,
+                      p: 0,
+                      border: '2px dashed rgba(0,122,255,0.4)',
+                      borderRadius: '12px',
+                      color: '#007AFF',
+                      '&:hover': {
+                        background: 'rgba(0,122,255,0.05)',
+                        border: '2px dashed #007AFF',
+                      },
+                    }}
+                  >
+                    <AddIcon />
+                  </Button>
+                </Tooltip>
               </Box>
 
               {/* Selected cast preview */}

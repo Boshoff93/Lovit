@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -50,6 +50,11 @@ import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
 import ScheduledContentPage from './pages/ScheduledContentPage';
 import DashboardSubscriptionPage from './pages/DashboardSubscriptionPage';
+import AIMusicPage from './pages/AIMusicPage';
+import AIMusicVideosPage from './pages/AIMusicVideosPage';
+import AIVideoShortsPage from './pages/AIVideoShortsPage';
+import SocialMediaPage from './pages/SocialMediaPage';
+import BlogPage from './pages/BlogPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -198,6 +203,17 @@ const RequireSubscription = ({
   return <>{children}</>;
 };
 
+// Scroll to top on route change
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 // Get all SEO routes from config
 const seoRoutes = getAllRoutePaths().filter(path => path !== '/');
 
@@ -205,6 +221,7 @@ function App() {
   return (
     <AudioPlayerProvider>
       <Router>
+        <ScrollToTop />
         <AuthInitializer>
         <Routes>
         {/* Public landing page */}
@@ -212,6 +229,13 @@ function App() {
 
         {/* Public pricing page - for non-logged in users */}
         <Route path="/pricing" element={<PaymentPage />} />
+
+        {/* Public landing pages with dedicated designs */}
+        <Route path="/ai-music" element={<AIMusicPage />} />
+        <Route path="/ai-music-videos" element={<AIMusicVideosPage />} />
+        <Route path="/ai-video-shorts" element={<AIVideoShortsPage />} />
+        <Route path="/social-media" element={<SocialMediaPage />} />
+        <Route path="/blog" element={<BlogPage />} />
 
         {/* Social platform detail pages - must be before SEO routes */}
         <Route path="/platforms/:platformId" element={<SocialDetailPage />} />

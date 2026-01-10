@@ -436,7 +436,7 @@ const MusicVideoDetailPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: '#fff',
+        background: '#0D0D0F',
         position: 'relative',
         pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
         transition: 'padding-bottom 0.3s ease-out',
@@ -450,7 +450,7 @@ const MusicVideoDetailPage: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(ellipse at top, rgba(0, 122, 255, 0.05) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at top, rgba(249, 115, 22, 0.08) 0%, transparent 50%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
@@ -491,11 +491,11 @@ const MusicVideoDetailPage: React.FC = () => {
           onClick={() => navigate('/')}
           sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: '#fff',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255,255,255,0.1)',
             }
           }}
         >
@@ -622,7 +622,7 @@ const MusicVideoDetailPage: React.FC = () => {
                             '&:hover': { background: '#fff', transform: 'scale(1.1)' },
                           }}
                         >
-                          <PlayArrowRoundedIcon sx={{ fontSize: 40, color: '#007AFF' }} />
+                          <PlayArrowRoundedIcon sx={{ fontSize: 40, color: '#F97316' }} />
                         </IconButton>
                       </Box>
                     )}
@@ -675,7 +675,7 @@ const MusicVideoDetailPage: React.FC = () => {
                         sx={{
                           height: '100%',
                           width: `${(currentTime / duration) * 100}%`,
-                          background: 'linear-gradient(90deg, #007AFF, #5856D6)',
+                          background: 'linear-gradient(90deg, #F97316, #EF4444)',
                           borderRadius: 2,
                         }}
                       />
@@ -727,7 +727,7 @@ const MusicVideoDetailPage: React.FC = () => {
                           },
                         }}
                       >
-                        <PlayArrowRoundedIcon sx={{ fontSize: 40, color: '#007AFF' }} />
+                        <PlayArrowRoundedIcon sx={{ fontSize: 40, color: '#F97316' }} />
                       </IconButton>
                     </Box>
                   </>
@@ -770,17 +770,17 @@ const MusicVideoDetailPage: React.FC = () => {
                 sx={{
                   fontSize: { xs: '2rem', md: '2.5rem' },
                   fontWeight: 700,
-                  color: '#1D1D1F',
+                  color: '#fff',
                   mb: 1,
                   fontFamily: '"Fredoka", "Nunito", sans-serif',
                 }}
               >
                 {currentVideo.title}
               </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: '1.1rem', mb: 3 }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', mb: 3 }}>
                 {currentVideo.description}
               </Typography>
-              <Typography sx={{ color: '#1D1D1F', lineHeight: 1.8, mb: 4 }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, mb: 4 }}>
                 {currentVideo.fullDescription}
               </Typography>
 
@@ -790,57 +790,57 @@ const MusicVideoDetailPage: React.FC = () => {
                   sx={{
                     p: 2,
                     borderRadius: '16px',
-                    background: 'rgba(0,0,0,0.02)',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <MusicNoteIcon sx={{ fontSize: 18, color: '#86868B' }} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase', letterSpacing: 0.5 }}>Genre</Typography>
+                    <MusicNoteIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Genre</Typography>
                   </Box>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.genre}</Typography>
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.genre}</Typography>
                 </Box>
                 <Box
                   sx={{
                     p: 2,
                     borderRadius: '16px',
-                    background: 'rgba(0,0,0,0.02)',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <PaletteIcon sx={{ fontSize: 18, color: '#86868B' }} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase', letterSpacing: 0.5 }}>Style</Typography>
+                    <PaletteIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Style</Typography>
                   </Box>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.style}</Typography>
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.style}</Typography>
                 </Box>
                 <Box
                   sx={{
                     p: 2,
                     borderRadius: '16px',
-                    background: 'rgba(0,0,0,0.02)',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <AccessTimeIcon sx={{ fontSize: 18, color: '#86868B' }} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase', letterSpacing: 0.5 }}>Duration</Typography>
+                    <AccessTimeIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Duration</Typography>
                   </Box>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.duration}</Typography>
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.duration}</Typography>
                 </Box>
                 <Box
                   sx={{
                     p: 2,
                     borderRadius: '16px',
-                    background: 'rgba(0,0,0,0.02)',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <SpeedIcon sx={{ fontSize: 18, color: '#86868B' }} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase', letterSpacing: 0.5 }}>BPM</Typography>
+                    <SpeedIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5 }}>BPM</Typography>
                   </Box>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.bpm}</Typography>
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.bpm}</Typography>
                 </Box>
               </Box>
 
@@ -851,15 +851,16 @@ const MusicVideoDetailPage: React.FC = () => {
                   endIcon={<KeyboardArrowRightIcon />}
                   onClick={() => navigate('/create?tab=video')}
                   sx={{
-                    background: '#007AFF',
+                    background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
                     color: '#fff',
                     fontWeight: 600,
                     borderRadius: '12px',
                     px: 4,
                     py: 1.5,
                     textTransform: 'none',
+                    boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
                     '&:hover': {
-                      background: '#0056CC',
+                      boxShadow: '0 12px 32px rgba(249, 115, 22, 0.45)',
                     },
                   }}
                 >
@@ -989,7 +990,7 @@ const MusicVideoDetailPage: React.FC = () => {
                           '&:hover': { background: '#fff', transform: 'scale(1.1)' },
                         }}
                       >
-                        <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#007AFF' }} />
+                        <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#F97316' }} />
                       </IconButton>
                     </Box>
                   )}
@@ -1042,7 +1043,7 @@ const MusicVideoDetailPage: React.FC = () => {
                       sx={{
                         height: '100%',
                         width: `${(currentTime / duration) * 100}%`,
-                        background: 'linear-gradient(90deg, #007AFF, #5856D6)',
+                        background: 'linear-gradient(90deg, #F97316, #EF4444)',
                         borderRadius: 2,
                       }}
                     />
@@ -1095,7 +1096,7 @@ const MusicVideoDetailPage: React.FC = () => {
                         },
                       }}
                     >
-                      <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#007AFF' }} />
+                      <PlayArrowRoundedIcon sx={{ fontSize: 32, color: '#F97316' }} />
                     </IconButton>
                   </Box>
                 </>
@@ -1139,7 +1140,7 @@ const MusicVideoDetailPage: React.FC = () => {
               sx={{
                 fontSize: { xs: '1.75rem', md: '2.5rem' },
                 fontWeight: 700,
-                color: '#1D1D1F',
+                color: '#fff',
                 mb: 2,
               }}
             >
@@ -1150,7 +1151,7 @@ const MusicVideoDetailPage: React.FC = () => {
             <Typography
               sx={{
                 fontSize: '1rem',
-                color: '#86868B',
+                color: 'rgba(255,255,255,0.6)',
                 mb: 3,
               }}
             >
@@ -1161,7 +1162,7 @@ const MusicVideoDetailPage: React.FC = () => {
             <Typography
               sx={{
                 fontSize: '0.95rem',
-                color: '#1D1D1F',
+                color: 'rgba(255,255,255,0.85)',
                 mb: 4,
                 lineHeight: 1.8,
               }}
@@ -1176,17 +1177,16 @@ const MusicVideoDetailPage: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <MusicNoteIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase' }}>Genre</Typography>
+                  <MusicNoteIcon sx={{ fontSize: 18, color: '#F97316' }} />
+                  <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Genre</Typography>
                 </Box>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.genre}</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.genre}</Typography>
               </Box>
 
               {/* Style */}
@@ -1194,24 +1194,23 @@ const MusicVideoDetailPage: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    borderColor: 'rgba(0,122,255,0.3)',
-                    boxShadow: '0 8px 24px rgba(0,122,255,0.1)',
+                    borderColor: 'rgba(249, 115, 22, 0.3)',
+                    background: 'rgba(255,255,255,0.08)',
                   },
                 }}
                 onClick={() => navigate(`/styles/${currentVideo.styleId}`)}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <PaletteIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase' }}>Style</Typography>
+                  <PaletteIcon sx={{ fontSize: 18, color: '#F97316' }} />
+                  <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Style</Typography>
                 </Box>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.style}</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.style}</Typography>
               </Box>
 
               {/* Duration */}
@@ -1219,17 +1218,16 @@ const MusicVideoDetailPage: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <AccessTimeIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase' }}>Duration</Typography>
+                  <AccessTimeIcon sx={{ fontSize: 18, color: '#F97316' }} />
+                  <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Duration</Typography>
                 </Box>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.duration}</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.duration}</Typography>
               </Box>
 
               {/* BPM */}
@@ -1237,17 +1235,16 @@ const MusicVideoDetailPage: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <SpeedIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', textTransform: 'uppercase' }}>BPM</Typography>
+                  <SpeedIcon sx={{ fontSize: 18, color: '#F97316' }} />
+                  <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>BPM</Typography>
                 </Box>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>{currentVideo.bpm}</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#fff' }}>{currentVideo.bpm}</Typography>
               </Box>
             </Box>
 
@@ -1258,22 +1255,18 @@ const MusicVideoDetailPage: React.FC = () => {
                 endIcon={<KeyboardArrowRightIcon sx={{ color: '#fff' }} />}
                 onClick={() => navigate('/create?tab=video')}
                 sx={{
-                  background: '#007AFF',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
                   color: '#fff',
                   fontWeight: 600,
                   borderRadius: '12px',
                   px: 4,
                   py: 1.5,
                   textTransform: 'none',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  boxShadow: '0 8px 24px rgba(0,122,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    background: '#0066DD',
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 12px 32px rgba(0,122,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+                    boxShadow: '0 12px 32px rgba(249, 115, 22, 0.45)',
                   },
                 }}
               >
@@ -1323,7 +1316,7 @@ const MusicVideoDetailPage: React.FC = () => {
                   sx={{
                     fontSize: '1.5rem',
                     fontWeight: 600,
-                    color: '#1D1D1F',
+                    color: '#fff',
                     mb: 0.5,
                   }}
                 >
@@ -1332,14 +1325,14 @@ const MusicVideoDetailPage: React.FC = () => {
                 <Typography
                   sx={{
                     fontSize: '0.95rem',
-                    color: '#86868B',
+                    color: 'rgba(255,255,255,0.6)',
                     lineHeight: 1.5,
                   }}
                 >
                   {sectionSubtext}
                 </Typography>
               </Box>
-              
+
               {/* Carousel with fade gradients */}
               <Box sx={{ position: 'relative', overflow: 'visible' }}>
                 {/* Left fade gradient */}
@@ -1350,7 +1343,7 @@ const MusicVideoDetailPage: React.FC = () => {
                     top: -8,
                     bottom: 0,
                     width: 60,
-                    background: 'linear-gradient(to right, #fff 0%, transparent 100%)',
+                    background: 'linear-gradient(to right, #0D0D0F 0%, transparent 100%)',
                     zIndex: 2,
                     pointerEvents: 'none',
                   }}
@@ -1363,7 +1356,7 @@ const MusicVideoDetailPage: React.FC = () => {
                     top: -8,
                     bottom: 0,
                     width: 60,
-                    background: 'linear-gradient(to left, #fff 0%, transparent 100%)',
+                    background: 'linear-gradient(to left, #0D0D0F 0%, transparent 100%)',
                     zIndex: 2,
                     pointerEvents: 'none',
                   }}
@@ -1391,8 +1384,8 @@ const MusicVideoDetailPage: React.FC = () => {
                       background: 'transparent', 
                       borderRadius: 3,
                     },
-                    '&:hover::-webkit-scrollbar-thumb': { 
-                      background: 'rgba(0,0,0,0.2)',
+                    '&:hover::-webkit-scrollbar-thumb': {
+                      background: 'rgba(255,255,255,0.2)',
                     },
                   }}
                 >
@@ -1486,7 +1479,7 @@ const MusicVideoDetailPage: React.FC = () => {
                               transition: 'all 0.2s ease',
                             }}
                           >
-                            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#007AFF' }} />
+                            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#F97316' }} />
                           </Box>
                         </Box>
                         <Box
@@ -1524,24 +1517,22 @@ const MusicVideoDetailPage: React.FC = () => {
             textAlign: 'center',
             p: 5,
             borderRadius: '24px',
-            background: 'rgba(255,255,255,0.6)',
+            background: 'rgba(255,255,255,0.05)',
             backdropFilter: 'blur(40px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
             Create Your Own Music Video
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1.1rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', mb: 3, fontSize: '1.1rem' }}>
             Turn your song into a stunning AI-generated music video in any style.
           </Typography>
           <Button
             variant="contained"
             onClick={() => navigate('/')}
             sx={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
-              backdropFilter: 'blur(20px)',
+              background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
               color: '#fff',
               fontWeight: 600,
               borderRadius: '16px',
@@ -1549,11 +1540,10 @@ const MusicVideoDetailPage: React.FC = () => {
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              boxShadow: '0 8px 32px rgba(249, 115, 22, 0.35)',
               '&:hover': {
-                background: '#000',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                boxShadow: '0 12px 40px rgba(249, 115, 22, 0.45)',
               },
             }}
           >
