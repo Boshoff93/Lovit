@@ -143,7 +143,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                     </Box>
                   )}
                   <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
+                    +{bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
                   </Typography>
                   <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
                     ${bundle.price}

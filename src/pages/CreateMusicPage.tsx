@@ -1136,11 +1136,10 @@ const CreateMusicPage: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Summary
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {SONG_COST}
+                  {SONG_COST} x
                 </Typography>
-                <Typography sx={{ color: 'rgba(0,0,0,0.2)' }}>|</Typography>
                 <GruviCoin size={20} />
               </Box>
             </Box>

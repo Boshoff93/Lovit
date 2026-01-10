@@ -395,9 +395,17 @@ const CreateVideoPage: React.FC = () => {
     fetchSongsForPicker(1, '');
   }, [fetchSongsForPicker]);
 
-  // Debounced search for song picker
+  // Track previous search query to detect actual changes
+  const prevSongSearchQueryRef = useRef(songSearchQuery);
+
+  // Debounced search for song picker - only triggers on actual search query changes
   useEffect(() => {
+    // Skip if picker is not open
     if (!songPickerOpen) return;
+
+    // Only fetch if search query actually changed (not just on picker open)
+    if (prevSongSearchQueryRef.current === songSearchQuery) return;
+    prevSongSearchQueryRef.current = songSearchQuery;
 
     if (songSearchDebounceRef.current) {
       clearTimeout(songSearchDebounceRef.current);
@@ -1220,11 +1228,11 @@ const CreateVideoPage: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Summary
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <GruviCoin size={18} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {getCredits()}
+                  {getCredits()} x
                 </Typography>
+                <GruviCoin size={20} />
               </Box>
             </Box>
 

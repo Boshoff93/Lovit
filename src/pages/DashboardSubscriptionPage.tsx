@@ -774,7 +774,7 @@ const DashboardSubscriptionPage: React.FC = () => {
                     {/* Top row: token amount left, price right */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                       <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        {bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
+                        +{bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
                       </Typography>
                       <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
                         ${bundle.price}
@@ -823,7 +823,7 @@ const DashboardSubscriptionPage: React.FC = () => {
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
           gap: 2,
         }}>
-          {topUpBundles.map((bundle, index) => (
+          {topUpBundles.map((bundle) => (
             <Card
               key={bundle.id}
               onClick={async () => {
@@ -876,16 +876,9 @@ const DashboardSubscriptionPage: React.FC = () => {
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 {/* Top row: token amount left, price right */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Box sx={{ display: 'flex' }}>
-                      {Array.from({ length: index + 1 }).map((_, i) => (
-                        <GruviCoin key={i} size={16} sx={{ ml: i > 0 ? -0.5 : 0 }} />
-                      ))}
-                    </Box>
-                    <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      {bundle.tokens.toLocaleString()} <GruviCoin size={14} />
-                    </Typography>
-                  </Box>
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    +{bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
+                  </Typography>
                   <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
                     ${bundle.price}
                   </Typography>
