@@ -602,6 +602,20 @@ const CreateVideoPage: React.FC = () => {
               justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(236,72,153,0.3)',
               flexShrink: 0,
+              animation: 'iconEntrance 0.5s ease-out',
+              '@keyframes iconEntrance': {
+                '0%': {
+                  opacity: 0,
+                  transform: 'scale(0.5) rotate(-10deg)',
+                },
+                '50%': {
+                  transform: 'scale(1.1) rotate(5deg)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'scale(1) rotate(0deg)',
+                },
+              },
             }}
           >
             <MovieIcon sx={{ fontSize: 28, color: '#fff' }} />
@@ -1511,25 +1525,48 @@ const CreateVideoPage: React.FC = () => {
           )}
         </ScrollableListWrapper>
         <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => setCastPickerOpen(false)}
-            sx={{
-              color: '#86868B',
-              borderColor: 'rgba(0,0,0,0.15)',
-              borderRadius: '12px',
-              px: 4,
-              py: 1,
-              textTransform: 'none',
-              fontWeight: 500,
-              '&:hover': {
-                borderColor: 'rgba(0,0,0,0.3)',
-                backgroundColor: 'rgba(0,0,0,0.02)',
-              }
-            }}
-          >
-            Done
-          </Button>
+          {selectedCharacterIds.length > 0 ? (
+            <Button
+              variant="contained"
+              onClick={() => setCastPickerOpen(false)}
+              sx={{
+                backgroundColor: '#007AFF',
+                color: '#fff',
+                borderRadius: '12px',
+                px: 4,
+                py: 1,
+                textTransform: 'none',
+                fontWeight: 500,
+                boxShadow: 'none',
+                '&:hover': {
+                  backgroundColor: '#0066DD',
+                  boxShadow: 'none',
+                }
+              }}
+            >
+              Done
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={() => setCastPickerOpen(false)}
+              sx={{
+                color: '#86868B',
+                borderColor: 'rgba(0,0,0,0.15)',
+                borderRadius: '12px',
+                px: 4,
+                py: 1,
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                  borderColor: 'rgba(0,0,0,0.3)',
+                  backgroundColor: 'rgba(0,0,0,0.02)',
+                }
+              }}
+            >
+              Cancel
+            </Button>
+          )}
         </Box>
       </Drawer>
 
