@@ -42,7 +42,10 @@ import { videosApi, charactersApi, songsApi } from '../services/api';
 import MentionTextField from '../components/MentionTextField';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 import GruviCoin from '../components/GruviCoin';
+import { useAudioPlayer, Song as AudioPlayerSong } from '../contexts/AudioPlayerContext';
 
 // Character type matching the API response
 interface Character {
@@ -63,6 +66,61 @@ interface Song {
   audioUrl?: string;
   actualDuration?: number;
 }
+
+// Animated Equalizer Component for song picker
+const AudioEqualizer: React.FC<{ isPlaying: boolean; size?: number; color?: string }> = ({
+  isPlaying,
+  size = 20,
+  color = '#007AFF'
+}) => {
+  const barWidth = size / 5;
+  const gap = size / 10;
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        height: size,
+        width: size,
+      }}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: barWidth,
+            backgroundColor: color,
+            borderRadius: `${barWidth / 2}px`,
+            height: isPlaying ? undefined : `${size * 0.2}px`,
+            minHeight: `${size * 0.15}px`,
+            animation: isPlaying
+              ? `equalizer${i} 0.${4 + i}s ease-in-out infinite alternate`
+              : 'none',
+            '@keyframes equalizer0': {
+              '0%': { height: `${size * 0.2}px` },
+              '100%': { height: `${size * 0.9}px` },
+            },
+            '@keyframes equalizer1': {
+              '0%': { height: `${size * 0.5}px` },
+              '100%': { height: `${size * 0.3}px` },
+            },
+            '@keyframes equalizer2': {
+              '0%': { height: `${size * 0.3}px` },
+              '100%': { height: `${size * 0.8}px` },
+            },
+            '@keyframes equalizer3': {
+              '0%': { height: `${size * 0.6}px` },
+              '100%': { height: `${size * 0.4}px` },
+            },
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
 
 // Genre to image mapping - same as AppPage
 const genreImages: Record<string, string> = {
@@ -226,6 +284,7 @@ const CreateVideoPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
+  const { playSong, pauseSong, currentSong, isPlaying } = useAudioPlayer();
 
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
@@ -1469,7 +1528,7 @@ const CreateVideoPage: React.FC = () => {
               }
             }}
           >
-            Cancel
+            Done
           </Button>
         </Box>
       </Drawer>
@@ -1585,6 +1644,8 @@ const CreateVideoPage: React.FC = () => {
             <>
               {songs.map((song) => {
                 const isSelected = selectedSongId === song.songId;
+                const isCurrentlyPlaying = currentSong?.songId === song.songId;
+                const isThisSongPlaying = isCurrentlyPlaying && isPlaying;
                 return (
                   <ListItem key={song.songId} disablePadding>
                     <ListItemButton
@@ -1603,24 +1664,88 @@ const CreateVideoPage: React.FC = () => {
                       }}
                     >
                       <Box
-                        component="img"
-                        src={getGenreImage(song.genre)}
-                        alt={song.genre}
                         sx={{
                           width: 40,
                           height: 40,
                           borderRadius: '8px',
-                          objectFit: 'cover',
                           mr: 2,
+                          position: 'relative',
+                          overflow: 'hidden',
                         }}
-                      />
+                      >
+                        <Box
+                          component="img"
+                          src={getGenreImage(song.genre)}
+                          alt={song.genre}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        {isThisSongPlaying && (
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              background: 'rgba(0,0,0,0.5)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <AudioEqualizer isPlaying={true} size={18} color="#fff" />
+                          </Box>
+                        )}
+                      </Box>
                       <ListItemText
                         primary={song.songTitle}
                         secondary={`${song.genre}${song.mood ? ` • ${song.mood}` : ''}${song.actualDuration ? ` • ${Math.floor(song.actualDuration / 60)}:${String(Math.floor(song.actualDuration % 60)).padStart(2, '0')}` : ''}`}
                         primaryTypographyProps={{ fontWeight: 600 }}
                         secondaryTypographyProps={{ fontSize: '0.75rem' }}
                       />
-                      {isSelected && <CheckIcon sx={{ color: '#007AFF' }} />}
+                      {song.audioUrl && (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isThisSongPlaying) {
+                              pauseSong();
+                            } else {
+                              playSong({
+                                songId: song.songId,
+                                songTitle: song.songTitle,
+                                genre: song.genre,
+                                audioUrl: song.audioUrl,
+                                status: song.status,
+                                createdAt: '',
+                              } as AudioPlayerSong, songs.filter(s => s.audioUrl).map(s => ({
+                                songId: s.songId,
+                                songTitle: s.songTitle,
+                                genre: s.genre,
+                                audioUrl: s.audioUrl,
+                                status: s.status,
+                                createdAt: '',
+                              } as AudioPlayerSong)));
+                            }
+                          }}
+                          sx={{
+                            mr: 1,
+                            width: 32,
+                            height: 32,
+                            backgroundColor: '#007AFF',
+                            color: '#fff',
+                            '&:hover': {
+                              backgroundColor: '#0066DD',
+                            },
+                          }}
+                        >
+                          {isThisSongPlaying ? <PauseIcon sx={{ fontSize: 18 }} /> : <PlayArrowIcon sx={{ fontSize: 18 }} />}
+                        </IconButton>
+                      )}
                     </ListItemButton>
                   </ListItem>
                 );

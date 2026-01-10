@@ -77,6 +77,7 @@ const LoadingAvatar: React.FC<{
 interface Character {
   characterId: string;
   characterName: string;
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
   gender?: string;
   age?: string;
   description?: string;
@@ -85,8 +86,19 @@ interface Character {
   createdAt: string;
 }
 
-// Get the type image based on character description
-const getCharacterTypeImage = (description?: string): string => {
+// Get the type image based on character type or description
+const getCharacterTypeImage = (characterType?: string, description?: string): string => {
+  // Check characterType field first
+  if (characterType) {
+    switch (characterType) {
+      case 'Human': return '/characters/human.jpeg';
+      case 'Non-Human': return '/characters/dog.jpeg';
+      case 'Product': return '/characters/product.jpeg';
+      case 'Place': return '/characters/house.jpeg';
+      case 'App': return '/gruvi/app.jpeg';
+    }
+  }
+  // Fallback to description parsing for legacy data
   if (!description) return '/characters/human.jpeg';
   if (description.includes('Place')) return '/characters/house.jpeg';
   if (description.includes('App')) return '/gruvi/app.jpeg';
@@ -303,23 +315,37 @@ const CharactersPage: React.FC = () => {
         </Box>
       ) : (
         (() => {
-          // Group characters by type
-          const getCharacterType = (char: Character): 'person' | 'product' | 'place' | 'app' => {
+          // Group characters by type - use characterType field, fallback to description parsing
+          const getCharacterCategory = (char: Character): 'human' | 'nonhuman' | 'product' | 'place' | 'app' => {
+            // Prefer characterType field if available
+            if (char.characterType) {
+              switch (char.characterType) {
+                case 'Human': return 'human';
+                case 'Non-Human': return 'nonhuman';
+                case 'Product': return 'product';
+                case 'Place': return 'place';
+                case 'App': return 'app';
+              }
+            }
+            // Fallback to description parsing for legacy data
             if (char.description?.includes('Place')) return 'place';
             if (char.description?.includes('App')) return 'app';
             if (char.description?.includes('Product')) return 'product';
-            return 'person';
+            if (char.description?.includes('Non-Human')) return 'nonhuman';
+            return 'human';
           };
-          
+
           const grouped = {
-            person: characters.filter(c => getCharacterType(c) === 'person'),
-            product: characters.filter(c => getCharacterType(c) === 'product'),
-            place: characters.filter(c => getCharacterType(c) === 'place'),
-            app: characters.filter(c => getCharacterType(c) === 'app'),
+            human: characters.filter(c => getCharacterCategory(c) === 'human'),
+            nonhuman: characters.filter(c => getCharacterCategory(c) === 'nonhuman'),
+            product: characters.filter(c => getCharacterCategory(c) === 'product'),
+            place: characters.filter(c => getCharacterCategory(c) === 'place'),
+            app: characters.filter(c => getCharacterCategory(c) === 'app'),
           };
 
           const sections = [
-            { key: 'person', label: 'People', items: grouped.person },
+            { key: 'human', label: 'People', items: grouped.human },
+            { key: 'nonhuman', label: 'Non-Humans', items: grouped.nonhuman },
             { key: 'product', label: 'Products', items: grouped.product },
             { key: 'place', label: 'Places', items: grouped.place },
             { key: 'app', label: 'Software & Apps', items: grouped.app },
@@ -346,7 +372,7 @@ const CharactersPage: React.FC = () => {
               }}
             >
               <LoadingAvatar
-                src={character.imageUrls?.[0] || getCharacterTypeImage(character.description)}
+                src={character.imageUrls?.[0] || getCharacterTypeImage(character.characterType, character.description)}
                 size={{ xs: 48, sm: 56 }}
               />
               <Box sx={{ flex: 1, minWidth: 0 }}>
