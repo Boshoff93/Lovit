@@ -17,6 +17,8 @@ const MARKETING_PATHS = [
   '/social-media',
   '/pricing',
   '/blog',
+  '/genres',
+  '/moods',
 ];
 
 // Genre to image mapping

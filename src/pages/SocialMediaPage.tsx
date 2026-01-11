@@ -450,9 +450,11 @@ const SocialMediaPage: React.FC = () => {
           <Grid container spacing={3} justifyContent="center">
             {platforms.map((platform, index) => {
               const IconComponent = platform.icon;
+              const isBlackIcon = platform.id === 'tiktok' || platform.id === 'x';
               return (
                 <Grid size={{ xs: 6, sm: 4, md: 2 }} key={platform.id}>
                   <Box
+                    onClick={() => navigate(`/platforms/${platform.id}`)}
                     sx={{
                       p: 3,
                       borderRadius: '20px',
@@ -476,9 +478,9 @@ const SocialMediaPage: React.FC = () => {
                       },
                       '&:hover': {
                         transform: 'translateY(-8px)',
-                        boxShadow: `0 16px 40px ${platform.color}20`,
-                        borderColor: `${platform.color}40`,
-                        background: 'rgba(255,255,255,0.05)',
+                        boxShadow: isBlackIcon ? '0 16px 40px rgba(255,255,255,0.15)' : `0 16px 40px ${platform.color}20`,
+                        borderColor: isBlackIcon ? 'rgba(255,255,255,0.25)' : `${platform.color}40`,
+                        background: isBlackIcon ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)',
                       },
                     }}
                   >

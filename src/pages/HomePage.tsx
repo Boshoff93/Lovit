@@ -801,29 +801,41 @@ const plans: PricePlan[] = [
 ];
 
 
-// Section Divider Component
+// Section Divider Component - Dark theme with gradient
 const SectionDivider: React.FC = () => (
-  <Container maxWidth="md">
+  <Box
+    sx={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 10,
+    }}
+  >
     <Box
       sx={{
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,0,0,0.12) 50%, rgba(0,122,255,0.15) 80%, transparent 100%)',
-        my: { xs: 2, md: 4 },
+        width: '100%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, transparent 15%, rgba(139,92,246,0.2) 35%, rgba(236,72,153,0.25) 50%, rgba(139,92,246,0.2) 65%, transparent 85%, transparent 100%)',
         position: 'relative',
         '&::before': {
           content: '""',
           position: 'absolute',
-          top: '-10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '20px',
-          background: 'radial-gradient(ellipse at center, rgba(0,122,255,0.08) 0%, transparent 70%)',
-          filter: 'blur(8px)',
+          top: '-2px',
+          left: '30%',
+          right: '30%',
+          height: '4px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.05) 30%, rgba(236,72,153,0.08) 50%, rgba(139,92,246,0.05) 70%, transparent 100%)',
+          filter: 'blur(2px)',
         },
       }}
     />
-  </Container>
+  </Box>
 );
 
 // Quick links / routes for footer SEO - using valid routes from routeConfig
@@ -1071,17 +1083,17 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
+              background: 'rgba(255,255,255,0.05)',
               boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
               width: 40,
               height: 40,
               '&:hover': {
-                background: '#fff',
+                background: 'rgba(255,255,255,0.05)',
                 transform: 'translateY(-50%) scale(1.05)',
               },
             }}
           >
-            <ChevronLeftIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronLeftIcon sx={{ color: '#FFFFFF' }} />
           </IconButton>
         </>
       )}
@@ -1109,17 +1121,17 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
+              background: 'rgba(255,255,255,0.05)',
               boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
               width: 40,
               height: 40,
               '&:hover': {
-                background: '#fff',
+                background: 'rgba(255,255,255,0.05)',
                 transform: 'translateY(-50%) scale(1.05)',
               },
             }}
           >
-            <ChevronRightIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronRightIcon sx={{ color: '#FFFFFF' }} />
           </IconButton>
         </>
       )}
@@ -1277,7 +1289,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
             sx={{
               fontSize: '0.7rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#FFFFFF',
               letterSpacing: '0.02em',
             }}
           >
@@ -1779,10 +1791,10 @@ const HomePage: React.FC = () => {
   }), [sampleTracks]);
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
-      background: '#FFFFFF',
-      color: '#1D1D1F',
+      background: '#0D0D0F',
+      color: '#FFFFFF',
       position: 'relative',
       overflow: 'hidden',
       // Add bottom padding when audio player is visible
@@ -1806,7 +1818,7 @@ const HomePage: React.FC = () => {
         ]}
       />
 
-      <MarketingHeader onOpenAuth={handleClickOpen} transparent alwaysBlurred lightMode />
+      <MarketingHeader onOpenAuth={handleClickOpen} transparent alwaysBlurred />
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{
@@ -1845,7 +1857,7 @@ const HomePage: React.FC = () => {
             sx={{
                 fontSize: { xs: '2.25rem', sm: '3.25rem', md: '4rem' },
                 fontWeight: 800,
-                color: '#1D1D1F',
+                color: '#FFFFFF',
               lineHeight: 1.1,
                 mb: 1.5,
                 letterSpacing: '-0.03em',
@@ -1854,7 +1866,7 @@ const HomePage: React.FC = () => {
             >
               <Box
                 component="span"
-                sx={{ color: '#1D1D1F' }}
+                sx={{ color: '#FFFFFF' }}
               >
                 Gruvi:
               </Box>{' '}
@@ -1919,7 +1931,7 @@ const HomePage: React.FC = () => {
                             background: prompt.trim() ? '#0056CC' : 'rgba(0,0,0,0.08)',
                           },
                           '&.Mui-disabled': {
-                            color: '#86868B',
+                            color: 'rgba(255,255,255,0.6)',
                           },
                         }}
                       >
@@ -1930,7 +1942,7 @@ const HomePage: React.FC = () => {
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.05)',
                     borderRadius: '100px',
                     pr: { xs: 1, sm: 1.5 },
                     boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
@@ -1948,21 +1960,21 @@ const HomePage: React.FC = () => {
                     },
                   },
                   '& .MuiInputBase-input': {
-                    color: '#1D1D1F',
+                    color: '#FFFFFF',
                     py: { xs: 1.25, sm: 2 },
                     px: { xs: 1.5, sm: 2.5 },
                     fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' },
                     fontWeight: 400,
                     textOverflow: 'ellipsis',
                     '&::placeholder': {
-                      color: '#86868B',
+                      color: 'rgba(255,255,255,0.6)',
                       opacity: 1,
                       fontSize: 'inherit',
                     },
                     // Override browser autofill background color
                     '&:-webkit-autofill': {
                       WebkitBoxShadow: '0 0 0 1000px #fff inset !important',
-                      WebkitTextFillColor: '#1D1D1F !important',
+                      WebkitTextFillColor: '#FFFFFF !important',
                       caretColor: '#1D1D1F',
                     },
                     '&:-webkit-autofill:hover': {
@@ -1996,7 +2008,7 @@ const HomePage: React.FC = () => {
                   sx={{
                     background: 'rgba(255,255,255,0.95)',
                     border: '1px solid rgba(0,0,0,0.06)',
-                    color: '#86868B',
+                    color: 'rgba(255,255,255,0.6)',
                     fontSize: { xs: '0.7rem', sm: '0.85rem', md: '0.95rem' },
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -2008,7 +2020,7 @@ const HomePage: React.FC = () => {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      background: '#fff',
+                      background: 'rgba(255,255,255,0.05)',
                       borderColor: 'rgba(0,122,255,0.3)',
                       color: '#007AFF',
                       transform: 'translateY(-1px)',
@@ -2055,7 +2067,7 @@ const HomePage: React.FC = () => {
                 to="/pricing"
                 sx={{
                   borderColor: 'rgba(0, 0, 0, 0.15)',
-                  color: '#1D1D1F',
+                  color: '#FFFFFF',
                   px: { xs: 3, sm: 4 },
                   py: { xs: 1.25, sm: 1.5 },
                   borderRadius: '100px',
@@ -2083,7 +2095,7 @@ const HomePage: React.FC = () => {
       <SectionDivider />
 
 {/* Featured Tracks Section - columns of 3 tracks each */}
-      <MarketingSection
+      <MarketingSection darkMode
         title={carouselTitles.featuredTracks.title}
         subtitle={carouselTitles.featuredTracks.subtitle}
         badge="AI-Generated"
@@ -2194,7 +2206,7 @@ const HomePage: React.FC = () => {
                         <Typography
                           sx={{
                             fontSize: '0.75rem',
-                            color: '#86868B',
+                            color: 'rgba(255,255,255,0.6)',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -2206,7 +2218,7 @@ const HomePage: React.FC = () => {
                       </Box>
 
                       {/* Duration */}
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>
                         {track.duration}
                       </Typography>
                     </Paper>
@@ -2219,7 +2231,7 @@ const HomePage: React.FC = () => {
 
       {/* Promo Videos - Portrait */}
       {promoVideosPortrait.length > 0 && (
-        <MarketingSection
+        <MarketingSection darkMode
           title={carouselTitles.promoVideos.title}
           subtitle={carouselTitles.promoVideos.subtitle}
           badge="Hover to Preview"
@@ -2241,7 +2253,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Share Everywhere Section - Carousel */}
-      <MarketingSection
+      <MarketingSection darkMode
         title="The AI Music Promo Generator"
         subtitle="Your AI-generated content is 100% original - post to YouTube, TikTok, Instagram & more without strikes or claims"
         badge="Platform Ready"
@@ -2324,7 +2336,7 @@ const HomePage: React.FC = () => {
                 <Typography sx={{ 
                   fontSize: { xs: '0.7rem', md: '0.8rem' }, 
                   fontWeight: 600, 
-                  color: '#1D1D1F',
+                  color: '#FFFFFF',
                   textAlign: 'center',
                 }}>
                   {platform.name}
@@ -2335,7 +2347,7 @@ const HomePage: React.FC = () => {
       </MarketingSection>
 
       {/* More Tracks Section - columns of 3 tracks each */}
-      <MarketingSection
+      <MarketingSection darkMode
         title={carouselTitles.moreTracks.title}
         subtitle={carouselTitles.moreTracks.subtitle}
         badge="100% Original"
@@ -2444,7 +2456,7 @@ const HomePage: React.FC = () => {
                         <Typography
                           sx={{
                             fontSize: '0.75rem',
-                            color: '#86868B',
+                            color: 'rgba(255,255,255,0.6)',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -2456,7 +2468,7 @@ const HomePage: React.FC = () => {
                       </Box>
 
                       {/* Duration */}
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>
                         {track.duration}
                       </Typography>
                     </Paper>
@@ -2469,7 +2481,7 @@ const HomePage: React.FC = () => {
 
       {/* Promo Videos - Landscape */}
       {promoVideosLandscape.length > 0 && (
-        <MarketingSection
+        <MarketingSection darkMode
           title="Cinematic Brand Videos"
           subtitle="Widescreen promo videos with AI-generated music for your brand"
           badge="Hover to Preview"
@@ -2491,7 +2503,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Genres Section - Strong hook */}
-      <MarketingSection
+      <MarketingSection darkMode
         title={carouselTitles.genres.title}
         subtitle={carouselTitles.genres.subtitle}
         badge="30+ Genres"
@@ -2527,7 +2539,7 @@ const HomePage: React.FC = () => {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     transition: 'all 0.2s ease',
                     p: 0.5,
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.05)',
                   }}
                 >
                   <Box
@@ -2537,7 +2549,7 @@ const HomePage: React.FC = () => {
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {genre.name}
                 </Typography>
               </Box>
@@ -2547,7 +2559,7 @@ const HomePage: React.FC = () => {
 
       {/* Music Videos - Landscape (Create Your Very Own Music Video) */}
       {musicVideosLandscape.length > 0 && (
-        <MarketingSection
+        <MarketingSection darkMode
           title="Create Your Very Own Music Video with AI"
           subtitle={carouselTitles.cinematicVideos.subtitle}
           badge="Cinematic"
@@ -2570,7 +2582,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Discover More Tracks Section - remaining 3 tracks + 12 additional genre tracks = 15 total */}
-      <MarketingSection
+      <MarketingSection darkMode
         title={carouselTitles.moreGenres.title}
         subtitle={carouselTitles.moreGenres.subtitle}
         badge="Discover"
@@ -2680,7 +2692,7 @@ const HomePage: React.FC = () => {
                         <Typography
                           sx={{
                             fontSize: '0.75rem',
-                            color: '#86868B',
+                            color: 'rgba(255,255,255,0.6)',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -2692,7 +2704,7 @@ const HomePage: React.FC = () => {
                       </Box>
 
                       {/* Duration */}
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>
                         {track.duration}
                       </Typography>
                     </Paper>
@@ -2705,7 +2717,7 @@ const HomePage: React.FC = () => {
 
       {/* Music Videos - Portrait (Turn Songs Into Music Videos) */}
       {musicVideosPortrait.length > 0 && (
-        <MarketingSection
+        <MarketingSection darkMode
           title={carouselTitles.musicVideos.title}
           subtitle={carouselTitles.musicVideos.subtitle}
           badge="Hover to Preview"
@@ -2727,7 +2739,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Art Styles Section - Strong hook */}
-      <MarketingSection
+      <MarketingSection darkMode
         title={carouselTitles.videoStyles.title}
         subtitle={carouselTitles.videoStyles.subtitle}
         badge="20+ Styles"
@@ -2767,7 +2779,7 @@ const HomePage: React.FC = () => {
                     sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <Typography sx={{ color: '#FFFFFF', fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {style.label}
                 </Typography>
               </Box>
@@ -2776,7 +2788,7 @@ const HomePage: React.FC = () => {
       </MarketingSection>
 
       {/* Languages Section - Strong hook */}
-      <MarketingSection
+      <MarketingSection darkMode
         title="Make Music in Any Language"
         subtitle="24+ languages with native-quality vocals - reach a global audience"
         badge="Global Reach"
@@ -2813,7 +2825,7 @@ const HomePage: React.FC = () => {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     transition: 'all 0.2s ease',
                     p: 1,
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.05)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -2826,7 +2838,7 @@ const HomePage: React.FC = () => {
                     sx={{ width: '100%', height: '100%', objectFit: 'contain', padding: 1 }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {lang.name}
                 </Typography>
               </Box>
@@ -2835,7 +2847,7 @@ const HomePage: React.FC = () => {
       </MarketingSection>
 
       {/* Language Tracks Section - 15 tracks in different languages (below Make Music in Any Language) */}
-      <MarketingSection
+      <MarketingSection darkMode
         title="Enjoy Music from Around the World"
         subtitle="AI-generated songs in 15+ languages - from English to Japanese to Arabic"
         badge="Multilingual"
@@ -2897,7 +2909,7 @@ const HomePage: React.FC = () => {
                           overflow: 'hidden',
                           flexShrink: 0,
                           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                          background: '#fff',
+                          background: 'rgba(255,255,255,0.05)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -2955,7 +2967,7 @@ const HomePage: React.FC = () => {
                         <Typography
                           sx={{
                             fontSize: '0.75rem',
-                            color: '#86868B',
+                            color: 'rgba(255,255,255,0.6)',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -2966,7 +2978,7 @@ const HomePage: React.FC = () => {
                       </Box>
 
                       {/* Duration */}
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>
                         {track.duration}
                       </Typography>
                     </Paper>
@@ -2978,7 +2990,7 @@ const HomePage: React.FC = () => {
       </MarketingSection>
 
       {/* Moods Section - Strong hook */}
-      <MarketingSection
+      <MarketingSection darkMode
         title="Set the Perfect Mood"
         subtitle="Uplifting, melancholic, energetic - music that captures any emotion"
         badge="Emotional"
@@ -3014,7 +3026,7 @@ const HomePage: React.FC = () => {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     transition: 'all 0.2s ease',
                     p: 0.5,
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.05)',
                   }}
                 >
                   <Box
@@ -3024,7 +3036,7 @@ const HomePage: React.FC = () => {
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {mood.name}
                 </Typography>
               </Box>
@@ -3033,7 +3045,7 @@ const HomePage: React.FC = () => {
       </MarketingSection>
 
       {/* Features Section - Strong hook */}
-      <MarketingSection
+      <MarketingSection darkMode
         title="Everything You Need to Create"
         subtitle="Professional music and video generation at your fingertips"
         badge="All-In-One"
@@ -3101,7 +3113,7 @@ const HomePage: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '10px',
-                  background: '#fff',
+                  background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(0,0,0,0.06)',
                   transition: 'all 0.2s ease',
                   '&:hover': {
@@ -3124,10 +3136,10 @@ const HomePage: React.FC = () => {
                     {feature.icon}
                   </Box>
                   <Box>
-                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#1D1D1F' }}>
+                    <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#FFFFFF' }}>
                       {feature.title}
                     </Typography>
-                    <Typography sx={{ color: '#86868B', fontSize: '0.8rem' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
                       {feature.description}
                     </Typography>
                   </Box>
@@ -3146,13 +3158,13 @@ const HomePage: React.FC = () => {
               sx={{ 
                 fontSize: { xs: '2rem', md: '2.5rem' },
                 fontWeight: 600,
-                color: '#1D1D1F',
+                color: '#FFFFFF',
                 mb: 2,
               }}
             >
               Start Making Music for Free
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem', mb: 4 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', mb: 4 }}>
               New customers get 2 free songs when they sign up. Select the plan that best fits your needs.
               </Typography>
 
@@ -3182,7 +3194,7 @@ const HomePage: React.FC = () => {
                   >
                     Monthly
                   </Typography>
-                  <Box sx={{ mx: 1, color: '#86868B' }}>|</Box>
+                  <Box sx={{ mx: 1, color: 'rgba(255,255,255,0.6)' }}>|</Box>
                   <Typography 
                     sx={{ 
                       fontWeight: isYearly ? 'bold' : 'normal', 
@@ -3274,13 +3286,13 @@ const HomePage: React.FC = () => {
                       </Box>
                     )}
                 <CardContent sx={{ p: 4 }}>
-                  <Typography sx={{ fontSize: '0.9rem', color: '#86868B', mb: 1, fontStyle: 'italic' }}>
+                  <Typography sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', mb: 1, fontStyle: 'italic' }}>
                     {plan.id === 'starter' ? 'Perfect for trying Gruvi. 500 tokens per month with commercial license.' : 
                      plan.id === 'pro' ? 'Great for content creators. 1,000 tokens per month with high quality audio.' : 
                      'Maximum power for professionals. 2,500 tokens per month with priority generation.'}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#FFFFFF' }}>
                       {plan.title}
                     </Typography>
                     {isYearly && (
@@ -3299,16 +3311,16 @@ const HomePage: React.FC = () => {
                   </Box>
                   
                   <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 0.5 }}>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#1D1D1F' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#FFFFFF' }}>
                       ${isYearly ? (plan.yearlyPrice / 12).toFixed(2) : plan.monthlyPrice}
                     </Typography>
-                    <Typography sx={{ color: '#86868B', ml: 1 }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', ml: 1 }}>
                       /month
                     </Typography>
                   </Box>
                   
                   {isYearly && (
-                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B', mb: 3 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', mb: 3 }}>
                       ${plan.yearlyPrice}/year
                     </Typography>
                   )}
@@ -3357,7 +3369,7 @@ const HomePage: React.FC = () => {
                         <ListItemText 
                           primary={feature} 
                           primaryTypographyProps={{ 
-                            sx: { color: '#1D1D1F', fontSize: '0.9rem' } 
+                            sx: { color: '#FFFFFF', fontSize: '0.9rem' } 
                           }}
                         />
                       </ListItem>
@@ -3370,7 +3382,7 @@ const HomePage: React.FC = () => {
 
           {/* Token Top-ups */}
           <Box sx={{ textAlign: 'center', mt: 6 }}>
-            <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>
               Need more tokens? Top-up bundles: 1,000 tokens ($12.99) • 5,000 tokens ($49.99) • 10,000 tokens ($89.99). Tokens never expire!
             </Typography>
           </Box>
@@ -3388,13 +3400,13 @@ const HomePage: React.FC = () => {
               sx={{
                 fontSize: { xs: '1.75rem', md: '2.5rem' },
                 fontWeight: 600,
-                color: '#1D1D1F',
+                color: '#FFFFFF',
                 mb: 2,
               }}
             >
               Frequently Asked Questions
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '1rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem' }}>
               Everything you need to know about creating music with AI
             </Typography>
           </Box>
@@ -3438,7 +3450,7 @@ const HomePage: React.FC = () => {
                     sx={{
                       fontWeight: 500,
                       fontSize: '1rem',
-                      color: '#1D1D1F',
+                      color: '#FFFFFF',
                       textAlign: 'left',
                     }}
                   >
@@ -3449,7 +3461,7 @@ const HomePage: React.FC = () => {
                   <Box>
                     <Typography
                       sx={{
-                        color: '#86868B',
+                        color: 'rgba(255,255,255,0.6)',
                         fontSize: '0.95rem',
                         lineHeight: 1.7,
                         textAlign: 'left',
@@ -3500,14 +3512,14 @@ const HomePage: React.FC = () => {
                 py: 1.5,
                 borderRadius: '12px',
                 fontWeight: 600,
-                background: '#fff',
+                background: 'rgba(255,255,255,0.05)',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 transition: 'all 0.2s ease',
                   '&:hover': {
                   borderColor: '#007AFF',
                   border: '1px solid #007AFF',
                   color: '#007AFF',
-                  background: '#fff',
+                  background: 'rgba(255,255,255,0.05)',
                   transform: 'translateY(-1px)',
                   boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
                   },
@@ -3530,13 +3542,13 @@ const HomePage: React.FC = () => {
               sx={{
                 fontSize: { xs: '1.5rem', md: '1.75rem' },
                 fontWeight: 600,
-                color: '#1D1D1F',
+                color: '#FFFFFF',
                 mb: 1,
               }}
             >
             Explore More
           </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.95rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
               Discover all the ways you can create with Gruvi
             </Typography>
           </Box>
@@ -3560,7 +3572,7 @@ const HomePage: React.FC = () => {
                   background: 'rgba(255,255,255,0.95)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(0,0,0,0.06)',
-                  color: '#1D1D1F',
+                  color: '#FFFFFF',
                   fontWeight: 500,
                   fontSize: '0.85rem',
                   px: 1.5,
@@ -3569,7 +3581,7 @@ const HomePage: React.FC = () => {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.05)',
                     color: '#007AFF',
                     borderColor: 'rgba(0,122,255,0.3)',
                     transform: 'translateY(-2px)',
@@ -3591,13 +3603,13 @@ const HomePage: React.FC = () => {
               sx={{
                 fontSize: { xs: '1.75rem', md: '2rem' },
                 fontWeight: 600,
-                color: '#1D1D1F',
+                color: '#FFFFFF',
                 mb: 2,
               }}
             >
               Ready to make music?
             </Typography>
-            <Typography sx={{ color: '#86868B', mb: 4 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', mb: 4 }}>
               Join thousands of creators making amazing music with AI.
             </Typography>
             <Button
@@ -3646,21 +3658,21 @@ const HomePage: React.FC = () => {
             flexDirection: { xs: 'column', sm: 'row' },
             gap: 2,
           }}>
-            <Typography sx={{ color: '#86868B', fontSize: '0.875rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
               © {new Date().getFullYear()} Gruvi. All rights reserved.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3 }}>
               <Link
                 component={RouterLink}
               to="/terms" 
-                sx={{ color: '#86868B', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#1D1D1F' } }}
+                sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#FFFFFF' } }}
               >
                 Terms
               </Link>
               <Link
                 component={RouterLink}
                 to="/privacy"
-                sx={{ color: '#86868B', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#1D1D1F' } }}
+                sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem', textDecoration: 'none', '&:hover': { color: '#FFFFFF' } }}
               >
                 Privacy
               </Link>
@@ -3692,7 +3704,7 @@ const HomePage: React.FC = () => {
           px: 4,
           textAlign: 'center',
         }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#FFFFFF' }}>
             {authTab === 0 ? 'Welcome back' : 'Create account'}
           </Typography>
           <IconButton
@@ -3701,7 +3713,7 @@ const HomePage: React.FC = () => {
               position: 'absolute',
               right: 16,
               top: 16,
-              color: '#86868B',
+              color: 'rgba(255,255,255,0.6)',
               '&:hover': { background: 'rgba(0,0,0,0.03)' },
             }}
           >
@@ -3717,11 +3729,11 @@ const HomePage: React.FC = () => {
               mb: 3,
               '& .MuiTab-root': {
                 fontWeight: 500,
-                color: '#86868B',
+                color: 'rgba(255,255,255,0.6)',
                 textTransform: 'none',
               },
               '& .Mui-selected': {
-                color: '#1D1D1F',
+                color: '#FFFFFF',
               },
               '& .MuiTabs-indicator': {
                 backgroundColor: '#007AFF',
@@ -3767,8 +3779,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <TextField
@@ -3786,8 +3798,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <Box sx={{ textAlign: 'right', mb: 3 }}>
@@ -3834,8 +3846,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <TextField
@@ -3852,8 +3864,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <TextField
@@ -3870,8 +3882,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <TextField
@@ -3889,8 +3901,8 @@ const HomePage: React.FC = () => {
                       '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
-                    '& .MuiInputLabel-root': { color: '#86868B' },
-                    '& .MuiInputBase-input': { color: '#1D1D1F' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
                 <Button 
@@ -3929,7 +3941,7 @@ const HomePage: React.FC = () => {
                   display: 'inline-block', 
                   px: 2, 
                   background: 'rgba(255, 255, 255, 0.95)',
-                  color: '#86868B',
+                  color: 'rgba(255,255,255,0.6)',
                   fontSize: '0.875rem',
                   left: '50%',
                   transform: 'translateX(-50%)',
@@ -3944,7 +3956,7 @@ const HomePage: React.FC = () => {
               variant="outlined" 
               startIcon={
                 isGoogleLoading ? (
-                  <CircularProgress size={18} sx={{ color: '#86868B' }} />
+                  <CircularProgress size={18} sx={{ color: 'rgba(255,255,255,0.6)' }} />
                 ) : (
                   <Box
                     component="img"
@@ -3960,7 +3972,7 @@ const HomePage: React.FC = () => {
                 py: 1.5,
                 borderRadius: '12px',
                 borderColor: 'rgba(0,0,0,0.15)',
-                color: '#1D1D1F',
+                color: '#FFFFFF',
                 '&:hover': {
                   borderColor: 'rgba(0,0,0,0.3)',
                   background: 'rgba(0,0,0,0.03)',
@@ -3976,7 +3988,7 @@ const HomePage: React.FC = () => {
                   mt: 3, 
                   textAlign: 'center', 
                   fontSize: '0.75rem', 
-                  color: '#86868B',
+                  color: 'rgba(255,255,255,0.6)',
                   lineHeight: 1.5,
                 }}
               >

@@ -15,6 +15,7 @@ interface MarketingSectionProps {
   background?: 'white' | 'gradient-subtle' | 'gradient-purple' | 'gradient-teal';
   align?: 'left' | 'center';
   id?: string;
+  darkMode?: boolean;
 }
 
 /**
@@ -33,8 +34,30 @@ const MarketingSection: React.FC<MarketingSectionProps> = ({
   background = 'white',
   align = 'left',
   id,
+  darkMode = false,
 }) => {
   const getBackgroundStyles = () => {
+    if (darkMode) {
+      switch (background) {
+        case 'gradient-subtle':
+          return {
+            background: 'linear-gradient(180deg, #0D0D0F 0%, #121218 40%, #0F0F14 100%)',
+          };
+        case 'gradient-purple':
+          return {
+            background: 'linear-gradient(180deg, #0F0A14 0%, #1A1028 40%, #140E1A 100%)',
+          };
+        case 'gradient-teal':
+          return {
+            background: 'linear-gradient(180deg, #0A1014 0%, #0E1820 40%, #0A1418 100%)',
+          };
+        case 'white':
+        default:
+          return {
+            background: 'transparent',
+          };
+      }
+    }
     switch (background) {
       case 'gradient-subtle':
         return {
@@ -174,7 +197,7 @@ const MarketingSection: React.FC<MarketingSectionProps> = ({
                     backgroundClip: 'text',
                   }
                 : {
-                    color: '#1D1D1F',
+                    color: darkMode ? '#FFFFFF' : '#1D1D1F',
                   }),
             }}
           >
@@ -186,7 +209,7 @@ const MarketingSection: React.FC<MarketingSectionProps> = ({
             <Typography
               sx={{
                 fontSize: { xs: '0.95rem', md: '1.05rem' },
-                color: '#48484A',
+                color: darkMode ? 'rgba(255,255,255,0.7)' : '#48484A',
                 maxWidth: align === 'center' ? '600px' : '100%',
                 lineHeight: 1.6,
               }}

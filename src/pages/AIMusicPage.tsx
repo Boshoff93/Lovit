@@ -158,11 +158,38 @@ const genres = [
 // Genre showcase data
 const genreShowcase = [
   { id: 'pop', name: 'Pop', color: '#FF6B9D' },
-  { id: 'hip-hop', name: 'Hip Hop', color: '#8B5CF6' },
-  { id: 'electronic', name: 'Electronic', color: '#00D4FF' },
-  { id: 'rock', name: 'Rock', color: '#FF4444' },
+  { id: 'hip-hop', name: 'Hip Hop', color: '#9D4EDD' },
+  { id: 'rnb', name: 'R&B', color: '#A855F7' },
+  { id: 'electronic', name: 'Electronic', color: '#00D9FF' },
+  { id: 'dance', name: 'Dance', color: '#FF1493' },
+  { id: 'house', name: 'House', color: '#00CED1' },
+  { id: 'edm', name: 'EDM', color: '#7B68EE' },
+  { id: 'techno', name: 'Techno', color: '#8A2BE2' },
+  { id: 'rock', name: 'Rock', color: '#FF4757' },
+  { id: 'alternative', name: 'Alternative', color: '#DC143C' },
+  { id: 'indie', name: 'Indie', color: '#B8860B' },
+  { id: 'punk', name: 'Punk', color: '#FF6347' },
+  { id: 'metal', name: 'Metal', color: '#2F4F4F' },
   { id: 'jazz', name: 'Jazz', color: '#FFB347' },
-  { id: 'classical', name: 'Classical', color: '#9D8DF1' },
+  { id: 'blues', name: 'Blues', color: '#4169E1' },
+  { id: 'soul', name: 'Soul', color: '#CD5C5C' },
+  { id: 'funk', name: 'Funk', color: '#FF8C00' },
+  { id: 'classical', name: 'Classical', color: '#4ECDC4' },
+  { id: 'orchestral', name: 'Orchestral', color: '#8B4513' },
+  { id: 'cinematic', name: 'Cinematic', color: '#1E293B' },
+  { id: 'country', name: 'Country', color: '#D4A574' },
+  { id: 'folk', name: 'Folk', color: '#8B7355' },
+  { id: 'acoustic', name: 'Acoustic', color: '#DEB887' },
+  { id: 'latin', name: 'Latin', color: '#FF4500' },
+  { id: 'reggaeton', name: 'Reggaeton', color: '#FF6B35' },
+  { id: 'kpop', name: 'K-Pop', color: '#FF69B4' },
+  { id: 'jpop', name: 'J-Pop', color: '#FFB7C5' },
+  { id: 'reggae', name: 'Reggae', color: '#22C55E' },
+  { id: 'lofi', name: 'Lo-fi', color: '#94A3B8' },
+  { id: 'ambient', name: 'Ambient', color: '#06B6D4' },
+  { id: 'chillout', name: 'Chill', color: '#5F9EA0' },
+  { id: 'tropical-house', name: 'Tropical House', color: '#00CED1' },
+  { id: 'gospel', name: 'Gospel', color: '#FFD700' },
 ];
 
 // Languages - All 24 supported languages with images
@@ -191,6 +218,27 @@ const languages = [
   { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
   { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
   { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
+];
+
+// Mood showcase - selection of moods for the marketing page
+const moodShowcase = [
+  { id: 'happy', name: 'Happy', image: '/moods/happy.jpeg', color: '#FFD93D' },
+  { id: 'sad', name: 'Sad', image: '/moods/sad.jpeg', color: '#5B8FB9' },
+  { id: 'energetic', name: 'Energetic', image: '/moods/energetic.jpeg', color: '#FF6B35' },
+  { id: 'romantic', name: 'Romantic', image: '/moods/romantic.jpeg', color: '#FF69B4' },
+  { id: 'chill', name: 'Chill', image: '/moods/chill.jpeg', color: '#87CEEB' },
+  { id: 'epic', name: 'Epic', image: '/moods/epic.jpeg', color: '#9B59B6' },
+  { id: 'dreamy', name: 'Dreamy', image: '/moods/dreamy.jpeg', color: '#DDA0DD' },
+  { id: 'dark', name: 'Dark', image: '/moods/dark.jpeg', color: '#6B46C1' },
+  { id: 'uplifting', name: 'Uplifting', image: '/moods/uplifting.jpeg', color: '#27AE60' },
+  { id: 'nostalgic', name: 'Nostalgic', image: '/moods/nostalgic.jpeg', color: '#D4A574' },
+  { id: 'peaceful', name: 'Peaceful', image: '/moods/peacful.jpeg', color: '#98FB98' },
+  { id: 'intense', name: 'Intense', image: '/moods/intense.jpeg', color: '#E74C3C' },
+  { id: 'melancholic', name: 'Melancholic', image: '/moods/melancholic.jpeg', color: '#7F8C8D' },
+  { id: 'playful', name: 'Playful', image: '/moods/playful.jpeg', color: '#F39C12' },
+  { id: 'mysterious', name: 'Mysterious', image: '/moods/mysterious.jpeg', color: '#8E44AD' },
+  { id: 'triumphant', name: 'Triumphant', image: '/moods/triumphant.jpeg', color: '#F1C40F' },
+  { id: 'promotional', name: 'Promotional', image: '/moods/promotional.jpeg', color: '#3498DB' },
 ];
 
 // Language sample tracks - using the same tracks as LanguageDetailPage (one per language)
@@ -337,6 +385,7 @@ const AIMusicPage: React.FC = () => {
   const { ref: whyRef, inView: whyInView } = useInView({ threshold: 0.1 });
   const { ref: genresRef, inView: genresInView } = useInView({ threshold: 0.1 });
   const { ref: languagesRef, inView: languagesInView } = useInView({ threshold: 0.1 });
+  const { ref: moodsRef, inView: moodsInView } = useInView({ threshold: 0.1 });
   const { ref: exploreRef, inView: exploreInView } = useInView({ threshold: 0.1 });
 
   const [selectedGenre, setSelectedGenre] = useState('all');
@@ -918,7 +967,7 @@ const AIMusicPage: React.FC = () => {
         ref={genresRef}
         sx={{
           py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #121A2D 0%, #0E1525 40%, #0A0E18 60%, #0E1828 100%)',
+          background: 'linear-gradient(180deg, #121A2D 0%, #0E1525 40%, #0A1220 60%, #0C1524 100%)',
           position: 'relative',
         }}
       >
@@ -936,7 +985,7 @@ const AIMusicPage: React.FC = () => {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Chip
-              label="32 Genres"
+              label="33 Genres"
               size="small"
               sx={{ mb: 2, background: 'rgba(255, 107, 157, 0.15)', color: '#FF6B9D', fontWeight: 600 }}
             />
@@ -960,7 +1009,7 @@ const AIMusicPage: React.FC = () => {
             {genreShowcase.map((genre, index) => (
               <Grid size={{ xs: 6, sm: 4, md: 2 }} key={genre.id}>
                 <Box
-                  onClick={() => { setSelectedGenre(genre.id); document.getElementById('explore-tracks')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  onClick={() => navigate(`/genres/${genre.id}`)}
                   sx={{
                     p: 3,
                     borderRadius: '20px',
@@ -1009,11 +1058,208 @@ const AIMusicPage: React.FC = () => {
         <SectionDivider />
       </Box>
 
+      {/* Languages Section */}
+      <Box
+        ref={languagesRef}
+        sx={{
+          py: { xs: 10, md: 14 },
+          background: 'linear-gradient(180deg, #0C1524 0%, #0E1828 40%, #101C30 60%, #0E1828 100%)',
+          position: 'relative',
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '10%',
+          left: '5%',
+          width: '30%',
+          height: '50%',
+          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+        }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Chip
+              label="24 Languages"
+              size="small"
+              sx={{ mb: 2, background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', fontWeight: 600 }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '2rem', md: '2.75rem' },
+                fontWeight: 800,
+                color: '#fff',
+                mb: 2,
+              }}
+            >
+              Create Music in Any Language
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', maxWidth: '600px', mx: 'auto' }}>
+              Generate lyrics and vocals in 24 languages. Reach a global audience with native-quality vocals.
+            </Typography>
+          </Box>
+
+          {/* Languages Grid */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: { xs: 2, md: 3 },
+            }}
+          >
+            {languages.map((lang, index) => (
+              <Box
+                key={lang.id}
+                onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  cursor: 'pointer',
+                  opacity: 0,
+                  transform: 'scale(0.9)',
+                  ...(languagesInView && {
+                    animation: `pop 0.4s ease ${index * 30}ms forwards`,
+                  }),
+                  '@keyframes pop': {
+                    to: { opacity: 1, transform: 'scale(1)' },
+                  },
+                  '&:hover': {
+                    '& .lang-image': {
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 12px 30px rgba(59, 130, 246, 0.3)',
+                    },
+                  },
+                }}
+              >
+                <Box
+                  className="lang-image"
+                  component="img"
+                  src={lang.image}
+                  alt={lang.name}
+                  sx={{
+                    width: { xs: 60, md: 70 },
+                    height: { xs: 60, md: 70 },
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '3px solid rgba(255,255,255,0.1)',
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+                <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.85rem' }}>
+                  {lang.name}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+        <SectionDivider />
+      </Box>
+
+      {/* Moods Section */}
+      <Box
+        ref={moodsRef}
+        sx={{
+          py: { xs: 10, md: 14 },
+          background: 'linear-gradient(180deg, #0E1828 0%, #101A28 40%, #0C1620 60%, #0E1828 100%)',
+          position: 'relative',
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '15%',
+          left: '10%',
+          width: '25%',
+          height: '40%',
+          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.06) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+        }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Chip
+              label="17 Moods"
+              size="small"
+              sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6', fontWeight: 600 }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '2rem', md: '2.75rem' },
+                fontWeight: 800,
+                color: '#fff',
+                mb: 2,
+              }}
+            >
+              Set the Perfect Mood
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', maxWidth: '600px', mx: 'auto' }}>
+              From energetic to melancholic, create music that perfectly captures any emotion.
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3}>
+            {moodShowcase.map((mood, index) => (
+              <Grid size={{ xs: 6, sm: 4, md: 2 }} key={mood.id}>
+                <Box
+                  onClick={() => navigate(`/moods/${mood.id}`)}
+                  sx={{
+                    p: 3,
+                    borderRadius: '20px',
+                    background: `linear-gradient(135deg, ${mood.color}15 0%, ${mood.color}05 100%)`,
+                    border: `1px solid ${mood.color}30`,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                    opacity: 0,
+                    transform: 'scale(0.9)',
+                    ...(moodsInView && {
+                      animation: `pop 0.4s ease ${index * 50}ms forwards`,
+                    }),
+                    '@keyframes pop': {
+                      to: { opacity: 1, transform: 'scale(1)' },
+                    },
+                    '&:hover': {
+                      transform: 'translateY(-6px) scale(1.02)',
+                      boxShadow: `0 20px 40px ${mood.color}20`,
+                      borderColor: `${mood.color}60`,
+                    },
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={mood.image}
+                    alt={mood.name}
+                    sx={{
+                      width: 70,
+                      height: 70,
+                      borderRadius: '16px',
+                      objectFit: 'cover',
+                      mb: 2,
+                      boxShadow: `0 8px 20px ${mood.color}30`,
+                    }}
+                  />
+                  <Typography sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+                    {mood.name}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+        <SectionDivider />
+      </Box>
+
       {/* Upload Your Own Music Section */}
       <Box
         sx={{
           py: { xs: 10, md: 14 },
-          background: 'linear-gradient(180deg, #0E1828 0%, #142035 40%, #1A2845 60%, #142035 100%)',
+          background: 'linear-gradient(180deg, #0E1828 0%, #121D30 40%, #142035 60%, #101C2D 100%)',
           position: 'relative',
         }}
       >
@@ -1023,7 +1269,7 @@ const AIMusicPage: React.FC = () => {
               <Chip
                 label="Upload & Distribute"
                 size="small"
-                sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6', fontWeight: 600 }}
+                sx={{ mb: 2, background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', fontWeight: 600 }}
               />
               <Typography
                 variant="h2"
@@ -1036,7 +1282,7 @@ const AIMusicPage: React.FC = () => {
               >
                 Already Have Music?{' '}
                 <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
@@ -1054,7 +1300,7 @@ const AIMusicPage: React.FC = () => {
                   'Schedule posts for optimal engagement',
                 ].map((item, i) => (
                   <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: '#8B5CF6' }} />
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6' }} />
                     <Typography sx={{ color: 'rgba(255,255,255,0.8)' }}>{item}</Typography>
                   </Box>
                 ))}
@@ -1064,7 +1310,7 @@ const AIMusicPage: React.FC = () => {
                 onClick={() => isLoggedIn ? navigate('/create/music') : handleOpenAuth()}
                 startIcon={<CloudUploadIcon />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%) !important',
                   color: '#fff',
                   px: 4,
                   py: 1.75,
@@ -1072,10 +1318,10 @@ const AIMusicPage: React.FC = () => {
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: '1.05rem',
-                  boxShadow: '0 8px 32px rgba(236, 72, 153, 0.4)',
+                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4)',
                   '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 12px 40px rgba(236, 72, 153, 0.5)',
+                    boxShadow: '0 12px 40px rgba(59, 130, 246, 0.5)',
                   },
                 }}
               >
@@ -1103,7 +1349,7 @@ const AIMusicPage: React.FC = () => {
       </Box>
 
       {/* Explore All Tracks Section */}
-      <Box ref={exploreRef} id="explore-tracks" sx={{ background: 'linear-gradient(180deg, #142035 0%, #0E1525 40%, #0A0E18 60%, #0D0D0F 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
+      <Box ref={exploreRef} id="explore-tracks" sx={{ background: 'linear-gradient(180deg, #101C2D 0%, #0C1620 40%, #0A1018 60%, #0D0D0F 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 5 }}>
             <Typography

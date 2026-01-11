@@ -30,6 +30,12 @@ import GoogleIcon from '@mui/icons-material/Google';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import FlightIcon from '@mui/icons-material/Flight';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
@@ -893,7 +899,7 @@ const AIVideoShortsPage: React.FC = () => {
                     border: '1px solid rgba(255,255,255,0.15)',
                   }}
                 >
-                  <Box sx={{ color: '#fff' }}>{platform.icon}</Box>
+                  <Box sx={{ color: '#fff', display: 'flex', alignItems: 'center' }}>{platform.icon}</Box>
                   <Typography sx={{ color: '#fff', fontSize: '0.85rem', fontWeight: 500 }}>
                     {platform.name}
                   </Typography>
@@ -1411,12 +1417,12 @@ const AIVideoShortsPage: React.FC = () => {
             }}
           >
             {[
-              { title: 'E-commerce', desc: 'Product showcases, unboxings, and reviews', icon: '🛒' },
-              { title: 'Real Estate', desc: 'Property tours and Airbnb listings', icon: '🏠' },
-              { title: 'Fashion & Beauty', desc: 'Lookbooks and product demonstrations', icon: '💄' },
-              { title: 'Tech & Electronics', desc: 'Product reviews and feature highlights', icon: '📱' },
-              { title: 'Food & Beverage', desc: 'Recipe videos and brand promotions', icon: '🍽️' },
-              { title: 'Travel & Hospitality', desc: 'Destination showcases and hotel tours', icon: '✈️' },
+              { title: 'E-commerce', desc: 'Product showcases, unboxings, and reviews', icon: <ShoppingCartIcon />, color: '#F97316' },
+              { title: 'Real Estate', desc: 'Property tours and Airbnb listings', icon: <HomeWorkIcon />, color: '#4ECDC4' },
+              { title: 'Fashion & Beauty', desc: 'Lookbooks and product demonstrations', icon: <DiamondIcon />, color: '#EC4899' },
+              { title: 'Tech & Electronics', desc: 'Product reviews and feature highlights', icon: <PhoneIphoneIcon />, color: '#8B5CF6' },
+              { title: 'Food & Beverage', desc: 'Recipe videos and brand promotions', icon: <RestaurantIcon />, color: '#EF4444' },
+              { title: 'Travel & Hospitality', desc: 'Destination showcases and hotel tours', icon: <FlightIcon />, color: '#3B82F6' },
             ].map((useCase, index) => (
               <Box
                 key={useCase.title}
@@ -1438,7 +1444,7 @@ const AIVideoShortsPage: React.FC = () => {
                   },
                 }}
               >
-                <Typography sx={{ fontSize: '2rem', mb: 1 }}>{useCase.icon}</Typography>
+                <Box sx={{ fontSize: '2rem', mb: 1, color: useCase.color, '& .MuiSvgIcon-root': { fontSize: '2rem' } }}>{useCase.icon}</Box>
                 <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', mb: 0.5 }}>
                   {useCase.title}
                 </Typography>
