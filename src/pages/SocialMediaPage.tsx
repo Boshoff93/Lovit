@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import Lottie from 'react-lottie';
 import {
   Box,
   Typography,
@@ -40,6 +41,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
 import { SEO } from '../utils/seoHelper';
 import { MarketingHeader } from '../components/marketing';
+import socialsAnimationData from '../assets/animations/socials.json';
+import cloudAnimationData from '../assets/animations/cloud.json';
 
 // Green-themed Section Divider for green zone sections
 const SectionDivider: React.FC = () => (
@@ -396,21 +399,23 @@ const SocialMediaPage: React.FC = () => {
             <Grid size={{ xs: 12, md: 5 }}>
               <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
                 <Box
-                  component="img"
-                  src="/gruvi/gruv-connect-socials.png"
-                  alt="Connect Social Media Accounts"
                   sx={{
                     width: '100%',
-                    maxWidth: 380,
-                    height: 'auto',
-                    filter: 'drop-shadow(0 30px 60px rgba(34, 197, 94, 0.25))',
-                    animation: 'float 6s ease-in-out infinite',
-                    '@keyframes float': {
-                      '0%, 100%': { transform: 'translateY(0px)' },
-                      '50%': { transform: 'translateY(-15px)' },
-                    },
+                    maxWidth: 420,
                   }}
-                />
+                >
+                  <Lottie
+                    options={{
+                      loop: true,
+                      autoplay: true,
+                      animationData: socialsAnimationData,
+                      rendererSettings: {
+                        preserveAspectRatio: 'xMidYMid slice'
+                      }
+                    }}
+                    isClickToPauseDisabled={true}
+                  />
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -531,18 +536,100 @@ const SocialMediaPage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
-                component="img"
-                src="/gruvi/gruvi-schedule.png"
-                alt="Schedule Posts"
                 sx={{
+                  position: 'relative',
                   width: '100%',
-                  maxWidth: 350,
-                  height: 'auto',
+                  maxWidth: 400,
                   mx: 'auto',
-                  display: 'block',
-                  filter: 'drop-shadow(0 20px 40px rgba(34, 197, 94, 0.2))',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: 350,
                 }}
-              />
+              >
+                {/* Iridescent shimmering dots floating around */}
+                {[
+                  { x: -120, y: -80, size: 8, delay: 0 },
+                  { x: 130, y: -60, size: 6, delay: 0.5 },
+                  { x: -100, y: 60, size: 10, delay: 1 },
+                  { x: 140, y: 40, size: 7, delay: 1.5 },
+                  { x: -60, y: -120, size: 5, delay: 2 },
+                  { x: 80, y: 100, size: 9, delay: 2.5 },
+                  { x: -140, y: 0, size: 6, delay: 0.3 },
+                  { x: 100, y: -100, size: 8, delay: 0.8 },
+                  { x: 0, y: 130, size: 5, delay: 1.3 },
+                  { x: -80, y: 110, size: 7, delay: 1.8 },
+                  { x: 60, y: -130, size: 6, delay: 2.2 },
+                  { x: -30, y: -100, size: 4, delay: 0.7 },
+                ].map((dot, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      width: dot.size,
+                      height: dot.size,
+                      borderRadius: '50%',
+                      background: `linear-gradient(135deg,
+                        ${['#22C55E', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B'][index % 6]} 0%,
+                        ${['#3B82F6', '#8B5CF6', '#EC4899', '#22C55E', '#10B981', '#3B82F6'][index % 6]} 100%)`,
+                      boxShadow: `0 0 ${dot.size * 2}px ${['#22C55E', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B'][index % 6]}90`,
+                      zIndex: 0,
+                      animation: `shimmerFloat${index} 4s ease-in-out ${dot.delay}s infinite`,
+                      [`@keyframes shimmerFloat${index}`]: {
+                        '0%, 100%': {
+                          opacity: 0.4,
+                          transform: `translate(calc(-50% + ${dot.x}px), calc(-50% + ${dot.y}px)) scale(0.8)`,
+                        },
+                        '50%': {
+                          opacity: 1,
+                          transform: `translate(calc(-50% + ${dot.x + (index % 2 === 0 ? 15 : -15)}px), calc(-50% + ${dot.y + (index % 3 === 0 ? -20 : 20)}px)) scale(1.2)`,
+                        },
+                      },
+                    }}
+                  />
+                ))}
+
+                {/* Main image with subtle bob animation */}
+                <Box
+                  component="img"
+                  src="/landing/littlefriend.png"
+                  alt="Social Media Distribution"
+                  sx={{
+                    width: '100%',
+                    maxWidth: 320,
+                    height: 'auto',
+                    filter: 'drop-shadow(0 20px 40px rgba(34, 197, 94, 0.25))',
+                    position: 'relative',
+                    zIndex: 2,
+                    animation: 'gentleBob 3s ease-in-out infinite',
+                    '@keyframes gentleBob': {
+                      '0%, 100%': { transform: 'translateY(0) rotate(-2deg)' },
+                      '50%': { transform: 'translateY(-10px) rotate(2deg)' },
+                    },
+                  }}
+                />
+
+                {/* Iridescent glow effect behind character */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    width: '280px',
+                    height: '280px',
+                    borderRadius: '50%',
+                    background: 'conic-gradient(from 0deg, rgba(34, 197, 94, 0.12), rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12), rgba(236, 72, 153, 0.12), rgba(34, 197, 94, 0.12))',
+                    filter: 'blur(50px)',
+                    zIndex: 0,
+                    animation: 'iridescentSpin 8s linear infinite',
+                    '@keyframes iridescentSpin': {
+                      '0%': { transform: 'rotate(0deg) scale(1)' },
+                      '50%': { transform: 'rotate(180deg) scale(1.1)' },
+                      '100%': { transform: 'rotate(360deg) scale(1)' },
+                    },
+                  }}
+                />
+              </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
               <Chip
@@ -569,7 +656,7 @@ const SocialMediaPage: React.FC = () => {
                 </Box>
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.15rem', lineHeight: 1.7, mb: 4 }}>
-                Say goodbye to logging into each platform separately. Create your content once, then distribute it everywhere instantly. Gruvi handles the formatting for each platform automatically.
+                Say goodbye to logging into each platform separately. Create your content once, then blast it everywhere instantly. Gruvi handles the formatting for each platform automatically.
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {[
@@ -721,18 +808,27 @@ const SocialMediaPage: React.FC = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
-                component="img"
-                src="/gruvi/gruvi-upload-music.png"
-                alt="Upload Content"
                 sx={{
                   width: '100%',
                   maxWidth: 350,
-                  height: 'auto',
                   mx: 'auto',
                   display: 'block',
-                  filter: 'drop-shadow(0 25px 50px rgba(34, 197, 94, 0.25))',
+                  filter: 'drop-shadow(0 25px 50px rgba(139, 92, 246, 0.3))',
                 }}
-              />
+              >
+                <Lottie
+                  options={{
+                    loop: true,
+                    autoplay: true,
+                    animationData: cloudAnimationData,
+                    rendererSettings: {
+                      preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={300}
+                  width={300}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Container>

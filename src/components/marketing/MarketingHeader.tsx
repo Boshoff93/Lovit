@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import {
   Box,
   Typography,
@@ -30,13 +30,16 @@ interface MarketingHeaderProps {
 }
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'AI Music', href: '/ai-music' },
-  { label: 'AI Video Shorts', href: '/ai-video-shorts' },
-  { label: 'Social Media', href: '/social-media' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Home', href: '/', activeColor: '#5DD3B3' }, // teal
+  { label: 'AI Music', href: '/ai-music', activeColor: '#5AC8FA' }, // blue
+  { label: 'AI Video Shorts', href: '/ai-video-shorts', activeColor: '#F5A623' }, // orange
+  { label: 'Social Media', href: '/social-media', activeColor: '#22C55E' }, // green
+  { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' }, // purple
+  { label: 'Blog', href: '/blog', activeColor: '#5DD3B3' }, // teal
 ];
+
+// Gruvi teal color for inactive nav items (matches logo gradient)
+const INACTIVE_COLOR = '#00D4AA';
 
 /**
  * MarketingHeader - Transparent header with scroll-based blur effect
@@ -59,6 +62,44 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Check if current path matches nav item
+  const isActive = useCallback((href: string) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
+  }, [location.pathname]);
+
+  // Find active nav index
+  const activeIndex = navItems.findIndex(item => isActive(item.href));
+  const activeItem = activeIndex >= 0 ? navItems[activeIndex] : null;
+
+  // Refs for animated bubble indicator
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<(HTMLElement | null)[]>([]);
+  const [bubbleStyle, setBubbleStyle] = useState({ left: 0, width: 0 });
+  const [bounceKey, setBounceKey] = useState(0);
+  const prevActiveIndexRef = useRef(activeIndex);
+
+  // Calculate bubble position when active item changes
+  useLayoutEffect(() => {
+    if (activeIndex >= 0 && buttonRefs.current[activeIndex] && navContainerRef.current) {
+      const button = buttonRefs.current[activeIndex];
+      const container = navContainerRef.current;
+      if (button && container) {
+        const buttonRect = button.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        setBubbleStyle({
+          left: buttonRect.left - containerRect.left,
+          width: buttonRect.width,
+        });
+      }
+    }
+    // Trigger bounce animation when active index changes
+    if (prevActiveIndexRef.current !== activeIndex && activeIndex >= 0) {
+      setBounceKey(prev => prev + 1);
+    }
+    prevActiveIndexRef.current = activeIndex;
+  }, [activeIndex, isMobile]);
 
   // Calculate scroll progress (0 = top, 1 = scrolled 100px+)
   useEffect(() => {
@@ -85,12 +126,6 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
     }
     onOpenAuth?.();
   }, [user, navigate, onOpenAuth]);
-
-  // Check if current path matches nav item
-  const isActive = (href: string) => {
-    if (href === '/') return location.pathname === '/';
-    return location.pathname.startsWith(href);
-  };
 
   // Dynamic styles based on scroll (or always if alwaysBlurred)
   const effectiveProgress = alwaysBlurred ? 1 : scrollProgress;
@@ -190,46 +225,107 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
             </IconButton>
           ) : (
             <>
-              {/* Center navigation tabs */}
-              <Box sx={{
-                display: 'flex',
-                gap: { md: 1, lg: 2 },
-                alignItems: 'center',
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}>
-                {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    component={RouterLink}
-                    to={item.href}
+              {/* Center navigation tabs with animated bubble */}
+              <Box
+                ref={navContainerRef}
+                sx={{
+                  display: 'flex',
+                  gap: { md: 0.5, lg: 0.5 },
+                  alignItems: 'center',
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  whiteSpace: 'nowrap',
+                  // Container for bubble positioning
+                  padding: '4px',
+                  borderRadius: '24px',
+                  background: lightMode ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)',
+                }}
+              >
+                {/* Animated sliding bubble indicator with bounce */}
+                {activeItem && bubbleStyle.width > 0 && (
+                  <Box
                     sx={{
-                      color: isActive(item.href)
-                        ? lightMode ? '#007AFF' : '#5DD3B3'
-                        : lightMode ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.75)',
-                      textTransform: 'none',
-                      fontWeight: isActive(item.href) ? 600 : 500,
-                      fontSize: { md: '0.85rem', lg: '0.95rem' },
-                      px: { md: 1.5, lg: 2 },
-                      py: 1,
-                      borderRadius: '8px',
-                      minWidth: 'auto',
-                      transition: 'all 0.2s ease',
-                      background: isActive(item.href)
-                        ? lightMode ? 'rgba(0, 122, 255, 0.1)' : 'rgba(93, 211, 179, 0.1)'
-                        : 'transparent',
-                      '&:hover': {
-                        color: isActive(item.href)
-                          ? lightMode ? '#007AFF' : '#5DD3B3'
-                          : lightMode ? '#1D1D1F' : '#fff',
-                        background: lightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)',
+                      position: 'absolute',
+                      top: '4px',
+                      bottom: '4px',
+                      left: `${bubbleStyle.left}px`,
+                      width: `${bubbleStyle.width}px`,
+                      borderRadius: '20px',
+                      background: `${activeItem.activeColor}25`,
+                      border: `1px solid ${activeItem.activeColor}50`,
+                      boxShadow: `0 0 20px ${activeItem.activeColor}40, inset 0 0 15px ${activeItem.activeColor}15`,
+                      // Spring bounce transition - overshoots then settles
+                      transition: 'left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+                      pointerEvents: 'none',
+                      zIndex: 0,
+                      // Pulsing animation
+                      '@keyframes bubblePulse': {
+                        '0%, 100%': {
+                          boxShadow: `0 0 15px ${activeItem.activeColor}30, inset 0 0 12px ${activeItem.activeColor}10`,
+                        },
+                        '50%': {
+                          boxShadow: `0 0 25px ${activeItem.activeColor}50, inset 0 0 20px ${activeItem.activeColor}20`,
+                        },
                       },
+                      // Bounce settle animation on arrival - use unique name to retrigger
+                      [`@keyframes bounceSettle${bounceKey}`]: {
+                        '0%': { transform: 'scaleX(1.15) scaleY(0.88)' },
+                        '25%': { transform: 'scaleX(0.9) scaleY(1.1)' },
+                        '45%': { transform: 'scaleX(1.06) scaleY(0.95)' },
+                        '65%': { transform: 'scaleX(0.97) scaleY(1.03)' },
+                        '80%': { transform: 'scaleX(1.01) scaleY(0.99)' },
+                        '100%': { transform: 'scaleX(1) scaleY(1)' },
+                      },
+                      animation: `bubblePulse 3s ease-in-out infinite, bounceSettle${bounceKey} 0.6s cubic-bezier(0.22, 1, 0.36, 1)`,
                     }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+                  />
+                )}
+
+                {navItems.map((item, index) => {
+                  const active = isActive(item.href);
+                  const itemColor = active ? item.activeColor : INACTIVE_COLOR;
+                  return (
+                    <Button
+                      key={item.label}
+                      ref={(el) => { buttonRefs.current[index] = el; }}
+                      component={RouterLink}
+                      to={item.href}
+                      sx={{
+                        color: lightMode
+                          ? (active ? item.activeColor : 'rgba(0,0,0,0.7)')
+                          : itemColor,
+                        textTransform: 'none',
+                        fontWeight: active ? 600 : 500,
+                        fontSize: { md: '0.8rem', lg: '0.9rem' },
+                        px: { md: 1.25, lg: 2 },
+                        py: 0.875,
+                        borderRadius: '20px',
+                        minWidth: 'auto',
+                        whiteSpace: 'nowrap',
+                        position: 'relative',
+                        zIndex: 1,
+                        transition: 'color 0.3s ease, transform 0.2s ease',
+                        background: 'transparent',
+                        '&:hover': {
+                          color: lightMode ? '#1D1D1F' : '#fff',
+                          background: active ? 'transparent' : (lightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'),
+                          transform: 'scale(1.02)',
+                        },
+                        '&:not(:hover)': {
+                          color: lightMode
+                            ? (active ? item.activeColor : 'rgba(0,0,0,0.7)')
+                            : itemColor,
+                        },
+                        '&:active': {
+                          transform: 'scale(0.98)',
+                        },
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  );
+                })}
               </Box>
 
               {/* Right side: Dashboard (logged in) or Login + CTA (logged out) */}
@@ -240,9 +336,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                     to="/my-music"
                     variant="contained"
                     sx={{
-                      background: lightMode
-                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
-                        : 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                      // Same gradient as Gruvi logo text
+                      background: 'linear-gradient(135deg, #00D4AA 0%, #5AC8FA 100%)',
                       color: '#fff',
                       px: 3,
                       py: 1.25,
@@ -250,17 +345,11 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       fontWeight: 600,
                       textTransform: 'none',
                       fontSize: '0.95rem',
-                      boxShadow: lightMode
-                        ? '0 4px 16px rgba(0, 122, 255, 0.4)'
-                        : '0 4px 16px rgba(78, 205, 196, 0.4)',
+                      boxShadow: '0 4px 16px rgba(0, 212, 170, 0.4)',
                       transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        background: lightMode
-                          ? 'linear-gradient(135deg, #0066DD 0%, #4AB8E8 100%)'
-                          : 'linear-gradient(135deg, #45B7AA 0%, #3D9480 100%)',
-                        boxShadow: lightMode
-                          ? '0 6px 24px rgba(0, 122, 255, 0.5)'
-                          : '0 6px 24px rgba(78, 205, 196, 0.5)',
+                        background: 'linear-gradient(135deg, #00C49A 0%, #4AB8E8 100%)',
+                        boxShadow: '0 6px 24px rgba(0, 212, 170, 0.5)',
                         transform: 'translateY(-2px)',
                       },
                     }}
@@ -288,9 +377,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       variant="contained"
                       onClick={handleClickOpen}
                       sx={{
-                        background: lightMode
-                          ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
-                          : 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                        // Same gradient as Gruvi logo text
+                        background: 'linear-gradient(135deg, #00D4AA 0%, #5AC8FA 100%)',
                         color: '#fff',
                         px: 3,
                         py: 1.25,
@@ -298,17 +386,11 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         fontWeight: 600,
                         textTransform: 'none',
                         fontSize: '0.95rem',
-                        boxShadow: lightMode
-                          ? '0 4px 16px rgba(0, 122, 255, 0.4)'
-                          : '0 4px 16px rgba(78, 205, 196, 0.4)',
+                        boxShadow: '0 4px 16px rgba(0, 212, 170, 0.4)',
                         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                         '&:hover': {
-                          background: lightMode
-                            ? 'linear-gradient(135deg, #0066DD 0%, #4AB8E8 100%)'
-                            : 'linear-gradient(135deg, #45B7AA 0%, #3D9480 100%)',
-                          boxShadow: lightMode
-                            ? '0 6px 24px rgba(0, 122, 255, 0.5)'
-                            : '0 6px 24px rgba(78, 205, 196, 0.5)',
+                          background: 'linear-gradient(135deg, #00C49A 0%, #4AB8E8 100%)',
+                          boxShadow: '0 6px 24px rgba(0, 212, 170, 0.5)',
                           transform: 'translateY(-2px)',
                         },
                       }}
@@ -399,30 +481,33 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               <ListItemText primary="Go to Dashboard" primaryTypographyProps={{ fontWeight: 600, color: '#4ECDC4' }} />
             </ListItemButton>
           )}
-          {navItems.map((item) => (
-            <ListItemButton
-              key={item.label}
-              component={RouterLink}
-              to={item.href}
-              onClick={handleDrawerToggle}
-              sx={{
-                borderRadius: 2,
-                mb: 0.5,
-                backgroundColor: isActive(item.href) ? 'rgba(93, 211, 179, 0.15)' : 'transparent',
-                '&:hover': {
-                  backgroundColor: isActive(item.href) ? 'rgba(93, 211, 179, 0.2)' : 'rgba(255,255,255,0.1)',
-                }
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  fontWeight: isActive(item.href) ? 600 : 500,
-                  color: isActive(item.href) ? '#5DD3B3' : 'rgba(255,255,255,0.9)',
+          {navItems.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <ListItemButton
+                key={item.label}
+                component={RouterLink}
+                to={item.href}
+                onClick={handleDrawerToggle}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  backgroundColor: active ? `${item.activeColor}26` : 'transparent',
+                  '&:hover': {
+                    backgroundColor: active ? `${item.activeColor}33` : 'rgba(255,255,255,0.1)',
+                  }
                 }}
-              />
-            </ListItemButton>
-          ))}
+              >
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: active ? 600 : 500,
+                    color: active ? item.activeColor : INACTIVE_COLOR,
+                  }}
+                />
+              </ListItemButton>
+            );
+          })}
         </List>
 
         {/* Bottom buttons */}

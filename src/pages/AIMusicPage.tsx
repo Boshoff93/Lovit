@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
+import Lottie from 'react-lottie';
+import cloudBlueAnimationData from '../assets/animations/cloud-blue.json';
 import {
   Box,
   Typography,
@@ -14,9 +16,18 @@ import {
   Tab,
   InputAdornment,
   IconButton,
+  Paper,
+  useMediaQuery,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Navigation } from 'swiper';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/navigation';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import CloseIcon from '@mui/icons-material/Close';
@@ -45,48 +56,41 @@ const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 
 // Genre to image mapping
 const genreToImage: Record<string, string> = {
-  'indie': '/genres/indie.jpeg',
-  'chillout': '/genres/chillout.jpeg',
-  'chill': '/genres/chillout.jpeg',
-  'hip-hop': '/genres/hip-hop.jpeg',
-  'pop': '/genres/pop.jpeg',
-  'kpop': '/genres/kpop.jpeg',
-  'jpop': '/genres/jpop.jpeg',
-  'dance': '/genres/dance.jpeg',
-  'gospel': '/genres/gospels.jpeg',
-  'ambient': '/genres/ambient.jpeg',
-  'lofi': '/genres/lofi.jpeg',
-  'house': '/genres/house.jpeg',
-  'metal': '/genres/metal.jpeg',
-  'jazz': '/genres/jazz.jpeg',
-  'blues': '/genres/blues.jpeg',
-  'soul': '/genres/soul.jpeg',
-  'rnb': '/genres/rnb.jpeg',
-  'funk': '/genres/funk.jpeg',
-  'classical': '/genres/classic.jpeg',
-  'orchestral': '/genres/orchestral.jpeg',
-  'cinematic': '/genres/cinematic.jpeg',
-  'country': '/genres/country.jpeg',
-  'folk': '/genres/folk.jpeg',
-  'acoustic': '/genres/acoustic.jpeg',
-  'rock': '/genres/rock.jpeg',
-  'latin': '/genres/latin.jpeg',
-  'reggaeton': '/genres/raggaeton.jpeg',
-  'reggae': '/genres/raggae.jpeg',
-  'electronic': '/genres/electronic.jpeg',
-  'alternative': '/genres/alternative.jpeg',
-  'punk': '/genres/punk.jpeg',
-  'edm': '/genres/edm.jpeg',
-  'techno': '/genres/techno.jpeg',
+  'indie': '/genres/indie.png',
+  'chillout': '/genres/chill.png',
+  'chill': '/genres/chill.png',
+  'hip-hop': '/genres/hip-hop.png',
+  'pop': '/genres/pop.png',
+  'kpop': '/genres/kpop.png',
+  'jpop': '/genres/jpop.png',
+  'dance': '/genres/dance.png',
+  'gospel': '/genres/gospels.png',
+  'ambient': '/genres/ambient.png',
+  'lofi': '/genres/lofi.png',
+  'house': '/genres/house.png',
+  'tropical-house': '/genres/house.png', // Uses house image for now
+  'metal': '/genres/metal.png',
+  'jazz': '/genres/jazz.png',
+  'blues': '/genres/blues.png',
+  'soul': '/genres/soul.png',
+  'rnb': '/genres/rnb.png',
+  'funk': '/genres/funk.png',
+  'classical': '/genres/classical.png',
+  'orchestral': '/genres/orchestral.png',
+  'cinematic': '/genres/cinematic.png',
+  'country': '/genres/country.png',
+  'folk': '/genres/folk.png',
+  'acoustic': '/genres/acoustic.png',
+  'rock': '/genres/rock.png',
+  'latin': '/genres/latin.png',
+  'reggaeton': '/genres/raggaeton.png',
+  'reggae': '/genres/raggae.png',
+  'electronic': '/genres/electronic.png',
+  'alternative': '/genres/alternative.png',
+  'punk': '/genres/punk.png',
+  'edm': '/genres/edm.png',
+  'techno': '/genres/techno.png',
 };
-
-// Featured tracks (top picks)
-const featuredTracks = [
-  { id: 'a93fd48c-9c12-41a5-8158-7afea227714f', title: 'Unstoppable', genre: 'pop', duration: '2:17' },
-  { id: '48f6a5d8-6086-43ca-9755-5fbbb576c35c', title: 'Concrete Shadows', genre: 'hip-hop', duration: '1:39' },
-  { id: '4ed4cf4d-6a02-457b-adb2-5718501abc9c', title: 'Dawn Will Find Us', genre: 'cinematic', duration: '2:46' },
-  { id: '31a82512-422d-47ee-9661-655d6d050ce7', title: 'Sunshine in My Coffee Cup', genre: 'jazz', duration: '2:05' },
-];
 
 // All sample tracks
 const sampleTracks = [
@@ -139,6 +143,10 @@ const sampleTracks = [
   { id: 'dcfcae83-63a5-4975-8496-7b97e04fc7d4', title: 'Teeth of the Void', genre: 'metal', duration: '3:46' },
   { id: 'd00b4220-bc57-43f8-836d-cae5089da865', title: 'Midnight at the Blue Room', genre: 'jazz', duration: '2:50' },
 ];
+
+// Split tracks: first half for Featured, second half for Explore
+const featuredTracks = sampleTracks.slice(0, Math.ceil(sampleTracks.length / 2));
+const exploreTracks = sampleTracks.slice(Math.ceil(sampleTracks.length / 2));
 
 // Genres list for filtering
 const genres = [
@@ -373,6 +381,366 @@ const SectionDivider: React.FC = () => (
   </Box>
 );
 
+// Dark-themed ScrollableCarousel component
+interface ScrollableCarouselProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children }) => {
+  const [showLeftArrow, setShowLeftArrow] = React.useState(false);
+  const [showRightArrow, setShowRightArrow] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const checkScrollPosition = React.useCallback(() => {
+    const container = containerRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const canScroll = scrollWidth > clientWidth + 10;
+      setShowLeftArrow(canScroll && scrollLeft > 10);
+      setShowRightArrow(canScroll && scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      window.addEventListener('resize', checkScrollPosition);
+      checkScrollPosition();
+      setTimeout(checkScrollPosition, 100);
+      return () => {
+        container.removeEventListener('scroll', checkScrollPosition);
+        window.removeEventListener('resize', checkScrollPosition);
+      };
+    }
+  }, [checkScrollPosition]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    const container = containerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  return (
+    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Left fade + arrow */}
+      {showLeftArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: -1,
+              top: -8,
+              bottom: -8,
+              width: 120,
+              background: 'linear-gradient(to right, rgba(14,21,37,1) 0%, rgba(14,21,37,0.6) 40%, rgba(14,21,37,0) 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('left')}
+            sx={{
+              position: 'absolute',
+              left: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: 'rgba(255,255,255,0.1)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+              width: 40,
+              height: 40,
+              '&:hover': {
+                background: 'rgba(255,255,255,0.15)',
+                transform: 'translateY(-50%) scale(1.05)',
+              },
+            }}
+          >
+            <ChevronLeftIcon sx={{ color: '#fff' }} />
+          </IconButton>
+        </>
+      )}
+
+      {/* Right fade + arrow */}
+      {showRightArrow && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              right: -1,
+              top: -8,
+              bottom: -8,
+              width: 120,
+              background: 'linear-gradient(to left, rgba(14,21,37,1) 0%, rgba(14,21,37,0.6) 40%, rgba(14,21,37,0) 100%)',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+          <IconButton
+            onClick={() => scroll('right')}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 3,
+              background: 'rgba(255,255,255,0.1)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+              width: 40,
+              height: 40,
+              '&:hover': {
+                background: 'rgba(255,255,255,0.15)',
+                transform: 'translateY(-50%) scale(1.05)',
+              },
+            }}
+          >
+            <ChevronRightIcon sx={{ color: '#fff' }} />
+          </IconButton>
+        </>
+      )}
+
+      {/* Scrollable content */}
+      <Box
+        ref={containerRef}
+        id={id}
+        sx={{
+          display: 'flex',
+          gap: 2,
+          overflowX: 'auto',
+          scrollBehavior: 'smooth',
+          px: 1,
+          py: 1,
+          '&::-webkit-scrollbar': { display: 'none' },
+          scrollbarWidth: 'none',
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
+// Genre Carousel Component - Similar to Fable's MusicalCarousel with drag support
+interface GenreCarouselProps {
+  genres: Array<{ id: string; name: string; color: string }>;
+  genreToImage: Record<string, string>;
+  onGenreClick: (id: string) => void;
+}
+
+const GenreCarousel: React.FC<GenreCarouselProps> = ({ genres, genreToImage, onGenreClick }) => {
+  const [currentIndex, setCurrentIndex] = useState(Math.floor(genres.length / 2));
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + genres.length) % genres.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % genres.length);
+  };
+
+  const getItemPosition = (index: number) => {
+    const diff = (index - currentIndex + genres.length) % genres.length;
+    if (diff === 0) return 'center';
+    if (diff === 1) return 'right';
+    if (diff === genres.length - 1) return 'left';
+    if (diff === 2) return 'far-right';
+    if (diff === genres.length - 2) return 'far-left';
+    return 'hidden';
+  };
+
+  return (
+    <Box sx={{ width: '100%', maxWidth: '1100px', margin: '0 auto', py: 4, pt:0 }}>
+      <Box
+        sx={{
+          position: 'relative',
+          height: { xs: '320px', sm: '360px', md: '420px' },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {genres.map((genre, index) => {
+          const position = getItemPosition(index);
+          const isCenter = position === 'center';
+          const isLeft = position === 'left';
+          const isRight = position === 'right';
+          const isFarLeft = position === 'far-left';
+          const isFarRight = position === 'far-right';
+          const isVisible = position !== 'hidden';
+
+          return (
+            <Box
+              key={genre.id}
+              onClick={() => isCenter && onGenreClick(genre.id)}
+              sx={{
+                position: 'absolute',
+                width: isCenter
+                  ? { xs: '220px', sm: '260px', md: '300px' }
+                  : (isLeft || isRight)
+                  ? { xs: '170px', sm: '200px', md: '230px' }
+                  : { xs: '130px', sm: '150px', md: '170px' },
+                cursor: isCenter ? 'pointer' : 'default',
+                transition: 'all 0.4s ease-out',
+                transform: `translateX(${
+                  isCenter
+                    ? 0
+                    : isLeft
+                    ? -180
+                    : isRight
+                    ? 180
+                    : isFarLeft
+                    ? -340
+                    : isFarRight
+                    ? 340
+                    : 0
+                }px) scale(${isCenter ? 1 : (isLeft || isRight) ? 0.85 : 0.7})`,
+                opacity: isCenter ? 1 : (isLeft || isRight) ? 0.7 : (isFarLeft || isFarRight) ? 0.4 : 0,
+                zIndex: isCenter ? 10 : (isLeft || isRight) ? 5 : 1,
+                pointerEvents: isCenter ? 'auto' : 'none',
+                display: isVisible ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              {/* Glow effect behind selected record */}
+              {isCenter && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle, ${genre.color}50 0%, ${genre.color}25 50%, transparent 70%)`,
+                    filter: 'blur(25px)',
+                    animation: 'glowPulse 3s ease-in-out infinite',
+                    '@keyframes glowPulse': {
+                      '0%, 100%': { opacity: 0.7, transform: 'scale(1)' },
+                      '50%': { opacity: 1, transform: 'scale(1.08)' },
+                    },
+                  }}
+                />
+              )}
+              {/* Vinyl image with transparent background */}
+              <Box
+                component="img"
+                src={genreToImage[genre.id] || '/genres/pop.png'}
+                alt={genre.name}
+                sx={{
+                  width: '100%',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  position: 'relative',
+                  zIndex: 1,
+                  filter: isCenter
+                    ? `drop-shadow(0 8px 24px ${genre.color}60)`
+                    : 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
+                }}
+              />
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  color: '#fff',
+                  mt: 1.5,
+                  fontSize: isCenter
+                    ? { xs: '1rem', sm: '1.1rem', md: '1.25rem' }
+                    : { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+                  textAlign: 'center',
+                  opacity: isCenter ? 1 : 0.7,
+                  transition: 'all 0.4s ease',
+                }}
+              >
+                {genre.name}
+              </Typography>
+            </Box>
+          );
+        })}
+
+        {/* Navigation Arrows */}
+        <IconButton
+          onClick={handlePrev}
+          sx={{
+            position: 'absolute',
+            left: { xs: 8, sm: 20, md: 40 },
+            zIndex: 20,
+            background: 'rgba(59, 130, 246, 0.25)',
+            border: '2px solid rgba(96, 165, 250, 0.5)',
+            color: '#60A5FA',
+            width: { xs: 48, md: 56 },
+            height: { xs: 48, md: 56 },
+            boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)',
+            '&:hover': {
+              background: 'rgba(59, 130, 246, 0.4)',
+              border: '2px solid rgba(96, 165, 250, 0.8)',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
+            },
+          }}
+        >
+          <ChevronLeftIcon sx={{ fontSize: { xs: 28, md: 36 } }} />
+        </IconButton>
+
+        <IconButton
+          onClick={handleNext}
+          sx={{
+            position: 'absolute',
+            right: { xs: 8, sm: 20, md: 40 },
+            zIndex: 20,
+            background: 'rgba(59, 130, 246, 0.25)',
+            border: '2px solid rgba(96, 165, 250, 0.5)',
+            color: '#60A5FA',
+            width: { xs: 48, md: 56 },
+            height: { xs: 48, md: 56 },
+            boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)',
+            '&:hover': {
+              background: 'rgba(59, 130, 246, 0.4)',
+              border: '2px solid rgba(96, 165, 250, 0.8)',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
+            },
+          }}
+        >
+          <ChevronRightIcon sx={{ fontSize: { xs: 28, md: 36 } }} />
+        </IconButton>
+      </Box>
+
+      {/* Dots Indicator */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 0.75,
+          mt: 2,
+          flexWrap: 'wrap',
+          maxWidth: '80%',
+          mx: 'auto',
+        }}
+      >
+        {genres.map((_, index) => (
+          <Box
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            sx={{
+              width: index === currentIndex ? 20 : 6,
+              height: 6,
+              borderRadius: '3px',
+              background: index === currentIndex ? '#3B82F6' : 'rgba(255, 255, 255, 0.3)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                background: index === currentIndex ? '#60A5FA' : 'rgba(255, 255, 255, 0.5)',
+              },
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
 const AIMusicPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.auth);
@@ -381,12 +749,12 @@ const AIMusicPage: React.FC = () => {
   const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
 
   // Scroll-triggered animation refs
-  const { ref: featuredRef, inView: featuredInView } = useInView({ threshold: 0.1 });
+  const { ref: featuredRef } = useInView({ threshold: 0.1 });
   const { ref: whyRef, inView: whyInView } = useInView({ threshold: 0.1 });
-  const { ref: genresRef, inView: genresInView } = useInView({ threshold: 0.1 });
+  const { ref: genresRef } = useInView({ threshold: 0.1 });
   const { ref: languagesRef, inView: languagesInView } = useInView({ threshold: 0.1 });
-  const { ref: moodsRef, inView: moodsInView } = useInView({ threshold: 0.1 });
-  const { ref: exploreRef, inView: exploreInView } = useInView({ threshold: 0.1 });
+  const { ref: moodsRef } = useInView({ threshold: 0.1 });
+  const { ref: exploreRef } = useInView({ threshold: 0.1 });
 
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [loadingSongId, setLoadingSongId] = useState<string | null>(null);
@@ -403,10 +771,10 @@ const AIMusicPage: React.FC = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Filter tracks by genre
+  // Filter tracks by genre (for Explore section - second half of tracks)
   const filteredTracks = selectedGenre === 'all'
-    ? sampleTracks
-    : sampleTracks.filter(t => t.genre === selectedGenre);
+    ? exploreTracks
+    : exploreTracks.filter(t => t.genre === selectedGenre);
 
   // Handle play button click
   const handlePlayTrack = useCallback(async (track: { id: string; title: string; genre: string; duration: string }) => {
@@ -554,7 +922,7 @@ const AIMusicPage: React.FC = () => {
   }, [googleLogin, getGoogleIdToken, resendVerificationEmail, navigate, handleCloseAuth, authError]);
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#0D0D0F' }}>
+    <Box sx={{ minHeight: '100vh', background: '#0D0D0F', overflowX: 'hidden' }}>
       <SEO
         title="AI Music Generator | Create Songs in 32 Genres | Gruvi"
         description="Create AI-generated music in any genre. Pop, Hip-Hop, Rock, Jazz, Classical, Electronic, and more. 100% original songs with commercial license."
@@ -645,7 +1013,7 @@ const AIMusicPage: React.FC = () => {
                   maxWidth: '540px',
                 }}
               >
-                Generate original songs in seconds. 32 genres, 24 languages. Every track is 100% yours with a commercial license included.
+                Generate original songs in seconds. 32 genres, 24 languages. Your music, your rights — use it anywhere you want.
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button
@@ -653,7 +1021,7 @@ const AIMusicPage: React.FC = () => {
                   onClick={() => isLoggedIn ? navigate('/create/music') : handleOpenAuth()}
                   endIcon={<ArrowForwardRoundedIcon />}
                   sx={{
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+                    background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%) !important',
                     color: '#fff',
                     px: 4,
                     py: 1.75,
@@ -663,6 +1031,7 @@ const AIMusicPage: React.FC = () => {
                     fontSize: '1.05rem',
                     boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4)',
                     '&:hover': {
+                      background: 'linear-gradient(135deg, #4F91F7 0%, #18C5D9 100%) !important',
                       transform: 'translateY(-2px)',
                       boxShadow: '0 12px 40px rgba(59, 130, 246, 0.5)',
                     },
@@ -701,20 +1070,92 @@ const AIMusicPage: React.FC = () => {
                   alignItems: 'center',
                 }}
               >
+                {/* Animated stars and shimmer background */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'visible',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {/* 4-point stars using SVG */}
+                  {[
+                    { top: '5%', left: '10%', size: 24, delay: 0 },
+                    { top: '15%', right: '5%', size: 18, delay: 0.5 },
+                    { top: '70%', left: '5%', size: 16, delay: 1.2 },
+                    { top: '80%', right: '15%', size: 20, delay: 0.8 },
+                    { top: '25%', left: '0%', size: 14, delay: 1.5 },
+                    { top: '60%', right: '0%', size: 17, delay: 0.3 },
+                  ].map((star, i) => (
+                    <Box
+                      key={`star-${i}`}
+                      component="svg"
+                      viewBox="0 0 24 24"
+                      sx={{
+                        position: 'absolute',
+                        top: star.top,
+                        left: star.left,
+                        right: star.right,
+                        width: star.size,
+                        height: star.size,
+                        fill: '#60A5FA',
+                        filter: 'drop-shadow(0 0 4px rgba(96, 165, 250, 0.8))',
+                        animation: `starTwinkle 2.5s ease-in-out ${star.delay}s infinite`,
+                        '@keyframes starTwinkle': {
+                          '0%, 100%': { opacity: 0.5, transform: 'scale(0.7)' },
+                          '50%': { opacity: 1, transform: 'scale(1.1)' },
+                        },
+                      }}
+                    >
+                      <path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" />
+                    </Box>
+                  ))}
+                  {/* Shimmering dots */}
+                  {[
+                    { top: '10%', left: '25%', delay: 0.2 },
+                    { top: '20%', right: '20%', delay: 0.7 },
+                    { top: '35%', left: '8%', delay: 1.1 },
+                    { top: '45%', right: '8%', delay: 0.4 },
+                    { top: '55%', left: '15%', delay: 1.6 },
+                    { top: '65%', right: '25%', delay: 0.9 },
+                    { top: '75%', left: '20%', delay: 1.3 },
+                    { top: '85%', right: '10%', delay: 0.1 },
+                    { top: '30%', left: '2%', delay: 1.8 },
+                    { top: '50%', right: '2%', delay: 0.6 },
+                  ].map((dot, i) => (
+                    <Box
+                      key={`dot-${i}`}
+                      sx={{
+                        position: 'absolute',
+                        top: dot.top,
+                        left: dot.left,
+                        right: dot.right,
+                        width: 4,
+                        height: 4,
+                        borderRadius: '50%',
+                        background: '#93C5FD',
+                        boxShadow: '0 0 6px 2px rgba(147, 197, 253, 0.6)',
+                        animation: `dotShimmer 1.5s ease-in-out ${dot.delay}s infinite`,
+                        '@keyframes dotShimmer': {
+                          '0%, 100%': { opacity: 0.3, transform: 'scale(0.5)' },
+                          '50%': { opacity: 1, transform: 'scale(1.5)' },
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
                 <Box
                   component="img"
-                  src="/gruvi/gruvi-create-music.png"
-                  alt="Gruvi AI Music Creation"
+                  src="/landing/disco.png"
+                  alt="AI Music disco ball"
                   sx={{
                     width: '100%',
-                    maxWidth: 380,
+                    maxWidth: 400,
                     height: 'auto',
-                    filter: 'drop-shadow(0 30px 60px rgba(59, 130, 246, 0.3))',
-                    animation: 'float 6s ease-in-out infinite',
-                    '@keyframes float': {
-                      '0%, 100%': { transform: 'translateY(0px)' },
-                      '50%': { transform: 'translateY(-15px)' },
-                    },
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 />
               </Box>
@@ -724,21 +1165,14 @@ const AIMusicPage: React.FC = () => {
         <SectionDivider />
       </Box>
 
-      {/* Featured Tracks Section - Gradient transition */}
-      <Box
-        ref={featuredRef}
-        sx={{
-          py: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, #152038 0%, #0E1525 40%, #0A0E18 60%, #0E1525 100%)',
-          position: 'relative',
-        }}
-      >
+      {/* Featured Tracks Section */}
+      <Box ref={featuredRef} id="featured-tracks" sx={{ background: 'linear-gradient(180deg, #152038 0%, #0E1525 40%, #0A0E18 60%, #0E1525 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ textAlign: 'center', mb: 5 }}>
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '2rem', md: '2.75rem' },
+                fontSize: { xs: '2rem', md: '2.5rem' },
                 fontWeight: 800,
                 color: '#fff',
                 mb: 2,
@@ -746,117 +1180,145 @@ const AIMusicPage: React.FC = () => {
             >
               Featured Tracks
             </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', maxWidth: '500px', mx: 'auto' }}>
-              Hand-picked AI-generated songs showcasing our best work
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', maxWidth: '550px', mx: 'auto' }}>
+              A track for every vibe - see what Gruvi can do
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            {featuredTracks.map((track, index) => {
-              const isCurrentSong = currentSong?.songId === track.id;
-              const isThisPlaying = isCurrentSong && isPlaying;
-              const isLoadingThis = loadingSongId === track.id;
+          {/* Featured Tracks List - ScrollableCarousel with columns of 3 */}
+          <ScrollableCarousel id="featured-tracks-carousel">
+            {(() => {
+              // Group featured tracks into columns of 3
+              const columns: typeof featuredTracks[] = [];
+              for (let i = 0; i < featuredTracks.length; i += 3) {
+                columns.push(featuredTracks.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
+                <Box
+                  key={`featured-column-${colIndex}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {columnTracks.map((track) => {
+                    const isCurrentSong = currentSong?.songId === track.id;
+                    const isThisPlaying = isCurrentSong && isPlaying;
+                    const isLoadingThis = loadingSongId === track.id;
 
-              return (
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={track.id}>
-                  <Box
-                    onClick={() => handlePlayTrack(track)}
-                    sx={{
-                      position: 'relative',
-                      borderRadius: '24px',
-                      overflow: 'hidden',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      cursor: 'pointer',
-                      transition: 'background 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      // Start at opacity 0, animate to visible when inView
-                      opacity: 0,
-                      transform: 'translateY(30px)',
-                      ...(featuredInView && {
-                        animation: `fadeInUp 0.5s ease ${index * 100}ms forwards`,
-                      }),
-                      '@keyframes fadeInUp': {
-                        to: { opacity: 1, transform: 'translateY(0)' },
-                      },
-                      '&:hover': {
-                        transform: 'translateY(-8px) scale(1.02)',
-                        background: 'rgba(255,255,255,0.06)',
-                        boxShadow: '0 25px 50px rgba(0,0,0,0.4)',
-                        '& .play-overlay': { opacity: 1 },
-                      },
-                    }}
-                  >
-                    <Box sx={{ position: 'relative', aspectRatio: '1' }}>
-                      <Box
-                        component="img"
-                        src={genreToImage[track.genre] || '/genres/pop.jpeg'}
-                        alt={track.genre}
-                        sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <Box
-                        className="play-overlay"
+                    return (
+                      <Paper
+                        key={track.id}
+                        elevation={0}
+                        onClick={() => handlePlayTrack(track)}
                         sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'rgba(0,0,0,0.5)',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          opacity: isThisPlaying ? 1 : 0,
-                          transition: 'opacity 0.3s ease',
+                          gap: 1.5,
+                          p: 1.5,
+                          width: { xs: 260, sm: 290, md: 320 },
+                          background: isCurrentSong
+                            ? 'rgba(59, 130, 246, 0.15)'
+                            : 'rgba(255,255,255,0.05)',
+                          borderRadius: '12px',
+                          border: isCurrentSong
+                            ? '1px solid rgba(59, 130, 246, 0.4)'
+                            : '1px solid rgba(255,255,255,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          '&:hover': {
+                            background: isCurrentSong
+                              ? 'rgba(59, 130, 246, 0.2)'
+                              : 'rgba(255,255,255,0.08)',
+                            transform: 'translateY(-2px)',
+                            '& .play-overlay': { opacity: 1 },
+                          },
                         }}
                       >
-                        {isLoadingThis ? (
-                          <CircularProgress size={40} sx={{ color: '#3B82F6' }} />
-                        ) : isThisPlaying ? (
-                          <AudioEqualizer isPlaying={true} size={40} color="#3B82F6" />
-                        ) : (
-                          <Box sx={{
-                            width: 64,
-                            height: 64,
+                        {/* Album Art */}
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: 48,
+                            height: 48,
                             borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 8px 24px rgba(59, 130, 246, 0.4)',
-                          }}>
-                            <PlayArrowRoundedIcon sx={{ fontSize: 36, color: '#fff', ml: 0.5 }} />
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            boxShadow: '0 0 10px rgba(255,255,255,0.08)',
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={genreToImage[track.genre] || '/genres/pop.png'}
+                            alt={track.title}
+                            sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                          />
+                          {/* Play overlay */}
+                          <Box
+                            className="play-overlay"
+                            sx={{
+                              position: 'absolute',
+                              inset: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                              opacity: isCurrentSong ? 1 : 0,
+                              transition: 'opacity 0.2s',
+                              borderRadius: '50%',
+                            }}
+                          >
+                            {isLoadingThis ? (
+                              <CircularProgress size={14} sx={{ color: '#fff' }} />
+                            ) : isThisPlaying ? (
+                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                            ) : (
+                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                            )}
                           </Box>
-                        )}
-                      </Box>
-                      <Chip
-                        label="Featured"
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: 12,
-                          left: 12,
-                          background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                          color: '#000',
-                          fontWeight: 700,
-                          fontSize: '0.7rem',
-                        }}
-                      />
-                    </Box>
-                    <Box sx={{ p: 2.5 }}>
-                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff', mb: 0.5 }}>
-                        {track.title}
-                      </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ fontSize: '0.85rem', color: '#3B82F6', textTransform: 'capitalize' }}>
-                          {track.genre}
-                        </Typography>
-                        <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                        </Box>
+
+                        {/* Track Info */}
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography
+                            sx={{
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                              color: isCurrentSong ? '#3B82F6' : '#fff',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {track.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: '0.75rem',
+                              color: 'rgba(255,255,255,0.5)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            {track.genre}
+                          </Typography>
+                        </Box>
+
+                        {/* Duration */}
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
                           {track.duration}
                         </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-              );
-            })}
-          </Grid>
+                      </Paper>
+                    );
+                  })}
+                </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
         </Container>
         <SectionDivider />
       </Box>
@@ -874,18 +1336,87 @@ const AIMusicPage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
-                component="img"
-                src="/gruvi/gruvi-my-music.png"
-                alt="Gruvi Music Library"
                 sx={{
+                  position: 'relative',
                   width: '100%',
-                  maxWidth: 350,
-                  height: 'auto',
+                  maxWidth: 400,
                   mx: 'auto',
-                  display: 'block',
-                  filter: 'drop-shadow(0 20px 40px rgba(139, 92, 246, 0.2))',
                 }}
-              />
+              >
+                {/* Disco light beams */}
+                {[
+                  { angle: -30, color: '#8B5CF6', delay: 0 },
+                  { angle: -15, color: '#3B82F6', delay: 0.3 },
+                  { angle: 0, color: '#06B6D4', delay: 0.6 },
+                  { angle: 15, color: '#EC4899', delay: 0.9 },
+                  { angle: 30, color: '#F59E0B', delay: 1.2 },
+                ].map((beam, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      position: 'absolute',
+                      top: '10%',
+                      left: '50%',
+                      width: '4px',
+                      height: '120%',
+                      background: `linear-gradient(180deg, ${beam.color}80 0%, transparent 70%)`,
+                      transformOrigin: 'top center',
+                      transform: `translateX(-50%) rotate(${beam.angle}deg)`,
+                      opacity: 0.4,
+                      animation: `discoBeam 2s ease-in-out ${beam.delay}s infinite`,
+                      '@keyframes discoBeam': {
+                        '0%, 100%': { opacity: 0.2, filter: 'blur(2px)' },
+                        '50%': { opacity: 0.6, filter: 'blur(4px)' },
+                      },
+                    }}
+                  />
+                ))}
+                {/* Sparkle dots */}
+                {[
+                  { top: '5%', left: '20%', color: '#8B5CF6', delay: 0 },
+                  { top: '15%', right: '15%', color: '#3B82F6', delay: 0.4 },
+                  { top: '25%', left: '10%', color: '#EC4899', delay: 0.8 },
+                  { top: '35%', right: '10%', color: '#06B6D4', delay: 1.2 },
+                  { top: '50%', left: '5%', color: '#F59E0B', delay: 0.2 },
+                  { top: '60%', right: '5%', color: '#8B5CF6', delay: 0.6 },
+                  { top: '70%', left: '15%', color: '#3B82F6', delay: 1.0 },
+                  { top: '80%', right: '20%', color: '#EC4899', delay: 0.5 },
+                ].map((sparkle, index) => (
+                  <Box
+                    key={`sparkle-${index}`}
+                    sx={{
+                      position: 'absolute',
+                      top: sparkle.top,
+                      left: sparkle.left,
+                      right: sparkle.right,
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: sparkle.color,
+                      boxShadow: `0 0 10px 3px ${sparkle.color}80`,
+                      animation: `sparkle 1.5s ease-in-out ${sparkle.delay}s infinite`,
+                      '@keyframes sparkle': {
+                        '0%, 100%': { opacity: 0.2, transform: 'scale(0.5)' },
+                        '50%': { opacity: 1, transform: 'scale(1.2)' },
+                      },
+                    }}
+                  />
+                ))}
+                {/* Lady image */}
+                <Box
+                  component="img"
+                  src="/landing/lady.png"
+                  alt="Gruvi Creator"
+                  sx={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                    position: 'relative',
+                    zIndex: 1,
+                    filter: 'drop-shadow(0 20px 40px rgba(139, 92, 246, 0.3))',
+                  }}
+                />
+              </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
               <Typography
@@ -894,10 +1425,10 @@ const AIMusicPage: React.FC = () => {
                   fontSize: { xs: '2rem', md: '2.75rem' },
                   fontWeight: 800,
                   color: '#fff',
-                  mb: 4,
+                  mb: 6,
                 }}
               >
-                Why Musicians Love Gruvi
+                Why Creators Love Gruvi
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {[
@@ -969,6 +1500,7 @@ const AIMusicPage: React.FC = () => {
           py: { xs: 10, md: 14 },
           background: 'linear-gradient(180deg, #121A2D 0%, #0E1525 40%, #0A1220 60%, #0C1524 100%)',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <Box sx={{
@@ -983,7 +1515,7 @@ const AIMusicPage: React.FC = () => {
         }} />
 
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ textAlign: 'center', mb: 0 }}>
             <Chip
               label="33 Genres"
               size="small"
@@ -1005,55 +1537,8 @@ const AIMusicPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            {genreShowcase.map((genre, index) => (
-              <Grid size={{ xs: 6, sm: 4, md: 2 }} key={genre.id}>
-                <Box
-                  onClick={() => navigate(`/genres/${genre.id}`)}
-                  sx={{
-                    p: 3,
-                    borderRadius: '20px',
-                    background: `linear-gradient(135deg, ${genre.color}15 0%, ${genre.color}05 100%)`,
-                    border: `1px solid ${genre.color}30`,
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                    // Start at opacity 0, animate to visible when inView
-                    opacity: 0,
-                    transform: 'scale(0.9)',
-                    ...(genresInView && {
-                      animation: `pop 0.4s ease ${index * 50}ms forwards`,
-                    }),
-                    '@keyframes pop': {
-                      to: { opacity: 1, transform: 'scale(1)' },
-                    },
-                    '&:hover': {
-                      transform: 'translateY(-6px) scale(1.02)',
-                      boxShadow: `0 20px 40px ${genre.color}20`,
-                      borderColor: `${genre.color}60`,
-                    },
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={genreToImage[genre.id] || '/genres/pop.jpeg'}
-                    alt={genre.name}
-                    sx={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: '16px',
-                      objectFit: 'cover',
-                      mb: 2,
-                      boxShadow: `0 8px 20px ${genre.color}30`,
-                    }}
-                  />
-                  <Typography sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
-                    {genre.name}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+{/* Genre Carousel */}
+          <GenreCarousel genres={genreShowcase} genreToImage={genreToImage} onGenreClick={(id) => navigate(`/genres/${id}`)} />
         </Container>
         <SectionDivider />
       </Box>
@@ -1167,6 +1652,7 @@ const AIMusicPage: React.FC = () => {
           py: { xs: 10, md: 14 },
           background: 'linear-gradient(180deg, #0E1828 0%, #101A28 40%, #0C1620 60%, #0E1828 100%)',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <Box sx={{
@@ -1203,54 +1689,85 @@ const AIMusicPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            {moodShowcase.map((mood, index) => (
-              <Grid size={{ xs: 6, sm: 4, md: 2 }} key={mood.id}>
-                <Box
-                  onClick={() => navigate(`/moods/${mood.id}`)}
-                  sx={{
-                    p: 3,
-                    borderRadius: '20px',
-                    background: `linear-gradient(135deg, ${mood.color}15 0%, ${mood.color}05 100%)`,
-                    border: `1px solid ${mood.color}30`,
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                    opacity: 0,
-                    transform: 'scale(0.9)',
-                    ...(moodsInView && {
-                      animation: `pop 0.4s ease ${index * 50}ms forwards`,
-                    }),
-                    '@keyframes pop': {
-                      to: { opacity: 1, transform: 'scale(1)' },
-                    },
-                    '&:hover': {
-                      transform: 'translateY(-6px) scale(1.02)',
-                      boxShadow: `0 20px 40px ${mood.color}20`,
-                      borderColor: `${mood.color}60`,
-                    },
-                  }}
-                >
+          {/* Swiper Coverflow Carousel for Moods */}
+          <Box sx={{
+            width: '100%',
+            '& .swiper': {
+              width: '100%',
+              pt: 6,
+              pb: 6,
+            },
+            '& .swiper-slide': {
+              width: { xs: 180, sm: 220, md: 260 },
+              height: { xs: 180, sm: 220, md: 260 },
+            },
+            '& .swiper-slide img': {
+              display: 'block',
+              width: '100%',
+            },
+          }}>
+            <Swiper
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              slidesPerView="auto"
+              initialSlide={Math.floor(moodShowcase.length / 2)}
+              loop={true}
+              coverflowEffect={{
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: false,
+              }}
+              modules={[EffectCoverflow]}
+            >
+              {moodShowcase.map((mood) => (
+                <SwiperSlide key={mood.id}>
                   <Box
-                    component="img"
-                    src={mood.image}
-                    alt={mood.name}
+                    onClick={() => navigate(`/moods/${mood.id}`)}
                     sx={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: '16px',
-                      objectFit: 'cover',
-                      mb: 2,
-                      boxShadow: `0 8px 20px ${mood.color}30`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      height: '100%',
                     }}
-                  />
-                  <Typography sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
-                    {mood.name}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+                  >
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '85%',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        boxShadow: `0 8px 24px ${mood.color}30`,
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={mood.image}
+                        alt={mood.name}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                    <Typography sx={{
+                      fontWeight: 700,
+                      color: '#fff',
+                      mt: 1.5,
+                      fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+                      textAlign: 'center',
+                    }}>
+                      {mood.name}
+                    </Typography>
+                  </Box>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </Box>
         </Container>
         <SectionDivider />
       </Box>
@@ -1320,6 +1837,7 @@ const AIMusicPage: React.FC = () => {
                   fontSize: '1.05rem',
                   boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4)',
                   '&:hover': {
+                    background: 'linear-gradient(135deg, #4F91F7 0%, #18C5D9 100%) !important',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 12px 40px rgba(59, 130, 246, 0.5)',
                   },
@@ -1329,19 +1847,20 @@ const AIMusicPage: React.FC = () => {
               </Button>
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Box
-                component="img"
-                src="/gruvi/gruvi-upload-music.png"
-                alt="Upload Music to Gruvi"
-                sx={{
-                  width: '100%',
-                  maxWidth: 350,
-                  height: 'auto',
-                  mx: 'auto',
-                  display: 'block',
-                  filter: 'drop-shadow(0 25px 50px rgba(139, 92, 246, 0.25))',
-                }}
-              />
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Lottie
+                  options={{
+                    loop: true,
+                    autoplay: true,
+                    animationData: cloudBlueAnimationData,
+                    rendererSettings: {
+                      preserveAspectRatio: 'xMidYMid slice'
+                    }
+                  }}
+                  height={350}
+                  width={350}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Container>
@@ -1395,130 +1914,317 @@ const AIMusicPage: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Tracks Grid */}
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-                lg: 'repeat(5, 1fr)',
-              },
-              gap: { xs: 2, md: 2.5 },
-            }}
-          >
-            {filteredTracks.map((track, index) => {
-              const isCurrentSong = currentSong?.songId === track.id;
-              const isThisPlaying = isCurrentSong && isPlaying;
-              const isLoadingThis = loadingSongId === track.id;
-
-              return (
+          {/* Tracks List - ScrollableCarousel with columns of 3 */}
+          <ScrollableCarousel id="explore-tracks-carousel">
+            {(() => {
+              // Group filtered tracks into columns of 3
+              const columns: typeof filteredTracks[] = [];
+              for (let i = 0; i < filteredTracks.length; i += 3) {
+                columns.push(filteredTracks.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
                 <Box
-                  key={track.id}
-                  onClick={() => handlePlayTrack(track)}
+                  key={`explore-column-${colIndex}`}
                   sx={{
-                    position: 'relative',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    cursor: 'pointer',
-                    transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-                    // Start at opacity 0, animate to visible when inView
-                    opacity: 0,
-                    transform: 'translateY(20px)',
-                    ...(exploreInView && {
-                      animation: `fadeInUp 0.4s ease ${Math.min(index, 10) * 30}ms forwards`,
-                    }),
-                    '@keyframes fadeInUp': {
-                      to: { opacity: 1, transform: 'translateY(0)' },
-                    },
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      background: 'rgba(255,255,255,0.07)',
-                      borderColor: 'rgba(59, 130, 246, 0.3)',
-                      '& .play-overlay': { opacity: 1 },
-                    },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    flexShrink: 0,
                   }}
                 >
-                  <Box sx={{ position: 'relative', aspectRatio: '1' }}>
-                    <Box
-                      component="img"
-                      src={genreToImage[track.genre] || '/genres/pop.jpeg'}
-                      alt={track.genre}
-                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <Box
-                      className="play-overlay"
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'rgba(0,0,0,0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: isThisPlaying ? 1 : 0,
-                        transition: 'opacity 0.2s ease',
-                      }}
-                    >
-                      {isLoadingThis ? (
-                        <CircularProgress size={32} sx={{ color: '#3B82F6' }} />
-                      ) : isThisPlaying ? (
-                        <AudioEqualizer isPlaying={true} size={32} color="#3B82F6" />
-                      ) : (
-                        <Box sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: '50%',
-                          background: 'rgba(255,255,255,0.9)',
+                  {columnTracks.map((track) => {
+                    const isCurrentSong = currentSong?.songId === track.id;
+                    const isThisPlaying = isCurrentSong && isPlaying;
+                    const isLoadingThis = loadingSongId === track.id;
+
+                    return (
+                      <Paper
+                        key={track.id}
+                        elevation={0}
+                        onClick={() => handlePlayTrack(track)}
+                        sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                          <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#1D1D1F', ml: 0.3 }} />
+                          gap: 1.5,
+                          p: 1.5,
+                          width: { xs: 260, sm: 290, md: 320 },
+                          background: isCurrentSong
+                            ? 'rgba(59, 130, 246, 0.15)'
+                            : 'rgba(255,255,255,0.05)',
+                          borderRadius: '12px',
+                          border: isCurrentSong
+                            ? '1px solid rgba(59, 130, 246, 0.4)'
+                            : '1px solid rgba(255,255,255,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          '&:hover': {
+                            background: isCurrentSong
+                              ? 'rgba(59, 130, 246, 0.2)'
+                              : 'rgba(255,255,255,0.08)',
+                            transform: 'translateY(-2px)',
+                            '& .play-overlay': { opacity: 1 },
+                          },
+                        }}
+                      >
+                        {/* Album Art */}
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            boxShadow: '0 0 10px rgba(255,255,255,0.08)',
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={genreToImage[track.genre] || '/genres/pop.png'}
+                            alt={track.title}
+                            sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                          />
+                          {/* Play overlay */}
+                          <Box
+                            className="play-overlay"
+                            sx={{
+                              position: 'absolute',
+                              inset: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                              opacity: isCurrentSong ? 1 : 0,
+                              transition: 'opacity 0.2s',
+                              borderRadius: '50%',
+                            }}
+                          >
+                            {isLoadingThis ? (
+                              <CircularProgress size={14} sx={{ color: '#fff' }} />
+                            ) : isThisPlaying ? (
+                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                            ) : (
+                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                            )}
+                          </Box>
                         </Box>
-                      )}
-                    </Box>
-                    <Chip
-                      label={track.genre}
-                      size="small"
-                      sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        background: 'rgba(0,0,0,0.6)',
-                        backdropFilter: 'blur(10px)',
-                        color: '#fff',
-                        fontWeight: 600,
-                        fontSize: '0.65rem',
-                        height: 22,
-                        textTransform: 'capitalize',
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ p: 2 }}>
-                    <Typography
-                      sx={{
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        color: '#fff',
-                        mb: 0.5,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {track.title}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                      {track.duration}
-                    </Typography>
-                  </Box>
+
+                        {/* Track Info */}
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography
+                            sx={{
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                              color: isCurrentSong ? '#3B82F6' : '#fff',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {track.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: '0.75rem',
+                              color: 'rgba(255,255,255,0.5)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            {track.genre}
+                          </Typography>
+                        </Box>
+
+                        {/* Duration */}
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
+                          {track.duration}
+                        </Typography>
+                      </Paper>
+                    );
+                  })}
                 </Box>
-              );
-            })}
+              ));
+            })()}
+          </ScrollableCarousel>
+        </Container>
+        <SectionDivider />
+      </Box>
+
+      {/* Language Tracks Section */}
+      <Box sx={{ background: 'linear-gradient(180deg, #0D0D0F 0%, #0E1525 40%, #101C2D 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 5 }}>
+            <Chip
+              label="Multilingual"
+              sx={{
+                background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: 28,
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: '2rem', md: '2.5rem' },
+                fontWeight: 800,
+                color: '#fff',
+                mb: 2,
+              }}
+            >
+              Music in Any Language
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', maxWidth: '550px', mx: 'auto' }}>
+              AI-generated songs in 15+ languages - from English to Japanese to Arabic
+            </Typography>
           </Box>
+
+          {/* Language Tracks Carousel - columns of 3 */}
+          <ScrollableCarousel id="language-tracks-carousel">
+            {(() => {
+              const languageTracks = getLanguageTracksForRoute();
+              const columns: typeof languageTracks[] = [];
+              for (let i = 0; i < languageTracks.length; i += 3) {
+                columns.push(languageTracks.slice(i, i + 3));
+              }
+              return columns.map((columnTracks, colIndex) => (
+                <Box
+                  key={`lang-column-${colIndex}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {columnTracks.map((track) => {
+                    const isCurrentSong = currentSong?.songId === track.id;
+                    const isThisPlaying = isCurrentSong && isPlaying;
+                    const isLoadingThis = loadingSongId === track.id;
+
+                    return (
+                      <Paper
+                        key={`${track.id}-${track.language}`}
+                        elevation={0}
+                        onClick={() => handlePlayTrack({ id: track.id, title: track.title, genre: track.language.toLowerCase(), duration: track.duration })}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          p: 1.5,
+                          width: { xs: 260, sm: 290, md: 320 },
+                          background: isCurrentSong
+                            ? 'rgba(59, 130, 246, 0.15)'
+                            : 'rgba(255,255,255,0.05)',
+                          borderRadius: '12px',
+                          border: isCurrentSong
+                            ? '1px solid rgba(59, 130, 246, 0.4)'
+                            : '1px solid rgba(255,255,255,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          '&:hover': {
+                            background: isCurrentSong
+                              ? 'rgba(59, 130, 246, 0.2)'
+                              : 'rgba(255,255,255,0.08)',
+                            transform: 'translateY(-2px)',
+                          },
+                          '&:hover .lang-play-overlay': {
+                            opacity: 1,
+                          },
+                        }}
+                      >
+                        {/* Language flag as album art */}
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: 48,
+                            height: 48,
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                            background: 'rgba(255,255,255,0.05)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={track.image}
+                            alt={track.language}
+                            sx={{
+                              width: '85%',
+                              height: '85%',
+                              objectFit: 'contain',
+                            }}
+                          />
+                          {/* Play overlay */}
+                          <Box
+                            className="lang-play-overlay"
+                            sx={{
+                              position: 'absolute',
+                              inset: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                              opacity: isCurrentSong ? 1 : 0,
+                              transition: 'opacity 0.2s',
+                            }}
+                          >
+                            {isLoadingThis ? (
+                              <CircularProgress size={14} sx={{ color: '#fff' }} />
+                            ) : isThisPlaying ? (
+                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                            ) : (
+                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                            )}
+                          </Box>
+                        </Box>
+
+                        {/* Track Info */}
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography
+                            sx={{
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                              color: isCurrentSong ? '#3B82F6' : '#fff',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {track.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: '0.75rem',
+                              color: 'rgba(255,255,255,0.5)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {track.language}
+                          </Typography>
+                        </Box>
+
+                        {/* Duration */}
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
+                          {track.duration}
+                        </Typography>
+                      </Paper>
+                    );
+                  })}
+                </Box>
+              ));
+            })()}
+          </ScrollableCarousel>
         </Container>
         <SectionDivider />
       </Box>

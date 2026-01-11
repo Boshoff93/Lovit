@@ -40,10 +40,23 @@ const VideoCard: React.FC<{
   onClick?: () => void;
   index: number;
   darkMode?: boolean;
-}> = ({ video, videoUrl, onClick, index, darkMode = false }) => {
+  isInView?: boolean;
+}> = ({ video, videoUrl, onClick, index, darkMode = false, isInView = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Auto-play when in view
+  useEffect(() => {
+    if (isInView && videoRef.current && videoUrl) {
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {});
+    } else if (!isInView && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isInView, videoUrl]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -56,12 +69,13 @@ const VideoCard: React.FC<{
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
-    setIsPlaying(false);
-    if (videoRef.current) {
+    // Don't stop playing if in view - keep auto-playing
+    if (!isInView && videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+      setIsPlaying(false);
     }
-  }, []);
+  }, [isInView]);
 
   return (
     <Box
@@ -273,15 +287,33 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
   // Take only first 3 videos for the centered display
   const displayVideos = videos.slice(0, 3);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
   const [hasOverflow, setHasOverflow] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [internalVideoUrls, setInternalVideoUrls] = useState<Record<string, string>>({});
+  const [isInView, setIsInView] = useState(false);
 
   // Use external video URLs if provided, otherwise use internal state
   const videoUrls = externalVideoUrls || internalVideoUrls;
+
+  // Intersection observer for auto-play when in view
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.3 } // Trigger when 30% visible
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   // Fetch all video URLs on mount (only if external URLs not provided)
   useEffect(() => {
@@ -352,6 +384,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
 
   return (
     <Box
+      ref={sectionRef}
       sx={{
         py: { xs: 8, md: 12 },
         position: 'relative',
@@ -455,8 +488,14 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
           )}
         </Box>
 
-        {/* Video Grid - Carousel on mobile, Grid on desktop */}
-        <Box sx={{ position: 'relative', maxWidth: '1000px', mx: { xs: -2, lg: 'auto' }, mb: { xs: 5, md: 6 }, overflow: 'visible' }}>
+        {/* Video Grid - Centered 3 cards */}
+        <Box sx={{
+          position: 'relative',
+          maxWidth: '900px',
+          mx: { xs: -2, sm: -3, md: 'auto' }, // Break out of container padding on mobile
+          mb: { xs: 5, md: 6 },
+          overflow: 'visible'
+        }}>
           {/* Left Arrow Overlay - only show when can scroll left */}
           {hasOverflow && canScrollLeft && !isLgUp && (
             <Box
@@ -515,36 +554,42 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
             </Box>
           )}
 
-          {/* Scrollable container on mobile/tablet, grid on desktop */}
+          {/* Centered grid container */}
           <Box
             ref={carouselRef}
             sx={{
-              // Horizontal scroll until lg breakpoint
-              display: { xs: 'flex', lg: 'grid' },
-              justifyContent: { xs: hasOverflow ? 'flex-start' : 'center', lg: 'initial' },
-              overflowX: { xs: 'auto', lg: 'visible' },
+              display: 'flex',
+              justifyContent: { xs: 'flex-start', md: 'center' },
+              overflowX: { xs: 'auto', md: 'visible' },
               overflowY: 'visible',
-              scrollSnapType: { xs: 'x mandatory', lg: 'none' },
+              // Add padding to prevent shadow clipping on mobile
+              py: { xs: 4, md: 2 },
+              my: { xs: -2, md: 0 },
+              scrollSnapType: { xs: 'x mandatory', md: 'none' },
               scrollbarWidth: 'none',
               '&::-webkit-scrollbar': { display: 'none' },
-              gap: { xs: 2, md: 2.5, lg: 4 },
-              py: 2,
-              px: 2,
-              // Desktop lg: grid layout
-              gridTemplateColumns: {
-                lg: 'repeat(3, 1fr)',
+              // Edge-to-edge scrolling on mobile with padding for first/last items
+              '&::before': {
+                content: '""',
+                flexShrink: 0,
+                width: { xs: '16px', md: 0 },
               },
+              '&::after': {
+                content: '""',
+                flexShrink: 0,
+                width: { xs: '16px', md: 0 },
+              },
+              gap: { xs: 2, md: 3 },
             }}
           >
             {displayVideos.map((video, index) => (
               <Box
                 key={video.id}
                 sx={{
-                  // Slightly bigger cards for top showcase
-                  width: { xs: '160px', sm: '180px', md: '200px', lg: 'auto' },
-                  minWidth: { xs: '160px', sm: '180px', md: '200px', lg: 'auto' },
-                  flex: { xs: '0 0 auto', lg: '1' },
-                  scrollSnapAlign: { xs: 'center', lg: 'none' },
+                  width: { xs: '200px', sm: '220px', md: '260px' },
+                  minWidth: { xs: '200px', sm: '220px', md: '260px' },
+                  flex: '0 0 auto',
+                  scrollSnapAlign: { xs: 'center', md: 'none' },
                 }}
               >
                 <VideoCard
@@ -552,6 +597,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
                   videoUrl={videoUrls[video.id]}
                   index={index}
                   darkMode={darkMode}
+                  isInView={isInView}
                   onClick={() => onVideoClick?.(video)}
                 />
               </Box>
