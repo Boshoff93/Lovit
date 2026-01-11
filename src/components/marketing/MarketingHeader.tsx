@@ -35,7 +35,6 @@ const navItems = [
   { label: 'AI Video Shorts', href: '/ai-video-shorts', activeColor: '#F5A623' }, // orange
   { label: 'Social Media', href: '/social-media', activeColor: '#22C55E' }, // green
   { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' }, // purple
-  { label: 'Blog', href: '/blog', activeColor: '#5DD3B3' }, // teal
 ];
 
 // Gruvi teal color for inactive nav items (matches logo gradient)
@@ -336,8 +335,9 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                     to="/my-music"
                     variant="contained"
                     sx={{
-                      // Same gradient as Gruvi logo text
-                      background: 'linear-gradient(135deg, #00D4AA 0%, #5AC8FA 100%)',
+                      // Blue-to-cyan gradient - same as Start Creating Free
+                      background: 'linear-gradient(135deg, #3B82F6 0%, #22D3EE 100%) !important',
+                      backgroundColor: 'transparent !important',
                       color: '#fff',
                       px: 3,
                       py: 1.25,
@@ -345,11 +345,12 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       fontWeight: 600,
                       textTransform: 'none',
                       fontSize: '0.95rem',
-                      boxShadow: '0 4px 16px rgba(0, 212, 170, 0.4)',
+                      boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4)',
                       transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #00C49A 0%, #4AB8E8 100%)',
-                        boxShadow: '0 6px 24px rgba(0, 212, 170, 0.5)',
+                        background: 'linear-gradient(135deg, #2563EB 0%, #06B6D4 100%) !important',
+                        backgroundColor: 'transparent !important',
+                        boxShadow: '0 6px 24px rgba(59, 130, 246, 0.5)',
                         transform: 'translateY(-2px)',
                       },
                     }}

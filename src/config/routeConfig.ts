@@ -2645,7 +2645,7 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     twitterDescription: 'Create AI content and distribute everywhere. The scheduler for creators.',
     breadcrumbName: 'Home',
     heroTagline: 'Start by Creating a Song',
-    heroHeading: 'The Music Promo Generator\nStart by Creating a Song',
+    heroHeading: 'The AI Music Promo Generator\nStart by Creating a Song',
     heroSubtext: 'Generate AI-powered promo videos and music, then instantly distribute to YouTube, TikTok, Instagram, Facebook & Spotify - no switching apps, no manual uploads.',
     examplePrompts: ['Upbeat coffee shop vibes', 'Epic gaming montage track', 'Chill lo-fi study beats', 'Hype workout anthem']
   },

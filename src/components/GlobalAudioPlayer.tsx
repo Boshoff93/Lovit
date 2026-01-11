@@ -5,6 +5,8 @@ import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CloseIcon from '@mui/icons-material/Close';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useLocation } from 'react-router-dom';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
@@ -19,6 +21,7 @@ const MARKETING_PATHS = [
   '/blog',
   '/genres',
   '/moods',
+  '/languages',
 ];
 
 // Genre to image mapping
@@ -145,6 +148,7 @@ const GlobalAudioPlayer: React.FC = () => {
   } = useAudioPlayer();
 
   const [localProgress, setLocalProgress] = useState<number | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Dark mode by default
 
   // Check if we're on a marketing page (no sidebar)
   const isMarketingPage = MARKETING_PATHS.some(path =>
@@ -171,6 +175,19 @@ const GlobalAudioPlayer: React.FC = () => {
   // Use local progress while dragging/seeking, otherwise use actual progress
   const displayProgress = localProgress !== null ? localProgress : progress;
 
+  // Theme colors based on mode
+  const theme = {
+    bg: isDarkMode ? '#1A1A1F' : '#fff',
+    border: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+    shadow: isDarkMode ? '0 -4px 24px rgba(0,0,0,0.4)' : '0 -4px 24px rgba(0,0,0,0.08)',
+    text: isDarkMode ? '#fff' : '#1D1D1F',
+    textSecondary: isDarkMode ? 'rgba(255,255,255,0.6)' : '#86868B',
+    sliderRail: isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.08)', // Lighter in dark mode
+    controlBg: isDarkMode ? 'rgba(59, 130, 246, 0.9)' : '#fff', // Blue play button in dark mode
+    controlBorder: isDarkMode ? 'rgba(59, 130, 246, 0.5)' : 'rgba(0,0,0,0.08)',
+    controlColor: isDarkMode ? '#fff' : '#007AFF', // White icon on blue bg in dark mode
+  };
+
   return (
     <Box
       sx={{
@@ -180,39 +197,36 @@ const GlobalAudioPlayer: React.FC = () => {
         left: isMarketingPage ? 0 : { xs: 0, md: 240 },
         right: 0,
         zIndex: 1300,
-        background: '#fff',
-        borderTop: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+        background: theme.bg,
+        borderTop: `1px solid ${theme.border}`,
+        boxShadow: theme.shadow,
         px: { xs: 2, sm: 3 },
         py: 1.5,
+        transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
       <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, width: '100%' }}>
-        {/* Song Icon with Genre Image and Equalizer */}
+        {/* Song Icon with Genre Image */}
         <Box
           sx={{
             width: { xs: 40, sm: 48 },
             height: { xs: 40, sm: 48 },
-            borderRadius: '12px',
-            background: '#1D1D1F',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            borderRadius: '10px',
             flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: isDarkMode
+              ? '0 0 12px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.3)'
+              : '0 0 12px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.08)',
             position: 'relative',
             overflow: 'hidden',
+            transition: 'all 0.3s ease',
           }}
         >
-          {/* Genre Background Image */}
+          {/* Genre Image - full coverage */}
           <Box
             component="img"
             src={getGenreImage(currentSong.genre || '')}
             alt={currentSong.genre}
             sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
@@ -221,21 +235,6 @@ const GlobalAudioPlayer: React.FC = () => {
               e.currentTarget.style.display = 'none';
             }}
           />
-          {/* Dark overlay for better equalizer visibility */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: 'rgba(0,0,0,0.4)',
-            }}
-          />
-          {/* Equalizer overlay */}
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            <AudioEqualizer isPlaying={isPlaying} size={20} color="#fff" />
-          </Box>
         </Box>
 
         {/* Song Info */}
@@ -244,41 +243,43 @@ const GlobalAudioPlayer: React.FC = () => {
             variant="body2"
             sx={{
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: theme.text,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              transition: 'color 0.3s ease',
             }}
           >
             {currentSong.songTitle}
           </Typography>
           <Typography
             variant="caption"
-            sx={{ color: '#86868B', fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+            sx={{ color: theme.textSecondary, fontSize: { xs: '0.7rem', sm: '0.75rem' }, transition: 'color 0.3s ease' }}
           >
             {currentSong.genre}
           </Typography>
         </Box>
 
         {/* Progress Slider - Full version for md+ screens */}
-        <Box 
-          sx={{ 
-            flex: 1, 
-            display: { xs: 'none', md: 'flex' }, 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            flex: 1,
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
             gap: 1.5,
             minWidth: 0,
           }}
         >
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              color: '#86868B', 
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.textSecondary,
               minWidth: 36,
               fontVariantNumeric: 'tabular-nums',
               textAlign: 'right',
               lineHeight: 1,
+              transition: 'color 0.3s ease',
             }}
           >
             {formatTime(displayProgress)}
@@ -299,7 +300,8 @@ const GlobalAudioPlayer: React.FC = () => {
                 },
                 '& .MuiSlider-rail': {
                   opacity: 1,
-                  backgroundColor: 'rgba(0,0,0,0.08)',
+                  backgroundColor: theme.sliderRail,
+                  transition: 'background-color 0.3s ease',
                 },
                 '& .MuiSlider-thumb': {
                   width: 16,
@@ -317,13 +319,14 @@ const GlobalAudioPlayer: React.FC = () => {
               }}
             />
           </Box>
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              color: '#86868B', 
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.textSecondary,
               minWidth: 36,
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1,
+              transition: 'color 0.3s ease',
             }}
           >
             {formatTime(duration)}
@@ -331,11 +334,11 @@ const GlobalAudioPlayer: React.FC = () => {
         </Box>
 
         {/* Compact Progress Slider - for small screens only */}
-        <Box 
-          sx={{ 
-            flex: 1, 
-            display: { xs: 'flex', md: 'none' }, 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            flex: 1,
+            display: { xs: 'flex', md: 'none' },
+            alignItems: 'center',
             gap: 0.5,
             minWidth: 0,
           }}
@@ -356,7 +359,8 @@ const GlobalAudioPlayer: React.FC = () => {
               },
               '& .MuiSlider-rail': {
                 opacity: 1,
-                backgroundColor: 'rgba(0,0,0,0.08)',
+                backgroundColor: theme.sliderRail,
+                transition: 'background-color 0.3s ease',
               },
               '& .MuiSlider-thumb': {
                 width: 12,
@@ -373,14 +377,15 @@ const GlobalAudioPlayer: React.FC = () => {
               },
             }}
           />
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              color: '#86868B', 
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.textSecondary,
               fontSize: '0.65rem',
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1,
               flexShrink: 0,
+              transition: 'color 0.3s ease',
             }}
           >
             {formatTime(displayProgress)}
@@ -392,8 +397,9 @@ const GlobalAudioPlayer: React.FC = () => {
           <IconButton
             onClick={previousSong}
             size="small"
-            sx={{ 
-              color: '#1D1D1F',
+            sx={{
+              color: theme.text,
+              transition: 'color 0.3s ease',
               '&:hover': { color: '#007AFF' },
             }}
           >
@@ -404,14 +410,14 @@ const GlobalAudioPlayer: React.FC = () => {
             sx={{
               width: 44,
               height: 44,
-              background: '#fff',
-              color: '#007AFF',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              background: theme.controlBg,
+              color: theme.controlColor,
+              border: `1px solid ${theme.controlBorder}`,
+              boxShadow: isDarkMode ? '0 2px 8px rgba(59, 130, 246, 0.4)' : '0 2px 8px rgba(0,0,0,0.1)',
               transition: 'all 0.2s ease',
               '&:hover': {
-                background: '#fff',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                background: isDarkMode ? 'rgba(59, 130, 246, 1)' : '#fff',
+                boxShadow: isDarkMode ? '0 4px 12px rgba(59, 130, 246, 0.5)' : '0 4px 12px rgba(0,0,0,0.15)',
                 transform: 'scale(1.05)',
               },
             }}
@@ -421,19 +427,35 @@ const GlobalAudioPlayer: React.FC = () => {
           <IconButton
             onClick={nextSong}
             size="small"
-            sx={{ 
-              color: '#1D1D1F',
+            sx={{
+              color: theme.text,
+              transition: 'color 0.3s ease',
               '&:hover': { color: '#007AFF' },
             }}
           >
             <SkipNextIcon />
           </IconButton>
+
+          {/* Dark/Light mode toggle */}
+          <IconButton
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            size="small"
+            sx={{
+              color: theme.textSecondary,
+              ml: 0.5,
+              transition: 'color 0.3s ease',
+              '&:hover': { color: '#007AFF' },
+            }}
+          >
+            {isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+          </IconButton>
+
           <IconButton
             onClick={closePlayer}
             size="small"
-            sx={{ 
-              color: '#86868B', 
-              ml: 1,
+            sx={{
+              color: theme.textSecondary,
+              transition: 'color 0.3s ease',
               '&:hover': { color: '#FF3B30' },
             }}
           >

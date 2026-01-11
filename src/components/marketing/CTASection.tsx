@@ -95,7 +95,7 @@ const CTASection: React.FC<CTASectionProps> = ({
         };
       }
       return {
-        background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+        background: 'linear-gradient(135deg, #3B82F6 0%, #22D3EE 100%) !important',
         color: '#fff',
         boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
         hoverShadow: '0 8px 32px rgba(59, 130, 246, 0.5)',

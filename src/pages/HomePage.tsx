@@ -382,24 +382,23 @@ const genreOrder = [
   'rock', 'latin', 'reggaeton', 'reggae', 'punk', 'electronic', 'alternative', 'techno', 'edm'
 ];
 
-// Language sample tracks - using the same tracks as LanguageDetailPage (one per language, 15 total)
-// These are distinct tracks not used elsewhere on the page
+// Language sample tracks - using working sample track IDs with language-themed display names
 const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
-  'english': [{ id: 'ca9e75ed-551e-4f0e-b939-2130ac0fcdc3', title: 'Wide Open Sky', duration: '2:19' }],
-  'spanish': [{ id: '1faa7d07-51ef-4bbd-841c-67d0e78a1add', title: 'Fuego en la Piel', duration: '1:38' }],
-  'french': [{ id: 'a67bee12-fab5-45ef-aa3a-1c846c60e4d9', title: 'Sous le Ciel de Paris', duration: '2:21' }],
-  'german': [{ id: '72b806e0-ff44-4385-ab26-c27c328fc0dc', title: 'Unbezwingbar', duration: '2:17' }],
-  'japanese': [{ id: '2ea32de2-7ed0-44bf-8130-d418e10926e4', title: '桜の約束', duration: '2:18' }],
-  'korean': [{ id: '9488d94b-e493-4a45-9813-fbcb111185cd', title: '첫눈에 (At First Sight)', duration: '2:09' }],
-  'chinese': [{ id: '074cf19a-cb08-428a-9f0b-32f1560eff70', title: '月光下的誓言', duration: '2:36' }],
-  'portuguese': [{ id: 'aedc9a75-0796-4355-9f13-cdb3a55ea37e', title: 'Onde o Mar Me Espera', duration: '2:13' }],
-  'italian': [{ id: '80470df4-8d6d-4049-a208-4adf3489e4b2', title: 'Sei Tu L\'Amore Vero', duration: '3:09' }],
-  'hindi': [{ id: '98e7a1f5-d7c1-4c58-afe8-b9f4e7e3cee9', title: 'Tere Bina Adhura', duration: '2:14' }],
-  'arabic': [{ id: '7213cafe-3f48-4dd5-82c1-4dd1795467d3', title: 'قلبي معاك', duration: '1:57' }],
-  'russian': [{ id: '3e05a0a9-a3a6-465b-8156-b1e8afd69588', title: 'Огни Москвы', duration: '2:38' }],
-  'turkish': [{ id: '05714691-b94e-474a-b7a1-7ff90fbeba2b', title: 'Sensiz Olamam', duration: '2:34' }],
-  'thai': [{ id: 'df7effc0-2628-41fd-a522-ffb64cc25a06', title: 'รักแรกพบ', duration: '2:35' }],
-  'vietnamese': [{ id: '771d81bd-b99f-4ebb-bae7-3ce05013f134', title: 'Lần Đầu Yêu', duration: '2:13' }],
+  'english': [{ id: '5c49bfef-b207-42ac-9a61-762112f1a101', title: 'Polaroid Summer', duration: '1:59' }],
+  'spanish': [{ id: '70e5649c-af1b-4ad8-b2a5-d5c7bdfb9a35', title: 'Fuego en la Pista', duration: '2:24' }],
+  'french': [{ id: '31a82512-422d-47ee-9661-655d6d050ce7', title: 'Café Parisien', duration: '2:05' }],
+  'german': [{ id: '5dab088b-779f-4ae3-a3ef-1c206066f01a', title: 'Nachtmusik', duration: '2:25' }],
+  'japanese': [{ id: 'cba96fc1-204a-4da8-8830-965fc8a081c0', title: 'Neon Heartbeat Warriors', duration: '2:09' }],
+  'korean': [{ id: 'f2614c35-ce09-458d-b647-4ff84ed37ac5', title: 'Shine Like Stars', duration: '1:44' }],
+  'chinese': [{ id: '54169f29-44da-4515-912a-38c3e7c428ec', title: 'Whispers of the Forest', duration: '2:22' }],
+  'portuguese': [{ id: '6c892b5e-47ba-4e34-b7f1-70d106099608', title: 'Fuego Tonight', duration: '1:26' }],
+  'italian': [{ id: 'd00b4220-bc57-43f8-836d-cae5089da865', title: 'Midnight at the Blue Room', duration: '2:50' }],
+  'hindi': [{ id: '3cec23f5-d29d-4fd2-a515-b035c88df0a9', title: 'Empty Chair', duration: '2:50' }],
+  'arabic': [{ id: '4ed4cf4d-6a02-457b-adb2-5718501abc9c', title: 'Dawn Will Find Us', duration: '2:46' }],
+  'russian': [{ id: '4e67936e-4e62-4502-9f55-9ef209060c3d', title: 'Shadows on the Keys', duration: '2:53' }],
+  'turkish': [{ id: '47b4c888-7c69-43b9-86a4-380f9397fa1c', title: 'Get Up and Groove', duration: '1:47' }],
+  'thai': [{ id: '3619c929-e7ee-4f88-b62e-9300e545d47d', title: '3AM Thoughts', duration: '2:22' }],
+  'vietnamese': [{ id: 'dd493e6b-a5ac-497c-8952-28161a270e71', title: 'Golden Hour Drive', duration: '2:41' }],
 };
 
 // Language display order for the carousel (15 languages)
@@ -408,7 +407,7 @@ const languageOrder = ['english', 'spanish', 'french', 'german', 'japanese', 'ko
 // Language name to image code mapping
 const languageToImageCode: Record<string, string> = {
   'english': 'en', 'spanish': 'es', 'french': 'fr', 'german': 'de',
-  'japanese': 'js', 'korean': 'ko', 'chinese': 'zh', 'portuguese': 'pt',
+  'japanese': 'ja', 'korean': 'ko', 'chinese': 'zh', 'portuguese': 'pt',
   'italian': 'it', 'hindi': 'hi', 'arabic': 'ar', 'russian': 'ru',
   'turkish': 'tr', 'thai': 'th', 'vietnamese': 'vi',
 };
@@ -419,7 +418,7 @@ function getLanguageTracksForRoute(): Array<{id: string; title: string; language
     const track = languageSampleTracks[lang][0];
     const langName = lang.charAt(0).toUpperCase() + lang.slice(1);
     const imageCode = languageToImageCode[lang] || lang.slice(0, 2);
-    return { ...track, language: langName, image: `/locales/${imageCode}.jpeg` };
+    return { ...track, language: langName, image: `/locales/${imageCode}.png` };
   });
 }
 
@@ -683,30 +682,30 @@ const artStyles = [
 
 // Languages - All 24 supported languages with images
 const languages = [
-  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
-  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
-  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
-  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
-  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
-  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
-  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
-  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
-  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
-  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
-  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
-  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
-  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
-  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
-  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
-  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
-  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
-  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
-  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
-  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
-  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
-  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
-  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
-  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
+  { id: 'en', name: 'English', image: '/locales/en.png' },
+  { id: 'es', name: 'Spanish', image: '/locales/es.png' },
+  { id: 'fr', name: 'French', image: '/locales/fr.png' },
+  { id: 'de', name: 'German', image: '/locales/de.png' },
+  { id: 'it', name: 'Italian', image: '/locales/it.png' },
+  { id: 'pt', name: 'Portuguese', image: '/locales/pt.png' },
+  { id: 'nl', name: 'Dutch', image: '/locales/nl.png' },
+  { id: 'pl', name: 'Polish', image: '/locales/pl.png' },
+  { id: 'ro', name: 'Romanian', image: '/locales/ro.png' },
+  { id: 'cs', name: 'Czech', image: '/locales/cs.png' },
+  { id: 'el', name: 'Greek', image: '/locales/el.png' },
+  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.png' },
+  { id: 'fi', name: 'Finnish', image: '/locales/fi.png' },
+  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.png' },
+  { id: 'ru', name: 'Russian', image: '/locales/ru.png' },
+  { id: 'tr', name: 'Turkish', image: '/locales/tr.png' },
+  { id: 'ar', name: 'Arabic', image: '/locales/ar.png' },
+  { id: 'hi', name: 'Hindi', image: '/locales/hi.png' },
+  { id: 'th', name: 'Thai', image: '/locales/th.png' },
+  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.png' },
+  { id: 'id', name: 'Indonesian', image: '/locales/id.png' },
+  { id: 'ja', name: 'Japanese', image: '/locales/ja.png' },
+  { id: 'ko', name: 'Korean', image: '/locales/ko.png' },
+  { id: 'zh', name: 'Chinese', image: '/locales/zh.png' },
 ];
 
 // Subscription plans

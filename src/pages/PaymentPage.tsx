@@ -545,7 +545,7 @@ const PaymentPage: React.FC = () => {
         title="Gruvi Pricing & Plans | AI Music Promo Generator | Create & Publish Everywhere"
         description="Choose the perfect Gruvi plan. Starter $29/mo (5,000 tokens), Scale $69/mo (20,000 tokens), or Beast $149/mo (50,000 tokens). Create AI music videos and publish to all social platforms. Save 25% with yearly billing."
         keywords="Gruvi pricing, AI music promo generator, music video generator pricing, subscription plans, AI content creator, viral video maker, token pricing, Gruvi Scale, Gruvi Beast, commercial license"
-        ogTitle="Gruvi AI: The Music Promo Generator | Pricing & Plans"
+        ogTitle="Gruvi AI: The AI Music Promo Generator | Pricing & Plans"
         ogDescription="Create viral music promos with AI. Publish to YouTube, TikTok, Instagram & more. Plans from $29/mo with yearly savings."
         ogType="website"
         ogUrl="https://gruvimusic.com/payment"

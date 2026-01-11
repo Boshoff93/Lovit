@@ -77,32 +77,13 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({ childr
     }
   }, []);
 
-  // Play next song - using refs to avoid stale closure
-  const playNextSong = useCallback(() => {
-    const current = currentSongRef.current;
-    const allSongs = songsRef.current;
-    
-    if (!current || allSongs.length === 0) return;
-    
-    const completedSongs = allSongs.filter(s => s.status === 'completed' && s.audioUrl);
-    const currentIndex = completedSongs.findIndex(s => s.songId === current.songId);
-    
-    if (currentIndex >= 0 && currentIndex < completedSongs.length - 1) {
-      const next = completedSongs[currentIndex + 1];
-      playSongInternal(next);
-    } else if (completedSongs.length > 0) {
-      // Loop back to first song
-      playSongInternal(completedSongs[0]);
-    }
-  }, []);
-
-  // Internal play function
+  // Internal play function - defined before playNextSong so it can be used
   const playSongInternal = useCallback((song: Song) => {
     if (!audioRef.current || !song.audioUrl) return;
-    
+
     const audio = audioRef.current;
     const current = currentSongRef.current;
-    
+
     if (current?.songId === song.songId) {
       // Same song - toggle play/pause
       if (audio.paused) {
@@ -121,6 +102,25 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({ childr
       safePlay(audio);
     }
   }, [safePlay]);
+
+  // Play next song - using refs to avoid stale closure
+  const playNextSong = useCallback(() => {
+    const current = currentSongRef.current;
+    const allSongs = songsRef.current;
+
+    if (!current || allSongs.length === 0) return;
+
+    const completedSongs = allSongs.filter(s => s.status === 'completed' && s.audioUrl);
+    const currentIndex = completedSongs.findIndex(s => s.songId === current.songId);
+
+    if (currentIndex >= 0 && currentIndex < completedSongs.length - 1) {
+      const next = completedSongs[currentIndex + 1];
+      playSongInternal(next);
+    } else if (completedSongs.length > 0) {
+      // Loop back to first song
+      playSongInternal(completedSongs[0]);
+    }
+  }, [playSongInternal]);
 
   // Initialize audio element
   useEffect(() => {

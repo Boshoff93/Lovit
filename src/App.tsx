@@ -54,7 +54,7 @@ import AIMusicPage from './pages/AIMusicPage';
 import AIMusicVideosPage from './pages/AIMusicVideosPage';
 import AIVideoShortsPage from './pages/AIVideoShortsPage';
 import SocialMediaPage from './pages/SocialMediaPage';
-import BlogPage from './pages/BlogPage';
+// import BlogPage from './pages/BlogPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -246,7 +246,6 @@ function App() {
         <Route path="/ai-music-videos" element={<AIMusicVideosPage />} />
         <Route path="/ai-video-shorts" element={<AIVideoShortsPage />} />
         <Route path="/social-media" element={<SocialMediaPage />} />
-        <Route path="/blog" element={<BlogPage />} />
 
         {/* Social platform detail pages - must be before SEO routes */}
         <Route path="/platforms/:platformId" element={<SocialDetailPage />} />

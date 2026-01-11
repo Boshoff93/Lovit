@@ -122,7 +122,7 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
   };
 
   return (
-    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+    <Box sx={{ position: 'relative', overflow: 'hidden', mx: { xs: -2, sm: 0 } }}>
       {showLeftArrow && (
         <>
           <Box
@@ -131,8 +131,8 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               left: -1,
               top: -8,
               bottom: -8,
-              width: 64,
-              background: 'linear-gradient(to right, #fff 0%, #fff 20%, transparent 100%)',
+              width: { xs: 48, sm: 64 },
+              background: 'linear-gradient(to right, rgba(13,13,15,0.4) 0%, rgba(26,26,46,0.2) 50%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -141,18 +141,19 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             onClick={() => scroll('left')}
             sx={{
               position: 'absolute',
-              left: 8,
+              left: { xs: 4, sm: 8 },
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-              width: 40,
-              height: 40,
-              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+              width: { xs: 36, sm: 40 },
+              height: { xs: 36, sm: 40 },
+              '&:hover': { background: 'rgba(255,255,255,0.15)', transform: 'translateY(-50%) scale(1.05)' },
             }}
           >
-            <ChevronLeftIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronLeftIcon sx={{ color: '#fff' }} />
           </IconButton>
         </>
       )}
@@ -164,8 +165,8 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               right: -1,
               top: -8,
               bottom: -8,
-              width: 64,
-              background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
+              width: { xs: 48, sm: 64 },
+              background: 'linear-gradient(to left, rgba(13,13,15,0.4) 0%, rgba(26,26,46,0.2) 50%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -174,18 +175,19 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             onClick={() => scroll('right')}
             sx={{
               position: 'absolute',
-              right: 8,
+              right: { xs: 4, sm: 8 },
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-              width: 40,
-              height: 40,
-              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+              width: { xs: 36, sm: 40 },
+              height: { xs: 36, sm: 40 },
+              '&:hover': { background: 'rgba(255,255,255,0.15)', transform: 'translateY(-50%) scale(1.05)' },
             }}
           >
-            <ChevronRightIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronRightIcon sx={{ color: '#fff' }} />
           </IconButton>
         </>
       )}
@@ -197,7 +199,7 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
           gap: 2,
           overflowX: 'auto',
           py: 1,
-          px: 0.5,
+          px: { xs: 2, sm: 0.5 },
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
         }}
@@ -211,32 +213,32 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
 // User ID for seed songs (pre-generated sample tracks)
 const SEED_SONGS_USER_ID = 'b1b35a41-efb4-4f79-ad61-13151294940d';
 
-// Language data with detailed information - using image icons
+// Language data with detailed information - using PNG flag images
 export const languageData = [
-  { id: 'english', name: 'English', image: '/locales/en.jpeg', code: 'en', description: 'Create music in English', fullDescription: 'English is the most widely used language in global music. Create songs with native-quality English lyrics and vocals. Perfect for international audiences, pop, rock, hip-hop, and all mainstream genres. Our AI understands English idioms, slang, and poetic expressions.' },
-  { id: 'spanish', name: 'Spanish', image: '/locales/es.jpeg', code: 'es', description: 'Create music in Spanish', fullDescription: 'Spanish is the second most spoken native language worldwide. Create authentic Latin music, reggaeton, flamenco, and Spanish pop. Our AI captures the passion and rhythm of Spanish-language music with proper pronunciation and cultural nuance.' },
-  { id: 'french', name: 'French', image: '/locales/fr.jpeg', code: 'fr', description: 'Create music in French', fullDescription: 'French brings elegance and romance to music. Create chanson française, French pop, or international hits with French lyrics. Our AI delivers authentic French pronunciation with the sophisticated charm the language is known for.' },
-  { id: 'german', name: 'German', image: '/locales/de.jpeg', code: 'de', description: 'Create music in German', fullDescription: 'German offers powerful expression for music. Create Schlager, German rap, rock, or electronic music with German lyrics. Perfect for the Central European market with authentic pronunciation and cultural relevance.' },
-  { id: 'italian', name: 'Italian', image: '/locales/it.jpeg', code: 'it', description: 'Create music in Italian', fullDescription: 'Italian is the language of opera and beautiful melodies. Create Italian pop, love songs, or classical pieces with authentic Italian vocals. Our AI captures the musicality inherent in the Italian language.' },
-  { id: 'portuguese', name: 'Portuguese', image: '/locales/pt.jpeg', code: 'pt', description: 'Create music in Portuguese', fullDescription: 'Portuguese brings the rhythm of Brazil and Portugal to your music. Create bossa nova, Brazilian funk, sertanejo, or Portuguese fado. Our AI delivers both Brazilian and European Portuguese styles.' },
-  { id: 'dutch', name: 'Dutch', image: '/locales/nl.jpeg', code: 'nl', description: 'Create music in Dutch', fullDescription: 'Dutch music has a unique character in European pop. Create Dutch-language songs with authentic pronunciation for the Netherlands and Belgium market.' },
-  { id: 'polish', name: 'Polish', image: '/locales/pl.jpeg', code: 'pl', description: 'Create music in Polish', fullDescription: 'Polish offers rich expression for music. Create Polish pop, disco polo, or contemporary tracks with authentic Polish vocals for the Polish market.' },
-  { id: 'romanian', name: 'Romanian', image: '/locales/ro.jpeg', code: 'ro', description: 'Create music in Romanian', fullDescription: 'Romanian combines Latin roots with Eastern European flavor. Create Romanian pop, manele, or contemporary tracks with authentic vocals.' },
-  { id: 'czech', name: 'Czech', image: '/locales/cs.jpeg', code: 'cs', description: 'Create music in Czech', fullDescription: 'Czech brings Central European charm to music. Create Czech-language songs with proper pronunciation for the Czech market.' },
-  { id: 'greek', name: 'Greek', image: '/locales/el.jpeg', code: 'el', description: 'Create music in Greek', fullDescription: 'Greek has ancient musical heritage. Create Greek pop, laika, or modern tracks with authentic Greek pronunciation and Mediterranean feel.' },
-  { id: 'bulgarian', name: 'Bulgarian', image: '/locales/bg.jpeg', code: 'bg', description: 'Create music in Bulgarian', fullDescription: 'Bulgarian offers unique musical traditions and vocal styles. Create Bulgarian pop or traditional music with authentic pronunciation.' },
-  { id: 'finnish', name: 'Finnish', image: '/locales/fi.jpeg', code: 'fi', description: 'Create music in Finnish', fullDescription: 'Finnish offers unique sonic qualities for music. Create Finnish pop, metal, or contemporary tracks with authentic Nordic vocals.' },
-  { id: 'ukrainian', name: 'Ukrainian', image: '/locales/uk.jpeg', code: 'uk', description: 'Create music in Ukrainian', fullDescription: 'Ukrainian music has beautiful melodic traditions. Create Ukrainian pop, folk-influenced tracks, or modern songs with authentic Ukrainian vocals.' },
-  { id: 'russian', name: 'Russian', image: '/locales/ru.jpeg', code: 'ru', description: 'Create music in Russian', fullDescription: 'Russian is spoken across Eastern Europe and Central Asia. Create Russian pop, rap, or traditional music with authentic Cyrillic lyrics and native pronunciation.' },
-  { id: 'turkish', name: 'Turkish', image: '/locales/tr.jpeg', code: 'tr', description: 'Create music in Turkish', fullDescription: 'Turkish bridges East and West in music. Create Turkish pop, arabesque, or modern tracks with authentic Turkish vocals and cultural nuance.' },
-  { id: 'arabic', name: 'Arabic', image: '/locales/ar.jpeg', code: 'ar', description: 'Create music in Arabic', fullDescription: 'Arabic is rich with musical tradition. Create Arabic pop, khaleeji, Egyptian, or Levantine style music with authentic Arabic vocals and pronunciation.' },
-  { id: 'hindi', name: 'Hindi', image: '/locales/hi.jpeg', code: 'hi', description: 'Create music in Hindi', fullDescription: 'Hindi dominates Bollywood and Indian pop music. Create Hindi songs, Bollywood-style tracks, or contemporary Indian music with authentic Hindi vocals.' },
-  { id: 'thai', name: 'Thai', image: '/locales/th.jpeg', code: 'th', description: 'Create music in Thai', fullDescription: 'Thai music has distinctive character. Create Thai pop, luk thung, or modern tracks with authentic Thai vocals and tonal accuracy.' },
-  { id: 'vietnamese', name: 'Vietnamese', image: '/locales/vi.jpeg', code: 'vi', description: 'Create music in Vietnamese', fullDescription: 'Vietnamese offers melodic tonal qualities. Create V-Pop or Vietnamese traditional-influenced music with authentic pronunciation.' },
-  { id: 'indonesian', name: 'Indonesian', image: '/locales/id.jpeg', code: 'id', description: 'Create music in Indonesian', fullDescription: 'Indonesian unites Southeast Asia\'s largest nation. Create Indonesian pop, dangdut, or contemporary tracks with authentic Indonesian vocals.' },
-  { id: 'japanese', name: 'Japanese', image: '/locales/js.jpeg', code: 'ja', description: 'Create music in Japanese', fullDescription: 'Japanese is essential for J-Pop and anime music. Create Japanese songs with authentic pronunciation, perfect for J-Pop, rock, or anime openings.' },
-  { id: 'korean', name: 'Korean', image: '/locales/ko.jpeg', code: 'ko', description: 'Create music in Korean', fullDescription: 'Korean powers the global K-Pop phenomenon. Create K-Pop style tracks with authentic Korean pronunciation, perfect for the polished K-Pop sound.' },
-  { id: 'chinese', name: 'Chinese', image: '/locales/zh.jpeg', code: 'zh', description: 'Create music in Chinese', fullDescription: 'Chinese (Mandarin) opens the world\'s largest music market. Create C-Pop, Chinese ballads, or contemporary tracks with authentic tonal pronunciation.' },
+  { id: 'english', name: 'English', image: '/locales/en.png', code: 'en', description: 'Create music in English', fullDescription: 'English is the most widely used language in global music. Create songs with native-quality English lyrics and vocals. Perfect for international audiences, pop, rock, hip-hop, and all mainstream genres. Our AI understands English idioms, slang, and poetic expressions.' },
+  { id: 'spanish', name: 'Spanish', image: '/locales/es.png', code: 'es', description: 'Create music in Spanish', fullDescription: 'Spanish is the second most spoken native language worldwide. Create authentic Latin music, reggaeton, flamenco, and Spanish pop. Our AI captures the passion and rhythm of Spanish-language music with proper pronunciation and cultural nuance.' },
+  { id: 'french', name: 'French', image: '/locales/fr.png', code: 'fr', description: 'Create music in French', fullDescription: 'French brings elegance and romance to music. Create chanson française, French pop, or international hits with French lyrics. Our AI delivers authentic French pronunciation with the sophisticated charm the language is known for.' },
+  { id: 'german', name: 'German', image: '/locales/de.png', code: 'de', description: 'Create music in German', fullDescription: 'German offers powerful expression for music. Create Schlager, German rap, rock, or electronic music with German lyrics. Perfect for the Central European market with authentic pronunciation and cultural relevance.' },
+  { id: 'italian', name: 'Italian', image: '/locales/it.png', code: 'it', description: 'Create music in Italian', fullDescription: 'Italian is the language of opera and beautiful melodies. Create Italian pop, love songs, or classical pieces with authentic Italian vocals. Our AI captures the musicality inherent in the Italian language.' },
+  { id: 'portuguese', name: 'Portuguese', image: '/locales/pt.png', code: 'pt', description: 'Create music in Portuguese', fullDescription: 'Portuguese brings the rhythm of Brazil and Portugal to your music. Create bossa nova, Brazilian funk, sertanejo, or Portuguese fado. Our AI delivers both Brazilian and European Portuguese styles.' },
+  { id: 'dutch', name: 'Dutch', image: '/locales/nl.png', code: 'nl', description: 'Create music in Dutch', fullDescription: 'Dutch music has a unique character in European pop. Create Dutch-language songs with authentic pronunciation for the Netherlands and Belgium market.' },
+  { id: 'polish', name: 'Polish', image: '/locales/pl.png', code: 'pl', description: 'Create music in Polish', fullDescription: 'Polish offers rich expression for music. Create Polish pop, disco polo, or contemporary tracks with authentic Polish vocals for the Polish market.' },
+  { id: 'romanian', name: 'Romanian', image: '/locales/ro.png', code: 'ro', description: 'Create music in Romanian', fullDescription: 'Romanian combines Latin roots with Eastern European flavor. Create Romanian pop, manele, or contemporary tracks with authentic vocals.' },
+  { id: 'czech', name: 'Czech', image: '/locales/cs.png', code: 'cs', description: 'Create music in Czech', fullDescription: 'Czech brings Central European charm to music. Create Czech-language songs with proper pronunciation for the Czech market.' },
+  { id: 'greek', name: 'Greek', image: '/locales/el.png', code: 'el', description: 'Create music in Greek', fullDescription: 'Greek has ancient musical heritage. Create Greek pop, laika, or modern tracks with authentic Greek pronunciation and Mediterranean feel.' },
+  { id: 'bulgarian', name: 'Bulgarian', image: '/locales/bg.png', code: 'bg', description: 'Create music in Bulgarian', fullDescription: 'Bulgarian offers unique musical traditions and vocal styles. Create Bulgarian pop or traditional music with authentic pronunciation.' },
+  { id: 'finnish', name: 'Finnish', image: '/locales/fi.png', code: 'fi', description: 'Create music in Finnish', fullDescription: 'Finnish offers unique sonic qualities for music. Create Finnish pop, metal, or contemporary tracks with authentic Nordic vocals.' },
+  { id: 'ukrainian', name: 'Ukrainian', image: '/locales/uk.png', code: 'uk', description: 'Create music in Ukrainian', fullDescription: 'Ukrainian music has beautiful melodic traditions. Create Ukrainian pop, folk-influenced tracks, or modern songs with authentic Ukrainian vocals.' },
+  { id: 'russian', name: 'Russian', image: '/locales/ru.png', code: 'ru', description: 'Create music in Russian', fullDescription: 'Russian is spoken across Eastern Europe and Central Asia. Create Russian pop, rap, or traditional music with authentic Cyrillic lyrics and native pronunciation.' },
+  { id: 'turkish', name: 'Turkish', image: '/locales/tr.png', code: 'tr', description: 'Create music in Turkish', fullDescription: 'Turkish bridges East and West in music. Create Turkish pop, arabesque, or modern tracks with authentic Turkish vocals and cultural nuance.' },
+  { id: 'arabic', name: 'Arabic', image: '/locales/ar.png', code: 'ar', description: 'Create music in Arabic', fullDescription: 'Arabic is rich with musical tradition. Create Arabic pop, khaleeji, Egyptian, or Levantine style music with authentic Arabic vocals and pronunciation.' },
+  { id: 'hindi', name: 'Hindi', image: '/locales/hi.png', code: 'hi', description: 'Create music in Hindi', fullDescription: 'Hindi dominates Bollywood and Indian pop music. Create Hindi songs, Bollywood-style tracks, or contemporary Indian music with authentic Hindi vocals.' },
+  { id: 'thai', name: 'Thai', image: '/locales/th.png', code: 'th', description: 'Create music in Thai', fullDescription: 'Thai music has distinctive character. Create Thai pop, luk thung, or modern tracks with authentic Thai vocals and tonal accuracy.' },
+  { id: 'vietnamese', name: 'Vietnamese', image: '/locales/vi.png', code: 'vi', description: 'Create music in Vietnamese', fullDescription: 'Vietnamese offers melodic tonal qualities. Create V-Pop or Vietnamese traditional-influenced music with authentic pronunciation.' },
+  { id: 'indonesian', name: 'Indonesian', image: '/locales/id.png', code: 'id', description: 'Create music in Indonesian', fullDescription: 'Indonesian unites Southeast Asia\'s largest nation. Create Indonesian pop, dangdut, or contemporary tracks with authentic Indonesian vocals.' },
+  { id: 'japanese', name: 'Japanese', image: '/locales/ja.png', code: 'ja', description: 'Create music in Japanese', fullDescription: 'Japanese is essential for J-Pop and anime music. Create Japanese songs with authentic pronunciation, perfect for J-Pop, rock, or anime openings.' },
+  { id: 'korean', name: 'Korean', image: '/locales/ko.png', code: 'ko', description: 'Create music in Korean', fullDescription: 'Korean powers the global K-Pop phenomenon. Create K-Pop style tracks with authentic Korean pronunciation, perfect for the polished K-Pop sound.' },
+  { id: 'chinese', name: 'Chinese', image: '/locales/zh.png', code: 'zh', description: 'Create music in Chinese', fullDescription: 'Chinese (Mandarin) opens the world\'s largest music market. Create C-Pop, Chinese ballads, or contemporary tracks with authentic tonal pronunciation.' },
 ];
 
 // Sample tracks for each language with song IDs for playback
@@ -469,13 +471,21 @@ const LanguageDetailPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: '#fff',
+        background: 'linear-gradient(180deg, #0D0D0F 0%, #1a1a2e 50%, #0D0D0F 100%)',
         position: 'relative',
         // Add bottom padding when audio player is visible
         pb: hasActivePlayer ? 12 : 0,
+        // Wind wave animation keyframes
+        '@keyframes windWave': {
+          '0%': { transform: 'rotate(-2deg) skewX(0deg)' },
+          '25%': { transform: 'rotate(1deg) skewX(1deg)' },
+          '50%': { transform: 'rotate(2deg) skewX(2deg)' },
+          '75%': { transform: 'rotate(0deg) skewX(1deg)' },
+          '100%': { transform: 'rotate(-2deg) skewX(0deg)' },
+        },
       }}
     >
-      {/* Background gradient */}
+      {/* Background gradient orbs */}
       <Box
         sx={{
           position: 'fixed',
@@ -483,7 +493,7 @@ const LanguageDetailPage: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(ellipse at top, rgba(0, 122, 255, 0.05) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at top, rgba(90, 200, 250, 0.08) 0%, transparent 50%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
@@ -517,23 +527,24 @@ const LanguageDetailPage: React.FC = () => {
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: 'rgba(255,255,255,0.7)',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255,255,255,0.1)',
+              color: '#fff',
             }
           }}
         >
-          Back to Home
+          Back
         </Button>
 
         {/* Hero Section */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          {/* Language Image */}
+          {/* Language Image with glassy effect and wave animation */}
           <Box
             sx={{
               display: 'inline-flex',
@@ -541,10 +552,12 @@ const LanguageDetailPage: React.FC = () => {
               justifyContent: 'center',
               width: 140,
               height: 140,
-              borderRadius: '32px',
-              overflow: 'hidden',
-              border: '3px solid rgba(0,122,255,0.3)',
-              boxShadow: '0 20px 60px rgba(0,122,255,0.15), 0 8px 24px rgba(0,0,0,0.1)',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 60px rgba(90, 200, 250, 0.2)',
               mb: 4,
             }}
           >
@@ -553,9 +566,13 @@ const LanguageDetailPage: React.FC = () => {
               src={currentLanguage.image}
               alt={currentLanguage.name}
               sx={{
-                width: '100%',
-                height: '100%',
+                width: 90,
+                height: 90,
                 objectFit: 'cover',
+                borderRadius: '50%',
+                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                transformOrigin: 'left center',
+                animation: 'windWave 2.5s ease-in-out infinite',
               }}
             />
           </Box>
@@ -566,7 +583,7 @@ const LanguageDetailPage: React.FC = () => {
             sx={{
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 2,
             }}
           >
@@ -577,7 +594,7 @@ const LanguageDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.1rem',
-              color: '#1D1D1F',
+              color: 'rgba(255,255,255,0.7)',
               mb: 4,
               lineHeight: 1.8,
               maxWidth: 700,
@@ -623,7 +640,7 @@ const LanguageDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.75rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 3,
               textAlign: 'center',
             }}
@@ -642,17 +659,17 @@ const LanguageDetailPage: React.FC = () => {
                 sx={{
                   p: 3,
                   borderRadius: '20px',
-                  background: 'rgba(255,255,255,0.7)',
+                  background: 'rgba(255,255,255,0.05)',
                   backdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                   textAlign: 'center',
                 }}
               >
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                <Typography sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                   {feature.title}
                 </Typography>
-                <Typography sx={{ color: '#86868B', fontSize: '0.95rem' }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
                   {feature.desc}
                 </Typography>
               </Box>
@@ -666,123 +683,143 @@ const LanguageDetailPage: React.FC = () => {
             <Box sx={{ mb: 2.5 }}>
               <Typography
                 variant="h2"
-                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+                sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#fff', mb: 0.5 }}
               >
                 Example {currentLanguage.name} Tracks
               </Typography>
-              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+              <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
                 AI-generated songs in {currentLanguage.name}
               </Typography>
             </Box>
 
             <ScrollableCarousel id="sample-tracks">
-              {sampleTracks.map((track) => (
-                <Paper
-                  key={track.id}
-                  elevation={0}
-                  onClick={() => handlePlayClick(track)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    p: 1.5,
-                    minWidth: 260,
-                    width: 280,
-                    flexShrink: 0,
-                    background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
-                    borderRadius: '12px',
-                    border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-                    cursor: track.id.startsWith('placeholder-') ? 'default' : 'pointer',
-                    transition: 'all 0.15s ease',
-                    '&:hover': {
-                      boxShadow: track.id.startsWith('placeholder-') ? undefined : '0 4px 16px rgba(0,0,0,0.08)',
-                      transform: track.id.startsWith('placeholder-') ? undefined : 'translateY(-2px)',
-                    },
-                    '&:hover .play-overlay': {
-                      opacity: track.id.startsWith('placeholder-') ? 0 : 1,
-                    },
-                  }}
-                >
-                  {/* Album Art */}
-                  <Box
+              {sampleTracks.map((track) => {
+                const isCurrentSong = currentSong?.songId === track.id;
+                const isThisPlaying = isCurrentSong && isPlaying;
+                const isLoadingThis = loadingSongId === track.id;
+
+                return (
+                  <Paper
+                    key={track.id}
+                    elevation={0}
+                    onClick={() => handlePlayClick(track)}
                     sx={{
-                      position: 'relative',
-                      width: 48,
-                      height: 48,
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      flexShrink: 0,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                      background: '#fff',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      gap: 1.5,
+                      p: 1.5,
+                      minWidth: 260,
+                      width: 280,
+                      flexShrink: 0,
+                      background: isCurrentSong
+                        ? 'rgba(59, 130, 246, 0.15)'
+                        : 'rgba(255,255,255,0.05)',
+                      borderRadius: '12px',
+                      border: isCurrentSong
+                        ? '1px solid rgba(59, 130, 246, 0.4)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                      cursor: track.id.startsWith('placeholder-') ? 'default' : 'pointer',
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        background: isCurrentSong
+                          ? 'rgba(59, 130, 246, 0.2)'
+                          : 'rgba(255,255,255,0.08)',
+                        transform: track.id.startsWith('placeholder-') ? undefined : 'translateY(-2px)',
+                      },
+                      '&:hover .play-overlay': {
+                        opacity: track.id.startsWith('placeholder-') ? 0 : 1,
+                      },
                     }}
                   >
+                    {/* Album Art - circular glassy */}
                     <Box
-                      component="img"
-                      src={currentLanguage.image}
-                      alt={track.title}
-                      sx={{ width: '85%', height: '85%', objectFit: 'contain' }}
-                    />
-                    {/* Play overlay */}
-                    <Box
-                      className="play-overlay"
                       sx={{
-                        position: 'absolute',
-                        inset: 0,
+                        position: 'relative',
+                        width: 48,
+                        height: 48,
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                        background: 'rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
-                        opacity: currentSong?.songId === track.id ? 1 : 0,
-                        transition: 'opacity 0.2s',
                       }}
                     >
-                      {loadingSongId === track.id ? (
-                        <CircularProgress size={14} sx={{ color: '#fff' }} />
-                      ) : currentSong?.songId === track.id && isPlaying ? (
-                        <AudioEqualizer isPlaying={true} size={20} color="#fff" />
-                      ) : (
-                        <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
-                      )}
+                      <Box
+                        component="img"
+                        src={currentLanguage.image}
+                        alt={track.title}
+                        sx={{
+                          width: 28,
+                          height: 28,
+                          objectFit: 'cover',
+                          borderRadius: '50%',
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                        }}
+                      />
+                      {/* Play overlay */}
+                      <Box
+                        className="play-overlay"
+                        sx={{
+                          position: 'absolute',
+                          inset: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                          opacity: isCurrentSong ? 1 : 0,
+                          transition: 'opacity 0.2s',
+                        }}
+                      >
+                        {isLoadingThis ? (
+                          <CircularProgress size={12} sx={{ color: '#fff' }} />
+                        ) : isThisPlaying ? (
+                          <AudioEqualizer isPlaying={true} size={14} color="#fff" />
+                        ) : (
+                          <PlayArrowRoundedIcon sx={{ fontSize: 16, color: '#fff' }} />
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
 
-                  {/* Track Info */}
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography
-                      sx={{
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {track.title}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: '0.75rem',
-                        color: '#86868B',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {currentLanguage.name}
-                    </Typography>
-                  </Box>
+                    {/* Track Info */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography
+                        sx={{
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          color: isCurrentSong ? '#3B82F6' : '#fff',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {track.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: '0.75rem',
+                          color: 'rgba(255,255,255,0.5)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {currentLanguage.name}
+                      </Typography>
+                    </Box>
 
-                  {/* Duration */}
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
-                    {track.duration}
-                  </Typography>
-                </Paper>
-              ))}
+                    {/* Duration */}
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
+                      {track.duration}
+                    </Typography>
+                  </Paper>
+                );
+              })}
             </ScrollableCarousel>
           </Box>
         )}
@@ -792,17 +829,17 @@ const LanguageDetailPage: React.FC = () => {
           <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#fff', mb: 0.5 }}
             >
               Explore More Languages
             </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+            <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
               Create music in 24+ languages with native-quality vocals
             </Typography>
           </Box>
           <ScrollableCarousel id="related-languages-carousel">
-            {languageData.filter(l => l.id !== languageId).slice(0, 16).map((lang) => (
-              <Box 
+            {languageData.filter(l => l.id !== languageId).slice(0, 16).map((lang, index) => (
+              <Box
                 key={lang.id}
                 onClick={() => navigate(`/languages/${lang.id}`)}
                 sx={{
@@ -815,7 +852,9 @@ const LanguageDetailPage: React.FC = () => {
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   '&:hover': { transform: 'scale(1.05)' },
-                  '&:hover .lang-circle': { boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
+                  '&:hover .lang-circle': {
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4), 0 0 30px rgba(90, 200, 250, 0.2)',
+                  },
                 }}
               >
                 <Box
@@ -825,10 +864,12 @@ const LanguageDetailPage: React.FC = () => {
                     height: { xs: 80, sm: 96 },
                     borderRadius: '50%',
                     overflow: 'hidden',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    background: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
                     transition: 'all 0.2s ease',
-                    p: 1,
-                    background: '#fff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -838,10 +879,19 @@ const LanguageDetailPage: React.FC = () => {
                     component="img"
                     src={lang.image}
                     alt={lang.name}
-                    sx={{ width: '100%', height: '100%', objectFit: 'contain', padding: 1 }}
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      objectFit: 'cover',
+                      borderRadius: '50%',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                      transformOrigin: 'left center',
+                      animation: `windWave 2.5s ease-in-out infinite`,
+                      animationDelay: `${index * 0.1}s`,
+                    }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {lang.name}
                 </Typography>
               </Box>
@@ -851,17 +901,17 @@ const LanguageDetailPage: React.FC = () => {
 
         {/* CTA Section */}
         <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
             Ready to Create in {currentLanguage.name}?
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', mb: 3, fontSize: '1rem' }}>
             Sign up for Gruvi and start generating {currentLanguage.name} music with AI.
           </Typography>
           <Button
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: '#007AFF',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #5AC8FA 100%)',
               color: '#fff',
               fontWeight: 600,
               borderRadius: '12px',
@@ -869,11 +919,11 @@ const LanguageDetailPage: React.FC = () => {
               py: 1.5,
               fontSize: '1rem',
               textTransform: 'none',
-              boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.4)',
               '&:hover': {
-                background: '#0066DD',
+                background: 'linear-gradient(135deg, #2563EB 0%, #38BDF8 100%)',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 8px 24px rgba(0,122,255,0.4)',
+                boxShadow: '0 8px 24px rgba(59,130,246,0.5)',
               },
             }}
           >

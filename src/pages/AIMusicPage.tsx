@@ -200,32 +200,32 @@ const genreShowcase = [
   { id: 'gospel', name: 'Gospel', color: '#FFD700' },
 ];
 
-// Languages - All 24 supported languages with images
+// Languages - All 24 supported languages with flag images
 const languages = [
-  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
-  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
-  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
-  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
-  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
-  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
-  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
-  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
-  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
-  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
-  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
-  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
-  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
-  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
-  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
-  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
-  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
-  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
-  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
-  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
-  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
-  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
-  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
-  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
+  { id: 'en', name: 'English', flag: '/locales/en.png', gradient: 'linear-gradient(135deg, #3C3B6E 0%, #B22234 50%, #FFFFFF 100%)', glow: '#B22234' },
+  { id: 'es', name: 'Spanish', flag: '/locales/es.png', gradient: 'linear-gradient(135deg, #AA151B 0%, #F1BF00 50%, #AA151B 100%)', glow: '#F1BF00' },
+  { id: 'fr', name: 'French', flag: '/locales/fr.png', gradient: 'linear-gradient(135deg, #002395 0%, #FFFFFF 50%, #ED2939 100%)', glow: '#E8E8FF' },
+  { id: 'de', name: 'German', flag: '/locales/de.png', gradient: 'linear-gradient(135deg, #000000 0%, #DD0000 50%, #FFCE00 100%)', glow: '#FFCE00' },
+  { id: 'it', name: 'Italian', flag: '/locales/it.png', gradient: 'linear-gradient(135deg, #009246 0%, #FFFFFF 50%, #CE2B37 100%)', glow: '#009246' },
+  { id: 'pt', name: 'Portuguese', flag: '/locales/pt.png', gradient: 'linear-gradient(135deg, #006600 0%, #FF0000 50%, #FFCC00 100%)', glow: '#FF0000' },
+  { id: 'nl', name: 'Dutch', flag: '/locales/nl.png', gradient: 'linear-gradient(135deg, #AE1C28 0%, #FFFFFF 50%, #21468B 100%)', glow: '#AE1C28' },
+  { id: 'pl', name: 'Polish', flag: '/locales/pl.png', gradient: 'linear-gradient(135deg, #FFFFFF 0%, #DC143C 100%)', glow: '#DC143C' },
+  { id: 'ro', name: 'Romanian', flag: '/locales/ro.png', gradient: 'linear-gradient(135deg, #002B7F 0%, #FCD116 50%, #CE1126 100%)', glow: '#FCD116' },
+  { id: 'cs', name: 'Czech', flag: '/locales/cs.png', gradient: 'linear-gradient(135deg, #11457E 0%, #FFFFFF 50%, #D7141A 100%)', glow: '#E8E8FF' },
+  { id: 'el', name: 'Greek', flag: '/locales/el.png', gradient: 'linear-gradient(135deg, #0D5EAF 0%, #FFFFFF 100%)', glow: '#E8E8FF' },
+  { id: 'bg', name: 'Bulgarian', flag: '/locales/bg.png', gradient: 'linear-gradient(135deg, #FFFFFF 0%, #00966E 50%, #D62612 100%)', glow: '#00966E' },
+  { id: 'fi', name: 'Finnish', flag: '/locales/fi.png', gradient: 'linear-gradient(135deg, #003580 0%, #FFFFFF 100%)', glow: '#E8E8FF' },
+  { id: 'uk', name: 'Ukrainian', flag: '/locales/uk.png', gradient: 'linear-gradient(135deg, #005BBB 0%, #FFD500 100%)', glow: '#FFD500' },
+  { id: 'ru', name: 'Russian', flag: '/locales/ru.png', gradient: 'linear-gradient(135deg, #FFFFFF 0%, #0039A6 50%, #D52B1E 100%)', glow: '#E8E8FF' },
+  { id: 'tr', name: 'Turkish', flag: '/locales/tr.png', gradient: 'linear-gradient(135deg, #E30A17 0%, #FFFFFF 100%)', glow: '#E30A17' },
+  { id: 'ar', name: 'Arabic', flag: '/locales/ar.png', gradient: 'linear-gradient(135deg, #006C35 0%, #FFFFFF 100%)', glow: '#006C35' },
+  { id: 'hi', name: 'Hindi', flag: '/locales/hi.png', gradient: 'linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%)', glow: '#FF9933' },
+  { id: 'th', name: 'Thai', flag: '/locales/th.png', gradient: 'linear-gradient(135deg, #A51931 0%, #FFFFFF 50%, #2D2A4A 100%)', glow: '#A51931' },
+  { id: 'vi', name: 'Vietnamese', flag: '/locales/vi.png', gradient: 'linear-gradient(135deg, #DA251D 0%, #FFFF00 100%)', glow: '#FFFF00' },
+  { id: 'id', name: 'Indonesian', flag: '/locales/id.png', gradient: 'linear-gradient(135deg, #FF0000 0%, #FFFFFF 100%)', glow: '#FF0000' },
+  { id: 'ja', name: 'Japanese', flag: '/locales/ja.png', gradient: 'linear-gradient(135deg, #FFFFFF 0%, #BC002D 100%)', glow: '#BC002D' },
+  { id: 'ko', name: 'Korean', flag: '/locales/ko.png', gradient: 'linear-gradient(135deg, #FFFFFF 0%, #C60C30 50%, #003478 100%)', glow: '#C60C30' },
+  { id: 'zh', name: 'Chinese', flag: '/locales/zh.png', gradient: 'linear-gradient(135deg, #DE2910 0%, #FFDE00 100%)', glow: '#FFDE00' },
 ];
 
 // Mood showcase - selection of moods for the marketing page
@@ -249,43 +249,43 @@ const moodShowcase = [
   { id: 'promotional', name: 'Promotional', image: '/moods/promotional.jpeg', color: '#3498DB' },
 ];
 
-// Language sample tracks - using the same tracks as LanguageDetailPage (one per language)
+// Language sample tracks - using actual multilingual track IDs from LanguageDetailPage
 const languageSampleTracks: Record<string, Array<{id: string; title: string; duration: string}>> = {
   'english': [{ id: 'ca9e75ed-551e-4f0e-b939-2130ac0fcdc3', title: 'Wide Open Sky', duration: '2:19' }],
   'spanish': [{ id: '1faa7d07-51ef-4bbd-841c-67d0e78a1add', title: 'Fuego en la Piel', duration: '1:38' }],
   'french': [{ id: 'a67bee12-fab5-45ef-aa3a-1c846c60e4d9', title: 'Sous le Ciel de Paris', duration: '2:21' }],
-  'german': [{ id: 'b6413f7f-31fc-4cf4-b9f9-49a0d6c75a14', title: 'Sternenstaub', duration: '2:16' }],
-  'japanese': [{ id: '2a1ff05d-cc16-4a81-b2ff-e4df1b14a14a', title: 'Sakura no Yume', duration: '2:08' }],
-  'korean': [{ id: '74f73f7a-ddbb-4b7a-9e6b-3157e6dd7e0c', title: 'Neo-Seoul Nights', duration: '2:22' }],
-  'chinese': [{ id: 'b9826c0a-ec29-4f59-8d3b-19f9f1e9e7d0', title: 'Yue Xia Du Xing', duration: '2:17' }],
-  'portuguese': [{ id: '7e52e4b2-7c61-4afc-8c77-0f4e2cd3c7fd', title: 'Saudade do Mar', duration: '2:33' }],
-  'italian': [{ id: 'a2bc2d41-41e6-4a28-a7ef-96a19cc5db75', title: 'Sotto le Stelle', duration: '2:23' }],
-  'hindi': [{ id: '6d17acca-6915-491a-a38a-23b5f03f2f43', title: 'Dil Ki Awaaz', duration: '2:28' }],
-  'arabic': [{ id: 'ad6b6c30-e2f9-42b5-b0b9-e5b66d1f6d74', title: 'Layl Al-Qamar', duration: '2:13' }],
-  'russian': [{ id: 'db6ee7c8-55c7-4b03-86ed-89d38d1fa0f4', title: 'Snezhnaya Noch', duration: '2:30' }],
-  'turkish': [{ id: 'f2614c35-ce09-458d-b647-4ff84ed37ac6', title: 'Istanbul Rüyası', duration: '2:18' }],
-  'thai': [{ id: 'e4c8a4a7-5e3c-4b8e-b3f5-3a7c8d9e0f1b', title: 'Khwam Rak Nai Jai', duration: '2:07' }],
+  'german': [{ id: '72b806e0-ff44-4385-ab26-c27c328fc0dc', title: 'Unbezwingbar', duration: '2:17' }],
+  'japanese': [{ id: '2ea32de2-7ed0-44bf-8130-d418e10926e4', title: '桜の約束', duration: '2:18' }],
+  'korean': [{ id: '9488d94b-e493-4a45-9813-fbcb111185cd', title: '첫눈에 (At First Sight)', duration: '2:09' }],
+  'chinese': [{ id: '074cf19a-cb08-428a-9f0b-32f1560eff70', title: '月光下的誓言', duration: '2:36' }],
+  'portuguese': [{ id: 'aedc9a75-0796-4355-9f13-cdb3a55ea37e', title: 'Onde o Mar Me Espera', duration: '2:13' }],
+  'italian': [{ id: '80470df4-8d6d-4049-a208-4adf3489e4b2', title: 'Sei Tu L\'Amore Vero', duration: '3:09' }],
+  'hindi': [{ id: '98e7a1f5-d7c1-4c58-afe8-b9f4e7e3cee9', title: 'Tere Bina Adhura', duration: '2:14' }],
+  'arabic': [{ id: '7213cafe-3f48-4dd5-82c1-4dd1795467d3', title: 'قلبي معاك', duration: '1:57' }],
+  'russian': [{ id: '3e05a0a9-a3a6-465b-8156-b1e8afd69588', title: 'Огни Москвы', duration: '2:38' }],
+  'turkish': [{ id: '05714691-b94e-474a-b7a1-7ff90fbeba2b', title: 'Sensiz Olamam', duration: '2:34' }],
+  'thai': [{ id: 'df7effc0-2628-41fd-a522-ffb64cc25a06', title: 'รักแรกพบ', duration: '2:35' }],
   'vietnamese': [{ id: '771d81bd-b99f-4ebb-bae7-3ce05013f134', title: 'Lần Đầu Yêu', duration: '2:13' }],
 };
 
 // Language display order for the carousel
 const languageOrder = ['english', 'spanish', 'french', 'german', 'japanese', 'korean', 'chinese', 'portuguese', 'italian', 'hindi', 'arabic', 'russian', 'turkish', 'thai', 'vietnamese'];
 
-// Language name to image code mapping
-const languageToImageCode: Record<string, string> = {
-  'english': 'en', 'spanish': 'es', 'french': 'fr', 'german': 'de',
-  'japanese': 'js', 'korean': 'ko', 'chinese': 'zh', 'portuguese': 'pt',
-  'italian': 'it', 'hindi': 'hi', 'arabic': 'ar', 'russian': 'ru',
-  'turkish': 'tr', 'thai': 'th', 'vietnamese': 'vi',
+// Language name to flag image path mapping
+const languageToFlag: Record<string, string> = {
+  'english': '/locales/en.png', 'spanish': '/locales/es.png', 'french': '/locales/fr.png', 'german': '/locales/de.png',
+  'japanese': '/locales/ja.png', 'korean': '/locales/ko.png', 'chinese': '/locales/zh.png', 'portuguese': '/locales/pt.png',
+  'italian': '/locales/it.png', 'hindi': '/locales/hi.png', 'arabic': '/locales/ar.png', 'russian': '/locales/ru.png',
+  'turkish': '/locales/tr.png', 'thai': '/locales/th.png', 'vietnamese': '/locales/vi.png',
 };
 
 // Function to get language tracks
-function getLanguageTracksForRoute(): Array<{id: string; title: string; language: string; duration: string; image: string}> {
+function getLanguageTracksForRoute(): Array<{id: string; title: string; language: string; duration: string; flag: string}> {
   return languageOrder.map(lang => {
     const track = languageSampleTracks[lang][0];
     const langName = lang.charAt(0).toUpperCase() + lang.slice(1);
-    const imageCode = languageToImageCode[lang] || lang.slice(0, 2);
-    return { ...track, language: langName, image: `/locales/${imageCode}.jpeg` };
+    const flag = languageToFlag[lang] || '🌍';
+    return { ...track, language: langName, flag };
   });
 }
 
@@ -626,7 +626,7 @@ const GenreCarousel: React.FC<GenreCarouselProps> = ({ genres, genreToImage, onG
                   }}
                 />
               )}
-              {/* Vinyl image with transparent background */}
+              {/* Vinyl image with subtle white glow */}
               <Box
                 component="img"
                 src={genreToImage[genre.id] || '/genres/pop.png'}
@@ -638,8 +638,8 @@ const GenreCarousel: React.FC<GenreCarouselProps> = ({ genres, genreToImage, onG
                   position: 'relative',
                   zIndex: 1,
                   filter: isCenter
-                    ? `drop-shadow(0 8px 24px ${genre.color}60)`
-                    : 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
+                    ? `drop-shadow(0 8px 24px ${genre.color}60) drop-shadow(0 0 3px rgba(255,255,255,0.5))`
+                    : 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 2px rgba(255,255,255,0.3))',
                 }}
               />
               <Typography
@@ -776,15 +776,63 @@ const AIMusicPage: React.FC = () => {
     ? exploreTracks
     : exploreTracks.filter(t => t.genre === selectedGenre);
 
-  // Handle play button click
-  const handlePlayTrack = useCallback(async (track: { id: string; title: string; genre: string; duration: string }) => {
+  // Handle play button click - now accepts optional playlist for next/previous navigation
+  const handlePlayTrack = useCallback(async (
+    track: { id: string; title: string; genre: string; duration: string },
+    playlist?: { id: string; title: string; genre: string; duration: string }[]
+  ) => {
     if (currentSong?.songId === track.id && isPlaying) {
       pauseSong();
       return;
     }
 
+    // Build the full songs list from cache + fetch missing
+    const buildPlaylist = async () => {
+      if (!playlist || playlist.length === 0) return undefined;
+
+      // Get all song IDs that aren't in cache
+      const uncachedIds = playlist.filter(t => !songCache[t.id]).map(t => t.id);
+
+      // Fetch all uncached songs in one request
+      if (uncachedIds.length > 0) {
+        try {
+          const response = await songsApi.getPublicSampleSongs(SEED_SONGS_USER_ID, uncachedIds);
+          const fetchedSongs = response.data?.songs || [];
+
+          // Add fetched songs to cache
+          const newCacheEntries: Record<string, any> = {};
+          fetchedSongs.forEach((s: any) => {
+            if (s.audioUrl) {
+              newCacheEntries[s.songId] = {
+                songId: s.songId,
+                songTitle: s.songTitle,
+                genre: s.genre,
+                audioUrl: s.audioUrl,
+                status: s.status,
+                createdAt: s.createdAt,
+                duration: s.actualDuration,
+              };
+            }
+          });
+          setSongCache(prev => ({ ...prev, ...newCacheEntries }));
+
+          // Build full playlist from cache + newly fetched
+          return playlist
+            .map(t => songCache[t.id] || newCacheEntries[t.id])
+            .filter(Boolean);
+        } catch (error) {
+          console.error('Error fetching playlist songs:', error);
+          return undefined;
+        }
+      }
+
+      // All songs are already cached
+      return playlist.map(t => songCache[t.id]).filter(Boolean);
+    };
+
     if (songCache[track.id]) {
-      playSong(songCache[track.id]);
+      const allSongs = await buildPlaylist();
+      playSong(songCache[track.id], allSongs);
       return;
     }
 
@@ -804,7 +852,8 @@ const AIMusicPage: React.FC = () => {
           duration: songs[0].actualDuration,
         };
         setSongCache(prev => ({ ...prev, [track.id]: song }));
-        playSong(song);
+        const allSongs = await buildPlaylist();
+        playSong(song, allSongs);
       }
     } catch (error) {
       console.error('Error fetching song:', error);
@@ -1212,7 +1261,7 @@ const AIMusicPage: React.FC = () => {
                       <Paper
                         key={track.id}
                         elevation={0}
-                        onClick={() => handlePlayTrack(track)}
+                        onClick={() => handlePlayTrack(track, featuredTracks)}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1237,46 +1286,57 @@ const AIMusicPage: React.FC = () => {
                           },
                         }}
                       >
-                        {/* Album Art */}
+                        {/* Album Art with white border */}
                         <Box
                           sx={{
                             position: 'relative',
-                            width: 48,
-                            height: 48,
+                            width: 52,
+                            height: 52,
                             borderRadius: '50%',
-                            overflow: 'hidden',
                             flexShrink: 0,
-                            boxShadow: '0 0 10px rgba(255,255,255,0.08)',
+                            padding: '2px',
+                            background: 'rgba(255,255,255,0.85)',
+                            boxShadow: '0 0 10px rgba(255,255,255,0.15)',
                           }}
                         >
                           <Box
-                            component="img"
-                            src={genreToImage[track.genre] || '/genres/pop.png'}
-                            alt={track.title}
-                            sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                          />
-                          {/* Play overlay */}
-                          <Box
-                            className="play-overlay"
                             sx={{
-                              position: 'absolute',
-                              inset: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
-                              opacity: isCurrentSong ? 1 : 0,
-                              transition: 'opacity 0.2s',
+                              position: 'relative',
+                              width: '100%',
+                              height: '100%',
                               borderRadius: '50%',
+                              overflow: 'hidden',
                             }}
                           >
-                            {isLoadingThis ? (
-                              <CircularProgress size={14} sx={{ color: '#fff' }} />
-                            ) : isThisPlaying ? (
-                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
-                            ) : (
-                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
-                            )}
+                            <Box
+                              component="img"
+                              src={genreToImage[track.genre] || '/genres/pop.png'}
+                              alt={track.title}
+                              sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                            />
+                            {/* Play overlay */}
+                            <Box
+                              className="play-overlay"
+                              sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                                opacity: isCurrentSong ? 1 : 0,
+                                transition: 'opacity 0.2s',
+                                borderRadius: '50%',
+                              }}
+                            >
+                              {isLoadingThis ? (
+                                <CircularProgress size={14} sx={{ color: '#fff' }} />
+                              ) : isThisPlaying ? (
+                                <AudioEqualizer isPlaying={true} size={14} color="#fff" />
+                              ) : (
+                                <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                              )}
+                            </Box>
                           </Box>
                         </Box>
 
@@ -1558,7 +1618,7 @@ const AIMusicPage: React.FC = () => {
           left: '5%',
           width: '30%',
           height: '50%',
-          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
           filter: 'blur(80px)',
           pointerEvents: 'none',
         }} />
@@ -1568,7 +1628,7 @@ const AIMusicPage: React.FC = () => {
             <Chip
               label="24 Languages"
               size="small"
-              sx={{ mb: 2, background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', fontWeight: 600 }}
+              sx={{ mb: 2, background: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', fontWeight: 600 }}
             />
             <Typography
               variant="h2"
@@ -1586,16 +1646,39 @@ const AIMusicPage: React.FC = () => {
             </Typography>
           </Box>
 
-          {/* Languages Grid */}
+          {/* Languages Grid with Flag Emojis - each with gradient container */}
           <Box
             sx={{
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              gap: { xs: 2, md: 3 },
+              gap: { xs: 1.5, md: 2.5 },
+              maxWidth: '900px',
+              mx: 'auto',
+              // Wind animation keyframes
+              '@keyframes windWave': {
+                '0%, 100%': {
+                  transform: 'rotate(-3deg) skewX(-2deg)',
+                },
+                '25%': {
+                  transform: 'rotate(2deg) skewX(3deg)',
+                },
+                '50%': {
+                  transform: 'rotate(-2deg) skewX(-1deg)',
+                },
+                '75%': {
+                  transform: 'rotate(3deg) skewX(2deg)',
+                },
+              },
             }}
           >
-            {languages.map((lang, index) => (
+            {languages.map((lang, index) => {
+              // Calculate row and column for staggered wind delay (left to right)
+              const col = index % 9; // Approximate columns
+              const row = Math.floor(index / 9);
+              const windDelay = (col * 0.15) + (row * 0.3); // Stagger by column then row
+
+              return (
               <Box
                 key={lang.id}
                 onClick={() => navigate(`/languages/${lang.name.toLowerCase()}`)}
@@ -1603,7 +1686,7 @@ const AIMusicPage: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
+                  gap: 0.75,
                   cursor: 'pointer',
                   opacity: 0,
                   transform: 'scale(0.9)',
@@ -1614,32 +1697,253 @@ const AIMusicPage: React.FC = () => {
                     to: { opacity: 1, transform: 'scale(1)' },
                   },
                   '&:hover': {
-                    '& .lang-image': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 12px 30px rgba(59, 130, 246, 0.3)',
+                    transform: 'scale(1.05)',
+                    '& .lang-card': {
+                      transform: 'scale(1.15)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.25)',
+                    },
+                    '& .lang-flag': {
+                      animationPlayState: 'paused',
+                      transform: 'rotate(0deg) skewX(0deg) !important',
                     },
                   },
                 }}
               >
+                {/* Circular glassy card with flag - iOS Control Center style */}
                 <Box
-                  className="lang-image"
-                  component="img"
-                  src={lang.image}
-                  alt={lang.name}
+                  className="lang-card"
                   sx={{
-                    width: { xs: 60, md: 70 },
-                    height: { xs: 60, md: 70 },
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: { xs: 56, md: 64 },
+                    height: { xs: 56, md: 64 },
+                    background: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.15)',
                     borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '3px solid rgba(255,255,255,0.1)',
+                    boxShadow: `0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 40px ${lang.glow}25`,
                     transition: 'all 0.3s ease',
                   }}
-                />
-                <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.85rem' }}>
+                >
+                  <Box
+                    component="img"
+                    src={lang.flag}
+                    alt={lang.name}
+                    className="lang-flag"
+                    sx={{
+                      width: { xs: 36, md: 42 },
+                      height: { xs: 36, md: 42 },
+                      objectFit: 'cover',
+                      borderRadius: '50%',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                      transformOrigin: 'left center',
+                      animation: `windWave 2.5s ease-in-out ${windDelay}s infinite`,
+                      transition: 'transform 0.3s ease',
+                    }}
+                  />
+                </Box>
+                {/* Language name outside the card */}
+                <Typography sx={{
+                  color: 'rgba(255,255,255,0.85)',
+                  fontWeight: 500,
+                  fontSize: { xs: '0.7rem', md: '0.75rem' },
+                  textAlign: 'center',
+                }}>
                   {lang.name}
                 </Typography>
               </Box>
-            ))}
+              );
+            })}
+          </Box>
+
+          {/* Divider between language grid and tracks carousel */}
+          <Box
+            sx={{
+              mt: 6,
+              mb: 6,
+              height: '1px',
+              background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent)',
+            }}
+          />
+
+          {/* Language Tracks Carousel - columns of 3 */}
+          <Box>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2rem', md: '2.5rem' },
+                  fontWeight: 800,
+                  color: '#fff',
+                  mb: 2,
+                }}
+              >
+                Listen to Sample Tracks
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: '0.9rem', md: '1rem' },
+                  color: 'rgba(255,255,255,0.6)',
+                }}
+              >
+                AI-generated songs in 15+ languages
+              </Typography>
+            </Box>
+            <ScrollableCarousel id="language-tracks-carousel">
+              {(() => {
+                const languageTracks = getLanguageTracksForRoute();
+                // Build playlist in the expected format for handlePlayTrack
+                const languagePlaylist = languageTracks.map(t => ({
+                  id: t.id,
+                  title: t.title,
+                  genre: t.language.toLowerCase(),
+                  duration: t.duration,
+                }));
+                const columns: typeof languageTracks[] = [];
+                for (let i = 0; i < languageTracks.length; i += 3) {
+                  columns.push(languageTracks.slice(i, i + 3));
+                }
+                return columns.map((columnTracks, colIndex) => (
+                  <Box
+                    key={`lang-column-${colIndex}`}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {columnTracks.map((track) => {
+                      const isCurrentSong = currentSong?.songId === track.id;
+                      const isThisPlaying = isCurrentSong && isPlaying;
+                      const isLoadingThis = loadingSongId === track.id;
+
+                      return (
+                        <Paper
+                          key={`${track.id}-${track.language}`}
+                          elevation={0}
+                          onClick={() => handlePlayTrack({ id: track.id, title: track.title, genre: track.language.toLowerCase(), duration: track.duration }, languagePlaylist)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1.5,
+                            p: 1.5,
+                            width: { xs: 260, sm: 290, md: 320 },
+                            background: isCurrentSong
+                              ? 'rgba(59, 130, 246, 0.15)'
+                              : 'rgba(255,255,255,0.05)',
+                            borderRadius: '12px',
+                            border: isCurrentSong
+                              ? '1px solid rgba(59, 130, 246, 0.4)'
+                              : '1px solid rgba(255,255,255,0.08)',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            '&:hover': {
+                              background: isCurrentSong
+                                ? 'rgba(59, 130, 246, 0.2)'
+                                : 'rgba(255,255,255,0.08)',
+                              transform: 'translateY(-2px)',
+                            },
+                            '&:hover .lang-play-overlay': {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          {/* Language flag as album art - circular glassy */}
+                          <Box
+                            sx={{
+                              position: 'relative',
+                              width: 48,
+                              height: 48,
+                              borderRadius: '50%',
+                              overflow: 'hidden',
+                              flexShrink: 0,
+                              background: 'rgba(255,255,255,0.08)',
+                              backdropFilter: 'blur(20px)',
+                              WebkitBackdropFilter: 'blur(20px)',
+                              border: '1px solid rgba(255,255,255,0.15)',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Box
+                              component="img"
+                              src={track.flag}
+                              alt={track.language}
+                              sx={{
+                                width: 28,
+                                height: 28,
+                                objectFit: 'cover',
+                                borderRadius: '50%',
+                                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                              }}
+                            />
+                            {/* Play overlay */}
+                            <Box
+                              className="lang-play-overlay"
+                              sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                                opacity: isCurrentSong ? 1 : 0,
+                                transition: 'opacity 0.2s',
+                              }}
+                            >
+                              {isLoadingThis ? (
+                                <CircularProgress size={12} sx={{ color: '#fff' }} />
+                              ) : isThisPlaying ? (
+                                <AudioEqualizer isPlaying={true} size={14} color="#fff" />
+                              ) : (
+                                <PlayArrowRoundedIcon sx={{ fontSize: 16, color: '#fff' }} />
+                              )}
+                            </Box>
+                          </Box>
+
+                          {/* Track Info */}
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                              sx={{
+                                fontSize: '0.85rem',
+                                fontWeight: 600,
+                                color: isCurrentSong ? '#3B82F6' : '#fff',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {track.title}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: '0.75rem',
+                                color: 'rgba(255,255,255,0.5)',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {track.language}
+                            </Typography>
+                          </Box>
+
+                          {/* Duration */}
+                          <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
+                            {track.duration}
+                          </Typography>
+                        </Paper>
+                      );
+                    })}
+                  </Box>
+                ));
+              })()}
+            </ScrollableCarousel>
           </Box>
         </Container>
         <SectionDivider />
@@ -1941,7 +2245,7 @@ const AIMusicPage: React.FC = () => {
                       <Paper
                         key={track.id}
                         elevation={0}
-                        onClick={() => handlePlayTrack(track)}
+                        onClick={() => handlePlayTrack(track, filteredTracks)}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1966,46 +2270,57 @@ const AIMusicPage: React.FC = () => {
                           },
                         }}
                       >
-                        {/* Album Art */}
+                        {/* Album Art with white border */}
                         <Box
                           sx={{
                             position: 'relative',
-                            width: 48,
-                            height: 48,
+                            width: 52,
+                            height: 52,
                             borderRadius: '50%',
-                            overflow: 'hidden',
                             flexShrink: 0,
-                            boxShadow: '0 0 10px rgba(255,255,255,0.08)',
+                            padding: '2px',
+                            background: 'rgba(255,255,255,0.85)',
+                            boxShadow: '0 0 10px rgba(255,255,255,0.15)',
                           }}
                         >
                           <Box
-                            component="img"
-                            src={genreToImage[track.genre] || '/genres/pop.png'}
-                            alt={track.title}
-                            sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                          />
-                          {/* Play overlay */}
-                          <Box
-                            className="play-overlay"
                             sx={{
-                              position: 'absolute',
-                              inset: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
-                              opacity: isCurrentSong ? 1 : 0,
-                              transition: 'opacity 0.2s',
+                              position: 'relative',
+                              width: '100%',
+                              height: '100%',
                               borderRadius: '50%',
+                              overflow: 'hidden',
                             }}
                           >
-                            {isLoadingThis ? (
-                              <CircularProgress size={14} sx={{ color: '#fff' }} />
-                            ) : isThisPlaying ? (
-                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
-                            ) : (
-                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
-                            )}
+                            <Box
+                              component="img"
+                              src={genreToImage[track.genre] || '/genres/pop.png'}
+                              alt={track.title}
+                              sx={{ width: '140%', height: '140%', objectFit: 'cover', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                            />
+                            {/* Play overlay */}
+                            <Box
+                              className="play-overlay"
+                              sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                                opacity: isCurrentSong ? 1 : 0,
+                                transition: 'opacity 0.2s',
+                                borderRadius: '50%',
+                              }}
+                            >
+                              {isLoadingThis ? (
+                                <CircularProgress size={14} sx={{ color: '#fff' }} />
+                              ) : isThisPlaying ? (
+                                <AudioEqualizer isPlaying={true} size={14} color="#fff" />
+                              ) : (
+                                <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                              )}
+                            </Box>
                           </Box>
                         </Box>
 
@@ -2052,182 +2367,6 @@ const AIMusicPage: React.FC = () => {
         <SectionDivider />
       </Box>
 
-      {/* Language Tracks Section */}
-      <Box sx={{ background: 'linear-gradient(180deg, #0D0D0F 0%, #0E1525 40%, #101C2D 100%)', py: { xs: 8, md: 12 }, position: 'relative' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 5 }}>
-            <Chip
-              label="Multilingual"
-              sx={{
-                background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 28,
-                mb: 2,
-              }}
-            />
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: '2rem', md: '2.5rem' },
-                fontWeight: 800,
-                color: '#fff',
-                mb: 2,
-              }}
-            >
-              Music in Any Language
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', maxWidth: '550px', mx: 'auto' }}>
-              AI-generated songs in 15+ languages - from English to Japanese to Arabic
-            </Typography>
-          </Box>
-
-          {/* Language Tracks Carousel - columns of 3 */}
-          <ScrollableCarousel id="language-tracks-carousel">
-            {(() => {
-              const languageTracks = getLanguageTracksForRoute();
-              const columns: typeof languageTracks[] = [];
-              for (let i = 0; i < languageTracks.length; i += 3) {
-                columns.push(languageTracks.slice(i, i + 3));
-              }
-              return columns.map((columnTracks, colIndex) => (
-                <Box
-                  key={`lang-column-${colIndex}`}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1,
-                    flexShrink: 0,
-                  }}
-                >
-                  {columnTracks.map((track) => {
-                    const isCurrentSong = currentSong?.songId === track.id;
-                    const isThisPlaying = isCurrentSong && isPlaying;
-                    const isLoadingThis = loadingSongId === track.id;
-
-                    return (
-                      <Paper
-                        key={`${track.id}-${track.language}`}
-                        elevation={0}
-                        onClick={() => handlePlayTrack({ id: track.id, title: track.title, genre: track.language.toLowerCase(), duration: track.duration })}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1.5,
-                          p: 1.5,
-                          width: { xs: 260, sm: 290, md: 320 },
-                          background: isCurrentSong
-                            ? 'rgba(59, 130, 246, 0.15)'
-                            : 'rgba(255,255,255,0.05)',
-                          borderRadius: '12px',
-                          border: isCurrentSong
-                            ? '1px solid rgba(59, 130, 246, 0.4)'
-                            : '1px solid rgba(255,255,255,0.08)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                          '&:hover': {
-                            background: isCurrentSong
-                              ? 'rgba(59, 130, 246, 0.2)'
-                              : 'rgba(255,255,255,0.08)',
-                            transform: 'translateY(-2px)',
-                          },
-                          '&:hover .lang-play-overlay': {
-                            opacity: 1,
-                          },
-                        }}
-                      >
-                        {/* Language flag as album art */}
-                        <Box
-                          sx={{
-                            position: 'relative',
-                            width: 48,
-                            height: 48,
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            flexShrink: 0,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                            background: 'rgba(255,255,255,0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Box
-                            component="img"
-                            src={track.image}
-                            alt={track.language}
-                            sx={{
-                              width: '85%',
-                              height: '85%',
-                              objectFit: 'contain',
-                            }}
-                          />
-                          {/* Play overlay */}
-                          <Box
-                            className="lang-play-overlay"
-                            sx={{
-                              position: 'absolute',
-                              inset: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: isCurrentSong ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
-                              opacity: isCurrentSong ? 1 : 0,
-                              transition: 'opacity 0.2s',
-                            }}
-                          >
-                            {isLoadingThis ? (
-                              <CircularProgress size={14} sx={{ color: '#fff' }} />
-                            ) : isThisPlaying ? (
-                              <AudioEqualizer isPlaying={true} size={20} color="#fff" />
-                            ) : (
-                              <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
-                            )}
-                          </Box>
-                        </Box>
-
-                        {/* Track Info */}
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography
-                            sx={{
-                              fontSize: '0.85rem',
-                              fontWeight: 600,
-                              color: isCurrentSong ? '#3B82F6' : '#fff',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                          >
-                            {track.title}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: '0.75rem',
-                              color: 'rgba(255,255,255,0.5)',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                          >
-                            {track.language}
-                          </Typography>
-                        </Box>
-
-                        {/* Duration */}
-                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
-                          {track.duration}
-                        </Typography>
-                      </Paper>
-                    );
-                  })}
-                </Box>
-              ));
-            })()}
-          </ScrollableCarousel>
-        </Container>
-        <SectionDivider />
-      </Box>
 
       {/* CTA Section */}
       <CTASection
