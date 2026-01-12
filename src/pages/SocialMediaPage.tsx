@@ -39,7 +39,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
-import { SEO } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader } from '../components/marketing';
 import socialsAnimationData from '../assets/animations/socials.json';
 import cloudAnimationData from '../assets/animations/cloud.json';
@@ -287,6 +287,10 @@ const SocialMediaPage: React.FC = () => {
         ogDescription="Publish AI music and videos to all social platforms with one click."
         ogType="website"
         ogUrl="https://gruvimusic.com/social-media"
+        structuredData={[createBreadcrumbStructuredData([
+          { name: 'Home', url: 'https://gruvimusic.com' },
+          { name: 'Social Media Publishing', url: 'https://gruvimusic.com/social-media' }
+        ])]}
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

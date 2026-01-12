@@ -79,8 +79,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
   const [bounceKey, setBounceKey] = useState(0);
   const prevActiveIndexRef = useRef(activeIndex);
 
-  // Calculate bubble position when active item changes
-  useLayoutEffect(() => {
+  // Calculate bubble position when active item changes or window resizes
+  const updateBubblePosition = useCallback(() => {
     if (activeIndex >= 0 && buttonRefs.current[activeIndex] && navContainerRef.current) {
       const button = buttonRefs.current[activeIndex];
       const container = navContainerRef.current;
@@ -93,12 +93,27 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
         });
       }
     }
+  }, [activeIndex]);
+
+  useLayoutEffect(() => {
+    updateBubblePosition();
+
     // Trigger bounce animation when active index changes
     if (prevActiveIndexRef.current !== activeIndex && activeIndex >= 0) {
       setBounceKey(prev => prev + 1);
     }
     prevActiveIndexRef.current = activeIndex;
-  }, [activeIndex, isMobile]);
+  }, [activeIndex, updateBubblePosition]);
+
+  // Update bubble position on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      updateBubblePosition();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [updateBubblePosition]);
 
   // Calculate scroll progress (0 = top, 1 = scrolled 100px+)
   useEffect(() => {

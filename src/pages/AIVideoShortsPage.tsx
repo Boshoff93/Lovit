@@ -40,7 +40,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
-import { SEO } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader, VideoShowcase, CTASection } from '../components/marketing';
 
 interface VideoItem {
@@ -793,6 +793,10 @@ const AIVideoShortsPage: React.FC = () => {
         ogDescription="Create AI-powered product videos and UGC content for social media."
         ogType="website"
         ogUrl="https://gruvimusic.com/ai-video-shorts"
+        structuredData={[createBreadcrumbStructuredData([
+          { name: 'Home', url: 'https://gruvimusic.com' },
+          { name: 'AI Video Shorts', url: 'https://gruvimusic.com/ai-video-shorts' }
+        ])]}
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

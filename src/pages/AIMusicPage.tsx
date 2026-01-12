@@ -47,7 +47,7 @@ import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
 import { songsApi } from '../services/api';
-import { SEO } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader, CTASection } from '../components/marketing';
 import GlobalAudioPlayer from '../components/GlobalAudioPlayer';
 
@@ -995,6 +995,10 @@ const AIMusicPage: React.FC = () => {
         ogDescription="Create AI-generated songs in any genre. 100% original music with commercial license."
         ogType="website"
         ogUrl="https://gruvimusic.com/ai-music"
+        structuredData={[createBreadcrumbStructuredData([
+          { name: 'Home', url: 'https://gruvimusic.com' },
+          { name: 'AI Music Generator', url: 'https://gruvimusic.com/ai-music' }
+        ])]}
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

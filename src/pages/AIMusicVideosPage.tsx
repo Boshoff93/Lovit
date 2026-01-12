@@ -26,7 +26,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
-import { SEO } from '../utils/seoHelper';
+import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader, CTASection } from '../components/marketing';
 
 interface VideoItem {
@@ -418,6 +418,10 @@ const AIMusicVideosPage: React.FC = () => {
         ogDescription="Create stunning AI-generated music videos with custom characters and art styles."
         ogType="website"
         ogUrl="https://gruvimusic.com/ai-music-videos"
+        structuredData={[createBreadcrumbStructuredData([
+          { name: 'Home', url: 'https://gruvimusic.com' },
+          { name: 'AI Music Videos', url: 'https://gruvimusic.com/ai-music-videos' }
+        ])]}
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent />

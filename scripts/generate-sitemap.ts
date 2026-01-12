@@ -172,6 +172,11 @@ function generateSitemap(): string {
   // Static routes with high priority
   const staticRoutes = [
     { path: '/', priority: '1.0', changefreq: 'daily' },
+    { path: '/ai-music', priority: '0.95', changefreq: 'weekly' },
+    { path: '/ai-music-videos', priority: '0.95', changefreq: 'weekly' },
+    { path: '/ai-video-shorts', priority: '0.95', changefreq: 'weekly' },
+    { path: '/social-media', priority: '0.95', changefreq: 'weekly' },
+    { path: '/pricing', priority: '0.9', changefreq: 'weekly' },
     { path: '/ai-music-generator', priority: '0.9', changefreq: 'weekly' },
     { path: '/ai-song-generator', priority: '0.9', changefreq: 'weekly' },
     { path: '/music-video-generator', priority: '0.9', changefreq: 'weekly' },
