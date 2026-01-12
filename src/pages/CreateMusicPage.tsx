@@ -100,30 +100,30 @@ const moods = [
 
 // Languages
 const languages = [
-  { id: 'en', name: 'English', image: '/locales/en.jpeg' },
-  { id: 'es', name: 'Spanish', image: '/locales/es.jpeg' },
-  { id: 'fr', name: 'French', image: '/locales/fr.jpeg' },
-  { id: 'de', name: 'German', image: '/locales/de.jpeg' },
-  { id: 'it', name: 'Italian', image: '/locales/it.jpeg' },
-  { id: 'pt', name: 'Portuguese', image: '/locales/pt.jpeg' },
-  { id: 'nl', name: 'Dutch', image: '/locales/nl.jpeg' },
-  { id: 'pl', name: 'Polish', image: '/locales/pl.jpeg' },
-  { id: 'ro', name: 'Romanian', image: '/locales/ro.jpeg' },
-  { id: 'cs', name: 'Czech', image: '/locales/cs.jpeg' },
-  { id: 'el', name: 'Greek', image: '/locales/el.jpeg' },
-  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.jpeg' },
-  { id: 'fi', name: 'Finnish', image: '/locales/fi.jpeg' },
-  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.jpeg' },
-  { id: 'ru', name: 'Russian', image: '/locales/ru.jpeg' },
-  { id: 'tr', name: 'Turkish', image: '/locales/tr.jpeg' },
-  { id: 'ar', name: 'Arabic', image: '/locales/ar.jpeg' },
-  { id: 'hi', name: 'Hindi', image: '/locales/hi.jpeg' },
-  { id: 'th', name: 'Thai', image: '/locales/th.jpeg' },
-  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.jpeg' },
-  { id: 'id', name: 'Indonesian', image: '/locales/id.jpeg' },
-  { id: 'ja', name: 'Japanese', image: '/locales/js.jpeg' },
-  { id: 'ko', name: 'Korean', image: '/locales/ko.jpeg' },
-  { id: 'zh', name: 'Chinese', image: '/locales/zh.jpeg' },
+  { id: 'en', name: 'English', image: '/locales/en.png' },
+  { id: 'es', name: 'Spanish', image: '/locales/es.png' },
+  { id: 'fr', name: 'French', image: '/locales/fr.png' },
+  { id: 'de', name: 'German', image: '/locales/de.png' },
+  { id: 'it', name: 'Italian', image: '/locales/it.png' },
+  { id: 'pt', name: 'Portuguese', image: '/locales/pt.png' },
+  { id: 'nl', name: 'Dutch', image: '/locales/nl.png' },
+  { id: 'pl', name: 'Polish', image: '/locales/pl.png' },
+  { id: 'ro', name: 'Romanian', image: '/locales/ro.png' },
+  { id: 'cs', name: 'Czech', image: '/locales/cs.png' },
+  { id: 'el', name: 'Greek', image: '/locales/el.png' },
+  { id: 'bg', name: 'Bulgarian', image: '/locales/bg.png' },
+  { id: 'fi', name: 'Finnish', image: '/locales/fi.png' },
+  { id: 'uk', name: 'Ukrainian', image: '/locales/uk.png' },
+  { id: 'ru', name: 'Russian', image: '/locales/ru.png' },
+  { id: 'tr', name: 'Turkish', image: '/locales/tr.png' },
+  { id: 'ar', name: 'Arabic', image: '/locales/ar.png' },
+  { id: 'hi', name: 'Hindi', image: '/locales/hi.png' },
+  { id: 'th', name: 'Thai', image: '/locales/th.png' },
+  { id: 'vi', name: 'Vietnamese', image: '/locales/vi.png' },
+  { id: 'id', name: 'Indonesian', image: '/locales/id.png' },
+  { id: 'ja', name: 'Japanese', image: '/locales/ja.png' },
+  { id: 'ko', name: 'Korean', image: '/locales/ko.png' },
+  { id: 'zh', name: 'Chinese', image: '/locales/zh.png' },
 ];
 
 // Character interface
@@ -899,7 +899,7 @@ const CreateMusicPage: React.FC = () => {
                     component="img"
                     src={genres.find(g => g.id === selectedGenre)?.image}
                     alt={genres.find(g => g.id === selectedGenre)?.name}
-                    sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                    sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
                   />
                   <span>{genres.find(g => g.id === selectedGenre)?.name}</span>
                 </>
@@ -999,7 +999,7 @@ const CreateMusicPage: React.FC = () => {
                     component="img"
                     src={moods.find(m => m.id === selectedMood)?.image}
                     alt={moods.find(m => m.id === selectedMood)?.name}
-                    sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                    sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
                   />
                   <span>{moods.find(m => m.id === selectedMood)?.name}</span>
                 </>
@@ -1317,7 +1317,7 @@ const CreateMusicPage: React.FC = () => {
                   component="img"
                   src={genre.image}
                   alt={genre.name}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <ListItemText primary={genre.name} primaryTypographyProps={{ fontWeight: 600 }} />
                 {selectedGenre === genre.id && <CheckIcon sx={{ color: '#007AFF' }} />}
@@ -1401,7 +1401,7 @@ const CreateMusicPage: React.FC = () => {
                   component="img"
                   src={mood.image}
                   alt={mood.name}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <ListItemText primary={mood.name} primaryTypographyProps={{ fontWeight: 600 }} />
                 {selectedMood === mood.id && <CheckIcon sx={{ color: '#007AFF' }} />}
@@ -1485,7 +1485,7 @@ const CreateMusicPage: React.FC = () => {
                   component="img"
                   src={language.image}
                   alt={language.name}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <ListItemText primary={language.name} primaryTypographyProps={{ fontWeight: 600 }} />
                 {selectedLanguage === language.id && <CheckIcon sx={{ color: '#007AFF' }} />}

@@ -997,7 +997,7 @@ const UploadPage: React.FC = () => {
                         component="img"
                         src={genres.find(g => g.id === selectedGenre)?.image}
                         alt={genres.find(g => g.id === selectedGenre)?.name}
-                        sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                        sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
                       />
                       <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                         {genres.find(g => g.id === selectedGenre)?.name || 'Select Genre'}
@@ -1032,7 +1032,7 @@ const UploadPage: React.FC = () => {
                         component="img"
                         src={moods.find(m => m.id === selectedMood)?.image}
                         alt={moods.find(m => m.id === selectedMood)?.name}
-                        sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                        sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
                       />
                       <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
                         {moods.find(m => m.id === selectedMood)?.name || 'Select Mood'}
@@ -1159,7 +1159,7 @@ const UploadPage: React.FC = () => {
                   component="img"
                   src={genre.image}
                   alt={genre.name}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <Typography sx={{ fontWeight: selectedGenre === genre.id ? 600 : 400, color: selectedGenre === genre.id ? '#007AFF' : '#1D1D1F' }}>
                   {genre.name}
@@ -1246,7 +1246,7 @@ const UploadPage: React.FC = () => {
                   component="img"
                   src={mood.image}
                   alt={mood.name}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <Typography sx={{ fontWeight: selectedMood === mood.id ? 600 : 400, color: selectedMood === mood.id ? '#007AFF' : '#1D1D1F' }}>
                   {mood.name}

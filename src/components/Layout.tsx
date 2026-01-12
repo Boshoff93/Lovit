@@ -295,7 +295,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
       setCurrentViewingItem
     }}>
-      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F5F5F7' }}>
         {/* Desktop Permanent Sidebar */}
         {!isMobile && (
           <Drawer

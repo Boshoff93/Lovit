@@ -1062,7 +1062,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const handleCreateVideo = (song: Song) => {
     // Navigate to video creation page with song ID
-    navigate(`/create?tab=video&song=${song.songId}`);
+    navigate(`/create-video/${song.songId}`);
   };
 
   const handleShareSong = async (song: Song) => {
@@ -1520,10 +1520,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 if (!selected) {
                   return (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
-                      <Box sx={{ 
-                        width: { xs: 24, sm: 28 }, 
-                        height: { xs: 24, sm: 28 }, 
-                        borderRadius: '6px', 
+                      <Box sx={{
+                        width: { xs: 24, sm: 28 },
+                        height: { xs: 24, sm: 28 },
+                        borderRadius: '50%',
                         background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         display: 'flex',
                         alignItems: 'center',
@@ -1543,7 +1543,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       component="img"
                       src={genre.image}
                       alt={genre.name}
-                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
+                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{genre.name}</Typography>
                   </Box>
@@ -1568,10 +1568,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             >
               <MenuItem value="" sx={{ py: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Box sx={{ 
-                    width: 28, 
-                    height: 28, 
-                    borderRadius: '6px', 
+                  <Box sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
                     background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                     display: 'flex',
                     alignItems: 'center',
@@ -1598,10 +1598,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       component="img"
                       src={genre.image}
                       alt={genre.name}
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '6px', 
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
                         objectFit: 'cover',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                       }}
@@ -1626,10 +1626,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 if (!selected) {
                   return (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
-                      <Box sx={{ 
-                        width: { xs: 24, sm: 28 }, 
-                        height: { xs: 24, sm: 28 }, 
-                        borderRadius: '6px', 
+                      <Box sx={{
+                        width: { xs: 24, sm: 28 },
+                        height: { xs: 24, sm: 28 },
+                        borderRadius: '50%',
                         background: 'linear-gradient(135deg, #FF6B9D, #C44569)',
                         display: 'flex',
                         alignItems: 'center',
@@ -1649,7 +1649,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       component="img"
                       src={mood.image}
                       alt={mood.name}
-                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '6px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
+                      sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
                     <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mood.name}</Typography>
                   </Box>
@@ -1674,10 +1674,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             >
               <MenuItem value="" sx={{ py: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Box sx={{ 
-                    width: 28, 
-                    height: 28, 
-                    borderRadius: '6px', 
+                  <Box sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
                     background: 'linear-gradient(135deg, #FF6B9D, #C44569)',
                     display: 'flex',
                     alignItems: 'center',
@@ -1704,10 +1704,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       component="img"
                       src={mood.image}
                       alt={mood.name}
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '6px', 
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
                         objectFit: 'cover',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                       }}
@@ -1852,8 +1852,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     sx={{
                       width: { xs: 44, sm: 48 },
                       height: { xs: 44, sm: 48 },
-                      borderRadius: '6px',
-                      background: isProcessing 
+                      borderRadius: '50%',
+                      background: isProcessing
                         ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
                         : isFailed
                         ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)'
@@ -2360,7 +2360,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={() => navigate('/create?tab=video')}
+                onClick={() => navigate('/create/video')}
                 sx={{
                   borderRadius: '12px',
                   textTransform: 'none',

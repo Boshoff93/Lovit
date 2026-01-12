@@ -750,7 +750,7 @@ const CreateVideoPage: React.FC = () => {
                       sx={{
                         width: 32,
                         height: 32,
-                        borderRadius: '6px',
+                        borderRadius: '50%',
                         objectFit: 'cover',
                         flexShrink: 0,
                       }}
@@ -1012,7 +1012,7 @@ const CreateVideoPage: React.FC = () => {
                   component="img"
                   src={artStyles.find(s => s.id === selectedStyle)?.image}
                   alt={artStyles.find(s => s.id === selectedStyle)?.label}
-                  sx={{ width: 28, height: 28, borderRadius: '6px', objectFit: 'cover' }}
+                  sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <span>{artStyles.find(s => s.id === selectedStyle)?.label}</span>
               </Box>
@@ -1381,7 +1381,7 @@ const CreateVideoPage: React.FC = () => {
                   component="img"
                   src={style.image}
                   alt={style.label}
-                  sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', mr: 2 }}
+                  sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', mr: 2 }}
                 />
                 <ListItemText primary={style.label} primaryTypographyProps={{ fontWeight: 600 }} />
                 {selectedStyle === style.id && <CheckIcon sx={{ color: '#007AFF' }} />}
@@ -1517,7 +1517,7 @@ const CreateVideoPage: React.FC = () => {
                         >
                           <Avatar
                             src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
-                            sx={{ width: 40, height: 40, borderRadius: '8px', mr: 2 }}
+                            sx={{ width: 40, height: 40, borderRadius: '50%', mr: 2 }}
                           />
                           <ListItemText
                             primary={char.characterName}
@@ -1715,7 +1715,7 @@ const CreateVideoPage: React.FC = () => {
                         sx={{
                           width: 40,
                           height: 40,
-                          borderRadius: '8px',
+                          borderRadius: '50%',
                           mr: 2,
                           position: 'relative',
                           overflow: 'hidden',

@@ -409,12 +409,28 @@ const ScheduledContentPage: React.FC = () => {
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto', minWidth: 0 }}>
 
         {/* Calendar Grid */}
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <CircularProgress sx={{ color: '#007AFF' }} />
-          </Box>
-        ) : (
-          <Box sx={{ flex: 1, background: '#FAFAFA', borderRadius: '0 0 16px 16px', position: 'relative', minHeight: 400, minWidth: { xs: 'auto', sm: 700 }, overflow: 'auto' }}>
+        <Box sx={{ flex: 1, background: '#FAFAFA', borderRadius: '0 0 16px 16px', position: 'relative', minHeight: 400, minWidth: { xs: 'auto', sm: 700 }, overflow: 'auto' }}>
+          {/* Loading overlay */}
+          {loading && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(250, 250, 250, 0.8)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 100,
+                borderRadius: '0 0 16px 16px',
+              }}
+            >
+              <CircularProgress sx={{ color: '#007AFF' }} />
+            </Box>
+          )}
             {/* Empty state overlay - centered, doesn't affect layout */}
             {scheduledPosts.filter(p => p.status === 'scheduled').length === 0 && !loading && (
               <Box
@@ -855,7 +871,6 @@ const ScheduledContentPage: React.FC = () => {
               </Box>
             )}
           </Box>
-        )}
       </Box>
 
       {/* Cancel Dialog */}
