@@ -44,7 +44,9 @@ export function useTabHeaders(): TabHeaders {
     // Default fallback (shouldn't reach here if used correctly)
     return {
       badge: 'Gruvi AI',
-      title: 'Create with AI',
+      titlePrefix: 'Create with ',
+      titleHighlight: 'AI',
+      titleSuffix: '',
       subtitle: 'Generate music and videos with artificial intelligence.',
     };
   }, [location.pathname]);

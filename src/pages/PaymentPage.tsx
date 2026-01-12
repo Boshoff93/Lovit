@@ -588,13 +588,25 @@ const PaymentPage: React.FC = () => {
               fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
               fontWeight: 800,
               fontFamily: '"Fredoka", "Nunito", sans-serif',
-              color: '#fff',
               mb: 3,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
+              color: '#fff',
             }}
           >
-            {headers.title}
+            {headers.titlePrefix}
+            <Box
+              component="span"
+              sx={{
+                background: 'linear-gradient(135deg, #C084FC 0%, #A78BFA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {headers.titleHighlight}
+            </Box>
+            {headers.titleSuffix}
           </Typography>
           <Typography
             sx={{

@@ -5,7 +5,7 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 
 interface MarketingSectionProps {
   children: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   subtitle?: string;
   badge?: string;
   badgeColor?: 'primary' | 'secondary' | 'success' | 'warning';

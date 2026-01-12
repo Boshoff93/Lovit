@@ -857,13 +857,25 @@ const AIVideoShortsPage: React.FC = () => {
               sx={{
                 fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
                 fontWeight: 800,
-                color: '#fff',
                 mb: 3,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.1,
+                color: '#fff',
               }}
             >
-              {headers.title}
+              {headers.titlePrefix}
+              <Box
+                component="span"
+                sx={{
+                  background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {headers.titleHighlight}
+              </Box>
+              {headers.titleSuffix}
             </Typography>
             <Typography
               sx={{
@@ -1406,7 +1418,14 @@ const AIVideoShortsPage: React.FC = () => {
                 mb: 2,
               }}
             >
-              Perfect For Every Industry
+              Perfect For{' '}
+              <Box component="span" sx={{
+                background: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Every Industry
+              </Box>
             </Typography>
           </Box>
 
@@ -1470,7 +1489,15 @@ const AIVideoShortsPage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              Ready to Create Viral Content?
+              Ready to Create{' '}
+              <Box component="span" sx={{
+                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Viral Content
+              </Box>
+              ?
             </Typography>
             <Typography
               sx={{

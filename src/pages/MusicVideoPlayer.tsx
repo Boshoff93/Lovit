@@ -146,7 +146,8 @@ const MusicVideoPlayer: React.FC = () => {
   const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
   const [socialError, setSocialError] = useState<string | null>(null);
   const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
-  
+  const [modalError, setModalError] = useState<string | null>(null);
+
   // Helper to show social error and scroll to it
   const showSocialError = useCallback((message: string) => {
     setSocialError(message);
@@ -3269,9 +3270,9 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
 
         {/* Upload Confirmation Modal */}
-        <Dialog 
-          open={showUploadConfirm} 
-          onClose={() => !isUploading && setShowUploadConfirm(false)}
+        <Dialog
+          open={showUploadConfirm}
+          onClose={() => { if (!isUploading) { setShowUploadConfirm(false); setModalError(null); } }}
           maxWidth="sm"
           fullWidth
           PaperProps={{
@@ -3282,6 +3283,21 @@ const MusicVideoPlayer: React.FC = () => {
             {isUploading ? 'Uploading...' : Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? 'Upload Complete' : 'Confirm Upload'}
           </DialogTitle>
           <DialogContent>
+            {/* Modal Error Alert */}
+            {modalError && (
+              <Alert
+                severity="error"
+                onClose={() => setModalError(null)}
+                sx={{
+                  mb: 2,
+                  borderRadius: '10px',
+                  width: 'fit-content',
+                }}
+              >
+                {modalError}
+              </Alert>
+            )}
+
             {backgroundUploadStarted && (
               <Alert
                 severity="success"
@@ -3619,10 +3635,11 @@ const MusicVideoPlayer: React.FC = () => {
               </Button>
             ) : (
               <>
-                <Button 
+                <Button
                   onClick={() => {
                     setShowUploadConfirm(false);
                     setUploadProgress({});
+                    setModalError(null);
                   }}
                   disabled={isUploading}
                   sx={{ borderRadius: '10px', textTransform: 'none', color: '#86868B' }}
@@ -3634,18 +3651,18 @@ const MusicVideoPlayer: React.FC = () => {
                   variant="contained"
                   startIcon={(isUploading || isScheduling) ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : uploadMode === 'schedule' ? <Schedule /> : <CloudUpload />}
                   onClick={async () => {
-                    setSocialError(null);
+                    setModalError(null);
 
                     // Handle scheduling
                     if (uploadMode === 'schedule') {
                       if (!scheduledDateTime) {
-                        showSocialError('Please select a date and time for scheduling');
+                        setModalError('Please select a date and time for scheduling');
                         return;
                       }
 
                       const scheduledDate = scheduledDateTime.toDate();
                       if (scheduledDate <= new Date()) {
-                        showSocialError('Scheduled time must be in the future');
+                        setModalError('Scheduled time must be in the future');
                         return;
                       }
 
@@ -3692,7 +3709,11 @@ const MusicVideoPlayer: React.FC = () => {
                       } catch (err: any) {
                         console.error('Scheduling failed:', err);
                         setIsScheduling(false);
-                        showSocialError(err.response?.data?.error || 'Failed to schedule post. Please try again.');
+                        if (err.response?.status === 401) {
+                          setModalError('Session expired. Please refresh the page and try again.');
+                        } else {
+                          setModalError(err.response?.data?.error || 'Failed to schedule post. Please try again.');
+                        }
                       }
                       return;
                     }

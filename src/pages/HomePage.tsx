@@ -2429,7 +2429,7 @@ const HomePage: React.FC = () => {
             tag: v.tag
           }))}
           videoUrls={videoUrls}
-          title="AI-Powered Product Videos"
+          title={<><Box component="span" sx={{ background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AI-Powered</Box> Product Videos</>}
           subtitle="Create stunning product videos with AI"
           badge="UGC Content"
           ctaText="Start Creating"
@@ -2491,7 +2491,14 @@ const HomePage: React.FC = () => {
                     mb: 2,
                   }}
                 >
-                  Cinematic Brand Videos
+                  Cinematic{' '}
+                  <Box component="span" sx={{
+                    background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}>
+                    Brand Videos
+                  </Box>
                 </Typography>
                 <Typography
                   sx={{
@@ -2805,7 +2812,15 @@ const HomePage: React.FC = () => {
                   lineHeight: 1.1,
                 }}
               >
-                Post to All Platforms in One Click
+                Post to{' '}
+                <Box component="span" sx={{
+                  background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  All Platforms
+                </Box>
+                {' '}in One Click
               </Typography>
               <Typography
                 sx={{
@@ -3159,7 +3174,14 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              Create in Any Genre
+              Create in{' '}
+              <Box component="span" sx={{
+                background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8A80 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Any Genre
+              </Box>
             </Typography>
             <Typography
               sx={{
@@ -3248,8 +3270,8 @@ const HomePage: React.FC = () => {
 
       {/* Discover More Tracks Section - remaining 3 tracks + 12 additional genre tracks = 15 total */}
       <MarketingSection darkMode
-        title={carouselTitles.moreGenres.title}
-        subtitle={carouselTitles.moreGenres.subtitle}
+        title={<><Box component="span" sx={{ background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Your Sound</Box>, Your Style</>}
+        subtitle="Explore AI-generated tracks across every genre"
         badge="Discover"
         badgeColor="primary"
         background="white"
@@ -3465,7 +3487,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              {carouselTitles.videoStyles.title}
+              Create Videos in Any Style
             </Typography>
             <Typography
               sx={{
@@ -3994,7 +4016,14 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              Set the Perfect Mood
+              Set the{' '}
+              <Box component="span" sx={{
+                background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Perfect Mood
+              </Box>
             </Typography>
             <Typography
               sx={{

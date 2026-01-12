@@ -7,7 +7,9 @@
 
 export interface TabHeaders {
   badge: string;
-  title: string;
+  titlePrefix: string;      // Text before the highlighted part (e.g., "Create ")
+  titleHighlight: string;   // The gradient/highlighted part (e.g., "Pop Music")
+  titleSuffix: string;      // Text after the highlighted part (e.g., " with AI")
   subtitle: string;
 }
 
@@ -22,7 +24,9 @@ export function getAIMusicHeaders(pathname: string): TabHeaders {
   if (!path) {
     return {
       badge: 'AI Music Generator',
-      title: 'Create Music in Any Genre with AI',
+      titlePrefix: 'Create Music in ',
+      titleHighlight: 'Any Genre',
+      titleSuffix: ' with AI',
       subtitle: 'Generate original songs in seconds. 32 genres, 24 languages. Your music, your rights — use it anywhere you want.',
     };
   }
@@ -47,7 +51,9 @@ export function getAIMusicHeaders(pathname: string): TabHeaders {
     const genre = genreMap[path];
     return {
       badge: `AI ${genre.name} Music Generator`,
-      title: `Create ${genre.name} Music with AI`,
+      titlePrefix: 'Create ',
+      titleHighlight: `${genre.name} Music`,
+      titleSuffix: ' with AI',
       subtitle: `Generate professional ${genre.description} in seconds. Perfect for artists, producers, and content creators.`,
     };
   }
@@ -70,31 +76,41 @@ export function getAIMusicHeaders(pathname: string): TabHeaders {
     const language = langMap[languageMatch[1]] || languageMatch[1];
     return {
       badge: `AI ${language} Music Generator`,
-      title: `Create AI Music in ${language}`,
+      titlePrefix: 'Create ',
+      titleHighlight: `${language} Music`,
+      titleSuffix: ' with AI',
       subtitle: `Generate songs with authentic ${language} vocals. Native-quality lyrics and pronunciation powered by AI.`,
     };
   }
 
   // Viral routes: /ai-music/viral-tiktok, /ai-music/trending
-  const viralMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const viralMap: Record<string, TabHeaders> = {
     'viral-tiktok': {
       badge: 'Viral TikTok Music Generator',
-      title: 'Create Viral TikTok Music with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Viral TikTok Music',
+      titleSuffix: ' with AI',
       subtitle: 'Generate TikTok-ready tracks optimized for trending sounds and maximum engagement.',
     },
     'youtube-shorts': {
       badge: 'YouTube Shorts Music Generator',
-      title: 'Create YouTube Shorts Music with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'YouTube Shorts Music',
+      titleSuffix: ' with AI',
       subtitle: 'Generate copyright-free music perfect for YouTube Shorts that keeps viewers watching.',
     },
     'instagram-reels': {
       badge: 'Instagram Reels Music Generator',
-      title: 'Create Instagram Reels Music with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Instagram Reels Music',
+      titleSuffix: ' with AI',
       subtitle: 'Generate trending Reels audio that captures attention and boosts engagement.',
     },
     'trending': {
       badge: 'Trending Music Generator',
-      title: 'Create Trending Music with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Trending Music',
+      titleSuffix: ' with AI',
       subtitle: 'Generate music in trending styles that resonate with today\'s audiences across all platforms.',
     },
   };
@@ -107,7 +123,9 @@ export function getAIMusicHeaders(pathname: string): TabHeaders {
   const displayName = path.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   return {
     badge: `AI ${displayName} Music`,
-    title: `Create ${displayName} Music with AI`,
+    titlePrefix: 'Create ',
+    titleHighlight: `${displayName} Music`,
+    titleSuffix: ' with AI',
     subtitle: 'Generate professional, copyright-free music in seconds with AI.',
   };
 }
@@ -123,61 +141,83 @@ export function getAIVideoShortsHeaders(pathname: string): TabHeaders {
   if (!path) {
     return {
       badge: 'AI Video Shorts Generator',
-      title: 'Create UGC Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'UGC Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Transform your products into engaging video content. AI avatars showcase your products 24/7 with perfect delivery, multiple languages, and unlimited scalability.',
     };
   }
 
   // Use case routes
-  const useCaseMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const useCaseMap: Record<string, TabHeaders> = {
     'product': {
       badge: 'Product Video Generator',
-      title: 'Create Product Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Product Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Transform your products into scroll-stopping videos perfect for TikTok, Instagram Reels, and YouTube Shorts.',
     },
     'ugc': {
       badge: 'UGC Video Generator',
-      title: 'Create UGC Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'UGC Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate authentic user-generated content style videos at scale. No filming required.',
     },
     'ads': {
       badge: 'Ad Video Generator',
-      title: 'Create Ad Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Ad Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate high-converting video ads in seconds. Perfect for Facebook, Instagram, and TikTok advertising.',
     },
     'promo': {
       badge: 'Promo Video Generator',
-      title: 'Create Promo Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Promo Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Create professional promotional videos that drive conversions and boost brand awareness.',
     },
     'social': {
       badge: 'Social Media Video Generator',
-      title: 'Create Social Media Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Social Media Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate engaging social content optimized for every platform - TikTok, Reels, Shorts, and more.',
     },
     'tiktok': {
       badge: 'TikTok Video Generator',
-      title: 'Create TikTok Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'TikTok Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate viral TikTok content with AI. Trending formats, perfect timing, maximum engagement.',
     },
     'instagram': {
       badge: 'Instagram Reels Generator',
-      title: 'Create Instagram Reels with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Instagram Reels',
+      titleSuffix: ' with AI',
       subtitle: 'Generate scroll-stopping Reels that boost your Instagram engagement and follower growth.',
     },
     'youtube': {
       badge: 'YouTube Shorts Generator',
-      title: 'Create YouTube Shorts with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'YouTube Shorts',
+      titleSuffix: ' with AI',
       subtitle: 'Generate YouTube Shorts that capture attention and drive subscribers to your channel.',
     },
     'brand': {
       badge: 'Brand Video Generator',
-      title: 'Create Brand Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Brand Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate professional brand videos that tell your story and connect with your audience.',
     },
     'marketing': {
       badge: 'Marketing Video Generator',
-      title: 'Create Marketing Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Marketing Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate marketing videos that convert. Perfect for campaigns, launches, and promotions.',
     },
   };
@@ -200,21 +240,27 @@ export function getAIVideoShortsHeaders(pathname: string): TabHeaders {
     const style = styleMap[styleMatch[1]] || styleMatch[1];
     return {
       badge: `${style} Video Generator`,
-      title: `Create ${style} Videos with AI`,
+      titlePrefix: 'Create ',
+      titleHighlight: `${style} Videos`,
+      titleSuffix: ' with AI',
       subtitle: `Generate stunning ${style.toLowerCase()}-style videos perfect for social media and marketing.`,
     };
   }
 
   // Viral platform routes
-  const viralMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const viralMap: Record<string, TabHeaders> = {
     'viral-tiktok': {
       badge: 'Viral TikTok Video Generator',
-      title: 'Create Viral TikTok Videos with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Viral TikTok Videos',
+      titleSuffix: ' with AI',
       subtitle: 'Generate TikTok videos optimized for the algorithm. Trending formats, perfect hooks, maximum virality.',
     },
     'reels': {
       badge: 'Instagram Reels Generator',
-      title: 'Create Instagram Reels with AI',
+      titlePrefix: 'Create ',
+      titleHighlight: 'Instagram Reels',
+      titleSuffix: ' with AI',
       subtitle: 'Generate Reels that stop the scroll and boost your Instagram presence.',
     },
   };
@@ -227,7 +273,9 @@ export function getAIVideoShortsHeaders(pathname: string): TabHeaders {
   const displayName = path.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   return {
     badge: `AI ${displayName} Video Generator`,
-    title: `Create ${displayName} Videos with AI`,
+    titlePrefix: 'Create ',
+    titleHighlight: `${displayName} Videos`,
+    titleSuffix: ' with AI',
     subtitle: 'Generate professional video content in seconds with AI.',
   };
 }
@@ -243,51 +291,69 @@ export function getSocialMediaHeaders(pathname: string): TabHeaders {
   if (!path) {
     return {
       badge: 'Social Media Publishing',
-      title: 'Publish to All Platforms in One Click',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'All Platforms',
+      titleSuffix: ' in One Click',
       subtitle: 'Stop manually posting to each platform. Connect your accounts once, then share your music and videos everywhere with a single click.',
     };
   }
 
   // Platform routes
-  const platformMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const platformMap: Record<string, TabHeaders> = {
     'youtube': {
       badge: 'YouTube Publishing',
-      title: 'Publish to YouTube Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'YouTube',
+      titleSuffix: ' Automatically',
       subtitle: 'Schedule and auto-post your videos to YouTube. Optimize titles, descriptions, and tags for maximum reach.',
     },
     'tiktok': {
       badge: 'TikTok Publishing',
-      title: 'Publish to TikTok Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'TikTok',
+      titleSuffix: ' Automatically',
       subtitle: 'Auto-post to TikTok at optimal times. Schedule unlimited videos and grow your TikTok presence.',
     },
     'instagram': {
       badge: 'Instagram Publishing',
-      title: 'Publish to Instagram Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'Instagram',
+      titleSuffix: ' Automatically',
       subtitle: 'Schedule Reels and posts to Instagram. Maintain consistent posting without lifting a finger.',
     },
     'facebook': {
       badge: 'Facebook Publishing',
-      title: 'Publish to Facebook Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'Facebook',
+      titleSuffix: ' Automatically',
       subtitle: 'Auto-post videos and music to Facebook. Schedule content and engage your audience effortlessly.',
     },
     'linkedin': {
       badge: 'LinkedIn Publishing',
-      title: 'Publish to LinkedIn Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'LinkedIn',
+      titleSuffix: ' Automatically',
       subtitle: 'Share professional content to LinkedIn on autopilot. Build your brand with consistent posting.',
     },
     'twitter': {
       badge: 'Twitter Publishing',
-      title: 'Publish to Twitter Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'Twitter',
+      titleSuffix: ' Automatically',
       subtitle: 'Schedule tweets and media posts. Stay active on Twitter without constant manual posting.',
     },
     'x': {
       badge: 'X Publishing',
-      title: 'Publish to X Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'X',
+      titleSuffix: ' Automatically',
       subtitle: 'Auto-post your content to X (Twitter). Schedule unlimited posts and grow your presence.',
     },
     'pinterest': {
       badge: 'Pinterest Publishing',
-      title: 'Publish to Pinterest Automatically',
+      titlePrefix: 'Publish to ',
+      titleHighlight: 'Pinterest',
+      titleSuffix: ' Automatically',
       subtitle: 'Schedule pins and drive traffic from Pinterest. Automate your Pinterest marketing strategy.',
     },
   };
@@ -297,35 +363,47 @@ export function getSocialMediaHeaders(pathname: string): TabHeaders {
   }
 
   // Feature routes
-  const featureMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const featureMap: Record<string, TabHeaders> = {
     'scheduler': {
       badge: 'Social Media Scheduler',
-      title: 'Schedule Posts to All Platforms',
+      titlePrefix: 'Schedule Posts to ',
+      titleHighlight: 'All Platforms',
+      titleSuffix: '',
       subtitle: 'Plan your content calendar weeks in advance. Auto-post at optimal times for maximum engagement.',
     },
     'analytics': {
       badge: 'Social Media Analytics',
-      title: 'Track Performance Across All Platforms',
+      titlePrefix: 'Track ',
+      titleHighlight: 'Performance',
+      titleSuffix: ' Across All Platforms',
       subtitle: 'Monitor views, engagement, and growth across all your social accounts in one dashboard.',
     },
     'auto-post': {
       badge: 'Auto-Posting Tool',
-      title: 'Auto-Post to All Platforms',
+      titlePrefix: 'Auto-Post to ',
+      titleHighlight: 'All Platforms',
+      titleSuffix: '',
       subtitle: 'Create once, publish everywhere automatically. Save hours every week with intelligent auto-posting.',
     },
     'cross-post': {
       badge: 'Cross-Platform Publishing',
-      title: 'Cross-Post to All Platforms Instantly',
+      titlePrefix: 'Cross-Post to ',
+      titleHighlight: 'All Platforms',
+      titleSuffix: ' Instantly',
       subtitle: 'Share your content to YouTube, TikTok, Instagram, Facebook, and more with one click.',
     },
     'calendar': {
       badge: 'Social Media Calendar',
-      title: 'Manage Your Content Calendar',
+      titlePrefix: 'Manage Your ',
+      titleHighlight: 'Content Calendar',
+      titleSuffix: '',
       subtitle: 'Visualize your posting schedule across all platforms. Drag, drop, and schedule content effortlessly.',
     },
     'bulk-upload': {
       badge: 'Bulk Upload Tool',
-      title: 'Upload Multiple Posts at Once',
+      titlePrefix: 'Upload ',
+      titleHighlight: 'Multiple Posts',
+      titleSuffix: ' at Once',
       subtitle: 'Schedule weeks of content in minutes. Upload and schedule 100+ posts across all platforms.',
     },
   };
@@ -338,7 +416,9 @@ export function getSocialMediaHeaders(pathname: string): TabHeaders {
   const displayName = path.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   return {
     badge: `Social Media ${displayName}`,
-    title: `${displayName} for Social Media`,
+    titlePrefix: '',
+    titleHighlight: displayName,
+    titleSuffix: ' for Social Media',
     subtitle: 'Streamline your social media workflow and grow your presence across all platforms.',
   };
 }
@@ -354,51 +434,69 @@ export function getPricingHeaders(pathname: string): TabHeaders {
   if (!path) {
     return {
       badge: 'Pricing Plans',
-      title: 'Unlimited AI Creativity Starting Today',
+      titlePrefix: 'Unlimited ',
+      titleHighlight: 'AI Creativity',
+      titleSuffix: ' Starting Today',
       subtitle: 'Generate unlimited AI images, videos, viral shorts, and avatars.',
     };
   }
 
   // Plan-specific routes
-  const planMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const planMap: Record<string, TabHeaders> = {
     'free': {
       badge: 'Free Plan',
-      title: 'Start Creating for Free',
+      titlePrefix: 'Start Creating ',
+      titleHighlight: 'for Free',
+      titleSuffix: '',
       subtitle: 'Try Gruvi with 2 free credits. Generate AI music and videos with no credit card required.',
     },
     'starter': {
       badge: 'Starter Plan',
-      title: 'Perfect for Getting Started',
+      titlePrefix: 'Perfect for ',
+      titleHighlight: 'Getting Started',
+      titleSuffix: '',
       subtitle: 'Generate unlimited AI music and videos. Perfect for content creators and small businesses.',
     },
     'pro': {
       badge: 'Pro Plan',
-      title: 'Most Popular for Creators',
+      titlePrefix: 'Most Popular for ',
+      titleHighlight: 'Creators',
+      titleSuffix: '',
       subtitle: 'Everything in Starter, plus advanced features and priority support for serious creators.',
     },
     'business': {
       badge: 'Business Plan',
-      title: 'Scale Your Content Creation',
+      titlePrefix: 'Scale Your ',
+      titleHighlight: 'Content Creation',
+      titleSuffix: '',
       subtitle: 'Advanced features, team collaboration, and white-label options for growing businesses.',
     },
     'enterprise': {
       badge: 'Enterprise Plan',
-      title: 'Custom Solutions for Enterprises',
+      titlePrefix: 'Custom Solutions for ',
+      titleHighlight: 'Enterprises',
+      titleSuffix: '',
       subtitle: 'Unlimited usage, dedicated support, custom integrations, and SLA guarantees.',
     },
     'monthly': {
       badge: 'Monthly Pricing',
-      title: 'Flexible Monthly Plans',
+      titlePrefix: 'Flexible ',
+      titleHighlight: 'Monthly Plans',
+      titleSuffix: '',
       subtitle: 'Pay month-to-month with the flexibility to upgrade, downgrade, or cancel anytime.',
     },
     'yearly': {
       badge: 'Annual Pricing',
-      title: 'Save 40% with Annual Plans',
+      titlePrefix: 'Save 40% with ',
+      titleHighlight: 'Annual Plans',
+      titleSuffix: '',
       subtitle: 'Get 2 months free when you subscribe annually. Best value for committed creators.',
     },
     'lifetime': {
       badge: 'Lifetime Deal',
-      title: 'Pay Once, Create Forever',
+      titlePrefix: 'Pay Once, ',
+      titleHighlight: 'Create Forever',
+      titleSuffix: '',
       subtitle: 'One-time payment for lifetime access. No recurring fees, unlimited creation forever.',
     },
   };
@@ -408,35 +506,47 @@ export function getPricingHeaders(pathname: string): TabHeaders {
   }
 
   // Use case pricing routes
-  const useCaseMap: Record<string, { badge: string; title: string; subtitle: string }> = {
+  const useCaseMap: Record<string, TabHeaders> = {
     'for-creators': {
       badge: 'Pricing for Creators',
-      title: 'Creator-Friendly Pricing',
+      titlePrefix: '',
+      titleHighlight: 'Creator-Friendly',
+      titleSuffix: ' Pricing',
       subtitle: 'Affordable plans designed for content creators, influencers, and YouTubers.',
     },
     'for-businesses': {
       badge: 'Pricing for Businesses',
-      title: 'Business Pricing Plans',
+      titlePrefix: '',
+      titleHighlight: 'Business',
+      titleSuffix: ' Pricing Plans',
       subtitle: 'Scalable solutions for businesses of all sizes. Team accounts and bulk creation included.',
     },
     'for-agencies': {
       badge: 'Pricing for Agencies',
-      title: 'Agency Pricing Plans',
+      titlePrefix: '',
+      titleHighlight: 'Agency',
+      titleSuffix: ' Pricing Plans',
       subtitle: 'White-label options, client management, and bulk generation for marketing agencies.',
     },
     'for-musicians': {
       badge: 'Pricing for Musicians',
-      title: 'Musician Pricing Plans',
+      titlePrefix: '',
+      titleHighlight: 'Musician',
+      titleSuffix: ' Pricing Plans',
       subtitle: 'Commercial licensing, unlimited downloads, and full rights for music professionals.',
     },
     'for-marketers': {
       badge: 'Pricing for Marketers',
-      title: 'Marketer Pricing Plans',
+      titlePrefix: '',
+      titleHighlight: 'Marketer',
+      titleSuffix: ' Pricing Plans',
       subtitle: 'Ad creation, A/B testing, and analytics for digital marketing professionals.',
     },
     'for-influencers': {
       badge: 'Pricing for Influencers',
-      title: 'Influencer Pricing Plans',
+      titlePrefix: '',
+      titleHighlight: 'Influencer',
+      titleSuffix: ' Pricing Plans',
       subtitle: 'Unlimited content generation to keep your social media presence consistent and engaging.',
     },
   };
@@ -449,7 +559,9 @@ export function getPricingHeaders(pathname: string): TabHeaders {
   const displayName = path.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   return {
     badge: `${displayName} Pricing`,
-    title: `${displayName} Plans`,
+    titlePrefix: '',
+    titleHighlight: displayName,
+    titleSuffix: ' Plans',
     subtitle: 'Choose the plan that fits your needs and start creating with AI today.',
   };
 }

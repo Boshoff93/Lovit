@@ -352,13 +352,25 @@ const SocialMediaPage: React.FC = () => {
                 sx={{
                   fontSize: { xs: '2.75rem', sm: '3.5rem', md: '4.25rem' },
                   fontWeight: 800,
-                  color: '#fff',
                   mb: 3,
                   letterSpacing: '-0.03em',
                   lineHeight: 1.05,
+                  color: '#fff',
                 }}
               >
-                {headers.title}
+                {headers.titlePrefix}
+                <Box
+                  component="span"
+                  sx={{
+                    background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {headers.titleHighlight}
+                </Box>
+                {headers.titleSuffix}
               </Typography>
               <Typography
                 sx={{
