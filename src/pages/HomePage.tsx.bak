@@ -1106,24 +1106,23 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOut 2.5s ease-out infinite',
-            '@keyframes pulseOut': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(59, 130, 246, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
@@ -1141,24 +1140,23 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOut 2.5s ease-out infinite',
-            '@keyframes pulseOut': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(59, 130, 246, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
@@ -1322,7 +1320,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick, isInView }) => {
             right: 10,
             px: 1.5,
             py: 0.5,
-            borderRadius: '12px',
+            borderRadius: '100px',
             background: 'rgba(255,255,255,0.7)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
@@ -1544,7 +1542,7 @@ const LandscapeVideoCard: React.FC<{
                 sx={{
                   px: 1.5,
                   py: 0.5,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   background: 'rgba(255, 255, 255, 0.15)',
                   backdropFilter: 'blur(20px)',
                 }}
@@ -2194,7 +2192,7 @@ const HomePage: React.FC = () => {
                   '& .MuiOutlinedInput-root': {
                     background: 'rgba(15, 20, 35, 0.8)',
                     backdropFilter: 'blur(20px)',
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     pr: { xs: 1, sm: 1.5 },
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
                     border: '1px solid rgba(0, 212, 170, 0.2)',
@@ -2266,7 +2264,7 @@ const HomePage: React.FC = () => {
                     fontSize: { xs: '0.7rem', sm: '0.85rem', md: '0.95rem' },
                     fontWeight: 500,
                     cursor: 'pointer',
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     height: { xs: '32px', sm: '38px', md: '42px' },
                     '& .MuiChip-label': {
                       px: { xs: 1.5, sm: 2, md: 2.5 },
@@ -2301,7 +2299,7 @@ const HomePage: React.FC = () => {
                   color: '#fff !important',
                   px: { xs: 3, sm: 4 },
                   py: { xs: 1.25, sm: 1.5 },
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: { xs: '0.95rem', sm: '1.05rem' },
@@ -2330,7 +2328,7 @@ const HomePage: React.FC = () => {
                   backgroundColor: 'transparent !important',
                   px: { xs: 3, sm: 4 },
                   py: { xs: 1.25, sm: 1.5 },
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: { xs: '0.95rem', sm: '1.05rem' },
@@ -2435,7 +2433,7 @@ const HomePage: React.FC = () => {
                     fontWeight: 600,
                     fontSize: '0.75rem',
                     height: 28,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                   }}
                 />
                 <Typography
@@ -2521,7 +2519,7 @@ const HomePage: React.FC = () => {
                     fontWeight: 600,
                     fontSize: '0.75rem',
                     height: 28,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                   }}
                 />
                 <Typography
@@ -2607,7 +2605,7 @@ const HomePage: React.FC = () => {
                     fontWeight: 600,
                     fontSize: '0.75rem',
                     height: 28,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                   }}
                 />
                 <Typography
@@ -2676,7 +2674,7 @@ const HomePage: React.FC = () => {
             color: '#fff !important',
             px: { xs: 4, sm: 5 },
             py: { xs: 1.5, sm: 1.75 },
-            borderRadius: '12px',
+            borderRadius: '100px',
             fontWeight: 600,
             textTransform: 'none',
             fontSize: { xs: '1rem', sm: '1.1rem' },
@@ -2753,7 +2751,7 @@ const HomePage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.8rem',
                   height: 32,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   border: '1px solid rgba(6, 182, 212, 0.3)',
                 }}
               />
@@ -2858,7 +2856,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #A78BFA',
               }}
             />
@@ -3035,7 +3033,7 @@ const HomePage: React.FC = () => {
                 color: '#fff !important',
                 px: 4,
                 py: 1.5,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 textTransform: 'none',
                 fontSize: '1rem',
@@ -3063,7 +3061,7 @@ const HomePage: React.FC = () => {
                 backgroundColor: 'transparent !important',
                 px: 4,
                 py: 1.5,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 textTransform: 'none',
                 fontSize: '1rem',
@@ -3115,7 +3113,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid rgba(6, 182, 212, 0.3)',
               }}
             />
@@ -3421,7 +3419,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #FB923C',
               }}
             />
@@ -3548,7 +3546,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #4ADE80',
               }}
             />
@@ -3725,7 +3723,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #4ADE80',
               }}
             />
@@ -3950,7 +3948,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #A78BFA',
               }}
             />
@@ -4054,7 +4052,7 @@ const HomePage: React.FC = () => {
             color: '#fff !important',
             px: { xs: 4, sm: 5 },
             py: { xs: 1.5, sm: 1.75 },
-            borderRadius: '12px',
+            borderRadius: '100px',
             fontWeight: 600,
             textTransform: 'none',
             fontSize: { xs: '1rem', sm: '1.1rem' },
@@ -4104,7 +4102,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #FB923C',
               }}
             />
@@ -4298,7 +4296,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 border: '1px solid #A78BFA',
               }}
             />
@@ -4325,7 +4323,7 @@ const HomePage: React.FC = () => {
                 alignItems: 'center',
                 gap: 2,
                 background: 'rgba(255,255,255,0.05)',
-                borderRadius: '12px',
+                borderRadius: '100px',
                 p: 1,
                 border: '1px solid rgba(255,255,255,0.1)',
               }}
@@ -4337,7 +4335,7 @@ const HomePage: React.FC = () => {
                   color: !isYearly ? '#fff' : 'rgba(255,255,255,0.5)',
                   px: 2,
                   py: 0.75,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   background: !isYearly ? 'rgba(255,255,255,0.1)' : 'transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -4352,7 +4350,7 @@ const HomePage: React.FC = () => {
                   color: isYearly ? '#fff' : 'rgba(255,255,255,0.5)',
                   px: 2,
                   py: 0.75,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   background: isYearly ? 'rgba(255,255,255,0.1)' : 'transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -4685,7 +4683,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
               }}
             />
             <Typography
@@ -4809,7 +4807,7 @@ const HomePage: React.FC = () => {
                 textTransform: 'none',
                 px: 4,
                 py: 1.5,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 border: 'none',
                 boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
@@ -4858,7 +4856,7 @@ const HomePage: React.FC = () => {
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
               }}
             />
             <Typography
@@ -4904,7 +4902,7 @@ const HomePage: React.FC = () => {
                   fontSize: '0.9rem',
                   px: 2,
                   height: 44,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {

@@ -6,7 +6,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Paper,
   Button,
   Breadcrumbs,
   Link
@@ -410,9 +409,9 @@ const FAQPage: React.FC = () => {
 
   // Always show the full-page standalone style (Fable-like)
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      background: '#fff',
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #0D0D0F 0%, #0F0F14 50%, #0D0D0F 100%)',
       position: 'relative',
       pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
       transition: 'padding-bottom 0.3s ease-out',
@@ -425,7 +424,7 @@ const FAQPage: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(ellipse at top, rgba(0, 122, 255, 0.03) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.05) 0%, transparent 50%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
@@ -453,28 +452,29 @@ const FAQPage: React.FC = () => {
           <Link
             component={RouterLink}
             to="/"
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              color: '#86868B',
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'rgba(255,255,255,0.6)',
               textDecoration: 'none',
-              '&:hover': { color: '#007AFF' }
+              '&:hover': { color: '#3B82F6' }
             }}
           >
             <HomeIcon sx={{ mr: 0.5, fontSize: 18 }} />
             Gruvi
           </Link>
-          <Typography color="text.primary" sx={{ fontWeight: 500 }}>FAQ</Typography>
+          <Typography sx={{ fontWeight: 500, color: '#FFFFFF' }}>FAQ</Typography>
         </Breadcrumbs>
 
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/')}
-          sx={{ 
+          sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: 'rgba(255,255,255,0.7)',
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#FFFFFF',
             }
           }}
         >
@@ -483,18 +483,19 @@ const FAQPage: React.FC = () => {
 
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography 
-            variant="h1" 
-            sx={{ 
-              fontSize: { xs: '2rem', md: '3rem' }, 
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '2rem', md: '3rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
-              mb: 2
+              color: '#FFFFFF',
+              mb: 2,
+              letterSpacing: '-0.02em',
             }}
           >
             Frequently Asked Questions
           </Typography>
-          <Typography sx={{ color: '#86868B', fontSize: '1.1rem', maxWidth: 600, mx: 'auto' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', maxWidth: 600, mx: 'auto' }}>
             Everything you need to know about creating AI-generated music and music videos with Gruvi.
           </Typography>
         </Box>
@@ -515,26 +516,22 @@ const FAQPage: React.FC = () => {
                 fontWeight: 500,
                 transition: 'all 0.2s ease',
                 ...(activeCategory === null ? {
-                  background: 'rgba(255,255,255,0.98)',
-                  color: '#007AFF',
-                  border: '1px solid rgba(0,122,255,0.3)',
-                  boxShadow: '0 4px 16px rgba(0,122,255,0.15), 0 2px 4px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
-                  '&:hover': { 
-                    background: '#fff',
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  color: '#3B82F6',
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  '&:hover': {
+                    background: 'rgba(59, 130, 246, 0.2)',
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 6px 20px rgba(0,122,255,0.2), 0 3px 6px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
                   }
                 } : {
-                  background: 'rgba(255,255,255,0.9)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  color: '#1D1D1F',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
-                  '&:hover': { 
-                    background: '#fff',
-                    borderColor: 'rgba(0,122,255,0.3)',
-                    color: '#007AFF',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: 'rgba(255,255,255,0.7)',
+                  '&:hover': {
+                    background: 'rgba(255,255,255,0.05)',
+                    borderColor: 'rgba(59, 130, 246, 0.3)',
+                    color: '#3B82F6',
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
                   }
                 })
               }}
@@ -554,26 +551,22 @@ const FAQPage: React.FC = () => {
                   fontWeight: 500,
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
-                    background: 'rgba(255,255,255,0.98)',
-                    color: '#007AFF',
-                    border: '1px solid rgba(0,122,255,0.3)',
-                    boxShadow: '0 4px 16px rgba(0,122,255,0.15), 0 2px 4px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
-                    '&:hover': { 
-                      background: '#fff',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#3B82F6',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    '&:hover': {
+                      background: 'rgba(59, 130, 246, 0.2)',
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 6px 20px rgba(0,122,255,0.2), 0 3px 6px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
                     }
                   } : {
-                    background: 'rgba(255,255,255,0.9)',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    color: '#1D1D1F',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
-                    '&:hover': { 
-                      background: '#fff',
-                      borderColor: 'rgba(0,122,255,0.3)',
-                      color: '#007AFF',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'rgba(255,255,255,0.7)',
+                    '&:hover': {
+                      background: 'rgba(255,255,255,0.05)',
+                      borderColor: 'rgba(59, 130, 246, 0.3)',
+                      color: '#3B82F6',
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
                     }
                   })
                 }}
@@ -597,26 +590,22 @@ const FAQPage: React.FC = () => {
                   fontWeight: 500,
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
-                    background: 'rgba(255,255,255,0.98)',
-                    color: '#007AFF',
-                    border: '1px solid rgba(0,122,255,0.3)',
-                    boxShadow: '0 4px 16px rgba(0,122,255,0.15), 0 2px 4px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
-                    '&:hover': { 
-                      background: '#fff',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#3B82F6',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    '&:hover': {
+                      background: 'rgba(59, 130, 246, 0.2)',
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 6px 20px rgba(0,122,255,0.2), 0 3px 6px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.05)',
                     }
                   } : {
-                    background: 'rgba(255,255,255,0.9)',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    color: '#1D1D1F',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1)',
-                    '&:hover': { 
-                      background: '#fff',
-                      borderColor: 'rgba(0,122,255,0.3)',
-                      color: '#007AFF',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'rgba(255,255,255,0.7)',
+                    '&:hover': {
+                      background: 'rgba(255,255,255,0.05)',
+                      borderColor: 'rgba(59, 130, 246, 0.3)',
+                      color: '#3B82F6',
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
                     }
                   })
                 }}
@@ -628,25 +617,25 @@ const FAQPage: React.FC = () => {
         </Box>
 
         {/* FAQ Count */}
-        <Typography sx={{ textAlign: 'center', color: '#86868B', mb: 4, fontSize: '0.9rem' }}>
+        <Typography sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', mb: 4, fontSize: '0.9rem' }}>
           Showing {filteredFAQs.length} of {faqItems.length} questions
         </Typography>
 
         {/* FAQ Accordions */}
-        <Paper 
-          elevation={0} 
+        <Box
           component="section"
-          sx={{ 
-            p: { xs: 2, md: 3 }, 
-            borderRadius: 3,
-            backgroundColor: 'transparent'
+          sx={{
+            borderRadius: '20px',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
           {filteredFAQs.map((item, index) => {
             const panelId = createSlug(item.question);
             const globalIndex = faqItems.findIndex(faq => faq.question === item.question);
             return (
-            <Accordion 
+            <Accordion
               key={index}
               component="article"
               ref={(el: HTMLDivElement | null) => {
@@ -655,43 +644,37 @@ const FAQPage: React.FC = () => {
                 id={panelId}
                 expanded={expandedPanel === panelId}
                 onChange={handleAccordionChange(panelId)}
-              sx={{ 
-                mb: 2,
-                  borderRadius: '16px !important',
-                '&:before': {
-                  display: 'none',
+              sx={{
+                background: 'transparent',
+                borderBottom: index !== filteredFAQs.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                boxShadow: 'none',
+                '&:before': { display: 'none' },
+                '&.Mui-expanded': {
+                  margin: 0,
+                  background: 'rgba(59, 130, 246, 0.05)',
                 },
-                  backgroundColor: 'rgba(255,255,255,0.9)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.06)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'all 0.3s ease',
-                '&:hover': {
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  },
-                  '&.Mui-expanded': {
-                    boxShadow: '0 8px 24px rgba(0,122,255,0.1)',
-                    border: '1px solid rgba(0,122,255,0.15)',
-                }
               }}
             >
               <AccordionSummary
-                  expandIcon={<ExpandMoreIcon sx={{ color: '#007AFF' }} />}
+                  expandIcon={<ExpandMoreIcon sx={{ color: '#3B82F6' }} />}
                 aria-label={`Toggle answer for ${item.question}`}
                 sx={{
-                    px: 3,
+                    padding: '20px 24px',
                   '& .MuiAccordionSummary-content': {
-                      my: 2,
+                      margin: 0,
                       flexDirection: 'column',
                       gap: 0.5,
-                    }
+                    },
+                    transition: 'background 0.2s ease',
+                    '&:hover': {
+                      background: 'rgba(255,255,255,0.02)',
+                    },
                   }}
                 >
-                  <Typography 
-                    sx={{ 
+                  <Typography
+                    sx={{
                       fontSize: '0.75rem',
-                      color: '#007AFF',
+                      color: '#3B82F6',
                       fontWeight: 500,
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em'
@@ -699,25 +682,25 @@ const FAQPage: React.FC = () => {
                   >
                     {item.category}
                   </Typography>
-                <Typography 
-                  variant="h2" 
+                <Typography
+                  variant="h2"
                   component="h2"
-                  sx={{ 
-                      fontWeight: 500,
-                      color: '#1D1D1F',
+                  sx={{
+                      fontWeight: 600,
+                      color: '#FFFFFF',
                       fontSize: { xs: '1rem', md: '1.1rem' }
                   }}
                 >
                   {item.question}
                 </Typography>
               </AccordionSummary>
-                <AccordionDetails sx={{ px: 3, pb: 3 }}>
-                <Typography 
-                  variant="body1" 
+                <AccordionDetails sx={{ padding: '0 24px 24px 24px' }}>
+                <Typography
+                  variant="body1"
                   component="p"
-                  sx={{ 
-                      color: '#86868B',
-                    lineHeight: 1.7,
+                  sx={{
+                      color: 'rgba(255,255,255,0.6)',
+                    lineHeight: 1.8,
                     mb: 2
                   }}
                 >
@@ -728,12 +711,15 @@ const FAQPage: React.FC = () => {
                       variant="text"
                     endIcon={<ArrowForwardIcon />}
                     onClick={() => handleReadMore(item.question)}
-                    sx={{ 
+                    sx={{
                       textTransform: 'none',
                         fontWeight: 500,
-                        color: '#007AFF',
+                        color: '#3B82F6',
+                        fontSize: '0.85rem',
+                        transition: 'all 0.2s ease',
                         '&:hover': {
-                          background: 'rgba(0,122,255,0.05)',
+                          background: 'rgba(59, 130, 246, 0.1)',
+                          transform: 'translateX(4px)',
                         }
                       }}
                     >
@@ -744,85 +730,77 @@ const FAQPage: React.FC = () => {
             </Accordion>
             );
           })}
-        </Paper>
+        </Box>
 
         {/* CTA Footer */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            mt: 6, 
-            p: 5, 
-            borderRadius: 4,
-            background: 'linear-gradient(145deg, rgba(0,122,255,0.05), rgba(0,122,255,0.1))',
-            border: '1px solid rgba(0,122,255,0.15)',
+        <Box
+          sx={{
+            mt: 6,
+            p: 5,
+            borderRadius: '20px',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.15)',
             textAlign: 'center'
           }}
         >
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
             Still Have Questions?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 3, color: '#86868B', fontSize: { xs: '1rem', md: '1.1rem' } }}>
+          <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.6)', fontSize: { xs: '1rem', md: '1.1rem' } }}>
             Can't find what you're looking for? Our support team is here to help.
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
               size="large"
               onClick={() => window.location.href = 'mailto:support@gruvi.ai'}
-              sx={{ 
+              sx={{
                 py: 1.5,
                 px: 4,
                 fontSize: '1rem',
-                borderRadius: '12px',
+                borderRadius: '100px',
                 textTransform: 'none',
                 fontWeight: 600,
-                background: 'rgba(0,0,0,0.9)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+                background: '#3B82F6',
+                color: '#FFFFFF',
+                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: '#000',
+                  background: '#2563EB',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)',
                 }
               }}
             >
               Contact Support
             </Button>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
             size="large"
             onClick={() => navigate('/')}
             endIcon={<ArrowForwardIcon />}
-            sx={{ 
+            sx={{
                 py: 1.5,
                 px: 4,
                 fontSize: '1rem',
-                borderRadius: '12px',
+                borderRadius: '100px',
               textTransform: 'none',
                 fontWeight: 600,
-                background: 'rgba(255,255,255,0.95)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                color: '#1D1D1F',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#FFFFFF',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: '#fff',
-                  borderColor: 'rgba(0,122,255,0.3)',
-                  color: '#007AFF',
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  borderColor: '#3B82F6',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,1)',
                 }
               }}
             >
               Start Creating
           </Button>
           </Box>
-        </Paper>
+        </Box>
       </Container>
     </Box>
   );

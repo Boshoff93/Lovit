@@ -132,7 +132,7 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: -8,
               bottom: -8,
               width: 64,
-              background: 'linear-gradient(to right, #fff 0%, #fff 20%, transparent 100%)',
+              background: 'linear-gradient(to right, #0D0D0F 0%, #0D0D0F 20%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -145,14 +145,15 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
               width: 40,
               height: 40,
-              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+              '&:hover': { background: 'rgba(255,255,255,0.08)', transform: 'translateY(-50%) scale(1.05)' },
             }}
           >
-            <ChevronLeftIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronLeftIcon sx={{ color: '#FFFFFF' }} />
           </IconButton>
         </>
       )}
@@ -165,7 +166,7 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: -8,
               bottom: -8,
               width: 64,
-              background: 'linear-gradient(to left, #fff 0%, #fff 20%, transparent 100%)',
+              background: 'linear-gradient(to left, #0D0D0F 0%, #0D0D0F 20%, transparent 100%)',
               zIndex: 2,
               pointerEvents: 'none',
             }}
@@ -178,14 +179,15 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 3,
-              background: '#fff',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
               width: 40,
               height: 40,
-              '&:hover': { background: '#fff', transform: 'translateY(-50%) scale(1.05)' },
+              '&:hover': { background: 'rgba(255,255,255,0.08)', transform: 'translateY(-50%) scale(1.05)' },
             }}
           >
-            <ChevronRightIcon sx={{ color: '#1D1D1F' }} />
+            <ChevronRightIcon sx={{ color: '#FFFFFF' }} />
           </IconButton>
         </>
       )}
@@ -517,7 +519,7 @@ const GenreDetailPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: '#fff',
+        background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
         position: 'relative',
         // Add bottom padding when audio player is visible
         pb: hasActivePlayer ? 12 : 0,
@@ -569,11 +571,11 @@ const GenreDetailPage: React.FC = () => {
           onClick={() => navigate('/')}
           sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: '#FFFFFF',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255,255,255,0.05)',
             }
           }}
         >
@@ -615,7 +617,7 @@ const GenreDetailPage: React.FC = () => {
             sx={{
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
+              color: '#FFFFFF',
               mb: 2,
             }}
           >
@@ -627,7 +629,7 @@ const GenreDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.1rem',
-              color: '#1D1D1F',
+              color: 'rgba(255,255,255,0.7)',
               mb: 4,
               lineHeight: 1.8,
               maxWidth: 700,
@@ -671,11 +673,11 @@ const GenreDetailPage: React.FC = () => {
           <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#FFFFFF', mb: 0.5 }}
             >
               Example {currentGenre.name} Tracks
             </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+            <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
               AI-generated {currentGenre.name.toLowerCase()} music samples
             </Typography>
           </Box>
@@ -694,15 +696,16 @@ const GenreDetailPage: React.FC = () => {
                   minWidth: 260,
                   width: 280,
                   flexShrink: 0,
-                  background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.08)' : '#fff',
+                  background: currentSong?.songId === track.id ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.03)',
                   borderRadius: '12px',
-                  border: currentSong?.songId === track.id ? '1px solid rgba(0,122,255,0.3)' : '1px solid rgba(0,0,0,0.06)',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                  border: currentSong?.songId === track.id ? '1px solid rgba(59,130,246,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                   '&:hover': {
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
                     transform: 'translateY(-2px)',
+                    background: 'rgba(255,255,255,0.05)',
                   },
                   '&:hover .play-overlay': {
                     opacity: 1,
@@ -736,7 +739,7 @@ const GenreDetailPage: React.FC = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: currentSong?.songId === track.id ? 'rgba(0,122,255,0.4)' : 'rgba(0,0,0,0.4)',
+                      background: currentSong?.songId === track.id ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
                       opacity: currentSong?.songId === track.id ? 1 : 0,
                       transition: 'opacity 0.2s',
                     }}
@@ -757,7 +760,7 @@ const GenreDetailPage: React.FC = () => {
                     sx={{
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: currentSong?.songId === track.id ? '#007AFF' : '#1D1D1F',
+                      color: currentSong?.songId === track.id ? '#3B82F6' : '#FFFFFF',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -768,7 +771,7 @@ const GenreDetailPage: React.FC = () => {
                   <Typography
                     sx={{
                       fontSize: '0.75rem',
-                      color: '#86868B',
+                      color: 'rgba(255,255,255,0.5)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -779,7 +782,7 @@ const GenreDetailPage: React.FC = () => {
                 </Box>
 
                 {/* Duration */}
-                <Typography sx={{ fontSize: '0.75rem', color: '#86868B', flexShrink: 0 }}>
+                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>
                   {track.duration}
                 </Typography>
               </Paper>
@@ -792,11 +795,11 @@ const GenreDetailPage: React.FC = () => {
           <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h2"
-              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}
+              sx={{ fontSize: { xs: '1.4rem', md: '1.6rem' }, fontWeight: 700, color: '#FFFFFF', mb: 0.5 }}
             >
               Explore More Genres
             </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+            <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
               Discover music across 30+ genres
             </Typography>
           </Box>
@@ -825,10 +828,11 @@ const GenreDetailPage: React.FC = () => {
                     height: { xs: 72, sm: 88 },
                     borderRadius: '50%',
                     overflow: 'hidden',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                     transition: 'all 0.2s ease',
                     p: 0.5,
-                    background: '#fff',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
                   }}
                 >
                   <Box
@@ -838,7 +842,7 @@ const GenreDetailPage: React.FC = () => {
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                   />
                 </Box>
-                <Typography sx={{ color: '#1D1D1F', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.8rem', textAlign: 'center' }}>
                   {genre.name}
                 </Typography>
               </Box>
@@ -848,17 +852,17 @@ const GenreDetailPage: React.FC = () => {
 
         {/* CTA Section */}
         <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 2 }}>
             Ready to Create Your Own {currentGenre.name} Track?
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 3, fontSize: '1rem' }}>
             Sign up for Gruvi and start generating professional {currentGenre.name} music in seconds.
           </Typography>
           <Button
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: '#007AFF',
+              background: '#3B82F6',
               color: '#fff',
               fontWeight: 600,
               borderRadius: '12px',
@@ -866,11 +870,11 @@ const GenreDetailPage: React.FC = () => {
               py: 1.5,
               fontSize: '1rem',
               textTransform: 'none',
-              boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.3)',
               '&:hover': {
-                background: '#0066DD',
+                background: '#2563EB',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 8px 24px rgba(0,122,255,0.4)',
+                boxShadow: '0 8px 24px rgba(59,130,246,0.4)',
               },
             }}
           >

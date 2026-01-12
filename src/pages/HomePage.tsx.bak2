@@ -1106,24 +1106,23 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOut 2.5s ease-out infinite',
-            '@keyframes pulseOut': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(59, 130, 246, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
@@ -1141,24 +1140,23 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOut 2.5s ease-out infinite',
-            '@keyframes pulseOut': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(59, 130, 246, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(59, 130, 246, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
@@ -2296,7 +2294,7 @@ const HomePage: React.FC = () => {
                 variant="contained"
                 onClick={handleClickOpen}
                 sx={{
-                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
+                  background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
                   backgroundColor: 'transparent !important',
                   color: '#fff !important',
                   px: { xs: 3, sm: 4 },
@@ -2305,14 +2303,14 @@ const HomePage: React.FC = () => {
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: { xs: '0.95rem', sm: '1.05rem' },
-                  boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
+                  boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)',
                   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
+                    background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
                     backgroundColor: 'transparent !important',
                     color: '#fff !important',
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5) !important',
+                    boxShadow: '0 8px 24px rgba(249, 115, 22, 0.5) !important',
                   },
                 }}
               >

@@ -50,7 +50,7 @@ export const carouselTitlesByCategory: Record<RouteCategory, {
   videoStyles: { title: string; subtitle: string };
 }> = {
   default: {
-    featuredTracks: { title: 'Featured Tracks for You', subtitle: 'Hear what Gruvi can create - professional AI-generated music' },
+    featuredTracks: { title: 'Find the Perfect Track for Your Needs', subtitle: 'Hear what Gruvi can create - professional AI-generated music' },
     musicVideos: { title: 'Turn Songs Into Music Videos', subtitle: 'Stunning AI-generated visuals synced to your music' },
     cinematicVideos: { title: 'Create Cinematic Music Videos', subtitle: 'Widescreen videos perfect for YouTube and streaming' },
     moreTracks: { title: 'Explore More Tracks', subtitle: 'Discover more AI-generated songs across every genre' },

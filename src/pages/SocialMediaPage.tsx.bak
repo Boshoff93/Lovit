@@ -336,7 +336,7 @@ const SocialMediaPage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.8rem',
                   height: 32,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                 }}
               />
               <Typography
@@ -381,7 +381,7 @@ const SocialMediaPage: React.FC = () => {
                     color: '#fff',
                     px: 4,
                     py: 1.75,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
@@ -792,7 +792,7 @@ const SocialMediaPage: React.FC = () => {
                   color: '#fff',
                   px: 4,
                   py: 1.75,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: '1.05rem',
@@ -1044,7 +1044,7 @@ const SocialMediaPage: React.FC = () => {
                 color: '#fff',
                 px: { xs: 4, sm: 5 },
                 py: { xs: 1.5, sm: 1.75 },
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 textTransform: 'none',
                 fontSize: { xs: '1rem', sm: '1.1rem' },

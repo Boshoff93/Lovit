@@ -283,7 +283,7 @@ const VideoCard: React.FC<{
                 sx={{
                   px: 1.5,
                   py: 0.5,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   background: 'rgba(255, 255, 255, 0.15)',
                   backdropFilter: 'blur(20px)',
                 }}
@@ -481,7 +481,7 @@ const LandscapeVideoCard: React.FC<{
                 sx={{
                   px: 1.5,
                   py: 0.5,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   background: 'rgba(255, 255, 255, 0.15)',
                   backdropFilter: 'blur(20px)',
                 }}
@@ -841,7 +841,7 @@ const AIVideoShortsPage: React.FC = () => {
                 fontWeight: 600,
                 fontSize: '0.75rem',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
               }}
             />
             <Typography
@@ -894,7 +894,7 @@ const AIVideoShortsPage: React.FC = () => {
                     gap: 1,
                     px: 2,
                     py: 1,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     background: 'rgba(255,255,255,0.1)',
                     border: '1px solid rgba(255,255,255,0.15)',
                   }}
@@ -916,7 +916,7 @@ const AIVideoShortsPage: React.FC = () => {
                 color: '#fff',
                 px: 5,
                 py: 2,
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 textTransform: 'none',
                 fontSize: '1.1rem',
@@ -955,11 +955,9 @@ const AIVideoShortsPage: React.FC = () => {
           badge="UGC Content"
           ctaText="Start Creating"
           ctaLink={isLoggedIn ? '/create/video' : undefined}
-          onCtaClick={!isLoggedIn ? handleOpenAuth : undefined}
           onVideoClick={(video) => navigate(`/videos/${video.title.toLowerCase().replace(/\s+/g, '-')}`)}
           darkMode
           gradientBackground="linear-gradient(180deg, #1A1008 0%, #18100A 50%, #140E0A 100%)"
-          ctaButtonGradient="linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%)"
         />
         <SectionDivider />
       </Box>
@@ -984,7 +982,7 @@ const AIVideoShortsPage: React.FC = () => {
                 fontWeight: 600,
                 fontSize: '0.75rem',
                 height: 28,
-                borderRadius: '12px',
+                borderRadius: '100px',
               }}
             />
             <Typography
@@ -1145,7 +1143,7 @@ const AIVideoShortsPage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.75rem',
                   height: 28,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                 }}
               />
               <Typography
@@ -1230,7 +1228,7 @@ const AIVideoShortsPage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.75rem',
                   height: 28,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                 }}
               />
               <Typography
@@ -1317,7 +1315,7 @@ const AIVideoShortsPage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.75rem',
                   height: 28,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                 }}
               />
               <Typography
@@ -1493,7 +1491,7 @@ const AIVideoShortsPage: React.FC = () => {
                 color: '#fff',
                 px: { xs: 4, sm: 5 },
                 py: { xs: 1.5, sm: 1.75 },
-                borderRadius: '12px',
+                borderRadius: '100px',
                 fontWeight: 600,
                 textTransform: 'none',
                 fontSize: { xs: '1rem', sm: '1.1rem' },

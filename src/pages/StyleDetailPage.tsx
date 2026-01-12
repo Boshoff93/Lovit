@@ -75,7 +75,7 @@ const StyleDetailPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: '#fff',
+        background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
         position: 'relative',
         pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
         transition: 'padding-bottom 0.3s ease-out',
@@ -115,11 +115,11 @@ const StyleDetailPage: React.FC = () => {
           onClick={() => navigate('/')}
           sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: '#FFFFFF',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255,255,255,0.05)',
             }
           }}
         >
@@ -160,7 +160,7 @@ const StyleDetailPage: React.FC = () => {
             sx={{
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
+              color: '#FFFFFF',
               mb: 2,
             }}
           >
@@ -171,7 +171,7 @@ const StyleDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.25rem',
-              color: '#86868B',
+              color: 'rgba(255,255,255,0.5)',
               mb: 3,
               maxWidth: 600,
               mx: 'auto',
@@ -184,7 +184,7 @@ const StyleDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.1rem',
-              color: '#1D1D1F',
+              color: 'rgba(255,255,255,0.7)',
               mb: 4,
               lineHeight: 1.8,
               maxWidth: 700,
@@ -231,7 +231,7 @@ const StyleDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#FFFFFF',
               mb: 3,
               textAlign: 'center',
             }}
@@ -250,17 +250,17 @@ const StyleDetailPage: React.FC = () => {
                 sx={{
                   p: 3,
                   borderRadius: '20px',
-                  background: 'rgba(255,255,255,0.7)',
+                  background: 'rgba(255,255,255,0.03)',
                   backdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                   textAlign: 'center',
                 }}
               >
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                <Typography sx={{ fontWeight: 600, color: '#FFFFFF', mb: 1 }}>
                   {feature.title}
                 </Typography>
-                <Typography sx={{ color: '#86868B', fontSize: '0.95rem' }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem' }}>
                   {feature.desc}
                 </Typography>
               </Box>
@@ -275,7 +275,7 @@ const StyleDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#FFFFFF',
               mb: 3,
             }}
           >
@@ -290,12 +290,13 @@ const StyleDetailPage: React.FC = () => {
                   width: 80,
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
+                  border: '1px solid rgba(255,255,255,0.08)',
                   '&:hover': {
                     transform: 'translateY(-3px) scale(1.05)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
                   },
                 }}
               >
@@ -309,8 +310,8 @@ const StyleDetailPage: React.FC = () => {
                     objectFit: 'cover',
                   }}
                 />
-                <Box sx={{ p: 0.75, background: '#fff' }}>
-                  <Typography sx={{ fontWeight: 500, color: '#1D1D1F', fontSize: '0.65rem', textAlign: 'center' }}>{style.label}</Typography>
+                <Box sx={{ p: 0.75, background: 'rgba(255,255,255,0.03)' }}>
+                  <Typography sx={{ fontWeight: 500, color: '#FFFFFF', fontSize: '0.65rem', textAlign: 'center' }}>{style.label}</Typography>
                 </Box>
               </Box>
             ))}
@@ -323,23 +324,23 @@ const StyleDetailPage: React.FC = () => {
             textAlign: 'center',
             p: 5,
             borderRadius: '24px',
-            background: 'rgba(255,255,255,0.6)',
+            background: 'rgba(255,255,255,0.03)',
             backdropFilter: 'blur(40px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.3)',
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 2 }}>
             Create Your {currentStyle.label} Music Video
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1.1rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 3, fontSize: '1.1rem' }}>
             Turn any song into a stunning {currentStyle.label} cinematic video with AI.
           </Typography>
           <Button
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
+              background: '#3B82F6',
               backdropFilter: 'blur(20px)',
               color: '#fff',
               fontWeight: 600,
@@ -348,11 +349,11 @@ const StyleDetailPage: React.FC = () => {
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              boxShadow: '0 8px 32px rgba(59,130,246,0.3)',
               '&:hover': {
-                background: '#000',
+                background: '#2563EB',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                boxShadow: '0 12px 40px rgba(59,130,246,0.4)',
               },
             }}
           >

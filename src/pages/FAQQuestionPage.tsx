@@ -3,8 +3,6 @@ import {
   Container,
   Typography,
   Box,
-  Paper,
-  useTheme,
   Button,
   Breadcrumbs,
   Link
@@ -17,7 +15,6 @@ import { faqItems } from './FAQPage';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
 const FAQQuestionPage: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const { question } = useParams<{ question: string }>();
   const { currentSong } = useAudioPlayer();
@@ -51,9 +48,9 @@ const FAQQuestionPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      bgcolor: 'background.default',
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #0D0D0F 0%, #0F0F14 50%, #0D0D0F 100%)',
       pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
       transition: 'padding-bottom 0.3s ease-out',
     }}>
@@ -89,70 +86,95 @@ const FAQQuestionPage: React.FC = () => {
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/faq')}
-          sx={{ mb: 1, px: 1 }}
+          sx={{
+            mb: 1,
+            px: 1,
+            color: 'rgba(255,255,255,0.7)',
+            '&:hover': {
+              background: 'rgba(255,255,255,0.05)',
+              color: '#FFFFFF',
+            }
+          }}
         >
           Back to FAQ
         </Button>
 
         <Breadcrumbs sx={{ mb: 3, px: 1 }}>
-          <Link component={RouterLink} to="/" color="inherit" sx={{ textDecoration: 'none' }}>
+          <Link
+            component={RouterLink}
+            to="/"
+            sx={{
+              textDecoration: 'none',
+              color: 'rgba(255,255,255,0.6)',
+              '&:hover': { color: '#3B82F6' }
+            }}
+          >
             Home
           </Link>
-          <Link component={RouterLink} to="/faq" color="inherit" sx={{ textDecoration: 'none' }}>
+          <Link
+            component={RouterLink}
+            to="/faq"
+            sx={{
+              textDecoration: 'none',
+              color: 'rgba(255,255,255,0.6)',
+              '&:hover': { color: '#3B82F6' }
+            }}
+          >
             FAQ
           </Link>
-          <Typography color="text.primary" sx={{ fontSize: '0.875rem' }}>
+          <Typography sx={{ fontSize: '0.875rem', color: '#FFFFFF' }}>
             {faqItem.question.length > 50 ? `${faqItem.question.substring(0, 50)}...` : faqItem.question}
           </Typography>
         </Breadcrumbs>
 
-        <Paper 
-          elevation={0} 
+        <Box
           component="article"
-          sx={{ 
-            p: { xs: 3, md: 4 }, 
-            borderRadius: 4,
-            backgroundColor: theme.palette.background.paper,
-            border: '1px solid rgba(0,0,0,0.06)',
+          sx={{
+            p: { xs: 3, md: 4 },
+            borderRadius: '20px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <Typography 
-            variant="h1" 
-            component="h1" 
-            gutterBottom 
+          <Typography
+            variant="h1"
+            component="h1"
+            gutterBottom
             sx={{
-              fontSize: { xs: '1.75rem', md: '2.25rem' }, 
+              fontSize: { xs: '1.75rem', md: '2.25rem' },
               fontWeight: 600,
-              color: theme.palette.text.primary,
+              color: '#FFFFFF',
               mb: 4,
               lineHeight: 1.3,
+              letterSpacing: '-0.02em',
             }}
           >
             {faqItem.question}
           </Typography>
-          
-                    <Typography 
-            variant="body1" 
+
+          <Typography
+            variant="body1"
             component="div"
-            sx={{ 
-              color: theme.palette.text.secondary,
+            sx={{
+              color: 'rgba(255,255,255,0.6)',
               fontSize: { xs: '1rem', md: '1.1rem' },
               lineHeight: 1.8,
             }}
           >
             {faqItem.detailedAnswer.split('\n\n').map((paragraph, index) => (
-              <Typography 
-                key={index} 
-                component="p" 
-                sx={{ 
+              <Typography
+                key={index}
+                component="p"
+                sx={{
                   mb: 2.5,
                   whiteSpace: 'pre-wrap',
+                  color: 'rgba(255,255,255,0.6)',
                   '& strong': {
-                    color: theme.palette.text.primary,
+                    color: '#FFFFFF',
                     fontWeight: 600,
                   }
                 }}
-                dangerouslySetInnerHTML={{ 
+                dangerouslySetInnerHTML={{
                   __html: paragraph.trim()
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/\n/g, '<br />')
@@ -160,47 +182,51 @@ const FAQQuestionPage: React.FC = () => {
               />
             ))}
           </Typography>
-        </Paper>
+        </Box>
 
         {/* CTA Footer */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            mt: 6, 
-            p: 5, 
-            borderRadius: 4,
-            background: 'linear-gradient(145deg, rgba(0,122,255,0.05), rgba(0,122,255,0.1))',
-            border: '1px solid rgba(0,122,255,0.15)',
+        <Box
+          sx={{
+            mt: 6,
+            p: 5,
+            borderRadius: '20px',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.15)',
             textAlign: 'center'
           }}
         >
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
             Ready to Create Music with AI?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 3, color: '#86868B', fontSize: { xs: '1rem', md: '1.1rem' } }}>
+          <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.6)', fontSize: { xs: '1rem', md: '1.1rem' } }}>
             Join thousands of creators making amazing music and music videos with Gruvi.
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             size="large"
             onClick={() => navigate('/')}
             endIcon={<ArrowForwardIcon />}
-            sx={{ 
+            sx={{
               py: 1.5,
               px: 5,
               fontSize: '1rem',
-              borderRadius: 3,
+              borderRadius: '100px',
               textTransform: 'none',
               fontWeight: 600,
-              background: '#1D1D1F',
+              background: '#3B82F6',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+              transition: 'all 0.3s ease',
               '&:hover': {
-                background: '#000',
+                background: '#2563EB',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)',
               }
             }}
           >
             Start Creating Free
           </Button>
-        </Paper>
+        </Box>
       </Container>
     </Box>
   );

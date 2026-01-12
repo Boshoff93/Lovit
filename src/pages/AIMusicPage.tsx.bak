@@ -1029,7 +1029,7 @@ const AIMusicPage: React.FC = () => {
                   fontWeight: 600,
                   fontSize: '0.8rem',
                   height: 32,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                 }}
               />
               <Typography
@@ -1074,7 +1074,7 @@ const AIMusicPage: React.FC = () => {
                     color: '#fff',
                     px: 4,
                     py: 1.75,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
@@ -1096,7 +1096,7 @@ const AIMusicPage: React.FC = () => {
                     color: '#fff',
                     px: 4,
                     py: 1.75,
-                    borderRadius: '12px',
+                    borderRadius: '100px',
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
@@ -2135,7 +2135,7 @@ const AIMusicPage: React.FC = () => {
                   color: '#fff',
                   px: 4,
                   py: 1.75,
-                  borderRadius: '12px',
+                  borderRadius: '100px',
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: '1.05rem',

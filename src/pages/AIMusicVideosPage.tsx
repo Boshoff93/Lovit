@@ -553,7 +553,7 @@ const AIMusicVideosPage: React.FC = () => {
               mx: 'auto',
             }}
           >
-            Hover to preview. All videos created with AI in minutes.
+            All videos created with AI in minutes.
           </Typography>
           <Box
             sx={{

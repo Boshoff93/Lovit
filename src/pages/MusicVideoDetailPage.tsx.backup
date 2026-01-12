@@ -311,7 +311,6 @@ interface VideoCarouselProps {
 const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVideoClick }) => {
   const [showLeftArrow, setShowLeftArrow] = React.useState(false);
   const [showRightArrow, setShowRightArrow] = React.useState(true);
-  const [maskImage, setMaskImage] = React.useState('linear-gradient(to right, black 0%, black 95%, transparent 100%)');
   const carouselContainerRef = React.useRef<HTMLDivElement>(null);
 
   const checkScrollPosition = React.useCallback(() => {
@@ -319,20 +318,8 @@ const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVi
     if (!container) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    const atStart = scrollLeft <= 10;
-    const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
-
-    setShowLeftArrow(!atStart);
-    setShowRightArrow(!atEnd);
-
-    // Update mask based on scroll position
-    if (atStart) {
-      setMaskImage('linear-gradient(to right, black 0%, black 95%, transparent 100%)');
-    } else if (atEnd) {
-      setMaskImage('linear-gradient(to right, transparent 0%, black 5%, black 100%)');
-    } else {
-      setMaskImage('linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)');
-    }
+    setShowLeftArrow(scrollLeft > 10);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
   }, []);
 
   React.useEffect(() => {
@@ -342,7 +329,6 @@ const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVi
     checkScrollPosition();
     container.addEventListener('scroll', checkScrollPosition);
     window.addEventListener('resize', checkScrollPosition);
-    setTimeout(checkScrollPosition, 100);
 
     return () => {
       container.removeEventListener('scroll', checkScrollPosition);
@@ -380,25 +366,23 @@ const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVi
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(249, 115, 22, 0.4) 100%)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(249, 115, 22, 0.5)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOutOrange 2.5s ease-out infinite',
-            '@keyframes pulseOutOrange': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(249, 115, 22, 0.5)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 12px rgba(249, 115, 22, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(249, 115, 22, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(249, 115, 22, 0.5) 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(249, 115, 22, 0.4)',
             },
           }}
         >
@@ -416,25 +400,23 @@ const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVi
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(249, 115, 22, 0.4) 100%)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(249, 115, 22, 0.5)',
+            background: 'rgba(255,255,255,0.05)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
             width: 40,
             height: 40,
-            animation: 'pulseOutOrange 2.5s ease-out infinite',
-            '@keyframes pulseOutOrange': {
-              '0%': {
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(249, 115, 22, 0.5)',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            '@keyframes pulse': {
+              '0%, 100%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
               },
-              '100%': {
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 12px rgba(249, 115, 22, 0)',
+              '50%': {
+                boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(249, 115, 22, 0)',
               },
             },
             '&:hover': {
-              background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(249, 115, 22, 0.5) 100%)',
+              background: 'rgba(255,255,255,0.05)',
               transform: 'translateY(-50%) scale(1.05)',
               animation: 'none',
-              boxShadow: '0 4px 16px rgba(249, 115, 22, 0.4)',
             },
           }}
         >
@@ -456,8 +438,6 @@ const VideoCarousel: React.FC<VideoCarouselProps> = ({ videos, isLandscape, onVi
           pb: 1,
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
-          maskImage,
-          WebkitMaskImage: maskImage,
         }}
       >
         {videos.map((video) => (
@@ -746,22 +726,18 @@ const MusicVideoDetailPage: React.FC = () => {
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
           sx={{
             mb: 4,
-            color: '#F97316 !important',
+            color: '#fff',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(249, 115, 22, 0.1)',
-              color: '#FB923C !important',
-            },
-            '& .MuiSvgIcon-root': {
-              color: '#F97316 !important',
+              background: 'rgba(255,255,255,0.1)',
             }
           }}
         >
-          Back
+          Back to Home
         </Button>
 
         {/* Main Content */}
@@ -1113,21 +1089,15 @@ const MusicVideoDetailPage: React.FC = () => {
                   endIcon={<KeyboardArrowRightIcon />}
                   onClick={() => navigate('/create?tab=video')}
                   sx={{
-                    background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
-                    backgroundColor: 'transparent !important',
-                    color: '#fff !important',
+                    background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+                    color: '#fff',
                     fontWeight: 600,
                     borderRadius: '12px',
                     px: 4,
                     py: 1.5,
                     textTransform: 'none',
                     boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
-                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
-                      backgroundColor: 'transparent !important',
-                      color: '#fff !important',
-                      transform: 'translateY(-2px)',
                       boxShadow: '0 12px 32px rgba(249, 115, 22, 0.45)',
                     },
                   }}
@@ -1569,9 +1539,55 @@ const MusicVideoDetailPage: React.FC = () => {
             ? 'Explore more AI-generated promotional videos for products, brands, and businesses'
             : 'Discover more AI-generated music videos in stunning visual styles';
 
+          // Portrait dimensions
+          const portraitWidth = { xs: 140, sm: 160 };
+          const portraitHeight = { xs: portraitWidth.xs * (16/9), sm: portraitWidth.sm * (16/9) };
+          // Landscape dimensions
+          const landscapeHeight = { xs: 140, sm: 160 };
+          const landscapeWidth = { xs: landscapeHeight.xs * (16/9), sm: landscapeHeight.sm * (16/9) };
+
           const isLandscape = currentAspectRatio === 'landscape';
 
           if (sameTypeVideos.length === 0) return null;
+
+          // Scroll state for arrows
+          const [showLeftArrow, setShowLeftArrow] = React.useState(false);
+          const [showRightArrow, setShowRightArrow] = React.useState(true);
+          const carouselContainerRef = React.useRef<HTMLDivElement>(null);
+
+          const checkScrollPosition = React.useCallback(() => {
+            const container = carouselContainerRef.current;
+            if (!container) return;
+
+            const { scrollLeft, scrollWidth, clientWidth } = container;
+            setShowLeftArrow(scrollLeft > 10);
+            setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+          }, []);
+
+          React.useEffect(() => {
+            const container = carouselContainerRef.current;
+            if (!container) return;
+
+            checkScrollPosition();
+            container.addEventListener('scroll', checkScrollPosition);
+            window.addEventListener('resize', checkScrollPosition);
+
+            return () => {
+              container.removeEventListener('scroll', checkScrollPosition);
+              window.removeEventListener('resize', checkScrollPosition);
+            };
+          }, [checkScrollPosition]);
+
+          const scroll = (direction: 'left' | 'right') => {
+            const container = carouselContainerRef.current;
+            if (container) {
+              const scrollAmount = container.clientWidth * 0.8;
+              container.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth',
+              });
+            }
+          };
           
           return (
             <Box sx={{ mt: 8 }}>
@@ -1599,12 +1615,209 @@ const MusicVideoDetailPage: React.FC = () => {
                 </Typography>
               </Box>
 
-              {/* Use VideoCarousel component */}
-              <VideoCarousel
-                videos={sameTypeVideos}
-                isLandscape={isLandscape}
-                onVideoClick={(id) => navigate(`/videos/${id}`)}
-              />
+              {/* Carousel with fade gradients */}
+              <Box sx={{ position: 'relative', overflow: 'visible' }}>
+                {/* Left arrow */}
+                {showLeftArrow && (
+                  <IconButton
+                    onClick={() => scroll('left')}
+                    sx={{
+                      position: 'absolute',
+                      left: 8,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      zIndex: 3,
+                      background: 'rgba(255,255,255,0.05)',
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
+                      width: 40,
+                      height: 40,
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                      '@keyframes pulse': {
+                        '0%, 100%': {
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
+                        },
+                        '50%': {
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(249, 115, 22, 0)',
+                        },
+                      },
+                      '&:hover': {
+                        background: 'rgba(255,255,255,0.05)',
+                        transform: 'translateY(-50%) scale(1.05)',
+                        animation: 'none',
+                      },
+                    }}
+                  >
+                    <ChevronLeftIcon sx={{ color: '#FFFFFF' }} />
+                  </IconButton>
+                )}
+
+                {/* Right arrow */}
+                {showRightArrow && (
+                  <IconButton
+                    onClick={() => scroll('right')}
+                    sx={{
+                      position: 'absolute',
+                      right: 8,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      zIndex: 3,
+                      background: 'rgba(255,255,255,0.05)',
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
+                      width: 40,
+                      height: 40,
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                      '@keyframes pulse': {
+                        '0%, 100%': {
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 0 rgba(249, 115, 22, 0.7)',
+                        },
+                        '50%': {
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(249, 115, 22, 0)',
+                        },
+                      },
+                      '&:hover': {
+                        background: 'rgba(255,255,255,0.05)',
+                        transform: 'translateY(-50%) scale(1.05)',
+                        animation: 'none',
+                      },
+                    }}
+                  >
+                    <ChevronRightIcon sx={{ color: '#FFFFFF' }} />
+                  </IconButton>
+                )}
+
+                <Box
+                  ref={carouselContainerRef}
+                  sx={{
+                    display: 'flex',
+                    gap: 2,
+                    flexWrap: 'nowrap',
+                    alignItems: 'flex-start',
+                    overflowX: 'auto',
+                    overflowY: 'visible',
+                    px: 4,
+                    pt: 1, // Top padding for hover lift
+                    pb: 1,
+                    scrollbarWidth: 'none',
+                    '&::-webkit-scrollbar': { display: 'none' },
+                  }}
+                >
+                  {sameTypeVideos.map((video) => (
+                    <Box
+                      key={video.id}
+                      onClick={() => navigate(`/videos/${video.id}`)}
+                      sx={{
+                        width: isLandscape 
+                          ? { xs: `${landscapeWidth.xs}px`, sm: `${landscapeWidth.sm}px` } 
+                          : { xs: `${portraitWidth.xs}px`, sm: `${portraitWidth.sm}px` },
+                        height: isLandscape
+                          ? { xs: `${landscapeHeight.xs}px`, sm: `${landscapeHeight.sm}px` }
+                          : { xs: `${portraitHeight.xs}px`, sm: `${portraitHeight.sm}px` },
+                        flexShrink: 0,
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                        },
+                      }}
+                    >
+                      <Box sx={{ 
+                        position: 'relative', 
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '16px', 
+                        overflow: 'hidden' 
+                      }}>
+                        <Box
+                          component="img"
+                          src={video.thumbnail}
+                          alt={video.title}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        {/* Tag - top right with glassy blur */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: '100px',
+                            background: 'rgba(255,255,255,0.7)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255,255,255,0.5)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              color: '#1D1D1F',
+                              letterSpacing: '0.02em',
+                            }}
+                          >
+                            {video.tag || video.style}
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              background: 'rgba(255,255,255,0.7)',
+                              backdropFilter: 'blur(20px)',
+                              WebkitBackdropFilter: 'blur(20px)',
+                              borderRadius: '50%',
+                              width: isLandscape ? 52 : 40,
+                              height: isLandscape ? 52 : 40,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '1px solid rgba(255,255,255,0.5)',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <PlayArrowRoundedIcon sx={{ fontSize: isLandscape ? 28 : 22, color: '#F97316' }} />
+                          </Box>
+                        </Box>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            p: 1.5,
+                            pt: 4,
+                            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                            {video.title}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
             </Box>
           );
         })()}
@@ -1615,6 +1828,10 @@ const MusicVideoDetailPage: React.FC = () => {
             mt: 8,
             textAlign: 'center',
             p: 5,
+            borderRadius: '24px',
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(40px)',
+            border: '1px solid rgba(255,255,255,0.1)',
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
@@ -1625,25 +1842,20 @@ const MusicVideoDetailPage: React.FC = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate('/create?tab=video')}
+            onClick={() => navigate('/')}
             sx={{
-              background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
-              backgroundColor: 'transparent !important',
-              color: '#fff !important',
+              background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+              color: '#fff',
               fontWeight: 600,
-              borderRadius: '12px',
+              borderRadius: '16px',
               px: 5,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
-              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 32px rgba(249, 115, 22, 0.35)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
-                backgroundColor: 'transparent !important',
-                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 32px rgba(249, 115, 22, 0.45)',
+                boxShadow: '0 12px 40px rgba(249, 115, 22, 0.45)',
               },
             }}
           >
