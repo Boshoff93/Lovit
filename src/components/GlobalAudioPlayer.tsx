@@ -206,35 +206,48 @@ const GlobalAudioPlayer: React.FC = () => {
       }}
     >
       <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, width: '100%' }}>
-        {/* Song Icon with Genre Image */}
+        {/* Song Icon with Genre Image - Circular with white border */}
         <Box
           sx={{
             width: { xs: 40, sm: 48 },
             height: { xs: 40, sm: 48 },
-            borderRadius: '10px',
+            borderRadius: '50%',
             flexShrink: 0,
-            boxShadow: isDarkMode
-              ? '0 0 12px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.3)'
-              : '0 0 12px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.08)',
+            padding: '2px',
+            background: 'rgba(255,255,255,0.85)',
+            boxShadow: '0 0 10px rgba(255,255,255,0.15)',
             position: 'relative',
-            overflow: 'hidden',
             transition: 'all 0.3s ease',
           }}
         >
-          {/* Genre Image - full coverage */}
           <Box
-            component="img"
-            src={getGenreImage(currentSong.genre || '')}
-            alt={currentSong.genre}
             sx={{
+              position: 'relative',
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              borderRadius: '50%',
+              overflow: 'hidden',
             }}
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          >
+            {/* Genre Image - full coverage */}
+            <Box
+              component="img"
+              src={getGenreImage(currentSong.genre || '')}
+              alt={currentSong.genre}
+              sx={{
+                width: '140%',
+                height: '140%',
+                objectFit: 'cover',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </Box>
         </Box>
 
         {/* Song Info */}

@@ -112,18 +112,22 @@ const StyleDetailPage: React.FC = () => {
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           sx={{
             mb: 4,
-            color: '#FFFFFF',
+            color: '#A78BFA !important',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(255,255,255,0.05)',
+              background: 'rgba(139, 92, 246, 0.1)',
+              color: '#C4B5FD !important',
+            },
+            '& .MuiSvgIcon-root': {
+              color: '#A78BFA !important',
             }
           }}
         >
-          Back to Home
+          Back
         </Button>
 
         {/* Hero Section */}
@@ -200,22 +204,23 @@ const StyleDetailPage: React.FC = () => {
             onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
-              background: 'rgba(0,0,0,0.9)',
-              backdropFilter: 'blur(20px)',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
-              borderRadius: '16px',
+              borderRadius: '12px',
               px: 4,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
-              transition: 'all 0.3s ease',
+              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4)',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: '#000',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                boxShadow: '0 12px 32px rgba(139, 92, 246, 0.5) !important',
               },
             }}
           >
@@ -340,20 +345,23 @@ const StyleDetailPage: React.FC = () => {
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: '#3B82F6',
-              backdropFilter: 'blur(20px)',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
-              borderRadius: '16px',
+              borderRadius: '12px',
               px: 5,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: '0 8px 32px rgba(59,130,246,0.3)',
+              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4)',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: '#2563EB',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(59,130,246,0.4)',
+                boxShadow: '0 12px 32px rgba(139, 92, 246, 0.5) !important',
               },
             }}
           >

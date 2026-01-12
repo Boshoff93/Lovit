@@ -84,14 +84,29 @@ interface ScrollableCarouselProps {
 const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children }) => {
   const [showLeftArrow, setShowLeftArrow] = React.useState(false);
   const [showRightArrow, setShowRightArrow] = React.useState(true);
+  const [maskImage, setMaskImage] = React.useState('linear-gradient(to right, black 0%, black 95%, transparent 100%)');
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const checkScrollPosition = React.useCallback(() => {
     const container = containerRef.current;
     if (container) {
       const { scrollLeft, scrollWidth, clientWidth } = container;
-      setShowLeftArrow(scrollLeft > 10);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+      const isAtStart = scrollLeft <= 10;
+      const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+
+      setShowLeftArrow(!isAtStart);
+      setShowRightArrow(!isAtEnd);
+
+      // Build dynamic mask like HomePage
+      let mask = 'linear-gradient(to right, ';
+      if (isAtStart) {
+        mask += 'black 0%, black 95%, transparent 100%)';
+      } else if (isAtEnd) {
+        mask += 'transparent 0%, black 5%, black 100%)';
+      } else {
+        mask += 'transparent 0%, black 5%, black 95%, transparent 100%)';
+      }
+      setMaskImage(mask);
     }
   }, []);
 
@@ -122,74 +137,72 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
   };
 
   return (
-    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+    <Box sx={{ position: 'relative', overflow: 'visible' }}>
       {showLeftArrow && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              left: -1,
-              top: -8,
-              bottom: -8,
-              width: 64,
-              background: 'linear-gradient(to right, #0D0D0F 0%, #0D0D0F 20%, transparent 100%)',
-              zIndex: 2,
-              pointerEvents: 'none',
-            }}
-          />
-          <IconButton
-            onClick={() => scroll('left')}
-            sx={{
-              position: 'absolute',
-              left: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 3,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-              width: 40,
-              height: 40,
-              '&:hover': { background: 'rgba(255,255,255,0.08)', transform: 'translateY(-50%) scale(1.05)' },
-            }}
-          >
-            <ChevronLeftIcon sx={{ color: '#FFFFFF' }} />
-          </IconButton>
-        </>
+        <IconButton
+          onClick={() => scroll('left')}
+          sx={{
+            position: 'absolute',
+            left: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 3,
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)',
+            boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 0 rgba(139, 92, 246, 0.6)',
+            width: 40,
+            height: 40,
+            animation: 'pulseOutPurple 2.5s ease-out infinite',
+            '@keyframes pulseOutPurple': {
+              '0%': {
+                boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 0 rgba(139, 92, 246, 0.6)',
+              },
+              '100%': {
+                boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 12px rgba(139, 92, 246, 0)',
+              },
+            },
+            '&:hover': {
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)',
+              transform: 'translateY(-50%) scale(1.05)',
+              animation: 'none',
+              boxShadow: '0 4px 16px rgba(139, 92, 246, 0.5)',
+            },
+          }}
+        >
+          <ChevronLeftIcon sx={{ color: '#FFFFFF' }} />
+        </IconButton>
       )}
       {showRightArrow && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              right: -1,
-              top: -8,
-              bottom: -8,
-              width: 64,
-              background: 'linear-gradient(to left, #0D0D0F 0%, #0D0D0F 20%, transparent 100%)',
-              zIndex: 2,
-              pointerEvents: 'none',
-            }}
-          />
-          <IconButton
-            onClick={() => scroll('right')}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 3,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-              width: 40,
-              height: 40,
-              '&:hover': { background: 'rgba(255,255,255,0.08)', transform: 'translateY(-50%) scale(1.05)' },
-            }}
-          >
-            <ChevronRightIcon sx={{ color: '#FFFFFF' }} />
-          </IconButton>
-        </>
+        <IconButton
+          onClick={() => scroll('right')}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 3,
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)',
+            boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 0 rgba(139, 92, 246, 0.6)',
+            width: 40,
+            height: 40,
+            animation: 'pulseOutPurple 2.5s ease-out infinite',
+            '@keyframes pulseOutPurple': {
+              '0%': {
+                boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 0 rgba(139, 92, 246, 0.6)',
+              },
+              '100%': {
+                boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3), 0 0 0 12px rgba(139, 92, 246, 0)',
+              },
+            },
+            '&:hover': {
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)',
+              transform: 'translateY(-50%) scale(1.05)',
+              animation: 'none',
+              boxShadow: '0 4px 16px rgba(139, 92, 246, 0.5)',
+            },
+          }}
+        >
+          <ChevronRightIcon sx={{ color: '#FFFFFF' }} />
+        </IconButton>
       )}
       <Box
         ref={containerRef}
@@ -198,10 +211,13 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
           display: 'flex',
           gap: 2,
           overflowX: 'auto',
-          py: 1,
+          overflowY: 'visible',
+          py: 3,
           px: 0.5,
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
+          maskImage,
+          WebkitMaskImage: maskImage,
         }}
       >
         {children}
@@ -568,47 +584,67 @@ const GenreDetailPage: React.FC = () => {
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           sx={{
             mb: 4,
-            color: '#FFFFFF',
+            color: '#A78BFA !important',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(255,255,255,0.05)',
+              background: 'rgba(139, 92, 246, 0.1)',
+              color: '#C4B5FD !important',
+            },
+            '& .MuiSvgIcon-root': {
+              color: '#A78BFA !important',
             }
           }}
         >
-          Back to Home
+          Back
         </Button>
 
         {/* Hero Section */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          {/* Genre Image */}
+          {/* Genre Image - Circular with white border */}
           <Box
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 140,
-              height: 140,
-              borderRadius: '32px',
-              overflow: 'hidden',
-              border: `3px solid ${currentGenre.color}40`,
-              boxShadow: `0 20px 60px ${currentGenre.color}30, 0 8px 24px rgba(0,0,0,0.1)`,
+              width: 200,
+              height: 200,
+              borderRadius: '50%',
+              padding: '6px',
+              background: 'rgba(255,255,255,0.9)',
+              boxShadow: `0 20px 60px ${currentGenre.color}30, 0 8px 24px rgba(0,0,0,0.1), 0 0 20px rgba(255,255,255,0.2)`,
               mb: 4,
+              position: 'relative',
+              transition: 'all 0.3s ease',
             }}
           >
             <Box
-              component="img"
-              src={currentGenre.image}
-              alt={currentGenre.name}
               sx={{
+                position: 'relative',
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                borderRadius: '50%',
+                overflow: 'hidden',
               }}
-            />
+            >
+              <Box
+                component="img"
+                src={currentGenre.image}
+                alt={currentGenre.name}
+                sx={{
+                  width: '140%',
+                  height: '140%',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+            </Box>
           </Box>
 
           {/* Title */}
@@ -645,22 +681,23 @@ const GenreDetailPage: React.FC = () => {
             onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
-              background: 'rgba(0,0,0,0.9)',
-              backdropFilter: 'blur(20px)',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
-              borderRadius: '16px',
+              borderRadius: '12px',
               px: 4,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
-              transition: 'all 0.3s ease',
+              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4)',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: '#000',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                boxShadow: '0 12px 32px rgba(139, 92, 246, 0.5) !important',
               },
             }}
           >
@@ -712,45 +749,67 @@ const GenreDetailPage: React.FC = () => {
                   },
                 }}
               >
-                {/* Album Art */}
+                {/* Album Art - Circular with white border */}
                 <Box
                   sx={{
-                    position: 'relative',
                     width: 48,
                     height: 48,
-                    borderRadius: '8px',
-                    overflow: 'hidden',
+                    borderRadius: '50%',
                     flexShrink: 0,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    padding: '2px',
+                    background: 'rgba(255,255,255,0.85)',
+                    boxShadow: '0 0 10px rgba(255,255,255,0.15)',
+                    position: 'relative',
+                    transition: 'all 0.3s ease',
                   }}
                 >
                   <Box
-                    component="img"
-                    src={currentGenre.image}
-                    alt={track.title}
-                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  {/* Play overlay */}
-                  <Box
-                    className="play-overlay"
                     sx={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: currentSong?.songId === track.id ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
-                      opacity: currentSong?.songId === track.id ? 1 : 0,
-                      transition: 'opacity 0.2s',
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      overflow: 'hidden',
                     }}
                   >
-                    {loadingSongId === track.id ? (
-                      <CircularProgress size={14} sx={{ color: '#fff' }} />
-                    ) : currentSong?.songId === track.id && isPlaying ? (
-                      <AudioEqualizer isPlaying={true} size={20} color="#fff" />
-                    ) : (
-                      <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
-                    )}
+                    {/* Genre Image - full coverage */}
+                    <Box
+                      component="img"
+                      src={currentGenre.image}
+                      alt={track.title}
+                      sx={{
+                        width: '140%',
+                        height: '140%',
+                        objectFit: 'cover',
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                      }}
+                    />
+                    {/* Play overlay */}
+                    <Box
+                      className="play-overlay"
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: currentSong?.songId === track.id ? 'rgba(59,130,246,0.5)' : 'rgba(0,0,0,0.5)',
+                        opacity: currentSong?.songId === track.id ? 1 : 0,
+                        transition: 'opacity 0.2s',
+                        borderRadius: '50%',
+                      }}
+                    >
+                      {loadingSongId === track.id ? (
+                        <CircularProgress size={14} sx={{ color: '#fff' }} />
+                      ) : currentSong?.songId === track.id && isPlaying ? (
+                        <AudioEqualizer isPlaying={true} size={20} color="#fff" />
+                      ) : (
+                        <PlayArrowRoundedIcon sx={{ fontSize: 20, color: '#fff' }} />
+                      )}
+                    </Box>
                   </Box>
                 </Box>
 
@@ -862,19 +921,23 @@ const GenreDetailPage: React.FC = () => {
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: '#3B82F6',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
               borderRadius: '12px',
               px: 4,
               py: 1.5,
               fontSize: '1rem',
               textTransform: 'none',
-              boxShadow: '0 4px 16px rgba(59,130,246,0.3)',
+              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4)',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: '#2563EB',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important',
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 8px 24px rgba(59,130,246,0.4)',
+                boxShadow: '0 12px 32px rgba(139, 92, 246, 0.5) !important',
               },
             }}
           >

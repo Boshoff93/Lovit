@@ -389,16 +389,30 @@ interface ScrollableCarouselProps {
 
 const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children }) => {
   const [showLeftArrow, setShowLeftArrow] = React.useState(false);
-  const [showRightArrow, setShowRightArrow] = React.useState(false);
+  const [showRightArrow, setShowRightArrow] = React.useState(true);
+  const [maskImage, setMaskImage] = React.useState('linear-gradient(to right, black 0%, black 95%, transparent 100%)');
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const checkScrollPosition = React.useCallback(() => {
     const container = containerRef.current;
     if (container) {
       const { scrollLeft, scrollWidth, clientWidth } = container;
-      const canScroll = scrollWidth > clientWidth + 10;
-      setShowLeftArrow(canScroll && scrollLeft > 10);
-      setShowRightArrow(canScroll && scrollLeft < scrollWidth - clientWidth - 10);
+      const isAtStart = scrollLeft <= 10;
+      const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+
+      setShowLeftArrow(!isAtStart);
+      setShowRightArrow(!isAtEnd);
+
+      // Build dynamic mask like HomePage
+      let mask = 'linear-gradient(to right, ';
+      if (isAtStart) {
+        mask += 'black 0%, black 95%, transparent 100%)';
+      } else if (isAtEnd) {
+        mask += 'transparent 0%, black 5%, black 100%)';
+      } else {
+        mask += 'transparent 0%, black 5%, black 95%, transparent 100%)';
+      }
+      setMaskImage(mask);
     }
   }, []);
 
@@ -428,84 +442,51 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
   };
 
   return (
-    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Left fade + arrow */}
+    <Box sx={{ position: 'relative', overflow: 'visible' }}>
       {showLeftArrow && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              left: -1,
-              top: -8,
-              bottom: -8,
-              width: 120,
-              background: 'linear-gradient(to right, rgba(14,21,37,1) 0%, rgba(14,21,37,0.6) 40%, rgba(14,21,37,0) 100%)',
-              zIndex: 2,
-              pointerEvents: 'none',
-            }}
-          />
-          <IconButton
-            onClick={() => scroll('left')}
-            sx={{
-              position: 'absolute',
-              left: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 3,
-              background: 'rgba(255,255,255,0.1)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-              width: 40,
-              height: 40,
-              '&:hover': {
-                background: 'rgba(255,255,255,0.15)',
-                transform: 'translateY(-50%) scale(1.05)',
-              },
-            }}
-          >
-            <ChevronLeftIcon sx={{ color: '#fff' }} />
-          </IconButton>
-        </>
+        <IconButton
+          onClick={() => scroll('left')}
+          sx={{
+            position: 'absolute',
+            left: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 3,
+            background: 'rgba(255,255,255,0.1)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+            width: 40,
+            height: 40,
+            '&:hover': {
+              background: 'rgba(255,255,255,0.15)',
+              transform: 'translateY(-50%) scale(1.05)',
+            },
+          }}
+        >
+          <ChevronLeftIcon sx={{ color: '#fff' }} />
+        </IconButton>
       )}
-
-      {/* Right fade + arrow */}
       {showRightArrow && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              right: -1,
-              top: -8,
-              bottom: -8,
-              width: 120,
-              background: 'linear-gradient(to left, rgba(14,21,37,1) 0%, rgba(14,21,37,0.6) 40%, rgba(14,21,37,0) 100%)',
-              zIndex: 2,
-              pointerEvents: 'none',
-            }}
-          />
-          <IconButton
-            onClick={() => scroll('right')}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 3,
-              background: 'rgba(255,255,255,0.1)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-              width: 40,
-              height: 40,
-              '&:hover': {
-                background: 'rgba(255,255,255,0.15)',
-                transform: 'translateY(-50%) scale(1.05)',
-              },
-            }}
-          >
-            <ChevronRightIcon sx={{ color: '#fff' }} />
-          </IconButton>
-        </>
+        <IconButton
+          onClick={() => scroll('right')}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 3,
+            background: 'rgba(255,255,255,0.1)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+            width: 40,
+            height: 40,
+            '&:hover': {
+              background: 'rgba(255,255,255,0.15)',
+              transform: 'translateY(-50%) scale(1.05)',
+            },
+          }}
+        >
+          <ChevronRightIcon sx={{ color: '#fff' }} />
+        </IconButton>
       )}
-
-      {/* Scrollable content */}
       <Box
         ref={containerRef}
         id={id}
@@ -518,6 +499,8 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
           py: 1,
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
+          maskImage,
+          WebkitMaskImage: maskImage,
         }}
       >
         {children}
@@ -1092,17 +1075,24 @@ const AIMusicPage: React.FC = () => {
                   variant="outlined"
                   onClick={() => document.getElementById('explore-tracks')?.scrollIntoView({ behavior: 'smooth' })}
                   sx={{
-                    borderColor: 'rgba(255,255,255,0.3)',
-                    color: '#fff',
+                    borderColor: '#00D4AA !important',
+                    borderWidth: '2px !important',
+                    color: '#FFFFFF !important',
+                    backgroundColor: 'transparent !important',
                     px: 4,
                     py: 1.75,
                     borderRadius: '12px',
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: '1.05rem',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      borderColor: 'rgba(255,255,255,0.5)',
-                      background: 'rgba(255,255,255,0.05)',
+                      borderColor: '#00D4AA !important',
+                      borderWidth: '2px !important',
+                      color: '#FFFFFF !important',
+                      backgroundColor: 'rgba(0, 212, 170, 0.1) !important',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 16px rgba(0, 212, 170, 0.3)',
                     },
                   }}
                 >
