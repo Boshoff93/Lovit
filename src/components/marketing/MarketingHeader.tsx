@@ -358,7 +358,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       color: '#fff !important',
                       px: 3,
                       py: 1.25,
-                      borderRadius: '12px',
+                      borderRadius: '20px',
                       fontWeight: 600,
                       textTransform: 'none',
                       fontSize: '0.95rem',
@@ -402,7 +402,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         color: '#fff !important',
                         px: 3,
                         py: 1.25,
-                        borderRadius: '12px',
+                        borderRadius: '20px',
                         fontWeight: 600,
                         textTransform: 'none',
                         fontSize: '0.95rem',
@@ -417,7 +417,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         },
                       }}
                     >
-                      Start Your Free Trial!
+                      Unlock Gruvi
                     </Button>
                   </>
                 )}

@@ -23,6 +23,9 @@ import {
   Schedule as ScheduleIcon,
   VideoLibrary as VideoLibraryIcon,
   Add as AddIcon,
+  CheckCircle as CheckCircleIcon,
+  Error as ErrorIcon,
+  HourglassTop as HourglassIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -133,12 +136,28 @@ const ScheduledContentPage: React.FC = () => {
     return dates;
   }, [currentDate]);
 
-  // Get posts for a specific date (for month view)
+  // Get posts for a specific date (for month view) - show all statuses except cancelled
   const getPostsForDate = (date: Date) => {
     return scheduledPosts.filter(post => {
       const postDate = new Date(post.scheduledTime);
-      return postDate.toDateString() === date.toDateString() && post.status === 'scheduled';
+      return postDate.toDateString() === date.toDateString() && post.status !== 'cancelled';
     });
+  };
+
+  // Get status color and styling
+  const getStatusStyle = (status: ScheduledPost['status']) => {
+    switch (status) {
+      case 'published':
+        return { bg: 'rgba(34, 197, 94, 0.12)', border: '#22C55E', text: '#15803D' };
+      case 'failed':
+        return { bg: 'rgba(239, 68, 68, 0.12)', border: '#EF4444', text: '#DC2626' };
+      case 'publishing':
+        return { bg: 'rgba(249, 115, 22, 0.12)', border: '#F97316', text: '#EA580C' };
+      case 'cancelled':
+        return { bg: 'rgba(156, 163, 175, 0.12)', border: '#9CA3AF', text: '#6B7280' };
+      default: // scheduled
+        return { bg: 'rgba(0, 122, 255, 0.1)', border: '#007AFF', text: '#1D1D1F' };
+    }
   };
 
   // Check if date is in current month
@@ -171,11 +190,11 @@ const ScheduledContentPage: React.FC = () => {
     }
   };
 
-  // Get posts for a specific date and hour
+  // Get posts for a specific date and hour - show all statuses except cancelled
   const getPostsForSlot = (date: Date, hour: number) => {
     return scheduledPosts.filter(post => {
       const postDate = new Date(post.scheduledTime);
-      return postDate.toDateString() === date.toDateString() && postDate.getHours() === hour && post.status === 'scheduled';
+      return postDate.toDateString() === date.toDateString() && postDate.getHours() === hour && post.status !== 'cancelled';
     });
   };
 
@@ -405,6 +424,40 @@ const ScheduledContentPage: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Status Legend */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: { xs: 1.5, sm: 3 },
+          px: { xs: 2, sm: 3, md: 4 },
+          py: 1,
+          background: '#fff',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 500, mr: 0.5 }}>
+          Status:
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <ScheduleIcon sx={{ fontSize: 14, color: '#007AFF' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Scheduled</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <HourglassIcon sx={{ fontSize: 14, color: '#F97316' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Publishing</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <CheckCircleIcon sx={{ fontSize: 14, color: '#22C55E' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Published</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <ErrorIcon sx={{ fontSize: 14, color: '#EF4444' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Failed</Typography>
+        </Box>
+      </Box>
+
       {/* Main Content - Calendar fills remaining space */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto', minWidth: 0 }}>
 
@@ -593,67 +646,104 @@ const ScheduledContentPage: React.FC = () => {
                             position: 'relative',
                           }}
                         >
-                          {posts.map((post) => (
-                            <Box
-                              key={post.scheduleId}
-                              sx={{
-                                background: 'rgba(0,122,255,0.1)',
-                                borderLeft: '3px solid #007AFF',
-                                borderRadius: '4px',
-                                p: 0.5,
-                                mb: 0.25,
-                                cursor: 'pointer',
-                                position: 'relative',
-                                '&:hover': { background: 'rgba(0,122,255,0.15)' },
-                                '&:hover .delete-btn': { opacity: 1 },
-                              }}
-                              onClick={() => navigate(`/video/${post.videoId}`)}
-                            >
-                              <Typography
+                          {posts.map((post) => {
+                            const statusStyle = getStatusStyle(post.status);
+                            return (
+                              <Box
+                                key={post.scheduleId}
                                 sx={{
-                                  fontSize: '0.65rem',
-                                  fontWeight: 600,
-                                  color: '#1D1D1F',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                  pr: 2,
+                                  background: statusStyle.bg,
+                                  borderLeft: `3px solid ${statusStyle.border}`,
+                                  borderRadius: '6px',
+                                  p: 0.5,
+                                  mb: 0.25,
+                                  cursor: 'pointer',
+                                  position: 'relative',
+                                  transition: 'all 0.2s ease',
+                                  '&:hover': {
+                                    background: statusStyle.bg,
+                                    filter: 'brightness(0.95)',
+                                    transform: 'scale(1.02)',
+                                  },
+                                  '&:hover .delete-btn': { opacity: 1 },
                                 }}
+                                onClick={() => navigate(`/video/${post.videoId}`)}
                               >
-                                {post.title || 'Untitled'}
-                              </Typography>
-                              <Box sx={{ display: 'flex', gap: 0.25, mt: 0.25 }}>
-                                {post.platforms.slice(0, 3).map((p, i) => (
-                                  <Box key={i} sx={{ width: 12, height: 12 }}>
-                                    {p.platform.toLowerCase() === 'youtube' && <YouTubeIcon sx={{ fontSize: 10, color: '#FF0000' }} />}
-                                    {p.platform.toLowerCase() === 'instagram' && <InstagramIcon sx={{ fontSize: 10, color: '#E4405F' }} />}
-                                    {p.platform.toLowerCase() === 'tiktok' && <TikTokIcon sx={{ '& svg': { width: 10, height: 10 } }} />}
-                                    {p.platform.toLowerCase() === 'facebook' && <FacebookIcon sx={{ fontSize: 10, color: '#1877F2' }} />}
-                                    {p.platform.toLowerCase() === 'linkedin' && <LinkedInIcon sx={{ fontSize: 10, color: '#0A66C2' }} />}
-                                  </Box>
-                                ))}
+                                {/* Title row with status icon */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: 2 }}>
+                                  {post.status === 'published' && <CheckCircleIcon sx={{ fontSize: 10, color: '#22C55E' }} />}
+                                  {post.status === 'failed' && <ErrorIcon sx={{ fontSize: 10, color: '#EF4444' }} />}
+                                  {post.status === 'publishing' && <HourglassIcon sx={{ fontSize: 10, color: '#F97316' }} />}
+                                  {post.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 10, color: '#007AFF' }} />}
+                                  <Typography
+                                    sx={{
+                                      fontSize: '0.65rem',
+                                      fontWeight: 600,
+                                      color: statusStyle.text,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      flex: 1,
+                                    }}
+                                  >
+                                    {post.title || 'Untitled'}
+                                  </Typography>
+                                </Box>
+                                {/* Platform icons row */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
+                                  {post.platforms.slice(0, 4).map((p, i) => (
+                                    <Box
+                                      key={i}
+                                      sx={{
+                                        width: 14,
+                                        height: 14,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '3px',
+                                        background: 'rgba(255,255,255,0.8)',
+                                      }}
+                                    >
+                                      {p.platform.toLowerCase() === 'youtube' && <YouTubeIcon sx={{ fontSize: 11, color: '#FF0000' }} />}
+                                      {p.platform.toLowerCase() === 'instagram' && <InstagramIcon sx={{ fontSize: 11, color: '#E4405F' }} />}
+                                      {p.platform.toLowerCase() === 'tiktok' && <TikTokIcon sx={{ width: 11, height: 11, color: '#000' }} />}
+                                      {p.platform.toLowerCase() === 'facebook' && <FacebookIcon sx={{ fontSize: 11, color: '#1877F2' }} />}
+                                      {p.platform.toLowerCase() === 'linkedin' && <LinkedInIcon sx={{ fontSize: 11, color: '#0A66C2' }} />}
+                                    </Box>
+                                  ))}
+                                  {post.platforms.length > 4 && (
+                                    <Typography sx={{ fontSize: '0.55rem', color: '#86868B', fontWeight: 600 }}>
+                                      +{post.platforms.length - 4}
+                                    </Typography>
+                                  )}
+                                </Box>
+                                {/* Delete button - only show for scheduled posts */}
+                                {post.status === 'scheduled' && (
+                                  <IconButton
+                                    className="delete-btn"
+                                    size="small"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCancelClick(post);
+                                    }}
+                                    sx={{
+                                      position: 'absolute',
+                                      top: 2,
+                                      right: 2,
+                                      p: 0.25,
+                                      color: '#FF3B30',
+                                      opacity: 0,
+                                      transition: 'opacity 0.2s',
+                                      background: 'rgba(255,255,255,0.9)',
+                                      '&:hover': { background: 'rgba(255,59,48,0.1)' },
+                                    }}
+                                  >
+                                    <DeleteIcon sx={{ fontSize: 12 }} />
+                                  </IconButton>
+                                )}
                               </Box>
-                              <IconButton
-                                className="delete-btn"
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCancelClick(post);
-                                }}
-                                sx={{
-                                  position: 'absolute',
-                                  top: 0,
-                                  right: 0,
-                                  p: 0.25,
-                                  color: '#FF3B30',
-                                  opacity: 0,
-                                  transition: 'opacity 0.2s',
-                                }}
-                              >
-                                <DeleteIcon sx={{ fontSize: 12 }} />
-                              </IconButton>
-                            </Box>
-                          ))}
+                            );
+                          })}
                         </Box>
                       );
                     })}
@@ -818,39 +908,52 @@ const ScheduledContentPage: React.FC = () => {
 
                         {/* Posts for this date */}
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-                          {posts.slice(0, 3).map((post) => (
-                            <Box
-                              key={post.scheduleId}
-                              onClick={() => navigate(`/video/${post.videoId}`)}
-                              sx={{
-                                background: 'rgba(0,122,255,0.1)',
-                                borderLeft: '2px solid #007AFF',
-                                borderRadius: '3px',
-                                px: 0.5,
-                                py: 0.25,
-                                cursor: 'pointer',
-                                '&:hover': { background: 'rgba(0,122,255,0.2)' },
-                              }}
-                            >
-                              <Typography
+                          {posts.slice(0, 3).map((post) => {
+                            const statusStyle = getStatusStyle(post.status);
+                            return (
+                              <Box
+                                key={post.scheduleId}
+                                onClick={() => navigate(`/video/${post.videoId}`)}
                                 sx={{
-                                  fontSize: '0.6rem',
-                                  fontWeight: 600,
-                                  color: '#1D1D1F',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
+                                  background: statusStyle.bg,
+                                  borderLeft: `2px solid ${statusStyle.border}`,
+                                  borderRadius: '4px',
+                                  px: 0.5,
+                                  py: 0.25,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  '&:hover': {
+                                    filter: 'brightness(0.95)',
+                                    transform: 'scale(1.02)',
+                                  },
                                 }}
                               >
-                                {new Date(post.scheduledTime).toLocaleTimeString('en-US', {
-                                  hour: 'numeric',
-                                  minute: '2-digit',
-                                  hour12: true,
-                                })}{' '}
-                                {post.title || 'Untitled'}
-                              </Typography>
-                            </Box>
-                          ))}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                                  {post.status === 'published' && <CheckCircleIcon sx={{ fontSize: 8, color: '#22C55E' }} />}
+                                  {post.status === 'failed' && <ErrorIcon sx={{ fontSize: 8, color: '#EF4444' }} />}
+                                  {post.status === 'publishing' && <HourglassIcon sx={{ fontSize: 8, color: '#F97316' }} />}
+                                  {post.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 8, color: '#007AFF' }} />}
+                                  <Typography
+                                    sx={{
+                                      fontSize: '0.55rem',
+                                      fontWeight: 600,
+                                      color: statusStyle.text,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  >
+                                    {new Date(post.scheduledTime).toLocaleTimeString('en-US', {
+                                      hour: 'numeric',
+                                      minute: '2-digit',
+                                      hour12: true,
+                                    })}{' '}
+                                    {post.title || 'Untitled'}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            );
+                          })}
                           {posts.length > 3 && (
                             <Typography
                               sx={{

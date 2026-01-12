@@ -232,6 +232,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [uploadMode, setUploadMode] = useState<'now' | 'schedule'>('now');
   const [scheduledDateTime, setScheduledDateTime] = useState<Dayjs | null>(null);
   const [isScheduling, setIsScheduling] = useState(false);
+  const uploadDialogContentRef = useRef<HTMLDivElement>(null);
   
   // Video characters state (for thumbnail selection)
   const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
@@ -1706,7 +1707,22 @@ const MusicVideoPlayer: React.FC = () => {
             </Alert>
           )}
           {socialSuccess && (
-            <Alert severity="success" onClose={() => setSocialSuccess(null)} sx={{ mb: 2 }}>
+            <Alert
+              severity="success"
+              onClose={() => setSocialSuccess(null)}
+              sx={{
+                mb: 2,
+                ...(socialSuccess.includes('Content Calendar') && {
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.12)' },
+                }),
+              }}
+              onClick={() => {
+                if (socialSuccess.includes('Content Calendar')) {
+                  navigate('/content-calendar');
+                }
+              }}
+            >
               {socialSuccess}
             </Alert>
           )}
@@ -3221,7 +3237,8 @@ const MusicVideoPlayer: React.FC = () => {
           {(() => {
             // TikTok validation checks
             const tiktokSelected = selectedPlatforms.includes('tiktok');
-            const tiktokPrivacyMissing = tiktokSelected && tiktokPrivacyLevel === '';
+            // In direct post mode, privacy is forced to SELF_ONLY so it's not missing
+            const tiktokPrivacyMissing = tiktokSelected && tiktokPostMode !== 'direct' && tiktokPrivacyLevel === '';
             const tiktokDurationExceeds = tiktokSelected && tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec;
             const tiktokCommercialIncomplete = tiktokSelected && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent;
             const tiktokCantPost = tiktokSelected && tiktokCreatorInfo?.canPost === false;
@@ -3282,7 +3299,7 @@ const MusicVideoPlayer: React.FC = () => {
           <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
             {isUploading ? 'Uploading...' : Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? 'Upload Complete' : 'Confirm Upload'}
           </DialogTitle>
-          <DialogContent>
+          <DialogContent ref={uploadDialogContentRef}>
             {/* Modal Error Alert */}
             {modalError && (
               <Alert
@@ -3497,7 +3514,23 @@ const MusicVideoPlayer: React.FC = () => {
                     </Typography>
                   </Box>
                   <Box
-                    onClick={() => setUploadMode('schedule')}
+                    onClick={() => {
+                      setUploadMode('schedule');
+                      // Set default scheduled time to 1 hour from now, rounded to next 15 minutes
+                      if (!scheduledDateTime) {
+                        const now = dayjs();
+                        const minutesToAdd = 60 + (15 - (now.minute() % 15));
+                        const defaultTime = now.add(minutesToAdd, 'minute').second(0);
+                        setScheduledDateTime(defaultTime);
+                      }
+                      // Scroll to bottom after state update renders the date picker
+                      setTimeout(() => {
+                        uploadDialogContentRef.current?.scrollTo({
+                          top: uploadDialogContentRef.current.scrollHeight,
+                          behavior: 'smooth'
+                        });
+                      }, 100);
+                    }}
                     sx={{
                       flex: 1,
                       p: 2,
@@ -3704,8 +3737,17 @@ const MusicVideoPlayer: React.FC = () => {
                         // Reset state
                         setUploadMode('now');
                         setScheduledDateTime(null);
-                        // Show success message (could use a snackbar)
-                        alert(`Post scheduled for ${scheduledDate.toLocaleString()}`);
+                        // Show success banner
+                        const formattedDate = scheduledDate.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true
+                        });
+                        setSocialSuccess(`Post scheduled for ${formattedDate}. View in Content Calendar →`);
+                        // Scroll to top to show success message
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       } catch (err: any) {
                         console.error('Scheduling failed:', err);
                         setIsScheduling(false);
