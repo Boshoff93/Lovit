@@ -75,6 +75,7 @@ import { RootState, AppDispatch } from '../store/store';
 import { createCheckoutSession } from '../store/authSlice';
 import { faqItems } from './FAQPage';
 import { songsApi } from '../services/api';
+import api from '../utils/axiosConfig';
 import UpgradePopup from '../components/UpgradePopup';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 // PauseRoundedIcon replaced with AudioEqualizer component
@@ -1419,19 +1420,30 @@ const LandscapeVideoCard: React.FC<{
   const [isHovered, setIsHovered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
-    if (videoRef.current) {
-      videoRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {});
+    if (videoRef.current && videoUrl) {
+      videoRef.current.currentTime = 0; // Restart from beginning on hover
+      timeoutRef.current = setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().then(() => {
+            setIsPlaying(true);
+          }).catch(() => {});
+        }
+      }, 300); // 300ms delay before playing
     }
-  }, []);
+  }, [videoUrl]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
     setIsPlaying(false);
+    // Clear the pending timeout to prevent video from starting after mouse leaves
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
@@ -1616,6 +1628,9 @@ const HomePage: React.FC = () => {
   // State for playing sample tracks
   const [loadingSongId, setLoadingSongId] = useState<string | null>(null);
   const [songCache, setSongCache] = useState<Record<string, any>>({});
+
+  // State for video URLs
+  const [videoUrls, setVideoUrls] = useState<Record<string, string>>({});
   
   const [open, setOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -2018,6 +2033,31 @@ const HomePage: React.FC = () => {
     }
   }, [isLoggedIn, pendingPlanId, open, handleSubscribeClick]);
 
+  // Fetch video URLs from public API endpoint
+  useEffect(() => {
+    const fetchVideoUrls = async () => {
+      const urls: Record<string, string> = {};
+      const allVideos = [...promoVideosPortrait.slice(0, 3), ...promoVideosLandscape];
+
+      await Promise.all(
+        allVideos.map(async (video) => {
+          try {
+            const response = await api.get(`/api/public/videos/${video.id}`);
+            if (response.data?.videoUrl) {
+              urls[video.id] = response.data.videoUrl;
+            }
+          } catch (err) {
+            console.error(`Error fetching video URL for ${video.id}:`, err);
+          }
+        })
+      );
+
+      setVideoUrls(urls);
+    };
+
+    fetchVideoUrls();
+  }, []);
+
   // Create structured data for SEO
   const trackStructuredData = useMemo(() => createMusicPlaylistStructuredData({
     name: 'Gruvi Featured Tracks for You',
@@ -2373,7 +2413,7 @@ const HomePage: React.FC = () => {
             thumbnail: v.thumbnail,
             tag: v.tag
           }))}
-          videoUrls={promoVideosPortrait.slice(0, 3).reduce((acc, v) => ({ ...acc, [v.id]: v.videoUrl }), {})}
+          videoUrls={videoUrls}
           title={
             <>
               <Box component="span" sx={{
@@ -2483,7 +2523,7 @@ const HomePage: React.FC = () => {
               <Box sx={{ flex: 1, width: '100%' }}>
                 <LandscapeVideoCard
                   video={promoVideosLandscape[0]}
-                  videoUrl={promoVideosLandscape[0].videoUrl}
+                  videoUrl={videoUrls[promoVideosLandscape[0].id]}
                   onClick={() => navigate(`/videos/${promoVideosLandscape[0].title.toLowerCase().replace(/\s+/g, '-')}`)}
                 />
               </Box>
@@ -2569,7 +2609,7 @@ const HomePage: React.FC = () => {
               <Box sx={{ flex: 1, width: '100%', order: { xs: 1, md: 0 } }}>
                 <LandscapeVideoCard
                   video={promoVideosLandscape[1]}
-                  videoUrl={promoVideosLandscape[1].videoUrl}
+                  videoUrl={videoUrls[promoVideosLandscape[1].id]}
                   onClick={() => navigate(`/videos/${promoVideosLandscape[1].title.toLowerCase().replace(/\s+/g, '-')}`)}
                 />
               </Box>
@@ -2655,7 +2695,7 @@ const HomePage: React.FC = () => {
               <Box sx={{ flex: 1, width: '100%' }}>
                 <LandscapeVideoCard
                   video={promoVideosLandscape[2]}
-                  videoUrl={promoVideosLandscape[2].videoUrl}
+                  videoUrl={videoUrls[promoVideosLandscape[2].id]}
                   onClick={() => navigate(`/videos/${promoVideosLandscape[2].title.toLowerCase().replace(/\s+/g, '-')}`)}
                 />
               </Box>
@@ -4345,7 +4385,7 @@ const HomePage: React.FC = () => {
               >
                 Monthly
               </Typography>
-              <Typography
+              <Box
                 onClick={() => !isYearly && handleToggleInterval()}
                 sx={{
                   fontWeight: isYearly ? 600 : 400,
@@ -4376,7 +4416,7 @@ const HomePage: React.FC = () => {
                     }}
                   />
                 )}
-              </Typography>
+              </Box>
             </Box>
           </Box>
 

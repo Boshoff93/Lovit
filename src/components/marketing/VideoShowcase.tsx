@@ -50,46 +50,69 @@ const VideoCard: React.FC<{
   onClick?: () => void;
   index: number;
   darkMode?: boolean;
-  isInView?: boolean;
   playButtonColor?: string;
-}> = ({ video, videoUrl, onClick, index, darkMode = false, isInView = false, playButtonColor }) => {
+}> = ({ video, videoUrl, onClick, index, darkMode = false, playButtonColor }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // IntersectionObserver to detect when video is in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.5 } // Play when 50% visible
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
 
   // Auto-play when in view
   useEffect(() => {
-    if (isInView && videoRef.current && videoUrl) {
+    if (isInView && videoRef.current && videoUrl && !isHovered) {
       videoRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {});
-    } else if (!isInView && videoRef.current) {
+      }).catch(() => {
+        setIsPlaying(false);
+      });
+    } else if (!isInView && videoRef.current && !isHovered) {
       videoRef.current.pause();
       setIsPlaying(false);
     }
-  }, [isInView, videoUrl]);
+  }, [isInView, videoUrl, isHovered]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
-    if (videoRef.current) {
+    // Don't restart if already playing from auto-play
+    if (videoRef.current && videoUrl && !isPlaying) {
       videoRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {});
+      }).catch(() => {
+        setIsPlaying(false);
+      });
     }
-  }, []);
+  }, [videoUrl, isPlaying]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
-    // Don't stop playing if in view - keep auto-playing
-    if (!isInView && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-      setIsPlaying(false);
-    }
-  }, [isInView]);
+    // When mouse leaves, keep playing (don't pause or reset)
+    // The auto-play logic will handle pausing when out of view
+  }, []);
 
   return (
     <Box
+      ref={containerRef}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -310,26 +333,9 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [internalVideoUrls, setInternalVideoUrls] = useState<Record<string, string>>({});
-  const [isInView, setIsInView] = useState(false);
 
   // Use external video URLs if provided, otherwise use internal state
   const videoUrls = externalVideoUrls || internalVideoUrls;
-
-  // Intersection observer for auto-play when in view
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { threshold: 0.3 } // Trigger when 30% visible
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
 
   // Fetch all video URLs on mount (only if external URLs not provided)
   useEffect(() => {
@@ -613,7 +619,6 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
                   videoUrl={videoUrls[video.id]}
                   index={index}
                   darkMode={darkMode}
-                  isInView={isInView}
                   playButtonColor={playButtonColor}
                   onClick={() => onVideoClick?.(video)}
                 />
