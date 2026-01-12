@@ -39,6 +39,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
+import { useTabHeaders } from '../hooks/useTabHeaders';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader } from '../components/marketing';
 import socialsAnimationData from '../assets/animations/socials.json';
@@ -152,6 +153,9 @@ const SocialMediaPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = !!token;
   const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
+
+  // Dynamic headers based on route
+  const headers = useTabHeaders();
 
   // Scroll-triggered animation refs
   const { ref: platformsRef, inView: platformsInView } = useInView({ threshold: 0.1 });
@@ -331,7 +335,7 @@ const SocialMediaPage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Chip
-                label="Social Media Publishing"
+                label={headers.badge}
                 size="small"
                 sx={{
                   mb: 3,
@@ -354,15 +358,7 @@ const SocialMediaPage: React.FC = () => {
                   lineHeight: 1.05,
                 }}
               >
-                Publish to{' '}
-                <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>
-                  All Platforms
-                </Box>
-                {' '}in One Click
+                {headers.title}
               </Typography>
               <Typography
                 sx={{
@@ -373,7 +369,7 @@ const SocialMediaPage: React.FC = () => {
                   maxWidth: '540px',
                 }}
               >
-                Stop manually posting to each platform. Connect your accounts once, then share your music and videos everywhere with a single click.
+                {headers.subtitle}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button

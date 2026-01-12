@@ -682,40 +682,8 @@ const MusicVideoDetailPage: React.FC = () => {
         transition: 'padding-bottom 0.3s ease-out',
       }}
     >
-      {/* Background gradient orbs - subtle */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      >
-        <Box sx={{
-          position: 'absolute',
-          top: '5%',
-          left: '5%',
-          width: '30%',
-          height: '40%',
-          background: 'radial-gradient(ellipse at center, rgba(249, 115, 22, 0.08) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }} />
-        <Box sx={{
-          position: 'absolute',
-          bottom: '5%',
-          right: '5%',
-          width: '25%',
-          height: '35%',
-          background: 'radial-gradient(ellipse at center, rgba(239, 68, 68, 0.06) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }} />
-      </Box>
-
       <SEO
-        title={currentVideo.tag 
+        title={currentVideo.tag
           ? `${currentVideo.title} - ${currentVideo.tag} Promo Video | Gruvi AI Video Generator`
           : `${currentVideo.title} - ${currentVideo.style} Music Video | Gruvi AI Video Generator`}
         description={currentVideo.tag

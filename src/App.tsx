@@ -477,6 +477,15 @@ function App() {
             </Layout>
            </RequireAuth>
         } />
+
+        {/* Catch-all for niche landing pages - route to appropriate tab page */}
+        <Route path="/ai-music/*" element={<AIMusicPage />} />
+        <Route path="/ai-video-shorts/*" element={<AIVideoShortsPage />} />
+        <Route path="/social-media/*" element={<SocialMediaPage />} />
+        <Route path="/pricing/*" element={<PaymentPage />} />
+
+        {/* Catch-all for any other niche routes - all go to HomePage with dynamic headers */}
+        <Route path="*" element={<HomePage />} />
         </Routes>
         <GlobalAudioPlayer />
         </AuthInitializer>

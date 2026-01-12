@@ -48,6 +48,7 @@ import { RootState } from '../store/store';
 import { AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAuth } from '../hooks/useAuth';
+import { useTabHeaders } from '../hooks/useTabHeaders';
 import {
   trackPaymentPageView,
   trackPlanSelected,
@@ -276,19 +277,22 @@ const PaymentPage: React.FC = () => {
   const [topUpError, setTopUpError] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
-  
+
+  // Dynamic headers based on route
+  const headers = useTabHeaders();
+
   // Check if audio player is active to add bottom padding
   const { currentSong } = useAudioPlayer();
   const hasActivePlayer = !!currentSong;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useDispatch<AppDispatch>();
-  
+
   // Get auth state from Redux
   const { isLoading, subscription } = useSelector((state: RootState) => state.auth);
-  
+
   // Use account data hook
   const { fetchAccountData } = useAccountData(false);
-  
+
   // Get signout function from useAuth
   const { logout } = useAuth();
 
@@ -565,6 +569,19 @@ const PaymentPage: React.FC = () => {
             mb: { xs: 2, md: 3 },
             pt: { xs: 4, md: 8 },
           }}>
+          <Chip
+            label={headers.badge}
+            size="small"
+            sx={{
+              mb: 2,
+              background: 'rgba(192, 132, 252, 0.15)',
+              color: '#C084FC',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: 28,
+              borderRadius: '12px',
+            }}
+          />
           <Typography
             variant="h1"
             sx={{
@@ -572,28 +589,12 @@ const PaymentPage: React.FC = () => {
               fontWeight: 800,
               fontFamily: '"Fredoka", "Nunito", sans-serif',
               color: '#fff',
-              mb: 2,
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-            }}
-          >
-            Unlimited AI Creativity
-          </Typography>
-          <Typography
-            component="div"
-            sx={{
-              fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
-              fontWeight: 800,
-              fontFamily: '"Fredoka", "Nunito", sans-serif',
               mb: 3,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
-              background: 'linear-gradient(135deg, #C084FC 0%, #A78BFA 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
             }}
           >
-            Starting Today
+            {headers.title}
           </Typography>
           <Typography
             sx={{
@@ -605,9 +606,7 @@ const PaymentPage: React.FC = () => {
               mt: 2,
             }}
           >
-            Generate unlimited AI images, videos, viral shorts, and avatars.
-            <br />
-            Choose the perfect plan for your creative needs.
+            {headers.subtitle}
           </Typography>
         </Box>
         </Container>
@@ -667,6 +666,103 @@ const PaymentPage: React.FC = () => {
             Every plan includes access to AI images, videos, avatars, and viral shorts.
           </Typography>
         </Box>
+
+        {/* Current Plan & Manage Subscription - shown for subscribed users, above cards */}
+        {subscription && subscription.tier !== 'free' && (() => {
+          // Get tier-specific colors
+          const tierColors: Record<string, { gradient: string; bgColor: string; borderColor: string; shadowColor: string }> = {
+            starter: {
+              gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+              bgColor: 'rgba(59, 130, 246, 0.1)',
+              borderColor: 'rgba(59, 130, 246, 0.2)',
+              shadowColor: 'rgba(59, 130, 246, 0.3)',
+            },
+            pro: {
+              gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+              bgColor: 'rgba(236, 72, 153, 0.1)',
+              borderColor: 'rgba(236, 72, 153, 0.2)',
+              shadowColor: 'rgba(236, 72, 153, 0.3)',
+            },
+            premium: {
+              gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
+              bgColor: 'rgba(249, 115, 22, 0.1)',
+              borderColor: 'rgba(249, 115, 22, 0.2)',
+              shadowColor: 'rgba(249, 115, 22, 0.3)',
+            },
+          };
+          const colors = tierColors[subscription.tier] || tierColors.starter;
+
+          return (
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 4,
+            py: 3,
+            px: 4,
+            maxWidth: '600px',
+            mx: 'auto',
+            background: colors.bgColor,
+            borderRadius: '16px',
+            border: `1px solid ${colors.borderColor}`,
+            flexWrap: 'wrap',
+            gap: 3,
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+              <Box
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '12px',
+                  background: colors.gradient,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
+              </Box>
+              <Box>
+                <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1.1rem' }}>
+                  {subscription.tier === 'premium' ? 'Beast Mode' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} Plan
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0
+                    ? `Next billing: ${new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}`
+                    : 'Active subscription'}
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              onClick={handleManageSubscription}
+              disabled={isManagingSubscription}
+              sx={{
+                background: colors.gradient,
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: '100px',
+                px: 3,
+                py: 1.25,
+                boxShadow: `0 4px 12px ${colors.shadowColor}`,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  boxShadow: `0 6px 16px ${colors.shadowColor}`,
+                  transform: 'translateY(-2px)',
+                },
+              }}
+            >
+              {isManagingSubscription ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                'Manage Subscription'
+              )}
+            </Button>
+          </Box>
+          );
+        })()}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 4 }}>
 
@@ -1256,77 +1352,6 @@ const PaymentPage: React.FC = () => {
           </Button>
         </Box>
 
-        {/* Current Plan & Manage Subscription - shown for subscribed users, below cards */}
-        {subscription && subscription.tier !== 'free' && (
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mt: 5,
-            py: 3,
-            px: 4,
-            maxWidth: '600px',
-            mx: 'auto',
-            background: 'rgba(249, 115, 22, 0.1)',
-            borderRadius: '16px',
-            border: '1px solid rgba(249, 115, 22, 0.2)',
-            flexWrap: 'wrap',
-            gap: 3,
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <SecurityIcon sx={{ fontSize: 24, color: '#fff' }} />
-              </Box>
-              <Box>
-                <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1.1rem' }}>
-                  {subscription.tier === 'premium' ? 'Beast Mode' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} Plan
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0
-                    ? `Next billing: ${new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}`
-                    : 'Active subscription'}
-                </Typography>
-              </Box>
-            </Box>
-            <Button
-              variant="contained"
-              onClick={handleManageSubscription}
-              disabled={isManagingSubscription}
-              sx={{
-                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
-                color: '#fff',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: '100px',
-                px: 3,
-                py: 1.25,
-                boxShadow: '0 4px 12px rgba(249,115,22,0.3)',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  boxShadow: '0 6px 16px rgba(249,115,22,0.4)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              {isManagingSubscription ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                'Manage Subscription'
-              )}
-            </Button>
-          </Box>
-        )}
         </Container>
         <SectionDivider />
       </Box>

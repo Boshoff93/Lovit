@@ -40,6 +40,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
+import { useTabHeaders } from '../hooks/useTabHeaders';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader, VideoShowcase, CTASection } from '../components/marketing';
 
@@ -591,6 +592,9 @@ const AIVideoShortsPage: React.FC = () => {
   const isLoggedIn = !!token;
   const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
 
+  // Dynamic headers based on route
+  const headers = useTabHeaders();
+
   // Scroll-triggered animation refs
   const { ref: moreVideosAnimRef, inView: moreVideosInView } = useInView({ threshold: 0.1 });
   const { ref: landscapeVideosRef, inView: landscapeVideosInView } = useInView({ threshold: 0.1 });
@@ -836,7 +840,7 @@ const AIVideoShortsPage: React.FC = () => {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 7 } }}>
             <Chip
-              label="AI Video Shorts"
+              label={headers.badge}
               size="small"
               sx={{
                 mb: 2,
@@ -859,15 +863,7 @@ const AIVideoShortsPage: React.FC = () => {
                 lineHeight: 1.1,
               }}
             >
-              Create{' '}
-              <Box component="span" sx={{
-                background: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                UGC Videos
-              </Box>
-              {' '}with AI
+              {headers.title}
             </Typography>
             <Typography
               sx={{
@@ -879,8 +875,7 @@ const AIVideoShortsPage: React.FC = () => {
                 mb: 4,
               }}
             >
-              Transform your products into engaging video content. AI avatars showcase your products 24/7
-              with perfect delivery, multiple languages, and unlimited scalability.
+              {headers.subtitle}
             </Typography>
 
             {/* Platform Icons */}

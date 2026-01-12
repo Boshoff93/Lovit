@@ -19,6 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
+import { getTabForRoute } from '../../config/tabRouting';
 
 interface MarketingHeaderProps {
   onOpenAuth?: () => void;
@@ -62,10 +63,11 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Check if current path matches nav item
+  // Check if current path matches nav item using tab routing logic
   const isActive = useCallback((href: string) => {
-    if (href === '/') return location.pathname === '/';
-    return location.pathname.startsWith(href);
+    const currentTab = getTabForRoute(location.pathname);
+    const itemTab = getTabForRoute(href);
+    return currentTab === itemTab;
   }, [location.pathname]);
 
   // Find active nav index

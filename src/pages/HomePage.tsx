@@ -70,6 +70,7 @@ import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { useAuth } from '../hooks/useAuth';
+import { useSectionHeaders } from '../hooks/useSectionHeaders';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { createCheckoutSession } from '../store/authSlice';
@@ -1746,7 +1747,10 @@ const HomePage: React.FC = () => {
   const heroHeadingParts = routeConfig.heroHeading.split('\n');
   const heroSubtext = routeConfig.heroSubtext;
   const examplePrompts = routeConfig.examplePrompts;
-  
+
+  // Get dynamic section headers
+  const headers = useSectionHeaders();
+
   // Get carousel titles based on route category (with fallback to default)
   const routeCategory: RouteCategory = routeConfig.routeCategory || 'default';
   const carouselTitles = carouselTitlesByCategory[routeCategory];
@@ -2140,6 +2144,23 @@ const HomePage: React.FC = () => {
       }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            {/* Badge */}
+            <Chip
+              label={headers.hero.badge}
+              size="small"
+              sx={{
+                mb: 3,
+                background: 'rgba(59, 130, 246, 0.15)',
+                color: '#3B82F6',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                letterSpacing: '0.02em',
+                height: 28,
+                borderRadius: '12px',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+              }}
+            />
+
             {/* Main Headline with Gruvi branding - animated gradient */}
           <Typography
             variant="h1"
@@ -2155,12 +2176,6 @@ const HomePage: React.FC = () => {
             >
               <Box
                 component="span"
-                sx={{ color: '#FFFFFF' }}
-              >
-                Gruvi:
-              </Box>{' '}
-              <Box
-                component="span"
             sx={{
                   background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 50%, #06B6D4 100%)',
                   backgroundSize: '200% 200%',
@@ -2174,7 +2189,7 @@ const HomePage: React.FC = () => {
                   },
                 }}
               >
-                {heroHeadingParts[0]}
+                {headers.hero.title}
               </Box>
           </Typography>
 
@@ -2188,7 +2203,7 @@ const HomePage: React.FC = () => {
                 mb: 3,
             }}
           >
-              {heroHeadingParts[1] || 'Everyone Deserves a Hit Song'}
+              {headers.hero.subtitle}
           </Typography>
 
             {/* Prompt Input - Glassy */}
@@ -2414,19 +2429,8 @@ const HomePage: React.FC = () => {
             tag: v.tag
           }))}
           videoUrls={videoUrls}
-          title={
-            <>
-              <Box component="span" sx={{
-                background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                AI-Powered
-              </Box>
-              {' '}Product Videos
-            </>
-          }
-          subtitle="Create stunning product videos with AI. Perfect for TikTok, Instagram Reels, and YouTube Shorts."
+          title="AI-Powered Product Videos"
+          subtitle="Create stunning product videos with AI"
           badge="UGC Content"
           ctaText="Start Creating"
           ctaLink={isLoggedIn ? '/create/video' : undefined}
@@ -2487,14 +2491,7 @@ const HomePage: React.FC = () => {
                     mb: 2,
                   }}
                 >
-                  Create{' '}
-                  <Box component="span" sx={{
-                    background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}>
-                    Product Promo Videos
-                  </Box>
+                  Cinematic Brand Videos
                 </Typography>
                 <Typography
                   sx={{
@@ -2504,7 +2501,7 @@ const HomePage: React.FC = () => {
                     lineHeight: 1.7,
                   }}
                 >
-                  Showcase your products with cinematic AI-generated videos perfect for ads and social media.
+                  Showcase your products with cinematic videos
                 </Typography>
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 1.5 }}>
                   {[
@@ -2808,15 +2805,7 @@ const HomePage: React.FC = () => {
                   lineHeight: 1.1,
                 }}
               >
-                Publish to{' '}
-                <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>
-                  All Platforms
-                </Box>
-                {' '}in One Click
+                Post to All Platforms in One Click
               </Typography>
               <Typography
                 sx={{
@@ -2826,7 +2815,7 @@ const HomePage: React.FC = () => {
                   mb: 2,
                 }}
               >
-                <Box component="span" sx={{ color: '#06B6D4', fontWeight: 600 }}>No More Manual Posting</Box> - Say goodbye to logging into each platform separately. Create your content once, then blast it everywhere instantly.
+                Upload to YouTube, TikTok, Instagram, and all major platforms
               </Typography>
               <Typography
                 sx={{
@@ -2913,7 +2902,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              {carouselTitles.featuredTracks.title}
+              Listen to Sample Tracks
             </Typography>
             <Typography
               sx={{
@@ -2924,7 +2913,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.6,
               }}
             >
-              {carouselTitles.featuredTracks.subtitle}
+              Discover the quality and variety
             </Typography>
           </Box>
           {/* Single carousel with columns of 3 tracks each - first 15 tracks (5 columns × 3 rows) */}
@@ -3170,7 +3159,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.2,
               }}
             >
-              {carouselTitles.genres.title}
+              Create in Any Genre
             </Typography>
             <Typography
               sx={{
@@ -3181,7 +3170,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.6,
               }}
             >
-              {carouselTitles.genres.subtitle}
+              From Pop to Classical, Hip-Hop to Jazz
             </Typography>
           </Box>
 
@@ -3614,7 +3603,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.6,
               }}
             >
-              Create songs with native-quality vocals in 24+ languages - reach a global audience
+              Create songs in 24+ languages
             </Typography>
           </Box>
 
@@ -4016,7 +4005,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.6,
               }}
             >
-              Uplifting, melancholic, energetic - create music that captures any emotion
+              Choose from energetic beats to peaceful melodies
             </Typography>
           </Box>
 
@@ -4170,7 +4159,7 @@ const HomePage: React.FC = () => {
                 lineHeight: 1.6,
               }}
             >
-              Professional music and video generation at your fingertips
+              Professional music and video creation tools
             </Typography>
           </Box>
 
@@ -4352,10 +4341,10 @@ const HomePage: React.FC = () => {
                 letterSpacing: '-0.02em',
               }}
             >
-              Start Making Music for Free
+              Choose Your Plan
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', mb: 4, maxWidth: '500px', mx: 'auto' }}>
-              New customers get 2 free songs when they sign up. Select the plan that best fits your needs.
+              Start creating for free
             </Typography>
 
             {/* Billing Toggle - Dark themed */}

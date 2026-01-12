@@ -46,6 +46,7 @@ import { RootState } from '../store/store';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { useAuth } from '../hooks/useAuth';
 import { useInView } from '../hooks/useInView';
+import { useTabHeaders } from '../hooks/useTabHeaders';
 import { songsApi } from '../services/api';
 import { SEO, createBreadcrumbStructuredData } from '../utils/seoHelper';
 import { MarketingHeader, CTASection } from '../components/marketing';
@@ -763,6 +764,9 @@ const AIMusicPage: React.FC = () => {
   const { currentSong, isPlaying, playSong, pauseSong } = useAudioPlayer();
   const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
 
+  // Dynamic headers based on route
+  const headers = useTabHeaders();
+
   // Scroll-triggered animation refs
   const { ref: featuredRef } = useInView({ threshold: 0.1 });
   const { ref: whyRef, inView: whyInView } = useInView({ threshold: 0.1 });
@@ -1039,7 +1043,7 @@ const AIMusicPage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Chip
-                label="AI Music Generation"
+                label={headers.badge}
                 size="small"
                 sx={{
                   mb: 3,
@@ -1062,15 +1066,7 @@ const AIMusicPage: React.FC = () => {
                   lineHeight: 1.05,
                 }}
               >
-                Create Music in{' '}
-                <Box component="span" sx={{
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>
-                  Any Genre
-                </Box>
-                {' '}with AI
+                {headers.title}
               </Typography>
               <Typography
                 sx={{
@@ -1081,7 +1077,7 @@ const AIMusicPage: React.FC = () => {
                   maxWidth: '540px',
                 }}
               >
-                Generate original songs in seconds. 32 genres, 24 languages. Your music, your rights — use it anywhere you want.
+                {headers.subtitle}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button
