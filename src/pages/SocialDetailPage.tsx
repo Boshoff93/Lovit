@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -89,58 +88,6 @@ export const socialPlatformData = [
     contentTypes: ['Short Videos', 'Announcements', 'Behind-the-scenes', 'Promotional Clips'],
     category: 'video',
   },
-  {
-    id: 'spotify', 
-    name: 'Spotify', 
-    color: '#1DB954',
-    image: '/music-apps/spotify.png',
-    svgPath: null,
-    description: 'Download your tracks and add them to your Spotify library',
-    fullDescription: 'Create AI-generated music with Gruvi, download your tracks, and add them to your personal Spotify library using Spotify\'s Local Files feature. Build playlists with your original creations and listen across all your devices. Perfect for personal use and sharing with friends.',
-    features: ['Add to Local Files', 'Create playlists', 'Sync across devices', 'Personal library'],
-    contentTypes: ['Personal Tracks', 'Workout Music', 'Study Beats', 'Party Mixes'],
-    category: 'music',
-    note: 'Download your tracks from Gruvi and add to Spotify via Local Files',
-  },
-  { 
-    id: 'apple-music', 
-    name: 'Apple Music', 
-    color: '#FA233B',
-    image: '/music-apps/apple.png',
-    svgPath: null,
-    description: 'Upload your tracks to iCloud Music Library',
-    fullDescription: 'Download your AI-generated music from Gruvi and upload it to your iCloud Music Library. Your tracks sync automatically across iPhone, iPad, Mac, and Apple Watch. Create personalized playlists with your original creations and enjoy them anywhere.',
-    features: ['iCloud sync', 'All Apple devices', 'Personal playlists', 'Offline listening'],
-    contentTypes: ['Personal Tracks', 'Custom Playlists', 'Workout Music', 'Focus Beats'],
-    category: 'music',
-    note: 'Download your tracks and upload to iCloud Music Library',
-  },
-  { 
-    id: 'amazon-music', 
-    name: 'Amazon Music', 
-    color: '#25D1DA',
-    image: '/music-apps/amazon.png',
-    svgPath: null,
-    description: 'Add your music to Amazon\'s personal library',
-    fullDescription: 'Download your AI-generated tracks from Gruvi and upload them to your Amazon Music personal library. Play your music through Alexa devices, Fire TV, and the Amazon Music app. Perfect for having your custom tracks available wherever you listen.',
-    features: ['Alexa playback', 'Fire TV support', 'Personal uploads', 'Multi-device sync'],
-    contentTypes: ['Personal Tracks', 'Smart Speaker Music', 'Background Vibes', 'Party Tracks'],
-    category: 'music',
-    note: 'Download your tracks and upload to your Amazon Music library',
-  },
-  { 
-    id: 'soundcloud', 
-    name: 'SoundCloud', 
-    color: '#FF5500',
-    image: '/music-apps/sound.png',
-    svgPath: null,
-    description: 'Share your tracks with the SoundCloud community',
-    fullDescription: 'SoundCloud lets you upload your AI-generated tracks directly and share them with 76 million monthly users. Build your profile, get feedback from listeners, and discover a community that celebrates creativity. The perfect platform for sharing your original music with the world.',
-    features: ['Direct uploads', 'Community feedback', 'Public or private', 'Share anywhere'],
-    contentTypes: ['Full Tracks', 'Demos', 'Remixes', 'Original Creations'],
-    category: 'music',
-    note: 'Upload directly to SoundCloud - coming soon!',
-  },
 ];
 
 
@@ -187,13 +134,13 @@ const SocialDetailPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: '#fff',
+        background: 'linear-gradient(180deg, #0A0E1A 0%, #121826 50%, #0F1420 100%)',
         position: 'relative',
         pb: currentSong ? { xs: 10, sm: 12, md: 14 } : 0,
         transition: 'padding-bottom 0.3s ease-out',
       }}
     >
-      {/* Background gradient */}
+      {/* Background gradient orbs */}
       <Box
         sx={{
           position: 'fixed',
@@ -201,11 +148,34 @@ const SocialDetailPage: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: `radial-gradient(ellipse at top, ${currentPlatform.color}15 0%, transparent 50%)`,
           pointerEvents: 'none',
           zIndex: 0,
+          overflow: 'hidden',
         }}
-      />
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '10%',
+            left: '10%',
+            width: '40%',
+            height: '40%',
+            background: `radial-gradient(circle, ${currentPlatform.color}15 0%, transparent 70%)`,
+            filter: 'blur(80px)',
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '20%',
+            right: '15%',
+            width: '35%',
+            height: '35%',
+            background: `radial-gradient(circle, ${currentPlatform.color}10 0%, transparent 70%)`,
+            filter: 'blur(80px)',
+          }}
+        />
+      </Box>
 
       <SEO
         title={`Distribute to ${currentPlatform.name} | AI Music & Video Generator | Gruvi`}
@@ -224,18 +194,22 @@ const SocialDetailPage: React.FC = () => {
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           sx={{
             mb: 4,
-            color: '#1D1D1F',
+            color: '#fff !important',
             textTransform: 'none',
             fontWeight: 500,
             '&:hover': {
-              background: 'rgba(0,0,0,0.05)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: '#fff !important',
+            },
+            '& .MuiSvgIcon-root': {
+              color: '#fff !important',
             }
           }}
         >
-          Back to Home
+          Back
         </Button>
 
         {/* Hero Section */}
@@ -249,9 +223,16 @@ const SocialDetailPage: React.FC = () => {
               width: 120,
               height: 120,
               borderRadius: '28px',
-              background: `linear-gradient(135deg, ${currentPlatform.color}15 0%, ${currentPlatform.color}25 100%)`,
-              border: `2px solid ${currentPlatform.color}30`,
-              boxShadow: `0 20px 60px ${currentPlatform.color}20, 0 8px 24px rgba(0,0,0,0.1)`,
+              // White glow background for TikTok and X (black icons on dark background)
+              background: (currentPlatform.id === 'tiktok' || currentPlatform.id === 'x')
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.20) 100%)'
+                : `linear-gradient(135deg, ${currentPlatform.color}15 0%, ${currentPlatform.color}25 100%)`,
+              border: (currentPlatform.id === 'tiktok' || currentPlatform.id === 'x')
+                ? '2px solid rgba(255,255,255,0.2)'
+                : `2px solid ${currentPlatform.color}30`,
+              boxShadow: (currentPlatform.id === 'tiktok' || currentPlatform.id === 'x')
+                ? '0 20px 60px rgba(255,255,255,0.12), 0 8px 24px rgba(255,255,255,0.08)'
+                : `0 20px 60px ${currentPlatform.color}20, 0 8px 24px rgba(0,0,0,0.1)`,
               mb: 4,
             }}
           >
@@ -293,7 +274,7 @@ const SocialDetailPage: React.FC = () => {
             sx={{
               fontSize: { xs: '2rem', md: '3rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 2,
             }}
           >
@@ -304,7 +285,7 @@ const SocialDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.25rem',
-              color: '#86868B',
+              color: 'rgba(255,255,255,0.7)',
               mb: 3,
               maxWidth: 600,
               mx: 'auto',
@@ -317,7 +298,7 @@ const SocialDetailPage: React.FC = () => {
           <Typography
             sx={{
               fontSize: '1.1rem',
-              color: '#1D1D1F',
+              color: 'rgba(255,255,255,0.8)',
               mb: 3,
               lineHeight: 1.8,
               maxWidth: 700,
@@ -333,49 +314,29 @@ const SocialDetailPage: React.FC = () => {
             onClick={handleCreateClick}
             endIcon={<KeyboardArrowRightIcon />}
             sx={{
-              background: currentPlatform.color,
-              color: '#fff',
+              background: `linear-gradient(135deg, ${currentPlatform.color} 0%, ${currentPlatform.color}CC 100%) !important`,
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
-              borderRadius: '16px',
+              borderRadius: '12px',
               px: 4,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: `0 8px 32px ${currentPlatform.color}40`,
-              transition: 'all 0.3s ease',
+              boxShadow: `0 8px 24px ${currentPlatform.color}40`,
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               mb: 3,
               '&:hover': {
-                background: currentPlatform.color,
-                filter: 'brightness(1.1)',
+                background: `linear-gradient(135deg, ${currentPlatform.color} 0%, ${currentPlatform.color}CC 100%) !important`,
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: `0 12px 40px ${currentPlatform.color}50`,
+                boxShadow: `0 12px 32px ${currentPlatform.color}50 !important`,
               },
             }}
           >
             Create for {currentPlatform.name}
           </Button>
-
-          {/* How it works note for music platforms */}
-          {'note' in currentPlatform && currentPlatform.note && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
-                px: 3,
-                py: 1.5,
-                borderRadius: '100px',
-                background: `${currentPlatform.color}08`,
-                border: `1px solid ${currentPlatform.color}15`,
-              }}
-            >
-              <InfoOutlinedIcon sx={{ fontSize: 16, color: currentPlatform.color, opacity: 0.8 }} />
-              <Typography sx={{ fontSize: '0.85rem', color: '#86868B', fontWeight: 500 }}>
-                {currentPlatform.note}
-              </Typography>
-            </Box>
-          )}
         </Box>
 
 
@@ -386,7 +347,7 @@ const SocialDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 3,
               textAlign: 'center',
             }}
@@ -401,13 +362,18 @@ const SocialDetailPage: React.FC = () => {
                 sx={{
                   p: 3,
                   borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.7)',
-                  backdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+                  background: 'rgba(255,255,255,0.03)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 2,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    background: 'rgba(255,255,255,0.05)',
+                    transform: 'translateY(-2px)',
+                  },
                 }}
               >
                 <Box
@@ -415,7 +381,7 @@ const SocialDetailPage: React.FC = () => {
                     width: 40,
                     height: 40,
                     borderRadius: '10px',
-                    background: `${currentPlatform.color}15`,
+                    background: 'rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -427,11 +393,11 @@ const SocialDetailPage: React.FC = () => {
                       width: 8,
                       height: 8,
                       borderRadius: '50%',
-                      background: currentPlatform.color,
+                      background: '#fff',
                     }}
                   />
                 </Box>
-                <Typography sx={{ fontWeight: 500, color: '#1D1D1F' }}>
+                <Typography sx={{ fontWeight: 500, color: '#fff' }}>
                   {feature}
                 </Typography>
               </Box>
@@ -446,7 +412,7 @@ const SocialDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 3,
               textAlign: 'center',
             }}
@@ -462,11 +428,11 @@ const SocialDetailPage: React.FC = () => {
                   px: 3,
                   py: 1.5,
                   borderRadius: '100px',
-                  background: `${currentPlatform.color}10`,
-                  border: `1px solid ${currentPlatform.color}20`,
+                  background: `${currentPlatform.color}15`,
+                  border: `1px solid ${currentPlatform.color}30`,
                 }}
               >
-                <Typography sx={{ fontWeight: 500, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                <Typography sx={{ fontWeight: 500, color: '#fff', fontSize: '0.95rem' }}>
                   {type}
                 </Typography>
               </Box>
@@ -481,7 +447,7 @@ const SocialDetailPage: React.FC = () => {
             sx={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: '#1D1D1F',
+              color: '#fff',
               mb: 3,
             }}
           >
@@ -510,15 +476,23 @@ const SocialDetailPage: React.FC = () => {
                     width: 56,
                     height: 56,
                     borderRadius: '14px',
-                    background: `linear-gradient(135deg, ${platform.color}15 0%, ${platform.color}25 100%)`,
-                    border: `1px solid ${platform.color}25`,
+                    background: (platform.id === 'tiktok' || platform.id === 'x')
+                      ? 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.20) 100%)'
+                      : `linear-gradient(135deg, ${platform.color}15 0%, ${platform.color}25 100%)`,
+                    border: (platform.id === 'tiktok' || platform.id === 'x')
+                      ? '1px solid rgba(255,255,255,0.2)'
+                      : `1px solid ${platform.color}25`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                    boxShadow: (platform.id === 'tiktok' || platform.id === 'x')
+                      ? '0 4px 16px rgba(255,255,255,0.08)'
+                      : '0 4px 16px rgba(0,0,0,0.08)',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      boxShadow: `0 8px 24px ${platform.color}20`,
+                      boxShadow: (platform.id === 'tiktok' || platform.id === 'x')
+                        ? '0 8px 24px rgba(255,255,255,0.12)'
+                        : `0 8px 24px ${platform.color}20`,
                     },
                   }}
                 >
@@ -553,7 +527,7 @@ const SocialDetailPage: React.FC = () => {
                     </Box>
                   ) : null}
                 </Box>
-                <Typography sx={{ fontWeight: 500, color: '#1D1D1F', fontSize: '0.7rem', textAlign: 'center' }}>
+                <Typography sx={{ fontWeight: 500, color: '#fff', fontSize: '0.7rem', textAlign: 'center' }}>
                   {platform.name}
                 </Typography>
               </Box>
@@ -567,35 +541,38 @@ const SocialDetailPage: React.FC = () => {
             textAlign: 'center',
             p: 5,
             borderRadius: '24px',
-            background: `linear-gradient(135deg, ${currentPlatform.color}08 0%, ${currentPlatform.color}15 100%)`,
-            border: `1px solid ${currentPlatform.color}20`,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
+            background: `linear-gradient(135deg, ${currentPlatform.color}15 0%, ${currentPlatform.color}08 100%)`,
+            border: `1px solid ${currentPlatform.color}30`,
+            boxShadow: '0 8px 40px rgba(0,0,0,0.3)',
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
             Ready to Share on {currentPlatform.name}?
           </Typography>
-          <Typography sx={{ color: '#86868B', mb: 3, fontSize: '1.1rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, fontSize: '1.1rem' }}>
             Create original AI-generated {isVideoCategory ? 'videos' : 'music'} and distribute directly - no copyright worries.
           </Typography>
           <Button
             variant="contained"
             onClick={handleCreateClick}
             sx={{
-              background: currentPlatform.color,
-              color: '#fff',
+              background: `linear-gradient(135deg, ${currentPlatform.color} 0%, ${currentPlatform.color}CC 100%) !important`,
+              backgroundColor: 'transparent !important',
+              color: '#fff !important',
               fontWeight: 600,
-              borderRadius: '16px',
+              borderRadius: '12px',
               px: 5,
               py: 1.5,
               fontSize: '1.1rem',
               textTransform: 'none',
-              boxShadow: `0 8px 32px ${currentPlatform.color}40`,
+              boxShadow: `0 8px 24px ${currentPlatform.color}40`,
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: currentPlatform.color,
-                filter: 'brightness(1.1)',
+                background: `linear-gradient(135deg, ${currentPlatform.color} 0%, ${currentPlatform.color}CC 100%) !important`,
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 transform: 'translateY(-2px)',
-                boxShadow: `0 12px 40px ${currentPlatform.color}50`,
+                boxShadow: `0 12px 32px ${currentPlatform.color}50 !important`,
               },
             }}
           >

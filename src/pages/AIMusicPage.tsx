@@ -452,17 +452,33 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'rgba(255,255,255,0.1)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '2px solid rgba(59, 130, 246, 0.4)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
             width: 40,
             height: 40,
+            animation: 'pulseOutBlue 2.5s ease-out infinite',
+            '@keyframes pulseOutBlue': {
+              '0%': {
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+              },
+              '100%': {
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              },
+            },
             '&:hover': {
-              background: 'rgba(255,255,255,0.15)',
+              background: 'rgba(59, 130, 246, 0.15)',
+              border: '2px solid rgba(96, 165, 250, 0.6)',
               transform: 'translateY(-50%) scale(1.05)',
+              animation: 'none',
+              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
-          <ChevronLeftIcon sx={{ color: '#fff' }} />
+          <ChevronLeftIcon sx={{ color: '#3B82F6' }} />
         </IconButton>
       )}
       {showRightArrow && (
@@ -474,17 +490,33 @@ const ScrollableCarousel: React.FC<ScrollableCarouselProps> = ({ id, children })
             top: '50%',
             transform: 'translateY(-50%)',
             zIndex: 3,
-            background: 'rgba(255,255,255,0.1)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '2px solid rgba(59, 130, 246, 0.4)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
             width: 40,
             height: 40,
+            animation: 'pulseOutBlue 2.5s ease-out infinite',
+            '@keyframes pulseOutBlue': {
+              '0%': {
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+              },
+              '100%': {
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+              },
+            },
             '&:hover': {
-              background: 'rgba(255,255,255,0.15)',
+              background: 'rgba(59, 130, 246, 0.15)',
+              border: '2px solid rgba(96, 165, 250, 0.6)',
               transform: 'translateY(-50%) scale(1.05)',
+              animation: 'none',
+              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
             },
           }}
         >
-          <ChevronRightIcon sx={{ color: '#fff' }} />
+          <ChevronRightIcon sx={{ color: '#3B82F6' }} />
         </IconButton>
       )}
       <Box
@@ -1984,38 +2016,127 @@ const AIMusicPage: React.FC = () => {
           </Box>
 
           {/* Swiper Coverflow Carousel for Moods */}
-          <Box sx={{
-            width: '100%',
-            '& .swiper': {
-              width: '100%',
-              pt: 6,
-              pb: 6,
-            },
-            '& .swiper-slide': {
-              width: { xs: 180, sm: 220, md: 260 },
-              height: { xs: 180, sm: 220, md: 260 },
-            },
-            '& .swiper-slide img': {
-              display: 'block',
-              width: '100%',
-            },
-          }}>
-            <Swiper
-              effect="coverflow"
-              grabCursor={true}
-              centeredSlides={true}
-              slidesPerView="auto"
-              initialSlide={Math.floor(moodShowcase.length / 2)}
-              loop={true}
-              coverflowEffect={{
-                rotate: 50,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: false,
+          <Box sx={{ width: '100%', position: 'relative' }}>
+            {/* Custom Navigation Buttons - Outside masked area */}
+            <IconButton
+              onClick={() => {
+                const swiperEl = document.querySelector('.mood-swiper') as any;
+                swiperEl?.swiper?.slidePrev();
               }}
-              modules={[EffectCoverflow]}
+              sx={{
+                position: 'absolute',
+                left: { xs: 8, sm: 16 },
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 20,
+                width: { xs: 44, md: 52 },
+                height: { xs: 44, md: 52 },
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '2px solid rgba(59, 130, 246, 0.4)',
+                borderRadius: '50%',
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+                animation: 'pulseOutBlue 2.5s ease-out infinite',
+                transition: 'all 0.3s ease',
+                '@keyframes pulseOutBlue': {
+                  '0%': {
+                    boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+                  },
+                  '100%': {
+                    boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+                  },
+                },
+                '&:hover': {
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  border: '2px solid rgba(96, 165, 250, 0.6)',
+                  transform: 'translateY(-50%) scale(1.05)',
+                  animation: 'none',
+                  boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
+                },
+              }}
             >
+              <ChevronLeftIcon sx={{ color: '#3B82F6', fontSize: { xs: 24, md: 28 } }} />
+            </IconButton>
+
+            <IconButton
+              onClick={() => {
+                const swiperEl = document.querySelector('.mood-swiper') as any;
+                swiperEl?.swiper?.slideNext();
+              }}
+              sx={{
+                position: 'absolute',
+                right: { xs: 8, sm: 16 },
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 20,
+                width: { xs: 44, md: 52 },
+                height: { xs: 44, md: 52 },
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '2px solid rgba(59, 130, 246, 0.4)',
+                borderRadius: '50%',
+                boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+                animation: 'pulseOutBlue 2.5s ease-out infinite',
+                transition: 'all 0.3s ease',
+                '@keyframes pulseOutBlue': {
+                  '0%': {
+                    boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.6)',
+                  },
+                  '100%': {
+                    boxShadow: '0 2px 12px rgba(59, 130, 246, 0.3), 0 0 0 12px rgba(59, 130, 246, 0)',
+                  },
+                },
+                '&:hover': {
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  border: '2px solid rgba(96, 165, 250, 0.6)',
+                  transform: 'translateY(-50%) scale(1.05)',
+                  animation: 'none',
+                  boxShadow: '0 4px 16px rgba(59, 130, 246, 0.5)',
+                },
+              }}
+            >
+              <ChevronRightIcon sx={{ color: '#3B82F6', fontSize: { xs: 24, md: 28 } }} />
+            </IconButton>
+
+            {/* Masked Swiper Container */}
+            <Box sx={{
+              '& .swiper': {
+                width: '100%',
+                pt: 6,
+                pb: 6,
+                // Apply mask to swiper only
+                maskImage: 'linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%)',
+              },
+              '& .swiper-slide': {
+                width: { xs: 180, sm: 220, md: 260 },
+                height: { xs: 180, sm: 220, md: 260 },
+              },
+              '& .swiper-slide img': {
+                display: 'block',
+                width: '100%',
+              },
+            }}>
+              <Swiper
+                className="mood-swiper"
+                effect="coverflow"
+                grabCursor={true}
+                centeredSlides={true}
+                slidesPerView="auto"
+                initialSlide={Math.floor(moodShowcase.length / 2)}
+                loop={true}
+                navigation={false}
+                coverflowEffect={{
+                  rotate: 50,
+                  stretch: 0,
+                  depth: 100,
+                  modifier: 1,
+                  slideShadows: false,
+                }}
+                modules={[EffectCoverflow]}
+              >
               {moodShowcase.map((mood) => (
                 <SwiperSlide key={mood.id}>
                   <Box
@@ -2061,6 +2182,7 @@ const AIMusicPage: React.FC = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
+            </Box>
           </Box>
         </Container>
         <SectionDivider />

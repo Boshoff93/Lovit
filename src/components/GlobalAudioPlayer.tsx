@@ -22,6 +22,9 @@ const MARKETING_PATHS = [
   '/genres',
   '/moods',
   '/languages',
+  '/platforms', // All platform detail pages
+  '/styles', // All video style detail pages
+  '/videos', // Music video detail pages
 ];
 
 // Genre to image mapping
