@@ -98,6 +98,10 @@ export const songsApi = {
     customInstructions?: string;
     creativity?: number; // 0-10 scale: 0 = literal, 10 = creative
     songLength?: 'short' | 'standard'; // 'short' = ~45-60s, 'standard' = ~90-120s
+    trackType?: 'standard' | 'premium'; // 'premium' uses ElevenLabs for higher quality
+    premiumDurationMs?: number; // Duration in ms for premium tracks (30000-180000)
+    forceInstrumental?: boolean; // For premium tracks: true = instrumental only, false = with lyrics
+    rouletteMode?: boolean; // If true, AI picks video concept based on track (ignores prompt & characters)
   }) => api.post('/api/gruvi/songs/generate', data),
   
   getUserSongs: (userId: string, options?: { 
@@ -184,6 +188,7 @@ export const videosApi = {
     characterIds?: string[];
     placeDescription?: string; // Optional: User's description of their property/location for web search
     creativity?: number; // 0-10: 0 = exact prompt adherence, 10 = creative interpretation
+    rouletteMode?: boolean; // Let AI pick the video concept based on the track
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {
@@ -423,6 +428,11 @@ export interface ScheduledPost {
   title: string;
   description: string;
   thumbnailUrl: string;
+  hook?: string;
+  tags?: string[];
+  ctaType?: string;
+  ctaUrl?: string;
+  aspectRatio?: 'portrait' | 'landscape';
   status: 'scheduled' | 'publishing' | 'published' | 'failed' | 'cancelled';
   createdAt: string;
   updatedAt: string;
@@ -445,6 +455,11 @@ export const scheduledPostsApi = {
     title?: string;
     description?: string;
     thumbnailUrl?: string;
+    hook?: string;
+    tags?: string[];
+    ctaType?: string;
+    ctaUrl?: string;
+    aspectRatio?: 'portrait' | 'landscape';
   }) => api.post('/api/gruvi/scheduled-posts', data),
 
   // Get all scheduled posts for the current user

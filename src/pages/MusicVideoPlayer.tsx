@@ -233,6 +233,19 @@ const MusicVideoPlayer: React.FC = () => {
   const [scheduledDateTime, setScheduledDateTime] = useState<Dayjs | null>(null);
   const [isScheduling, setIsScheduling] = useState(false);
   const uploadDialogContentRef = useRef<HTMLDivElement>(null);
+
+  // Post-schedule success dialog state
+  const [showScheduleSuccessDialog, setShowScheduleSuccessDialog] = useState(false);
+  const [lastScheduledPostId, setLastScheduledPostId] = useState<string | null>(null);
+  const [lastScheduledTime, setLastScheduledTime] = useState<string | null>(null);
+
+  // Top banner state for schedule success/failure
+  const [scheduleBanner, setScheduleBanner] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+    scheduleId?: string;
+  }>({ show: false, type: 'success', message: '' });
   
   // Video characters state (for thumbnail selection)
   const [videoCharacters, setVideoCharacters] = useState<Character[]>([]);
@@ -1220,7 +1233,43 @@ const MusicVideoPlayer: React.FC = () => {
   const displayDuration = videoData?.durationSeconds || songData?.actualDuration || songData?.estimatedDuration || duration;
 
   return (
-    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%', pb: 16 }}>
+    <Box sx={{ width: '100%', maxWidth: '100%' }}>
+      <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, pb: 16 }}>
+      {/* Top Schedule Banner */}
+      {scheduleBanner.show && (
+        <Box
+          sx={{
+            mb: 3,
+            borderRadius: '12px',
+            background: scheduleBanner.type === 'success'
+              ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+              : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+            color: '#fff',
+            py: 2,
+            px: 3,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}
+        >
+          {scheduleBanner.type === 'success' ? (
+            <CheckCircle sx={{ fontSize: 24 }} />
+          ) : (
+            <Error sx={{ fontSize: 24 }} />
+          )}
+          <Typography sx={{ fontWeight: 600, fontSize: '1rem' }}>
+            {scheduleBanner.message}
+          </Typography>
+          <IconButton
+            size="small"
+            onClick={() => setScheduleBanner({ ...scheduleBanner, show: false })}
+            sx={{ color: '#fff', ml: 'auto', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+          >
+            <Close sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Box>
+      )}
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
@@ -1712,13 +1761,13 @@ const MusicVideoPlayer: React.FC = () => {
               onClose={() => setSocialSuccess(null)}
               sx={{
                 mb: 2,
-                ...(socialSuccess.includes('Content Calendar') && {
+                ...(socialSuccess.includes('Scheduled Posts') && {
                   cursor: 'pointer',
                   '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.12)' },
                 }),
               }}
               onClick={() => {
-                if (socialSuccess.includes('Content Calendar')) {
+                if (socialSuccess.includes('Scheduled Posts')) {
                   navigate('/content-calendar');
                 }
               }}
@@ -3460,26 +3509,45 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Video Details Summary - only show before uploading */}
             {!isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
-              <Box sx={{ bgcolor: '#f5f5f7', borderRadius: '12px', p: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
-                <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
-                  <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5, 
-                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' 
-                }}>
-                  <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
-                </Typography>
-                {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
-                    {editedMetadata.tags.slice(0, 5).map((tag, i) => (
-                      <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
-                    ))}
-                    {editedMetadata.tags.length > 5 && (
-                      <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
-                    )}
-                  </Box>
+              <Box sx={{ bgcolor: '#f5f5f7', borderRadius: '12px', p: 2, display: 'flex', gap: 2 }}>
+                {/* Thumbnail Preview */}
+                {(selectedThumbnailUrl || localThumbnailFile?.dataUrl || videoData?.thumbnailUrl) && (
+                  <Box
+                    component="img"
+                    src={localThumbnailFile?.dataUrl || selectedThumbnailUrl || videoData?.thumbnailUrl}
+                    alt="Thumbnail"
+                    sx={{
+                      width: 100,
+                      height: 'auto',
+                      aspectRatio: videoData?.aspectRatio === 'portrait' ? '9/16' : '16/9',
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                      flexShrink: 0,
+                    }}
+                  />
                 )}
+                {/* Details */}
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
+                  <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
+                    <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                  }}>
+                    <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
+                  </Typography>
+                  {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                      {editedMetadata.tags.slice(0, 5).map((tag, i) => (
+                        <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
+                      ))}
+                      {editedMetadata.tags.length > 5 && (
+                        <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
+                      )}
+                    </Box>
+                  )}
+                </Box>
               </Box>
             )}
 
@@ -3723,39 +3791,63 @@ const MusicVideoPlayer: React.FC = () => {
                                        platform === 'linkedin' ? linkedinName : undefined) || undefined,
                         }));
 
-                        await scheduledPostsApi.createScheduledPost({
+                        const response = await scheduledPostsApi.createScheduledPost({
                           videoId: videoId!,
                           platforms: platformConfigs,
                           scheduledTime: scheduledDate.toISOString(),
                           title: editedMetadata?.title || '',
                           description: editedMetadata?.description || '',
                           thumbnailUrl: selectedThumbnailUrl || videoData?.thumbnailUrl || '',
+                          hook: editedMetadata?.hook || hookText || '',
+                          tags: editedMetadata?.tags || [],
+                          ctaType: ctaType || '',
+                          ctaUrl: ctaUrl || '',
+                          aspectRatio: videoData?.aspectRatio || 'portrait',
                         });
+
+                        // Get the scheduleId from response
+                        const newScheduleId = response.data?.scheduledPost?.scheduleId;
 
                         setIsScheduling(false);
                         setShowUploadConfirm(false);
                         // Reset state
                         setUploadMode('now');
                         setScheduledDateTime(null);
-                        // Show success banner
+                        // Show success banner at very top of page
                         const formattedDate = scheduledDate.toLocaleDateString('en-US', {
+                          weekday: 'short',
                           month: 'short',
                           day: 'numeric',
                           hour: 'numeric',
                           minute: '2-digit',
                           hour12: true
                         });
-                        setSocialSuccess(`Post scheduled for ${formattedDate}. View in Content Calendar →`);
-                        // Scroll to top to show success message
+                        setScheduleBanner({
+                          show: true,
+                          type: 'success',
+                          message: `Post scheduled for ${formattedDate}`,
+                          scheduleId: newScheduleId,
+                        });
+                        setLastScheduledPostId(newScheduleId || null);
+                        setLastScheduledTime(formattedDate);
+                        // Show dialog asking if user wants to view scheduled posts
+                        setShowScheduleSuccessDialog(true);
+                        // Scroll to top to show success banner
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       } catch (err: any) {
                         console.error('Scheduling failed:', err);
                         setIsScheduling(false);
-                        if (err.response?.status === 401) {
-                          setModalError('Session expired. Please refresh the page and try again.');
-                        } else {
-                          setModalError(err.response?.data?.error || 'Failed to schedule post. Please try again.');
-                        }
+                        const errorMessage = err.response?.status === 401
+                          ? 'Session expired. Please refresh the page and try again.'
+                          : err.response?.data?.error || 'Failed to schedule post. Please try again.';
+                        setModalError(errorMessage);
+                        // Also show error banner at top
+                        setScheduleBanner({
+                          show: true,
+                          type: 'error',
+                          message: errorMessage,
+                        });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                       return;
                     }
@@ -3921,6 +4013,91 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
       </Dialog>
 
+      {/* Schedule Success Dialog - Ask user to view scheduled posts */}
+      <Dialog
+        open={showScheduleSuccessDialog}
+        onClose={() => setShowScheduleSuccessDialog(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            p: 3,
+            maxWidth: 420,
+            mx: 2,
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Box sx={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+          }}>
+            <Schedule sx={{ fontSize: 28, color: '#fff' }} />
+          </Box>
+          <Box>
+            <Typography sx={{ fontWeight: 700, fontSize: '1.25rem', color: '#1D1D1F' }}>
+              Post Scheduled!
+            </Typography>
+            <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
+              {lastScheduledTime}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Typography sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
+          Your video has been scheduled and will be automatically posted at the scheduled time. Would you like to view your scheduled posts?
+        </Typography>
+
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Button
+            onClick={() => setShowScheduleSuccessDialog(false)}
+            fullWidth
+            sx={{
+              borderRadius: '100px',
+              textTransform: 'none',
+              fontWeight: 600,
+              py: 1.5,
+              fontSize: '1rem',
+              color: '#1d1d1f',
+              border: '1px solid rgba(0,0,0,0.15)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
+            }}
+          >
+            Maybe Later
+          </Button>
+          <Button
+            onClick={() => {
+              setShowScheduleSuccessDialog(false);
+              // Navigate to scheduled posts page with the scheduleId to scroll to
+              if (lastScheduledPostId) {
+                navigate(`/settings/scheduled-content?highlight=${lastScheduledPostId}`);
+              } else {
+                navigate('/settings/scheduled-content');
+              }
+            }}
+            fullWidth
+            variant="contained"
+            sx={{
+              bgcolor: '#007AFF',
+              borderRadius: '100px',
+              textTransform: 'none',
+              fontWeight: 600,
+              py: 1.5,
+              fontSize: '1rem',
+              boxShadow: 'none',
+              '&:hover': { bgcolor: '#0066DD', boxShadow: 'none' },
+            }}
+          >
+            View Scheduled
+          </Button>
+        </Box>
+      </Dialog>
+
       {/* Thumbnail Lightbox Overlay */}
       {lightboxUrl && (
         <Box
@@ -3970,6 +4147,7 @@ const MusicVideoPlayer: React.FC = () => {
           />
         </Box>
       )}
+      </Box>
     </Box>
   );
 };

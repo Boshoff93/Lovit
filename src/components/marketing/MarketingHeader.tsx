@@ -351,6 +351,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                     component={RouterLink}
                     to="/my-music"
                     variant="contained"
+                    endIcon={<ChevronRightIcon />}
                     sx={{
                       // Primary button style - blue to teal gradient
                       background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
@@ -373,7 +374,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       },
                     }}
                   >
-                    Go to Dashboard
+                    Let's Get Gruvi
                   </Button>
                 ) : (
                   <>
@@ -483,26 +484,6 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
 
         {/* Drawer Content */}
         <List sx={{ px: 1, py: 2 }}>
-          {isLoggedIn && (
-            <ListItemButton
-              component={RouterLink}
-              to="/my-music"
-              onClick={handleDrawerToggle}
-              sx={{
-                borderRadius: 2,
-                mb: 1,
-                backgroundColor: 'rgba(78, 205, 196, 0.15)',
-                '&:hover': {
-                  backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                }
-              }}
-            >
-              <ListItemIcon sx={{ color: '#4ECDC4' }}>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Go to Dashboard" primaryTypographyProps={{ fontWeight: 600, color: '#4ECDC4' }} />
-            </ListItemButton>
-          )}
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -548,21 +529,22 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               component={RouterLink}
               to="/my-music"
               onClick={handleDrawerToggle}
+              endIcon={<ChevronRightIcon />}
               sx={{
-                background: 'linear-gradient(135deg, #00D9FF 0%, #00A3CC 100%)',
+                background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
                 color: '#fff',
                 textTransform: 'none',
                 fontWeight: 600,
                 borderRadius: '10px',
                 py: 1.25,
-                boxShadow: '0 4px 16px rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #33E0FF 0%, #00D9FF 100%)',
-                  boxShadow: '0 6px 24px rgba(0, 217, 255, 0.5)',
+                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+                  boxShadow: '0 6px 24px rgba(59, 130, 246, 0.5)',
                 }
               }}
             >
-              Go to Dashboard
+              Let's Get Gruvi
             </Button>
           ) : (
             <>

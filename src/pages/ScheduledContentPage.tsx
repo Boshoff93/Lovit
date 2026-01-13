@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from '@mui/material';
 import {
   ChevronLeft as ChevronLeftIcon,
@@ -21,13 +22,15 @@ import {
   CalendarMonth as CalendarMonthIcon,
   Delete as DeleteIcon,
   Schedule as ScheduleIcon,
-  VideoLibrary as VideoLibraryIcon,
   Add as AddIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   HourglassTop as HourglassIcon,
+  Close as CloseIcon,
+  PlayArrow as PlayArrowIcon,
+  ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   scheduledPostsApi,
   ScheduledPost,
@@ -51,6 +54,7 @@ type ViewMode = 'day' | 'week' | 'month';
 
 const ScheduledContentPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('week');
@@ -58,6 +62,54 @@ const ScheduledContentPage: React.FC = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [postToCancel, setPostToCancel] = useState<ScheduledPost | null>(null);
   const [cancelling, setCancelling] = useState(false);
+
+  // Details dialog state
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<ScheduledPost | null>(null);
+
+  // Highlighted post (from URL param)
+  const [highlightedPostId, setHighlightedPostId] = useState<string | null>(null);
+
+  // Refs for scrolling to posts
+  const postRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  // Handle highlight param from URL
+  useEffect(() => {
+    const highlight = searchParams.get('highlight');
+    if (highlight) {
+      setHighlightedPostId(highlight);
+      // Clear the URL param after reading it
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Scroll to highlighted post after posts load
+  useEffect(() => {
+    if (highlightedPostId && scheduledPosts.length > 0 && !loading) {
+      const post = scheduledPosts.find(p => p.scheduleId === highlightedPostId);
+      if (post) {
+        // Navigate calendar to the date of the scheduled post
+        const postDate = new Date(post.scheduledTime);
+        setCurrentDate(postDate);
+
+        // Wait for render, then scroll to the post
+        setTimeout(() => {
+          const element = postRefs.current.get(highlightedPostId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Clear highlight after animation
+            setTimeout(() => setHighlightedPostId(null), 3000);
+          }
+        }, 300);
+      }
+    }
+  }, [highlightedPostId, scheduledPosts, loading]);
+
+  // Handle post tile click - show details dialog
+  const handlePostClick = useCallback((post: ScheduledPost) => {
+    setSelectedPost(post);
+    setDetailsDialogOpen(true);
+  }, []);
 
   // Load scheduled posts
   useEffect(() => {
@@ -280,10 +332,11 @@ const ScheduledContentPage: React.FC = () => {
             </Box>
           </Box>
 
-          {/* View My Videos button - Full on large, icon on small */}
+          {/* Create a Post button - Full on large, icon on small */}
           <Button
             variant="contained"
             onClick={() => navigate('/my-videos')}
+            endIcon={<ArrowForwardIcon />}
             sx={{
               display: { xs: 'none', sm: 'flex' },
               background: '#007AFF',
@@ -302,7 +355,7 @@ const ScheduledContentPage: React.FC = () => {
               },
             }}
           >
-            View My Videos
+            Create a Post
           </Button>
           {/* Circle icon button for small screens */}
           <IconButton
@@ -320,7 +373,7 @@ const ScheduledContentPage: React.FC = () => {
               },
             }}
           >
-            <VideoLibraryIcon sx={{ fontSize: 22 }} />
+            <ArrowForwardIcon sx={{ fontSize: 22 }} />
           </IconButton>
         </Box>
       </Box>
@@ -648,18 +701,27 @@ const ScheduledContentPage: React.FC = () => {
                         >
                           {posts.map((post) => {
                             const statusStyle = getStatusStyle(post.status);
+                            const isHighlighted = highlightedPostId === post.scheduleId;
                             return (
                               <Box
                                 key={post.scheduleId}
+                                ref={(el: HTMLDivElement | null) => {
+                                  if (el) postRefs.current.set(post.scheduleId, el);
+                                }}
                                 sx={{
-                                  background: statusStyle.bg,
+                                  background: isHighlighted ? 'rgba(0, 122, 255, 0.2)' : statusStyle.bg,
                                   borderLeft: `3px solid ${statusStyle.border}`,
                                   borderRadius: '6px',
                                   p: 0.5,
                                   mb: 0.25,
                                   cursor: 'pointer',
                                   position: 'relative',
-                                  transition: 'all 0.2s ease',
+                                  transition: 'all 0.3s ease',
+                                  animation: isHighlighted ? 'pulse 1s ease-in-out 3' : 'none',
+                                  '@keyframes pulse': {
+                                    '0%, 100%': { boxShadow: '0 0 0 0 rgba(0, 122, 255, 0.4)' },
+                                    '50%': { boxShadow: '0 0 0 8px rgba(0, 122, 255, 0)' },
+                                  },
                                   '&:hover': {
                                     background: statusStyle.bg,
                                     filter: 'brightness(0.95)',
@@ -667,7 +729,7 @@ const ScheduledContentPage: React.FC = () => {
                                   },
                                   '&:hover .delete-btn': { opacity: 1 },
                                 }}
-                                onClick={() => navigate(`/video/${post.videoId}`)}
+                                onClick={() => handlePostClick(post)}
                               >
                                 {/* Title row with status icon */}
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: 2 }}>
@@ -784,24 +846,33 @@ const ScheduledContentPage: React.FC = () => {
                         </Typography>
                       </Box>
                       <Box sx={{ flex: 1, p: 0.5 }}>
-                        {posts.map((post) => (
-                          <Box
-                            key={post.scheduleId}
-                            onClick={() => navigate(`/video/${post.videoId}`)}
-                            sx={{
-                              background: 'rgba(0,122,255,0.1)',
-                              borderLeft: '3px solid #007AFF',
-                              borderRadius: '4px',
-                              p: 1,
-                              cursor: 'pointer',
-                              '&:hover': { background: 'rgba(0,122,255,0.15)' },
-                            }}
-                          >
-                            <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
-                              {post.title || 'Untitled'}
-                            </Typography>
-                          </Box>
-                        ))}
+                        {posts.map((post) => {
+                          const statusStyle = getStatusStyle(post.status);
+                          const isHighlighted = highlightedPostId === post.scheduleId;
+                          return (
+                            <Box
+                              key={post.scheduleId}
+                              ref={(el: HTMLDivElement | null) => {
+                                if (el) postRefs.current.set(post.scheduleId, el);
+                              }}
+                              onClick={() => handlePostClick(post)}
+                              sx={{
+                                background: isHighlighted ? 'rgba(0, 122, 255, 0.2)' : statusStyle.bg,
+                                borderLeft: `3px solid ${statusStyle.border}`,
+                                borderRadius: '4px',
+                                p: 1,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                animation: isHighlighted ? 'pulse 1s ease-in-out 3' : 'none',
+                                '&:hover': { background: 'rgba(0,122,255,0.15)' },
+                              }}
+                            >
+                              <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                                {post.title || 'Untitled'}
+                              </Typography>
+                            </Box>
+                          );
+                        })}
                       </Box>
                     </Box>
                   );
@@ -910,18 +981,23 @@ const ScheduledContentPage: React.FC = () => {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
                           {posts.slice(0, 3).map((post) => {
                             const statusStyle = getStatusStyle(post.status);
+                            const isHighlighted = highlightedPostId === post.scheduleId;
                             return (
                               <Box
                                 key={post.scheduleId}
-                                onClick={() => navigate(`/video/${post.videoId}`)}
+                                ref={(el: HTMLDivElement | null) => {
+                                  if (el) postRefs.current.set(post.scheduleId, el);
+                                }}
+                                onClick={() => handlePostClick(post)}
                                 sx={{
-                                  background: statusStyle.bg,
+                                  background: isHighlighted ? 'rgba(0, 122, 255, 0.2)' : statusStyle.bg,
                                   borderLeft: `2px solid ${statusStyle.border}`,
                                   borderRadius: '4px',
                                   px: 0.5,
                                   py: 0.25,
                                   cursor: 'pointer',
                                   transition: 'all 0.15s ease',
+                                  animation: isHighlighted ? 'pulse 1s ease-in-out 3' : 'none',
                                   '&:hover': {
                                     filter: 'brightness(0.95)',
                                     transform: 'scale(1.02)',
@@ -1006,6 +1082,330 @@ const ScheduledContentPage: React.FC = () => {
             {cancelling ? <CircularProgress size={20} /> : 'Cancel Post'}
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Scheduled Post Details Dialog */}
+      <Dialog
+        open={detailsDialogOpen}
+        onClose={() => setDetailsDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            overflow: 'hidden',
+          }
+        }}
+      >
+        {selectedPost && (
+          <>
+            {/* Header */}
+            <Box sx={{ p: 3, pb: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  {/* Status badge */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: '20px',
+                      bgcolor: selectedPost.status === 'scheduled' ? 'rgba(0,122,255,0.1)'
+                        : selectedPost.status === 'published' ? 'rgba(34,197,94,0.1)'
+                        : selectedPost.status === 'failed' ? 'rgba(239,68,68,0.1)'
+                        : selectedPost.status === 'publishing' ? 'rgba(249,115,22,0.1)'
+                        : 'rgba(156,163,175,0.1)',
+                      color: selectedPost.status === 'scheduled' ? '#007AFF'
+                        : selectedPost.status === 'published' ? '#22C55E'
+                        : selectedPost.status === 'failed' ? '#EF4444'
+                        : selectedPost.status === 'publishing' ? '#F97316'
+                        : '#9CA3AF',
+                    }}
+                  >
+                    {selectedPost.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'published' && <CheckCircleIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'failed' && <ErrorIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'publishing' && <HourglassIcon sx={{ fontSize: 16 }} />}
+                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' }}>
+                      {selectedPost.status}
+                    </Typography>
+                  </Box>
+                </Box>
+                {/* Close button */}
+                <IconButton
+                  onClick={() => setDetailsDialogOpen(false)}
+                  size="small"
+                  sx={{ color: '#86868B', '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' } }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+
+              {/* Title */}
+              <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#1D1D1F', mb: 1 }}>
+                {selectedPost.title || 'Untitled'}
+              </Typography>
+
+              {/* Scheduled time */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                <ScheduleIcon sx={{ fontSize: 18, color: '#86868B' }} />
+                <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
+                  {new Date(selectedPost.scheduledTime).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
+                </Typography>
+              </Box>
+            </Box>
+
+            <DialogContent sx={{ p: 3, pt: 0 }}>
+              {/* Thumbnail & Platforms Row */}
+              <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                {/* Thumbnail - 16:9 for landscape, 9:16 for portrait */}
+                {selectedPost.thumbnailUrl && (
+                  <Box
+                    component="img"
+                    src={selectedPost.thumbnailUrl}
+                    alt="Thumbnail"
+                    sx={{
+                      width: selectedPost.aspectRatio === 'landscape' ? 160 : 90,
+                      height: selectedPost.aspectRatio === 'landscape' ? 90 : 160,
+                      borderRadius: '12px',
+                      objectFit: 'cover',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                {/* Platforms */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Platforms
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selectedPost.platforms.map((p, i) => (
+                      <Chip
+                        key={i}
+                        icon={
+                          p.platform.toLowerCase() === 'youtube' ? <YouTubeIcon sx={{ fontSize: 16 }} /> :
+                          p.platform.toLowerCase() === 'instagram' ? <InstagramIcon sx={{ fontSize: 16 }} /> :
+                          p.platform.toLowerCase() === 'tiktok' ? <TikTokIcon sx={{ width: 16, height: 16 }} /> :
+                          p.platform.toLowerCase() === 'facebook' ? <FacebookIcon sx={{ fontSize: 16 }} /> :
+                          p.platform.toLowerCase() === 'linkedin' ? <LinkedInIcon sx={{ fontSize: 16 }} /> :
+                          undefined
+                        }
+                        label={p.accountName || p.platform}
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(0,0,0,0.05)',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                          '& .MuiChip-icon': {
+                            color: p.platform.toLowerCase() === 'youtube' ? '#FF0000' :
+                              p.platform.toLowerCase() === 'instagram' ? '#E4405F' :
+                              p.platform.toLowerCase() === 'facebook' ? '#1877F2' :
+                              p.platform.toLowerCase() === 'linkedin' ? '#0A66C2' :
+                              '#000',
+                          },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Hook */}
+              {selectedPost.hook && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Hook
+                  </Typography>
+                  <Box sx={{
+                    p: 1.5,
+                    borderRadius: '8px',
+                    bgcolor: 'rgba(0,122,255,0.05)',
+                    borderLeft: '3px solid #007AFF'
+                  }}>
+                    <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                      "{selectedPost.hook}"
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Description */}
+              {selectedPost.description && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Description
+                  </Typography>
+                  <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                    {selectedPost.description}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Tags */}
+              {selectedPost.tags && selectedPost.tags.length > 0 && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Tags
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selectedPost.tags.map((tag, i) => (
+                      <Chip
+                        key={i}
+                        label={`#${tag}`}
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(0,0,0,0.05)',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+
+              {/* CTA */}
+              {selectedPost.ctaType && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Call to Action
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Chip
+                      label={selectedPost.ctaType}
+                      size="small"
+                      sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#059669', fontWeight: 600 }}
+                    />
+                    {selectedPost.ctaUrl && (
+                      <Typography
+                        component="a"
+                        href={selectedPost.ctaUrl}
+                        target="_blank"
+                        sx={{
+                          fontSize: '0.85rem',
+                          color: '#007AFF',
+                          textDecoration: 'none',
+                          '&:hover': { textDecoration: 'underline' }
+                        }}
+                      >
+                        {selectedPost.ctaUrl}
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Upload Results (for published/failed posts) */}
+              {selectedPost.uploadResults && selectedPost.uploadResults.length > 0 && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                    Upload Results
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {selectedPost.uploadResults.map((result, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          p: 1,
+                          borderRadius: '8px',
+                          bgcolor: result.status === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                        }}
+                      >
+                        {result.status === 'success' ? (
+                          <CheckCircleIcon sx={{ fontSize: 18, color: '#22C55E' }} />
+                        ) : (
+                          <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />
+                        )}
+                        <Typography sx={{ fontWeight: 500, textTransform: 'capitalize', flex: 1 }}>
+                          {result.platform}
+                        </Typography>
+                        {result.error && (
+                          <Typography sx={{ fontSize: '0.75rem', color: '#EF4444' }}>
+                            {result.error}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
+            </DialogContent>
+
+            <DialogActions sx={{ p: 3, pt: 0, gap: 1 }}>
+              {/* Cancel button - only for scheduled posts */}
+              {selectedPost.status === 'scheduled' && (
+                <Button
+                  onClick={() => {
+                    setDetailsDialogOpen(false);
+                    handleCancelClick(selectedPost);
+                  }}
+                  variant="outlined"
+                  color="error"
+                  sx={{
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                  }}
+                >
+                  Cancel Post
+                </Button>
+              )}
+              <Box sx={{ flex: 1 }} />
+              {/* View Video button */}
+              <Button
+                onClick={() => {
+                  setDetailsDialogOpen(false);
+                  navigate(`/video/${selectedPost.videoId}`);
+                }}
+                variant="contained"
+                sx={{
+                  bgcolor: '#007AFF',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: '#0066DD' },
+                }}
+              >
+                View Video
+              </Button>
+              {/* Close button - only for completed or failed posts */}
+              {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (
+                <Button
+                  onClick={() => setDetailsDialogOpen(false)}
+                  variant="outlined"
+                  sx={{
+                    ml: 1,
+                    borderColor: 'rgba(0,0,0,0.2)',
+                    color: '#666',
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    '&:hover': {
+                      borderColor: 'rgba(0,0,0,0.3)',
+                      bgcolor: 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  Close
+                </Button>
+              )}
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </Box>
   );

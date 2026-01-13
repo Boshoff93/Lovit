@@ -293,6 +293,7 @@ const CreateVideoPage: React.FC = () => {
   const [videoPrompt, setVideoPrompt] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPromptError, setShowPromptError] = useState(false);
+  const [rouletteMode, setRouletteMode] = useState(false);
 
   // Song selection state
   const [songs, setSongs] = useState<Song[]>([]);
@@ -527,11 +528,12 @@ const CreateVideoPage: React.FC = () => {
       return;
     }
 
-    if (!videoPrompt.trim()) {
+    // Validation: either need prompt or roulette mode
+    if (!videoPrompt.trim() && !rouletteMode) {
       setShowPromptError(true);
       setNotification({
         open: true,
-        message: 'Please describe your music video concept',
+        message: 'Please describe your music video concept or use Gruvi Roulette',
         severity: 'error'
       });
       return;
@@ -554,9 +556,10 @@ const CreateVideoPage: React.FC = () => {
         songId: selectedSongId,
         videoType: videoType as 'still' | 'standard' | 'professional',
         style: selectedStyle,
-        videoPrompt: videoPrompt.trim(),
+        videoPrompt: rouletteMode ? '' : videoPrompt.trim(),
         aspectRatio: aspectRatio as 'portrait' | 'landscape',
-        characterIds: selectedCharacterIds,
+        characterIds: rouletteMode ? [] : selectedCharacterIds,
+        rouletteMode,
       });
       
       // Update tokens in UI with actual value from backend
@@ -564,15 +567,7 @@ const CreateVideoPage: React.FC = () => {
         dispatch(setTokensRemaining(response.data.tokensRemaining));
       }
       
-      setNotification({
-        open: true,
-        message: 'Music video generation started! It will appear in your library when ready.',
-        severity: 'success'
-      });
-      
-      setTimeout(() => {
-        navigate('/my-videos');
-      }, 2000);
+      navigate('/my-videos?generating=true');
     } catch (error: any) {
       console.error('Video generation error:', error);
       setNotification({
@@ -817,22 +812,25 @@ const CreateVideoPage: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                Video Description
+                {rouletteMode ? 'Video Concept' : 'Video Description'}
               </Typography>
-              <Chip
-                label="Required"
-                size="small"
-                sx={{
-                  ml: 1,
-                  background: 'rgba(255,59,48,0.1)',
-                  color: '#FF3B30',
-                  fontWeight: 600,
-                  fontSize: '0.7rem'
-                }}
-              />
+              {!rouletteMode && (
+                <Chip
+                  label="Required"
+                  size="small"
+                  sx={{
+                    ml: 1,
+                    background: 'rgba(255,59,48,0.1)',
+                    color: '#FF3B30',
+                    fontWeight: 600,
+                    fontSize: '0.7rem'
+                  }}
+                />
+              )}
             </Box>
-            
-            {/* Cast Selection - Dropdown + Create Button */}
+
+            {/* Cast Selection - Dropdown + Create Button - hidden in roulette mode */}
+            {!rouletteMode && (
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 1 }}>
                 Add AI assets to your video (max {MAX_CAST_MEMBERS}):
@@ -956,7 +954,8 @@ const CreateVideoPage: React.FC = () => {
                 </Box>
               )}
             </Box>
-            
+            )}
+
             <MentionTextField
               value={videoPrompt}
               onChange={(value) => {
@@ -966,8 +965,17 @@ const CreateVideoPage: React.FC = () => {
               characterNames={characters.map(c => c.characterName)}
               placeholder="Describe the scenes, setting, and story for your music video... Type @name to add AI assets."
               rows={4}
-              error={showPromptError && !videoPrompt.trim()}
-              helperText={showPromptError && !videoPrompt.trim() ? 'Please describe your music video' : ''}
+              error={showPromptError && !videoPrompt.trim() && !rouletteMode}
+              helperText={showPromptError && !videoPrompt.trim() && !rouletteMode ? 'Please describe your music video or use Gruvi Roulette' : ''}
+              rouletteMode={rouletteMode}
+              onRouletteToggle={(enabled) => {
+                setRouletteMode(enabled);
+                if (enabled) {
+                  // Clear prompt when entering roulette mode
+                  setVideoPrompt('');
+                  setShowPromptError(false);
+                }
+              }}
             />
           </Paper>
 
@@ -1223,10 +1231,11 @@ const CreateVideoPage: React.FC = () => {
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(0,0,0,0.08)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              position: 'sticky',
-              top: 28,
+              position: { lg: 'sticky' },
+              top: { lg: 28 },
             }}
           >
+            {/* Header row */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
                 Summary
@@ -1239,59 +1248,74 @@ const CreateVideoPage: React.FC = () => {
               </Box>
             </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Style</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                  <Box
-                    component="img"
-                    src={artStyles.find(s => s.id === selectedStyle)?.image}
-                    alt={artStyles.find(s => s.id === selectedStyle)?.label}
-                    sx={{ width: 22, height: 22, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
-                  />
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {artStyles.find(s => s.id === selectedStyle)?.label}
-                  </Typography>
+            {/* Summary bullets - 2 columns on md only */}
+            <Box sx={{
+              mb: 3,
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row', lg: 'column' },
+              gap: { xs: 0, md: 3, lg: 0 },
+            }}>
+              {/* Column 1: Style, Type */}
+              <Box sx={{ flex: { xs: 'none', md: 1, lg: 'none' }, minWidth: 0 }}>
+                <Box sx={{ display: 'flex', mb: 1.5 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Style</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    <Box
+                      component="img"
+                      src={artStyles.find(s => s.id === selectedStyle)?.image}
+                      alt={artStyles.find(s => s.id === selectedStyle)?.label}
+                      sx={{ width: 22, height: 22, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
+                    />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {artStyles.find(s => s.id === selectedStyle)?.label}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', mb: { xs: 1.5, md: 0, lg: 1.5 } }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Type</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    {(() => {
+                      const typeInfo = videoTypes.find(t => t.id === videoType);
+                      const TypeIcon = typeInfo?.icon;
+                      return (
+                        <>
+                          {TypeIcon && <TypeIcon sx={{ fontSize: 18, color: '#007AFF' }} />}
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                            {typeInfo?.label}
+                          </Typography>
+                        </>
+                      );
+                    })()}
+                  </Box>
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Type</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                  {(() => {
-                    const typeInfo = videoTypes.find(t => t.id === videoType);
-                    const TypeIcon = typeInfo?.icon;
-                    return (
-                      <>
-                        {TypeIcon && <TypeIcon sx={{ fontSize: 18, color: '#007AFF' }} />}
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                          {typeInfo?.label}
-                        </Typography>
-                      </>
-                    );
-                  })()}
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Aspect Ratio</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                  {(() => {
-                    const arInfo = aspectRatios.find(ar => ar.id === aspectRatio);
-                    const ArIcon = arInfo?.Icon;
-                    return (
-                      <>
-                        {ArIcon && <ArIcon sx={{ fontSize: 18, color: aspectRatio === 'portrait' ? '#FF9500' : '#34C759' }} />}
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
-                          {arInfo?.label} ({arInfo?.ratio})
-                        </Typography>
-                      </>
-                    );
-                  })()}
+
+              {/* Column 2: Aspect Ratio */}
+              <Box sx={{ flex: { xs: 'none', md: 1, lg: 'none' }, minWidth: 0 }}>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography color="text.secondary" sx={{ fontSize: '0.9rem', flex: 1 }}>Aspect Ratio</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    {(() => {
+                      const arInfo = aspectRatios.find(ar => ar.id === aspectRatio);
+                      const ArIcon = arInfo?.Icon;
+                      return (
+                        <>
+                          {ArIcon && <ArIcon sx={{ fontSize: 18, color: aspectRatio === 'portrait' ? '#FF9500' : '#34C759' }} />}
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.9rem' }}>
+                            {arInfo?.label} ({arInfo?.ratio})
+                          </Typography>
+                        </>
+                      );
+                    })()}
+                  </Box>
                 </Box>
               </Box>
             </Box>
 
+            {/* Generate Button */}
             <Button
               variant="contained"
+              fullWidth
               onClick={handleGenerate}
               disabled={isGenerating || !videoPrompt.trim()}
               sx={{
@@ -1302,9 +1326,6 @@ const CreateVideoPage: React.FC = () => {
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '1rem',
-                width: { xs: '100%', sm: 'fit-content', lg: '100%' },
-                mx: 'auto',
-                display: 'flex',
                 '&:hover': {
                   boxShadow: '0 12px 32px rgba(0,122,255,0.4)',
                 },

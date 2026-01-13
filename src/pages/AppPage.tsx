@@ -54,6 +54,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import PublishIcon from '@mui/icons-material/Publish';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 
@@ -284,6 +285,7 @@ interface Song {
   songLength?: 'short' | 'standard'; // Song duration preference
   isUserUpload?: boolean; // Flag for user-uploaded content
   artist?: string; // Artist name for user-uploaded songs
+  isPremium?: boolean; // Premium track (ElevenLabs)
 }
 
 interface Video {
@@ -325,6 +327,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Store the video URL when hover starts to prevent URL changes from resetting playback
+  const videoUrlRef = useRef<string | null>(null);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -338,9 +342,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
   return (
     <Box
       onMouseEnter={() => {
+        // Capture the current video URL when hover starts
+        videoUrlRef.current = video.videoUrl || null;
         hoverTimeoutRef.current = setTimeout(() => {
           setIsHovered(true);
-        }, 300);
+        }, 200);
       }}
       onMouseLeave={() => {
         if (hoverTimeoutRef.current) {
@@ -349,6 +355,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         }
         setIsHovered(false);
         setIsVideoReady(false);
+        videoUrlRef.current = null;
       }}
       onClick={() => video.status === 'completed' && onWatch(video)}
       sx={{
@@ -366,7 +373,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         } : {},
       }}
     >
-      {/* Thumbnail Image - hidden when video is ready and playing */}
+      {/* Thumbnail Image - always visible as background, video overlays on top */}
       <Box
         component="img"
         src={
@@ -381,7 +388,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          display: isVideoReady ? 'none' : 'block',
         }}
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
           e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
@@ -389,10 +395,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
       />
 
       {/* Video Preview on Hover */}
-      {video.status === 'completed' && video.videoUrl && isHovered && (
+      {video.status === 'completed' && videoUrlRef.current && isHovered && (
         <Box
           component="video"
-          src={video.videoUrl}
+          src={videoUrlRef.current}
           autoPlay
           muted
           loop
@@ -405,6 +411,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            background: 'transparent',
+            opacity: isVideoReady ? 1 : 0,
+            transition: 'opacity 0.2s ease',
           }}
         />
       )}
@@ -597,6 +606,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
   const processingSongIdsRef = useRef<Set<string>>(new Set()); // Track IDs of songs we're waiting for
+  const processingVideoIdsRef = useRef<Set<string>>(new Set()); // Track IDs of videos we're waiting for
   
   // Global audio player
   const { 
@@ -636,11 +646,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   // Fetch songs with server-side pagination and filtering
   const fetchSongs = useCallback(async (showLoading = true, page = currentPage) => {
     if (!user?.userId) return;
-    
+
     if (showLoading) setIsLoadingSongs(true);
     try {
-      const response = await songsApi.getUserSongs(user.userId, { 
-        page, 
+      const response = await songsApi.getUserSongs(user.userId, {
+        page,
         limit: songsPerPage,
         search: searchQuery || undefined,
         genre: genreFilter || undefined,
@@ -648,7 +658,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       });
       const fetchedSongs = response.data.songs || [];
       const pagination = response.data.pagination;
-      
+
       setSongs(fetchedSongs);
       // Use pagination.totalCount if available, otherwise fallback to songs length
       if (pagination?.totalCount !== undefined) {
@@ -656,14 +666,14 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       } else {
         setTotalSongsCount(fetchedSongs.length);
       }
-      
+
       // Return list of processing song IDs
       const processingSongIds = fetchedSongs
         .filter((s: Song) => s.status === 'processing')
         .map((s: Song) => s.songId);
       return processingSongIds as string[];
     } catch (error) {
-      console.error('Error fetching songs:', error);
+      console.error('[Songs] Error fetching songs:', error);
     } finally {
       if (showLoading) setIsLoadingSongs(false);
     }
@@ -708,16 +718,16 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     // Track the song IDs we're waiting for
     initialProcessingIds.forEach(id => processingSongIdsRef.current.add(id));
     
-    // Poll every 3 seconds
+    // Poll every 5 seconds
     pollingIntervalRef.current = setInterval(async () => {
       const currentProcessingIds = await fetchSongs(false);
-      
+
       // Check if any songs we were waiting for have completed
       const processingIds = currentProcessingIds || [];
       const completedIds = Array.from(processingSongIdsRef.current).filter(
         id => !processingIds.includes(id)
       );
-      
+
       // Show notification for each completed song
       if (completedIds.length > 0) {
         setNotification({
@@ -728,17 +738,17 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         // Remove completed songs from tracking
         completedIds.forEach(id => processingSongIdsRef.current.delete(id));
       }
-      
+
       // Add any new processing songs to tracking
       processingIds.forEach(id => processingSongIdsRef.current.add(id));
-      
+
       // Stop polling if no more songs to track
       if (processingIds.length === 0 && pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
         processingSongIdsRef.current.clear();
       }
-    }, 3000);
+    }, 5000);
   }, [fetchSongs]);
 
   // Initial fetch and polling setup
@@ -861,41 +871,50 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
   }, [user?.userId, currentVideoPage]);
 
-  // Start video polling for processing videos
-  const startVideoPolling = useCallback(() => {
+  // Start video polling only when there are processing videos
+  const startVideoPolling = useCallback((initialProcessingIds: string[]) => {
     if (videoPollingRef.current) {
       clearInterval(videoPollingRef.current);
     }
-    
+
+    // Track the video IDs we're waiting for
+    initialProcessingIds.forEach(id => processingVideoIdsRef.current.add(id));
+
     videoPollingRef.current = setInterval(async () => {
       const hasProcessing = await fetchVideos(false);
-      
+
+      // Stop polling if no more processing videos
       if (!hasProcessing && videoPollingRef.current) {
         clearInterval(videoPollingRef.current);
         videoPollingRef.current = null;
-        
-        setNotification({
-          open: true,
-          message: 'Your music video is ready! 🎬',
-          severity: 'success'
-        });
+
+        // Show notification if we were tracking any videos
+        if (processingVideoIdsRef.current.size > 0) {
+          setNotification({
+            open: true,
+            message: 'Your video is ready! 🎬',
+            severity: 'success'
+          });
+        }
+        processingVideoIdsRef.current.clear();
       }
     }, 5000);
   }, [fetchVideos]);
 
-  // Fetch videos on mount
+  // Fetch videos on mount and start polling if needed
   useEffect(() => {
     const initVideoFetch = async () => {
       const hasProcessing = await fetchVideos(true);
       if (hasProcessing) {
-        startVideoPolling();
+        // Get processing video IDs from the response (fetchVideos updates state, so we check after)
+        startVideoPolling([]);
       }
     };
-    
+
     if (user?.userId) {
       initVideoFetch();
     }
-    
+
     return () => {
       if (videoPollingRef.current) {
         clearInterval(videoPollingRef.current);
@@ -1923,18 +1942,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
                   {/* Track Info */}
                   <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                        color: isFailed ? '#FF3B30' : '#1D1D1F',
-                        fontSize: { xs: '0.85rem', sm: '0.95rem' },
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {song.songTitle}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          color: isFailed ? '#FF3B30' : '#1D1D1F',
+                          fontSize: { xs: '0.85rem', sm: '0.95rem' },
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {song.songTitle}
+                      </Typography>
+                      {song.isPremium && (
+                        <Tooltip title="Premium Track" arrow>
+                          <WorkspacePremiumIcon sx={{ fontSize: 18, color: '#FFB800', flexShrink: 0 }} />
+                        </Tooltip>
+                      )}
+                    </Box>
                     {isProcessing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography sx={{ color: '#007AFF', fontSize: { xs: '0.75rem', sm: '0.85rem' }, fontWeight: 500 }}>

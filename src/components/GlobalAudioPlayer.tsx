@@ -151,7 +151,7 @@ const GlobalAudioPlayer: React.FC = () => {
   } = useAudioPlayer();
 
   const [localProgress, setLocalProgress] = useState<number | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(true); // Dark mode by default
+  const [isDarkMode, setIsDarkMode] = useState(false); // Light mode by default
 
   // Check if we're on a marketing page (no sidebar)
   const isMarketingPage = MARKETING_PATHS.some(path =>
