@@ -212,7 +212,7 @@ export const videosApi = {
     api.delete(`/api/gruvi/videos/${userId}/${videoId}`),
   
   // Social Sharing APIs
-  generateSocialMetadata: (userId: string, videoId: string, data?: { location?: string }) =>
+  generateSocialMetadata: (userId: string, videoId: string, data?: { location?: string; userContext?: string }) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`, data || {}),
   
   getSocialMetadata: (userId: string, videoId: string) =>

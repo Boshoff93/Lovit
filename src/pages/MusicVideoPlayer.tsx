@@ -87,6 +87,9 @@ interface VideoData {
   characterIds?: string[];
   seedreamReferenceUrls?: Record<string, string>; // characterId -> seedream URL
   sceneImageUrls?: string[]; // All generated scene images from video
+  isUserUpload?: boolean; // Flag for user-uploaded videos
+  originalFilename?: string; // Original filename for uploaded videos
+  description?: string; // Description/context for uploaded videos
 }
 
 interface SongData {
@@ -166,6 +169,8 @@ const MusicVideoPlayer: React.FC = () => {
   const [newTag, setNewTag] = useState('');
   const [ctaType, setCtaType] = useState<string>('');
   const [ctaUrl, setCtaUrl] = useState('');
+  const [uploadedVideoContext, setUploadedVideoContext] = useState(''); // Context for uploaded videos
+  const [showContextModal, setShowContextModal] = useState(false); // Modal for uploaded video context
   
   // YouTube state
   const [youtubeConnected, setYoutubeConnected] = useState(false);
@@ -574,29 +579,50 @@ const MusicVideoPlayer: React.FC = () => {
   }, [user?.userId, videoId]);
 
   // Social sharing handlers
-  const handleGenerateMetadata = async () => {
+  const handleGenerateMetadata = async (contextFromModal?: string) => {
     if (!user?.userId || !videoId) return;
+
+    // For uploaded videos, always show modal first (unless called from modal with context)
+    if (videoData?.isUserUpload && contextFromModal === undefined) {
+      setShowContextModal(true);
+      return;
+    }
+
     setIsGeneratingMetadata(true);
     setSocialError(null);
-    
+    setShowContextModal(false);
+
+    // Preserve current CTA values before generating
+    const currentCtaType = ctaType;
+    const currentCtaUrl = ctaUrl;
+
     try {
-      const response = await videosApi.generateSocialMetadata(user.userId, videoId, {});
+      const response = await videosApi.generateSocialMetadata(user.userId, videoId, {
+        userContext: videoData?.isUserUpload ? contextFromModal : undefined,
+      });
       const newMetadata = response.data.socialMetadata;
       setSocialMetadata(newMetadata);
       setEditedMetadata(newMetadata);
       setHookText(newMetadata.hook || '');
-      
+
+      // Restore CTA values (don't let generation overwrite them)
+      setCtaType(currentCtaType);
+      setCtaUrl(currentCtaUrl);
+
       // Update tokens in UI with actual value from backend
       if (response.data.tokensRemaining !== undefined) {
         dispatch(setTokensRemaining(response.data.tokensRemaining));
       }
-      
+
       setSocialSuccess('Social metadata generated! (10 credits used)');
       setTimeout(() => setSocialSuccess(null), 3000);
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData?.error === 'Insufficient credits') {
         showSocialError(`Insufficient credits. You need ${errorData.required} credits but have ${errorData.available}. Add credits or enter metadata manually.`);
+      } else if (errorData?.error === 'uploaded_needs_context') {
+        // Show context modal for uploaded videos
+        setShowContextModal(true);
       } else {
         showSocialError(errorData?.error || 'Failed to generate metadata');
       }
@@ -2378,8 +2404,14 @@ const MusicVideoPlayer: React.FC = () => {
               <Button
                 variant="contained"
                 size="small"
-                startIcon={isGeneratingMetadata ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <Box sx={{ display: 'flex', alignItems: 'center' }}><Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, mr: 0.5, color: '#fff' }}>10</Typography><GruviCoin size={16} /></Box>}
-                onClick={handleGenerateMetadata}
+                endIcon={!isGeneratingMetadata && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 1.5, ml: 0.5 }}>
+                    <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>10</Typography>
+                    <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 400, mx: 0.5, color: '#fff' }}>x</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}><GruviCoin size={16} /></Box>
+                  </Box>
+                )}
+                onClick={() => handleGenerateMetadata()}
                 disabled={isGeneratingMetadata}
                 sx={{
                   borderRadius: '10px',
@@ -2403,9 +2435,10 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               >
-                {isGeneratingMetadata ? 'Generating...' : 'Generate with AI'}
+                {isGeneratingMetadata ? <><CircularProgress size={14} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate with AI'}
               </Button>
             </Box>
+
 
             {/* Title */}
             <Box sx={{ mb: 2 }}>
@@ -4096,6 +4129,108 @@ const MusicVideoPlayer: React.FC = () => {
             View Scheduled
           </Button>
         </Box>
+      </Dialog>
+
+      {/* Uploaded Video Context Modal */}
+      <Dialog
+        open={showContextModal}
+        onClose={() => setShowContextModal(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            p: 1,
+            maxWidth: 560,
+            width: '100%',
+            mx: 2,
+          }
+        }}
+      >
+        <DialogContent sx={{ pt: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Box sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+            }}>
+              <AutoAwesome sx={{ fontSize: 28, color: '#fff' }} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#1D1D1F', mb: 0.5 }}>
+                Describe Your Video
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#86868B' }}>
+                Since this is an uploaded video, we need some context to generate a great title, description, and tags for your post.
+              </Typography>
+            </Box>
+          </Box>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            value={uploadedVideoContext}
+            onChange={(e) => setUploadedVideoContext(e.target.value)}
+            placeholder="E.g., A cinematic travel video showcasing the beaches of Bali at sunset, featuring drone shots of the coastline and local temples..."
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+              },
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 1 }}>
+          <Button
+            onClick={() => setShowContextModal(false)}
+            sx={{
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3,
+              py: 1,
+              color: '#666',
+              border: '1px solid #E5E5E7',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => handleGenerateMetadata(uploadedVideoContext)}
+            disabled={!uploadedVideoContext.trim() || isGeneratingMetadata}
+            endIcon={!isGeneratingMetadata && (
+              <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 1.5, ml: 0.5 }}>
+                <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>10</Typography>
+                <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 400, mx: 0.5, color: '#fff' }}>x</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}><GruviCoin size={16} /></Box>
+              </Box>
+            )}
+            sx={{
+              borderRadius: '10px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 2,
+              py: 1,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+              '&:hover': {
+                boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
+              },
+              '&:disabled': {
+                background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
+                boxShadow: 'none',
+              },
+            }}
+          >
+            {isGeneratingMetadata ? <><CircularProgress size={16} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate with AI'}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Thumbnail Lightbox Overlay */}
