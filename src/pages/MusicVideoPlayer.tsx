@@ -168,6 +168,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
   const [hookText, setHookText] = useState('');
   const [thumbnailDescription, setThumbnailDescription] = useState(''); // Optional description for AI thumbnail generation
+  const [thumbnailGenMode, setThumbnailGenMode] = useState<'images' | 'text'>('images'); // Toggle between image-based and text-based generation
   const [newTag, setNewTag] = useState('');
   const [ctaType, setCtaType] = useState<string>('');
   const [ctaUrl, setCtaUrl] = useState('');
@@ -641,44 +642,53 @@ const MusicVideoPlayer: React.FC = () => {
     }
     // Filter out the toggle marker
     const realSelectedIds = selectedCharacterIds.filter(id => id !== 'toggle_open');
-    if (realSelectedIds.length === 0) {
+
+    // Validate based on generation mode
+    if (thumbnailGenMode === 'images' && realSelectedIds.length === 0) {
       showSocialError('Please select at least one image');
       return;
     }
+    if (thumbnailGenMode === 'text' && !thumbnailDescription.trim()) {
+      showSocialError('Please enter a description for the thumbnail');
+      return;
+    }
+
     setIsGeneratingThumbnail(true);
     setSocialError(null);
-    
+
     try {
-      // Convert selected image IDs to actual URLs
+      // Convert selected image IDs to actual URLs (only for image mode)
       const selectedImageUrls: string[] = [];
-      realSelectedIds.forEach(id => {
-        // Handle different ID formats
-        if (id.startsWith('ai_thumb_')) {
-          // AI-generated thumbnail: ai_thumb_N
-          const idx = parseInt(id.replace('ai_thumb_', ''));
-          const url = generatedThumbnails[idx];
-          if (url) selectedImageUrls.push(url);
-        } else if (id.endsWith('_seedream')) {
-          // Seedream reference: characterId_seedream
-          const charId = id.replace('_seedream', '');
-          const url = videoData?.seedreamReferenceUrls?.[charId];
-          if (url) selectedImageUrls.push(url);
-        } else if (id.startsWith('scene_')) {
-          // Video scene: scene_N
-          const idx = parseInt(id.replace('scene_', ''));
-          const url = videoData?.sceneImageUrls?.[idx];
-          if (url) selectedImageUrls.push(url);
-        } else if (id === 'original_thumb') {
-          // Original thumbnail (video first frame)
-          if (videoData?.thumbnailUrl) selectedImageUrls.push(videoData.thumbnailUrl);
-        } else if (id.startsWith('upload_')) {
-          // User-uploaded custom thumbnail
-          const idx = parseInt(id.replace('upload_', ''));
-          const thumb = uploadedCustomThumbnails[idx];
-          if (thumb?.dataUrl) selectedImageUrls.push(thumb.dataUrl);
-        }
-      });
-      
+      if (thumbnailGenMode === 'images') {
+        realSelectedIds.forEach(id => {
+          // Handle different ID formats
+          if (id.startsWith('ai_thumb_')) {
+            // AI-generated thumbnail: ai_thumb_N
+            const idx = parseInt(id.replace('ai_thumb_', ''));
+            const url = generatedThumbnails[idx];
+            if (url) selectedImageUrls.push(url);
+          } else if (id.endsWith('_seedream')) {
+            // Seedream reference: characterId_seedream
+            const charId = id.replace('_seedream', '');
+            const url = videoData?.seedreamReferenceUrls?.[charId];
+            if (url) selectedImageUrls.push(url);
+          } else if (id.startsWith('scene_')) {
+            // Video scene: scene_N
+            const idx = parseInt(id.replace('scene_', ''));
+            const url = videoData?.sceneImageUrls?.[idx];
+            if (url) selectedImageUrls.push(url);
+          } else if (id === 'original_thumb') {
+            // Original thumbnail (video first frame)
+            if (videoData?.thumbnailUrl) selectedImageUrls.push(videoData.thumbnailUrl);
+          } else if (id.startsWith('upload_')) {
+            // User-uploaded custom thumbnail
+            const idx = parseInt(id.replace('upload_', ''));
+            const thumb = uploadedCustomThumbnails[idx];
+            if (thumb?.dataUrl) selectedImageUrls.push(thumb.dataUrl);
+          }
+        });
+      }
+
       const response = await videosApi.generateSocialThumbnail(user.userId, videoId, {
         hookText,
         thumbnailDescription: thumbnailDescription.trim() || undefined,
@@ -2880,71 +2890,122 @@ const MusicVideoPlayer: React.FC = () => {
                   
                   return (
                     <>
-                      <Box sx={{ mb: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
-                            Select reference images
+                      {/* Generation Mode Toggle */}
+                      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                        <Box
+                          onClick={() => setThumbnailGenMode('images')}
+                          sx={{
+                            flex: 1,
+                            p: 1.5,
+                            borderRadius: '10px',
+                            border: `2px solid ${thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
+                            bgcolor: thumbnailGenMode === 'images' ? 'rgba(0,122,255,0.05)' : '#fff',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center',
+                            '&:hover': { borderColor: thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: thumbnailGenMode === 'images' ? '#007AFF' : '#1D1D1F' }}>
+                            From Images
                           </Typography>
-                          <Typography variant="caption" sx={{ 
-                            color: '#007AFF', 
-                            fontWeight: 600,
-                            bgcolor: 'rgba(0,122,255,0.1)',
-                            px: 1.5, py: 0.5, borderRadius: '100px',
-                          }}>
-                            {realSelectedIds.length}/{maxSelections}
+                          <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>
+                            Use reference images
                           </Typography>
                         </Box>
-                        <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mt: 0.5 }}>
-                          AI will use the selected images as a starting point to generate a new thumbnail
-                        </Typography>
+                        <Box
+                          onClick={() => setThumbnailGenMode('text')}
+                          sx={{
+                            flex: 1,
+                            p: 1.5,
+                            borderRadius: '10px',
+                            border: `2px solid ${thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
+                            bgcolor: thumbnailGenMode === 'text' ? 'rgba(0,122,255,0.05)' : '#fff',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center',
+                            '&:hover': { borderColor: thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: thumbnailGenMode === 'text' ? '#007AFF' : '#1D1D1F' }}>
+                            From Text
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>
+                            Describe your thumbnail
+                          </Typography>
+                        </Box>
                       </Box>
-                      
-                      {availableImages.length > 0 ? (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                          {availableImages.map((img) => {
-                            const isSelected = realSelectedIds.includes(img.id);
-                            const canSelect = isSelected || realSelectedIds.length < maxSelections;
-                            
-                            return (
-                              <Box
-                                key={img.id}
-                                onClick={() => {
-                                  if (!canSelect && !isSelected) return;
-                                  setSelectedCharacterIds(prev => {
-                                    const filtered = prev.filter(id => id !== 'toggle_open');
-                                    const newIds = isSelected 
-                                      ? filtered.filter(id => id !== img.id)
-                                      : [...filtered, img.id];
-                                    return newIds.length === 0 ? ['toggle_open'] : newIds;
-                                  });
-                                }}
-                                sx={{
-                                  position: 'relative',
-                                  cursor: canSelect ? 'pointer' : 'not-allowed',
-                                  borderRadius: 0.5,
-                                  overflow: 'hidden',
-                                  border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
-                                  opacity: canSelect ? 1 : 0.4,
-                                  transition: 'all 0.2s',
-                                  '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : {},
-                                }}
-                              >
-                                <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block' }} />
-                                {isSelected && (
-                                  <Box sx={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Check sx={{ fontSize: 9, color: '#fff' }} />
+
+                      {/* Image Selection - Only show in images mode */}
+                      {thumbnailGenMode === 'images' && (
+                        <>
+                          <Box sx={{ mb: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
+                                Select reference images
+                              </Typography>
+                              <Typography variant="caption" sx={{
+                                color: '#007AFF',
+                                fontWeight: 600,
+                                bgcolor: 'rgba(0,122,255,0.1)',
+                                px: 1.5, py: 0.5, borderRadius: '100px',
+                              }}>
+                                {realSelectedIds.length}/{maxSelections}
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mt: 0.5 }}>
+                              AI will use the selected images as a starting point
+                            </Typography>
+                          </Box>
+
+                          {availableImages.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                              {availableImages.map((img) => {
+                                const isSelected = realSelectedIds.includes(img.id);
+                                const canSelect = isSelected || realSelectedIds.length < maxSelections;
+
+                                return (
+                                  <Box
+                                    key={img.id}
+                                    onClick={() => {
+                                      if (!canSelect && !isSelected) return;
+                                      setSelectedCharacterIds(prev => {
+                                        const filtered = prev.filter(id => id !== 'toggle_open');
+                                        const newIds = isSelected
+                                          ? filtered.filter(id => id !== img.id)
+                                          : [...filtered, img.id];
+                                        return newIds.length === 0 ? ['toggle_open'] : newIds;
+                                      });
+                                    }}
+                                    sx={{
+                                      position: 'relative',
+                                      cursor: canSelect ? 'pointer' : 'not-allowed',
+                                      borderRadius: 0.5,
+                                      overflow: 'hidden',
+                                      border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                                      opacity: canSelect ? 1 : 0.4,
+                                      transition: 'all 0.2s',
+                                      '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : {},
+                                    }}
+                                  >
+                                    <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block' }} />
+                                    {isSelected && (
+                                      <Box sx={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Check sx={{ fontSize: 9, color: '#fff' }} />
+                                      </Box>
+                                    )}
                                   </Box>
-                                )}
-                              </Box>
-                            );
-                          })}
-                        </Box>
-                      ) : (
-                        <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
-                          No reference images available
-                        </Typography>
+                                );
+                              })}
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
+                              No reference images available
+                            </Typography>
+                          )}
+                        </>
                       )}
-                      
+
                       {/* Hook Text */}
                       <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
                         Hook Text
@@ -2961,9 +3022,10 @@ const MusicVideoPlayer: React.FC = () => {
                         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
                       />
 
-                      {/* Thumbnail Description (Optional) */}
+                      {/* Thumbnail Description */}
                       <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
-                        Thumbnail Description <Typography component="span" sx={{ color: '#86868B', fontWeight: 400 }}>(Optional)</Typography>
+                        Thumbnail Description {thumbnailGenMode === 'images' && <Typography component="span" sx={{ color: '#86868B', fontWeight: 400 }}>(Optional)</Typography>}
+                        {thumbnailGenMode === 'text' && <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>}
                       </Typography>
                       <TextField
                         fullWidth
@@ -2972,7 +3034,10 @@ const MusicVideoPlayer: React.FC = () => {
                         size="small"
                         multiline
                         rows={2}
-                        placeholder="e.g., 'Show the character looking up at the sky with a glowing aura'"
+                        placeholder={thumbnailGenMode === 'text'
+                          ? "Describe the scene, characters, style, and mood for your thumbnail..."
+                          : "e.g., 'Show the character looking up at the sky with a glowing aura'"
+                        }
                         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
                       />
 
@@ -2982,7 +3047,7 @@ const MusicVideoPlayer: React.FC = () => {
                           variant="contained"
                           startIcon={isGeneratingThumbnail ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <AutoAwesome />}
                           onClick={handleGenerateThumbnail}
-                          disabled={isGeneratingThumbnail || !hookText.trim() || realSelectedIds.length === 0}
+                          disabled={isGeneratingThumbnail || !hookText.trim() || (thumbnailGenMode === 'images' && realSelectedIds.length === 0) || (thumbnailGenMode === 'text' && !thumbnailDescription.trim())}
                           size="small"
                           sx={{ bgcolor: '#007AFF', borderRadius: '8px', textTransform: 'none', fontWeight: 600, '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)' } }}
                         >
@@ -3746,7 +3811,7 @@ const MusicVideoPlayer: React.FC = () => {
             )}
 
           </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 1 }}>
+          <DialogActions sx={{ p: 2, pt: 1, borderTop: '1px solid rgba(0,0,0,0.08)', bgcolor: '#fff', position: 'sticky', bottom: 0 }}>
             {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
               <Button 
                 variant="contained"
