@@ -209,7 +209,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [tiktokCreatorInfoError, setTiktokCreatorInfoError] = useState<string | null>(null);
 
   // TikTok posting settings (required by TikTok API guidelines)
-  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>(''); // NO default - user must select (TikTok requirement)
+  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>('SELF_ONLY'); // Default to "Only me"
   const [tiktokAllowComment, setTiktokAllowComment] = useState(false); // Unchecked by default
   const [tiktokAllowDuet, setTiktokAllowDuet] = useState(false); // Unchecked by default
   const [tiktokAllowStitch, setTiktokAllowStitch] = useState(false); // Unchecked by default
@@ -3139,7 +3139,6 @@ const MusicVideoPlayer: React.FC = () => {
                 <Box
                   onClick={() => {
                     setTiktokPostMode('direct');
-                    setTiktokPrivacyLevel('SELF_ONLY');
                   }}
                   sx={{
                     flex: 1,
@@ -3156,20 +3155,19 @@ const MusicVideoPlayer: React.FC = () => {
                     Direct Post
                   </Typography>
                   <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
-                    Private only (pending TikTok approval for public posts)
+                    Post directly to your TikTok profile
                   </Typography>
                 </Box>
               </Box>
 
               {/* Privacy Level - Options from API, NO default value (TikTok requirement) */}
-              {/* For Direct Post mode, only SELF_ONLY is allowed (pending TikTok approval) */}
               <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
                 Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontSize: '0.75rem' }}>*</Typography>
               </Typography>
               <Select
                 fullWidth
                 size="small"
-                value={tiktokPostMode === 'direct' ? 'SELF_ONLY' : tiktokPrivacyLevel}
+                value={tiktokPrivacyLevel}
                 onChange={(e) => {
                   setTiktokPrivacyLevel(e.target.value);
                   if (e.target.value === 'SELF_ONLY' && tiktokBrandedContent) {
@@ -3177,17 +3175,17 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                 }}
                 displayEmpty
-                sx={{ borderRadius: '10px', mb: (tiktokPostMode === 'direct' || tiktokPrivacyLevel !== '') ? 2 : 1 }}
+                sx={{ borderRadius: '10px', mb: tiktokPrivacyLevel !== '' ? 2 : 1 }}
               >
                 <MenuItem value="" disabled>
                   <Typography sx={{ color: '#86868B' }}>Select privacy level</Typography>
                 </MenuItem>
                 {/* Use options from creator_info API, fallback to defaults */}
-                {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY']).map((option) => (
+                {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((option) => (
                   <MenuItem
                     key={option}
                     value={option}
-                    disabled={(tiktokPostMode === 'direct' && option !== 'SELF_ONLY') || (option === 'SELF_ONLY' && tiktokBrandedContent)}
+                    disabled={option === 'SELF_ONLY' && tiktokBrandedContent}
                   >
                     {option === 'PUBLIC_TO_EVERYONE' && 'Everyone'}
                     {option === 'MUTUAL_FOLLOW_FRIENDS' && 'Friends'}
@@ -3196,7 +3194,7 @@ const MusicVideoPlayer: React.FC = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {tiktokPostMode !== 'direct' && tiktokPrivacyLevel === '' && (
+              {tiktokPrivacyLevel === '' && (
                 <Typography sx={{ fontSize: '0.7rem', color: '#FF3B30', mb: 2 }}>
                   Please select a privacy level to continue
                 </Typography>
@@ -3355,15 +3353,15 @@ const MusicVideoPlayer: React.FC = () => {
                 sx={{
                   mt: 2,
                   borderRadius: '10px',
-                  bgcolor: tiktokPostMode === 'direct' ? 'rgba(255,149,0,0.08)' : 'rgba(0,122,255,0.08)',
-                  border: tiktokPostMode === 'direct' ? '1px solid rgba(255,149,0,0.3)' : '1px solid rgba(0,122,255,0.2)',
-                  '& .MuiAlert-icon': { color: tiktokPostMode === 'direct' ? '#FF9500' : '#007AFF' },
+                  bgcolor: 'rgba(0,122,255,0.08)',
+                  border: '1px solid rgba(0,122,255,0.2)',
+                  '& .MuiAlert-icon': { color: '#007AFF' },
                   '& .MuiAlert-message': { color: '#1D1D1F' }
                 }}
               >
                 <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
                   {tiktokPostMode === 'direct'
-                    ? <>Videos will be posted as <strong>private</strong> (only visible to you). After posting, it may take a few minutes for your video to appear on your TikTok profile.</>
+                    ? <>After posting, it may take a few minutes for your video to appear on your TikTok profile.</>
                     : <>After posting, it may take a few minutes for your video to appear in your TikTok inbox.</>
                   }
                 </Typography>
@@ -3403,8 +3401,8 @@ const MusicVideoPlayer: React.FC = () => {
           {(() => {
             // TikTok validation checks
             const tiktokSelected = selectedPlatforms.includes('tiktok');
-            // In direct post mode, privacy is forced to SELF_ONLY so it's not missing
-            const tiktokPrivacyMissing = tiktokSelected && tiktokPostMode !== 'direct' && tiktokPrivacyLevel === '';
+            // User must manually select privacy level (TikTok UX requirement - no default)
+            const tiktokPrivacyMissing = tiktokSelected && tiktokPrivacyLevel === '';
             const tiktokDurationExceeds = tiktokSelected && tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec;
             const tiktokCommercialIncomplete = tiktokSelected && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent;
             const tiktokCantPost = tiktokSelected && tiktokCreatorInfo?.canPost === false;
@@ -3663,6 +3661,12 @@ const MusicVideoPlayer: React.FC = () => {
                         <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
                       )}
                     </Box>
+                  )}
+                  {/* Call to Action */}
+                  {ctaType && ctaUrl && (
+                    <Typography variant="body2" sx={{ color: '#1D1D1F', mt: 1 }}>
+                      <strong>CTA:</strong> {ctaType} → {ctaUrl}
+                    </Typography>
                   )}
                 </Box>
               </Box>
@@ -3998,7 +4002,7 @@ const MusicVideoPlayer: React.FC = () => {
                         // TikTok-specific settings (required by TikTok API)
                         tiktokSettings: selectedPlatforms.includes('tiktok') ? {
                           postMode: tiktokPostMode,
-                          privacyLevel: tiktokPrivacyLevel,
+                          privacyLevel: tiktokPostMode === 'direct' ? 'SELF_ONLY' : tiktokPrivacyLevel,
                           allowComment: tiktokAllowComment,
                           allowDuet: tiktokAllowDuet,
                           allowStitch: tiktokAllowStitch,
