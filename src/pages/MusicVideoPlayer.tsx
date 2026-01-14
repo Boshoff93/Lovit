@@ -47,6 +47,7 @@ import {
   Schedule,
   Public as PublicIcon,
   VideoLibrary as VideoLibraryIcon,
+  Casino,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -171,6 +172,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [ctaUrl, setCtaUrl] = useState('');
   const [uploadedVideoContext, setUploadedVideoContext] = useState(''); // Context for uploaded videos
   const [showContextModal, setShowContextModal] = useState(false); // Modal for uploaded video context
+  const [useGruviRoulette, setUseGruviRoulette] = useState(true); // Toggle for Gruvi Roulette in modal
   
   // YouTube state
   const [youtubeConnected, setYoutubeConnected] = useState(false);
@@ -579,11 +581,11 @@ const MusicVideoPlayer: React.FC = () => {
   }, [user?.userId, videoId]);
 
   // Social sharing handlers
-  const handleGenerateMetadata = async (contextFromModal?: string) => {
+  const handleGenerateMetadata = async (options?: { context?: string; useRoulette?: boolean }) => {
     if (!user?.userId || !videoId) return;
 
-    // For uploaded videos, always show modal first (unless called from modal with context)
-    if (videoData?.isUserUpload && contextFromModal === undefined) {
+    // Always show modal first (unless called from modal with an option selected)
+    if (options === undefined) {
       setShowContextModal(true);
       return;
     }
@@ -598,7 +600,7 @@ const MusicVideoPlayer: React.FC = () => {
 
     try {
       const response = await videosApi.generateSocialMetadata(user.userId, videoId, {
-        userContext: videoData?.isUserUpload ? contextFromModal : undefined,
+        userContext: options.useRoulette ? undefined : options.context,
       });
       const newMetadata = response.data.socialMetadata;
       setSocialMetadata(newMetadata);
@@ -4131,7 +4133,7 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
       </Dialog>
 
-      {/* Uploaded Video Context Modal */}
+      {/* Generate Metadata Modal */}
       <Dialog
         open={showContextModal}
         onClose={() => setShowContextModal(false)}
@@ -4146,7 +4148,8 @@ const MusicVideoPlayer: React.FC = () => {
         }}
       >
         <DialogContent sx={{ pt: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          {/* Header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box sx={{
               width: 56,
               height: 56,
@@ -4162,28 +4165,160 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
             <Box>
               <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#1D1D1F', mb: 0.5 }}>
-                Describe Your Video
+                Generate with AI
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B' }}>
-                Since this is an uploaded video, we need some context to generate a great title, description, and tags for your post.
+                Create a title, description, and tags for your post
               </Typography>
             </Box>
           </Box>
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            value={uploadedVideoContext}
-            onChange={(e) => setUploadedVideoContext(e.target.value)}
-            placeholder="E.g., A cinematic travel video showcasing the beaches of Bali at sunset, featuring drone shots of the coastline and local temples..."
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '12px',
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-              },
-            }}
-          />
+
+          {/* Gruvi Roulette toggle - only for non-uploaded videos */}
+          {!videoData?.isUserUpload && (
+            <>
+              {useGruviRoulette ? (
+                /* Gruvi Roulette Active Banner - whole card clickable */
+                <Box
+                  onClick={() => setUseGruviRoulette(false)}
+                  sx={{
+                    p: '3px',
+                    mb: 2,
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                    cursor: 'pointer',
+                    transition: 'transform 0.15s ease',
+                    '&:hover': { transform: 'scale(0.99)' },
+                  }}
+                >
+                  <Box sx={{
+                    bgcolor: '#fff',
+                    borderRadius: '13px',
+                    p: 2.5,
+                    textAlign: 'center',
+                  }}>
+                    <Box sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '10px',
+                      background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mx: 'auto',
+                      mb: 1.5,
+                    }}>
+                      <Casino sx={{ fontSize: 22, color: '#fff' }} />
+                    </Box>
+                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: '#1D1D1F', mb: 0.5 }}>
+                      Gruvi Roulette Active
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#86868B' }}>
+                      We'll create metadata based on your video's story and lyrics. Sit back and let the magic happen!
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: '0.85rem',
+                        color: '#6366F1',
+                        mt: 1.5,
+                      }}
+                    >
+                      Click to enter your own prompt instead
+                    </Typography>
+                  </Box>
+                </Box>
+              ) : (
+                /* Custom input with Gruvi Roulette toggle button below text box */
+                <>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    value={uploadedVideoContext}
+                    onChange={(e) => setUploadedVideoContext(e.target.value)}
+                    placeholder="Override with your own description, e.g., A high-energy music video about chasing dreams..."
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      },
+                    }}
+                  />
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                    <Box
+                      onClick={() => setUseGruviRoulette(true)}
+                      sx={{
+                        p: '1.5px',
+                        borderRadius: '20px',
+                        background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                        cursor: 'pointer',
+                        '& .inner-box': {
+                          bgcolor: '#fff',
+                          transition: 'background-color 0.2s ease',
+                        },
+                        '& .icon': {
+                          color: '#8B5CF6',
+                          transition: 'color 0.2s ease',
+                        },
+                        '& .text': {
+                          background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          transition: 'all 0.2s ease',
+                        },
+                        '&:hover .inner-box': {
+                          bgcolor: 'transparent',
+                        },
+                        '&:hover .icon': {
+                          color: '#fff',
+                        },
+                        '&:hover .text': {
+                          background: 'none',
+                          WebkitTextFillColor: '#fff',
+                        },
+                      }}
+                    >
+                      <Box className="inner-box" sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        borderRadius: '18.5px',
+                        px: 1.25,
+                        py: 0.25,
+                      }}>
+                        <Casino className="icon" sx={{ fontSize: 13 }} />
+                        <Typography className="text" sx={{
+                          fontSize: '0.7rem',
+                          fontWeight: 600,
+                        }}>
+                          Gruvi Roulette
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Custom context input - for uploaded videos only */}
+          {videoData?.isUserUpload && (
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              value={uploadedVideoContext}
+              onChange={(e) => setUploadedVideoContext(e.target.value)}
+              placeholder="Describe your video content, e.g., A cinematic travel video showcasing the beaches of Bali at sunset..."
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                },
+              }}
+            />
+          )}
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 1 }}>
           <Button
@@ -4202,29 +4337,50 @@ const MusicVideoPlayer: React.FC = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => handleGenerateMetadata(uploadedVideoContext)}
-            disabled={!uploadedVideoContext.trim() || isGeneratingMetadata}
-            endIcon={!isGeneratingMetadata && (
-              <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 1.5, ml: 0.5 }}>
-                <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>10</Typography>
-                <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 400, mx: 0.5, color: '#fff' }}>x</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}><GruviCoin size={16} /></Box>
-              </Box>
-            )}
+            onClick={() => {
+              if (!videoData?.isUserUpload && useGruviRoulette) {
+                // Use Gruvi Roulette - no context needed
+                handleGenerateMetadata({ useRoulette: true });
+              } else {
+                // Use custom context
+                handleGenerateMetadata({ context: uploadedVideoContext });
+              }
+            }}
+            disabled={
+              isGeneratingMetadata ||
+              // Only require context if NOT using Gruvi Roulette (or if uploaded video)
+              ((!videoData?.isUserUpload && !useGruviRoulette && !uploadedVideoContext.trim()) ||
+               (videoData?.isUserUpload && !uploadedVideoContext.trim()))
+            }
+            endIcon={!isGeneratingMetadata && (() => {
+              const isDisabled = isGeneratingMetadata ||
+                ((!videoData?.isUserUpload && !useGruviRoulette && !uploadedVideoContext.trim()) ||
+                 (videoData?.isUserUpload && !uploadedVideoContext.trim()));
+              const textColor = isDisabled ? '#999' : '#fff';
+              return (
+                <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: `1px solid ${isDisabled ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)'}`, pl: 1.5, ml: 0.5 }}>
+                  <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: textColor }}>10</Typography>
+                  <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 400, mx: 0.5, color: textColor }}>x</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}><GruviCoin size={16} /></Box>
+                </Box>
+              );
+            })()}
             sx={{
               borderRadius: '10px',
               textTransform: 'none',
               fontWeight: 600,
               px: 2,
               py: 1,
+              color: '#fff',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
               '&:hover': {
                 boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
               },
-              '&:disabled': {
-                background: 'linear-gradient(135deg, #a0a0a0 0%, #808080 100%)',
+              '&.Mui-disabled': {
+                background: '#E5E5E7',
                 boxShadow: 'none',
+                color: '#999',
               },
             }}
           >
