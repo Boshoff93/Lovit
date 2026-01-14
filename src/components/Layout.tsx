@@ -119,13 +119,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [currentViewingItem, setCurrentViewingItem] = useState<CurrentViewingItem | null>(null);
 
+  const { isLoading: authLoading } = useSelector((state: RootState) => state.auth);
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
   const isTrialing = subscription?.status === 'trialing';
   // Show paywall for all free users (no active subscription/trial)
   // - hasUsedTrial === true means trial expired → show "Trial Expired" messaging
   // - hasUsedTrial === false or undefined means new user → show "Start Trial" messaging
-  const showPaywall = !!user && !hasSubscription && !isTrialing;
+  // - Don't show paywall while auth/subscription data is still loading
+  const showPaywall = !!user && !hasSubscription && !isTrialing && !authLoading;
   const trialExpired = user?.hasUsedTrial === true;
 
   // Scroll to top on route change and clear current viewing item
