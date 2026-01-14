@@ -1812,7 +1812,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => navigate('/create?tab=song')}
+              onClick={() => navigate('/create/music')}
               sx={{
                 borderRadius: '12px',
                 textTransform: 'none',
@@ -2505,6 +2505,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setMenuAnchorEl(null);
           setMenuSong(null);
         }}
+        slotProps={{
+          backdrop: { invisible: true }, // Allow interaction with drawer while menu is open
+        }}
         PaperProps={{
           sx: {
             borderRadius: 2,
@@ -2656,6 +2659,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         onClose={handleVideoMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          backdrop: { invisible: true }, // Allow interaction with drawer while menu is open
+        }}
         PaperProps={{
           sx: {
             borderRadius: 2,

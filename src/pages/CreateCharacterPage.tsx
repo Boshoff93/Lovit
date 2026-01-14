@@ -26,16 +26,22 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckIcon from '@mui/icons-material/Check';
 import PeopleIcon from '@mui/icons-material/People';
+import PetsIcon from '@mui/icons-material/Pets';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import BusinessIcon from '@mui/icons-material/Business';
 import { charactersApi } from '../services/api';
 import { useLayout } from '../components/Layout';
 
-// Character kind options
+// Character kind options with MUI icons
 const characterKindOptions = [
-  { id: 'Human', label: 'Human', image: '/characters/human.jpeg' },
-  { id: 'Non-Human', label: 'Non-Human', image: '/characters/dog.jpeg' },
-  { id: 'Product', label: 'Product', image: '/characters/product.jpeg' },
-  { id: 'Place', label: 'Place / Airbnb', image: '/characters/house.jpeg' },
-  { id: 'App', label: 'Software & Apps', image: '/gruvi/app.jpeg' },
+  { id: 'Human', label: 'Human', icon: PersonIcon, color: '#007AFF' },
+  { id: 'Non-Human', label: 'Non-Human', icon: PetsIcon, color: '#FF9500' },
+  { id: 'Product', label: 'Product', icon: InventoryIcon, color: '#34C759' },
+  { id: 'Place', label: 'Place / Airbnb', icon: HomeIcon, color: '#AF52DE' },
+  { id: 'App', label: 'Software & Apps', icon: PhoneIphoneIcon, color: '#5856D6' },
+  { id: 'Business', label: 'Business', icon: BusinessIcon, color: '#FF3B30' },
 ];
 
 // Gender options
@@ -223,6 +229,8 @@ const CreateCharacterPage: React.FC = () => {
           setCharacterKind('App');
         } else if (desc.includes('Product')) {
           setCharacterKind('Product');
+        } else if (desc.includes('Business')) {
+          setCharacterKind('Business');
         } else if (desc.includes('Non-Human')) {
           setCharacterKind('Non-Human');
         }
@@ -376,7 +384,7 @@ const CreateCharacterPage: React.FC = () => {
 
       // Build description from character attributes
       // Product, Place, and App types don't have age, gender, hair, eye color
-      const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App';
+      const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business';
       const fullDescription = isProductOrPlaceOrApp
         ? [
             characterDescription,
@@ -393,15 +401,15 @@ const CreateCharacterPage: React.FC = () => {
         // Update existing character/product/place
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App',
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
           ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
 
-        console.log('Character/Product/App update response:', response.data);
+        console.log('Character/Product/App/Business update response:', response.data);
 
-        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'));
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')));
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" updated successfully!`,
@@ -412,15 +420,15 @@ const CreateCharacterPage: React.FC = () => {
         const response = await charactersApi.createCharacter({
           userId: user.userId,
           characterName: characterName.trim(),
-          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App',
+          characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
           ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
 
-        console.log('Character/Product/Place/App creation response:', response.data);
+        console.log('Character/Product/Place/App/Business creation response:', response.data);
 
-        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'));
+        const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')));
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" created successfully!`,
@@ -428,8 +436,8 @@ const CreateCharacterPage: React.FC = () => {
         });
       }
 
-      // Navigate back to AI assets page after a short delay
-      setTimeout(() => navigate('/ai-assets'), 1500);
+      // Navigate back to AI assets page
+      navigate('/ai-assets');
     } catch (error: any) {
       console.error('Character save error:', error);
       const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'create'} character. Please try again.`;
@@ -598,7 +606,7 @@ const CreateCharacterPage: React.FC = () => {
         {/* Type and Gender Row - Two columns on md+ */}
         <Box sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' ? '1fr 1fr' : '1fr' },
+          gridTemplateColumns: { xs: '1fr', md: characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && characterKind !== 'Business' ? '1fr 1fr' : '1fr' },
           gap: 3,
           mb: 3,
         }}>
@@ -637,12 +645,24 @@ const CreateCharacterPage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  component="img"
-                  src={characterKindOptions.find(k => k.id === characterKind)?.image}
-                  alt={characterKind}
-                  sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }}
-                />
+                {(() => {
+                  const selected = characterKindOptions.find(k => k.id === characterKind);
+                  const IconComponent = selected?.icon;
+                  return IconComponent ? (
+                    <Box sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: `${selected.color}15`,
+                      border: `1px solid ${selected.color}30`
+                    }}>
+                      <IconComponent sx={{ fontSize: 20, color: selected.color }} />
+                    </Box>
+                  ) : null;
+                })()}
                 {characterKindOptions.find(k => k.id === characterKind)?.label}
               </Box>
               <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
@@ -650,7 +670,7 @@ const CreateCharacterPage: React.FC = () => {
           </Paper>
 
           {/* Gender - Only for Human and Non-Human */}
-          {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && (
+          {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && characterKind !== 'Business' && (
             <Paper
               elevation={0}
               sx={{
@@ -913,7 +933,7 @@ const CreateCharacterPage: React.FC = () => {
             Reference Images
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.85rem' }}>
-            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : 'for appearance in music videos'}
+            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : characterKind === 'Business' ? 'showcasing your business, storefront, or brand' : 'for appearance in music videos'}
           </Typography>
           {characterKind === 'Product' && (
             <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
@@ -930,7 +950,12 @@ const CreateCharacterPage: React.FC = () => {
               💡 Tip: Include app screenshots, UI mockups, logo, and feature highlights. Show key screens and user flows for the best promo video.
             </Typography>
           )}
-          
+          {characterKind === 'Business' && (
+            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+              💡 Tip: Include your logo, storefront, team photos, office space, and any branded materials. Show what makes your business unique.
+            </Typography>
+          )}
+
           {/* Drag and drop area */}
           <Box
             onDragEnter={handleDragEnter}
@@ -1047,7 +1072,9 @@ const CreateCharacterPage: React.FC = () => {
                 ? 'Product Description'
                 : characterKind === 'App'
                   ? 'App Description'
-                  : 'Description'} (Optional)
+                  : characterKind === 'Business'
+                    ? 'Business Description'
+                    : 'Description'} (Optional)
           </Typography>
           <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
             {characterKind === 'Place'
@@ -1056,7 +1083,9 @@ const CreateCharacterPage: React.FC = () => {
                 ? 'Describe the product features, materials, colors, and unique details'
                 : characterKind === 'App'
                   ? 'Describe the app, its key features, target users, and what makes it unique'
-                  : 'Add extra details about personality, appearance, features, or traits'}
+                  : characterKind === 'Business'
+                    ? 'Describe your business, services, brand identity, and what sets you apart'
+                    : 'Add extra details about personality, appearance, features, or traits'}
           </Typography>
           <TextField
             fullWidth
@@ -1071,7 +1100,9 @@ const CreateCharacterPage: React.FC = () => {
                   ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side"
                   : characterKind === 'App'
                     ? "e.g., A fitness tracking app with clean UI, progress charts, workout plans, social features, and gamification elements"
-                    : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
+                    : characterKind === 'Business'
+                      ? "e.g., A modern coffee shop with artisan roasts, cozy atmosphere, community events, and sustainable sourcing"
+                      : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
             }
             sx={{
               '& .MuiOutlinedInput-root': {
@@ -1107,8 +1138,8 @@ const CreateCharacterPage: React.FC = () => {
             <CircularProgress size={24} sx={{ color: '#fff' }} />
           ) : (
             isEditMode
-              ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`
-              : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : 'Character'))}`
+              ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
+              : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
           )}
         </Button>
 
@@ -1164,7 +1195,18 @@ const CreateCharacterPage: React.FC = () => {
                   }}
                 >
                   <ListItemIcon>
-                    <Box component="img" src={kind.image} alt={kind.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
+                    <Box sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: `${kind.color}15`,
+                      border: `2px solid ${kind.color}30`
+                    }}>
+                      <kind.icon sx={{ fontSize: 24, color: kind.color }} />
+                    </Box>
                   </ListItemIcon>
                   <ListItemText primary={kind.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
                   {characterKind === kind.id && <CheckIcon sx={{ color: '#007AFF' }} />}

@@ -155,7 +155,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const openCharacter = useCallback(() => {
-    navigate('/create?tab=character');
+    navigate('/ai-assets/create');
     if (isMobile) {
       setMobileOpen(false);
     }
@@ -317,6 +317,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   duration: theme.transitions.duration.leavingScreen,
                 }),
                 overflowX: 'hidden',
+                overflowY: 'auto', // Allow vertical scroll in drawer
               },
             }}
           >

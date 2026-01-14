@@ -22,6 +22,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
+import PetsIcon from '@mui/icons-material/Pets';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import BusinessIcon from '@mui/icons-material/Business';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { charactersApi } from '../services/api';
@@ -77,7 +82,7 @@ const LoadingAvatar: React.FC<{
 interface Character {
   characterId: string;
   characterName: string;
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
   gender?: string;
   age?: string;
   description?: string;
@@ -86,25 +91,62 @@ interface Character {
   createdAt: string;
 }
 
-// Get the type image based on character type or description
-const getCharacterTypeImage = (characterType?: string, description?: string): string => {
+// Helper to get character type icon and color
+const getCharacterTypeIcon = (characterType?: string, description?: string): { icon: React.ElementType; color: string } => {
   // Check characterType field first
   if (characterType) {
     switch (characterType) {
-      case 'Human': return '/characters/human.jpeg';
-      case 'Non-Human': return '/characters/dog.jpeg';
-      case 'Product': return '/characters/product.jpeg';
-      case 'Place': return '/characters/house.jpeg';
-      case 'App': return '/gruvi/app.jpeg';
+      case 'Product': return { icon: InventoryIcon, color: '#34C759' };
+      case 'Place': return { icon: HomeIcon, color: '#AF52DE' };
+      case 'App': return { icon: PhoneIphoneIcon, color: '#5856D6' };
+      case 'Business': return { icon: BusinessIcon, color: '#FF3B30' };
+      case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' };
+      default: return { icon: PersonIcon, color: '#007AFF' };
     }
   }
   // Fallback to description parsing for legacy data
-  if (!description) return '/characters/human.jpeg';
-  if (description.includes('Place')) return '/characters/house.jpeg';
-  if (description.includes('App')) return '/gruvi/app.jpeg';
-  if (description.includes('Product')) return '/characters/product.jpeg';
-  if (description.includes('Non-Human')) return '/characters/dog.jpeg';
-  return '/characters/human.jpeg';
+  if (description) {
+    if (description.includes('Place')) return { icon: HomeIcon, color: '#AF52DE' };
+    if (description.includes('App')) return { icon: PhoneIphoneIcon, color: '#5856D6' };
+    if (description.includes('Product')) return { icon: InventoryIcon, color: '#34C759' };
+    if (description.includes('Business')) return { icon: BusinessIcon, color: '#FF3B30' };
+    if (description.includes('Non-Human')) return { icon: PetsIcon, color: '#FF9500' };
+  }
+  return { icon: PersonIcon, color: '#007AFF' };
+};
+
+// Character Avatar component that shows icon when no image
+const CharacterAvatar: React.FC<{
+  character: Character;
+  size: { xs: number; sm: number };
+}> = ({ character, size }) => {
+  const hasImage = character.imageUrls && character.imageUrls.length > 0 && character.imageUrls[0];
+
+  if (hasImage) {
+    return (
+      <LoadingAvatar
+        src={character.imageUrls![0]}
+        size={size}
+      />
+    );
+  }
+
+  const { icon: IconComponent, color } = getCharacterTypeIcon(character.characterType, character.description);
+  return (
+    <Box sx={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: `${color}15`,
+      border: `2px solid ${color}30`,
+      flexShrink: 0,
+    }}>
+      <IconComponent sx={{ fontSize: { xs: size.xs * 0.55, sm: size.sm * 0.55 }, color }} />
+    </Box>
+  );
 };
 
 const CharactersPage: React.FC = () => {
@@ -371,8 +413,8 @@ const CharactersPage: React.FC = () => {
                 },
               }}
             >
-              <LoadingAvatar
-                src={character.imageUrls?.[0] || getCharacterTypeImage(character.characterType, character.description)}
+              <CharacterAvatar
+                character={character}
                 size={{ xs: 48, sm: 56 }}
               />
               <Box sx={{ flex: 1, minWidth: 0 }}>

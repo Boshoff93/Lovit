@@ -38,6 +38,11 @@ import TvIcon from '@mui/icons-material/Tv';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import PersonIcon from '@mui/icons-material/Person';
+import PetsIcon from '@mui/icons-material/Pets';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import BusinessIcon from '@mui/icons-material/Business';
 import { RootState } from '../store/store';
 import { videosApi, charactersApi, songsApi } from '../services/api';
 import MentionTextField from '../components/MentionTextField';
@@ -52,7 +57,7 @@ import { useAudioPlayer, Song as AudioPlayerSong } from '../contexts/AudioPlayer
 interface Character {
   characterId: string;
   characterName: string;
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
   description?: string;
   imageUrls?: string[];
 }
@@ -205,15 +210,51 @@ const aspectRatios = [
   { id: 'landscape', label: 'Landscape', Icon: TvIcon, ratio: '16:9', description: 'Best for TV & YouTube' },
 ];
 
-// Helper to get character type image
-const getCharacterTypeImage = (characterType?: string) => {
+// Helper to get character type icon and color
+const getCharacterTypeIcon = (characterType?: string): { icon: React.ElementType; color: string } => {
   switch (characterType) {
-    case 'Product': return '/characters/product.jpeg';
-    case 'Place': return '/characters/house.jpeg';
-    case 'App': return '/gruvi/app.jpeg';
-    case 'Non-Human': return '/characters/dog.jpeg';
-    default: return '/characters/human.jpeg';
+    case 'Product': return { icon: InventoryIcon, color: '#34C759' };
+    case 'Place': return { icon: HomeIcon, color: '#AF52DE' };
+    case 'App': return { icon: PhoneIphoneIcon, color: '#5856D6' };
+    case 'Business': return { icon: BusinessIcon, color: '#FF3B30' };
+    case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' };
+    default: return { icon: PersonIcon, color: '#007AFF' };
   }
+};
+
+// Character Avatar component that shows icon when no image
+const CharacterAvatar: React.FC<{
+  character: Character;
+  size?: number;
+  sx?: object;
+}> = ({ character, size = 40, sx = {} }) => {
+  const hasImage = character.imageUrls && character.imageUrls.length > 0 && character.imageUrls[0];
+
+  if (hasImage) {
+    return (
+      <Avatar
+        src={character.imageUrls![0]}
+        sx={{ width: size, height: size, ...sx }}
+      />
+    );
+  }
+
+  const { icon: IconComponent, color } = getCharacterTypeIcon(character.characterType);
+  return (
+    <Box sx={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: `${color}15`,
+      border: `2px solid ${color}30`,
+      ...sx
+    }}>
+      <IconComponent sx={{ fontSize: size * 0.55, color }} />
+    </Box>
+  );
 };
 
 // Scrollable list wrapper with dynamic fade gradients
@@ -347,7 +388,7 @@ const CreateVideoPage: React.FC = () => {
   }, {} as Record<string, Character[]>);
 
   // Order of character types for display
-  const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App'];
+  const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App', 'Business'];
 
   // Fetch songs for picker with server-side search/pagination
   const fetchSongsForPicker = useCallback(async (page = 1, search = '', append = false) => {
@@ -873,16 +914,13 @@ const CreateVideoPage: React.FC = () => {
                       ) : (
                         <Box sx={{ display: 'flex', ml: -0.5 }}>
                           {selectedCastMembers.slice(0, 3).map((char, idx) => (
-                            <Avatar
-                              key={char.characterId}
-                              src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
-                              sx={{
-                                width: 24,
-                                height: 24,
-                                border: '2px solid #fff',
-                                ml: idx > 0 ? -1 : 0,
-                              }}
-                            />
+                            <Box key={char.characterId} sx={{ ml: idx > 0 ? -1 : 0 }}>
+                              <CharacterAvatar
+                                character={char}
+                                size={24}
+                                sx={{ border: '2px solid #fff' }}
+                              />
+                            </Box>
                           ))}
                         </Box>
                       )}
@@ -934,11 +972,7 @@ const CreateVideoPage: React.FC = () => {
                       label={char.characterName}
                       onDelete={() => handleCharacterToggle(char.characterId)}
                       avatar={
-                        <Avatar
-                          src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
-                          alt={char.characterName}
-                          sx={{ width: 24, height: 24 }}
-                        />
+                        <CharacterAvatar character={char} size={24} />
                       }
                       sx={{
                         background: 'rgba(0,122,255,0.1)',
@@ -1536,10 +1570,7 @@ const CreateVideoPage: React.FC = () => {
                             opacity: isDisabled ? 0.5 : 1,
                           }}
                         >
-                          <Avatar
-                            src={char.imageUrls?.[0] || getCharacterTypeImage(char.characterType)}
-                            sx={{ width: 40, height: 40, borderRadius: '50%', mr: 2 }}
-                          />
+                          <CharacterAvatar character={char} size={40} sx={{ mr: 2 }} />
                           <ListItemText
                             primary={char.characterName}
                             secondary={char.description?.slice(0, 50) || type}

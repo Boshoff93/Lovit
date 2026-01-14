@@ -497,7 +497,7 @@ const GenreDetailPage: React.FC = () => {
   // Handle create button click - navigate to create page or login
   const handleCreateClick = () => {
     if (user?.userId) {
-      navigate('/create?tab=song');
+      navigate('/create/music');
     } else {
       navigate('/login');
     }

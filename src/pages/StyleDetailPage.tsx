@@ -43,7 +43,7 @@ const StyleDetailPage: React.FC = () => {
   // Handle create button click - navigate to create page or login
   const handleCreateClick = () => {
     if (user?.userId) {
-      navigate('/create?tab=video');
+      navigate('/create/video');
     } else {
       navigate('/login');
     }

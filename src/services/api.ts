@@ -6,7 +6,7 @@ export interface Character {
   characterId: string;
   userId: string;
   characterName: string;
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
   gender?: string;
   age?: string;
   description?: string;
@@ -394,7 +394,7 @@ export const charactersApi = {
     gender?: string;
     age?: string;
     description?: string;
-    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
     imageBase64Array: string[];
   }) => api.post('/api/gruvi/characters', data),
   
@@ -403,7 +403,7 @@ export const charactersApi = {
     gender?: string;
     age?: string;
     description?: string;
-    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+    characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
     imageBase64Array?: string[];
   }) => api.put(`/api/gruvi/characters/${userId}/${characterId}`, data),
   

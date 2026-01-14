@@ -359,7 +359,7 @@ interface Character {
   characterId: string;
   characterName: string;
   imageUrls?: string[];
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App';
+  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
   description?: string;
 }
 

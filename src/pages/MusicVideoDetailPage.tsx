@@ -1079,7 +1079,7 @@ const MusicVideoDetailPage: React.FC = () => {
                 <Button
                   variant="contained"
                   endIcon={<KeyboardArrowRightIcon />}
-                  onClick={() => navigate('/create?tab=video')}
+                  onClick={() => navigate('/create/video')}
                   sx={{
                     background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
                     backgroundColor: 'transparent !important',
@@ -1489,7 +1489,7 @@ const MusicVideoDetailPage: React.FC = () => {
               <Button
                 variant="contained"
                 endIcon={<KeyboardArrowRightIcon sx={{ color: '#fff' }} />}
-                onClick={() => navigate('/create?tab=video')}
+                onClick={() => navigate('/create/video')}
                 sx={{
                   background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
                   backgroundColor: 'transparent !important',
@@ -1593,7 +1593,7 @@ const MusicVideoDetailPage: React.FC = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate('/create?tab=video')}
+            onClick={() => navigate('/create/video')}
             sx={{
               background: 'linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%) !important',
               backgroundColor: 'transparent !important',
