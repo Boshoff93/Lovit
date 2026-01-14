@@ -209,7 +209,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [tiktokCreatorInfoError, setTiktokCreatorInfoError] = useState<string | null>(null);
 
   // TikTok posting settings (required by TikTok API guidelines)
-  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>('SELF_ONLY'); // Default to "Only me"
+  const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState<string>(''); // No default - user must select (TikTok UX requirement)
   const [tiktokAllowComment, setTiktokAllowComment] = useState(false); // Unchecked by default
   const [tiktokAllowDuet, setTiktokAllowDuet] = useState(false); // Unchecked by default
   const [tiktokAllowStitch, setTiktokAllowStitch] = useState(false); // Unchecked by default
