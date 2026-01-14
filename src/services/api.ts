@@ -230,6 +230,7 @@ export const videosApi = {
   
   generateSocialThumbnail: (userId: string, videoId: string, data: {
     hookText: string;
+    thumbnailDescription?: string;
     customPrompt?: string;
     selectedCharacterIds?: string[];
     selectedImageUrls?: string[];

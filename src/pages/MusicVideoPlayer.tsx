@@ -167,6 +167,7 @@ const MusicVideoPlayer: React.FC = () => {
   
   const [editedMetadata, setEditedMetadata] = useState<typeof socialMetadata>(null);
   const [hookText, setHookText] = useState('');
+  const [thumbnailDescription, setThumbnailDescription] = useState(''); // Optional description for AI thumbnail generation
   const [newTag, setNewTag] = useState('');
   const [ctaType, setCtaType] = useState<string>('');
   const [ctaUrl, setCtaUrl] = useState('');
@@ -680,6 +681,7 @@ const MusicVideoPlayer: React.FC = () => {
       
       const response = await videosApi.generateSocialThumbnail(user.userId, videoId, {
         hookText,
+        thumbnailDescription: thumbnailDescription.trim() || undefined,
         selectedImageUrls: selectedImageUrls.length > 0 ? selectedImageUrls : undefined,
       });
       const newThumbnailUrl = response.data.thumbnailUrl;
@@ -2958,7 +2960,22 @@ const MusicVideoPlayer: React.FC = () => {
                         placeholder="e.g., 'Epic Adventure Awaits!'"
                         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
                       />
-                      
+
+                      {/* Thumbnail Description (Optional) */}
+                      <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
+                        Thumbnail Description <Typography component="span" sx={{ color: '#86868B', fontWeight: 400 }}>(Optional)</Typography>
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        value={thumbnailDescription}
+                        onChange={(e) => setThumbnailDescription(e.target.value)}
+                        size="small"
+                        multiline
+                        rows={2}
+                        placeholder="e.g., 'Show the character looking up at the sky with a glowing aura'"
+                        sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
+                      />
+
                       {/* Actions */}
                       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                         <Button
