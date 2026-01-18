@@ -117,6 +117,27 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [updateBubblePosition]);
 
+  // Recalculate bubble position after fonts load and initial render settles
+  // This fixes the issue when navigating directly from an external site
+  useEffect(() => {
+    // Immediate update
+    updateBubblePosition();
+
+    // Delayed update after layout settles
+    const timeoutId = setTimeout(() => {
+      updateBubblePosition();
+    }, 100);
+
+    // Also update when fonts finish loading
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        updateBubblePosition();
+      });
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [updateBubblePosition]);
+
   // Calculate scroll progress (0 = top, 1 = scrolled 100px+)
   useEffect(() => {
     const handleScroll = () => {

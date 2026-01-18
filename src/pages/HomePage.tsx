@@ -2113,8 +2113,12 @@ const HomePage: React.FC = () => {
 
       {/* Hero Section with Prompt Input */}
       <Box sx={{
-        pt: { xs: 14, md: 18 },
-        pb: { xs: 6, md: 8 },
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        pt: { xs: 8, md: 10 },
+        pb: { xs: 8, md: 10 },
         position: 'relative',
         zIndex: 1,
         background: 'transparent',
@@ -2146,7 +2150,7 @@ const HomePage: React.FC = () => {
           <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
             {/* Badge */}
             <Chip
-              label={headers.hero.badge}
+              label={routeConfig.heroTagline || headers.hero.badge}
               size="small"
               sx={{
                 mb: 3,
@@ -2170,7 +2174,7 @@ const HomePage: React.FC = () => {
                 color: '#FFFFFF',
               lineHeight: 1.1,
                 mb: 1.5,
-                letterSpacing: '-0.03em',
+                letterSpacing: '-0.01em',
                 px: { xs: 1, sm: 0 },
               }}
             >
@@ -2189,8 +2193,13 @@ const HomePage: React.FC = () => {
                   },
                 }}
               >
-                {headers.hero.title}
+                {heroHeadingParts.length > 1 ? heroHeadingParts[0] : headers.hero.title}
               </Box>
+              {heroHeadingParts.length > 1 && (
+                <Box component="span" sx={{ display: 'block', color: '#FFFFFF' }}>
+                  {heroHeadingParts[1]}
+                </Box>
+              )}
           </Typography>
 
             {/* Tagline */}
@@ -2203,144 +2212,10 @@ const HomePage: React.FC = () => {
                 mb: 3,
             }}
           >
-              {headers.hero.subtitle}
+              {heroSubtext || headers.hero.subtitle}
           </Typography>
 
-            {/* Prompt Input - Glassy */}
-            <Box sx={{
-              maxWidth: '600px',
-              mx: 'auto',
-              mb: 4,
-              px: { xs: 2, sm: 0 },
-            }}>
-              <TextField
-                fullWidth
-                placeholder={isMobile ? "Type any idea into a song..." : "Type any idea you have into a song..."}
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyPress={handlePromptKeyPress}
-                inputRef={promptInputRef}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleGenerateClick}
-                        disabled={!prompt.trim()}
-                        size={isMobile ? "small" : "medium"}
-                        sx={{
-                          background: prompt.trim() ? 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)' : 'rgba(255,255,255,0.05)',
-                          color: '#fff',
-                          mr: -0.5,
-                          '&:hover': {
-                            background: prompt.trim() ? 'linear-gradient(135deg, #4A90FF 35%, #00E5BB 100%)' : 'rgba(255,255,255,0.08)',
-                          },
-                          '&.Mui-disabled': {
-                            background: 'rgba(255,255,255,0.05)',
-                            color: 'rgba(255,255,255,0.3)',
-                          },
-                        }}
-                      >
-                        <SendRoundedIcon sx={{ fontSize: { xs: 18, sm: 24 } }} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 20, 35, 0.8)',
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: '12px',
-                    pr: { xs: 1, sm: 1.5 },
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(0, 212, 170, 0.2)',
-                    '& fieldset': {
-                      border: 'none',
-                    },
-                    '&:hover': {
-                      background: 'rgba(20, 25, 40, 0.9)',
-                      boxShadow: '0 8px 24px rgba(0, 212, 170, 0.2), inset 0 1px 0 rgba(0, 212, 170, 0.1)',
-                      border: '1px solid rgba(0, 212, 170, 0.4)',
-                    },
-                    '&.Mui-focused': {
-                      background: 'rgba(20, 25, 40, 0.95)',
-                      boxShadow: '0 12px 32px rgba(0, 212, 170, 0.3), inset 0 1px 0 rgba(0, 212, 170, 0.15)',
-                      border: '1px solid rgba(0, 212, 170, 0.6)',
-                    },
-                  },
-                  '& .MuiInputBase-input': {
-                    color: '#FFFFFF',
-                    py: { xs: 1.25, sm: 2 },
-                    px: { xs: 1.5, sm: 2.5 },
-                    fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' },
-                    fontWeight: 400,
-                    textOverflow: 'ellipsis',
-                    '&::placeholder': {
-                      color: 'rgba(255,255,255,0.5)',
-                      opacity: 1,
-                      fontSize: 'inherit',
-                    },
-                    // Override browser autofill background color
-                    '&:-webkit-autofill': {
-                      WebkitBoxShadow: '0 0 0 1000px #1A1A2E inset !important',
-                      WebkitTextFillColor: '#FFFFFF !important',
-                      caretColor: '#FFFFFF',
-                    },
-                    '&:-webkit-autofill:hover': {
-                      WebkitBoxShadow: '0 0 0 1000px #1A1A2E inset !important',
-                    },
-                    '&:-webkit-autofill:focus': {
-                      WebkitBoxShadow: '0 0 0 1000px #1A1A2E inset !important',
-                    },
-                    '&:-webkit-autofill:active': {
-                      WebkitBoxShadow: '0 0 0 1000px #1A1A2E inset !important',
-                    },
-                  },
-                }}
-              />
-            </Box>
-
-            {/* Quick Prompt Suggestions */}
-            <Box sx={{
-              display: 'flex',
-              gap: { xs: 0.75, sm: 1 },
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              mb: 6,
-              px: { xs: 1, sm: 0 },
-            }}>
-              {examplePrompts.map((suggestion, index) => (
-                <Chip
-                  key={index}
-                  label={suggestion}
-                  onClick={() => setPrompt(suggestion)}
-                  sx={{
-                    background: 'rgba(255,255,255,0.06)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.7)',
-                    fontSize: { xs: '0.7rem', sm: '0.85rem', md: '0.95rem' },
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    borderRadius: '12px',
-                    height: { xs: '32px', sm: '38px', md: '42px' },
-                    '& .MuiChip-label': {
-                      px: { xs: 1.5, sm: 2, md: 2.5 },
-                    },
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      background: 'rgba(59,130,246,0.15)',
-                      borderColor: 'rgba(59,130,246,0.4)',
-                      color: '#5AC8FA',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 16px rgba(59,130,246,0.2)',
-                    },
-                  }}
-                />
-              ))}
-            </Box>
-
-            {/* Dual CTA Buttons */}
+            {/* CTA Buttons */}
             <Box sx={{
               display: 'flex',
               gap: 2,

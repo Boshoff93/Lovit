@@ -265,13 +265,14 @@ const SONG_COST_STANDARD = 40;   // Standard tracks (~1.5-3min)
 const PREMIUM_COST_PER_30S = 50; // Premium tracks: 50 credits per 30 seconds
 
 // Premium duration options (in seconds)
+// Note: 59/119/179 instead of 60/120/180 to stay under ElevenLabs minute thresholds (saves $0.80 per minute tier)
 const PREMIUM_DURATION_OPTIONS = [
   { value: 30, label: '30 sec', cost: 50 },
-  { value: 60, label: '1 min', cost: 100 },
+  { value: 59, label: '1 min', cost: 100 },
   { value: 90, label: '1.5 min', cost: 150 },
-  { value: 120, label: '2 min', cost: 200 },
+  { value: 119, label: '2 min', cost: 200 },
   { value: 150, label: '2.5 min', cost: 250 },
-  { value: 180, label: '3 min', cost: 300 },
+  { value: 179, label: '3 min', cost: 300 },
 ];
 
 const CreateMusicPage: React.FC = () => {
@@ -313,7 +314,7 @@ const CreateMusicPage: React.FC = () => {
 
   // Premium track state
   const [trackType, setTrackType] = useState<'standard' | 'premium'>('standard');
-  const [premiumDuration, setPremiumDuration] = useState<number>(60); // seconds
+  const [premiumDuration, setPremiumDuration] = useState<number>(59); // seconds
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
 
   // Calculate song cost based on track type and settings
@@ -1284,7 +1285,7 @@ const CreateMusicPage: React.FC = () => {
                   step={null}
                   marks={PREMIUM_DURATION_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
                   min={30}
-                  max={180}
+                  max={179}
                   valueLabelDisplay="off"
                   sx={{
                     color: '#007AFF',
