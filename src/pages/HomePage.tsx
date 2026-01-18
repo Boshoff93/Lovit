@@ -2154,14 +2154,14 @@ const HomePage: React.FC = () => {
               size="small"
               sx={{
                 mb: 3,
-                background: 'rgba(59, 130, 246, 0.15)',
-                color: '#3B82F6',
+                background: 'rgba(0, 206, 209, 0.15)',
+                color: '#00CED1',
                 fontWeight: 600,
                 fontSize: '0.75rem',
                 letterSpacing: '0.02em',
                 height: 28,
                 borderRadius: '12px',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
+                border: '1px solid rgba(0, 206, 209, 0.3)',
               }}
             />
 

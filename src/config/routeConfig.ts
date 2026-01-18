@@ -2650,6 +2650,75 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     examplePrompts: ['Product showcase video', 'Airbnb property tour', 'Business promo video', 'Character animation']
   },
 
+  // Platform-specific landing pages (for cross-promotion)
+  '/youtube': {
+    path: '/youtube',
+    title: 'Create AI Videos for YouTube | Gruvi',
+    description: 'Create stunning AI-generated videos for YouTube. Perfect for Shorts, music videos, and promotional content. Post directly to your channel with one click.',
+    keywords: 'youtube ai videos, youtube shorts generator, ai video for youtube, youtube content creator, faceless youtube channel, youtube automation',
+    ogTitle: 'Create AI Videos for YouTube | Gruvi',
+    ogDescription: 'Create stunning AI videos for YouTube. Perfect for Shorts, music videos, and promotional content.',
+    twitterTitle: 'Create AI Videos for YouTube',
+    twitterDescription: 'Create stunning AI videos for YouTube Shorts, music videos, and promo content.',
+    breadcrumbName: 'YouTube',
+    heroTagline: 'YouTube Content Made Easy',
+    heroHeading: 'Create AI Videos\nfor YouTube',
+    heroSubtext: 'Create professional YouTube content without a camera. AI generates stunning Shorts, music videos, and promotional content. Post directly to your channel with one click.',
+    examplePrompts: ['YouTube Shorts viral video', 'Faceless YouTube content', 'YouTube music video', 'Channel promo video'],
+    routeCategory: 'platform'
+  },
+
+  '/tiktok': {
+    path: '/tiktok',
+    title: 'Create AI Videos for TikTok | Gruvi',
+    description: 'Go viral on TikTok with AI-generated videos. Create trending content with original music and stunning visuals. Post directly to TikTok with one click.',
+    keywords: 'tiktok ai videos, tiktok content generator, ai video for tiktok, tiktok creator, viral tiktok content, tiktok automation',
+    ogTitle: 'Create AI Videos for TikTok | Gruvi',
+    ogDescription: 'Go viral on TikTok with AI-generated videos. Create trending content with stunning visuals.',
+    twitterTitle: 'Create AI Videos for TikTok',
+    twitterDescription: 'Go viral on TikTok with AI-generated videos and trending content.',
+    breadcrumbName: 'TikTok',
+    heroTagline: 'Go Viral on TikTok',
+    heroHeading: 'Create AI Videos\nfor TikTok',
+    heroSubtext: 'Go viral on TikTok without appearing on camera. AI creates trending-style videos with original music and attention-grabbing visuals. Post directly with one click.',
+    examplePrompts: ['Viral TikTok video', 'TikTok trend content', 'Faceless TikTok creator', 'TikTok promo video'],
+    routeCategory: 'platform'
+  },
+
+  '/instagram': {
+    path: '/instagram',
+    title: 'Create AI Videos for Instagram | Gruvi',
+    description: 'Create scroll-stopping Reels for Instagram. AI generates engaging video content with music that grows your following. Post directly to Instagram with one click.',
+    keywords: 'instagram ai videos, instagram reels generator, ai video for instagram, instagram content creator, viral reels content, instagram automation',
+    ogTitle: 'Create AI Videos for Instagram | Gruvi',
+    ogDescription: 'Create scroll-stopping Reels for Instagram. AI generates engaging content that grows your following.',
+    twitterTitle: 'Create AI Videos for Instagram',
+    twitterDescription: 'Create scroll-stopping Instagram Reels with AI-generated videos.',
+    breadcrumbName: 'Instagram',
+    heroTagline: 'Grow Your Instagram',
+    heroHeading: 'Create AI Videos\nfor Instagram',
+    heroSubtext: 'Create scroll-stopping Reels without filming yourself. AI generates engaging video content with music that grows your following. Post directly to Instagram with one click.',
+    examplePrompts: ['Instagram Reels viral', 'Scroll-stopping content', 'Faceless Instagram growth', 'Instagram promo video'],
+    routeCategory: 'platform'
+  },
+
+  '/facebook': {
+    path: '/facebook',
+    title: 'Create AI Videos for Facebook | Gruvi',
+    description: 'Reach billions on Facebook with AI-generated videos. Create engaging Reels and video posts that drive engagement. Post directly to your Page with one click.',
+    keywords: 'facebook ai videos, facebook reels generator, ai video for facebook, facebook content creator, facebook video posts, facebook automation',
+    ogTitle: 'Create AI Videos for Facebook | Gruvi',
+    ogDescription: 'Reach billions on Facebook with AI-generated videos. Create engaging Reels and video posts.',
+    twitterTitle: 'Create AI Videos for Facebook',
+    twitterDescription: 'Reach billions on Facebook with AI-generated Reels and video posts.',
+    breadcrumbName: 'Facebook',
+    heroTagline: 'Reach Billions on Facebook',
+    heroHeading: 'Create AI Videos\nfor Facebook',
+    heroSubtext: 'Reach billions on Facebook without filming yourself. AI creates engaging Reels and video posts that drive engagement. Post directly to your Page with one click.',
+    examplePrompts: ['Facebook Reels video', 'Viral Facebook content', 'Facebook Page promo', 'Community engagement video'],
+    routeCategory: 'platform'
+  },
+
   // No-camera content creation routes
   '/create-content-without-camera': {
     path: '/create-content-without-camera',
