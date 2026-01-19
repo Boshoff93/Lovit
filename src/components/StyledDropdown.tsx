@@ -24,6 +24,8 @@ export interface DropdownOption {
   description?: string;
   audioPreview?: string;
   isPremium?: boolean;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 interface StyledDropdownProps {
@@ -357,17 +359,23 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
             const isSelected = value === option.id;
             const isPlaying = effectivePlayingId === option.id;
             const isLocked = option.isPremium && !hasPremiumAccess;
+            const isDisabled = option.disabled || isLocked;
 
             return (
               <ListItem key={option.id} disablePadding>
                 <ListItemButton
-                  onClick={() => handleSelect(option.id, option)}
+                  onClick={() => !isDisabled && handleSelect(option.id, option)}
+                  disabled={isDisabled}
                   sx={{
                     py: 1.5,
                     px: 2,
                     background: isSelected ? 'rgba(0, 122, 255, 0.15)' : 'transparent',
-                    opacity: isLocked ? 0.6 : 1,
-                    '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    '&:hover': { background: isDisabled ? 'transparent' : 'rgba(255,255,255,0.08)' },
+                    '&.Mui-disabled': {
+                      opacity: 0.5,
+                    },
                   }}
                 >
                   {option.image && (
@@ -380,23 +388,20 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                   )}
                   <ListItemText
                     primary={option.label}
-                    secondary={option.description}
+                    secondary={option.disabled && option.disabledReason ? option.disabledReason : option.description}
                     primaryTypographyProps={{
-                      sx: { color: '#fff', fontWeight: 500, fontSize: '0.9rem' }
+                      sx: { color: isDisabled ? 'rgba(255,255,255,0.5)' : '#fff', fontWeight: 500, fontSize: '0.9rem' }
                     }}
                     secondaryTypographyProps={{
                       sx: {
-                        color: 'rgba(255,255,255,0.5)',
+                        color: option.disabled && option.disabledReason ? 'rgba(239, 68, 68, 0.7)' : 'rgba(255,255,255,0.5)',
                         fontSize: '0.75rem',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
                       }
                     }}
                   />
 
                   {/* Audio preview button */}
-                  {showAudioPreview && option.audioPreview && (
+                  {showAudioPreview && option.audioPreview && !isDisabled && (
                     <IconButton
                       size="small"
                       onClick={(e) => handlePlayPreview(e, option)}
@@ -413,7 +418,7 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                     </IconButton>
                   )}
 
-                  {isSelected && !showAudioPreview && (
+                  {isSelected && !showAudioPreview && !isDisabled && (
                     <CheckIcon sx={{ color: '#007AFF', fontSize: 20, ml: 1 }} />
                   )}
                 </ListItemButton>

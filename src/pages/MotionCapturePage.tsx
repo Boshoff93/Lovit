@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getTokensFromAllowances, setAllowances } from '../store/authSlice';
@@ -18,7 +18,13 @@ import {
   Grid,
   Avatar,
   IconButton,
+  Stepper,
+  Step,
+  StepLabel,
+  StepConnector,
+  stepConnectorClasses,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import MovieFilterIcon from '@mui/icons-material/MovieFilter';
@@ -28,39 +34,116 @@ import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import PersonIcon from '@mui/icons-material/Person';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import DownloadIcon from '@mui/icons-material/Download';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import BrushIcon from '@mui/icons-material/Brush';
 import GruviCoin from '../components/GruviCoin';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 import { swapStudioApi, videosApi, charactersApi, Character } from '../services/api';
 
+// Custom stepper connector
+const GradientConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 22,
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 3,
+    border: 0,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 1,
+  },
+}));
+
+// Custom step icon
+const StepIconRoot = styled('div')<{ ownerState: { completed?: boolean; active?: boolean } }>(
+  ({ ownerState }) => ({
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    zIndex: 1,
+    color: 'rgba(255,255,255,0.5)',
+    width: 44,
+    height: 44,
+    display: 'flex',
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...(ownerState.active && {
+      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+      color: '#fff',
+      boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+    }),
+    ...(ownerState.completed && {
+      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+      color: '#fff',
+    }),
+  }),
+);
+
+function CustomStepIcon(props: { active?: boolean; completed?: boolean; icon: React.ReactNode; className?: string }) {
+  const { active, completed, className, icon } = props;
+  const icons: { [index: string]: React.ReactElement } = {
+    1: <VideoLibraryIcon />,
+    2: <SwapHorizIcon />,
+    3: <PersonIcon />,
+    4: <RecordVoiceOverIcon />,
+  };
+  return (
+    <StepIconRoot ownerState={{ completed, active }} className={className}>
+      {completed ? <CheckCircleIcon /> : icons[String(icon)]}
+    </StepIconRoot>
+  );
+}
+
+const steps = ['Select Video', 'Swap Mode', 'Select Character', 'Voice (Optional)'];
+
 // Swap mode types
 type SwapMode = 'wan-replace' | 'wan-move' | 'kling-motion';
 
-// Token costs (includes reference image generation)
-const TOKEN_COSTS: Record<SwapMode, number> = {
-  'wan-replace': 130, // 100 + 30 for Seedream
-  'wan-move': 130,
-  'kling-motion': 180, // 150 + 30 for Seedream
+// Pricing: 50 tokens per 10 seconds (rounded up)
+const TOKENS_PER_10_SECONDS = 50;
+
+// Max video duration: 3 minutes (180 seconds)
+const MAX_VIDEO_DURATION_SECONDS = 180;
+
+// Max duration for Kling mode: 30 seconds
+const MAX_KLING_DURATION_SECONDS = 30;
+
+// Voice change: 50 tokens per minute (rounded up)
+const VOICE_TOKENS_PER_MINUTE = 50;
+
+// Calculate video swap cost based on duration
+const calculateSwapCost = (durationSeconds: number): number => {
+  // Round up to next 10 seconds
+  const roundedSeconds = Math.ceil(durationSeconds / 10) * 10;
+  return (roundedSeconds / 10) * TOKENS_PER_10_SECONDS;
 };
 
-const VOICE_CHANGE_COST = 50;
+// Calculate voice change cost based on duration (50 tokens per minute, rounded up)
+const calculateVoiceChangeCost = (durationSeconds: number): number => {
+  const minutes = Math.ceil(durationSeconds / 60);
+  return minutes * VOICE_TOKENS_PER_MINUTE;
+};
 
-// Swap mode options for dropdown
-const swapModeOptions: DropdownOption[] = [
-  {
-    id: 'wan-replace',
-    label: 'Replace Character',
-    description: 'Keep the background, change only the person',
-  },
-  {
-    id: 'wan-move',
-    label: 'New Scene',
-    description: 'Transfer motion to a completely new scene',
-  },
-  {
-    id: 'kling-motion',
-    label: 'Premium Quality',
-    description: 'Best for complex motions & lip sync (up to 30s)',
-  },
+// Art style options for reference image generation
+const ART_STYLE_OPTIONS: DropdownOption[] = [
+  { id: '3d-cartoon', label: '3D Cartoon', image: '/art_styles/boy_cartoon.jpeg' },
+  { id: 'claymation', label: 'Claymation', image: '/art_styles/boy_claymation.jpeg' },
+  { id: 'childrens-storybook', label: "Children's Book", image: '/art_styles/boy_storybook.jpeg' },
+  { id: 'photo-realism', label: 'Realistic', image: '/art_styles/boy_real.jpeg' },
+  { id: 'comic-book', label: 'Comic Book', image: '/art_styles/boy_comic.jpeg' },
+  { id: 'classic-blocks', label: 'Classic Blocks', image: '/art_styles/boy_lego.jpeg' },
+  { id: 'anime', label: 'Animation', image: '/art_styles/boy_anime.jpeg' },
+  { id: 'spray-paint', label: 'Spray Paint', image: '/art_styles/boy_spray_paint.jpeg' },
+  { id: 'playground-crayon', label: 'Crayon', image: '/art_styles/boy_crayon.jpeg' },
 ];
 
 // Voice options for dropdown (same as CreateNarrativePage)
@@ -114,14 +197,39 @@ interface SwapResult {
   error?: string;
 }
 
+// Format duration as mm:ss
+const formatDuration = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.round(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Get video duration from URL by loading metadata
+const getVideoDuration = (videoUrl: string): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => {
+      resolve(video.duration);
+      video.remove();
+    };
+    video.onerror = () => {
+      reject(new Error('Failed to load video metadata'));
+      video.remove();
+    };
+    video.src = videoUrl;
+  });
+};
+
 // Video card with hover preview
 interface VideoCardProps {
   video: VideoInfo;
   isSelected: boolean;
   onClick: () => void;
+  isTooLong?: boolean;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick, isTooLong = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -152,18 +260,19 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick }) => 
         setIsVideoReady(false);
         videoUrlRef.current = null;
       }}
-      onClick={onClick}
+      onClick={isTooLong ? undefined : onClick}
       sx={{
         position: 'relative',
         aspectRatio: '9/16',
         borderRadius: '16px',
         overflow: 'hidden',
-        cursor: 'pointer',
+        cursor: isTooLong ? 'not-allowed' : 'pointer',
+        opacity: isTooLong ? 0.5 : 1,
         boxShadow: isSelected
           ? '0 0 0 3px #8B5CF6, 0 8px 32px rgba(139, 92, 246, 0.4)'
           : '0 4px 20px rgba(0,0,0,0.3)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        '&:hover': {
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease',
+        '&:hover': isTooLong ? {} : {
           transform: 'translateY(-4px) scale(1.02)',
           boxShadow: isSelected
             ? '0 0 0 3px #8B5CF6, 0 12px 40px rgba(139, 92, 246, 0.5)'
@@ -187,7 +296,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick }) => 
       />
 
       {/* Video Preview on Hover */}
-      {videoUrlRef.current && isHovered && (
+      {videoUrlRef.current && isHovered && !isTooLong && (
         <Box
           component="video"
           src={videoUrlRef.current}
@@ -208,6 +317,46 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick }) => 
             transition: 'opacity 0.2s ease',
           }}
         />
+      )}
+
+      {/* Duration badge */}
+      {video.duration && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            px: 1,
+            py: 0.25,
+            borderRadius: '4px',
+            background: isTooLong ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0,0,0,0.7)',
+          }}
+        >
+          <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#fff' }}>
+            {formatDuration(video.duration)}
+          </Typography>
+        </Box>
+      )}
+
+      {/* Too long overlay */}
+      {isTooLong && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            px: 1.5,
+            py: 0.75,
+            borderRadius: '8px',
+            background: 'rgba(239, 68, 68, 0.9)',
+            textAlign: 'center',
+          }}
+        >
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff' }}>
+            Max 3 min
+          </Typography>
+        </Box>
       )}
 
       {/* Info overlay at bottom */}
@@ -266,11 +415,14 @@ const MotionCapturePage: React.FC = () => {
   const hasSubscription = subscription?.tier !== 'free' && subscription?.status === 'active';
 
   // State
+  const [activeStep, setActiveStep] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<VideoInfo | null>(null);
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [characterPrompt, setCharacterPrompt] = useState('');
   const [useCustomPrompt, setUseCustomPrompt] = useState(false);
+  const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [swapMode, setSwapMode] = useState<SwapMode>('wan-replace');
+  const [klingPrompt, setKlingPrompt] = useState('');
   const [enableVoiceChange, setEnableVoiceChange] = useState(false);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>('albus');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -283,6 +435,7 @@ const MotionCapturePage: React.FC = () => {
   const [userCharacters, setUserCharacters] = useState<Character[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [loadingCharacters, setLoadingCharacters] = useState(false);
+  const [loadingDuration, setLoadingDuration] = useState(false);
 
   // Pagination state
   const [videoPage, setVideoPage] = useState(1);
@@ -311,6 +464,13 @@ const MotionCapturePage: React.FC = () => {
     };
   }, []);
 
+  // Reset swap mode to wan-replace if user selects a video > 30s and has Kling selected
+  useEffect(() => {
+    if (selectedVideo && (selectedVideo.duration || 0) > 30 && swapMode === 'kling-motion') {
+      setSwapMode('wan-replace');
+    }
+  }, [selectedVideo]);
+
   const loadUserVideos = async (page: number = 1, append: boolean = false) => {
     if (append) {
       setLoadingMoreVideos(true);
@@ -323,7 +483,7 @@ const MotionCapturePage: React.FC = () => {
         limit: VIDEOS_PER_PAGE,
       });
       // Filter to only show completed videos that have a videoKey
-      const videos = (response.data.videos || [])
+      const videos: VideoInfo[] = (response.data.videos || [])
         .filter((v: any) => v.status === 'completed' && v.videoKey)
         .map((v: any) => ({
           videoId: v.videoId,
@@ -345,11 +505,50 @@ const MotionCapturePage: React.FC = () => {
       const loadedCount = append ? userVideos.length + videos.length : videos.length;
       setHasMoreVideos(loadedCount < totalCount);
       setVideoPage(page);
+
+      // Fetch missing durations in the background
+      fetchMissingDurations(videos);
     } catch (err) {
       console.error('Failed to load videos:', err);
     } finally {
       setLoadingVideos(false);
       setLoadingMoreVideos(false);
+    }
+  };
+
+  // Fetch durations for videos that don't have them (runs in background)
+  const fetchMissingDurations = async (videos: VideoInfo[]) => {
+    const videosWithoutDuration = videos.filter(v => !v.duration && v.videoUrl);
+    if (videosWithoutDuration.length === 0) return;
+
+    // Fetch durations in parallel (limit to 4 concurrent to avoid overwhelming browser)
+    const batchSize = 4;
+    for (let i = 0; i < videosWithoutDuration.length; i += batchSize) {
+      const batch = videosWithoutDuration.slice(i, i + batchSize);
+      const results = await Promise.allSettled(
+        batch.map(async (video) => {
+          try {
+            const duration = await getVideoDuration(video.videoUrl!);
+            return { videoId: video.videoId, duration };
+          } catch {
+            return null;
+          }
+        })
+      );
+
+      // Update state with fetched durations
+      const updates = results
+        .filter((r): r is PromiseFulfilledResult<{ videoId: string; duration: number } | null> =>
+          r.status === 'fulfilled' && r.value !== null
+        )
+        .map(r => r.value!);
+
+      if (updates.length > 0) {
+        setUserVideos(prev => prev.map(v => {
+          const update = updates.find(u => u.videoId === v.videoId);
+          return update ? { ...v, duration: update.duration } : v;
+        }));
+      }
     }
   };
 
@@ -369,6 +568,42 @@ const MotionCapturePage: React.FC = () => {
     }
   };
 
+  // Handle video selection - fetch duration from video metadata if not available
+  const handleVideoSelect = async (video: VideoInfo) => {
+    // If video already has duration, use it directly
+    if (video.duration) {
+      setSelectedVideo(video);
+      setActiveStep(1);
+      return;
+    }
+
+    // Otherwise, fetch duration from video metadata
+    if (video.videoUrl) {
+      setLoadingDuration(true);
+      try {
+        const duration = await getVideoDuration(video.videoUrl);
+        const videoWithDuration = { ...video, duration };
+        setSelectedVideo(videoWithDuration);
+        // Also update the video in the list so duration is cached
+        setUserVideos(prev => prev.map(v =>
+          v.videoId === video.videoId ? videoWithDuration : v
+        ));
+        setActiveStep(1);
+      } catch (err) {
+        console.error('Failed to get video duration:', err);
+        // Still select the video even if we can't get duration
+        setSelectedVideo(video);
+        setActiveStep(1);
+      } finally {
+        setLoadingDuration(false);
+      }
+    } else {
+      // No video URL, just select it
+      setSelectedVideo(video);
+      setActiveStep(1);
+    }
+  };
+
   // Convert characters to dropdown options
   const characterOptions: DropdownOption[] = userCharacters.map(char => ({
     id: char.characterId,
@@ -377,11 +612,38 @@ const MotionCapturePage: React.FC = () => {
     image: char.imageUrls?.[0],
   }));
 
-  // Calculate total cost
+  // Video duration checks
+  const videoDuration = selectedVideo?.duration || 0;
+  const isVideoTooLong = videoDuration > MAX_VIDEO_DURATION_SECONDS;
+  const isVideoTooLongForKling = videoDuration > MAX_KLING_DURATION_SECONDS;
+
+  // Swap mode options - dynamically disable Kling for videos > 30 seconds
+  const swapModeOptions: DropdownOption[] = useMemo(() => [
+    {
+      id: 'wan-replace',
+      label: 'Replace Character',
+      description: 'Swap the character while keeping the original background (WAN)',
+    },
+    {
+      id: 'wan-move',
+      label: 'Replace Character + Environment',
+      description: 'Swap both the character and background to a new scene (WAN)',
+    },
+    {
+      id: 'kling-motion',
+      label: 'Replace + Custom Prompt',
+      description: 'Add a text prompt to guide the motion. Best for lip sync (Kling, max 30s)',
+      disabled: isVideoTooLongForKling,
+      disabledReason: 'Video exceeds 30 second limit',
+    },
+  ], [isVideoTooLongForKling]);
+
+  // Calculate total cost based on video duration
   const calculateTotalCost = () => {
-    let cost = TOKEN_COSTS[swapMode];
+    if (!selectedVideo?.duration) return 0;
+    let cost = calculateSwapCost(selectedVideo.duration);
     if (enableVoiceChange) {
-      cost += VOICE_CHANGE_COST;
+      cost += calculateVoiceChangeCost(selectedVideo.duration);
     }
     return cost;
   };
@@ -389,6 +651,7 @@ const MotionCapturePage: React.FC = () => {
   // Check if form is valid
   const isFormValid = () => {
     if (!selectedVideo?.videoKey) return false;
+    if (!selectedStyle) return false;
     if (useCustomPrompt) {
       return characterPrompt.trim().length > 0;
     }
@@ -412,6 +675,11 @@ const MotionCapturePage: React.FC = () => {
       return;
     }
 
+    if (!selectedStyle) {
+      setError('Please select an art style');
+      return;
+    }
+
     const totalCost = calculateTotalCost();
     if (tokensRemaining < totalCost) {
       setError(`Not enough tokens. You need ${totalCost} tokens but only have ${tokensRemaining}.`);
@@ -425,9 +693,12 @@ const MotionCapturePage: React.FC = () => {
       const response = await swapStudioApi.createSwap({
         userId,
         sourceVideoKey: selectedVideo.videoKey,
+        videoDuration: selectedVideo.duration || 0, // Send duration for pricing calculation
         characterId: useCustomPrompt ? undefined : selectedCharacter?.characterId,
         characterPrompt: useCustomPrompt ? characterPrompt : undefined,
+        artStyle: selectedStyle,
         swapMode,
+        klingPrompt: swapMode === 'kling-motion' && klingPrompt.trim() ? klingPrompt.trim() : undefined,
         enableVoiceChange,
         voiceId: enableVoiceChange ? selectedVoiceId : undefined,
       });
@@ -764,9 +1035,27 @@ const MotionCapturePage: React.FC = () => {
           </IconButton>
         </Box>
 
+        {/* Stepper */}
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel
+          connector={<GradientConnector />}
+          sx={{ mb: 4 }}
+        >
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel StepIconComponent={CustomStepIcon}>
+                <Typography sx={{ color: '#fff', fontSize: { xs: '0.7rem', sm: '0.85rem' }, fontWeight: 500 }}>
+                  {label}
+                </Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+
         {/* Main Content - Two Column Layout */}
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%', minWidth: 0 }}>
-          {/* Left Column - Settings */}
+          {/* Left Column - Step Content */}
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Paper
               elevation={0}
@@ -779,284 +1068,646 @@ const MotionCapturePage: React.FC = () => {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
               }}
             >
-              {/* Source Video Selection */}
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <VideoLibraryIcon sx={{ color: '#8B5CF6' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                    Source Video
-                  </Typography>
-                  <Chip
-                    label="Required"
-                    size="small"
-                    sx={{
-                      ml: 1,
-                      background: 'rgba(255,59,48,0.1)',
-                      color: '#FF3B30',
-                      fontWeight: 600,
-                      fontSize: '0.7rem'
-                    }}
-                  />
-                </Box>
-                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
-                  Select a video to apply motion capture
-                </Typography>
-
-                {loadingVideos ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                    <CircularProgress sx={{ color: '#8B5CF6' }} />
-                  </Box>
-                ) : userVideos.length === 0 ? (
-                  <Box sx={{ textAlign: 'center', py: 4, background: 'rgba(255,255,255,0.02)', borderRadius: 2 }}>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2 }}>
-                      No videos found. Create a video first!
+              {/* Step 0: Source Video Selection */}
+              {activeStep === 0 && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <VideoLibraryIcon sx={{ color: '#8B5CF6' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      Select Source Video
                     </Typography>
-                    <Button
-                      variant="contained"
-                      onClick={() => navigate('/create/video')}
-                      sx={{
-                        background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                      }}
-                    >
-                      Create Video
-                    </Button>
                   </Box>
-                ) : (
-                  <>
-                    <Grid container spacing={2}>
-                      {userVideos.map((video) => (
-                        <Grid size={{ xs: 6, sm: 4, md: 3 }} key={video.videoId}>
-                          <VideoCard
-                            video={video}
-                            isSelected={selectedVideo?.videoId === video.videoId}
-                            onClick={() => setSelectedVideo(video)}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-
-                    {/* Load More Button */}
-                    {hasMoreVideos && (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                        <Button
-                          variant="outlined"
-                          onClick={handleLoadMoreVideos}
-                          disabled={loadingMoreVideos}
-                          sx={{
-                            borderColor: 'rgba(139, 92, 246, 0.5)',
-                            color: '#8B5CF6',
-                            '&:hover': {
-                              borderColor: '#8B5CF6',
-                              background: 'rgba(139, 92, 246, 0.1)',
-                            },
-                          }}
-                        >
-                          {loadingMoreVideos ? (
-                            <CircularProgress size={20} sx={{ mr: 1, color: '#8B5CF6' }} />
-                          ) : null}
-                          {loadingMoreVideos ? 'Loading...' : 'Load More Videos'}
-                        </Button>
-                      </Box>
-                    )}
-                  </>
-                )}
-              </Box>
-
-              {/* Character Selection */}
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <PersonIcon sx={{ color: '#EC4899' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                    New Character
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
+                    Choose a video to apply motion capture. The character in this video will be replaced.
                   </Typography>
-                  <Chip
-                    label="Required"
-                    size="small"
-                    sx={{
-                      ml: 1,
-                      background: 'rgba(255,59,48,0.1)',
-                      color: '#FF3B30',
-                      fontWeight: 600,
-                      fontSize: '0.7rem'
-                    }}
-                  />
-                </Box>
-                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
-                  Choose a character or describe a new one
-                </Typography>
 
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={useCustomPrompt}
-                      onChange={(e) => setUseCustomPrompt(e.target.checked)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#8B5CF6',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#8B5CF6',
-                        },
-                      }}
-                    />
-                  }
-                  label="Use custom description"
-                  sx={{ mb: 2, color: 'rgba(255,255,255,0.7)' }}
-                />
-
-                {useCustomPrompt ? (
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    placeholder="Describe the new character in detail. E.g., 'A young woman with long red hair, wearing a blue dress, smiling warmly'"
-                    value={characterPrompt}
-                    onChange={(e) => setCharacterPrompt(e.target.value)}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '16px',
-                        background: 'rgba(255,255,255,0.03)',
-                        color: '#fff',
-                        fontSize: '0.95rem',
-                        lineHeight: 1.6,
-                        '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-                        '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
-                        '&.Mui-focused fieldset': { borderColor: '#8B5CF6' },
-                      },
-                      '& .MuiInputBase-input': {
-                        '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
-                      },
-                    }}
-                  />
-                ) : (
-                  <Box sx={{ width: { xs: '100%', md: '50%' } }}>
-                    {loadingCharacters ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5 }}>
-                        <CircularProgress size={20} sx={{ color: '#8B5CF6' }} />
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>Loading characters...</Typography>
-                      </Box>
-                    ) : characterOptions.length === 0 ? (
-                      <Box sx={{ py: 2 }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.9rem' }}>
-                          No characters found.
+                  {loadingVideos || loadingDuration ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4, gap: 2 }}>
+                      <CircularProgress sx={{ color: '#8B5CF6' }} />
+                      {loadingDuration && (
+                        <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
+                          Loading video details...
                         </Typography>
-                        <Button
-                          variant="text"
-                          size="small"
-                          onClick={() => setUseCustomPrompt(true)}
-                          sx={{ color: '#8B5CF6', textTransform: 'none' }}
-                        >
-                          Use custom description instead
-                        </Button>
-                      </Box>
-                    ) : (
-                      <StyledDropdown
-                        options={characterOptions}
-                        value={selectedCharacter?.characterId || ''}
-                        onChange={(id) => {
-                          const char = userCharacters.find(c => c.characterId === id);
-                          setSelectedCharacter(char || null);
-                        }}
-                        placeholder="Select character"
-                        icon={<PersonIcon sx={{ fontSize: 20 }} />}
-                        fullWidth
-                      />
-                    )}
-                  </Box>
-                )}
-              </Box>
-
-              {/* Swap Mode Selection */}
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <SwapHorizIcon sx={{ color: '#8B5CF6' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                    Swap Mode
-                  </Typography>
-                </Box>
-                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
-                  Choose how to apply the character swap
-                </Typography>
-                <Box sx={{ width: { xs: '100%', md: '50%' } }}>
-                  <StyledDropdown
-                    options={swapModeOptions}
-                    value={swapMode}
-                    onChange={(id) => setSwapMode(id as SwapMode)}
-                    placeholder="Select swap mode"
-                    icon={<SwapHorizIcon sx={{ fontSize: 20 }} />}
-                    fullWidth
-                  />
-                </Box>
-              </Box>
-
-              {/* Voice Change Option */}
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <RecordVoiceOverIcon sx={{ color: '#F59E0B' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                    Voice Change
-                  </Typography>
-                  <Chip
-                    label="Optional"
-                    size="small"
-                    sx={{
-                      ml: 1,
-                      background: 'rgba(245,158,11,0.1)',
-                      color: '#F59E0B',
-                      fontWeight: 600,
-                      fontSize: '0.7rem'
-                    }}
-                  />
-                </Box>
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={enableVoiceChange}
-                      onChange={(e) => setEnableVoiceChange(e.target.checked)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#F59E0B',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#F59E0B',
-                        },
-                      }}
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>Enable voice transformation</Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography sx={{ color: '#F59E0B', fontWeight: 600, fontSize: '0.85rem' }}>+{VOICE_CHANGE_COST}</Typography>
-                        <GruviCoin size={14} />
-                      </Box>
+                      )}
                     </Box>
-                  }
-                  sx={{ mb: 2 }}
-                />
+                  ) : userVideos.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 4, background: 'rgba(255,255,255,0.02)', borderRadius: 2 }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2 }}>
+                        No videos found. Create a video first!
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        onClick={() => navigate('/create/video')}
+                        sx={{
+                          background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                        }}
+                      >
+                        Create Video
+                      </Button>
+                    </Box>
+                  ) : (
+                    <>
+                      <Grid container spacing={2}>
+                        {userVideos.map((video) => {
+                          const videoTooLong = (video.duration || 0) > MAX_VIDEO_DURATION_SECONDS;
+                          return (
+                            <Grid size={{ xs: 6, sm: 4, md: 3 }} key={video.videoId}>
+                              <VideoCard
+                                video={video}
+                                isSelected={selectedVideo?.videoId === video.videoId}
+                                isTooLong={videoTooLong}
+                                onClick={() => handleVideoSelect(video)}
+                              />
+                            </Grid>
+                          );
+                        })}
+                      </Grid>
 
-                {enableVoiceChange && (
-                  <Box sx={{ width: { xs: '100%', md: '50%' } }}>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
-                      Select target voice
+                      {hasMoreVideos && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                          <Button
+                            variant="outlined"
+                            onClick={handleLoadMoreVideos}
+                            disabled={loadingMoreVideos}
+                            sx={{
+                              borderColor: 'rgba(139, 92, 246, 0.5)',
+                              color: '#8B5CF6',
+                              '&:hover': {
+                                borderColor: '#8B5CF6',
+                                background: 'rgba(139, 92, 246, 0.1)',
+                              },
+                            }}
+                          >
+                            {loadingMoreVideos ? (
+                              <CircularProgress size={20} sx={{ mr: 1, color: '#8B5CF6' }} />
+                            ) : null}
+                            {loadingMoreVideos ? 'Loading...' : 'Load More Videos'}
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  )}
+                </Box>
+              )}
+
+              {/* Step 1: Swap Mode Selection */}
+              {activeStep === 1 && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <SwapHorizIcon sx={{ color: '#8B5CF6' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      Swap Mode
                     </Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
+                    Choose how you want to apply the character swap. Pricing: 50 tokens per 10 seconds of video (rounded up).
+                  </Typography>
+
+                  <Box sx={{ width: { xs: '100%', md: '50%' }, mb: 3 }}>
                     <StyledDropdown
-                      options={VOICE_OPTIONS}
-                      value={selectedVoiceId}
-                      onChange={handleVoiceSelect}
-                      showAudioPreview
-                      hasPremiumAccess={hasSubscription}
-                      icon={<RecordVoiceOverIcon sx={{ fontSize: 20 }} />}
+                      options={swapModeOptions}
+                      value={swapMode}
+                      onChange={(id) => setSwapMode(id as SwapMode)}
+                      placeholder="Select swap mode"
+                      icon={<SwapHorizIcon sx={{ fontSize: 20 }} />}
                       fullWidth
                     />
                   </Box>
+
+                  {/* Kling Mode Prompt - only shown when Kling is selected */}
+                  {swapMode === 'kling-motion' && (
+                    <Box sx={{ mb: 3 }}>
+                      <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem', mb: 1 }}>
+                        Kling Prompt (Optional)
+                      </Typography>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                        Describe the motion or action you want. E.g., "An African American woman dancing energetically"
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        placeholder="Describe the motion or action..."
+                        value={klingPrompt}
+                        onChange={(e) => setKlingPrompt(e.target.value)}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            background: 'rgba(255,255,255,0.03)',
+                            color: '#fff',
+                            fontSize: '0.95rem',
+                            '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                            '&.Mui-focused fieldset': { borderColor: '#8B5CF6' },
+                          },
+                          '& .MuiInputBase-input': {
+                            '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                          },
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Pricing explanation */}
+                  <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <GruviCoin size={16} />
+                      <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
+                        Pricing
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem' }}>
+                      50 tokens per 10 seconds of video (rounded up to next 10s).
+                      {selectedVideo?.duration && (
+                        <> Your {Math.round(selectedVideo.duration)}s video = <strong>{calculateSwapCost(selectedVideo.duration)} tokens</strong>.</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  {/* Navigation buttons */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      onClick={() => {
+                        setSelectedVideo(null);
+                        setActiveStep(0);
+                      }}
+                      sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'none' }}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      endIcon={<ArrowForwardIcon />}
+                      onClick={() => setActiveStep(2)}
+                      sx={{
+                        background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                        textTransform: 'none',
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Step 2: Character Selection */}
+              {activeStep === 2 && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <PersonIcon sx={{ color: '#EC4899' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      Select Character
+                    </Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
+                    Choose the character you want us to swap into the video. We'll use the reference images of that character to create your UGC video.
+                  </Typography>
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={useCustomPrompt}
+                        onChange={(e) => setUseCustomPrompt(e.target.checked)}
+                        sx={{
+                          '& .MuiSwitch-switchBase.Mui-checked': { color: '#8B5CF6' },
+                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#8B5CF6' },
+                        }}
+                      />
+                    }
+                    label="Use custom description"
+                    sx={{ mb: 2, color: 'rgba(255,255,255,0.7)' }}
+                  />
+
+                  {useCustomPrompt ? (
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={4}
+                      placeholder="Describe the new character in detail. E.g., 'A young woman with long red hair, wearing a blue dress, smiling warmly'"
+                      value={characterPrompt}
+                      onChange={(e) => setCharacterPrompt(e.target.value)}
+                      sx={{
+                        mb: 3,
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '16px',
+                          background: 'rgba(255,255,255,0.03)',
+                          color: '#fff',
+                          fontSize: '0.95rem',
+                          lineHeight: 1.6,
+                          '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                          '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                          '&.Mui-focused fieldset': { borderColor: '#8B5CF6' },
+                        },
+                        '& .MuiInputBase-input': {
+                          '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <Box sx={{ width: { xs: '100%', md: '50%' }, mb: 3 }}>
+                      {loadingCharacters ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5 }}>
+                          <CircularProgress size={20} sx={{ color: '#8B5CF6' }} />
+                          <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>Loading characters...</Typography>
+                        </Box>
+                      ) : characterOptions.length === 0 ? (
+                        <Box sx={{ py: 2 }}>
+                          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.9rem' }}>
+                            No characters found.
+                          </Typography>
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={() => setUseCustomPrompt(true)}
+                            sx={{ color: '#8B5CF6', textTransform: 'none' }}
+                          >
+                            Use custom description instead
+                          </Button>
+                        </Box>
+                      ) : (
+                        <StyledDropdown
+                          options={characterOptions}
+                          value={selectedCharacter?.characterId || ''}
+                          onChange={(id) => {
+                            const char = userCharacters.find(c => c.characterId === id);
+                            setSelectedCharacter(char || null);
+                          }}
+                          placeholder="Select character"
+                          icon={<PersonIcon sx={{ fontSize: 20 }} />}
+                          fullWidth
+                        />
+                      )}
+                    </Box>
+                  )}
+
+                  {/* Art Style Selection */}
+                  <Box sx={{ mb: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                      <BrushIcon sx={{ color: '#8B5CF6', fontSize: 20 }} />
+                      <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>
+                        Art Style
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                      Select the style for the reference image we'll generate as the start frame.
+                    </Typography>
+                    <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                      <StyledDropdown
+                        options={ART_STYLE_OPTIONS}
+                        value={selectedStyle}
+                        onChange={(id) => setSelectedStyle(id)}
+                        placeholder="Select art style"
+                        icon={<BrushIcon sx={{ fontSize: 20 }} />}
+                        fullWidth
+                      />
+                    </Box>
+                  </Box>
+
+                  {/* Navigation buttons */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      onClick={() => setActiveStep(1)}
+                      sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'none' }}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      endIcon={<ArrowForwardIcon />}
+                      onClick={() => setActiveStep(3)}
+                      disabled={(useCustomPrompt ? !characterPrompt.trim() : !selectedCharacter) || !selectedStyle}
+                      sx={{
+                        background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                        textTransform: 'none',
+                        '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Step 3: Voice Change (Optional) & Generate */}
+              {activeStep === 3 && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <RecordVoiceOverIcon sx={{ color: '#F59E0B' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      Voice Change
+                    </Typography>
+                    <Chip
+                      label="Optional"
+                      size="small"
+                      sx={{
+                        ml: 1,
+                        background: 'rgba(245,158,11,0.1)',
+                        color: '#F59E0B',
+                        fontWeight: 600,
+                        fontSize: '0.7rem'
+                      }}
+                    />
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
+                    Optionally change the voice to match the new character.
+                  </Typography>
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={enableVoiceChange}
+                        onChange={(e) => setEnableVoiceChange(e.target.checked)}
+                        sx={{
+                          '& .MuiSwitch-switchBase.Mui-checked': { color: '#F59E0B' },
+                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#F59E0B' },
+                        }}
+                      />
+                    }
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>Enable voice transformation</Typography>
+                        {selectedVideo?.duration && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography sx={{ color: '#F59E0B', fontWeight: 600, fontSize: '0.85rem' }}>+{calculateVoiceChangeCost(selectedVideo.duration)}</Typography>
+                            <GruviCoin size={14} />
+                          </Box>
+                        )}
+                      </Box>
+                    }
+                    sx={{ mb: 2 }}
+                  />
+
+                  {enableVoiceChange && (
+                    <Box sx={{ width: { xs: '100%', md: '50%' }, mb: 3 }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                        Select target voice
+                      </Typography>
+                      <StyledDropdown
+                        options={VOICE_OPTIONS}
+                        value={selectedVoiceId}
+                        onChange={handleVoiceSelect}
+                        showAudioPreview
+                        hasPremiumAccess={hasSubscription}
+                        icon={<RecordVoiceOverIcon sx={{ fontSize: 20 }} />}
+                        fullWidth
+                      />
+                    </Box>
+                  )}
+
+                  {/* Voice pricing explanation */}
+                  <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', mb: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <GruviCoin size={16} />
+                      <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
+                        Voice Pricing
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem' }}>
+                      50 tokens per minute of video (rounded up to next minute).
+                      {selectedVideo?.duration && (
+                        <> Your {Math.round(selectedVideo.duration)}s video = <strong>{calculateVoiceChangeCost(selectedVideo.duration)} tokens</strong> for voice change.</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  {/* Navigation buttons - generate is in mobile summary below */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      onClick={() => setActiveStep(2)}
+                      sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'none' }}
+                    >
+                      Back
+                    </Button>
+                    {/* Generate button on lg screens (mobile has it in summary below) */}
+                    <Button
+                      variant="contained"
+                      onClick={handleGenerateSwap}
+                      disabled={isGenerating || !isFormValid() || tokensRemaining < calculateTotalCost()}
+                      sx={{
+                        display: { xs: 'none', lg: 'flex' },
+                        px: 4,
+                        background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                        boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        '&:hover': {
+                          boxShadow: '0 12px 32px rgba(139, 92, 246, 0.4)',
+                        },
+                        '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
+                      }}
+                    >
+                      {isGenerating ? (
+                        <CircularProgress size={24} sx={{ color: '#fff' }} />
+                      ) : (
+                        'Generate Motion Capture'
+                      )}
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+
+            {/* Mobile Summary Section - shows on smaller screens after video selected */}
+            {activeStep > 0 && selectedVideo && (
+              <Box sx={{ display: { xs: 'block', lg: 'none' }, mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                {/* Summary header */}
+                <Typography variant="subtitle2" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', mb: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.7rem' }}>
+                  Summary
+                </Typography>
+
+                {/* Compact chip-style summary */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3 }}>
+                  {/* Video chip */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: '20px',
+                    background: 'rgba(139, 92, 246, 0.15)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                  }}>
+                    {selectedVideo?.thumbnailUrl && (
+                      <Box
+                        component="img"
+                        src={selectedVideo.thumbnailUrl}
+                        sx={{ width: 20, height: 20, borderRadius: '4px', objectFit: 'cover' }}
+                      />
+                    )}
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {selectedVideo?.duration ? formatDuration(selectedVideo.duration) : 'Video'}
+                    </Typography>
+                  </Box>
+
+                  {/* Swap Mode chip */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: '20px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}>
+                    <SwapHorizIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.7)' }} />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                      {swapModeOptions.find(m => m.id === swapMode)?.label?.replace(' Character', '') || 'Replace'}
+                    </Typography>
+                  </Box>
+
+                  {/* Character chip - only show if selected */}
+                  {((useCustomPrompt && characterPrompt.trim()) || selectedCharacter) && (
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 0.75,
+                      borderRadius: '20px',
+                      background: 'rgba(236, 72, 153, 0.15)',
+                      border: '1px solid rgba(236, 72, 153, 0.3)',
+                    }}>
+                      {!useCustomPrompt && selectedCharacter?.imageUrls?.[0] && (
+                        <Avatar src={selectedCharacter.imageUrls[0]} sx={{ width: 20, height: 20 }} />
+                      )}
+                      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {useCustomPrompt ? 'Custom' : selectedCharacter?.characterName}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Art Style chip - only show if selected */}
+                  {selectedStyle && (
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 0.75,
+                      borderRadius: '20px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}>
+                      <Avatar
+                        src={ART_STYLE_OPTIONS.find(s => s.id === selectedStyle)?.image}
+                        sx={{ width: 20, height: 20, borderRadius: '4px' }}
+                        variant="rounded"
+                      />
+                      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                        {ART_STYLE_OPTIONS.find(s => s.id === selectedStyle)?.label}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Voice chip - only show on step 3 if enabled */}
+                  {activeStep === 3 && enableVoiceChange && (
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 0.75,
+                      borderRadius: '20px',
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                    }}>
+                      <Avatar src={VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.image} sx={{ width: 20, height: 20 }} />
+                      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                        {VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.label}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Token cost chip */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: '20px',
+                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                  }}>
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>
+                      {calculateTotalCost()}
+                    </Typography>
+                    <GruviCoin size={16} />
+                  </Box>
+                </Box>
+
+                {/* Generate Button - only enabled on last step */}
+                {activeStep === 3 ? (
+                  <>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Button
+                        variant="contained"
+                        onClick={handleGenerateSwap}
+                        disabled={isGenerating || !isFormValid() || tokensRemaining < calculateTotalCost()}
+                        sx={{
+                          py: 1.5,
+                          px: 4,
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                          boxShadow: '0 4px 16px rgba(139, 92, 246, 0.3)',
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          fontSize: '1rem',
+                          '&:hover': {
+                            boxShadow: '0 6px 20px rgba(139, 92, 246, 0.4)',
+                          },
+                          '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' },
+                        }}
+                      >
+                        {isGenerating ? (
+                          <CircularProgress size={24} sx={{ color: '#fff' }} />
+                        ) : (
+                          'Generate Motion Capture'
+                        )}
+                      </Button>
+                    </Box>
+
+                    <Typography
+                      variant="caption"
+                      sx={{ textAlign: 'center', mt: 2, display: 'block', color: 'rgba(255,255,255,0.5)' }}
+                    >
+                      Generation typically takes 3-5 minutes
+                    </Typography>
+                  </>
+                ) : (
+                  <Typography
+                    variant="caption"
+                    sx={{ textAlign: 'center', display: 'block', color: 'rgba(255,255,255,0.5)' }}
+                  >
+                    Complete all steps to generate
+                  </Typography>
                 )}
               </Box>
+            )}
+            </Paper>
+          </Box>
 
-              {/* Summary & Generate - shown inside Paper on xs/sm/md */}
-              <Box sx={{ display: { xs: 'block', lg: 'none' }, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                {/* Summary row */}
+          {/* Right Column - Summary - only on lg screens and only after step 0 (video selected) */}
+          {activeStep > 0 && selectedVideo && (
+            <Box sx={{ width: 320, flexShrink: 0, display: { xs: 'none', lg: 'block' } }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: '20px',
+                  background: 'rgba(255,255,255,0.03)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                  position: 'sticky',
+                  top: 28,
+                }}
+              >
+                {/* Header row */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                     Summary
@@ -1069,176 +1720,111 @@ const MotionCapturePage: React.FC = () => {
                   </Box>
                 </Box>
 
-                {/* Summary details */}
-                <Box sx={{ mb: 3 }}>
+                {/* Summary bullets */}
+                <Box>
+                  {/* Video */}
                   <Box sx={{ display: 'flex', mb: 1.5 }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Swap Mode</Typography>
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Video</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                      <Box
+                        component="img"
+                        src={selectedVideo.thumbnailUrl}
+                        sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: '#8B5CF6', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {selectedVideo.title || 'Video'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {/* Character */}
+                  <Box sx={{ display: 'flex', mb: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Character</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                      {useCustomPrompt ? (
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: characterPrompt.trim() ? '#EC4899' : 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {characterPrompt.trim() ? 'Custom description' : 'Not specified'}
+                        </Typography>
+                      ) : selectedCharacter ? (
+                        <>
+                          <Avatar
+                            src={selectedCharacter.imageUrls?.[0]}
+                            sx={{ width: 24, height: 24 }}
+                          />
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: '#EC4899', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {selectedCharacter.characterName}
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+                          Not selected
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                  {/* Art Style */}
+                  <Box sx={{ display: 'flex', mb: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Art Style</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                      {selectedStyle ? (
+                        <>
+                          <Avatar
+                            src={ART_STYLE_OPTIONS.find(s => s.id === selectedStyle)?.image}
+                            sx={{ width: 24, height: 24, borderRadius: '4px' }}
+                            variant="rounded"
+                          />
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: '#8B5CF6', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {ART_STYLE_OPTIONS.find(s => s.id === selectedStyle)?.label}
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+                          Not selected
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                  {/* Swap Mode */}
+                  <Box sx={{ display: 'flex', mb: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Swap Mode</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                       <SwapHorizIcon sx={{ fontSize: 18, color: '#8B5CF6' }} />
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {swapModeOptions.find(m => m.id === swapMode)?.label}
                       </Typography>
                     </Box>
                   </Box>
+                  {/* Voice Change */}
                   <Box sx={{ display: 'flex', mb: 1.5 }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Voice Change</Typography>
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', flex: 1, color: enableVoiceChange ? '#F59E0B' : 'rgba(255,255,255,0.5)' }}>
-                      {enableVoiceChange ? VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.label : 'None'}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex' }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Available</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1 }}>
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: tokensRemaining >= calculateTotalCost() ? '#22C55E' : '#EF4444' }}>
-                        {tokensRemaining}
-                      </Typography>
-                      <GruviCoin size={14} />
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Voice</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                      {enableVoiceChange ? (
+                        <>
+                          <Avatar
+                            src={VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.image}
+                            sx={{ width: 18, height: 18 }}
+                          />
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: '#F59E0B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.label}
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+                          None
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 </Box>
 
-                {/* Generate Button */}
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={handleGenerateSwap}
-                  disabled={isGenerating || !isFormValid() || tokensRemaining < calculateTotalCost()}
-                  sx={{
-                    py: 2,
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                    boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    '&:hover': {
-                      boxShadow: '0 12px 32px rgba(139, 92, 246, 0.4)',
-                    },
-                    '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
-                  }}
-                >
-                  {isGenerating ? (
-                    <CircularProgress size={24} sx={{ color: '#fff' }} />
-                  ) : (
-                    'Generate Motion Capture'
-                  )}
-                </Button>
-
                 <Typography
                   variant="caption"
-                  sx={{ textAlign: 'center', mt: 2, display: 'block', color: 'rgba(255,255,255,0.5)' }}
+                  sx={{ textAlign: 'center', mt: 3, display: 'block', color: 'rgba(255,255,255,0.5)' }}
                 >
                   Generation typically takes 3-5 minutes
                 </Typography>
-              </Box>
-            </Paper>
-          </Box>
-
-          {/* Right Column - Summary & Generate - only on lg screens */}
-          <Box sx={{ width: 320, flexShrink: 0, display: { xs: 'none', lg: 'block' } }}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.03)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                position: 'sticky',
-                top: 28,
-              }}
-            >
-              {/* Header row */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                  Summary
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
-                    {calculateTotalCost()} x
-                  </Typography>
-                  <GruviCoin size={20} />
-                </Box>
-              </Box>
-
-              {/* Summary bullets */}
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Swap Mode</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <SwapHorizIcon sx={{ fontSize: 18, color: '#8B5CF6' }} />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {swapModeOptions.find(m => m.id === swapMode)?.label}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Voice Change</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    {enableVoiceChange ? (
-                      <>
-                        <Avatar
-                          src={VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.image}
-                          sx={{ width: 18, height: 18 }}
-                        />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#F59E0B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {VOICE_OPTIONS.find(v => v.id === selectedVoiceId)?.label}
-                        </Typography>
-                      </>
-                    ) : (
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>
-                        None
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>Available</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1 }}>
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: tokensRemaining >= calculateTotalCost() ? '#22C55E' : '#EF4444' }}>
-                      {tokensRemaining}
-                    </Typography>
-                    <GruviCoin size={14} />
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Generate Button */}
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handleGenerateSwap}
-                disabled={isGenerating || !isFormValid() || tokensRemaining < calculateTotalCost()}
-                sx={{
-                  py: 2,
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                  boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  '&:hover': {
-                    boxShadow: '0 12px 32px rgba(139, 92, 246, 0.4)',
-                  },
-                  '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
-                }}
-              >
-                {isGenerating ? (
-                  <CircularProgress size={24} sx={{ color: '#fff' }} />
-                ) : (
-                  'Generate Motion Capture'
-                )}
-              </Button>
-
-              <Typography
-                variant="caption"
-                sx={{ textAlign: 'center', mt: 2, display: 'block', color: 'rgba(255,255,255,0.5)' }}
-              >
-                Generation typically takes 3-5 minutes
-              </Typography>
-            </Paper>
-          </Box>
+              </Paper>
+            </Box>
+          )}
         </Box>
       </Box>
 

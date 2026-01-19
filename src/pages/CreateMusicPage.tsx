@@ -692,7 +692,7 @@ const CreateMusicPage: React.FC = () => {
           >
           {/* Song Prompt */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2,  }}>
               <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Song Prompt
@@ -701,7 +701,7 @@ const CreateMusicPage: React.FC = () => {
                 label="Required"
                 size="small"
                 sx={{
-                  ml: 1,
+                  ml: 'auto',
                   background: 'rgba(255,59,48,0.1)',
                   color: '#FF3B30',
                   fontWeight: 600,
@@ -715,7 +715,7 @@ const CreateMusicPage: React.FC = () => {
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1 }}>
               Add AI assets to give your song context — feature a character, product, or set a fitting mood
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center',  }}>
               {/* Dropdown button */}
               <Box
                 onClick={(e) => setCastPickerAnchor(e.currentTarget)}
@@ -916,7 +916,7 @@ const CreateMusicPage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
             {/* Genre */}
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5,  }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Genre
                 </Typography>
@@ -963,7 +963,7 @@ const CreateMusicPage: React.FC = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
                 Select the musical style for your track
               </Typography>
-              <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+              <Box sx={{  }}>
                 {autoPickGenre ? (
                   <Box
                     sx={{
@@ -994,7 +994,7 @@ const CreateMusicPage: React.FC = () => {
 
             {/* Mood */}
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5,  }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Mood
                 </Typography>
@@ -1041,7 +1041,7 @@ const CreateMusicPage: React.FC = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
                 Set the emotional tone of your song
               </Typography>
-              <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+              <Box sx={{  }}>
                 {autoPickMood ? (
                   <Box
                     sx={{
@@ -1078,7 +1078,7 @@ const CreateMusicPage: React.FC = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
                 Choose the language for your lyrics
               </Typography>
-              <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+              <Box sx={{  }}>
                 <StyledDropdown
                   options={languages}
                   value={selectedLanguage}
@@ -1366,161 +1366,151 @@ const CreateMusicPage: React.FC = () => {
 
           {/* Summary & Generate - shown inside Paper on xs/sm/md */}
           <Box sx={{ display: { xs: 'block', lg: 'none' }, mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            {/* Header row */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                Summary
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
-                  {songCost} x
-                </Typography>
-                <GruviCoin size={20} />
-              </Box>
-            </Box>
+            {/* Summary header */}
+            <Typography variant="subtitle2" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', mb: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.7rem' }}>
+              Summary
+            </Typography>
 
-            {/* Summary bullets - 2 columns on md, 1 column on xs/sm */}
-            <Box sx={{
-              mb: 3,
-              display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              gap: { xs: 0, md: 3 },
-            }}>
-              {/* Column 1: Genre, Mood, Length */}
-              <Box sx={{ flex: { xs: 'none', md: 1 }, minWidth: 0 }}>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Genre</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    {autoPickGenre ? (
-                      <>
-                        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#007AFF' }}>
-                          AI picks
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <Box
-                          component="img"
-                          src={genres.find(g => g.id === selectedGenre)?.image}
-                          alt={genres.find(g => g.id === selectedGenre)?.label}
-                          sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                        />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>
-                          {genres.find(g => g.id === selectedGenre)?.label}
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Mood</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    {autoPickMood ? (
-                      <>
-                        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#007AFF' }} />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#007AFF' }}>
-                          AI picks
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <Box
-                          component="img"
-                          src={moods.find(m => m.id === selectedMood)?.image}
-                          alt={moods.find(m => m.id === selectedMood)?.label}
-                          sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                        />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>
-                          {moods.find(m => m.id === selectedMood)?.label}
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', mb: { xs: 1.5, md: 0 } }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Length</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <TimerIcon sx={{ fontSize: 18, color: songLength === 'short' ? '#FF9500' : '#34C759' }} />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                      {songLength === 'short' ? '30 - 90s' : '1.5 - 3 min'}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Column 2: Creativity, Language, Track Quality */}
-              <Box sx={{ flex: { xs: 'none', md: 1 }, minWidth: 0 }}>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Creativity</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <TuneIcon sx={{ fontSize: 18, flexShrink: 0, color: creativity <= 2 ? '#007AFF' : creativity <= 4 ? '#5856D6' : creativity <= 6 ? '#5856D6' : creativity <= 8 ? '#AF52DE' : '#FF2D55' }} />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>
-                      {creativity <= 2 ? 'Robot' : creativity <= 4 ? 'Literal' : creativity <= 6 ? 'Balanced' : creativity <= 8 ? 'Creative' : 'Picasso'} ({creativity}/10)
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Language</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+            {/* Compact chip-style summary */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3 }}>
+              {/* Genre chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: 'rgba(0, 122, 255, 0.15)',
+                border: '1px solid rgba(0, 122, 255, 0.3)',
+              }}>
+                {autoPickGenre ? (
+                  <>
+                    <AutoAwesomeIcon sx={{ fontSize: 16, color: '#007AFF' }} />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>AI Genre</Typography>
+                  </>
+                ) : (
+                  <>
                     <Box
                       component="img"
-                      src={languages.find(l => l.id === selectedLanguage)?.image}
-                      alt={languages.find(l => l.id === selectedLanguage)?.label}
-                      sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                      src={genres.find(g => g.id === selectedGenre)?.image}
+                      sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>
-                      {languages.find(l => l.id === selectedLanguage)?.label}
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                      {genres.find(g => g.id === selectedGenre)?.label}
                     </Typography>
-                  </Box>
+                  </>
+                )}
+              </Box>
+
+              {/* Mood chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: 'rgba(88, 86, 214, 0.15)',
+                border: '1px solid rgba(88, 86, 214, 0.3)',
+              }}>
+                {autoPickMood ? (
+                  <>
+                    <AutoAwesomeIcon sx={{ fontSize: 16, color: '#5856D6' }} />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>AI Mood</Typography>
+                  </>
+                ) : (
+                  <>
+                    <Box
+                      component="img"
+                      src={moods.find(m => m.id === selectedMood)?.image}
+                      sx={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                      {moods.find(m => m.id === selectedMood)?.label}
+                    </Typography>
+                  </>
+                )}
+              </Box>
+
+              {/* Length chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: songLength === 'short' ? 'rgba(255, 149, 0, 0.15)' : 'rgba(52, 199, 89, 0.15)',
+                border: songLength === 'short' ? '1px solid rgba(255, 149, 0, 0.3)' : '1px solid rgba(52, 199, 89, 0.3)',
+              }}>
+                <TimerIcon sx={{ fontSize: 16, color: songLength === 'short' ? '#FF9500' : '#34C759' }} />
+                <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                  {trackType === 'premium' ? `${premiumDuration}s` : (songLength === 'short' ? 'Short' : 'Standard')}
+                </Typography>
+              </Box>
+
+              {/* Quality chip - only show if premium */}
+              {trackType === 'premium' && (
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: 'rgba(255, 184, 0, 0.15)',
+                  border: '1px solid rgba(255, 184, 0, 0.3)',
+                }}>
+                  <WorkspacePremiumIcon sx={{ fontSize: 16, color: '#FFB800' }} />
+                  <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>Premium</Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Track Quality</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    {trackType === 'premium' ? (
-                      <>
-                        <WorkspacePremiumIcon sx={{ fontSize: 18, color: '#FFB800' }} />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                          Premium
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <MusicNoteIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                          Standard
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                </Box>
+              )}
+
+              {/* Token cost chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+              }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>
+                  {songCost}
+                </Typography>
+                <GruviCoin size={16} />
               </Box>
             </Box>
 
             {/* Generate Button */}
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleGenerateSong}
-              disabled={isGeneratingSong}
-              sx={{
-                py: 2,
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                boxShadow: '0 8px 24px rgba(0,122,255,0.3)',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '1rem',
-                '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
-                '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              {isGeneratingSong ? (
-                <CircularProgress size={24} sx={{ color: '#fff' }} />
-              ) : (
-                'Generate Song'
-              )}
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                onClick={handleGenerateSong}
+                disabled={isGeneratingSong}
+                sx={{
+                  py: 1.5,
+                  px: 4,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                  boxShadow: '0 8px 24px rgba(0,122,255,0.3)',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
+                  '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' },
+                }}
+              >
+                {isGeneratingSong ? (
+                  <CircularProgress size={24} sx={{ color: '#fff' }} />
+                ) : (
+                  'Generate Song'
+                )}
+              </Button>
+            </Box>
 
             <Typography
               variant="caption"

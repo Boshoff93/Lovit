@@ -532,16 +532,6 @@ const CreateNarrativePage: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Narrative Type
               </Typography>
-              <Chip
-                label="Required"
-                size="small"
-                sx={{
-                  bgcolor: 'rgba(0, 212, 170, 0.15)',
-                  color: '#00D4AA',
-                  fontWeight: 600,
-                  fontSize: '0.7rem'
-                }}
-              />
             </Box>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
               Choose the style of content to generate
@@ -567,14 +557,14 @@ const CreateNarrativePage: React.FC = () => {
               }}
               sx={{
                 display: 'flex',
-                gap: 2,
+                gap: 0.5,
                 flexDirection: { xs: 'column', sm: 'row' },
                 width: '100%',
                 '& .MuiToggleButtonGroup-grouped': {
                   border: 'none',
                   '&:not(:first-of-type)': {
                     borderRadius: '16px',
-                    ml: { xs: 0, sm: 2 },
+                    ml: { xs: 0, sm: 1 },
                     mt: { xs: 1, sm: 0 },
                   },
                   '&:first-of-type': {
@@ -648,7 +638,7 @@ const CreateNarrativePage: React.FC = () => {
 
           {/* Voice Selection */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,  }}>
               <RecordVoiceOverIcon sx={{ color: '#00D4AA' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Voice
@@ -657,6 +647,7 @@ const CreateNarrativePage: React.FC = () => {
                 label="Required"
                 size="small"
                 sx={{
+                  ml: 'auto',
                   bgcolor: 'rgba(0, 212, 170, 0.15)',
                   color: '#00D4AA',
                   fontWeight: 600,
@@ -667,7 +658,7 @@ const CreateNarrativePage: React.FC = () => {
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
               Choose a voice for your narrative
             </Typography>
-            <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+            <Box sx={{  }}>
               <StyledDropdown
                 options={VOICE_OPTIONS}
                 value={selectedVoice}
@@ -685,7 +676,7 @@ const CreateNarrativePage: React.FC = () => {
 
           {/* Content Prompt */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,  }}>
               {narrativeType === 'story' ? (
                 <MenuBookIcon sx={{ color: '#00D4AA' }} />
               ) : (
@@ -698,6 +689,7 @@ const CreateNarrativePage: React.FC = () => {
                 label="Required"
                 size="small"
                 sx={{
+                  ml: 'auto',
                   bgcolor: narrativeType === 'story' ? 'rgba(0, 212, 170, 0.15)' : 'rgba(255, 45, 85, 0.15)',
                   color: narrativeType === 'story' ? '#00D4AA' : '#FF2D55',
                   fontWeight: 600,
@@ -712,7 +704,7 @@ const CreateNarrativePage: React.FC = () => {
                   ? 'Select AI asset (1 product/place/app)'
                   : 'Add AI assets (1 character + 1 product/place max)'}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
+              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center',  }}>
                 {/* Dropdown button */}
                 <Box
                   onClick={(e) => {
@@ -849,95 +841,127 @@ const CreateNarrativePage: React.FC = () => {
 
           {/* Summary & Generate - shown inside Paper on xs/sm/md */}
           <Box sx={{ display: { xs: 'block', lg: 'none' }, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            {/* Summary row */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                Summary
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
-                  {estimatedCost} x
-                </Typography>
-                <GruviCoin size={20} />
-              </Box>
-            </Box>
+            {/* Summary header */}
+            <Typography variant="subtitle2" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', mb: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.7rem' }}>
+              Summary
+            </Typography>
 
-            {/* Summary details */}
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Type</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                  {narrativeType === 'story' ? (
-                    <>
-                      <MenuBookIcon sx={{ fontSize: 18, color: '#00D4AA' }} />
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>Story</Typography>
-                    </>
-                  ) : (
-                    <>
-                      <CampaignIcon sx={{ fontSize: 18, color: '#FF2D55' }} />
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>UGC</Typography>
-                    </>
-                  )}
-                </Box>
+            {/* Compact chip-style summary */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3 }}>
+              {/* Type chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: narrativeType === 'story' ? 'rgba(0, 212, 170, 0.15)' : 'rgba(255, 45, 85, 0.15)',
+                border: narrativeType === 'story' ? '1px solid rgba(0, 212, 170, 0.3)' : '1px solid rgba(255, 45, 85, 0.3)',
+              }}>
+                {narrativeType === 'story' ? (
+                  <>
+                    <MenuBookIcon sx={{ fontSize: 16, color: '#00D4AA' }} />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>Story</Typography>
+                  </>
+                ) : (
+                  <>
+                    <CampaignIcon sx={{ fontSize: 16, color: '#FF2D55' }} />
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>UGC</Typography>
+                  </>
+                )}
               </Box>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Voice</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                  <Avatar
-                    src={VOICE_OPTIONS.find(v => v.id === selectedVoice)?.image}
-                    sx={{ width: 22, height: 22 }}
-                  />
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                    {VOICE_OPTIONS.find(v => v.id === selectedVoice)?.label}
+
+              {/* Voice chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: 'rgba(88, 86, 214, 0.15)',
+                border: '1px solid rgba(88, 86, 214, 0.3)',
+              }}>
+                <Avatar
+                  src={VOICE_OPTIONS.find(v => v.id === selectedVoice)?.image}
+                  sx={{ width: 18, height: 18 }}
+                />
+                <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                  {VOICE_OPTIONS.find(v => v.id === selectedVoice)?.label}
+                </Typography>
+              </Box>
+
+              {/* Characters chip - only if selected */}
+              {selectedCastMembers.length > 0 && (
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: 'rgba(236, 72, 153, 0.15)',
+                  border: '1px solid rgba(236, 72, 153, 0.3)',
+                }}>
+                  <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                    {selectedCastMembers.length} Asset{selectedCastMembers.length > 1 ? 's' : ''}
                   </Typography>
                 </Box>
-              </Box>
-              <Box sx={{ display: 'flex', mb: 1.5 }}>
-                <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Prompt Length</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', flex: 1, color: '#fff' }}>
-                  {text.length.toLocaleString()} chars
+              )}
+
+              {/* Token cost chip */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: '20px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+              }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>
+                  {estimatedCost}
                 </Typography>
-              </Box>
-              <Box sx={{ display: 'flex' }}>
-                <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>AI Assets</Typography>
-                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', flex: 1, color: '#fff' }}>
-                  {selectedCastMembers.length > 0 ? selectedCastMembers.length : 'None'}
-                </Typography>
+                <GruviCoin size={16} />
               </Box>
             </Box>
 
             {/* Generate Button */}
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleGenerate}
-              disabled={isLoading || !text.trim() || !isAuthenticated}
-              sx={{
-                py: 2,
-                borderRadius: '16px',
-                background: narrativeType === 'story'
-                  ? 'linear-gradient(135deg, #00D4AA 0%, #007AFF 100%)'
-                  : 'linear-gradient(135deg, #FF2D55 0%, #AF52DE 100%)',
-                boxShadow: narrativeType === 'story'
-                  ? '0 8px 24px rgba(0, 212, 170, 0.3)'
-                  : '0 8px 24px rgba(255, 45, 85, 0.3)',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '1rem',
-                '&:hover': {
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                onClick={handleGenerate}
+                disabled={isLoading || !text.trim() || !isAuthenticated}
+                sx={{
+                  py: 1.5,
+                  px: 4,
+                  borderRadius: '12px',
+                  background: narrativeType === 'story'
+                    ? 'linear-gradient(135deg, #00D4AA 0%, #007AFF 100%)'
+                    : 'linear-gradient(135deg, #FF2D55 0%, #AF52DE 100%)',
                   boxShadow: narrativeType === 'story'
-                    ? '0 12px 32px rgba(0, 212, 170, 0.4)'
-                    : '0 12px 32px rgba(255, 45, 85, 0.4)',
-                },
-                '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              {isLoading ? (
-                <CircularProgress size={24} sx={{ color: '#fff' }} />
-              ) : (
-                narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Content'
-              )}
-            </Button>
+                    ? '0 8px 24px rgba(0, 212, 170, 0.3)'
+                    : '0 8px 24px rgba(255, 45, 85, 0.3)',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  '&:hover': {
+                    boxShadow: narrativeType === 'story'
+                      ? '0 12px 32px rgba(0, 212, 170, 0.4)'
+                      : '0 12px 32px rgba(255, 45, 85, 0.4)',
+                  },
+                  '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' },
+                }}
+              >
+                {isLoading ? (
+                  <CircularProgress size={24} sx={{ color: '#fff' }} />
+                ) : (
+                  narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Content'
+                )}
+              </Button>
+            </Box>
 
             <Typography
               variant="caption"
@@ -1224,32 +1248,49 @@ const CreateNarrativePage: React.FC = () => {
           maxHeight: 300,
           overflowY: 'auto',
         }}>
-          {characters.length === 0 ? (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 2 }}>
-                No AI assets yet
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => {
-                  setCastPickerOpen(false);
-                  setCastPickerAnchor(null);
-                  navigate('/ai-assets/create');
-                }}
-                sx={{
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                  borderColor: '#007AFF',
-                  color: '#007AFF',
-                }}
-              >
-                <AddIcon sx={{ mr: 0.5, fontSize: 18 }} />
-                Create Asset
-              </Button>
-            </Box>
-          ) : (
-            characterTypeOrder.map((type) => {
+          {(() => {
+            // Filter types based on narrative mode
+            const productTypes = ['Product', 'Place', 'App', 'Business'];
+            const allowedTypes = narrativeType === 'ugc'
+              ? productTypes
+              : characterTypeOrder;
+
+            // Check if there are any available assets for the allowed types
+            const hasAvailableAssets = allowedTypes.some(type =>
+              groupedCharacters[type] && groupedCharacters[type].length > 0
+            );
+
+            if (characters.length === 0 || !hasAvailableAssets) {
+              return (
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 2 }}>
+                    {narrativeType === 'ugc'
+                      ? 'No products, places, or apps yet'
+                      : 'No AI assets yet'}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      setCastPickerOpen(false);
+                      setCastPickerAnchor(null);
+                      navigate(narrativeType === 'ugc' ? '/ai-assets/create?type=product' : '/ai-assets/create');
+                    }}
+                    sx={{
+                      borderRadius: '10px',
+                      textTransform: 'none',
+                      borderColor: '#007AFF',
+                      color: '#007AFF',
+                    }}
+                  >
+                    <AddIcon sx={{ mr: 0.5, fontSize: 18 }} />
+                    Create Asset
+                  </Button>
+                </Box>
+              );
+            }
+
+            return allowedTypes.map((type) => {
               const typeCharacters = groupedCharacters[type];
               if (!typeCharacters || typeCharacters.length === 0) return null;
               return (
@@ -1315,8 +1356,8 @@ const CreateNarrativePage: React.FC = () => {
                   })}
                 </Box>
               );
-            })
-          )}
+            });
+          })()}
         </List>
 
         {/* Done button when selections made */}

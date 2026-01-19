@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   TextField,
   Button,
   Chip,
@@ -10,12 +9,7 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
+  Paper,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -23,9 +17,9 @@ import { RootState } from '../store/store';
 import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CheckIcon from '@mui/icons-material/Check';
 import PeopleIcon from '@mui/icons-material/People';
+import MaleIcon from '@mui/icons-material/Male';
+import FemaleIcon from '@mui/icons-material/Female';
 import PetsIcon from '@mui/icons-material/Pets';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HomeIcon from '@mui/icons-material/Home';
@@ -33,25 +27,36 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { charactersApi } from '../services/api';
 import { useLayout } from '../components/Layout';
+import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 
-// Character kind options with MUI icons
-const characterKindOptions = [
-  { id: 'Human', label: 'Human', icon: PersonIcon, color: '#007AFF' },
-  { id: 'Non-Human', label: 'Non-Human', icon: PetsIcon, color: '#FF9500' },
-  { id: 'Product', label: 'Product', icon: InventoryIcon, color: '#34C759' },
-  { id: 'Place', label: 'Place / Airbnb', icon: HomeIcon, color: '#AF52DE' },
-  { id: 'App', label: 'Software & Apps', icon: PhoneIphoneIcon, color: '#5856D6' },
-  { id: 'Business', label: 'Business', icon: BusinessIcon, color: '#FF3B30' },
+// Character kind options for dropdown - no images, using icons via the icon prop
+const characterKindOptions: DropdownOption[] = [
+  { id: 'Human', label: 'Human' },
+  { id: 'Non-Human', label: 'Non-Human' },
+  { id: 'Product', label: 'Product' },
+  { id: 'Place', label: 'Place / Airbnb' },
+  { id: 'App', label: 'Software & Apps' },
+  { id: 'Business', label: 'Business' },
 ];
 
+// Character type icons mapping
+const characterTypeIcons: Record<string, React.ReactNode> = {
+  'Human': <PersonIcon sx={{ fontSize: 20 }} />,
+  'Non-Human': <PetsIcon sx={{ fontSize: 20 }} />,
+  'Product': <InventoryIcon sx={{ fontSize: 20 }} />,
+  'Place': <HomeIcon sx={{ fontSize: 20 }} />,
+  'App': <PhoneIphoneIcon sx={{ fontSize: 20 }} />,
+  'Business': <BusinessIcon sx={{ fontSize: 20 }} />,
+};
+
 // Gender options
-const genderOptions = [
-  { id: 'Male', label: 'Male', image: '/characters/male.jpeg' },
-  { id: 'Female', label: 'Female', image: '/characters/female.jpeg' },
+const genderOptions: DropdownOption[] = [
+  { id: 'Male', label: 'Male' },
+  { id: 'Female', label: 'Female' },
 ];
 
 // Age options
-const ageOptions = [
+const ageOptions: DropdownOption[] = [
   { id: 'Baby', label: 'Baby (0-2)' },
   { id: 'Toddler', label: 'Toddler (2-4)' },
   { id: 'Child', label: 'Child (5-12)' },
@@ -61,59 +66,56 @@ const ageOptions = [
   { id: 'Senior', label: 'Senior (55+)' },
 ];
 
-// Hair color options with images
-const hairColorOptions = [
-  { id: 'Black', label: 'Black', image: '/hair/short_black.jpeg' },
-  { id: 'Dark Brown', label: 'Dark Brown', image: '/hair/short_brown.jpeg' },
-  { id: 'Light Brown', label: 'Light Brown', image: '/hair/short_light_brown.jpeg' },
-  { id: 'Blonde', label: 'Blonde', image: '/hair/short_blonde.jpeg' },
-  { id: 'Strawberry Blonde', label: 'Strawberry Blonde', image: '/hair/short_strawberry_blonde.jpeg' },
-  { id: 'Red', label: 'Red / Orange', image: '/hair/short_red.jpeg' },
-  { id: 'Grey', label: 'Grey', image: '/hair/short_grey.jpeg' },
-  { id: 'White', label: 'White', image: '/hair/short_white.jpeg' },
-];
+// Hair color to file name mapping
+const hairColorFileMap: Record<string, string> = {
+  'Black': 'black',
+  'Dark Brown': 'brown',
+  'Light Brown': 'light_brown',
+  'Blonde': 'blonde',
+  'Strawberry Blonde': 'strawberry_blonde',
+  'Red': 'red',
+  'Grey': 'grey',
+  'White': 'white',
+};
 
-// Hair length options - images will be dynamically generated based on selected color
-const hairLengthOptions = [
-  { id: 'Short', label: 'Short' },
-  { id: 'Medium', label: 'Medium' },
-  { id: 'Long', label: 'Long' },
-  { id: 'Very Long', label: 'Very Long' },
-  { id: 'Bald', label: 'Bald' },
-];
+// Hair length to file prefix mapping
+const hairLengthPrefixMap: Record<string, string> = {
+  'Short': 'short',
+  'Medium': 'medium',
+  'Long': 'long',
+  'Very Long': 'very_long',
+  'Bald': 'bald',
+};
 
-// Helper to get hair length image based on color and length
-const getHairLengthImage = (length: string, color: string): string => {
-  if (length === 'Bald') return '/hair/bald.jpeg';
-  
-  // Map color to filename
-  const colorMap: Record<string, string> = {
-    'Black': 'black',
-    'Dark Brown': 'brown',
-    'Light Brown': 'light_brown',
-    'Blonde': 'blonde',
-    'Strawberry Blonde': 'strawberry_blonde',
-    'Red': 'red',
-    'Grey': 'grey',
-    'White': 'white',
-  };
-  
-  // Map length to prefix
-  const lengthMap: Record<string, string> = {
-    'Short': 'short',
-    'Medium': 'medium',
-    'Long': 'long',
-    'Very Long': 'very_long',
-  };
-  
-  const colorSlug = colorMap[color] || 'brown';
-  const lengthSlug = lengthMap[length] || 'medium';
-  
-  return `/hair/${lengthSlug}_${colorSlug}.jpeg`;
+// Function to get hair color options based on selected hair length
+const getHairColorOptions = (hairLength: string): DropdownOption[] => {
+  const prefix = hairLengthPrefixMap[hairLength] || 'medium';
+  return [
+    { id: 'Black', label: 'Black', image: `/hair/${prefix}_black.jpeg` },
+    { id: 'Dark Brown', label: 'Dark Brown', image: `/hair/${prefix}_brown.jpeg` },
+    { id: 'Light Brown', label: 'Light Brown', image: `/hair/${prefix}_light_brown.jpeg` },
+    { id: 'Blonde', label: 'Blonde', image: `/hair/${prefix}_blonde.jpeg` },
+    { id: 'Strawberry Blonde', label: 'Strawberry Blonde', image: `/hair/${prefix}_strawberry_blonde.jpeg` },
+    { id: 'Red', label: 'Red / Orange', image: `/hair/${prefix}_red.jpeg` },
+    { id: 'Grey', label: 'Grey', image: `/hair/${prefix}_grey.jpeg` },
+    { id: 'White', label: 'White', image: `/hair/${prefix}_white.jpeg` },
+  ];
+};
+
+// Function to get hair length options based on selected hair color
+const getHairLengthOptions = (hairColor: string): DropdownOption[] => {
+  const colorFile = hairColorFileMap[hairColor] || 'brown';
+  return [
+    { id: 'Short', label: 'Short', image: `/hair/short_${colorFile}.jpeg` },
+    { id: 'Medium', label: 'Medium', image: `/hair/medium_${colorFile}.jpeg` },
+    { id: 'Long', label: 'Long', image: `/hair/long_${colorFile}.jpeg` },
+    { id: 'Very Long', label: 'Very Long', image: `/hair/very_long_${colorFile}.jpeg` },
+    { id: 'Bald', label: 'Bald', image: '/hair/bald.jpeg' },
+  ];
 };
 
 // Eye color options with images
-const eyeColorOptions = [
+const eyeColorOptions: DropdownOption[] = [
   { id: 'Brown', label: 'Brown', image: '/eyes/brown.jpg' },
   { id: 'Blue', label: 'Blue', image: '/eyes/blue.jpg' },
   { id: 'Green', label: 'Green', image: '/eyes/green.jpg' },
@@ -193,35 +195,28 @@ const CreateCharacterPage: React.FC = () => {
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   const [showCharacterNameError, setShowCharacterNameError] = useState(false);
 
-  // Drawer states for action sheets
-  const [typePickerOpen, setTypePickerOpen] = useState(false);
-  const [agePickerOpen, setAgePickerOpen] = useState(false);
-  const [hairColorPickerOpen, setHairColorPickerOpen] = useState(false);
-  const [hairLengthPickerOpen, setHairLengthPickerOpen] = useState(false);
-  const [eyeColorPickerOpen, setEyeColorPickerOpen] = useState(false);
-  
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
 
   // Fetch character data in edit mode
   const fetchCharacter = useCallback(async () => {
     if (!isEditMode || !user?.userId || !characterId) return;
-    
+
     setIsLoadingCharacter(true);
     try {
       const response = await charactersApi.getUserCharacters(user.userId);
       const characters = response.data.characters || [];
       const character = characters.find((c: any) => c.characterId === characterId);
-      
+
       if (character) {
         setCharacterName(character.characterName || '');
         setCharacterGender(character.gender || 'Male');
         setCharacterAge(character.age || 'Child');
         setExistingImageUrls(character.imageUrls || []);
-        
+
         // Parse the description to extract user-written description vs auto-generated traits
         const desc = character.description || '';
-        
+
         // Check for character kind
         if (desc.includes('Place')) {
           setCharacterKind('Place');
@@ -234,7 +229,7 @@ const CreateCharacterPage: React.FC = () => {
         } else if (desc.includes('Non-Human')) {
           setCharacterKind('Non-Human');
         }
-        
+
         // Extract hair color/length/eye color if present in description
         const hairColorMatch = desc.match(/Hair: ([^,]+),/);
         if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
@@ -242,7 +237,7 @@ const CreateCharacterPage: React.FC = () => {
         if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
         const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
         if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
-        
+
         // Extract only the user-written description (the part before the auto-generated traits)
         // The auto-generated part starts with "Human," or "Non-Human,"
         const userDescParts = desc.split(/\.\s*(Human|Non-Human),/);
@@ -461,236 +456,185 @@ const CreateCharacterPage: React.FC = () => {
     severity: 'success'
   });
 
+  // Check if this is a non-human type (Product, Place, App, Business)
+  const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business';
+
   return (
-    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto'}}>
-        {/* Header */}
-        <Box sx={{
-          mb: 4,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 2,
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '16px',
-                background: isEditMode
-                  ? 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)'
-                  : 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: isEditMode
-                  ? '0 4px 12px rgba(16,185,129,0.3)'
-                  : '0 4px 12px rgba(236,72,153,0.3)',
-                flexShrink: 0,
-                animation: 'iconEntrance 0.5s ease-out',
-                '@keyframes iconEntrance': {
-                  '0%': {
-                    opacity: 0,
-                    transform: 'scale(0.5) rotate(-10deg)',
-                  },
-                  '50%': {
-                    transform: 'scale(1.1) rotate(5deg)',
-                  },
-                  '100%': {
-                    opacity: 1,
-                    transform: 'scale(1) rotate(0deg)',
-                  },
-                },
-              }}
-            >
-              <PersonIcon sx={{ fontSize: 28, color: '#fff' }} />
-            </Box>
-            <Box sx={{ minWidth: 0 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-                {isEditMode ? 'Edit AI Asset' : 'Create AI Asset'}
-              </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-                {isEditMode ? 'Update your asset details' : 'Add a character, product, or place to your AI assets'}
-              </Typography>
-            </Box>
+    <Box sx={{
+      py: 4,
+      px: { xs: 2, sm: 3, md: 4 },
+      width: '100%',
+      minWidth: 0,
+      display: "flex",
+      flexDirection: "column",
+      mx: 'auto',
+    }}>
+      {/* Header - matching CreateNarrativePage style */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+        <Box
+          sx={{
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            background: isEditMode
+              ? 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)'
+              : 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: isEditMode
+              ? '0 8px 24px rgba(16,185,129,0.3)'
+              : '0 8px 24px rgba(236,72,153,0.3)',
+          }}
+        >
+          <PersonIcon sx={{ fontSize: 28, color: '#fff' }} />
+        </Box>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+            {isEditMode ? 'Edit AI Asset' : 'Create AI Asset'}
+          </Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+            {isEditMode ? 'Update your asset details' : 'Add a character, product, or place to your AI assets'}
+          </Typography>
+        </Box>
+        <Box sx={{ flexShrink: 0 }}>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/ai-assets')}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              background: '#007AFF',
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 600,
+              borderRadius: '10px',
+              px: 2.5,
+              py: 1,
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': {
+                background: '#0066CC',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              },
+            }}
+          >
+            View AI Assets
+          </Button>
+          <IconButton
+            onClick={() => navigate('/ai-assets')}
+            sx={{
+              display: { xs: 'flex', sm: 'none' },
+              width: 44,
+              height: 44,
+              background: '#007AFF',
+              color: '#fff',
+              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+              '&:hover': {
+                background: '#0066CC',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+              },
+            }}
+          >
+            <PeopleIcon sx={{ fontSize: 22 }} />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Form wrapped in Paper - matching CreateNarrativePage style */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: '20px',
+          background: 'rgba(255,255,255,0.03)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+        }}
+      >
+        {/* Name Input */}
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem' }}>
+              What should we call it?
+            </Typography>
+            <Chip label="Required" size="small" sx={{ background: 'rgba(255,59,48,0.2)', color: '#FF6B6B', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
-          <Box sx={{ flexShrink: 0 }}>
-            <Button
-              variant="contained"
-              onClick={() => navigate('/ai-assets')}
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1.5, fontSize: '0.85rem' }}>
+            Give your asset a memorable name. This is how you'll reference it when creating songs, videos, narratives, and motion swaps.
+          </Typography>
+          <Box>
+            <TextField
+              fullWidth
+              value={characterName}
+              onChange={(e) => {
+                setCharacterName(e.target.value);
+                if (e.target.value.trim()) setShowCharacterNameError(false);
+              }}
+              placeholder="e.g., Luna, Max, Summer Villa, Chuck Taylors"
+              error={showCharacterNameError && !characterName.trim()}
+              helperText={showCharacterNameError && !characterName.trim() ? 'Please enter a name' : ''}
               sx={{
-                display: { xs: 'none', sm: 'flex' },
-                background: '#007AFF',
-                color: '#fff',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: '10px',
-                px: 2.5,
-                py: 1,
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: '#0066CC',
-                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#fff',
+                  '& input': {
+                    py: 1.5,
+                    color: '#fff',
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                  },
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'rgba(0,122,255,0.1)',
+                    borderColor: '#007AFF',
+                  },
+                  '& fieldset': { border: 'none' },
                 },
               }}
-            >
-              View AI Assets
-            </Button>
-            <IconButton
-              onClick={() => navigate('/ai-assets')}
-              sx={{
-                display: { xs: 'flex', sm: 'none' },
-                width: 44,
-                height: 44,
-                background: '#007AFF',
-                color: '#fff',
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: '#0066CC',
-                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                },
-              }}
-            >
-              <PeopleIcon sx={{ fontSize: 22 }} />
-            </IconButton>
+            />
           </Box>
         </Box>
 
-        <Box sx={{ width: '100%' }}>
-        {/* Name */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: showCharacterNameError && !characterName.trim() ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <PersonIcon sx={{ color: '#007AFF' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-              What should we call it?
-            </Typography>
-            <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
-          </Box>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-            Give your asset a memorable name. This is how you'll reference it when creating songs and videos.
-          </Typography>
-          <TextField
-            fullWidth
-            value={characterName}
-            onChange={(e) => {
-              setCharacterName(e.target.value);
-              if (e.target.value.trim()) setShowCharacterNameError(false);
-            }}
-            placeholder="e.g., Luna, Max, Summer Villa, Chuck Taylors"
-            error={showCharacterNameError && !characterName.trim()}
-            helperText={showCharacterNameError && !characterName.trim() ? 'Please enter a name' : ''}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '10px',
-                backgroundColor: '#fff',
-                height: 52,
-                '& input': { py: 1.5 },
-                '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
-                '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.03)' },
-              },
-            }}
-          />
-        </Paper>
-
-        {/* Type and Gender Row - Two columns on md+ */}
+        {/* Two-column grid for form fields on md+ */}
         <Box sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && characterKind !== 'Business' ? '1fr 1fr' : '1fr' },
-          gap: 3,
-          mb: 3,
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: { xs: 0, md: 3 },
+          alignItems: 'start',
+          mb: 3
         }}>
-          {/* Type */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+          {/* Type Dropdown */}
+          <Box sx={{ mb: 3 }}>
+            <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
               Type
             </Typography>
-            <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
               This determines how AI generates and showcases your video content
             </Typography>
-            <Button
+            <StyledDropdown
+              options={characterKindOptions}
+              value={characterKind}
+              onChange={setCharacterKind}
+              placeholder="Select type..."
+              icon={characterTypeIcons[characterKind]}
               fullWidth
-              variant="outlined"
-              onClick={() => setTypePickerOpen(true)}
-              sx={{
-                justifyContent: 'space-between',
-                py: 1.5,
-                px: 2,
-                borderRadius: '12px',
-                borderColor: 'rgba(0,0,0,0.15)',
-                color: '#1D1D1F',
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                {(() => {
-                  const selected = characterKindOptions.find(k => k.id === characterKind);
-                  const IconComponent = selected?.icon;
-                  return IconComponent ? (
-                    <Box sx={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: `${selected.color}15`,
-                      border: `1px solid ${selected.color}30`
-                    }}>
-                      <IconComponent sx={{ fontSize: 20, color: selected.color }} />
-                    </Box>
-                  ) : null;
-                })()}
-                {characterKindOptions.find(k => k.id === characterKind)?.label}
-              </Box>
-              <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-            </Button>
-          </Paper>
+            />
+          </Box>
 
           {/* Gender - Only for Human and Non-Human */}
-          {characterKind !== 'Product' && characterKind !== 'Place' && characterKind !== 'App' && characterKind !== 'Business' && (
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+          {!isProductOrPlaceOrApp && (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
                 Gender
               </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 'auto', fontSize: '0.85rem' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
                 Select the gender identity for your character
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1.5 }}>
                 {genderOptions.map((gender) => {
                   const isSelected = characterGender === gender.id;
                   const isMale = gender.id === 'Male';
@@ -699,26 +643,33 @@ const CreateCharacterPage: React.FC = () => {
                       key={gender.id}
                       onClick={() => setCharacterGender(gender.id)}
                       sx={{
-                        flex: 1,
+                        flex: '1 1 0',
+                        minWidth: 0,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 1,
                         py: 1.5,
+                        minHeight: 52,
                         borderRadius: '12px',
-                        background: isSelected ? 'rgba(0,122,255,0.08)' : '#fff',
-                        border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                        background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
+                        border: isSelected ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        '&:hover': { background: isSelected ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                        '&:hover': {
+                          background: isSelected ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)',
+                          borderColor: isSelected ? '#007AFF' : 'rgba(255,255,255,0.2)',
+                        },
                       }}
                     >
-                      <Typography sx={{ fontSize: '1.1rem', color: isMale ? '#007AFF' : '#EC4899' }}>
-                        {isMale ? '♂' : '♀'}
-                      </Typography>
+                      {isMale ? (
+                        <MaleIcon sx={{ fontSize: 22, color: isSelected ? '#007AFF' : '#007AFF' }} />
+                      ) : (
+                        <FemaleIcon sx={{ fontSize: 22, color: isSelected ? '#007AFF' : '#EC4899' }} />
+                      )}
                       <Typography sx={{
                         fontWeight: isSelected ? 600 : 500,
-                        color: isSelected ? '#007AFF' : '#1D1D1F',
+                        color: '#fff',
                         fontSize: '0.9rem',
                       }}>
                         {gender.label}
@@ -727,231 +678,111 @@ const CreateCharacterPage: React.FC = () => {
                   );
                 })}
               </Box>
-            </Paper>
+            </Box>
+          )}
+
+          {/* Age - Only for Human and Non-Human */}
+          {!isProductOrPlaceOrApp && (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+                Age
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
+                Select the age range for your character
+              </Typography>
+              <StyledDropdown
+                options={ageOptions}
+                value={characterAge}
+                onChange={setCharacterAge}
+                placeholder="Select age..."
+                fullWidth
+              />
+            </Box>
+          )}
+
+          {/* Hair Length - Only for humans */}
+          {characterKind === 'Human' && (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+                Hair Length
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
+                Select the hair length style for your character
+              </Typography>
+              <StyledDropdown
+                options={getHairLengthOptions(characterHairColor)}
+                value={characterHairLength}
+                onChange={setCharacterHairLength}
+                placeholder="Select hair length..."
+                fullWidth
+              />
+            </Box>
+          )}
+
+          {/* Hair Color - Only for humans with hair (not bald) */}
+          {characterKind === 'Human' && characterHairLength !== 'Bald' && (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+                Hair Color
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
+                Choose the hair color for your character
+              </Typography>
+              <StyledDropdown
+                options={getHairColorOptions(characterHairLength)}
+                value={characterHairColor}
+                onChange={setCharacterHairColor}
+                placeholder="Select hair color..."
+                fullWidth
+              />
+            </Box>
+          )}
+
+          {/* Eye Color - Only for Human and Non-Human */}
+          {!isProductOrPlaceOrApp && (
+            <Box sx={{ mb: 3 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+                Eye Color
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
+                Pick the eye color for your character
+              </Typography>
+              <StyledDropdown
+                options={eyeColorOptions}
+                value={characterEyeColor}
+                onChange={setCharacterEyeColor}
+                placeholder="Select eye color..."
+                fullWidth
+              />
+            </Box>
           )}
         </Box>
 
-        {/* Character Attributes Grid - Two columns on md+ */}
-        {(characterKind === 'Human' || characterKind === 'Non-Human') && (
-          <Box sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: 3,
-            mb: 3,
-          }}>
-            {/* Hair Length - Only for humans */}
-            {characterKind === 'Human' && (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: '20px',
-                  background: 'rgba(255,255,255,0.9)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                  Hair Length
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                  Select the hair length style for your character
-                </Typography>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => setHairLengthPickerOpen(true)}
-                  sx={{
-                    justifyContent: 'space-between',
-                    py: 1.5,
-                    px: 2,
-                    borderRadius: '12px',
-                    borderColor: 'rgba(0,0,0,0.15)',
-                    color: '#1D1D1F',
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box component="img" src={getHairLengthImage(characterHairLength, characterHairColor)} alt={characterHairLength} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
-                    {hairLengthOptions.find(h => h.id === characterHairLength)?.label}
-                  </Box>
-                  <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-                </Button>
-              </Paper>
-            )}
-
-            {/* Hair Color - Only for humans with hair (not bald) */}
-            {characterKind === 'Human' && characterHairLength !== 'Bald' && (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: '20px',
-                  background: 'rgba(255,255,255,0.9)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                  Hair Color
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                  Choose the hair color for your character
-                </Typography>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => setHairColorPickerOpen(true)}
-                  sx={{
-                    justifyContent: 'space-between',
-                    py: 1.5,
-                    px: 2,
-                    borderRadius: '12px',
-                    borderColor: 'rgba(0,0,0,0.15)',
-                    color: '#1D1D1F',
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box component="img" src={hairColorOptions.find(h => h.id === characterHairColor)?.image} alt={characterHairColor} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
-                    {hairColorOptions.find(h => h.id === characterHairColor)?.label}
-                  </Box>
-                  <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-                </Button>
-              </Paper>
-            )}
-
-            {/* Eye Color - Only for Human and Non-Human */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                Eye Color
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Pick the eye color for your character
-              </Typography>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setEyeColorPickerOpen(true)}
-                sx={{
-                  justifyContent: 'space-between',
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '12px',
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Box component="img" src={eyeColorOptions.find(e => e.id === characterEyeColor)?.image} alt={characterEyeColor} sx={{ width: 32, height: 32, borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
-                  {eyeColorOptions.find(e => e.id === characterEyeColor)?.label}
-                </Box>
-                <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-              </Button>
-            </Paper>
-
-            {/* Age - Only for Human and Non-Human */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: '20px',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
-                Age
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Select the age range for your character
-              </Typography>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setAgePickerOpen(true)}
-                sx={{
-                  justifyContent: 'space-between',
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '12px',
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
-                }}
-              >
-                {ageOptions.find(a => a.id === characterAge)?.label}
-                <KeyboardArrowDownIcon sx={{ color: '#007AFF', ml: 1 }} />
-              </Button>
-            </Paper>
-          </Box>
-        )}
-
-        {/* Reference Images and Description - side by side on lg+ */}
-        <Box sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-          gap: 3,
-          mb: 3
-        }}>
         {/* Reference Images */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+        <Box sx={{ mb: 3 }}>
+          <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
             Reference Images
           </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.85rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.85rem' }}>
             Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : characterKind === 'Business' ? 'showcasing your business, storefront, or brand' : 'for appearance in music videos'}
           </Typography>
           {characterKind === 'Product' && (
-            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
               💡 Tip: Create one product entry per item. For example, if you have different shoe colors or variants, create a separate entry for each one.
             </Typography>
           )}
           {characterKind === 'Place' && (
-            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
               💡 Tip: Upload up to 20 photos! Include interior rooms, exterior views, surrounding area (beachfront, garden, pool), and unique features. Each photo becomes a scene in your video.
             </Typography>
           )}
           {characterKind === 'App' && (
-            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
               💡 Tip: Include app screenshots, UI mockups, logo, and feature highlights. Show key screens and user flows for the best promo video.
             </Typography>
           )}
           {characterKind === 'Business' && (
-            <Typography variant="body2" sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
               💡 Tip: Include your logo, storefront, team photos, office space, and any branded materials. Show what makes your business unique.
             </Typography>
           )}
@@ -967,8 +798,8 @@ const CreateCharacterPage: React.FC = () => {
               width: '100%',
               minHeight: 120,
               borderRadius: '12px',
-              border: isDragging ? '2px dashed #007AFF' : '2px dashed rgba(0,0,0,0.15)',
-              backgroundColor: isDragging ? 'rgba(0,122,255,0.05)' : 'transparent',
+              border: isDragging ? '2px dashed #007AFF' : '2px dashed rgba(255,255,255,0.2)',
+              backgroundColor: isDragging ? 'rgba(0,122,255,0.1)' : 'rgba(255,255,255,0.02)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -977,15 +808,15 @@ const CreateCharacterPage: React.FC = () => {
               transition: 'all 0.2s ease',
               '&:hover': {
                 borderColor: '#007AFF',
-                backgroundColor: 'rgba(0,122,255,0.02)',
+                backgroundColor: 'rgba(0,122,255,0.05)',
               }
             }}
           >
-            <CloudUploadIcon sx={{ fontSize: 32, color: isDragging ? '#007AFF' : '#86868B', mb: 1 }} />
-            <Typography sx={{ color: isDragging ? '#007AFF' : '#1D1D1F', fontWeight: 500 }}>
+            <CloudUploadIcon sx={{ fontSize: 32, color: isDragging ? '#007AFF' : 'rgba(255,255,255,0.5)', mb: 1 }} />
+            <Typography sx={{ color: isDragging ? '#007AFF' : '#fff', fontWeight: 500 }}>
               {isDragging ? 'Drop images here' : 'Drag & drop or click to upload'}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#86868B', mt: 0.5 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, fontSize: '0.85rem' }}>
               {existingImageUrls.length + uploadedImages.length}/{maxImages} images
             </Typography>
             <input
@@ -997,27 +828,27 @@ const CreateCharacterPage: React.FC = () => {
               ref={fileInputRef}
             />
           </Box>
-          
+
           {/* Existing images (in edit mode) */}
           {existingImageUrls.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.8rem' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.8rem' }}>
                 Current images:
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)' }}>
                 {existingImageUrls.map((url, index) => (
                   <Box key={`existing-${index}`} sx={{ position: 'relative', width: 70, height: 70 }}>
-                    <img 
-                      src={url} 
-                      alt={`Existing ${index}`} 
+                    <img
+                      src={url}
+                      alt={`Existing ${index}`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                     />
                     <IconButton
                       size="small"
-                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
+                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(0,0,0,0.8)', '&:hover': { backgroundColor: 'rgba(0,0,0,0.9)' }, p: 0.5 }}
                       onClick={(e) => { e.stopPropagation(); handleRemoveExistingImage(index); }}
                     >
-                      <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
+                      <DeleteIcon fontSize="small" sx={{ color: '#FF6B6B' }} />
                     </IconButton>
                   </Box>
                 ))}
@@ -1028,44 +859,34 @@ const CreateCharacterPage: React.FC = () => {
           {/* Newly uploaded images */}
           {uploadedImages.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 1, fontSize: '0.8rem' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.8rem' }}>
                 New images to upload:
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)' }}>
                 {uploadedImages.map((image, index) => (
                   <Box key={index} sx={{ position: 'relative', width: 70, height: 70 }}>
-                    <img 
-                      src={URL.createObjectURL(image)} 
-                      alt={`Upload ${index}`} 
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Upload ${index}`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                     />
                     <IconButton
                       size="small"
-                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(255,255,255,0.9)', '&:hover': { backgroundColor: '#fff' }, p: 0.5 }}
+                      sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: 'rgba(0,0,0,0.8)', '&:hover': { backgroundColor: 'rgba(0,0,0,0.9)' }, p: 0.5 }}
                       onClick={(e) => { e.stopPropagation(); handleRemoveImage(index); }}
                     >
-                      <DeleteIcon fontSize="small" sx={{ color: '#FF3B30' }} />
+                      <DeleteIcon fontSize="small" sx={{ color: '#FF6B6B' }} />
                     </IconButton>
                   </Box>
                 ))}
               </Box>
             </Box>
           )}
-        </Paper>
+        </Box>
 
-        {/* Description - Title changes based on character type */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+        {/* Description */}
+        <Box sx={{ mb: 4 }}>
+          <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
             {characterKind === 'Place'
               ? 'Property Details'
               : characterKind === 'Product'
@@ -1076,7 +897,7 @@ const CreateCharacterPage: React.FC = () => {
                     ? 'Business Description'
                     : 'Description'} (Optional)
           </Typography>
-          <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
             {characterKind === 'Place'
               ? 'Describe the location, style, key features, amenities, and vibe'
               : characterKind === 'Product'
@@ -1107,476 +928,74 @@ const CreateCharacterPage: React.FC = () => {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '12px',
-                background: '#fff',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff',
+                '& textarea': {
+                  color: '#fff',
+                  '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                },
+                '&:hover': {
+                  backgroundColor: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(255,255,255,0.2)',
+                },
+                '&.Mui-focused': {
+                  backgroundColor: 'rgba(0,122,255,0.1)',
+                  borderColor: '#007AFF',
+                },
+                '& fieldset': { border: 'none' },
               },
             }}
           />
-        </Paper>
         </Box>
 
         {/* Create/Update Button */}
-        <Button
-          variant="contained"
-          onClick={handleCreateCharacter}
-          disabled={isCreatingCharacter || isLoadingCharacter}
-          sx={{
-            py: 2,
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-            boxShadow: '0 8px 24px rgba(0,122,255,0.3)',
-            textTransform: 'none',
-            fontWeight: 600,
-            fontSize: '1.1rem',
-            width: { xs: '100%', sm: 'fit-content' },
-            mx: 'auto',
-            display: 'flex',
-            '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
-            '&.Mui-disabled': { background: 'rgba(0,0,0,0.1)' },
-          }}
-        >
-          {isCreatingCharacter ? (
-            <CircularProgress size={24} sx={{ color: '#fff' }} />
-          ) : (
-            isEditMode
-              ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
-              : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
-          )}
-        </Button>
-
-        {/* Action Sheets / Bottom Drawers */}
-
-        {/* Type Picker */}
-        <Drawer
-          anchor="bottom"
-          open={typePickerOpen}
-          onClose={() => setTypePickerOpen(false)}
-          sx={{
-            zIndex: 1400,
-            '& .MuiBackdrop-root': {
-              left: { xs: 0, md: 240 },
-            },
-          }}
-          PaperProps={{
-            sx: {
-              borderRadius: '20px 20px 0 0',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              left: { xs: 0, sm: 0, md: 310 },
-              right: { xs: 0, sm: 0, md: 70 },
-              width: 'auto',
-              maxWidth: 1100,
-              mx: 'auto',
-              px: { xs: 2, sm: 3, md: 4 },
-            },
-          }}
-        >
-          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
-              Select Type
-            </Typography>
-          </Box>
-          <List sx={{ px: 1, py: 1 }}>
-            {characterKindOptions.map((kind) => (
-              <ListItem key={kind.id} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setCharacterKind(kind.id);
-                    setTypePickerOpen(false);
-                  }}
-                  sx={{
-                    borderRadius: '12px',
-                    mb: 0.5,
-                    py: 1.5,
-                    background: characterKind === kind.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: characterKind === kind.id ? '2px solid #007AFF' : '2px solid transparent',
-                  }}
-                >
-                  <ListItemIcon>
-                    <Box sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: `${kind.color}15`,
-                      border: `2px solid ${kind.color}30`
-                    }}>
-                      <kind.icon sx={{ fontSize: 24, color: kind.color }} />
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText primary={kind.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
-                  {characterKind === kind.id && <CheckIcon sx={{ color: '#007AFF' }} />}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Button
-              variant="outlined"
-              onClick={() => setTypePickerOpen(false)}
-              sx={{
-                color: '#86868B',
-                borderColor: 'rgba(0,0,0,0.15)',
-                borderRadius: '12px',
-                px: 4,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Drawer>
-
-        {/* Age Picker */}
-        <Drawer
-          anchor="bottom"
-          open={agePickerOpen}
-          onClose={() => setAgePickerOpen(false)}
-          sx={{
-            zIndex: 1400,
-            '& .MuiBackdrop-root': {
-              left: { xs: 0, md: 240 },
-            },
-          }}
-          PaperProps={{
-            sx: {
-              borderRadius: '20px 20px 0 0',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              left: { xs: 0, sm: 0, md: 310 },
-              right: { xs: 0, sm: 0, md: 70 },
-              width: 'auto',
-              maxWidth: 1100,
-              mx: 'auto',
-              px: { xs: 2, sm: 3, md: 4 },
-            },
-          }}
-        >
-          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
-              Select Age
-            </Typography>
-          </Box>
-          <List sx={{ px: 1, py: 1 }}>
-            {ageOptions.map((age) => (
-              <ListItem key={age.id} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setCharacterAge(age.id);
-                    setAgePickerOpen(false);
-                  }}
-                  sx={{
-                    borderRadius: '12px',
-                    mb: 0.5,
-                    py: 1.5,
-                    background: characterAge === age.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: characterAge === age.id ? '2px solid #007AFF' : '2px solid transparent',
-                  }}
-                >
-                  <ListItemText primary={age.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
-                  {characterAge === age.id && <CheckIcon sx={{ color: '#007AFF' }} />}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              variant="outlined" 
-              onClick={() => setAgePickerOpen(false)} 
-              sx={{ 
-                color: '#86868B', 
-                borderColor: 'rgba(0,0,0,0.15)', 
-                borderRadius: '12px',
-                px: 4,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Drawer>
-
-        {/* Hair Color Picker */}
-        <Drawer
-          anchor="bottom"
-          open={hairColorPickerOpen}
-          onClose={() => setHairColorPickerOpen(false)}
-          sx={{
-            zIndex: 1400,
-            '& .MuiBackdrop-root': {
-              left: { xs: 0, md: 240 },
-            },
-          }}
-          PaperProps={{
-            sx: {
-              borderRadius: '20px 20px 0 0',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              left: { xs: 0, sm: 0, md: 310 },
-              right: { xs: 0, sm: 0, md: 70 },
-              width: 'auto',
-              maxWidth: 1100,
-              mx: 'auto',
-              px: { xs: 2, sm: 3, md: 4 },
-            },
-          }}
-        >
-          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
-              Select Hair Color
-            </Typography>
-          </Box>
-          <List sx={{ px: 1, py: 1 }}>
-            {hairColorOptions.map((color) => (
-              <ListItem key={color.id} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setCharacterHairColor(color.id);
-                    setHairColorPickerOpen(false);
-                  }}
-                  sx={{
-                    borderRadius: '12px',
-                    mb: 0.5,
-                    py: 1.5,
-                    background: characterHairColor === color.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: characterHairColor === color.id ? '2px solid #007AFF' : '2px solid transparent',
-                  }}
-                >
-                  <ListItemIcon>
-                    <Box component="img" src={color.image} alt={color.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
-                  </ListItemIcon>
-                  <ListItemText primary={color.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
-                  {characterHairColor === color.id && <CheckIcon sx={{ color: '#007AFF' }} />}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              variant="outlined" 
-              onClick={() => setHairColorPickerOpen(false)} 
-              sx={{ 
-                color: '#86868B', 
-                borderColor: 'rgba(0,0,0,0.15)', 
-                borderRadius: '12px',
-                px: 4,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Drawer>
-
-        {/* Hair Length Picker */}
-        <Drawer
-          anchor="bottom"
-          open={hairLengthPickerOpen}
-          onClose={() => setHairLengthPickerOpen(false)}
-          sx={{
-            zIndex: 1400,
-            '& .MuiBackdrop-root': {
-              left: { xs: 0, md: 240 },
-            },
-          }}
-          PaperProps={{
-            sx: {
-              borderRadius: '20px 20px 0 0',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              left: { xs: 0, sm: 0, md: 310 },
-              right: { xs: 0, sm: 0, md: 70 },
-              width: 'auto',
-              maxWidth: 1100,
-              mx: 'auto',
-              px: { xs: 2, sm: 3, md: 4 },
-            },
-          }}
-        >
-          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
-              Select Hair Length
-            </Typography>
-          </Box>
-          <List sx={{ px: 1, py: 1 }}>
-            {hairLengthOptions.map((length) => (
-              <ListItem key={length.id} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setCharacterHairLength(length.id);
-                    setHairLengthPickerOpen(false);
-                  }}
-                  sx={{
-                    borderRadius: '12px',
-                    mb: 0.5,
-                    py: 1.5,
-                    background: characterHairLength === length.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: characterHairLength === length.id ? '2px solid #007AFF' : '2px solid transparent',
-                  }}
-                >
-              
-                    <ListItemIcon>
-                      <Box component="img" src={getHairLengthImage(length.id, characterHairColor)} alt={length.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
-                    </ListItemIcon>
-              
-                  <ListItemText primary={length.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
-                  {characterHairLength === length.id && <CheckIcon sx={{ color: '#007AFF' }} />}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              variant="outlined" 
-              onClick={() => setHairLengthPickerOpen(false)} 
-              sx={{ 
-                color: '#86868B', 
-                borderColor: 'rgba(0,0,0,0.15)', 
-                borderRadius: '12px',
-                px: 4,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Drawer>
-
-        {/* Eye Color Picker */}
-        <Drawer
-          anchor="bottom"
-          open={eyeColorPickerOpen}
-          onClose={() => setEyeColorPickerOpen(false)}
-          sx={{
-            zIndex: 1400,
-            '& .MuiBackdrop-root': {
-              left: { xs: 0, md: 240 },
-            },
-          }}
-          PaperProps={{
-            sx: {
-              borderRadius: '20px 20px 0 0',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              left: { xs: 0, sm: 0, md: 310 },
-              right: { xs: 0, sm: 0, md: 70 },
-              width: 'auto',
-              maxWidth: 1100,
-              mx: 'auto',
-              px: { xs: 2, sm: 3, md: 4 },
-            },
-          }}
-        >
-          <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
-              Select Eye Color
-            </Typography>
-          </Box>
-          <List sx={{ px: 1, py: 1 }}>
-            {eyeColorOptions.map((color) => (
-              <ListItem key={color.id} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setCharacterEyeColor(color.id);
-                    setEyeColorPickerOpen(false);
-                  }}
-                  sx={{
-                    borderRadius: '12px',
-                    mb: 0.5,
-                    py: 1.5,
-                    background: characterEyeColor === color.id ? 'rgba(0,122,255,0.1)' : 'transparent',
-                    border: characterEyeColor === color.id ? '2px solid #007AFF' : '2px solid transparent',
-                  }}
-                >
-                  <ListItemIcon>
-                    <Box component="img" src={color.image} alt={color.label} sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover', border: '2px solid rgba(0,0,0,0.1)' }} />
-                  </ListItemIcon>
-                  <ListItemText primary={color.label} primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} />
-                  {characterEyeColor === color.id && <CheckIcon sx={{ color: '#007AFF' }} />}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Box sx={{ p: 2, pt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              variant="outlined" 
-              onClick={() => setEyeColorPickerOpen(false)} 
-              sx={{ 
-                color: '#86868B', 
-                borderColor: 'rgba(0,0,0,0.15)', 
-                borderRadius: '12px',
-                px: 4,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Drawer>
-      </Box>
-
-        {/* Notification */}
-        <Snackbar
-          open={notification.open}
-          autoHideDuration={6000}
-          onClose={() => setNotification(prev => ({ ...prev, open: false }))}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          sx={{ mt: 8 }}
-        >
-          <Alert
-            onClose={() => setNotification(prev => ({ ...prev, open: false }))}
-            severity={notification.severity}
-            sx={{ width: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            onClick={handleCreateCharacter}
+            disabled={isCreatingCharacter || isLoadingCharacter}
+            sx={{
+              py: 2,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+              boxShadow: '0 8px 24px rgba(0,122,255,0.3)',
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              width: { xs: '100%', sm: 'fit-content' },
+              px: 4,
+              '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
+              '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' },
+            }}
           >
-            {notification.message}
-          </Alert>
-        </Snackbar>
+            {isCreatingCharacter ? (
+              <CircularProgress size={24} sx={{ color: '#fff' }} />
+            ) : (
+              isEditMode
+                ? `Update ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
+                : `Create ${characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')))}`
+            )}
+          </Button>
+        </Box>
+      </Paper>
+
+      {/* Notification */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={() => setNotification(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 8 }}
+      >
+        <Alert
+          onClose={() => setNotification(prev => ({ ...prev, open: false }))}
+          severity={notification.severity}
+          sx={{ width: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

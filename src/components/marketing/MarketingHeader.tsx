@@ -378,13 +378,13 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                       to="/my-music"
                       variant="contained"
                       sx={{
-                        // Dashboard button - same gradient as "Unlock Gruvi"
+                        // Let's Get Gruvi button - gradient with squarish radius
                         background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
                         backgroundColor: 'transparent !important',
                         color: '#fff !important',
                         px: 2.5,
                         py: 1,
-                        borderRadius: '100px',
+                        borderRadius: '12px',
                         fontWeight: 600,
                         textTransform: 'none',
                         fontSize: '0.875rem',
@@ -399,7 +399,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         },
                       }}
                     >
-                      Dashboard
+                      Let's Get Gruvi
                     </Button>
                     <Tooltip title="Sign Out">
                       <IconButton
@@ -540,24 +540,27 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               to="/my-music"
               onClick={handleDrawerToggle}
               sx={{
-                // Dashboard button - same gradient as "Unlock Gruvi"
-                background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-                color: '#fff',
+                // Let's Get Gruvi button - blue to cyan gradient with squarish radius
+                background: 'linear-gradient(135deg, #3B82F6 0%, #00D4AA 100%) !important',
+                backgroundColor: 'transparent !important',
+                color: '#fff !important',
                 textTransform: 'none',
                 fontWeight: 600,
-                borderRadius: '100px',
+                borderRadius: '12px',
                 py: 1.25,
                 fontSize: '0.9rem',
                 boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #00D4AA 100%) !important',
+                  backgroundColor: 'transparent !important',
+                  color: '#fff !important',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5)',
+                  boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5) !important',
                 }
               }}
             >
-              Dashboard
+              Let's Get Gruvi
             </Button>
           ) : (
             <>
@@ -664,20 +667,20 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           <Box sx={{ p: 2 }}>
             <Box
               component="a"
-              href="https://fable.app"
+              href="https://thefableapp.com"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
                 display: 'block',
                 textDecoration: 'none',
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
+                background: 'linear-gradient(135deg, rgba(0, 77, 64, 0.9) 0%, rgba(0, 105, 92, 0.9) 100%)',
+                border: '1px solid rgba(0, 212, 170, 0.3)',
                 borderRadius: '16px',
                 p: 2,
                 transition: 'all 0.2s ease',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%)',
-                  borderColor: 'rgba(139, 92, 246, 0.5)',
+                  background: 'linear-gradient(135deg, rgba(0, 95, 80, 0.95) 0%, rgba(0, 128, 112, 0.95) 100%)',
+                  borderColor: 'rgba(0, 212, 170, 0.5)',
                   transform: 'translateY(-2px)',
                 }
               }}
@@ -685,21 +688,21 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               <Typography
                 sx={{
                   fontWeight: 700,
-                  fontSize: '0.85rem',
+                  fontSize: '0.9rem',
                   color: '#fff',
                   mb: 0.5,
                 }}
               >
-                Try Fable
+                Create AI Stories & Audiobooks
               </Typography>
               <Typography
                 sx={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'rgba(0, 212, 170, 0.9)',
                   lineHeight: 1.4,
                 }}
               >
-                Create stunning AI-powered motion graphics and animated content
+                Try Fable - The #1 AI Storytelling App
               </Typography>
             </Box>
           </Box>

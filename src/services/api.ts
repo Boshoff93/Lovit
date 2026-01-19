@@ -488,9 +488,12 @@ export const swapStudioApi = {
   createSwap: (data: {
     userId: string;
     sourceVideoKey: string;
+    videoDuration: number; // Duration in seconds for pricing calculation
     characterId?: string;
     characterPrompt?: string;
+    artStyle?: string;
     swapMode: 'wan-replace' | 'wan-move' | 'kling-motion';
+    klingPrompt?: string;
     enableVoiceChange?: boolean;
     voiceId?: string;
   }) => api.post('/api/gruvi/swap-studio/create', data),

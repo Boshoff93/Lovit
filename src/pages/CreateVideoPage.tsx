@@ -849,7 +849,6 @@ const CreateVideoPage: React.FC = () => {
                 />
               </Box>
 
-              <Box sx={{ width: { xs: '100%', md: '50%' } }}>
               <Box
                 onClick={(e) => {
                   if (!isLoadingNarratives) {
@@ -925,14 +924,13 @@ const CreateVideoPage: React.FC = () => {
                 )}
                 <KeyboardArrowDownIcon sx={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
               </Box>
-              </Box>
             </Box>
             )}
 
             {/* Song Selection - only for music videos */}
             {contentType === 'music' && (
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                 <MusicNoteIcon sx={{ color: '#007AFF' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Select Song
@@ -941,7 +939,7 @@ const CreateVideoPage: React.FC = () => {
                   label="Required"
                   size="small"
                   sx={{
-                    ml: 1,
+                    ml: 'auto',
                     background: 'rgba(255,59,48,0.1)',
                     color: '#FF3B30',
                     fontWeight: 600,
@@ -950,7 +948,6 @@ const CreateVideoPage: React.FC = () => {
                 />
               </Box>
 
-              <Box sx={{ width: { xs: '100%', md: '50%' } }}>
               <Box
                 onClick={(e) => {
                   if (!isLoadingSongs) {
@@ -1010,7 +1007,7 @@ const CreateVideoPage: React.FC = () => {
                           </Typography>
                         </>
                       ) : (
-                        <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           Choose a song for your video
                         </Typography>
                       )}
@@ -1018,7 +1015,6 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                 )}
                 <KeyboardArrowDownIcon sx={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
-              </Box>
               </Box>
 
               {songs.length === 0 && !isLoadingSongs && (
@@ -1046,7 +1042,7 @@ const CreateVideoPage: React.FC = () => {
 
             {/* Video Description */}
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   {rouletteMode ? 'Video Concept' : 'Video Description'}
@@ -1056,7 +1052,7 @@ const CreateVideoPage: React.FC = () => {
                     label="Required"
                     size="small"
                     sx={{
-                      ml: 1,
+                      ml: 'auto',
                       background: 'rgba(255,59,48,0.1)',
                       color: '#FF3B30',
                       fontWeight: 600,
@@ -1075,7 +1071,7 @@ const CreateVideoPage: React.FC = () => {
                     : `Add AI assets to your video (max ${MAX_CAST_MEMBERS}):`}
                 </Typography>
 
-                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
                   {/* Dropdown button */}
                   <Box
                     onClick={(e) => {
@@ -1369,15 +1365,13 @@ const CreateVideoPage: React.FC = () => {
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
                   Choose the art style for your video
                 </Typography>
-                <Box sx={{ width: { xs: '100%', md: '50%' } }}>
-                  <StyledDropdown
+                <StyledDropdown
                     options={artStyles}
                     value={selectedStyle}
                     onChange={setSelectedStyle}
                     placeholder="Select style"
                     fullWidth
                   />
-                </Box>
               </Box>
 
               {/* Video Type */}
@@ -1510,111 +1504,132 @@ const CreateVideoPage: React.FC = () => {
 
             {/* Summary & Generate - shown inside Paper on xs/sm/md */}
             <Box sx={{ display: { xs: 'block', lg: 'none' }, mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              {/* Header row */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                  Summary
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
-                    {getCredits()} x
+              {/* Summary header */}
+              <Typography variant="subtitle2" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', mb: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.7rem' }}>
+                Summary
+              </Typography>
+
+              {/* Compact chip-style summary */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3 }}>
+                {/* Style chip */}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: 'rgba(0, 122, 255, 0.15)',
+                  border: '1px solid rgba(0, 122, 255, 0.3)',
+                }}>
+                  <Box
+                    component="img"
+                    src={artStyles.find(s => s.id === selectedStyle)?.image}
+                    sx={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                  <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                    {artStyles.find(s => s.id === selectedStyle)?.label}
                   </Typography>
-                  <GruviCoin size={20} />
-                </Box>
-              </Box>
-
-              {/* Summary bullets - 2 columns on md, 1 column on xs/sm */}
-              <Box sx={{
-                mb: 3,
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                gap: { xs: 0, md: 3 },
-              }}>
-                {/* Column 1: Style, Type */}
-                <Box sx={{ flex: { xs: 'none', md: 1 }, minWidth: 0 }}>
-                  <Box sx={{ display: 'flex', mb: 1.5 }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Style</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                      <Box
-                        component="img"
-                        src={artStyles.find(s => s.id === selectedStyle)?.image}
-                        alt={artStyles.find(s => s.id === selectedStyle)?.label}
-                        sx={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                      />
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>
-                        {artStyles.find(s => s.id === selectedStyle)?.label}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ display: 'flex', mb: { xs: 1.5, md: 0 } }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Type</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                      {(() => {
-                        const typeInfo = videoTypes.find(t => t.id === videoType);
-                        const TypeIcon = typeInfo?.icon;
-                        return (
-                          <>
-                            {TypeIcon && <TypeIcon sx={{ fontSize: 18, color: '#007AFF' }} />}
-                            <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                              {typeInfo?.label}
-                            </Typography>
-                          </>
-                        );
-                      })()}
-                    </Box>
-                  </Box>
                 </Box>
 
-                {/* Column 2: Aspect Ratio */}
-                <Box sx={{ flex: { xs: 'none', md: 1 }, minWidth: 0 }}>
-                  <Box sx={{ display: 'flex' }}>
-                    <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Aspect Ratio</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                      {(() => {
-                        const arInfo = aspectRatios.find(ar => ar.id === aspectRatio);
-                        const ArIcon = arInfo?.Icon;
-                        return (
-                          <>
-                            {ArIcon && <ArIcon sx={{ fontSize: 18, color: aspectRatio === 'portrait' ? '#FF9500' : '#34C759' }} />}
-                            <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                              {arInfo?.label}
-                            </Typography>
-                          </>
-                        );
-                      })()}
-                    </Box>
-                  </Box>
+                {/* Type chip */}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: 'rgba(88, 86, 214, 0.15)',
+                  border: '1px solid rgba(88, 86, 214, 0.3)',
+                }}>
+                  {(() => {
+                    const typeInfo = videoTypes.find(t => t.id === videoType);
+                    const TypeIcon = typeInfo?.icon;
+                    return (
+                      <>
+                        {TypeIcon && <TypeIcon sx={{ fontSize: 16, color: '#5856D6' }} />}
+                        <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                          {typeInfo?.label}
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                </Box>
+
+                {/* Aspect Ratio chip */}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: aspectRatio === 'portrait' ? 'rgba(255, 149, 0, 0.15)' : 'rgba(52, 199, 89, 0.15)',
+                  border: aspectRatio === 'portrait' ? '1px solid rgba(255, 149, 0, 0.3)' : '1px solid rgba(52, 199, 89, 0.3)',
+                }}>
+                  {(() => {
+                    const arInfo = aspectRatios.find(ar => ar.id === aspectRatio);
+                    const ArIcon = arInfo?.Icon;
+                    return (
+                      <>
+                        {ArIcon && <ArIcon sx={{ fontSize: 16, color: aspectRatio === 'portrait' ? '#FF9500' : '#34C759' }} />}
+                        <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                          {arInfo?.label}
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                </Box>
+
+                {/* Token cost chip */}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.75,
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                }}>
+                  <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>
+                    {getCredits()}
+                  </Typography>
+                  <GruviCoin size={16} />
                 </Box>
               </Box>
 
               {/* Generate Button */}
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handleGenerate}
-                disabled={isGenerating || (!videoPrompt.trim() && !rouletteMode) || (contentType === 'music' && !selectedSongId) || (contentType === 'narrative' && !selectedNarrativeId)}
-                sx={{
-                  py: 2,
-                  borderRadius: '16px',
-                  background: contentType === 'narrative'
-                    ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
-                    : 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-                  boxShadow: contentType === 'narrative'
-                    ? '0 8px 24px rgba(88,86,214,0.3)'
-                    : '0 8px 24px rgba(0,122,255,0.3)',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
-                  '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)' },
-                }}
-              >
-                {isGenerating ? (
-                  <CircularProgress size={24} sx={{ color: '#fff' }} />
-                ) : (
-                  contentType === 'narrative' ? 'Generate Narrative Video' : 'Generate Music Video'
-                )}
-              </Button>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant="contained"
+                  onClick={handleGenerate}
+                  disabled={isGenerating || (!videoPrompt.trim() && !rouletteMode) || (contentType === 'music' && !selectedSongId) || (contentType === 'narrative' && !selectedNarrativeId)}
+                  sx={{
+                    py: 1.5,
+                    px: 4,
+                    borderRadius: '12px',
+                    background: contentType === 'narrative'
+                      ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
+                      : 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                    boxShadow: contentType === 'narrative'
+                      ? '0 8px 24px rgba(88,86,214,0.3)'
+                      : '0 8px 24px rgba(0,122,255,0.3)',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    '&:hover': { boxShadow: '0 12px 32px rgba(0,122,255,0.4)' },
+                    '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' },
+                  }}
+                >
+                  {isGenerating ? (
+                    <CircularProgress size={24} sx={{ color: '#fff' }} />
+                  ) : (
+                    contentType === 'narrative' ? 'Generate Narrative Video' : 'Generate Music Video'
+                  )}
+                </Button>
+              </Box>
 
               <Typography
                 variant="caption"
