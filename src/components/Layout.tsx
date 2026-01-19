@@ -51,7 +51,7 @@ export const useLayout = () => {
 };
 
 // Sidebar dimensions
-const sidebarWidth = 240;
+const sidebarWidth = 260;
 const sidebarCollapsedWidth = 72;
 const mobileTopBarHeight = 56;
 

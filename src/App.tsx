@@ -472,7 +472,7 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* Create Narrative - Text-to-Speech */}
+        {/* Create Voiceover - Text-to-Speech */}
         <Route path="/create/narrative" element={
           <RequireAuth>
             <Layout>
@@ -481,7 +481,7 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* My Narratives - List user's narratives */}
+        {/* My Voiceovers - List user's voiceovers */}
         <Route path="/my-narratives" element={
           <RequireAuth>
             <Layout>

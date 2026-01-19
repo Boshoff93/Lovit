@@ -996,6 +996,7 @@ const MotionCapturePage: React.FC = () => {
           <Button
             variant="contained"
             onClick={() => navigate('/my-videos')}
+            startIcon={<VideoLibraryIcon />}
             sx={{
               display: { xs: 'none', sm: 'flex' },
               background: '#8B5CF6',

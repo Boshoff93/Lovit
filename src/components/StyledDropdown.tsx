@@ -21,6 +21,8 @@ export interface DropdownOption {
   id: string;
   label: string;
   image?: string;
+  icon?: React.ReactNode;
+  iconBg?: string;
   description?: string;
   audioPreview?: string;
   isPremium?: boolean;
@@ -153,7 +155,8 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
   const selectedOption = options.find(opt => opt.id === value);
   const displayLabel = value === 'all' ? allOptionLabel : selectedOption?.label || placeholder;
   const displayImage = value === 'all' ? undefined : selectedOption?.image;
-  const displayIcon = value === 'all' ? allOptionIcon : icon;
+  const displayIcon = value === 'all' ? allOptionIcon : (selectedOption?.icon || icon);
+  const displayIconBg = value === 'all' ? undefined : selectedOption?.iconBg;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (!disabled) {
@@ -277,9 +280,27 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
               sx={{ width: 24, height: 24 }}
             />
           ) : displayIcon ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', color: '#007AFF' }}>
-              {displayIcon}
-            </Box>
+            displayIconBg ? (
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: displayIconBg,
+                  color: '#fff',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                {displayIcon}
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', color: '#007AFF' }}>
+                {displayIcon}
+              </Box>
+            )
           ) : null}
           <Typography sx={{ color: '#fff', fontWeight: 500, fontSize: '0.9rem' }}>
             {displayLabel}
@@ -378,14 +399,32 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                     },
                   }}
                 >
-                  {option.image && (
+                  {option.image ? (
                     <ListItemAvatar sx={{ minWidth: 48 }}>
                       <Avatar
                         src={option.image}
                         sx={{ width: 36, height: 36 }}
                       />
                     </ListItemAvatar>
-                  )}
+                  ) : option.icon ? (
+                    <ListItemAvatar sx={{ minWidth: 48 }}>
+                      <Box
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: option.iconBg || 'rgba(0, 122, 255, 0.2)',
+                          color: '#fff',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                        }}
+                      >
+                        {option.icon}
+                      </Box>
+                    </ListItemAvatar>
+                  ) : null}
                   <ListItemText
                     primary={option.label}
                     secondary={option.disabled && option.disabledReason ? option.disabledReason : option.description}

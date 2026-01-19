@@ -5,8 +5,6 @@ import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CloseIcon from '@mui/icons-material/Close';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useLocation } from 'react-router-dom';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
@@ -151,7 +149,6 @@ const GlobalAudioPlayer: React.FC = () => {
   } = useAudioPlayer();
 
   const [localProgress, setLocalProgress] = useState<number | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false); // Light mode by default
 
   // Check if we're on a marketing page (no sidebar)
   const isMarketingPage = MARKETING_PATHS.some(path =>
@@ -178,17 +175,17 @@ const GlobalAudioPlayer: React.FC = () => {
   // Use local progress while dragging/seeking, otherwise use actual progress
   const displayProgress = localProgress !== null ? localProgress : progress;
 
-  // Theme colors based on mode
+  // Dark theme colors
   const theme = {
-    bg: isDarkMode ? '#1A1A1F' : '#fff',
-    border: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-    shadow: isDarkMode ? '0 -4px 24px rgba(0,0,0,0.4)' : '0 -4px 24px rgba(0,0,0,0.08)',
-    text: isDarkMode ? '#fff' : '#1D1D1F',
-    textSecondary: isDarkMode ? 'rgba(255,255,255,0.6)' : '#86868B',
-    sliderRail: isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.08)', // Lighter in dark mode
-    controlBg: isDarkMode ? 'rgba(59, 130, 246, 0.9)' : '#fff', // Blue play button in dark mode
-    controlBorder: isDarkMode ? 'rgba(59, 130, 246, 0.5)' : 'rgba(0,0,0,0.08)',
-    controlColor: isDarkMode ? '#fff' : '#007AFF', // White icon on blue bg in dark mode
+    bg: '#1A1A1F',
+    border: 'rgba(255,255,255,0.1)',
+    shadow: '0 -4px 24px rgba(0,0,0,0.4)',
+    text: '#fff',
+    textSecondary: 'rgba(255,255,255,0.6)',
+    sliderRail: 'rgba(255,255,255,0.25)',
+    controlBg: 'rgba(59, 130, 246, 0.9)',
+    controlBorder: 'rgba(59, 130, 246, 0.5)',
+    controlColor: '#fff',
   };
 
   return (
@@ -429,11 +426,11 @@ const GlobalAudioPlayer: React.FC = () => {
               background: theme.controlBg,
               color: theme.controlColor,
               border: `1px solid ${theme.controlBorder}`,
-              boxShadow: isDarkMode ? '0 2px 8px rgba(59, 130, 246, 0.4)' : '0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.4)',
               transition: 'all 0.2s ease',
               '&:hover': {
-                background: isDarkMode ? 'rgba(59, 130, 246, 1)' : '#fff',
-                boxShadow: isDarkMode ? '0 4px 12px rgba(59, 130, 246, 0.5)' : '0 4px 12px rgba(0,0,0,0.15)',
+                background: 'rgba(59, 130, 246, 1)',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.5)',
                 transform: 'scale(1.05)',
               },
             }}
@@ -450,20 +447,6 @@ const GlobalAudioPlayer: React.FC = () => {
             }}
           >
             <SkipNextIcon />
-          </IconButton>
-
-          {/* Dark/Light mode toggle */}
-          <IconButton
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            size="small"
-            sx={{
-              color: theme.textSecondary,
-              ml: 0.5,
-              transition: 'color 0.3s ease',
-              '&:hover': { color: '#007AFF' },
-            }}
-          >
-            {isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
           </IconButton>
 
           <IconButton

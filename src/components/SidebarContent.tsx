@@ -44,9 +44,9 @@ const gradients = {
 // Navigation items configuration
 const createItems = [
   { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon, gradient: gradients.create },
-  { path: '/create/narrative', label: 'Create Narrative', icon: HeadsetMicIcon, gradient: gradients.create },
+  { path: '/create/narrative', label: 'Create Voiceover', icon: HeadsetMicIcon, gradient: gradients.create },
   { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
-  { path: '/motion-capture', label: 'Motion Capture', icon: SwapHorizIcon, gradient: gradients.create },
+  { path: '/motion-capture', label: 'Create Motion Capture', icon: SwapHorizIcon, gradient: gradients.create },
   { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
 ];
 
@@ -57,9 +57,9 @@ const uploadItems = [
 
 const contentItems = [
   { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon, gradient: gradients.content },
+  { path: '/my-narratives', label: 'My Voiceovers', icon: HeadsetMicIcon, gradient: gradients.content },
   { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon, gradient: gradients.content },
-  { path: '/my-narratives', label: 'My Narratives', icon: HeadsetMicIcon, gradient: gradients.content },
-  { path: '/ai-assets', label: 'AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
+  { path: '/ai-assets', label: 'My AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
 ];
 
 const publishItems = [

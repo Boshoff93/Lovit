@@ -17,7 +17,7 @@ import { RootState } from '../store/store';
 import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PeopleIcon from '@mui/icons-material/People';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -29,14 +29,14 @@ import { charactersApi } from '../services/api';
 import { useLayout } from '../components/Layout';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 
-// Character kind options for dropdown - no images, using icons via the icon prop
+// Character kind options for dropdown with icons and colors (matching dashboard gradient style)
 const characterKindOptions: DropdownOption[] = [
-  { id: 'Human', label: 'Human' },
-  { id: 'Non-Human', label: 'Non-Human' },
-  { id: 'Product', label: 'Product' },
-  { id: 'Place', label: 'Place / Airbnb' },
-  { id: 'App', label: 'Software & Apps' },
-  { id: 'Business', label: 'Business' },
+  { id: 'Human', label: 'Human', icon: <PersonIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)' },
+  { id: 'Non-Human', label: 'Non-Human', icon: <PetsIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)' },
+  { id: 'Product', label: 'Product', icon: <InventoryIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)' },
+  { id: 'Place', label: 'Place / Airbnb', icon: <HomeIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)' },
+  { id: 'App', label: 'Software & Apps', icon: <PhoneIphoneIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)' },
+  { id: 'Business', label: 'Business', icon: <BusinessIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)' },
 ];
 
 // Character type icons mapping
@@ -501,6 +501,7 @@ const CreateCharacterPage: React.FC = () => {
           <Button
             variant="contained"
             onClick={() => navigate('/ai-assets')}
+            startIcon={<FolderSpecialIcon />}
             sx={{
               display: { xs: 'none', sm: 'flex' },
               background: '#007AFF',
@@ -517,7 +518,7 @@ const CreateCharacterPage: React.FC = () => {
               },
             }}
           >
-            View AI Assets
+            My AI Assets
           </Button>
           <IconButton
             onClick={() => navigate('/ai-assets')}
@@ -534,7 +535,7 @@ const CreateCharacterPage: React.FC = () => {
               },
             }}
           >
-            <PeopleIcon sx={{ fontSize: 22 }} />
+            <FolderSpecialIcon sx={{ fontSize: 22 }} />
           </IconButton>
         </Box>
       </Box>
@@ -554,8 +555,8 @@ const CreateCharacterPage: React.FC = () => {
         {/* Name Input */}
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem' }}>
-              What should we call it?
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+              Name
             </Typography>
             <Chip label="Required" size="small" sx={{ background: 'rgba(255,59,48,0.2)', color: '#FF6B6B', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
@@ -609,7 +610,7 @@ const CreateCharacterPage: React.FC = () => {
         }}>
           {/* Type Dropdown */}
           <Box sx={{ mb: 3 }}>
-            <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
               Type
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
@@ -628,7 +629,7 @@ const CreateCharacterPage: React.FC = () => {
           {/* Gender - Only for Human and Non-Human */}
           {!isProductOrPlaceOrApp && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                 Gender
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
@@ -684,7 +685,7 @@ const CreateCharacterPage: React.FC = () => {
           {/* Age - Only for Human and Non-Human */}
           {!isProductOrPlaceOrApp && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                 Age
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
@@ -703,7 +704,7 @@ const CreateCharacterPage: React.FC = () => {
           {/* Hair Length - Only for humans */}
           {characterKind === 'Human' && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                 Hair Length
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
@@ -722,7 +723,7 @@ const CreateCharacterPage: React.FC = () => {
           {/* Hair Color - Only for humans with hair (not bald) */}
           {characterKind === 'Human' && characterHairLength !== 'Bald' && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                 Hair Color
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
@@ -741,7 +742,7 @@ const CreateCharacterPage: React.FC = () => {
           {/* Eye Color - Only for Human and Non-Human */}
           {!isProductOrPlaceOrApp && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                 Eye Color
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
@@ -760,7 +761,7 @@ const CreateCharacterPage: React.FC = () => {
 
         {/* Reference Images */}
         <Box sx={{ mb: 3 }}>
-          <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
             Reference Images
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.85rem' }}>
@@ -886,7 +887,7 @@ const CreateCharacterPage: React.FC = () => {
 
         {/* Description */}
         <Box sx={{ mb: 4 }}>
-          <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1rem', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
             {characterKind === 'Place'
               ? 'Property Details'
               : characterKind === 'Product'

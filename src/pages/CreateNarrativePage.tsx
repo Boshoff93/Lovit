@@ -485,29 +485,79 @@ const CreateNarrativePage: React.FC = () => {
         )}
 
         {/* Header - matching CreateVideoPage style */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-          <Box
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 4,
+          gap: 2,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0, flex: 1 }}>
+            <Box
+              sx={{
+                width: 56,
+                height: 56,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #00D4AA 0%, #007AFF 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 24px rgba(0, 212, 170, 0.3)',
+                flexShrink: 0,
+              }}
+            >
+              <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />
+            </Box>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+                Create Voiceover
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+                Transform your text into professional AI-generated audio
+              </Typography>
+            </Box>
+          </Box>
+          {/* View My Voiceovers button - Full on large, icon on small */}
+          <Button
+            variant="contained"
+            onClick={() => navigate('/my-narratives')}
+            startIcon={<HeadsetMicIcon />}
             sx={{
-              width: 56,
-              height: 56,
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #00D4AA 0%, #007AFF 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 8px 24px rgba(0, 212, 170, 0.3)',
+              display: { xs: 'none', sm: 'flex' },
+              background: 'rgba(255,255,255,0.08)',
+              color: '#fff',
+              px: 2.5,
+              py: 1,
+              borderRadius: '12px',
+              fontWeight: 600,
+              textTransform: 'none',
+              fontSize: '0.9rem',
+              border: '1px solid rgba(255,255,255,0.1)',
+              flexShrink: 0,
+              '&:hover': {
+                background: 'rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.2)',
+              },
             }}
           >
-            <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-              Create Narrative
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-              Transform your text into professional AI-generated audio
-            </Typography>
-          </Box>
+            View My Voiceovers
+          </Button>
+          <IconButton
+            onClick={() => navigate('/my-narratives')}
+            sx={{
+              display: { xs: 'flex', sm: 'none' },
+              background: 'rgba(255,255,255,0.08)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              flexShrink: 0,
+              '&:hover': {
+                background: 'rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.2)',
+              },
+            }}
+          >
+            <HeadsetMicIcon />
+          </IconButton>
         </Box>
 
         {/* Main Content - Two Column Layout */}
@@ -527,12 +577,9 @@ const CreateNarrativePage: React.FC = () => {
         >
           {/* Narrative Type Selection */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <AutoAwesomeIcon sx={{ color: '#00D4AA' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                Narrative Type
-              </Typography>
-            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
+              Narrative Type
+            </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
               Choose the style of content to generate
             </Typography>
@@ -638,8 +685,7 @@ const CreateNarrativePage: React.FC = () => {
 
           {/* Voice Selection */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,  }}>
-              <RecordVoiceOverIcon sx={{ color: '#00D4AA' }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Voice
               </Typography>
@@ -676,12 +722,8 @@ const CreateNarrativePage: React.FC = () => {
 
           {/* Content Prompt */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,  }}>
-              {narrativeType === 'story' ? (
-                <MenuBookIcon sx={{ color: '#00D4AA' }} />
-              ) : (
-                <CampaignIcon sx={{ color: '#FF2D55' }} />
-              )}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <AutoAwesomeIcon sx={{ color: narrativeType === 'story' ? '#00D4AA' : '#FF2D55' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 {narrativeType === 'story' ? 'Story Prompt' : 'Content Prompt'}
               </Typography>

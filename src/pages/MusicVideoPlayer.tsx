@@ -55,6 +55,7 @@ import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, 
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import GruviCoin from '../components/GruviCoin';
+import { GhostButton } from '../components/GhostButton';
 import { TopUpBundle } from '../config/stripe';
 import { useLayout } from '../components/Layout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -4083,77 +4084,77 @@ const MusicVideoPlayer: React.FC = () => {
       />
       
       {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={showDeleteDialog} 
+      <Dialog
+        open={showDeleteDialog}
         onClose={() => !isDeleting && setShowDeleteDialog(false)}
         PaperProps={{
-          sx: { 
-            borderRadius: '24px', 
-            p: 3,
+          sx: {
+            borderRadius: '16px',
+            bgcolor: '#1D1D1F',
             maxWidth: 400,
             mx: 2,
           }
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Box sx={{ 
-            width: 48, 
-            height: 48, 
-            borderRadius: '50%', 
-            bgcolor: 'rgba(255,59,48,0.1)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
+        <DialogTitle sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          pb: 1,
+        }}>
+          <Box sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            bgcolor: 'rgba(255,59,48,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             <Delete sx={{ fontSize: 24, color: '#FF3B30' }} />
           </Box>
-          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
+          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#fff' }}>
             Delete Video?
           </Typography>
-        </Box>
-        
-        <Typography sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
-          Are you sure you want to delete "<strong>{videoData?.songTitle || 'this video'}</strong>"? This action cannot be undone.
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Button 
+        </DialogTitle>
+
+        <DialogContent>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+            Are you sure you want to delete "<strong style={{ color: '#fff' }}>{videoData?.songTitle || 'this video'}</strong>"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+          <GhostButton
             onClick={() => setShowDeleteDialog(false)}
             disabled={isDeleting}
-            fullWidth
-            sx={{ 
-              borderRadius: '100px',
-              textTransform: 'none',
-              fontWeight: 600,
-              py: 1.5,
-              fontSize: '1rem',
-              color: '#1d1d1f',
-              border: '1px solid rgba(0,0,0,0.15)',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
-            }}
+            sx={{ flex: 1, py: 1.25 }}
           >
             Cancel
-          </Button>
+          </GhostButton>
           <Button
             onClick={handleDelete}
             disabled={isDeleting}
             fullWidth
             variant="contained"
             sx={{
-              bgcolor: '#007AFF',
-              borderRadius: '100px',
+              flex: 1,
+              py: 1.25,
+              borderRadius: '12px',
               textTransform: 'none',
               fontWeight: 600,
-              py: 1.5,
-              fontSize: '1rem',
-              boxShadow: 'none',
-              '&:hover': { bgcolor: '#0066DD', boxShadow: 'none' },
-              '&:disabled': { bgcolor: '#007AFF', opacity: 0.7 },
+              background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+              boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+                boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
+              },
+              '&:disabled': { opacity: 0.7 },
             }}
           >
             {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
           </Button>
-        </Box>
+        </DialogActions>
       </Dialog>
 
       {/* Schedule Success Dialog - Ask user to view scheduled posts */}

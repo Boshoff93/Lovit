@@ -200,9 +200,9 @@ const artStyles: DropdownOption[] = [
 
 // Video type options (DropdownOption format)
 // Token costs: Still image video = 40 tokens, Cinematic video = 1000 tokens
-const videoTypes: (DropdownOption & { credits: number; icon: React.ElementType })[] = [
-  { id: 'still', label: 'Still Image', description: '40 credits', credits: 40, icon: ImageIcon },
-  { id: 'standard', label: 'Cinematic', description: '1000 credits', credits: 1000, icon: AnimationIcon },
+const videoTypes: (DropdownOption & { credits: number; IconComponent: React.ElementType })[] = [
+  { id: 'still', label: 'Still Image', description: '40 credits', credits: 40, IconComponent: ImageIcon },
+  { id: 'standard', label: 'Cinematic', description: '1000 credits', credits: 1000, IconComponent: AnimationIcon },
 ];
 
 // Aspect ratio options (DropdownOption format)
@@ -582,11 +582,11 @@ const CreateVideoPage: React.FC = () => {
       return;
     }
 
-    // For narrative videos, require a narrative
+    // For voiceover videos, require a voiceover
     if (contentType === 'narrative' && !selectedNarrativeId) {
       setNotification({
         open: true,
-        message: 'Please select a narrative first',
+        message: 'Please select a voiceover first',
         severity: 'error'
       });
       return;
@@ -599,7 +599,7 @@ const CreateVideoPage: React.FC = () => {
         open: true,
         message: contentType === 'music'
           ? 'Please describe your music video concept or use Gruvi Roulette'
-          : 'Please describe your narrative video content or use Gruvi Roulette',
+          : 'Please describe your voiceover video content or use Gruvi Roulette',
         severity: 'error'
       });
       return;
@@ -706,6 +706,7 @@ const CreateVideoPage: React.FC = () => {
         <Button
           variant="contained"
           onClick={() => navigate('/my-videos')}
+          startIcon={<VideoLibraryIcon />}
           sx={{
             display: { xs: 'none', sm: 'flex' },
             background: '#007AFF',
@@ -819,7 +820,7 @@ const CreateVideoPage: React.FC = () => {
                 <ToggleButton value="narrative" sx={{ flexDirection: 'column', gap: 0.5, py: 2 }}>
                   <RecordVoiceOverIcon sx={{ fontSize: 28, color: contentType === 'narrative' ? '#007AFF' : 'rgba(255,255,255,0.5)' }} />
                   <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: contentType === 'narrative' ? '#fff' : 'rgba(255,255,255,0.7)' }}>
-                    Narrative Video
+                    Voiceover Video
                   </Typography>
                   <Typography variant="body2" sx={{ color: contentType === 'narrative' ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>
                     UGC & influencer
@@ -828,19 +829,18 @@ const CreateVideoPage: React.FC = () => {
               </ToggleButtonGroup>
             </Box>
 
-            {/* Narrative Selection - only for narrative videos */}
+            {/* Voiceover Selection - only for voiceover videos */}
             {contentType === 'narrative' && (
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <RecordVoiceOverIcon sx={{ color: '#5856D6' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                  Select Narrative
+                  Select Voiceover
                 </Typography>
                 <Chip
                   label="Required"
                   size="small"
                   sx={{
-                    ml: 1,
+                    ml: 'auto',
                     background: 'rgba(255,59,48,0.1)',
                     color: '#FF3B30',
                     fontWeight: 600,
@@ -877,7 +877,7 @@ const CreateVideoPage: React.FC = () => {
                 {isLoadingNarratives ? (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CircularProgress size={16} sx={{ color: '#fff' }} />
-                    <span>Loading narratives...</span>
+                    <span>Loading voiceovers...</span>
                   </Box>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
@@ -903,12 +903,12 @@ const CreateVideoPage: React.FC = () => {
                       {selectedNarrativeId ? (
                         <>
                           <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {narratives.find(n => n.narrativeId === selectedNarrativeId)?.title || 'Selected Narrative'}
+                            {narratives.find(n => n.narrativeId === selectedNarrativeId)?.title || 'Selected Voiceover'}
                           </Typography>
                           <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
                             {(() => {
                               const durationMs = narratives.find(n => n.narrativeId === selectedNarrativeId)?.durationMs;
-                              if (!durationMs) return 'Audio narrative';
+                              if (!durationMs) return 'Audio voiceover';
                               const totalSecs = Math.floor(durationMs / 1000);
                               return `${Math.floor(totalSecs / 60)}:${String(totalSecs % 60).padStart(2, '0')}`;
                             })()}
@@ -916,7 +916,7 @@ const CreateVideoPage: React.FC = () => {
                         </>
                       ) : (
                         <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
-                          Choose a narrative for your video
+                          Choose a voiceover for your video
                         </Typography>
                       )}
                     </Box>
@@ -931,7 +931,6 @@ const CreateVideoPage: React.FC = () => {
             {contentType === 'music' && (
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <MusicNoteIcon sx={{ color: '#007AFF' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Select Song
                 </Typography>
@@ -1040,12 +1039,12 @@ const CreateVideoPage: React.FC = () => {
             </Box>
             )}
 
-            {/* Video Description */}
+            {/* Video Prompt */}
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                  {rouletteMode ? 'Video Concept' : 'Video Description'}
+                  {rouletteMode ? 'Video Concept' : 'Video Prompt'}
                 </Typography>
                 {!rouletteMode && (
                   <Chip
@@ -1223,7 +1222,7 @@ const CreateVideoPage: React.FC = () => {
                   <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', textAlign: 'center', maxWidth: 320 }}>
                     {contentType === 'music'
                       ? "We'll create an epic video concept based on your track. Sit back and let the magic happen!"
-                      : "We'll create an amazing narrative video for you. Sit back and let the magic happen!"}
+                      : "We'll create an amazing voiceover video for you. Sit back and let the magic happen!"}
                   </Typography>
                   <Typography sx={{ color: '#007AFF', fontSize: '0.75rem', mt: 2, fontWeight: 500 }}>
                     Click to enter your own prompt instead
@@ -1268,7 +1267,7 @@ const CreateVideoPage: React.FC = () => {
                   }}
                   placeholder={contentType === 'music'
                     ? "Describe the scenes, setting, and story for your music video..."
-                    : "Describe the narrative - what story to tell or what the character should say..."}
+                    : "Describe the voiceover video - what story to tell or what the character should say..."}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 0,
@@ -1350,7 +1349,7 @@ const CreateVideoPage: React.FC = () => {
               {/* Error message */}
               {showPromptError && !videoPrompt.trim() && !rouletteMode && (
                 <Typography sx={{ color: '#f44336', fontSize: '0.75rem', mt: 0.5, ml: 1.5 }}>
-                  Please describe your {contentType === 'music' ? 'music video' : 'narrative'} or use Gruvi Roulette
+                  Please describe your {contentType === 'music' ? 'music video' : 'voiceover video'} or use Gruvi Roulette
                 </Typography>
               )}
             </Box>
@@ -1413,7 +1412,7 @@ const CreateVideoPage: React.FC = () => {
                   }}
                 >
                   {videoTypes.map((type) => {
-                    const TypeIcon = type.icon;
+                    const TypeIcon = type.IconComponent;
                     const isSelected = videoType === type.id;
                     // Disable "Still" for UGC narratives (UGC uses OmniHuman which requires cinematic)
                     const isDisabled = type.id === 'still' && contentType === 'narrative' && selectedNarrativeType === 'ugc';
@@ -1545,7 +1544,7 @@ const CreateVideoPage: React.FC = () => {
                 }}>
                   {(() => {
                     const typeInfo = videoTypes.find(t => t.id === videoType);
-                    const TypeIcon = typeInfo?.icon;
+                    const TypeIcon = typeInfo?.IconComponent;
                     return (
                       <>
                         {TypeIcon && <TypeIcon sx={{ fontSize: 16, color: '#5856D6' }} />}
@@ -1626,7 +1625,7 @@ const CreateVideoPage: React.FC = () => {
                   {isGenerating ? (
                     <CircularProgress size={24} sx={{ color: '#fff' }} />
                   ) : (
-                    contentType === 'narrative' ? 'Generate Narrative Video' : 'Generate Music Video'
+                    contentType === 'narrative' ? 'Generate Voiceover Video' : 'Generate Music Video'
                   )}
                 </Button>
               </Box>
@@ -1690,7 +1689,7 @@ const CreateVideoPage: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
                   {(() => {
                     const typeInfo = videoTypes.find(t => t.id === videoType);
-                    const TypeIcon = typeInfo?.icon;
+                    const TypeIcon = typeInfo?.IconComponent;
                     return (
                       <>
                         {TypeIcon && <TypeIcon sx={{ fontSize: 18, color: '#007AFF' }} />}
@@ -1746,7 +1745,7 @@ const CreateVideoPage: React.FC = () => {
               {isGenerating ? (
                 <CircularProgress size={24} sx={{ color: '#fff' }} />
               ) : (
-                contentType === 'narrative' ? 'Generate Narrative Video' : 'Generate Music Video'
+                contentType === 'narrative' ? 'Generate Voiceover Video' : 'Generate Music Video'
               )}
             </Button>
 
@@ -2240,11 +2239,11 @@ const CreateVideoPage: React.FC = () => {
         {/* Header */}
         <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
-            Select Narrative
+            Select Voiceover
           </Typography>
         </Box>
 
-        {/* Narrative list */}
+        {/* Voiceover list */}
         <List sx={{
           py: 0.5,
           maxHeight: 340,
@@ -2255,7 +2254,7 @@ const CreateVideoPage: React.FC = () => {
           {narratives.length === 0 ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 2 }}>
-                No narratives yet
+                No voiceovers yet
               </Typography>
               <Button
                 variant="outlined"
@@ -2273,7 +2272,7 @@ const CreateVideoPage: React.FC = () => {
                 }}
               >
                 <RecordVoiceOverIcon sx={{ mr: 1, fontSize: 18 }} />
-                Create Narrative
+                Create Voiceover
               </Button>
             </Box>
           ) : (
@@ -2316,7 +2315,7 @@ const CreateVideoPage: React.FC = () => {
                       primary={narrative.title}
                       secondary={narrative.durationMs
                         ? `${Math.floor(narrative.durationMs / 1000 / 60)}:${String(Math.floor(narrative.durationMs / 1000 % 60)).padStart(2, '0')}`
-                        : 'Audio narrative'}
+                        : 'Audio voiceover'}
                       primaryTypographyProps={{
                         sx: { color: '#fff', fontWeight: 500, fontSize: '0.9rem' }
                       }}

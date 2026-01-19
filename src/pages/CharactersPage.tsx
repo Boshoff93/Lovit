@@ -30,6 +30,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { charactersApi } from '../services/api';
+import { GhostButton } from '../components/GhostButton';
 
 // Avatar with skeleton loading state
 const LoadingAvatar: React.FC<{
@@ -60,7 +61,7 @@ const LoadingAvatar: React.FC<{
         sx={{
           width: size,
           height: size,
-          bgcolor: '#E5E5EA',
+          bgcolor: 'rgba(255,255,255,0.1)',
           opacity: isLoading && !hasError ? 0 : 1,
           transition: 'opacity 0.2s ease',
         }}
@@ -73,7 +74,7 @@ const LoadingAvatar: React.FC<{
           loading: 'lazy',
         }}
       >
-        {fallback || <PersonIcon sx={{ color: '#8E8E93' }} />}
+        {fallback || <PersonIcon sx={{ color: 'rgba(255,255,255,0.5)' }} />}
       </Avatar>
     </Box>
   );
@@ -91,24 +92,24 @@ interface Character {
   createdAt: string;
 }
 
-// Helper to get character type icon and color
+// Helper to get character type icon and color (matching CreateAIAssetPage icons)
 const getCharacterTypeIcon = (characterType?: string, description?: string): { icon: React.ElementType; color: string } => {
   // Check characterType field first
   if (characterType) {
     switch (characterType) {
-      case 'Product': return { icon: InventoryIcon, color: '#34C759' };
-      case 'Place': return { icon: HomeIcon, color: '#AF52DE' };
-      case 'App': return { icon: PhoneIphoneIcon, color: '#5856D6' };
+      case 'Product': return { icon: InventoryIcon, color: '#FF2D55' }; // Pink/red
+      case 'Place': return { icon: HomeIcon, color: '#5856D6' }; // Purple
+      case 'App': return { icon: PhoneIphoneIcon, color: 'rgba(255,255,255,0.6)' }; // Gray
       case 'Business': return { icon: BusinessIcon, color: '#FF3B30' };
-      case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' };
-      default: return { icon: PersonIcon, color: '#007AFF' };
+      case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' }; // Orange
+      default: return { icon: PersonIcon, color: '#007AFF' }; // Blue for human
     }
   }
   // Fallback to description parsing for legacy data
   if (description) {
-    if (description.includes('Place')) return { icon: HomeIcon, color: '#AF52DE' };
-    if (description.includes('App')) return { icon: PhoneIphoneIcon, color: '#5856D6' };
-    if (description.includes('Product')) return { icon: InventoryIcon, color: '#34C759' };
+    if (description.includes('Place')) return { icon: HomeIcon, color: '#5856D6' };
+    if (description.includes('App')) return { icon: PhoneIphoneIcon, color: 'rgba(255,255,255,0.6)' };
+    if (description.includes('Product')) return { icon: InventoryIcon, color: '#FF2D55' };
     if (description.includes('Business')) return { icon: BusinessIcon, color: '#FF3B30' };
     if (description.includes('Non-Human')) return { icon: PetsIcon, color: '#FF9500' };
   }
@@ -136,15 +137,14 @@ const CharacterAvatar: React.FC<{
     <Box sx={{
       width: size,
       height: size,
-      borderRadius: '50%',
+      borderRadius: '12px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: `${color}15`,
-      border: `2px solid ${color}30`,
+      background: color,
       flexShrink: 0,
     }}>
-      <IconComponent sx={{ fontSize: { xs: size.xs * 0.55, sm: size.sm * 0.55 }, color }} />
+      <IconComponent sx={{ fontSize: { xs: size.xs * 0.5, sm: size.sm * 0.5 }, color: '#fff' }} />
     </Box>
   );
 };
@@ -258,22 +258,22 @@ const CharactersPage: React.FC = () => {
           </Box>
           <Box sx={{ minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-                AI Assets
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+                My AI Assets
               </Typography>
               <Chip
                 label={`${characters.length}`}
                 size="small"
                 sx={{
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  color: '#007AFF',
+                  backgroundColor: 'rgba(59,130,246,0.15)',
+                  color: '#3B82F6',
                   fontWeight: 500,
                   height: 24,
                   '& .MuiChip-label': { px: 1.5 },
                 }}
               />
             </Box>
-            <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Manage your characters, products, and places
             </Typography>
           </Box>
@@ -287,12 +287,12 @@ const CharactersPage: React.FC = () => {
               onClick={() => navigate('/ai-assets/create')}
               sx={{
                 display: { xs: 'flex', sm: 'none' },
-                background: '#007AFF',
+                background: '#3B82F6',
                 color: '#fff',
                 width: 44,
                 height: 44,
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': { background: '#0066CC' },
+                boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
+                '&:hover': { background: '#2563EB' },
               }}
             >
               <AddIcon sx={{ fontSize: 22 }} />
@@ -305,14 +305,14 @@ const CharactersPage: React.FC = () => {
             onClick={() => navigate('/ai-assets/create')}
             sx={{
               display: { xs: 'none', sm: 'flex' },
-              background: '#007AFF',
+              background: '#3B82F6',
               borderRadius: '10px',
               textTransform: 'none',
               fontWeight: 600,
               px: 2,
               py: 0.75,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              '&:hover': { background: '#0066CC' },
+              boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
+              '&:hover': { background: '#2563EB' },
             }}
           >
             Create New
@@ -321,22 +321,22 @@ const CharactersPage: React.FC = () => {
       </Box>
 
       {/* Description */}
-      <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 3 }}>
+      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
         Add people, products, or places. Tag them when creating a video to feature them! This helps the AI understand exactly what they look like, so your videos match your vision.
       </Typography>
 
       {/* Content */}
       {isLoading ? (
         <Box sx={{ py: 8, textAlign: 'center' }}>
-          <CircularProgress sx={{ color: '#007AFF' }} />
+          <CircularProgress sx={{ color: '#3B82F6' }} />
         </Box>
       ) : characters.length === 0 ? (
         <Box sx={{ py: 8, textAlign: 'center' }}>
-          <PersonIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
+          <PersonIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+          <Typography variant="h6" sx={{ color: '#fff' }}>
             No references yet
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1, mb: 3 }}>
             Add characters, products or places to feature in your songs and videos
           </Typography>
           <Button
@@ -348,8 +348,8 @@ const CharactersPage: React.FC = () => {
               textTransform: 'none',
               fontWeight: 600,
               px: 3,
-              background: '#007AFF',
-              '&:hover': { background: '#0066CC' },
+              background: '#3B82F6',
+              '&:hover': { background: '#2563EB' },
             }}
           >
             Create New
@@ -403,26 +403,26 @@ const CharactersPage: React.FC = () => {
                 gap: { xs: 1.5, sm: 2 },
                 p: { xs: 1.5, sm: 2 },
                 borderRadius: '12px',
-                border: '1px solid rgba(0,0,0,0.08)',
-                background: '#fff',
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.03)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 '&:hover': {
-                  backgroundColor: 'rgba(0,122,255,0.02)',
-                  borderColor: 'rgba(0,122,255,0.2)',
+                  backgroundColor: 'rgba(59,130,246,0.08)',
+                  borderColor: 'rgba(59,130,246,0.3)',
                 },
               }}
             >
               <CharacterAvatar
                 character={character}
-                size={{ xs: 48, sm: 56 }}
+                size={{ xs: 40, sm: 44 }}
               />
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography 
-                  variant="subtitle1" 
-                  sx={{ 
-                    fontWeight: 600, 
-                    color: '#1D1D1F',
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: 600,
+                    color: '#fff',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -431,10 +431,10 @@ const CharactersPage: React.FC = () => {
                 >
                   {character.characterName}
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  color="text.secondary" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255,255,255,0.5)',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -455,11 +455,11 @@ const CharactersPage: React.FC = () => {
                   onClick={(e) => handleDeleteClick(e, character)}
                   size="small"
                   sx={{
-                    color: '#8E8E93',
+                    color: 'rgba(255,255,255,0.8)',
                     flexShrink: 0,
                     '&:hover': {
-                      color: '#FF3B30',
-                      backgroundColor: 'rgba(255,59,48,0.1)',
+                      color: '#fff',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
                     },
                   }}
                 >
@@ -470,14 +470,14 @@ const CharactersPage: React.FC = () => {
           );
 
           return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: { xs: '100%', md: '100%%' } }}>
               {sections.map((section) => (
                 <Box key={section.key}>
-                  <Typography 
-                    sx={{ 
-                      fontSize: '0.8rem', 
-                      fontWeight: 600, 
-                      color: '#86868B', 
+                  <Typography
+                    sx={{
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      color: 'rgba(255,255,255,0.5)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       mb: 1.5,
@@ -501,61 +501,60 @@ const CharactersPage: React.FC = () => {
           onClose={() => !isDeleting && setDeleteDialogOpen(false)}
           PaperProps={{
             sx: {
-              borderRadius: '16px',
-              maxWidth: 400,
+              borderRadius: 3,
+              p: 1,
+              minWidth: 340,
+              bgcolor: '#1D1D1F',
+              border: '1px solid rgba(255,255,255,0.1)',
             }
           }}
         >
-          <DialogTitle sx={{ fontWeight: 600 }}>
-            Delete?
+          <DialogTitle sx={{ pb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              bgcolor: 'rgba(255,59,48,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <DeleteIcon sx={{ fontSize: 24, color: '#FF3B30' }} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+              Delete AI Asset?
+            </Typography>
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete "{characterToDelete?.characterName}"? This cannot be undone.
+            <DialogContentText sx={{ color: 'rgba(255,255,255,0.7)' }}>
+              Are you sure you want to delete "<strong style={{ color: '#fff' }}>{characterToDelete?.characterName}</strong>"? This action cannot be undone.
             </DialogContentText>
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-            <Button
+          <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+            <GhostButton
               onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
-              variant="outlined"
-              sx={{
-                color: '#1D1D1F',
-                borderColor: 'rgba(0,0,0,0.2)',
-                textTransform: 'none',
-                fontWeight: 500,
-                borderRadius: '12px',
-                px: 3,
-                py: 1,
-                flex: 1,
-                '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.4)',
-                  backgroundColor: 'rgba(0,0,0,0.02)',
-                },
-              }}
+              sx={{ flex: 1, py: 1.25 }}
             >
               Cancel
-            </Button>
+            </GhostButton>
             <Button
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
               variant="contained"
               sx={{
-                color: '#fff',
-                backgroundColor: '#007AFF',
+                flex: 1,
+                py: 1.25,
+                borderRadius: '12px',
                 textTransform: 'none',
                 fontWeight: 600,
-                borderRadius: '12px',
-                px: 3,
-                py: 1,
-                flex: 1,
+                background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+                boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
                 '&:hover': {
-                  backgroundColor: '#0066CC',
+                  background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+                  boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
                 },
-                '&.Mui-disabled': {
-                  backgroundColor: 'rgba(0,122,255,0.5)',
-                  color: '#fff',
-                },
+                '&:disabled': { opacity: 0.7 },
               }}
             >
               {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}

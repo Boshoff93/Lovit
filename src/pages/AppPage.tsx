@@ -57,6 +57,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
+import { GhostButton, GhostIconButton } from '../components/GhostButton';
 
 // Genre options for filter with images
 const genreOptions = [
@@ -1359,7 +1360,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </Box>
           <Box sx={{ minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 {activeTab === 'songs' ? 'My Music' : 'My Videos'}
               </Typography>
               <Chip
@@ -1374,7 +1375,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 }}
               />
             </Box>
-            <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               {activeTab === 'songs' ? 'Your generated and uploaded tracks' : 'Your generated and uploaded videos'}
             </Typography>
           </Box>
@@ -1385,30 +1386,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           {/* Full buttons on sm+ screens */}
           <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5 }}>
             {/* Upload Button */}
-            <Button
-              variant="outlined"
-              startIcon={<CloudUploadIcon sx={{ color: '#007AFF' }} />}
+            <GhostButton
+              startIcon={<CloudUploadIcon />}
               onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
-              sx={{
-                borderColor: '#007AFF',
-                color: '#007AFF',
-                borderRadius: '10px',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 2,
-                py: 0.75,
-                '& .MuiButton-startIcon': {
-                  color: '#007AFF',
-                },
-                '&:hover': {
-                  borderColor: '#0066CC',
-                  color: '#0066CC',
-                  background: 'rgba(0,122,255,0.08)',
-                },
-              }}
+              sx={{ borderRadius: '10px', px: 2, py: 0.75 }}
             >
               Upload
-            </Button>
+            </GhostButton>
             {/* Create New Button */}
             <Button
               variant="contained"
@@ -1430,22 +1414,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </Box>
           {/* Circle icon buttons on xs screens */}
           <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center', gap: 1 }}>
-            <IconButton
+            <GhostIconButton
               onClick={() => navigate(activeTab === 'songs' ? '/upload?type=song' : '/upload?type=video')}
-              sx={{
-                width: 44,
-                height: 44,
-                border: '2px solid #007AFF',
-                color: '#007AFF',
-                '&:hover': {
-                  borderColor: '#0066CC',
-                  color: '#0066CC',
-                  background: 'rgba(0,122,255,0.08)',
-                },
-              }}
+              sx={{ width: 44, height: 44 }}
             >
-              <CloudUploadIcon sx={{ fontSize: 22, color: '#007AFF' }} />
-            </IconButton>
+              <CloudUploadIcon sx={{ fontSize: 22 }} />
+            </GhostIconButton>
             <IconButton
               onClick={() => navigate(activeTab === 'songs' ? '/create/music' : '/create/video')}
               sx={{
@@ -1496,22 +1470,28 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               flex: { lg: 1 },
               '& .MuiOutlinedInput-root': {
                 borderRadius: '10px',
-                backgroundColor: 'rgba(0,0,0,0.03)',
+                backgroundColor: searchQuery ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+                border: searchQuery ? '2px solid #3B82F6' : '2px solid transparent',
+                color: '#fff',
                 '& fieldset': { border: 'none' },
-                '&:hover': { backgroundColor: 'rgba(0,0,0,0.05)' },
-                '&.Mui-focused': { backgroundColor: 'rgba(0,122,255,0.05)' },
+                '&:hover': { backgroundColor: searchQuery ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.08)' },
+                '&.Mui-focused': { backgroundColor: 'rgba(59,130,246,0.1)', border: '2px solid #3B82F6' },
+              },
+              '& .MuiInputBase-input': {
+                color: '#fff',
+                '&::placeholder': { color: 'rgba(255,255,255,0.5)', opacity: 1 },
               },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: '#86868B' }} />
+                  <SearchIcon sx={{ color: '#fff' }} />
                 </InputAdornment>
               ),
               endAdornment: searchQuery && (
                 <InputAdornment position="end">
                   <IconButton size="small" onClick={() => setSearchQuery('')}>
-                    <ClearIcon sx={{ fontSize: 18 }} />
+                    <ClearIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }} />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -1551,7 +1531,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       }}>
                         <MusicNoteIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#fff' }} />
                       </Box>
-                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>All Genres</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>All Genres</Typography>
                     </Box>
                   );
                 }
@@ -1564,23 +1544,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       alt={genre.name}
                       sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{genre.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>{genre.name}</Typography>
                   </Box>
                 ) : selected;
               }}
               sx={{
                 borderRadius: '10px',
-                backgroundColor: genreFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                backgroundColor: genreFilter ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+                border: genreFilter ? '2px solid #3B82F6' : '2px solid transparent',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '&:hover': { backgroundColor: genreFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
+                '&:hover': { backgroundColor: genreFilter ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.08)' },
+                '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.5)' },
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
                     maxHeight: 400,
                     borderRadius: '12px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                     mt: 1,
+                    bgcolor: '#1D1D1F',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }
                 }
               }}
@@ -1591,25 +1575,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     width: 28,
                     height: 28,
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                    background: 'linear-gradient(135deg, #3B82F6, #5AC8FA)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
                     <MusicNoteIcon sx={{ fontSize: 16, color: '#fff' }} />
                   </Box>
-                  <Typography sx={{ fontWeight: 500 }}>All Genres</Typography>
+                  <Typography sx={{ fontWeight: 500, color: '#fff' }}>All Genres</Typography>
                 </Box>
               </MenuItem>
-              <Divider sx={{ my: 1 }} />
+              <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
               {genreOptions.map((genre) => (
-                <MenuItem 
-                  key={genre.id} 
+                <MenuItem
+                  key={genre.id}
                   value={genre.id}
-                  sx={{ 
+                  sx={{
                     py: 1,
-                    '&:hover': { backgroundColor: 'rgba(0,122,255,0.08)' },
-                    '&.Mui-selected': { backgroundColor: 'rgba(0,122,255,0.12)' },
+                    '&:hover': { backgroundColor: 'rgba(59,130,246,0.15)' },
+                    '&.Mui-selected': { backgroundColor: 'rgba(59,130,246,0.2)' },
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -1625,7 +1609,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                       }}
                     />
-                    <Typography sx={{ fontWeight: 500 }}>{genre.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, color: '#fff' }}>{genre.name}</Typography>
                   </Box>
                 </MenuItem>
               ))}
@@ -1657,7 +1641,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       }}>
                         <AutoAwesomeIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#fff' }} />
                       </Box>
-                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>All Moods</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>All Moods</Typography>
                     </Box>
                   );
                 }
@@ -1670,23 +1654,27 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       alt={mood.name}
                       sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', flexShrink: 0 }}
                     />
-                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mood.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: { xs: '0.85rem', sm: '1rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#fff' }}>{mood.name}</Typography>
                   </Box>
                 ) : selected;
               }}
               sx={{
                 borderRadius: '10px',
-                backgroundColor: moodFilter ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.03)',
+                backgroundColor: moodFilter ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+                border: moodFilter ? '2px solid #3B82F6' : '2px solid transparent',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '&:hover': { backgroundColor: moodFilter ? 'rgba(0,122,255,0.15)' : 'rgba(0,0,0,0.05)' },
+                '&:hover': { backgroundColor: moodFilter ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.08)' },
+                '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.5)' },
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
                     maxHeight: 400,
                     borderRadius: '12px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                     mt: 1,
+                    bgcolor: '#1D1D1F',
+                    border: '1px solid rgba(255,255,255,0.1)',
                   }
                 }
               }}
@@ -1704,18 +1692,18 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   }}>
                     <AutoAwesomeIcon sx={{ fontSize: 16, color: '#fff' }} />
                   </Box>
-                  <Typography sx={{ fontWeight: 500 }}>All Moods</Typography>
+                  <Typography sx={{ fontWeight: 500, color: '#fff' }}>All Moods</Typography>
                 </Box>
               </MenuItem>
-              <Divider sx={{ my: 1 }} />
+              <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
               {moodOptions.map((mood) => (
-                <MenuItem 
-                  key={mood.id} 
+                <MenuItem
+                  key={mood.id}
                   value={mood.id}
-                  sx={{ 
+                  sx={{
                     py: 1,
-                    '&:hover': { backgroundColor: 'rgba(0,122,255,0.08)' },
-                    '&.Mui-selected': { backgroundColor: 'rgba(0,122,255,0.12)' },
+                    '&:hover': { backgroundColor: 'rgba(59,130,246,0.15)' },
+                    '&.Mui-selected': { backgroundColor: 'rgba(59,130,246,0.2)' },
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -1731,7 +1719,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                       }}
                     />
-                    <Typography sx={{ fontWeight: 500 }}>{mood.name}</Typography>
+                    <Typography sx={{ fontWeight: 500, color: '#fff' }}>{mood.name}</Typography>
                   </Box>
                 </MenuItem>
               ))}
@@ -1751,9 +1739,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               }}
               sx={{
                 textTransform: 'none',
-                color: '#86868B',
+                color: '#fff !important',
                 whiteSpace: 'nowrap',
-                '&:hover': { color: '#1D1D1F', backgroundColor: 'rgba(0,0,0,0.05)' },
+                '& .MuiSvgIcon-root': { color: '#fff !important' },
+                '&:hover': { color: '#fff !important', backgroundColor: 'rgba(255,255,255,0.1)' },
               }}
               startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
             >
@@ -1802,11 +1791,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           </Box>
         ) : totalSongsCount === 0 ? (
           <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
-            <MusicNoteIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary">
+            <MusicNoteIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#fff' }}>
               No songs yet
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1, mb: 3, px: 2 }}>
               Create your first song to get started
             </Typography>
             <Button
@@ -1840,12 +1829,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     gap: { xs: 1.5, sm: 2 },
                     p: { xs: 1.5, sm: 2 },
                     px: { xs: 2, sm: 3 },
-                    borderBottom: index < displayedSongs.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none',
+                    borderBottom: index < displayedSongs.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                     transition: 'all 0.2s ease',
                     opacity: isProcessing ? 0.85 : 1,
                     cursor: isProcessing || isFailed ? 'default' : 'pointer',
                     '&:hover': {
-                      backgroundColor: 'rgba(0,122,255,0.03)',
+                      backgroundColor: 'rgba(59,130,246,0.08)',
                       '& .play-overlay': {
                         opacity: 1,
                       },
@@ -1857,7 +1846,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     sx={{
                       width: { xs: 24, sm: 32 },
                       textAlign: 'center',
-                      color: '#86868B',
+                      color: '#fff',
                       fontSize: { xs: '0.8rem', sm: '0.9rem' },
                       fontWeight: 500,
                       flexShrink: 0,
@@ -1946,7 +1935,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                       <Typography
                         sx={{
                           fontWeight: 600,
-                          color: isFailed ? '#FF3B30' : '#1D1D1F',
+                          color: isFailed ? '#FF3B30' : '#fff',
                           fontSize: { xs: '0.85rem', sm: '0.95rem' },
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -1983,8 +1972,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         />
                       </Box>
                     ) : (
-                      <Typography sx={{ 
-                        color: '#86868B', 
+                      <Typography sx={{
+                        color: 'rgba(255,255,255,0.5)',
                         fontSize: { xs: '0.75rem', sm: '0.85rem' },
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -2007,13 +1996,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         sx={{
                           width: { xs: 36, md: 40 },
                           height: { xs: 36, md: 40 },
-                          background: '#fff',
-                          border: '1px solid rgba(0,0,0,0.08)',
-                          color: '#007AFF',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                          background: '#3B82F6',
+                          color: '#fff',
                           '&:hover': {
-                            background: '#fff',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            background: '#2563EB',
                           },
                         }}
                       >
@@ -2034,10 +2020,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                         }}
                         size="small"
                         sx={{
-                          color: '#86868B',
+                          color: '#fff',
                           '&:hover': {
-                            color: '#1D1D1F',
-                            background: 'transparent',
+                            color: '#fff',
+                            background: 'rgba(255,255,255,0.1)',
                           },
                         }}
                       >
@@ -2056,18 +2042,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           sx={{
                             width: 40,
                             height: 40,
-                            background: '#fff',
-                            border: '1px solid rgba(0,0,0,0.08)',
-                            color: '#FF3B30',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            background: 'rgba(255,59,48,0.75)',
+                            color: '#fff',
                             '&:hover': {
-                              background: '#fff',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              background: 'rgba(255,59,48,0.9)',
                             },
                           }}
                         >
                           {deletingSongId === song.songId ? (
-                            <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
+                            <CircularProgress size={20} sx={{ color: '#fff' }} />
                           ) : (
                             <DeleteIcon sx={{ fontSize: 20 }} />
                           )}
@@ -2095,18 +2078,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                           sx={{
                             width: 40,
                             height: 40,
-                            background: '#fff',
-                            border: '1px solid rgba(0,0,0,0.08)',
-                            color: '#FF3B30',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            background: 'rgba(255,59,48,0.75)',
+                            color: '#fff',
                             '&:hover': {
-                              background: '#fff',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              background: 'rgba(255,59,48,0.9)',
                             },
                           }}
                         >
                           {deletingSongId === song.songId ? (
-                            <CircularProgress size={20} sx={{ color: '#FF3B30' }} />
+                            <CircularProgress size={20} sx={{ color: '#fff' }} />
                           ) : (
                             <DeleteIcon sx={{ fontSize: 20 }} />
                           )}
@@ -2290,10 +2270,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                   return (
                     <Box key={dateKey} sx={{ mb: 4, overflow: 'visible' }}>
                       {/* Date Section Header */}
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          color: '#86868B',
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          color: 'rgba(255,255,255,0.5)',
                           fontWeight: 600,
                           mb: 2,
                           textTransform: 'uppercase',
@@ -2376,11 +2356,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             </Box>
           ) : (
             <Box sx={{ py: 8, px: 3, textAlign: 'center' }}>
-              <VideoLibraryIcon sx={{ fontSize: 64, color: 'rgba(0,0,0,0.1)', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary">
+              <VideoLibraryIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+              <Typography variant="h6" sx={{ color: '#fff' }}>
                 No music videos yet
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, px: 2 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1, mb: 3, px: 2 }}>
                 Create a song first, then generate a music video from it
               </Typography>
               <Button
@@ -2412,11 +2392,22 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           mt: 7
         }}
       >
-        <Alert 
-          onClose={handleCloseNotification} 
+        <Alert
+          onClose={handleCloseNotification}
           severity={notification.severity}
           variant="filled"
-          sx={{ width: '100%', alignItems: 'center' }}
+          sx={{
+            width: '100%',
+            alignItems: 'center',
+            bgcolor: notification.severity === 'success' ? '#10B981' : notification.severity === 'error' ? '#EF4444' : '#3B82F6',
+            color: '#fff',
+            '& .MuiAlert-icon': {
+              color: '#fff',
+            },
+            '& .MuiAlert-action': {
+              color: '#fff',
+            },
+          }}
         >
           {notification.message}
         </Alert>
@@ -2431,11 +2422,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            background: 'linear-gradient(180deg, #fff 0%, #f8f9fa 100%)',
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
-        <DialogTitle sx={{ 
+        <DialogTitle sx={{
           pb: 1,
           display: 'flex',
           alignItems: 'center',
@@ -2446,7 +2438,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               width: 40,
               height: 40,
               borderRadius: 2,
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #5AC8FA 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -2455,10 +2447,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             <LyricsIcon sx={{ color: '#fff', fontSize: 22 }} />
           </Box>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2, color: '#fff' }}>
               {selectedSongForLyrics?.songTitle || 'Lyrics'}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#86868B' }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
               {selectedSongForLyrics?.genre}
             </Typography>
           </Box>
@@ -2471,25 +2463,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                 fontFamily: 'Georgia, serif',
                 fontSize: '1rem',
                 lineHeight: 1.8,
-                color: '#1D1D1F',
+                color: 'rgba(255,255,255,0.9)',
               }}
             >
               {selectedSongForLyrics.lyrics}
             </Typography>
           ) : (
-            <Typography sx={{ color: '#86868B', textAlign: 'center', py: 4 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', py: 4 }}>
               Lyrics not available for this song
             </Typography>
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button 
+          <Button
             onClick={() => setLyricsDialogOpen(false)}
             variant="contained"
             sx={{
               borderRadius: 2,
               textTransform: 'none',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #5AC8FA 100%)',
             }}
           >
             Close
@@ -2512,7 +2504,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           sx: {
             borderRadius: 2,
             minWidth: 180,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
@@ -2522,9 +2516,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setMenuSong(null);
         }}>
           <ListItemIcon>
-            <LyricsIcon sx={{ color: '#007AFF' }} />
+            <LyricsIcon sx={{ color: '#3B82F6' }} />
           </ListItemIcon>
-          <ListItemText>View Lyrics</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>View Lyrics</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => {
           if (menuSong) handleDownload(menuSong);
@@ -2532,9 +2526,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setMenuSong(null);
         }}>
           <ListItemIcon>
-            <DownloadIcon sx={{ color: '#007AFF' }} />
+            <DownloadIcon sx={{ color: '#3B82F6' }} />
           </ListItemIcon>
-          <ListItemText>Download</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>Download</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => {
           if (menuSong) handleCreateVideo(menuSong);
@@ -2542,11 +2536,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setMenuSong(null);
         }}>
           <ListItemIcon>
-            <MovieIcon sx={{ color: '#007AFF' }} />
+            <MovieIcon sx={{ color: '#3B82F6' }} />
           </ListItemIcon>
-          <ListItemText>Create Video</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>Create Video</ListItemText>
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => {
             if (menuSong) handleGenerateSimilar(menuSong);
             setMenuAnchorEl(null);
@@ -2554,12 +2548,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           }}
         >
           <ListItemIcon>
-            <ContentCopyIcon sx={{ color: '#007AFF' }} />
+            <ContentCopyIcon sx={{ color: '#3B82F6' }} />
           </ListItemIcon>
-          <ListItemText>Generate Similar</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>Generate Similar</ListItemText>
         </MenuItem>
-        <Divider />
-        <MenuItem 
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+        <MenuItem
           onClick={() => {
             if (menuSong) handleDeleteSong(menuSong);
             setMenuAnchorEl(null);
@@ -2570,7 +2564,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <ListItemIcon>
             <DeleteIcon sx={{ color: '#FF3B30' }} />
           </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#FF3B30' } }}>Delete</ListItemText>
         </MenuItem>
       </Menu>
 
@@ -2586,13 +2580,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             borderRadius: 3,
             p: 1,
             minWidth: 340,
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
-        <DialogTitle sx={{ 
-          pb: 1, 
-          display: 'flex', 
-          alignItems: 'center', 
+        <DialogTitle sx={{
+          pb: 1,
+          display: 'flex',
+          alignItems: 'center',
           gap: 1.5,
         }}>
           <Box
@@ -2608,42 +2604,39 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           >
             <DeleteIcon sx={{ color: '#FF3B30', fontSize: 24 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
             Delete Song?
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#86868B' }}>
-            Are you sure you want to delete "<strong>{songToDelete?.songTitle}</strong>"? This action cannot be undone.
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            Are you sure you want to delete "<strong style={{ color: '#fff' }}>{songToDelete?.songTitle}</strong>"? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-          <Button
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+          <GhostButton
             onClick={() => {
               setDeleteConfirmOpen(false);
               setSongToDelete(null);
             }}
-            variant="outlined"
-            sx={{
-              flex: 1,
-              borderRadius: 2,
-              textTransform: 'none',
-              borderColor: 'rgba(0,0,0,0.15)',
-              color: '#1D1D1F',
-            }}
+            sx={{ flex: 1, py: 1.25 }}
           >
             Cancel
-          </Button>
+          </GhostButton>
           <Button
             onClick={confirmDeleteSong}
             variant="contained"
             sx={{
               flex: 1,
-              borderRadius: 2,
+              py: 1.25,
+              borderRadius: '12px',
               textTransform: 'none',
-              background: '#FF3B30',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+              boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
               '&:hover': {
-                background: '#E53528',
+                background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+                boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
               },
             }}
           >
@@ -2665,26 +2658,28 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         PaperProps={{
           sx: {
             borderRadius: 2,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             minWidth: 160,
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
         {menuVideo?.status === 'completed' && (
-          <MenuItem 
+          <MenuItem
             onClick={() => {
               if (menuVideo) handleWatchVideo(menuVideo);
               handleVideoMenuClose();
             }}
           >
             <ListItemIcon>
-              <PlayArrowRoundedIcon sx={{ color: '#007AFF' }} />
+              <PlayArrowRoundedIcon sx={{ color: '#3B82F6' }} />
             </ListItemIcon>
-            <ListItemText>Watch</ListItemText>
+            <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>Watch</ListItemText>
           </MenuItem>
         )}
         {menuVideo?.status === 'completed' && menuVideo?.videoUrl && (
-          <MenuItem 
+          <MenuItem
             onClick={() => {
               if (menuVideo) handleDownloadVideo(menuVideo);
               handleVideoMenuClose();
@@ -2693,20 +2688,20 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           >
             <ListItemIcon>
               {downloadingVideoId === menuVideo?.videoId ? (
-                <CircularProgress size={20} sx={{ color: '#007AFF' }} />
+                <CircularProgress size={20} sx={{ color: '#3B82F6' }} />
               ) : (
-                <DownloadIcon sx={{ color: '#007AFF' }} />
+                <DownloadIcon sx={{ color: '#3B82F6' }} />
               )}
             </ListItemIcon>
-            <ListItemText>
+            <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>
               {downloadingVideoId === menuVideo?.videoId ? 'Downloading...' : 'Download'}
             </ListItemText>
           </MenuItem>
         )}
         {menuVideo?.status === 'completed' && (
           <>
-            <Divider />
-            <MenuItem 
+            <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+            <MenuItem
               onClick={() => {
                 if (menuVideo) {
                   navigate(`/video/${menuVideo.videoId}?scrollTo=social`);
@@ -2717,12 +2712,12 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               <ListItemIcon>
                 <ShareIcon sx={{ color: '#34C759' }} />
               </ListItemIcon>
-              <ListItemText>Upload to Social Channels</ListItemText>
+              <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#fff' } }}>Upload to Social Channels</ListItemText>
             </MenuItem>
           </>
         )}
-        <Divider />
-        <MenuItem 
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+        <MenuItem
           onClick={() => {
             if (menuVideo) handleDeleteVideo(menuVideo);
             handleVideoMenuClose();
@@ -2732,7 +2727,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <ListItemIcon>
             <DeleteIcon sx={{ color: '#FF3B30' }} />
           </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#FF3B30' } }}>Delete</ListItemText>
         </MenuItem>
       </Menu>
 
@@ -2748,13 +2743,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             borderRadius: 3,
             p: 1,
             minWidth: 340,
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
-        <DialogTitle sx={{ 
-          pb: 1, 
-          display: 'flex', 
-          alignItems: 'center', 
+        <DialogTitle sx={{
+          pb: 1,
+          display: 'flex',
+          alignItems: 'center',
           gap: 1.5,
         }}>
           <Box
@@ -2770,32 +2767,25 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           >
             <DeleteIcon sx={{ color: '#FF3B30', fontSize: 24 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
             Delete Video?
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#86868B' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
             Are you sure you want to delete this video? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-          <Button
+          <GhostButton
             onClick={() => {
               setVideoDeleteConfirmOpen(false);
               setVideoToDelete(null);
             }}
-            variant="outlined"
-            sx={{
-              flex: 1,
-              borderRadius: 2,
-              textTransform: 'none',
-              borderColor: 'rgba(0,0,0,0.15)',
-              color: '#1D1D1F',
-            }}
+            sx={{ flex: 1 }}
           >
             Cancel
-          </Button>
+          </GhostButton>
           <Button
             onClick={confirmDeleteVideo}
             variant="contained"
@@ -2803,9 +2793,9 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
               flex: 1,
               borderRadius: 2,
               textTransform: 'none',
-              background: '#007AFF',
+              background: '#FF3B30',
               '&:hover': {
-                background: '#0066DD',
+                background: '#E53528',
               },
             }}
           >

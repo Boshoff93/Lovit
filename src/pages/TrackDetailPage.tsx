@@ -780,53 +780,62 @@ const TrackDetailPage: React.FC = () => {
       </Container>
       
       {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={showDeleteDialog} 
+      <Dialog
+        open={showDeleteDialog}
         onClose={() => !isDeleting && setShowDeleteDialog(false)}
         PaperProps={{
-          sx: { 
-            borderRadius: '24px', 
-            p: 3,
-            maxWidth: 400,
-            mx: 2,
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            minWidth: 340,
+            bgcolor: '#1D1D1F',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Box sx={{ 
-            width: 48, 
-            height: 48, 
-            borderRadius: '50%', 
-            bgcolor: 'rgba(255,59,48,0.1)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
+        <DialogTitle sx={{ pb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{
+            width: 44,
+            height: 44,
+            borderRadius: 2,
+            bgcolor: 'rgba(255,59,48,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             <Delete sx={{ fontSize: 24, color: '#FF3B30' }} />
           </Box>
-          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
             Delete Song?
           </Typography>
-        </Box>
-        
-        <Typography sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
-          Are you sure you want to delete "<strong>{songData?.songTitle || 'this song'}</strong>"? This action cannot be undone.
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Button 
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            Are you sure you want to delete "<strong style={{ color: '#fff' }}>{songData?.songTitle || 'this song'}</strong>"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+          <Button
             onClick={() => setShowDeleteDialog(false)}
             disabled={isDeleting}
-            fullWidth
-            sx={{ 
-              borderRadius: '100px',
+            variant="outlined"
+            sx={{
+              flex: 1,
+              py: 1.25,
+              borderRadius: '12px',
               textTransform: 'none',
               fontWeight: 600,
-              py: 1.5,
-              fontSize: '1rem',
-              color: '#1d1d1f',
-              border: '1px solid rgba(0,0,0,0.15)',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
+              borderColor: '#3B82F6',
+              color: '#fff',
+              '&:hover': {
+                borderColor: '#3B82F6',
+                backgroundColor: 'transparent',
+                boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
+              },
+              '&:disabled': {
+                borderColor: 'rgba(59, 130, 246, 0.3)',
+                color: 'rgba(255, 255, 255, 0.3)',
+              },
             }}
           >
             Cancel
@@ -834,23 +843,25 @@ const TrackDetailPage: React.FC = () => {
           <Button
             onClick={handleDelete}
             disabled={isDeleting}
-            fullWidth
             variant="contained"
             sx={{
-              bgcolor: '#007AFF',
-              borderRadius: '100px',
+              flex: 1,
+              py: 1.25,
+              borderRadius: '12px',
               textTransform: 'none',
               fontWeight: 600,
-              py: 1.5,
-              fontSize: '1rem',
-              boxShadow: 'none',
-              '&:hover': { bgcolor: '#0066DD', boxShadow: 'none' },
-              '&:disabled': { bgcolor: '#007AFF', opacity: 0.7 },
+              background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+              boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+                boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
+              },
+              '&:disabled': { opacity: 0.7 },
             }}
           >
             {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
           </Button>
-        </Box>
+        </DialogActions>
       </Dialog>
     </Box>
   );
