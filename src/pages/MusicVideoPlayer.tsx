@@ -1223,7 +1223,7 @@ const MusicVideoPlayer: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#f5f5f7',
+          background: 'transparent',
         }}
       >
         <CircularProgress sx={{ color: '#007AFF', mb: 2 }} size={48} />
@@ -1437,18 +1437,18 @@ const MusicVideoPlayer: React.FC = () => {
                   <IconButton
                     onClick={handlePlayPause}
                     sx={{
-                      width: 80,
-                      height: 80,
-                      background: 'rgba(255,255,255,0.95)',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                      width: 56,
+                      height: 56,
+                      background: '#007AFF',
+                      boxShadow: '0 4px 20px rgba(0,122,255,0.4)',
                       '&:hover': {
-                        background: 'rgba(255,255,255,0.03)',
+                        background: '#0066DD',
                         transform: 'scale(1.1)',
                       },
                       transition: 'transform 0.2s ease',
                     }}
                   >
-                    <PlayArrowRounded sx={{ fontSize: 48, color: '#007AFF' }} />
+                    <PlayArrowRounded sx={{ fontSize: 32, color: '#fff' }} />
                   </IconButton>
                 </Box>
               )}
@@ -2329,26 +2329,16 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
             </Box>
 
-          </Paper>
+            {/* Divider between social accounts and post details */}
+            <Box sx={{ my: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }} />
 
-          {/* Video Details Section - Own Paper */}
-          <Paper
-            elevation={0}
-            sx={{
-              borderRadius: '16px',
-              p: { xs: 2, sm: 2.5 },
-              mb: 2,
-              background: 'rgba(255,255,255,0.03)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            }}
-          >
+            {/* Post Details Section */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
-              {/* Generate with AI button */}
+              {/* Generate Post Metadata button */}
               <Button
                 variant="contained"
                 size="small"
+                startIcon={!isGeneratingMetadata && <AutoAwesome sx={{ fontSize: 18 }} />}
                 endIcon={!isGeneratingMetadata && (
                   <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 1.5, ml: 0.5 }}>
                     <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>10</Typography>
@@ -2380,7 +2370,7 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               >
-                {isGeneratingMetadata ? <><CircularProgress size={14} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate with AI'}
+                {isGeneratingMetadata ? <><CircularProgress size={14} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Post Metadata'}
               </Button>
             </Box>
 
@@ -3080,15 +3070,16 @@ const MusicVideoPlayer: React.FC = () => {
                     sx={{
                       width: 40,
                       height: 40,
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #25F4EE 0%, #FE2C55 50%, #000 100%)',
+                      borderRadius: '50%',
+                      border: '2.5px solid #34C759',
+                      background: '#000',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: '0 2px 8px rgba(254, 44, 85, 0.3)',
+                      boxShadow: '0 0 12px rgba(52,199,89,0.4)',
                     }}
                   >
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 20, height: 20, fill: '#fff' }}>
                       <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                     </Box>
                   </Box>
@@ -4318,12 +4309,16 @@ const MusicVideoPlayer: React.FC = () => {
         open={showContextModal}
         onClose={() => setShowContextModal(false)}
         PaperProps={{
+          elevation: 0,
           sx: {
             borderRadius: '24px',
             p: 1,
             maxWidth: 560,
             width: '100%',
             mx: 2,
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
@@ -4345,7 +4340,7 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
             <Box>
               <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#fff', mb: 0.5 }}>
-                Generate with AI
+                Generate Post Metadata
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B' }}>
                 Create a title, description, and tags for your post
@@ -4353,130 +4348,134 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Gruvi Roulette toggle - only for non-uploaded videos */}
+          {/* Text field with integrated Roulette button - only for non-uploaded videos */}
           {!videoData?.isUserUpload && (
             <>
               {useGruviRoulette ? (
-                /* Gruvi Roulette Active Banner - whole card clickable */
+                /* Roulette mode - show special UI */
                 <Box
-                  onClick={() => setUseGruviRoulette(false)}
                   sx={{
-                    p: '3px',
-                    mb: 2,
                     borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                    background: 'linear-gradient(135deg, rgba(0,122,255,0.08) 0%, rgba(88,86,214,0.08) 50%, rgba(255,45,85,0.08) 100%)',
+                    border: '2px solid transparent',
+                    backgroundClip: 'padding-box',
+                    position: 'relative',
+                    p: 3,
+                    minHeight: 3 * 24 + 32,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     cursor: 'pointer',
-                    transition: 'transform 0.15s ease',
-                    '&:hover': { transform: 'scale(0.99)' },
+                    transition: 'all 0.3s ease',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: '16px',
+                      padding: '2px',
+                      background: 'linear-gradient(135deg, #007AFF, #5856D6, #FF2D55)',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                    },
+                    '&:hover': {
+                      transform: 'scale(1.01)',
+                    },
                   }}
+                  onClick={() => setUseGruviRoulette(false)}
                 >
-                  <Box sx={{
-                    bgcolor: '#fff',
-                    borderRadius: '13px',
-                    p: 2.5,
-                    textAlign: 'center',
-                  }}>
-                    <Box sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '10px',
-                      background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 1.5,
-                    }}>
-                      <Casino sx={{ fontSize: 22, color: '#fff' }} />
-                    </Box>
-                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: '#fff', mb: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                    <Casino sx={{ fontSize: 32, color: '#5856D6' }} />
+                    <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
                       Gruvi Roulette Active
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#86868B' }}>
-                      We'll create metadata based on your video's story and lyrics. Sit back and let the magic happen!
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: '0.85rem',
-                        color: '#6366F1',
-                        mt: 1.5,
-                      }}
-                    >
-                      Click to enter your own prompt instead
-                    </Typography>
                   </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', textAlign: 'center', maxWidth: 320 }}>
+                    We'll create metadata based on your video's story and lyrics. Sit back and let the magic happen!
+                  </Typography>
+                  <Typography sx={{ color: '#007AFF', fontSize: '0.75rem', mt: 2, fontWeight: 500 }}>
+                    Click to enter your own prompt instead
+                  </Typography>
                 </Box>
               ) : (
-                /* Custom input with Gruvi Roulette toggle button below text box */
-                <>
+                /* Normal text field with integrated bottom bar */
+                <Box
+                  sx={{
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: uploadedVideoContext.trim()
+                      ? '2px solid #007AFF'
+                      : '1px solid rgba(255,255,255,0.1)',
+                    overflow: 'hidden',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderColor: uploadedVideoContext.trim()
+                        ? '#007AFF'
+                        : 'rgba(0,122,255,0.3)',
+                      background: 'rgba(255,255,255,0.08)',
+                    },
+                    '&:focus-within': {
+                      borderColor: '#007AFF',
+                      borderWidth: '2px',
+                    },
+                  }}
+                >
+                  {/* Text input area */}
                   <TextField
-                    fullWidth
                     multiline
                     rows={3}
+                    fullWidth
                     value={uploadedVideoContext}
                     onChange={(e) => setUploadedVideoContext(e.target.value)}
                     placeholder="Override with your own description, e.g., A high-energy music video about chasing dreams..."
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px',
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                        borderRadius: 0,
+                        background: 'transparent',
+                        color: '#fff',
+                        fontSize: '0.95rem',
+                        lineHeight: 1.6,
+                        '& fieldset': { border: 'none' },
+                        '&:hover fieldset': { border: 'none' },
+                        '&.Mui-focused fieldset': { border: 'none' },
+                      },
+                      '& .MuiInputBase-input': {
+                        '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                       },
                     }}
                   />
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+
+                  {/* Divider and Roulette button */}
+                  <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.08)', px: 2, py: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
                     <Box
-                      onClick={() => setUseGruviRoulette(true)}
+                      onClick={() => {
+                        setUseGruviRoulette(true);
+                        setUploadedVideoContext('');
+                      }}
                       sx={{
-                        p: '1.5px',
+                        background: '#5856D6',
+                        border: 'none',
                         borderRadius: '20px',
-                        background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                        px: 1.5,
+                        py: 0.5,
+                        gap: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
                         cursor: 'pointer',
-                        '& .inner-box': {
-                          bgcolor: '#fff',
-                          transition: 'background-color 0.2s ease',
-                        },
-                        '& .icon': {
-                          color: '#8B5CF6',
-                          transition: 'color 0.2s ease',
-                        },
-                        '& .text': {
-                          background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          transition: 'all 0.2s ease',
-                        },
-                        '&:hover .inner-box': {
-                          bgcolor: 'transparent',
-                        },
-                        '&:hover .icon': {
-                          color: '#fff',
-                        },
-                        '&:hover .text': {
-                          background: 'none',
-                          WebkitTextFillColor: 'rgba(255,255,255,0.03)',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #5856D6 0%, #FF2D55 100%)',
                         },
                       }}
                     >
-                      <Box className="inner-box" sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                        borderRadius: '18.5px',
-                        px: 1.25,
-                        py: 0.25,
-                      }}>
-                        <Casino className="icon" sx={{ fontSize: 13 }} />
-                        <Typography className="text" sx={{
-                          fontSize: '0.7rem',
-                          fontWeight: 600,
-                        }}>
-                          Gruvi Roulette
-                        </Typography>
-                      </Box>
+                      <Casino sx={{ fontSize: 14, color: '#fff' }} />
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff' }}>
+                        Roulette
+                      </Typography>
                     </Box>
                   </Box>
-                </>
+                </Box>
               )}
             </>
           )}
@@ -4493,28 +4492,26 @@ const MusicVideoPlayer: React.FC = () => {
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#fff',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                  '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                },
+                '& .MuiInputBase-input': {
+                  '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                 },
               }}
             />
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button
+          <GhostButton
             onClick={() => setShowContextModal(false)}
-            sx={{
-              borderRadius: '10px',
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 3,
-              py: 1,
-              color: '#666',
-              border: '1px solid #E5E5E7',
-            }}
+            sx={{ px: 3, py: 1 }}
           >
             Cancel
-          </Button>
+          </GhostButton>
           <Button
             variant="contained"
             onClick={() => {
@@ -4536,7 +4533,7 @@ const MusicVideoPlayer: React.FC = () => {
               const isDisabled = isGeneratingMetadata ||
                 ((!videoData?.isUserUpload && !useGruviRoulette && !uploadedVideoContext.trim()) ||
                  (videoData?.isUserUpload && !uploadedVideoContext.trim()));
-              const textColor = isDisabled ? '#999' : 'rgba(255,255,255,0.03)';
+              const textColor = isDisabled ? '#999' : '#fff';
               return (
                 <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: `1px solid ${isDisabled ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)'}`, pl: 1.5, ml: 0.5 }}>
                   <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: textColor }}>10</Typography>
@@ -4558,13 +4555,13 @@ const MusicVideoPlayer: React.FC = () => {
                 boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)',
               },
               '&.Mui-disabled': {
-                background: '#E5E5E7',
+                background: 'rgba(255,255,255,0.1)',
                 boxShadow: 'none',
-                color: '#999',
+                color: 'rgba(255,255,255,0.4)',
               },
             }}
           >
-            {isGeneratingMetadata ? <><CircularProgress size={16} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate with AI'}
+            {isGeneratingMetadata ? <><CircularProgress size={16} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Post Metadata'}
           </Button>
         </DialogActions>
       </Dialog>

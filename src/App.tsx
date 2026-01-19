@@ -142,8 +142,8 @@ const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
   if (isAuthorized === null) {
     // Still loading
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: '#0D0D0F' }}>
+        <CircularProgress sx={{ color: '#007AFF' }} />
       </Box>
     );
   }
