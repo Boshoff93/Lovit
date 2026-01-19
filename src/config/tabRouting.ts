@@ -5,7 +5,7 @@
  * This ensures the correct tab is selected based on the current route.
  */
 
-export type TabType = 'home' | 'ai-music' | 'ai-music-videos' | 'ai-video-shorts' | 'social-media' | 'pricing';
+export type TabType = 'home' | 'ai-music' | 'ai-music-videos' | 'ai-video-shorts' | 'social-media' | 'blog' | 'pricing';
 
 export interface TabRoute {
   path: string;
@@ -23,7 +23,11 @@ export const tabRoutes: TabRoute[] = [
   { path: '/ai-music-videos', tab: 'ai-music-videos', exact: true },
   { path: '/ai-video-shorts', tab: 'ai-video-shorts', exact: true },
   { path: '/social-media', tab: 'social-media', exact: true },
+  { path: '/blog', tab: 'blog', exact: true },
   { path: '/pricing', tab: 'pricing', exact: true },
+
+  // Blog tab - all blog articles (prefix match)
+  { path: '/blog/', tab: 'blog', exact: false },
 
   // AI Music tab - Niche routes (prefix match)
   { path: '/ai-music/', tab: 'ai-music', exact: false },

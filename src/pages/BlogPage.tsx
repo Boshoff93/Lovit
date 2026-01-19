@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Box,
   Typography,
@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
@@ -30,104 +29,33 @@ import { useAuth } from '../hooks/useAuth';
 import { SEO } from '../utils/seoHelper';
 import { MarketingHeader, CTASection } from '../components/marketing';
 
-// Blog categories
-const categories = [
-  { id: 'all', name: 'All Posts' },
-  { id: 'ai-music', name: 'AI Music' },
-  { id: 'social-media', name: 'Social Media' },
-  { id: 'tutorials', name: 'Tutorials' },
-  { id: 'news', name: 'News' },
-];
-
-// Sample blog posts
+// Blog posts - SEO optimized articles
 const blogPosts = [
   {
-    id: '1',
-    title: 'How to Create Viral TikTok Music with AI',
-    excerpt: 'Learn the secrets to creating catchy, trending music that can help your TikTok content go viral. From beats to hooks, we cover everything.',
-    category: 'ai-music',
-    image: '/genres/pop.jpeg',
+    id: 'motion-control-viral-content',
+    slug: 'motion-control-viral-content',
+    title: 'How to Go Viral with AI Character Swaps Using Kling Motion Control',
+    excerpt: 'AI character swaps are taking over social media. Learn how creators like @minchoi and @levelsio generate millions of views with Kling motion control and how you can do it too.',
+    category: 'tutorials',
+    image: '/blog/motion-control-hero.jpg',
     author: 'Gruvi Team',
-    date: 'Jan 8, 2026',
+    date: 'Jan 18, 2026',
     readTime: '5 min read',
     featured: true,
+    hasFullArticle: true,
   },
   {
-    id: '2',
-    title: '10 Tips for Growing Your Music Audience on Social Media',
-    excerpt: 'Building an audience takes time and strategy. Here are proven tactics to grow your following across YouTube, TikTok, and Instagram.',
-    category: 'social-media',
-    image: '/genres/electronic.jpeg',
-    author: 'Sarah Chen',
-    date: 'Jan 5, 2026',
-    readTime: '8 min read',
-    featured: true,
-  },
-  {
-    id: '3',
-    title: 'Understanding Copyright-Free Music for Content Creators',
-    excerpt: 'Navigate the complex world of music licensing and learn why AI-generated music is changing the game for creators.',
+    id: 'how-to-create-promo-music-video',
+    slug: 'how-to-create-promo-music-video',
+    title: 'How to Create a Promo Music Video with AI in Minutes',
+    excerpt: 'Learn how to create stunning promotional music videos for your brand, product, or business using AI-generated music and visuals. No video editing experience required.',
     category: 'tutorials',
     image: '/genres/cinematic.jpeg',
-    author: 'Michael Torres',
-    date: 'Jan 3, 2026',
+    author: 'Gruvi Team',
+    date: 'Jan 15, 2026',
     readTime: '6 min read',
-    featured: false,
-  },
-  {
-    id: '4',
-    title: 'The Future of AI Music: 2026 Predictions',
-    excerpt: 'What does the future hold for AI-generated music? We explore emerging trends and technologies shaping the industry.',
-    category: 'news',
-    image: '/genres/techno.jpeg',
-    author: 'Gruvi Team',
-    date: 'Jan 1, 2026',
-    readTime: '7 min read',
-    featured: false,
-  },
-  {
-    id: '5',
-    title: 'How to Choose the Perfect Genre for Your Content',
-    excerpt: 'Different types of content call for different music styles. Learn how to match genres to your videos for maximum impact.',
-    category: 'tutorials',
-    image: '/genres/jazz.jpeg',
-    author: 'Emma Wilson',
-    date: 'Dec 28, 2025',
-    readTime: '4 min read',
-    featured: false,
-  },
-  {
-    id: '6',
-    title: 'Case Study: How One Creator Got 1M Views with AI Music',
-    excerpt: 'An in-depth look at how content creator @MusicMaster leveraged Gruvi to create viral content and grow their channel.',
-    category: 'social-media',
-    image: '/genres/hip-hop.jpeg',
-    author: 'David Park',
-    date: 'Dec 25, 2025',
-    readTime: '10 min read',
-    featured: false,
-  },
-  {
-    id: '7',
-    title: 'Creating Emotional Soundtracks with AI',
-    excerpt: 'Music sets the mood for your content. Discover how to use AI to create emotional, impactful soundtracks for any video.',
-    category: 'ai-music',
-    image: '/genres/orchestral.jpeg',
-    author: 'Gruvi Team',
-    date: 'Dec 22, 2025',
-    readTime: '6 min read',
-    featured: false,
-  },
-  {
-    id: '8',
-    title: 'Gruvi 2.0: New Features and Improvements',
-    excerpt: 'Announcing our biggest update yet! Check out all the new features, improved AI models, and exciting additions to Gruvi.',
-    category: 'news',
-    image: '/genres/dance.jpeg',
-    author: 'Gruvi Team',
-    date: 'Dec 20, 2025',
-    readTime: '5 min read',
-    featured: false,
+    featured: true,
+    hasFullArticle: true,
   },
 ];
 
@@ -136,8 +64,6 @@ const BlogPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = !!token;
   const { login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: authError } = useAuth();
-
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Auth modal state
   const [authOpen, setAuthOpen] = useState(false);
@@ -149,14 +75,6 @@ const BlogPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Filter posts by category
-  const filteredPosts = selectedCategory === 'all'
-    ? blogPosts
-    : blogPosts.filter(post => post.category === selectedCategory);
-
-  const featuredPosts = filteredPosts.filter(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured);
 
   const handleOpenAuth = useCallback(() => {
     setAuthOpen(true);
@@ -266,7 +184,7 @@ const BlogPage: React.FC = () => {
   }, [googleLogin, getGoogleIdToken, resendVerificationEmail, navigate, handleCloseAuth, authError]);
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#0D0D0F' }}>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)' }}>
       <SEO
         title="Blog | AI Music Tips, Tutorials & News | Gruvi"
         description="Stay up to date with the latest in AI music generation, social media tips, tutorials, and news from the Gruvi team."
@@ -284,32 +202,10 @@ const BlogPage: React.FC = () => {
         sx={{
           pt: { xs: 14, md: 20 },
           pb: { xs: 6, md: 10 },
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Gradient orbs */}
-        <Box sx={{
-          position: 'absolute',
-          top: '10%',
-          left: '10%',
-          width: '40%',
-          height: '60%',
-          background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-        }} />
-        <Box sx={{
-          position: 'absolute',
-          bottom: '0%',
-          right: '10%',
-          width: '35%',
-          height: '50%',
-          background: 'radial-gradient(ellipse at center, rgba(78, 205, 196, 0.08) 0%, transparent 70%)',
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-        }} />
 
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ textAlign: 'center', maxWidth: '700px', mx: 'auto' }}>
@@ -359,46 +255,10 @@ const BlogPage: React.FC = () => {
         </Container>
       </Box>
 
-      {/* Category Filter */}
-      <Box sx={{
-        py: 3,
-        background: 'linear-gradient(180deg, #1A1A2E 0%, #16213E 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {categories.map((category) => (
-              <Chip
-                key={category.id}
-                label={category.name}
-                onClick={() => setSelectedCategory(category.id)}
-                sx={{
-                  background: selectedCategory === category.id
-                    ? 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)'
-                    : 'rgba(255,255,255,0.08)',
-                  color: selectedCategory === category.id ? '#fff' : 'rgba(255,255,255,0.7)',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  px: 1.5,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    background: selectedCategory === category.id
-                      ? 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)'
-                      : 'rgba(255,255,255,0.12)',
-                  },
-                }}
-              />
-            ))}
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Featured Posts */}
-      {featuredPosts.length > 0 && (
+      {/* Articles */}
+      {blogPosts.length > 0 && (
         <Box sx={{
           py: { xs: 6, md: 10 },
-          background: 'linear-gradient(180deg, #16213E 0%, #1A1A2E 100%)',
         }}>
           <Container maxWidth="lg">
             <Typography
@@ -410,12 +270,13 @@ const BlogPage: React.FC = () => {
                 mb: 4,
               }}
             >
-              Featured Articles
+              Latest Articles
             </Typography>
             <Grid container spacing={3}>
-              {featuredPosts.map((post, index) => (
+              {blogPosts.map((post, index) => (
                 <Grid size={{ xs: 12, md: 6 }} key={post.id}>
                   <Box
+                    onClick={() => (post as any).slug && navigate(`/blog/${(post as any).slug}`)}
                     sx={{
                       borderRadius: '24px',
                       overflow: 'hidden',
@@ -468,7 +329,7 @@ const BlogPage: React.FC = () => {
                     </Box>
                     <Box sx={{ p: 3, flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <Chip
-                        label={categories.find(c => c.id === post.category)?.name || post.category}
+                        label={post.category}
                         size="small"
                         sx={{
                           alignSelf: 'flex-start',
@@ -510,117 +371,13 @@ const BlogPage: React.FC = () => {
         </Box>
       )}
 
-      {/* All Posts */}
-      <Box sx={{
-        py: { xs: 6, md: 10 },
-        background: 'linear-gradient(180deg, #1A1A2E 0%, #0D0D0F 100%)',
-      }}>
-        <Container maxWidth="lg">
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: { xs: '1.5rem', md: '2rem' },
-              fontWeight: 700,
-              color: '#fff',
-              mb: 4,
-            }}
-          >
-            {selectedCategory === 'all' ? 'All Articles' : `${categories.find(c => c.id === selectedCategory)?.name} Articles`}
-          </Typography>
-          <Grid container spacing={3}>
-            {regularPosts.map((post, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={post.id}>
-                <Box
-                  sx={{
-                    borderRadius: '20px',
-                    overflow: 'hidden',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    animation: `fadeIn 0.4s ease ${index * 60}ms forwards`,
-                    opacity: 0,
-                    '@keyframes fadeIn': { to: { opacity: 1 } },
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      background: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(139, 92, 246, 0.3)',
-                      '& img': { transform: 'scale(1.05)' },
-                    },
-                  }}
-                >
-                  <Box sx={{ position: 'relative', height: 160, overflow: 'hidden' }}>
-                    <Box
-                      component="img"
-                      src={post.image}
-                      alt={post.title}
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        transition: 'transform 0.5s ease',
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Chip
-                      label={categories.find(c => c.id === post.category)?.name || post.category}
-                      size="small"
-                      sx={{
-                        alignSelf: 'flex-start',
-                        mb: 1.5,
-                        background: 'rgba(139, 92, 246, 0.15)',
-                        color: '#8B5CF6',
-                        fontWeight: 600,
-                        fontSize: '0.65rem',
-                        height: 22,
-                      }}
-                    />
-                    <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff', mb: 1, lineHeight: 1.3 }}>
-                      {post.title}
-                    </Typography>
-                    <Typography sx={{
-                      color: 'rgba(255,255,255,0.6)',
-                      fontSize: '0.85rem',
-                      lineHeight: 1.5,
-                      mb: 2,
-                      flex: 1,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}>
-                      {post.excerpt}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
-                        {post.date}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <AccessTimeIcon sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }} />
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
-                          {post.readTime}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
       {/* CTA Section */}
       <CTASection
         title="Ready to Create Your First Track?"
         subtitle="Join thousands of creators making music with AI."
         primaryButtonText="Get Started Free"
         primaryButtonAction={() => isLoggedIn ? navigate('/create/music') : handleOpenAuth()}
-        variant="dark"
+        variant="transparent"
       />
 
       {/* Auth Modal */}

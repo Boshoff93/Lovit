@@ -1760,6 +1760,16 @@ const HomePage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
+  // Check for ?auth=open query param to open auth modal (used by PaymentPage etc)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('auth') === 'open' && !user) {
+      setOpen(true);
+      // Clear the query param from URL
+      window.history.replaceState({}, '', location.pathname);
+    }
+  }, [location.search, location.pathname, user]);
+
   // Track scroll progress for header blur effect (0 = top, 1 = scrolled 100px+)
   useEffect(() => {
     const handleScroll = () => {
@@ -4933,20 +4943,20 @@ const HomePage: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Auth Dialog - Glassy White */}
-      <Dialog 
-        open={open} 
-        onClose={handleClose} 
-        maxWidth="xs" 
+      {/* Auth Dialog - Dark Theme */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="xs"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: '24px',
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: 'rgba(29, 29, 31, 0.95)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
-            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.15)',
-            border: '1px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
@@ -4966,7 +4976,7 @@ const HomePage: React.FC = () => {
               right: 16,
               top: 16,
               color: 'rgba(255,255,255,0.6)',
-              '&:hover': { background: 'rgba(0,0,0,0.03)' },
+              '&:hover': { background: 'rgba(255,255,255,0.1)' },
             }}
           >
             <CloseIcon />
@@ -5023,12 +5033,12 @@ const HomePage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  sx={{ 
+                  sx={{
                     mb: 2,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5042,12 +5052,12 @@ const HomePage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  sx={{ 
+                  sx={{
                     mb: 1,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5090,12 +5100,12 @@ const HomePage: React.FC = () => {
                   label="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  sx={{ 
+                  sx={{
                     mb: 2,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5108,12 +5118,12 @@ const HomePage: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  sx={{ 
+                  sx={{
                     mb: 2,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5126,12 +5136,12 @@ const HomePage: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  sx={{ 
+                  sx={{
                     mb: 2,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5145,12 +5155,12 @@ const HomePage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  sx={{ 
+                  sx={{
                     mb: 3,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(0,0,0,0.02)',
-                      '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
-                      '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.2)' },
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
                       '&.Mui-focused fieldset': { borderColor: '#007AFF' },
                     },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
@@ -5179,20 +5189,20 @@ const HomePage: React.FC = () => {
             )}
 
             <Box sx={{ position: 'relative', my: 3 }}>
-              <Box sx={{ 
-                position: 'absolute', 
-                top: '50%', 
-                left: 0, 
-                right: 0, 
-                height: '1px', 
-                background: 'rgba(0,0,0,0.08)' 
+              <Box sx={{
+                position: 'absolute',
+                top: '50%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: 'rgba(255,255,255,0.1)'
               }} />
-            <Typography 
-              sx={{ 
-                  position: 'relative', 
-                  display: 'inline-block', 
-                  px: 2, 
-                  background: 'rgba(255, 255, 255, 0.95)',
+            <Typography
+              sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  px: 2,
+                  background: 'rgba(29, 29, 31, 0.95)',
                   color: 'rgba(255,255,255,0.6)',
                   fontSize: '0.875rem',
                   left: '50%',
@@ -5220,14 +5230,14 @@ const HomePage: React.FC = () => {
               }
               onClick={handleGoogleSignup}
               disabled={isGoogleLoading}
-              sx={{ 
+              sx={{
                 py: 1.5,
                 borderRadius: '12px',
-                borderColor: 'rgba(0,0,0,0.15)',
+                borderColor: 'rgba(255,255,255,0.15)',
                 color: '#FFFFFF',
                 '&:hover': {
-                  borderColor: 'rgba(0,0,0,0.3)',
-                  background: 'rgba(0,0,0,0.03)',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  background: 'rgba(255,255,255,0.05)',
                 },
               }}
             >

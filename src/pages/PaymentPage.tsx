@@ -22,7 +22,20 @@ import {
   Snackbar,
   keyframes,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Tabs,
+  Tab,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+import PersonIcon from '@mui/icons-material/Person';
+import GoogleIcon from '@mui/icons-material/Google';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import GruviCoin from '../components/GruviCoin';
@@ -59,6 +72,8 @@ import {
 } from '../utils/analytics';
 import { stripeConfig, topUpBundles } from '../config/stripe';
 import { MarketingHeader } from '../components/marketing';
+import { Link as RouterLink } from 'react-router-dom';
+import Link from '@mui/material/Link';
 
 interface PricePlan {
   id: string;
@@ -275,6 +290,18 @@ const PaymentPage: React.FC = () => {
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [topUpError, setTopUpError] = useState<string | null>(null);
+
+  // Auth modal state
+  const [authOpen, setAuthOpen] = useState<boolean>(false);
+  const [authTab, setAuthTab] = useState<number>(0);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -293,8 +320,8 @@ const PaymentPage: React.FC = () => {
   // Use account data hook
   const { fetchAccountData } = useAccountData(false);
 
-  // Get signout function from useAuth
-  const { logout } = useAuth();
+  // Get auth functions from useAuth
+  const { logout, login, signup, googleLogin, getGoogleIdToken, resendVerificationEmail, error: useAuthError } = useAuth();
 
   const proceedRef = useRef<HTMLDivElement>(null);
   const plansSectionRef = useRef<HTMLDivElement>(null);
@@ -437,6 +464,143 @@ const PaymentPage: React.FC = () => {
     navigate('/');
   },[logout, navigate]);
 
+  // Auth modal handlers
+  const handleOpenAuth = useCallback(() => {
+    setAuthOpen(true);
+    setAuthError(null);
+  }, []);
+
+  const handleCloseAuth = useCallback(() => {
+    setAuthOpen(false);
+    setIsAuthLoading(false);
+    setIsGoogleLoading(false);
+    setAuthError(null);
+  }, []);
+
+  const handleAuthTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
+    setAuthTab(newValue);
+    setAuthError(null);
+  }, []);
+
+  const handleEmailLogin = useCallback(async () => {
+    try {
+      setIsAuthLoading(true);
+      setAuthError(null);
+
+      if (!email || !password) {
+        setAuthError('Please fill in all fields');
+        setIsAuthLoading(false);
+        return;
+      }
+
+      const result = await login(email, password);
+
+      if (result.type.endsWith('/fulfilled')) {
+        setIsAuthLoading(false);
+        handleCloseAuth();
+        fetchAccountData(true);
+      } else {
+        setIsAuthLoading(false);
+        setAuthError(result.payload || 'Login failed. Please try again.');
+      }
+    } catch (error: any) {
+      setIsAuthLoading(false);
+      setAuthError(useAuthError || 'Login failed. Please try again.');
+    }
+  }, [login, email, password, handleCloseAuth, fetchAccountData, useAuthError]);
+
+  const handleEmailSignup = useCallback(async () => {
+    try {
+      setIsAuthLoading(true);
+      setAuthError(null);
+
+      if (!email || !password || !username) {
+        setAuthError('Please fill in all fields');
+        setIsAuthLoading(false);
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setAuthError('Please enter a valid email address');
+        setIsAuthLoading(false);
+        return;
+      }
+
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        setAuthError('Password must be at least 8 characters with uppercase, number, and special character');
+        setIsAuthLoading(false);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setAuthError('Passwords do not match');
+        setIsAuthLoading(false);
+        return;
+      }
+
+      const result = await signup(email, password, username);
+
+      if (result.type.endsWith('/fulfilled')) {
+        setIsAuthLoading(false);
+        handleCloseAuth();
+        setSuccess('Account created! Please check your email to verify.');
+      } else {
+        setIsAuthLoading(false);
+        setAuthError(result.payload || 'Signup failed. Please try again.');
+      }
+    } catch (error: any) {
+      setIsAuthLoading(false);
+      setAuthError(useAuthError || 'Signup failed. Please try again.');
+    }
+  }, [signup, email, password, confirmPassword, username, handleCloseAuth, useAuthError]);
+
+  const handleGoogleSignup = useCallback(async () => {
+    try {
+      setIsGoogleLoading(true);
+      setAuthError(null);
+
+      const accessToken = await getGoogleIdToken();
+      const result = await googleLogin(accessToken);
+
+      if (result.type === 'auth/loginWithGoogle/fulfilled') {
+        const userData = result.payload.user;
+
+        if (!userData.isVerified) {
+          try {
+            await resendVerificationEmail(userData.email);
+            setSuccess('Verification email sent - please check your inbox.');
+          } catch (err) {
+            console.error('Failed to resend verification email:', err);
+          }
+        }
+        handleCloseAuth();
+        fetchAccountData(true);
+      } else {
+        setAuthError(result.payload || 'Google login failed.');
+      }
+    } catch (error: any) {
+      if (error.error === 'popup_closed_by_user') {
+        setAuthError('Google sign-in was cancelled.');
+      } else {
+        setAuthError(useAuthError || 'Google sign-in failed.');
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [googleLogin, getGoogleIdToken, resendVerificationEmail, handleCloseAuth, fetchAccountData, useAuthError]);
+
+  const handleAuthKeyPress = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isAuthLoading) {
+      if (authTab === 0) {
+        handleEmailLogin();
+      } else {
+        handleEmailSignup();
+      }
+    }
+  }, [authTab, handleEmailLogin, handleEmailSignup, isAuthLoading]);
+
   // Determine the button text based on subscription status
   const getButtonText = useCallback(() => {
     if (isLoading) {
@@ -542,7 +706,7 @@ const PaymentPage: React.FC = () => {
       }} />
 
       {/* Marketing Header */}
-      <MarketingHeader onOpenAuth={() => navigate('/')} transparent alwaysBlurred />
+      <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />
 
       {/* SEO */}
       <SEO
@@ -1607,9 +1771,9 @@ const PaymentPage: React.FC = () => {
 
       {/* Only show arrow when "Proceed to Payment" button is not visible */}
       {isMobile && selectedPlan && !isButtonVisible && (
-        <Box 
+        <Box
           onClick={scrollToProceed}
-          sx={{ 
+          sx={{
             position: 'fixed',
             bottom: 20,
             left: 0,
@@ -1637,6 +1801,331 @@ const PaymentPage: React.FC = () => {
           </Box>
         </Box>
       )}
+
+      {/* Auth Dialog - Dark Theme */}
+      <Dialog
+        open={authOpen}
+        onClose={handleCloseAuth}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            background: 'rgba(29, 29, 31, 0.95)',
+            backdropFilter: 'blur(40px)',
+            WebkitBackdropFilter: 'blur(40px)',
+            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          pt: 4,
+          pb: 0,
+          px: 4,
+          textAlign: 'center',
+        }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#FFFFFF' }}>
+            {authTab === 0 ? 'Welcome back' : 'Create account'}
+          </Typography>
+          <IconButton
+            onClick={handleCloseAuth}
+            sx={{
+              position: 'absolute',
+              right: 16,
+              top: 16,
+              color: 'rgba(255,255,255,0.6)',
+              '&:hover': { background: 'rgba(255,255,255,0.1)' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 4 }}>
+          <Tabs
+            value={authTab}
+            onChange={handleAuthTabChange}
+            variant="fullWidth"
+            sx={{
+              mb: 3,
+              '& .MuiTab-root': {
+                fontWeight: 500,
+                color: 'rgba(255,255,255,0.6)',
+                textTransform: 'none',
+              },
+              '& .Mui-selected': {
+                color: '#FFFFFF',
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#007AFF',
+              }
+            }}
+          >
+            <Tab label="Sign In" />
+            <Tab label="Sign Up" />
+          </Tabs>
+
+          <Box sx={{ mt: 2 }}>
+            {authError && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 3,
+                  borderRadius: '12px',
+                  background: 'rgba(255, 59, 48, 0.1)',
+                  border: '1px solid rgba(255, 59, 48, 0.2)',
+                  color: '#D70015',
+                  '& .MuiAlert-icon': { alignItems: 'center', color: '#D70015' },
+                }}
+              >
+                {authError}
+              </Alert>
+            )}
+
+            {authTab === 0 ? (
+              <>
+                <TextField
+                  autoFocus
+                  fullWidth
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyPress={handleAuthKeyPress}
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={handleAuthKeyPress}
+                  sx={{
+                    mb: 1,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <Box sx={{ textAlign: 'right', mb: 3 }}>
+                  <Link
+                    component={RouterLink}
+                    to="/reset-password-request"
+                    sx={{ fontSize: '0.875rem', color: '#007AFF', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                  >
+                    Forgot password?
+                  </Link>
+                </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={handleEmailLogin}
+                  disabled={isAuthLoading}
+                  sx={{
+                    mb: 2,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    background: '#1D1D1F',
+                    color: '#fff',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    '&:hover': { background: '#000' },
+                  }}
+                >
+                  {isAuthLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Sign In'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <TextField
+                  autoFocus
+                  fullWidth
+                  label="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Confirm Password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyPress={handleAuthKeyPress}
+                  sx={{
+                    mb: 3,
+                    '& .MuiOutlinedInput-root': {
+                      background: 'rgba(255,255,255,0.05)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)' },
+                    '& .MuiInputBase-input': { color: '#FFFFFF' },
+                  }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={handleEmailSignup}
+                  disabled={isAuthLoading}
+                  sx={{
+                    mb: 2,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    background: '#1D1D1F',
+                    color: '#fff',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    '&:hover': { background: '#000' },
+                  }}
+                >
+                  {isAuthLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Create Account'}
+                </Button>
+              </>
+            )}
+
+            <Box sx={{ position: 'relative', my: 3 }}>
+              <Box sx={{
+                position: 'absolute',
+                top: '50%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: 'rgba(255,255,255,0.1)'
+              }} />
+              <Typography
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  px: 2,
+                  background: 'rgba(29, 29, 31, 0.95)',
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: '0.875rem',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                }}
+              >
+                or
+              </Typography>
+            </Box>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={
+                isGoogleLoading ? (
+                  <CircularProgress size={18} sx={{ color: 'rgba(255,255,255,0.6)' }} />
+                ) : (
+                  <Box
+                    component="img"
+                    src="/google-color.svg"
+                    alt="Google"
+                    sx={{ width: 18, height: 18 }}
+                  />
+                )
+              }
+              onClick={handleGoogleSignup}
+              disabled={isGoogleLoading}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                borderColor: 'rgba(255,255,255,0.15)',
+                color: '#FFFFFF',
+                '&:hover': {
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  background: 'rgba(255,255,255,0.05)',
+                },
+              }}
+            >
+              Continue with Google
+            </Button>
+
+            {authTab === 1 && (
+              <Typography
+                sx={{
+                  mt: 3,
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  color: 'rgba(255,255,255,0.6)',
+                  lineHeight: 1.5,
+                }}
+              >
+                By signing up, you agree to our{' '}
+                <Link component={RouterLink} to="/terms" sx={{ color: '#007AFF' }}>
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link component={RouterLink} to="/privacy" sx={{ color: '#007AFF' }}>
+                  Privacy Policy
+                </Link>
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

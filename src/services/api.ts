@@ -50,14 +50,18 @@ export const userApi = {
 
 // User subscription API
 export const subscriptionApi = {
-  getUserSubscription: () => 
+  getUserSubscription: () =>
     api.get('/api/user/subscription'),
-  
-  createCheckoutSession: (priceId: string, productId: string, allowPriceSwitch = true) => 
+
+  createCheckoutSession: (priceId: string, productId: string, allowPriceSwitch = true) =>
     api.post('/api/create-checkout-session', { priceId, productId, allowPriceSwitch }),
-  
-  createPortalSession: () => 
+
+  createPortalSession: () =>
     api.post('/api/create-portal-session'),
+
+  // End trial immediately and convert to paid subscription
+  endTrialNow: () =>
+    api.post<{ success: boolean; subscriptionId: string; status: string; message: string }>('/api/stripe/end-trial'),
 };
 
 // User models API
@@ -180,7 +184,8 @@ export const songsApi = {
 export const videosApi = {
   generateVideo: (data: {
     userId: string;
-    songId: string;
+    songId?: string | null; // Required for music videos, optional for narrative
+    narrativeId?: string | null; // Required for narrative videos (type is fetched from narrative record)
     videoType: 'still' | 'standard' | 'professional'; // still=slideshow, standard=Seedance, professional=Kling
     style?: string;
     videoPrompt?: string;
@@ -189,6 +194,7 @@ export const videosApi = {
     placeDescription?: string; // Optional: User's description of their property/location for web search
     creativity?: number; // 0-10: 0 = exact prompt adherence, 10 = creative interpretation
     rouletteMode?: boolean; // Let AI pick the video concept based on the track
+    contentType?: 'music' | 'narrative'; // 'music' for music videos, 'narrative' for UGC/influencer content
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {
@@ -474,6 +480,100 @@ export const scheduledPostsApi = {
   // Cancel a scheduled post
   cancelScheduledPost: (scheduleId: string) =>
     api.delete(`/api/gruvi/scheduled-posts/${scheduleId}`),
+};
+
+// Swap Studio API - Character/Motion Swap
+export const swapStudioApi = {
+  // Create a motion capture swap using S3 key + character reference
+  createSwap: (data: {
+    userId: string;
+    sourceVideoKey: string;
+    characterId?: string;
+    characterPrompt?: string;
+    swapMode: 'wan-replace' | 'wan-move' | 'kling-motion';
+    enableVoiceChange?: boolean;
+    voiceId?: string;
+  }) => api.post('/api/gruvi/swap-studio/create', data),
+
+  // Get swap status
+  getSwapStatus: (userId: string, swapId: string) =>
+    api.get(`/api/gruvi/swap-studio/${userId}/${swapId}`),
+
+  // Get all swaps for user
+  getUserSwaps: (userId: string) =>
+    api.get(`/api/gruvi/swap-studio/${userId}`),
+
+  // Delete a swap
+  deleteSwap: (userId: string, swapId: string) =>
+    api.delete(`/api/gruvi/swap-studio/${userId}/${swapId}`),
+};
+
+// Alias for the new name
+export const motionCaptureApi = swapStudioApi;
+
+// Narrative interface
+export interface NarratorVoice {
+  id: string;
+  voiceId: string;
+  label: string;
+  description: string;
+  isPremium: boolean;
+}
+
+export interface Narrative {
+  narrativeId: string;
+  userId: string;
+  title: string;
+  text: string;
+  voiceId: string;
+  narratorId: string;
+  narrativeType?: 'story' | 'ugc';
+  characterIds?: string[];
+  generatedText?: string; // AI-generated narrative text (for story/ugc modes)
+  status: 'processing' | 'completed' | 'failed';
+  progress: number;
+  progressMessage: string;
+  audioUrl?: string;
+  audioKey?: string;
+  durationMs?: number;
+  tokensCost: number;
+  errorMessage?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+// Narratives API - Text-to-Speech
+export const narrativesApi = {
+  // Get available narrator voices
+  getVoices: () =>
+    api.get<{ voices: NarratorVoice[]; freeVoiceIds: string[] }>('/api/gruvi/narratives/voices'),
+
+  // Create a new narrative (text-to-speech or AI-generated content)
+  createNarrative: (data: {
+    userId: string;
+    text: string;
+    narratorId: string;
+    title?: string;
+    characterIds?: string[];
+    narrativeType?: 'story' | 'ugc';
+  }) => api.post<{
+    narrativeId: string;
+    status: string;
+    tokensCost: number;
+    tokensRemaining: number;
+  }>(`/api/gruvi/narratives/${data.userId}`, data),
+
+  // Get single narrative
+  getNarrative: (userId: string, narrativeId: string) =>
+    api.get<Narrative>(`/api/gruvi/narratives/${userId}/${narrativeId}`),
+
+  // Get all narratives for user
+  getUserNarratives: (userId: string) =>
+    api.get<{ narratives: Narrative[] }>(`/api/gruvi/narratives/${userId}`),
+
+  // Delete a narrative
+  deleteNarrative: (userId: string, narrativeId: string) =>
+    api.delete(`/api/gruvi/narratives/${userId}/${narrativeId}`),
 };
 
 export default api; 

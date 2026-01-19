@@ -24,7 +24,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   createCheckoutSession,
   createPortalSession,
+  fetchSubscription,
 } from '../store/authSlice';
+import { subscriptionApi } from '../services/api';
 import { RootState, AppDispatch } from '../store/store';
 import { useAccountData } from '../hooks/useAccountData';
 import { stripeConfig, topUpBundles } from '../config/stripe';
@@ -174,11 +176,21 @@ const DashboardSubscriptionPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
+  const [isEndingTrial, setIsEndingTrial] = useState<boolean>(false);
   const location = useLocation();
 
   const dispatch = useDispatch<AppDispatch>();
   const { isLoading, subscription } = useSelector((state: RootState) => state.auth);
   const { fetchAccountData } = useAccountData(false);
+
+  // Check if subscription is in trial
+  const isTrialing = subscription?.status === 'trialing';
+  const trialEndDate = subscription?.currentPeriodEnd
+    ? new Date(Number(subscription.currentPeriodEnd) * 1000)
+    : null;
+  const trialDaysRemaining = trialEndDate
+    ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   useEffect(() => {
     if (subscription?.tier && subscription.tier !== 'free' && !selectedPlan) {
@@ -268,6 +280,26 @@ const DashboardSubscriptionPage: React.FC = () => {
       setIsManagingSubscription(false);
     }
   }, [dispatch]);
+
+  const handleEndTrial = useCallback(async () => {
+    try {
+      setError(null);
+      setIsEndingTrial(true);
+
+      const response = await subscriptionApi.endTrialNow();
+
+      if (response.data.success) {
+        setSuccess('Your trial has ended and your subscription is now active!');
+        // Refresh subscription data
+        dispatch(fetchSubscription());
+        fetchAccountData(true);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Failed to end trial');
+    } finally {
+      setIsEndingTrial(false);
+    }
+  }, [dispatch, fetchAccountData]);
 
   const isSubscribed = subscription && subscription.tier !== 'free';
 
@@ -370,6 +402,55 @@ const DashboardSubscriptionPage: React.FC = () => {
           {success}
         </Alert>
       </Snackbar>
+
+      {/* Trial Banner */}
+      {isTrialing && (
+        <Card
+          sx={{
+            mb: 3,
+            background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+            borderRadius: '16px',
+            overflow: 'hidden',
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+                  You're on a Free Trial
+                </Typography>
+                <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem' }}>
+                  {trialDaysRemaining > 0
+                    ? `${trialDaysRemaining} day${trialDaysRemaining === 1 ? '' : 's'} remaining - your card will be charged when the trial ends`
+                    : 'Your trial ends today'}
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                onClick={handleEndTrial}
+                disabled={isEndingTrial}
+                sx={{
+                  bgcolor: '#fff',
+                  color: '#D97706',
+                  fontWeight: 600,
+                  px: 3,
+                  py: 1,
+                  borderRadius: '10px',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                  },
+                  '&.Mui-disabled': {
+                    bgcolor: 'rgba(255,255,255,0.5)',
+                    color: 'rgba(217,119,6,0.5)',
+                  },
+                }}
+              >
+                {isEndingTrial ? <CircularProgress size={20} sx={{ color: '#D97706' }} /> : 'Start Subscription Now'}
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main content: Plans + Checkout Sidebar */}
       <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column-reverse', lg: 'row' } }}>

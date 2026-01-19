@@ -123,6 +123,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
   const hasSubscription = subscription?.tier && subscription.tier !== 'free';
   const isTrialing = subscription?.status === 'trialing';
+
+  // Calculate trial days remaining
+  const trialDaysRemaining = isTrialing && subscription?.currentPeriodEnd
+    ? Math.max(0, Math.ceil((subscription.currentPeriodEnd * 1000 - Date.now()) / (1000 * 60 * 60 * 24)))
+    : undefined;
   // Show paywall for all free users (no active subscription/trial)
   // - hasUsedTrial === true means trial expired → show "Trial Expired" messaging
   // - hasUsedTrial === false or undefined means new user → show "Start Trial" messaging
@@ -282,6 +287,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     onSidebarCollapse: handleSidebarCollapse,
     onTokensClick: handleTokensClick,
     onLogoutClick: handleLogoutClick,
+    trialDaysRemaining,
+    isTrialActive: isTrialing,
   };
 
   const collapsedSidebarProps = {
@@ -297,7 +304,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
       setCurrentViewingItem
     }}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F5F5F7' }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)' }}>
         {/* Desktop Permanent Sidebar */}
         {!isMobile && (
           <Drawer
@@ -313,7 +320,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 width: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
                 boxSizing: 'border-box',
                 borderRight: '1px solid rgba(0,0,0,0.08)',
-                backgroundColor: '#FAFAFA',
+                backgroundColor: '#1D1D1F',
                 transition: theme.transitions.create('width', {
                   easing: theme.transitions.easing.sharp,
                   duration: theme.transitions.duration.leavingScreen,
@@ -336,7 +343,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               left: 0,
               right: 0,
               height: 56,
-              backgroundColor: '#FAFAFA',
+              backgroundColor: '#1D1D1F',
               borderBottom: '1px solid rgba(0,0,0,0.08)',
               zIndex: theme.zIndex.drawer,
               display: 'flex',
@@ -408,16 +415,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               '& .MuiDrawer-paper': {
                 width: sidebarWidth,
                 boxSizing: 'border-box',
-                backgroundColor: '#FAFAFA',
+                backgroundColor: '#1D1D1F',
               },
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-              <IconButton onClick={handleMobileDrawerToggle}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Box>
-            <SidebarContent {...sidebarProps} />
+            <SidebarContent
+              {...sidebarProps}
+              showMobileBackButton={true}
+              onMobileBackClick={handleMobileDrawerToggle}
+            />
           </Drawer>
         )}
 

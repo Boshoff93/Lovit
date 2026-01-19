@@ -29,6 +29,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LockIcon from '@mui/icons-material/Lock';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PersonIcon from '@mui/icons-material/Person';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useLocation } from 'react-router-dom';
 
 // Gradient colors for each navigation group
@@ -43,18 +44,21 @@ const gradients = {
 // Navigation items configuration
 const createItems = [
   { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon, gradient: gradients.create },
+  { path: '/create/narrative', label: 'Create Narrative', icon: HeadsetMicIcon, gradient: gradients.create },
   { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
+  { path: '/motion-capture', label: 'Motion Capture', icon: SwapHorizIcon, gradient: gradients.create },
   { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
 ];
 
 const uploadItems = [
-  { path: '/upload', label: 'Upload Music', icon: MusicNoteIcon, params: '?type=song', gradient: gradients.upload },
+  { path: '/upload', label: 'Upload Audio', icon: MusicNoteIcon, params: '?type=song', gradient: gradients.upload },
   { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '?type=video', gradient: gradients.upload },
 ];
 
 const contentItems = [
   { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon, gradient: gradients.content },
   { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon, gradient: gradients.content },
+  { path: '/my-narratives', label: 'My Narratives', icon: HeadsetMicIcon, gradient: gradients.content },
   { path: '/ai-assets', label: 'AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
 ];
 
@@ -67,8 +71,10 @@ const accountItems = [
   { path: '/account', label: 'Account', icon: AccountCircleIcon, gradient: gradients.account },
   { path: '/payment', label: 'Subscription', icon: CreditCardIcon, gradient: gradients.account },
   { path: '/support', label: 'Support & FAQ', icon: HeadsetMicIcon, gradient: gradients.account },
-  { path: 'logout', label: 'Sign Out', icon: LogoutIcon, gradient: gradients.account, isLogout: true },
 ];
+
+// Sign Out is separate - moved to bottom of sidebar
+const signOutItem = { path: 'logout', label: 'Sign Out', icon: LogoutIcon, gradient: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)', isLogout: true };
 
 const footerItems = [
   { path: '/terms', label: 'Terms', external: false },
@@ -92,6 +98,10 @@ interface SidebarContentProps {
   onSidebarCollapse: () => void;
   onTokensClick: () => void;
   onLogoutClick: () => void;
+  showMobileBackButton?: boolean;
+  onMobileBackClick?: () => void;
+  trialDaysRemaining?: number;
+  isTrialActive?: boolean;
 }
 
 // Memoized sidebar content - only re-renders when props change
@@ -105,6 +115,10 @@ const SidebarContent = memo<SidebarContentProps>(({
   onSidebarCollapse,
   onTokensClick,
   onLogoutClick,
+  showMobileBackButton,
+  onMobileBackClick,
+  trialDaysRemaining,
+  isTrialActive,
 }) => {
   // Use location inside the memoized component - changes will only cause this component to re-render
   const location = useLocation();
@@ -117,7 +131,7 @@ const SidebarContent = memo<SidebarContentProps>(({
       py: 2,
       pb: 0
     }}>
-      {/* Logo and Collapse button row */}
+      {/* Logo and Collapse/Back button row */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, mb: 3 }}>
         <Box
           component="a"
@@ -138,6 +152,7 @@ const SidebarContent = memo<SidebarContentProps>(({
               height: 36,
               width: 36,
               objectFit: 'contain',
+              filter: 'drop-shadow(0 2px 8px rgba(0, 210, 211, 0.5))',
             }}
           />
           <Typography
@@ -157,12 +172,27 @@ const SidebarContent = memo<SidebarContentProps>(({
           </Typography>
         </Box>
 
-        {!isMobile && (
+        {/* Desktop collapse button or Mobile back button */}
+        {showMobileBackButton ? (
+          <IconButton
+            onClick={onMobileBackClick}
+            size="small"
+            sx={{
+              color: 'rgba(255,255,255,0.5)',
+              '&:hover': {
+                color: '#007AFF',
+                backgroundColor: 'rgba(0,122,255,0.08)',
+              },
+            }}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+        ) : !isMobile && (
           <IconButton
             onClick={onSidebarCollapse}
             size="small"
             sx={{
-              color: '#86868B',
+              color: 'rgba(255,255,255,0.5)',
               '&:hover': {
                 color: '#007AFF',
                 backgroundColor: 'rgba(0,122,255,0.08)',
@@ -173,6 +203,45 @@ const SidebarContent = memo<SidebarContentProps>(({
           </IconButton>
         )}
       </Box>
+
+      {/* Trial Status Banner */}
+      {isTrialActive && trialDaysRemaining !== undefined && (
+        <Box sx={{ px: 2, mb: 2 }}>
+          <Box
+            onClick={() => onNavigate('/payment')}
+            sx={{
+              borderRadius: '12px',
+              p: 2,
+              background: 'linear-gradient(135deg, #FF9500 0%, #FF2D55 100%)',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 16px rgba(255,149,0,0.4)',
+              },
+            }}
+          >
+            <Typography
+              sx={{
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                mb: 0.5,
+              }}
+            >
+              {trialDaysRemaining} days left in trial
+            </Typography>
+            <Typography
+              sx={{
+                color: 'rgba(255,255,255,0.9)',
+                fontSize: '0.75rem',
+              }}
+            >
+              Upgrade now to keep creating
+            </Typography>
+          </Box>
+        </Box>
+      )}
 
       {/* Tokens Display */}
       {hasToken && (
@@ -214,7 +283,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -238,7 +307,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     px: 2,
                     backgroundColor: active ? 'rgba(236,72,153,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: active ? 'rgba(236,72,153,0.15)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: active ? 'rgba(236,72,153,0.15)' : 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -252,7 +321,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(236,72,153,0.25)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                       }}
                     >
                       <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -263,7 +332,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     primaryTypographyProps={{
                       fontWeight: active ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: '#1D1D1F',
+                      color: '#FFFFFF',
                     }}
                   />
                   {isLocked && (
@@ -282,7 +351,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -306,7 +375,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     px: 2,
                     backgroundColor: active ? 'rgba(249,115,22,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: active ? 'rgba(249,115,22,0.15)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: active ? 'rgba(249,115,22,0.15)' : 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -320,7 +389,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(249,115,22,0.25)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                       }}
                     >
                       <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -331,7 +400,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     primaryTypographyProps={{
                       fontWeight: active ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: '#1D1D1F',
+                      color: '#FFFFFF',
                     }}
                   />
                 </ListItemButton>
@@ -340,6 +409,8 @@ const SidebarContent = memo<SidebarContentProps>(({
           })}
         </List>
 
+        <Divider sx={{ mx: 2, my: 1 }} />
+
         {/* CONTENT Section */}
         <Typography
           variant="caption"
@@ -347,7 +418,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -386,7 +457,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                       px: 2,
                       backgroundColor: isHighlighted ? 'rgba(16,185,129,0.1)' : 'transparent',
                       '&:hover': {
-                        backgroundColor: isHighlighted ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.04)',
+                        backgroundColor: isHighlighted ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
                       },
                     }}
                   >
@@ -400,7 +471,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                         }}
                       >
                         <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -411,7 +482,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                       primaryTypographyProps={{
                         fontWeight: isHighlighted ? 600 : 500,
                         fontSize: '0.875rem',
-                        color: '#1D1D1F',
+                        color: '#FFFFFF',
                       }}
                     />
                   </ListItemButton>
@@ -496,7 +567,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: '0 2px 4px rgba(16,185,129,0.25)',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                           }}
                         >
                           {currentViewingItem.type === 'asset' ? (
@@ -528,6 +599,8 @@ const SidebarContent = memo<SidebarContentProps>(({
           })}
         </List>
 
+        <Divider sx={{ mx: 2, my: 1 }} />
+
         {/* PUBLISH Section */}
         <Typography
           variant="caption"
@@ -535,7 +608,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -559,7 +632,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     px: 2,
                     backgroundColor: active ? 'rgba(59,130,246,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: active ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: active ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -573,7 +646,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(59,130,246,0.25)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                       }}
                     >
                       <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -584,7 +657,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     primaryTypographyProps={{
                       fontWeight: active ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: '#1D1D1F',
+                      color: '#FFFFFF',
                     }}
                   />
                   {isLocked && (
@@ -603,7 +676,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -615,19 +688,18 @@ const SidebarContent = memo<SidebarContentProps>(({
         <List sx={{ px: 1, pb: 1 }}>
           {accountItems.map((item) => {
             const Icon = item.icon;
-            const isLogout = (item as any).isLogout;
-            const active = !isLogout && (location.pathname === item.path || location.pathname.startsWith(item.path + '/'));
+            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
-                  onClick={() => isLogout ? onLogoutClick() : onNavigate(item.path)}
+                  onClick={() => onNavigate(item.path)}
                   sx={{
                     borderRadius: '10px',
                     py: 1,
                     px: 2,
                     backgroundColor: active ? 'rgba(139,92,246,0.1)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: isLogout ? 'rgba(255,59,48,0.08)' : (active ? 'rgba(139,92,246,0.15)' : 'rgba(0,0,0,0.04)'),
+                      backgroundColor: active ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -637,11 +709,11 @@ const SidebarContent = memo<SidebarContentProps>(({
                         width: 28,
                         height: 28,
                         borderRadius: '8px',
-                        background: isLogout ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)' : item.gradient,
+                        background: item.gradient,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: isLogout ? '0 2px 6px rgba(255,59,48,0.25)' : '0 2px 6px rgba(139,92,246,0.25)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                       }}
                     >
                       <Icon sx={{ fontSize: 16, color: '#fff' }} />
@@ -652,7 +724,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                     primaryTypographyProps={{
                       fontWeight: active ? 600 : 500,
                       fontSize: '0.875rem',
-                      color: isLogout ? '#FF3B30' : '#1D1D1F',
+                      color: '#FFFFFF',
                     }}
                   />
                 </ListItemButton>
@@ -660,6 +732,46 @@ const SidebarContent = memo<SidebarContentProps>(({
             );
           })}
         </List>
+      </Box>
+
+      {/* Sign Out - Separated at bottom */}
+      <Box sx={{ px: 2, pb: 1 }}>
+        <ListItemButton
+          onClick={onLogoutClick}
+          sx={{
+            borderRadius: '10px',
+            py: 1,
+            px: 2,
+            '&:hover': {
+              backgroundColor: 'rgba(255,59,48,0.08)',
+            },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 40 }}>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '8px',
+                background: signOutItem.gradient,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              }}
+            >
+              <LogoutIcon sx={{ fontSize: 16, color: '#fff' }} />
+            </Box>
+          </ListItemIcon>
+          <ListItemText
+            primary="Sign Out"
+            primaryTypographyProps={{
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              color: '#FF3B30',
+            }}
+          />
+        </ListItemButton>
       </Box>
 
       {/* Footer Links - matches GlobalAudioPlayer height */}
@@ -672,7 +784,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             href={item.path}
             sx={{
               fontSize: '0.75rem',
-              color: '#86868B',
+              color: 'rgba(255,255,255,0.5)',
               textDecoration: 'none',
               '&:hover': {
                 color: '#007AFF',
@@ -740,6 +852,7 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
               height: 36,
               width: 36,
               objectFit: 'contain',
+              filter: 'drop-shadow(0 2px 8px rgba(0, 210, 211, 0.5))',
             }}
           />
         </Box>
@@ -767,13 +880,12 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
         <List sx={{ px: 1 }}>
           {allItems.map((item, index) => {
             const Icon = item.icon;
-            const isLogout = (item as any).isLogout;
             const fullPath = item.path + ((item as any).params || '');
-            const active = !isLogout && location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
+            const active = location.pathname === item.path && ((item as any).params ? location.search === (item as any).params : true);
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
                 <ListItemButton
-                  onClick={() => isLogout ? onLogoutClick() : onNavigate(fullPath)}
+                  onClick={() => onNavigate(fullPath)}
                   sx={{
                     borderRadius: '10px',
                     py: 1,
@@ -782,7 +894,7 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
                     justifyContent: 'center',
                     backgroundColor: 'transparent',
                     '&:hover': {
-                      backgroundColor: isLogout ? 'rgba(255,59,48,0.08)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -791,7 +903,7 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
                       width: 32,
                       height: 32,
                       borderRadius: '8px',
-                      background: isLogout ? 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)' : item.gradient,
+                      background: item.gradient,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -807,6 +919,39 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
             );
           })}
         </List>
+      </Box>
+
+      {/* Sign Out - at bottom */}
+      <Box sx={{ px: 1, pb: 2, display: 'flex', justifyContent: 'center' }}>
+        <ListItemButton
+          onClick={onLogoutClick}
+          sx={{
+            borderRadius: '10px',
+            py: 1,
+            px: 1,
+            minWidth: 0,
+            justifyContent: 'center',
+            backgroundColor: 'transparent',
+            '&:hover': {
+              backgroundColor: 'rgba(255,59,48,0.08)',
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: '8px',
+              background: signOutItem.gradient,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            }}
+          >
+            <LogoutIcon sx={{ fontSize: 18, color: '#fff' }} />
+          </Box>
+        </ListItemButton>
       </Box>
     </Box>
   );

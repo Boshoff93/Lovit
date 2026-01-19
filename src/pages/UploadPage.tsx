@@ -29,6 +29,7 @@ import {
   Close,
   Image as ImageIcon,
   KeyboardArrowDown,
+  RecordVoiceOver as RecordVoiceOverIcon,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
 import { songsApi, videosApi } from '../services/api';
@@ -178,6 +179,7 @@ const UploadPage: React.FC = () => {
     setCoverImage(null);
     setCoverImagePreview(null);
     setTitle('');
+    setAudioType('music');
     setError(null);
     setSuccess(null);
   }, [urlType]);
@@ -195,6 +197,7 @@ const UploadPage: React.FC = () => {
   
   // Metadata state
   const [title, setTitle] = useState('');
+  const [audioType, setAudioType] = useState<'music' | 'voice'>('music'); // Music vs Voice audio
   const [selectedGenre, setSelectedGenre] = useState('pop'); // Auto-select first option
   const [selectedMood, setSelectedMood] = useState('happy'); // Auto-select first option
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
@@ -451,10 +454,10 @@ const UploadPage: React.FC = () => {
             </Box>
             <Box sx={{ minWidth: 0 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-                Upload {uploadType === 'song' ? 'Music' : 'Video'}
+                Upload {uploadType === 'song' ? 'Audio' : 'Video'}
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-                Upload your own {uploadType === 'song' ? 'music' : 'videos'} to Gruvi
+                Upload your own {uploadType === 'song' ? 'audio' : 'videos'} to Gruvi
               </Typography>
             </Box>
           </Box>
@@ -851,84 +854,13 @@ const UploadPage: React.FC = () => {
           </Paper>
         )}
 
-        {/* Songs: Cover Art + Song Details Row */}
+        {/* Song Details Section */}
         {uploadType === 'song' && (
-          <Box sx={{ display: 'flex', gap: 3, mb: 3, flexDirection: { xs: 'column', lg: 'row' } }}>
-            {/* Cover Art Section */}
             <Paper
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3 },
-                flex: { lg: 1 },
-                borderRadius: { xs: '16px', sm: '20px' },
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <ImageIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                  Cover Art
-                </Typography>
-                <Chip label="Optional" size="small" sx={{ ml: 1, background: 'rgba(0,0,0,0.05)', color: '#86868B', fontWeight: 600, fontSize: '0.7rem' }} />
-              </Box>
-              <Typography variant="body2" sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
-                Add album artwork
-              </Typography>
-
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => e.target.files?.[0] && handleCoverImageSelect(e.target.files[0])}
-                style={{ display: 'none' }}
-              />
-              <Box
-                onClick={() => coverInputRef.current?.click()}
-                sx={{
-                  flex: 1,
-                  width: '100%',
-                  minHeight: { xs: 200, sm: 180 },
-                  borderRadius: '12px',
-                  border: '2px dashed rgba(0,0,0,0.15)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  transition: 'all 0.2s',
-                  background: 'rgba(0,0,0,0.02)',
-                  '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.02)' },
-                }}
-              >
-                {coverImagePreview ? (
-                  <img
-                    src={coverImagePreview}
-                    alt="Cover"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <>
-                    <ImageIcon sx={{ color: '#86868B', fontSize: 48, mb: 1 }} />
-                    <Typography variant="body2" sx={{ color: '#86868B', fontWeight: 500 }}>
-                      Click to add
-                    </Typography>
-                  </>
-                )}
-              </Box>
-            </Paper>
-
-            {/* Song Details Section */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 2, sm: 3 },
-                flex: { lg: 2 },
+                mb: 3,
                 borderRadius: { xs: '16px', sm: '20px' },
                 background: 'rgba(255,255,255,0.9)',
                 backdropFilter: 'blur(20px)',
@@ -968,6 +900,61 @@ const UploadPage: React.FC = () => {
                     },
                   }}
                 />
+              </Box>
+
+              {/* Audio Type Selection */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 500, color: '#1D1D1F', mb: 0.5 }}>
+                  Audio Type
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1.5 }}>
+                  <Box
+                    onClick={() => setAudioType('music')}
+                    sx={{
+                      flex: 1,
+                      height: 52,
+                      px: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1,
+                      cursor: 'pointer',
+                      borderRadius: '10px',
+                      background: audioType === 'music' ? 'rgba(0,122,255,0.08)' : '#fff',
+                      border: audioType === 'music' ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                      transition: 'all 0.2s',
+                      '&:hover': { background: audioType === 'music' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                    }}
+                  >
+                    <MusicNoteIcon sx={{ fontSize: 20, color: audioType === 'music' ? '#007AFF' : '#86868B' }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: audioType === 'music' ? '#007AFF' : '#1D1D1F' }}>
+                      Music
+                    </Typography>
+                  </Box>
+                  <Box
+                    onClick={() => setAudioType('voice')}
+                    sx={{
+                      flex: 1,
+                      height: 52,
+                      px: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1,
+                      cursor: 'pointer',
+                      borderRadius: '10px',
+                      background: audioType === 'voice' ? 'rgba(0,122,255,0.08)' : '#fff',
+                      border: audioType === 'voice' ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.15)',
+                      transition: 'all 0.2s',
+                      '&:hover': { background: audioType === 'voice' ? 'rgba(0,122,255,0.12)' : 'rgba(0,0,0,0.02)' },
+                    }}
+                  >
+                    <RecordVoiceOverIcon sx={{ fontSize: 20, color: audioType === 'voice' ? '#007AFF' : '#86868B' }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: audioType === 'voice' ? '#007AFF' : '#1D1D1F' }}>
+                      Voice
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
 
               {/* Genre and Mood Selection */}
@@ -1043,7 +1030,6 @@ const UploadPage: React.FC = () => {
                 </Box>
               </Box>
             </Paper>
-          </Box>
         )}
 
         {/* Upload Button Section */}

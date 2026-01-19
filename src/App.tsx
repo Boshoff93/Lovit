@@ -54,7 +54,12 @@ import AIMusicPage from './pages/AIMusicPage';
 import AIMusicVideosPage from './pages/AIMusicVideosPage';
 import AIVideoShortsPage from './pages/AIVideoShortsPage';
 import SocialMediaPage from './pages/SocialMediaPage';
-// import BlogPage from './pages/BlogPage';
+import BlogPage from './pages/BlogPage';
+import MotionControlViralContent from './pages/blog/motion-control-viral-content';
+import HowToCreatePromoMusicVideo from './pages/blog/how-to-create-promo-music-video';
+import MotionCapturePage from './pages/MotionCapturePage';
+import CreateNarrativePage from './pages/CreateNarrativePage';
+import MyNarrativesPage from './pages/MyNarrativesPage';
 
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
@@ -246,6 +251,11 @@ function App() {
         <Route path="/ai-music-videos" element={<AIMusicVideosPage />} />
         <Route path="/ai-video-shorts" element={<AIVideoShortsPage />} />
         <Route path="/social-media" element={<SocialMediaPage />} />
+
+        {/* Blog pages */}
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/motion-control-viral-content" element={<MotionControlViralContent />} />
+        <Route path="/blog/how-to-create-promo-music-video" element={<HowToCreatePromoMusicVideo />} />
 
         {/* Social platform detail pages - must be before SEO routes */}
         <Route path="/platforms/:platformId" element={<SocialDetailPage />} />
@@ -447,7 +457,39 @@ function App() {
             </Layout>
           </RequireAuth>
         } />
-        
+
+        {/* Motion Capture - Character/Motion Swap */}
+        <Route path="/motion-capture" element={
+          <RequireAuth>
+            <Layout>
+              <RequireSubscription
+                featureName="Motion Capture"
+                description="Create viral character swaps and motion control videos with cutting-edge AI."
+              >
+                <MotionCapturePage />
+              </RequireSubscription>
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Create Narrative - Text-to-Speech */}
+        <Route path="/create/narrative" element={
+          <RequireAuth>
+            <Layout>
+              <CreateNarrativePage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* My Narratives - List user's narratives */}
+        <Route path="/my-narratives" element={
+          <RequireAuth>
+            <Layout>
+              <MyNarrativesPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
         {/* Upload page - protected route */}
         <Route path="/upload" element={
           <RequireAuth>

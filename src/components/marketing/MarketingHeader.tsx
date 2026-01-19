@@ -15,7 +15,9 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import Tooltip from '@mui/material/Tooltip';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
@@ -35,6 +37,7 @@ const navItems = [
   { label: 'AI Music', href: '/ai-music', activeColor: '#5AC8FA' }, // blue
   { label: 'AI Video Shorts', href: '/ai-video-shorts', activeColor: '#F5A623' }, // orange
   { label: 'Social Media', href: '/social-media', activeColor: '#22C55E' }, // green
+  { label: 'Blog', href: '/blog', activeColor: '#EC4899' }, // pink
   { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' }, // purple
 ];
 
@@ -52,12 +55,13 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
   alwaysBlurred = false,
 }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // Use 'lg' breakpoint (1200px) to snap to drawer sooner, preventing overflow
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const navigate = useNavigate();
   const location = useLocation();
 
   const { token } = useSelector((state: RootState) => state.auth);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const isLoggedIn = !!token;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -365,69 +369,90 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                 })}
               </Box>
 
-              {/* Right side: Dashboard (logged in) or Login + CTA (logged out) */}
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
+              {/* Right side: Dashboard (logged in) or Sign In + Unlock (logged out) */}
+              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', ml: 'auto' }}>
                 {isLoggedIn ? (
-                  <Button
-                    component={RouterLink}
-                    to="/my-music"
-                    variant="contained"
-                    endIcon={<ChevronRightIcon />}
-                    sx={{
-                      // Primary button style - blue to teal gradient
-                      background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
-                      backgroundColor: 'transparent !important',
-                      color: '#fff !important',
-                      px: 3,
-                      py: 1.25,
-                      borderRadius: '20px',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      fontSize: '0.95rem',
-                      boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
-                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
+                  <>
+                    <Button
+                      component={RouterLink}
+                      to="/my-music"
+                      variant="contained"
+                      sx={{
+                        // Dashboard button - same gradient as "Unlock Gruvi"
                         background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
                         backgroundColor: 'transparent !important',
                         color: '#fff !important',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5) !important',
-                      },
-                    }}
-                  >
-                    Let's Get Gruvi
-                  </Button>
+                        px: 2.5,
+                        py: 1,
+                        borderRadius: '100px',
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        fontSize: '0.875rem',
+                        boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
+                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
+                          backgroundColor: 'transparent !important',
+                          color: '#fff !important',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5) !important',
+                        },
+                      }}
+                    >
+                      Dashboard
+                    </Button>
+                    <Tooltip title="Sign Out">
+                      <IconButton
+                        onClick={logout}
+                        sx={{
+                          color: lightMode ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)',
+                          '&:hover': {
+                            color: lightMode ? '#1D1D1F' : '#fff',
+                            background: lightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
+                          },
+                        }}
+                      >
+                        <LogoutIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
                 ) : (
                   <>
                     <Button
                       onClick={handleClickOpen}
                       sx={{
-                        color: lightMode ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.9)',
+                        // Sign In - teal color matching nav items
+                        color: `${lightMode ? 'rgba(0,0,0,0.8)' : INACTIVE_COLOR} !important`,
                         textTransform: 'none',
                         fontWeight: 500,
-                        fontSize: '0.95rem',
+                        fontSize: '0.875rem',
+                        px: 2,
+                        py: 0.875,
+                        borderRadius: '12px',
+                        border: lightMode ? '1px solid rgba(0,0,0,0.15)' : `1px solid ${INACTIVE_COLOR}40`,
                         '&:hover': {
-                          color: lightMode ? '#1D1D1F' : '#fff',
-                          background: 'transparent',
+                          color: `${lightMode ? '#1D1D1F' : '#fff'} !important`,
+                          background: lightMode ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.08)',
+                          borderColor: lightMode ? 'rgba(0,0,0,0.25)' : `${INACTIVE_COLOR}60`,
                         },
                       }}
                     >
-                      Log in
+                      Sign In
                     </Button>
                     <Button
                       variant="contained"
                       onClick={handleClickOpen}
                       sx={{
-                        // Primary button style - blue to teal gradient
+                        // Unlock button - same style as "Start Your Free Trial"
                         background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
                         backgroundColor: 'transparent !important',
                         color: '#fff !important',
-                        px: 3,
-                        py: 1.25,
-                        borderRadius: '20px',
+                        px: 2.5,
+                        py: 1,
+                        borderRadius: '12px',
                         fontWeight: 600,
                         textTransform: 'none',
-                        fontSize: '0.95rem',
+                        fontSize: '0.875rem',
                         boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
                         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                         '&:hover': {
@@ -449,7 +474,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
         </Box>
       </Box>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer - Fable-style layout */}
       <Drawer
         anchor="right"
         open={drawerOpen}
@@ -459,24 +484,26 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           disableScrollLock: true,
         }}
         sx={{
-          display: { xs: 'block', md: 'none' },
+          display: { xs: 'block', lg: 'none' },
           '& .MuiDrawer-paper': {
-            width: 280,
+            width: 300,
             background: '#1D1D1F',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px 0 0 16px',
             boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            flexDirection: 'column',
           },
         }}
       >
-        {/* Drawer Header */}
+        {/* Drawer Header with close button */}
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           p: 2,
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          pb: 1.5,
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box
@@ -503,8 +530,100 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           </IconButton>
         </Box>
 
-        {/* Drawer Content */}
-        <List sx={{ px: 1, py: 2 }}>
+        {/* TOP: CTA Buttons - Fable style */}
+        <Box sx={{ px: 2, pb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {isLoggedIn ? (
+            <Button
+              fullWidth
+              variant="contained"
+              component={RouterLink}
+              to="/my-music"
+              onClick={handleDrawerToggle}
+              sx={{
+                // Dashboard button - same gradient as "Unlock Gruvi"
+                background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: '100px',
+                py: 1.25,
+                fontSize: '0.9rem',
+                boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5)',
+                }
+              }}
+            >
+              Dashboard
+            </Button>
+          ) : (
+            <>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => {
+                  handleDrawerToggle();
+                  onOpenAuth?.();
+                }}
+                sx={{
+                  // Blue to teal gradient - same as "Start Your Free Trial"
+                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
+                  backgroundColor: 'transparent !important',
+                  color: '#fff !important',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  borderRadius: '12px',
+                  py: 1.25,
+                  fontSize: '0.9rem',
+                  boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%) !important',
+                    backgroundColor: 'transparent !important',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5) !important',
+                  }
+                }}
+              >
+                Unlock Gruvi
+              </Button>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  handleDrawerToggle();
+                  onOpenAuth?.();
+                }}
+                sx={{
+                  // Teal color like nav items
+                  borderColor: `${INACTIVE_COLOR}40 !important`,
+                  color: `${INACTIVE_COLOR} !important`,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  borderRadius: '12px',
+                  py: 1.125,
+                  fontSize: '0.9rem',
+                  '&:hover': {
+                    borderColor: `${INACTIVE_COLOR}60 !important`,
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    color: `${INACTIVE_COLOR} !important`,
+                  }
+                }}
+              >
+                Sign In
+              </Button>
+            </>
+          )}
+        </Box>
+
+        {/* Divider */}
+        <Box sx={{ mx: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }} />
+
+        {/* MIDDLE: Navigation tabs */}
+        <List sx={{ px: 1, py: 1.5, flex: 1 }}>
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -514,11 +633,12 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                 to={item.href}
                 onClick={handleDrawerToggle}
                 sx={{
-                  borderRadius: 2,
+                  borderRadius: '12px',
                   mb: 0.5,
-                  backgroundColor: active ? `${item.activeColor}26` : 'transparent',
+                  py: 1.25,
+                  backgroundColor: active ? `${item.activeColor}20` : 'transparent',
                   '&:hover': {
-                    backgroundColor: active ? `${item.activeColor}33` : 'rgba(255,255,255,0.1)',
+                    backgroundColor: active ? `${item.activeColor}30` : 'rgba(255,255,255,0.08)',
                   }
                 }}
               >
@@ -526,6 +646,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                   primary={item.label}
                   primaryTypographyProps={{
                     fontWeight: active ? 600 : 500,
+                    fontSize: '0.95rem',
                     color: active ? item.activeColor : INACTIVE_COLOR,
                   }}
                 />
@@ -534,86 +655,84 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           })}
         </List>
 
-        {/* Bottom buttons */}
-        <Box sx={{
-          mt: 'auto',
-          p: 2,
-          borderTop: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-        }}>
-          {isLoggedIn ? (
-            <Button
-              fullWidth
-              variant="contained"
-              component={RouterLink}
-              to="/my-music"
-              onClick={handleDrawerToggle}
-              endIcon={<ChevronRightIcon />}
+        {/* BOTTOM: Fable upsell card + Sign out */}
+        <Box sx={{ mt: 'auto' }}>
+          {/* Divider */}
+          <Box sx={{ mx: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }} />
+
+          {/* Fable Upsell Card */}
+          <Box sx={{ p: 2 }}>
+            <Box
+              component="a"
+              href="https://fable.app"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
-                background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-                color: '#fff',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: '10px',
-                py: 1.25,
-                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4)',
+                display: 'block',
+                textDecoration: 'none',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                borderRadius: '16px',
+                p: 2,
+                transition: 'all 0.2s ease',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #3B82F6 35%, #00D4AA 100%)',
-                  boxShadow: '0 6px 24px rgba(59, 130, 246, 0.5)',
+                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%)',
+                  borderColor: 'rgba(139, 92, 246, 0.5)',
+                  transform: 'translateY(-2px)',
                 }
               }}
             >
-              Let's Get Gruvi
-            </Button>
-          ) : (
-            <>
-              <Button
-                fullWidth
-                variant="outlined"
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  color: '#fff',
+                  mb: 0.5,
+                }}
+              >
+                Try Fable
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.75rem',
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.4,
+                }}
+              >
+                Create stunning AI-powered motion graphics and animated content
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Sign Out (only if logged in) */}
+          {isLoggedIn && (
+            <Box sx={{ px: 2, pb: 2 }}>
+              <ListItemButton
                 onClick={() => {
                   handleDrawerToggle();
-                  onOpenAuth?.();
+                  logout();
                 }}
                 sx={{
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  color: '#fff',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  borderRadius: '10px',
+                  borderRadius: '12px',
                   py: 1.25,
                   '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
                   }
                 }}
               >
-                Log in
-              </Button>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={() => {
-                  handleDrawerToggle();
-                  onOpenAuth?.();
-                }}
-                sx={{
-                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
-                  color: '#fff',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  py: 1.25,
-                  boxShadow: '0 4px 16px rgba(78, 205, 196, 0.4)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #45B7AA 0%, #3D9480 100%)',
-                  }
-                }}
-              >
-                Start Your Free Trial!
-              </Button>
-            </>
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  <LogoutIcon sx={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Sign Out"
+                  primaryTypographyProps={{
+                    fontWeight: 500,
+                    fontSize: '0.9rem',
+                    color: 'rgba(255,255,255,0.7)',
+                  }}
+                />
+              </ListItemButton>
+            </Box>
           )}
         </Box>
       </Drawer>

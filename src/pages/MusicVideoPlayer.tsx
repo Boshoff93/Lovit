@@ -2648,8 +2648,9 @@ const MusicVideoPlayer: React.FC = () => {
             {/* Thumbnail Options Grid */}
             {(() => {
               const isLandscape = videoData?.aspectRatio === 'landscape';
-              const thumbWidth = isLandscape ? 160 : 90;
-              const thumbHeight = isLandscape ? 90 : 160;
+              // Responsive thumbnail sizes - smaller on mobile
+              const thumbWidth = { xs: isLandscape ? 120 : 68, sm: isLandscape ? 160 : 90 };
+              const thumbHeight = { xs: isLandscape ? 68 : 120, sm: isLandscape ? 90 : 160 };
               
               // All available thumbnails: original + AI generated + uploaded customs
               const thumbnailOptions: { url: string; label: string; type: 'original' | 'ai' | 'custom'; dataUrl?: string }[] = [];
@@ -2883,8 +2884,9 @@ const MusicVideoPlayer: React.FC = () => {
                   });
                   
                   const isLandscape = videoData?.aspectRatio === 'landscape';
-                  const refThumbWidth = isLandscape ? 80 : 45;
-                  const refThumbHeight = isLandscape ? 45 : 80;
+                  // Responsive reference thumbnail sizes
+                  const refThumbWidth = { xs: isLandscape ? 60 : 34, sm: isLandscape ? 80 : 45 };
+                  const refThumbHeight = { xs: isLandscape ? 34 : 60, sm: isLandscape ? 45 : 80 };
                   const realSelectedIds = selectedCharacterIds.filter(id => id !== 'toggle_open');
                   const maxSelections = 3;
                   
@@ -2988,7 +2990,7 @@ const MusicVideoPlayer: React.FC = () => {
                                       '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : {},
                                     }}
                                   >
-                                    <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block' }} />
+                                    <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block', minWidth: 0 }} />
                                     {isSelected && (
                                       <Box sx={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Check sx={{ fontSize: 9, color: '#fff' }} />
@@ -3699,7 +3701,7 @@ const MusicVideoPlayer: React.FC = () => {
                       </Typography>
                     </Box>
                     <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      Upload immediately
+                      Goes live in ~5 minutes
                     </Typography>
                   </Box>
                   <Box
@@ -3973,9 +3975,10 @@ const MusicVideoPlayer: React.FC = () => {
                       return;
                     }
 
-                    // Handle immediate upload
-                    setIsUploading(true);
+                    // Handle "Post Now" - schedule 5 minutes from now for better UX
+                    const scheduledDate = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
+                    setIsScheduling(true);
                     try {
                       // Save metadata first
                       if (editedMetadata?.title) {
@@ -3989,43 +3992,62 @@ const MusicVideoPlayer: React.FC = () => {
                         });
                       }
 
-                      // Clear any previous failed state immediately before starting new upload
-                      setSocialUploadStatus('queued');
-                      setSocialUploadPlatforms(selectedPlatforms);
-                      setSocialUploadResults({});
+                      // Create scheduled post for 5 minutes from now
+                      const platformConfigs = selectedPlatforms.map(platform => ({
+                        platform,
+                        accountName: (platform === 'youtube' ? youtubeChannel?.channelTitle :
+                                     platform === 'tiktok' ? tiktokUsername :
+                                     platform === 'instagram' ? instagramUsername :
+                                     platform === 'facebook' ? facebookPageName :
+                                     platform === 'linkedin' ? linkedinName : undefined) || undefined,
+                      }));
 
-                      // Queue upload to background worker - always emails when done
-                      const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-                      await videosApi.batchSocialUpload(user!.userId, videoId!, {
-                        platforms: selectedPlatforms,
-                        addThumbnailIntro: shouldAddThumbnailIntro,
-                        // TikTok-specific settings (required by TikTok API)
-                        tiktokSettings: selectedPlatforms.includes('tiktok') ? {
-                          postMode: tiktokPostMode,
-                          privacyLevel: tiktokPostMode === 'direct' ? 'SELF_ONLY' : tiktokPrivacyLevel,
-                          allowComment: tiktokAllowComment,
-                          allowDuet: tiktokAllowDuet,
-                          allowStitch: tiktokAllowStitch,
-                          discloseContent: tiktokDiscloseContent,
-                          brandOrganic: tiktokBrandOrganic,
-                          brandedContent: tiktokBrandedContent,
-                        } : undefined,
+                      const response = await scheduledPostsApi.createScheduledPost({
+                        videoId: videoId!,
+                        platforms: platformConfigs,
+                        scheduledTime: scheduledDate.toISOString(),
+                        title: editedMetadata?.title || '',
+                        description: editedMetadata?.description || '',
+                        thumbnailUrl: selectedThumbnailUrl || videoData?.thumbnailUrl || '',
+                        hook: editedMetadata?.hook || hookText || '',
+                        tags: editedMetadata?.tags || [],
+                        ctaType: ctaType || '',
+                        ctaUrl: ctaUrl || '',
+                        aspectRatio: videoData?.aspectRatio || 'portrait',
                       });
 
-                      setBackgroundUploadStarted(true);
-                      setIsUploading(false);
+                      // Get the scheduleId from response
+                      const newScheduleId = response.data?.scheduledPost?.scheduleId;
+
+                      setIsScheduling(false);
+                      setShowUploadConfirm(false);
+                      // Reset state
+                      setUploadMode('now');
+                      // Show success banner
+                      setScheduleBanner({
+                        show: true,
+                        type: 'success',
+                        message: 'Your post will go live in ~5 minutes!',
+                        scheduleId: newScheduleId,
+                      });
+                      setLastScheduledPostId(newScheduleId || null);
+                      setLastScheduledTime('in ~5 minutes');
+                      // Show dialog asking if user wants to view scheduled posts
+                      setShowScheduleSuccessDialog(true);
+                      // Scroll to top to show success banner
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     } catch (err: any) {
-                      console.error('Upload failed:', err);
-                      setIsUploading(false);
-                      showSocialError(err.response?.data?.error || 'Failed to start upload. Please try again.');
+                      console.error('Upload scheduling failed:', err);
+                      setIsScheduling(false);
+                      const errorMessage = err.response?.status === 401
+                        ? 'Session expired. Please refresh the page and try again.'
+                        : err.response?.data?.error || 'Failed to schedule post. Please try again.';
+                      showSocialError(errorMessage);
                     }
                   }}
                   disabled={
-                    isUploading ||
                     isScheduling ||
                     selectedPlatforms.length === 0 ||
-                    socialUploadStatus === 'queued' ||
-                    socialUploadStatus === 'uploading' ||
                     // TikTok validation: if disclosure is on, must select at least one brand option
                     (selectedPlatforms.includes('tiktok') && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent) ||
                     // Schedule validation: must have date/time selected
@@ -4040,7 +4062,7 @@ const MusicVideoPlayer: React.FC = () => {
                     '&:hover': { bgcolor: '#0066DD' },
                   }}
                 >
-                  {isUploading ? 'Starting...' : isScheduling ? 'Scheduling...' : uploadMode === 'schedule' ? 'Schedule Post' : 'Upload Now'}
+                  {isScheduling ? 'Scheduling...' : uploadMode === 'schedule' ? 'Schedule Post' : 'Post Now'}
                 </Button>
               </>
             )}

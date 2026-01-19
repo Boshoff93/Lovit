@@ -10,7 +10,7 @@ interface CTASectionProps {
   primaryButtonAction?: () => void;
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
-  variant?: 'gradient' | 'light' | 'dark' | 'orange' | 'green';
+  variant?: 'gradient' | 'light' | 'dark' | 'orange' | 'green' | 'transparent';
   /** Custom gradient background - overrides variant background */
   gradientBackground?: string;
 }
@@ -35,6 +35,12 @@ const CTASection: React.FC<CTASectionProps> = ({
       case 'dark':
         return {
           background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
+          titleColor: '#fff',
+          subtitleColor: 'rgba(255,255,255,0.8)',
+        };
+      case 'transparent':
+        return {
+          background: 'transparent',
           titleColor: '#fff',
           subtitleColor: 'rgba(255,255,255,0.8)',
         };
