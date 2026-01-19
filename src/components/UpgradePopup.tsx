@@ -58,10 +58,14 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
       open={open}
       onClose={onClose}
       PaperProps={{
+        elevation: 0,
         sx: {
           borderRadius: 3,
           maxWidth: 420,
-          px: 1
+          px: 1,
+          bgcolor: '#141418 !important',
+          backgroundImage: 'none !important',
+          border: '1px solid rgba(255,255,255,0.1)',
         }
       }}
     >
@@ -81,13 +85,13 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
         }}>
           <GruviCoin size={64} />
           
-          <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>
             {message}
           </Typography>
           
           {/* Top-up bundle selector */}
           <Box sx={{ width: '100%' }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#1D1D1F' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#fff' }}>
               Select a top-up bundle:
             </Typography>
             <ToggleButtonGroup
@@ -95,7 +99,7 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
               exclusive
               onChange={handleBundleChange}
               aria-label="token bundle"
-              sx={{ 
+              sx={{
                 width: '100%',
                 display: 'flex',
                 '& .MuiToggleButton-root': {
@@ -103,16 +107,17 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                   flexDirection: 'column',
                   py: 1.5,
                   px: 1,
-                  border: '1px solid rgba(0,0,0,0.12)',
+                  border: '1px solid rgba(255,255,255,0.15)',
                   borderRadius: '12px !important',
                   mx: 0.5,
+                  color: '#fff',
                   '&:first-of-type': { ml: 0 },
                   '&:last-of-type': { mr: 0 },
                   '&.Mui-selected': {
-                    background: 'rgba(0,122,255,0.08)',
-                    borderColor: '#007AFF',
+                    background: 'rgba(59,130,246,0.15)',
+                    borderColor: '#3B82F6',
                     '&:hover': {
-                      background: 'rgba(0,122,255,0.12)',
+                      background: 'rgba(59,130,246,0.2)',
                     }
                   }
                 }
@@ -142,10 +147,10 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
                       {bundle.badge}
                     </Box>
                   )}
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#fff', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     +{bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
                   </Typography>
-                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#3B82F6' }}>
                     ${bundle.price}
                   </Typography>
                 </ToggleButton>
@@ -159,11 +164,11 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
               sx={{
                 p: 1.5,
                 borderRadius: 2,
-                background: 'rgba(0,0,0,0.03)',
+                background: 'transparent',
                 width: '100%'
               }}
             >
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                 Or upgrade your plan for more monthly tokens!
               </Typography>
             </Paper>
@@ -177,20 +182,22 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
         flexDirection: 'column',
         gap: 1
       }}>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={handleTopUpClick}
           fullWidth
           disabled={isTopUpLoading}
-          sx={{ 
-            borderRadius: '12px', 
+          sx={{
+            borderRadius: '12px',
             py: 1.25,
             fontWeight: 600,
-            background: '#007AFF',
+            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
             color: '#fff',
-            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-            '&:hover': { 
-              background: '#0066DD',
+            boxShadow: '0 4px 12px rgba(59,130,246,0.3)',
+            textTransform: 'none',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              boxShadow: '0 6px 16px rgba(59,130,246,0.4)',
             },
           }}
         >
@@ -201,21 +208,22 @@ const UpgradePopup: React.FC<UpgradePopupProps> = ({
           )}
         </Button>
         {!isPremiumTier && (
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             onClick={onUpgrade}
             fullWidth
             disabled={isUpgradeLoading}
-            sx={{ 
-              borderRadius: '12px', 
+            sx={{
+              borderRadius: '12px',
               py: 1.25,
               fontWeight: 600,
-              borderColor: 'rgba(0,0,0,0.15)',
-              color: '#1D1D1F',
-              '&:hover': { 
-                borderColor: '#007AFF',
-                color: '#007AFF',
-                background: 'rgba(0,122,255,0.05)',
+              borderColor: '#3B82F6',
+              color: '#fff',
+              textTransform: 'none',
+              '&:hover': {
+                borderColor: '#3B82F6',
+                backgroundColor: 'transparent',
+                boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
               },
             }}
           >

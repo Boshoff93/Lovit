@@ -1161,7 +1161,7 @@ const CreatePage: React.FC = () => {
         {/* Left: Page Title */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AutoAwesomeIcon sx={{ color: '#007AFF', fontSize: 28 }} />
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#141418' }}>
             {activeTab === 'song' ? 'Create Music' : 'Create Video'}
           </Typography>
         </Box>
@@ -1228,7 +1228,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Song Prompt
                 </Typography>
                 <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
@@ -1360,7 +1360,7 @@ const CreatePage: React.FC = () => {
                                 />
                               )}
                               <Box>
-                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#1D1D1F' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#141418' }}>{char.characterName}</Typography>
                                 <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
                                   {isInPrompt ? 'Already added' : 'Click to add'}
                                 </Typography>
@@ -1373,7 +1373,7 @@ const CreatePage: React.FC = () => {
                             tooltip: {
                               sx: {
                                 bgcolor: '#fff',
-                                color: '#1D1D1F',
+                                color: '#141418',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
                                 borderRadius: '12px',
                                 p: 1.5,
@@ -1465,7 +1465,7 @@ const CreatePage: React.FC = () => {
                       <InfoOutlinedIcon sx={{ fontSize: 14, color: '#86868B', cursor: 'help' }} />
                     </Tooltip>
                   </Box>
-                  <Typography variant="caption" sx={{ color: '#1D1D1F', fontWeight: 500 }}>
+                  <Typography variant="caption" sx={{ color: '#141418', fontWeight: 500 }}>
                     {creativity <= 3 ? 'Exact' : creativity <= 6 ? 'Balanced' : 'Creative'} ({creativity}/10)
                   </Typography>
                 </Box>
@@ -1521,7 +1521,7 @@ const CreatePage: React.FC = () => {
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
                   <Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#141418', fontSize: '0.95rem' }}>
                       Genre
                     </Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
@@ -1571,7 +1571,7 @@ const CreatePage: React.FC = () => {
                     borderRadius: '10px',
                     border: '1px solid rgba(0,0,0,0.1)',
                     background: autoPickGenre ? 'rgba(0,122,255,0.05)' : '#fff',
-                    color: autoPickGenre ? '#007AFF' : '#1D1D1F',
+                    color: autoPickGenre ? '#007AFF' : '#141418',
                     fontWeight: 500,
                     fontSize: '0.85rem',
                     opacity: autoPickGenre ? 0.7 : 1,
@@ -1621,7 +1621,7 @@ const CreatePage: React.FC = () => {
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
                   <Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#141418', fontSize: '0.95rem' }}>
                       Mood
                     </Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
@@ -1671,7 +1671,7 @@ const CreatePage: React.FC = () => {
                     borderRadius: '10px',
                     border: '1px solid rgba(0,0,0,0.1)',
                     background: autoPickMood ? 'rgba(0,122,255,0.05)' : '#fff',
-                    color: autoPickMood ? '#007AFF' : '#1D1D1F',
+                    color: autoPickMood ? '#007AFF' : '#141418',
                     fontWeight: 500,
                     fontSize: '0.85rem',
                     opacity: autoPickMood ? 0.7 : 1,
@@ -1721,7 +1721,7 @@ const CreatePage: React.FC = () => {
                   boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
                 }}
               >
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#141418', mb: 0.5, fontSize: '0.95rem' }}>
                 Song Length
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
@@ -1751,7 +1751,7 @@ const CreatePage: React.FC = () => {
                     gap: 1.5,
                     textTransform: 'none',
                     background: songLength === 'short' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     border: songLength === 'short' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
                     boxShadow: songLength === 'short' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.2s ease',
@@ -1761,7 +1761,7 @@ const CreatePage: React.FC = () => {
                     },
                     '&.Mui-selected': {
                       background: 'rgba(0,122,255,0.08)',
-                      color: '#1D1D1F',
+                      color: '#141418',
                       '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
@@ -1779,7 +1779,7 @@ const CreatePage: React.FC = () => {
                     <TimerIcon sx={{ color: songLength === 'short' ? '#007AFF' : '#86868B', fontSize: 18 }} />
                   </Box>
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 600, color: songLength === 'short' ? '#007AFF' : '#1D1D1F', fontSize: '0.85rem' }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'short' ? '#007AFF' : '#141418', fontSize: '0.85rem' }}>
                       Short
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1801,7 +1801,7 @@ const CreatePage: React.FC = () => {
                     gap: 1.5,
                     textTransform: 'none',
                     background: songLength === 'standard' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     border: songLength === 'standard' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
                     boxShadow: songLength === 'standard' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.2s ease',
@@ -1811,7 +1811,7 @@ const CreatePage: React.FC = () => {
                     },
                     '&.Mui-selected': {
                       background: 'rgba(0,122,255,0.08)',
-                      color: '#1D1D1F',
+                      color: '#141418',
                       '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
@@ -1829,7 +1829,7 @@ const CreatePage: React.FC = () => {
                     <MusicNoteIcon sx={{ color: songLength === 'standard' ? '#007AFF' : '#86868B', fontSize: 18 }} />
                   </Box>
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 600, color: songLength === 'standard' ? '#007AFF' : '#1D1D1F', fontSize: '0.85rem' }}>
+                    <Typography sx={{ fontWeight: 600, color: songLength === 'standard' ? '#007AFF' : '#141418', fontSize: '0.85rem' }}>
                       Standard
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#86868B', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1855,7 +1855,7 @@ const CreatePage: React.FC = () => {
                   alignSelf: { sm: 'flex-start' },
                 }}
               >
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5, fontSize: '0.95rem' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#141418', mb: 0.5, fontSize: '0.95rem' }}>
                   Language
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#86868B', mb: 1.5, fontSize: '0.8rem' }}>
@@ -1872,7 +1872,7 @@ const CreatePage: React.FC = () => {
                     borderRadius: '10px',
                     border: '1px solid rgba(0,0,0,0.1)',
                     background: '#fff',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     fontWeight: 500,
                     fontSize: '0.85rem',
                     minWidth: 0,
@@ -1911,7 +1911,7 @@ const CreatePage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Summary
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
@@ -2077,7 +2077,7 @@ const CreatePage: React.FC = () => {
         >
           <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', textAlign: 'left' }}>
               Select Genre
             </Typography>
           </Box>
@@ -2111,7 +2111,7 @@ const CreatePage: React.FC = () => {
                   />
                   <ListItemText 
                     primary={genre.name} 
-                    primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
+                    primaryTypographyProps={{ fontWeight: 600, color: '#141418' }} 
                   />
                   {selectedGenre === genre.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                 </ListItemButton>
@@ -2170,7 +2170,7 @@ const CreatePage: React.FC = () => {
         >
           <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', textAlign: 'left' }}>
               Select Mood
             </Typography>
           </Box>
@@ -2204,7 +2204,7 @@ const CreatePage: React.FC = () => {
                   />
                   <ListItemText 
                     primary={mood.name} 
-                    primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
+                    primaryTypographyProps={{ fontWeight: 600, color: '#141418' }} 
                   />
                   {selectedMood === mood.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                 </ListItemButton>
@@ -2263,7 +2263,7 @@ const CreatePage: React.FC = () => {
         >
           <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', textAlign: 'left' }}>
               Select Language
             </Typography>
           </Box>
@@ -2297,7 +2297,7 @@ const CreatePage: React.FC = () => {
                   />
                   <ListItemText 
                     primary={language.name} 
-                    primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }} 
+                    primaryTypographyProps={{ fontWeight: 600, color: '#141418' }} 
                   />
                   {selectedLanguage === language.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                 </ListItemButton>
@@ -2348,7 +2348,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <MusicNoteIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Select Song
                 </Typography>
                 <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
@@ -2366,7 +2366,7 @@ const CreatePage: React.FC = () => {
                   px: 2,
                   borderRadius: '12px',
                   borderColor: showSongSelectionError && !selectedSong ? 'rgba(255,59,48,0.5)' : 'rgba(0,0,0,0.15)',
-                  color: selectedSong ? '#1D1D1F' : '#86868B',
+                  color: selectedSong ? '#141418' : '#86868B',
                   textTransform: 'none',
                   fontWeight: 500,
                   '&:hover': {
@@ -2434,7 +2434,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                 <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left', mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', textAlign: 'left', mb: 2 }}>
                   Select Song
                 </Typography>
                 {/* Search Bar */}
@@ -2519,7 +2519,7 @@ const CreatePage: React.FC = () => {
                               width: 48,
                               height: 48,
                               borderRadius: '10px',
-                              background: '#1D1D1F',
+                              background: '#141418',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -2579,7 +2579,7 @@ const CreatePage: React.FC = () => {
                         <ListItemText
                           primary={song.songTitle}
                           secondary={song.genre}
-                          primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F' }}
+                          primaryTypographyProps={{ fontWeight: 600, color: '#141418' }}
                           secondaryTypographyProps={{ color: '#86868B' }}
                         />
                         {/* Play/Pause button */}
@@ -2714,7 +2714,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <AutoAwesomeIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Video Description
                 </Typography>
                 <Chip label="Required" size="small" sx={{ ml: 1, background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontWeight: 600, fontSize: '0.7rem' }} />
@@ -2846,7 +2846,7 @@ const CreatePage: React.FC = () => {
                                 />
                               )}
                               <Box>
-                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#1D1D1F' }}>{char.characterName}</Typography>
+                                <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#141418' }}>{char.characterName}</Typography>
                                 <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
                                   {isInPrompt ? 'Already added' : 'Click to add'}
                                 </Typography>
@@ -2859,7 +2859,7 @@ const CreatePage: React.FC = () => {
                             tooltip: {
                               sx: {
                                 bgcolor: '#fff',
-                                color: '#1D1D1F',
+                                color: '#141418',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
                                 borderRadius: '12px',
                                 p: 1.5,
@@ -2949,7 +2949,7 @@ const CreatePage: React.FC = () => {
                       <InfoOutlinedIcon sx={{ fontSize: 14, color: '#86868B', cursor: 'help' }} />
                     </Tooltip>
                   </Box>
-                  <Typography variant="caption" sx={{ color: '#1D1D1F', fontWeight: 500 }}>
+                  <Typography variant="caption" sx={{ color: '#141418', fontWeight: 500 }}>
                     {videoCreativity <= 3 ? 'Exact' : videoCreativity <= 6 ? 'Balanced' : 'Creative'} ({videoCreativity}/10)
                   </Typography>
                 </Box>
@@ -2999,7 +2999,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <PaletteIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Visual Style
                 </Typography>
               </Box>
@@ -3016,7 +3016,7 @@ const CreatePage: React.FC = () => {
                   px: 2,
                   borderRadius: '12px',
                   borderColor: 'rgba(0,0,0,0.15)',
-                  color: '#1D1D1F',
+                  color: '#141418',
                   textTransform: 'none',
                   fontSize: '0.95rem',
                   '&:hover': { borderColor: '#007AFF', background: 'rgba(0,122,255,0.04)' },
@@ -3064,7 +3064,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ pt: 2, pb: 1, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                 <Box sx={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.2)', mx: 'auto', mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', textAlign: 'left' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', textAlign: 'left' }}>
                   Select Visual Style
                 </Typography>
               </Box>
@@ -3100,7 +3100,7 @@ const CreatePage: React.FC = () => {
                       </ListItemIcon>
                       <ListItemText 
                         primary={style.label} 
-                        primaryTypographyProps={{ fontWeight: 600, color: '#1D1D1F', ml: 1 }} 
+                        primaryTypographyProps={{ fontWeight: 600, color: '#141418', ml: 1 }} 
                       />
                       {selectedStyle === style.id && <CheckIcon sx={{ color: '#007AFF' }} />}
                     </ListItemButton>
@@ -3145,7 +3145,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <MovieIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Video Type
                 </Typography>
               </Box>
@@ -3187,7 +3187,7 @@ const CreatePage: React.FC = () => {
                           gap: 2,
                           textTransform: 'none',
                           background: isSelected ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                          color: '#1D1D1F',
+                          color: '#141418',
                           border: isSelected ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
                           boxShadow: isSelected ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -3197,14 +3197,14 @@ const CreatePage: React.FC = () => {
                           },
                           '&.Mui-selected': { 
                             background: 'rgba(0,122,255,0.08)', 
-                            color: '#1D1D1F',
+                            color: '#141418',
                             '&:hover': { background: 'rgba(0,122,255,0.12)' },
                           },
                         }}
                       >
-                        <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#1D1D1F', flexShrink: 0 }} />
+                        <IconComponent sx={{ fontSize: 28, color: isSelected ? '#007AFF' : '#141418', flexShrink: 0 }} />
                         <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                          <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#1D1D1F' }}>{type.label}</Typography>
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? '#007AFF' : '#141418' }}>{type.label}</Typography>
                           <Typography sx={{ fontSize: '0.75rem', color: '#86868B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{type.description}</Typography>
                         </Box>
                         <Chip 
@@ -3235,7 +3235,7 @@ const CreatePage: React.FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <AspectRatioIcon sx={{ color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Aspect Ratio
                 </Typography>
               </Box>
@@ -3268,7 +3268,7 @@ const CreatePage: React.FC = () => {
                     gap: 2,
                     textTransform: 'none',
                     background: aspectRatio === 'portrait' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     border: aspectRatio === 'portrait' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
                     boxShadow: aspectRatio === 'portrait' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -3278,14 +3278,14 @@ const CreatePage: React.FC = () => {
                     },
                     '&.Mui-selected': { 
                       background: 'rgba(0,122,255,0.08)', 
-                      color: '#1D1D1F',
+                      color: '#141418',
                       '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
                 >
                   <SmartphoneIcon sx={{ fontSize: 28, flexShrink: 0, color: aspectRatio === 'portrait' ? '#007AFF' : '#86868B' }} />
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#1D1D1F' }}>Portrait</Typography>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'portrait' ? '#007AFF' : '#141418' }}>Portrait</Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>9:16 • Best for mobile & TikTok</Typography>
                   </Box>
                 </ToggleButton>
@@ -3301,7 +3301,7 @@ const CreatePage: React.FC = () => {
                     gap: 2,
                     textTransform: 'none',
                     background: aspectRatio === 'landscape' ? 'rgba(0,122,255,0.08)' : 'rgba(0,0,0,0.02)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     border: aspectRatio === 'landscape' ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.08)',
                     boxShadow: aspectRatio === 'landscape' ? '0 4px 16px rgba(0,122,255,0.15)' : 'none',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -3311,14 +3311,14 @@ const CreatePage: React.FC = () => {
                     },
                     '&.Mui-selected': { 
                       background: 'rgba(0,122,255,0.08)', 
-                      color: '#1D1D1F',
+                      color: '#141418',
                       '&:hover': { background: 'rgba(0,122,255,0.12)' },
                     },
                   }}
                 >
                   <TvIcon sx={{ fontSize: 28, flexShrink: 0, color: aspectRatio === 'landscape' ? '#007AFF' : '#86868B' }} />
                   <Box sx={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#1D1D1F' }}>Landscape</Typography>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: aspectRatio === 'landscape' ? '#007AFF' : '#141418' }}>Landscape</Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>16:9 • Best for YouTube & TV</Typography>
                   </Box>
                 </ToggleButton>
@@ -3341,7 +3341,7 @@ const CreatePage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   Summary
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>

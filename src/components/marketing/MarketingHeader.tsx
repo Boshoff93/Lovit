@@ -258,7 +258,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
             <IconButton
               onClick={handleDrawerToggle}
               sx={{
-                color: lightMode ? '#1D1D1F' : '#fff',
+                color: lightMode ? '#141418' : '#fff',
                 ml: 'auto',
               }}
             >
@@ -349,7 +349,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         transition: 'color 0.3s ease, transform 0.2s ease',
                         background: 'transparent',
                         '&:hover': {
-                          color: lightMode ? '#1D1D1F' : '#fff',
+                          color: lightMode ? '#141418' : '#fff',
                           background: active ? 'transparent' : (lightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'),
                           transform: 'scale(1.02)',
                         },
@@ -407,7 +407,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         sx={{
                           color: lightMode ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)',
                           '&:hover': {
-                            color: lightMode ? '#1D1D1F' : '#fff',
+                            color: lightMode ? '#141418' : '#fff',
                             background: lightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
                           },
                         }}
@@ -431,7 +431,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         borderRadius: '12px',
                         border: lightMode ? '1px solid rgba(0,0,0,0.15)' : `1px solid ${INACTIVE_COLOR}40`,
                         '&:hover': {
-                          color: `${lightMode ? '#1D1D1F' : '#fff'} !important`,
+                          color: `${lightMode ? '#141418' : '#fff'} !important`,
                           background: lightMode ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.08)',
                           borderColor: lightMode ? 'rgba(0,0,0,0.25)' : `${INACTIVE_COLOR}60`,
                         },
@@ -487,7 +487,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           display: { xs: 'block', lg: 'none' },
           '& .MuiDrawer-paper': {
             width: 300,
-            background: '#1D1D1F',
+            background: '#141418',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px 0 0 16px',

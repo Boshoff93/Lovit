@@ -504,7 +504,7 @@ const CharactersPage: React.FC = () => {
               borderRadius: 3,
               p: 1,
               minWidth: 340,
-              bgcolor: '#1D1D1F',
+              bgcolor: '#141418',
               border: '1px solid rgba(255,255,255,0.1)',
             }
           }}

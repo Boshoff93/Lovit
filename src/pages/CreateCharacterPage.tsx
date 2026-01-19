@@ -577,21 +577,22 @@ const CreateCharacterPage: React.FC = () => {
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: characterName.trim() ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.05)',
+                  border: characterName.trim() ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)',
                   color: '#fff',
+                  transition: 'all 0.2s ease',
                   '& input': {
                     py: 1.5,
                     color: '#fff',
                     '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
                   },
                   '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.08)',
-                    borderColor: 'rgba(255,255,255,0.2)',
+                    backgroundColor: characterName.trim() ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.08)',
+                    borderColor: characterName.trim() ? '#3B82F6' : 'rgba(255,255,255,0.2)',
                   },
                   '&.Mui-focused': {
-                    backgroundColor: 'rgba(0,122,255,0.1)',
-                    borderColor: '#007AFF',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    borderColor: '#3B82F6',
                   },
                   '& fieldset': { border: 'none' },
                 },
@@ -929,20 +930,21 @@ const CreateCharacterPage: React.FC = () => {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '12px',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.05)',
+                border: characterDescription.trim() ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)',
                 color: '#fff',
+                transition: 'all 0.2s ease',
                 '& textarea': {
                   color: '#fff',
                   '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
                 },
                 '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                  borderColor: 'rgba(255,255,255,0.2)',
+                  backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.08)',
+                  borderColor: characterDescription.trim() ? '#3B82F6' : 'rgba(255,255,255,0.2)',
                 },
                 '&.Mui-focused': {
-                  backgroundColor: 'rgba(0,122,255,0.1)',
-                  borderColor: '#007AFF',
+                  backgroundColor: 'rgba(59,130,246,0.1)',
+                  borderColor: '#3B82F6',
                 },
                 '& fieldset': { border: 'none' },
               },

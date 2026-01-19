@@ -66,7 +66,7 @@ const AvatarShowcase: React.FC<AvatarShowcaseProps> = ({
             sx={{
               fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
               fontWeight: 700,
-              color: '#1D1D1F',
+              color: '#141418',
               mb: 2,
               letterSpacing: '-0.02em',
             }}
@@ -168,7 +168,7 @@ const AvatarShowcase: React.FC<AvatarShowcaseProps> = ({
                         boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                       }}
                     >
-                      <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#1D1D1F', ml: 0.5 }} />
+                      <PlayArrowRoundedIcon sx={{ fontSize: 28, color: '#141418', ml: 0.5 }} />
                     </Box>
                   </Box>
                 </Box>
@@ -179,7 +179,7 @@ const AvatarShowcase: React.FC<AvatarShowcaseProps> = ({
                     sx={{
                       fontSize: '0.95rem',
                       fontWeight: 600,
-                      color: '#1D1D1F',
+                      color: '#141418',
                       mb: 0.5,
                     }}
                   >

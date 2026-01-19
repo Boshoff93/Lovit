@@ -28,6 +28,7 @@ import {
   Delete,
 } from '@mui/icons-material';
 import { RootState } from '../store/store';
+import { GhostButton } from '../components/GhostButton';
 import { songsApi } from '../services/api';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 
@@ -726,7 +727,7 @@ const TrackDetailPage: React.FC = () => {
               border: '1px solid rgba(0,0,0,0.06)',
             }}
           >
-            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2, fontSize: '0.95rem' }}>
+            <Typography sx={{ fontWeight: 600, color: '#141418', mb: 2, fontSize: '0.95rem' }}>
               Select Platforms
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mb: 2 }}>
@@ -788,7 +789,7 @@ const TrackDetailPage: React.FC = () => {
             borderRadius: 3,
             p: 1,
             minWidth: 340,
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -815,31 +816,13 @@ const TrackDetailPage: React.FC = () => {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
-          <Button
+          <GhostButton
             onClick={() => setShowDeleteDialog(false)}
             disabled={isDeleting}
-            variant="outlined"
-            sx={{
-              flex: 1,
-              py: 1.25,
-              borderRadius: '12px',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderColor: '#3B82F6',
-              color: '#fff',
-              '&:hover': {
-                borderColor: '#3B82F6',
-                backgroundColor: 'transparent',
-                boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
-              },
-              '&:disabled': {
-                borderColor: 'rgba(59, 130, 246, 0.3)',
-                color: 'rgba(255, 255, 255, 0.3)',
-              },
-            }}
+            sx={{ flex: 1, py: 1.25 }}
           >
             Cancel
-          </Button>
+          </GhostButton>
           <Button
             onClick={handleDelete}
             disabled={isDeleting}

@@ -197,7 +197,7 @@ const MarketingSection: React.FC<MarketingSectionProps> = ({
                     backgroundClip: 'text',
                   }
                 : {
-                    color: darkMode ? '#FFFFFF' : '#1D1D1F',
+                    color: darkMode ? '#FFFFFF' : '#141418',
                   }),
             }}
           >

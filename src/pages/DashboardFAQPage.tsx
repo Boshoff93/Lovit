@@ -105,7 +105,7 @@ const DashboardFAQPage: React.FC = () => {
           <HelpOutlineIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
             Help & FAQ
           </Typography>
           <Typography sx={{ color: '#86868B' }}>
@@ -130,7 +130,7 @@ const DashboardFAQPage: React.FC = () => {
                   color: '#fff',
                 } : {
                   background: 'rgba(0,0,0,0.05)',
-                  color: '#1D1D1F',
+                  color: '#141418',
                   '&:hover': { background: 'rgba(0,122,255,0.1)' }
                 })
               }}
@@ -149,7 +149,7 @@ const DashboardFAQPage: React.FC = () => {
                     color: '#fff',
                   } : {
                     background: 'rgba(0,0,0,0.05)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     '&:hover': { background: 'rgba(0,122,255,0.1)' }
                   })
                 }}
@@ -209,7 +209,7 @@ const DashboardFAQPage: React.FC = () => {
                         {item.category}
                       </Typography>
                       <Typography
-                        sx={{ fontWeight: 600, color: '#1D1D1F' }}
+                        sx={{ fontWeight: 600, color: '#141418' }}
                       >
                         {item.question}
                       </Typography>
@@ -276,7 +276,7 @@ const DashboardFAQPage: React.FC = () => {
               <EmailIcon sx={{ fontSize: '1.25rem', color: '#fff' }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                 Still Have Questions?
               </Typography>
               <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>

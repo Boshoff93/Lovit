@@ -2511,7 +2511,7 @@ const AIMusicPage: React.FC = () => {
         PaperProps={{
           sx: {
             borderRadius: '20px',
-            background: '#1D1D1F',
+            background: '#141418',
             border: '1px solid rgba(255,255,255,0.1)',
           },
         }}

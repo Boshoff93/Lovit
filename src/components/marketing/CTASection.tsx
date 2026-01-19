@@ -47,7 +47,7 @@ const CTASection: React.FC<CTASectionProps> = ({
       case 'light':
         return {
           background: '#fff',
-          titleColor: '#1D1D1F',
+          titleColor: '#141418',
           subtitleColor: '#48484A',
         };
       case 'orange':

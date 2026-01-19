@@ -208,7 +208,7 @@ const ScheduledContentPage: React.FC = () => {
       case 'cancelled':
         return { bg: 'rgba(156, 163, 175, 0.12)', border: '#9CA3AF', text: '#6B7280' };
       default: // scheduled
-        return { bg: 'rgba(0, 122, 255, 0.1)', border: '#007AFF', text: '#1D1D1F' };
+        return { bg: 'rgba(0, 122, 255, 0.1)', border: '#007AFF', text: '#141418' };
     }
   };
 
@@ -323,7 +323,7 @@ const ScheduledContentPage: React.FC = () => {
               <CalendarMonthIcon sx={{ fontSize: 28, color: '#fff' }} />
             </Box>
             <Box sx={{ minWidth: 0 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 Content Calendar
               </Typography>
               <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
@@ -394,7 +394,7 @@ const ScheduledContentPage: React.FC = () => {
       >
         {/* Left - Date Range with Arrows */}
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 0.5 }}>
-          <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: { xs: '0.8rem', sm: '0.9rem' }, display: { xs: 'block', sm: 'none' } }}>
+          <Typography sx={{ fontWeight: 600, color: '#141418', fontSize: { xs: '0.8rem', sm: '0.9rem' }, display: { xs: 'block', sm: 'none' } }}>
             {getDateRangeText()}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -422,7 +422,7 @@ const ScheduledContentPage: React.FC = () => {
             >
               <ChevronRightIcon sx={{ fontSize: '1rem' }} />
             </IconButton>
-            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem', ml: 0.5, display: { xs: 'none', sm: 'block' } }}>
+            <Typography sx={{ fontWeight: 600, color: '#141418', fontSize: '0.9rem', ml: 0.5, display: { xs: 'none', sm: 'block' } }}>
               {getDateRangeText()}
             </Typography>
           </Box>
@@ -438,7 +438,7 @@ const ScheduledContentPage: React.FC = () => {
               borderRadius: '12px',
               textTransform: 'none',
               borderColor: 'rgba(0,0,0,0.15)',
-              color: '#1D1D1F',
+              color: '#141418',
               fontSize: { xs: '0.7rem', sm: '0.75rem' },
               py: 0.5,
               px: { xs: 1.5, sm: 2 },
@@ -463,7 +463,7 @@ const ScheduledContentPage: React.FC = () => {
                   minWidth: 'auto',
                   bgcolor: viewMode === mode ? '#007AFF' : 'transparent',
                   borderColor: viewMode === mode ? '#007AFF' : 'rgba(0,0,0,0.15)',
-                  color: viewMode === mode ? '#fff' : '#1D1D1F',
+                  color: viewMode === mode ? '#fff' : '#141418',
                   '&:hover': {
                     bgcolor: viewMode === mode ? '#0066DD' : 'rgba(0,122,255,0.04)',
                     borderColor: '#007AFF',
@@ -495,19 +495,19 @@ const ScheduledContentPage: React.FC = () => {
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <ScheduleIcon sx={{ fontSize: 14, color: '#007AFF' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Scheduled</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#141418' }}>Scheduled</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <HourglassIcon sx={{ fontSize: 14, color: '#F97316' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Publishing</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#141418' }}>Publishing</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <CheckCircleIcon sx={{ fontSize: 14, color: '#22C55E' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Published</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#141418' }}>Published</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <ErrorIcon sx={{ fontSize: 14, color: '#EF4444' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#1D1D1F' }}>Failed</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#141418' }}>Failed</Typography>
         </Box>
       </Box>
 
@@ -580,7 +580,7 @@ const ScheduledContentPage: React.FC = () => {
                   >
                     <ScheduleIcon sx={{ fontSize: 32, color: '#007AFF' }} />
                   </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 1 }}>
                     No Scheduled Posts
                   </Typography>
                   <Typography sx={{ color: '#86868B', mb: 3, maxWidth: 280, fontSize: '0.9rem' }}>
@@ -636,7 +636,7 @@ const ScheduledContentPage: React.FC = () => {
                       sx={{
                         fontSize: '1.5rem',
                         fontWeight: 600,
-                        color: isToday(date) ? '#007AFF' : '#1D1D1F',
+                        color: isToday(date) ? '#007AFF' : '#141418',
                         lineHeight: 1,
                       }}
                     >
@@ -962,7 +962,7 @@ const ScheduledContentPage: React.FC = () => {
                               color: todayDate
                                 ? '#fff'
                                 : inCurrentMonth
-                                ? '#1D1D1F'
+                                ? '#141418'
                                 : '#C7C7CC',
                               width: 26,
                               height: 26,
@@ -1144,7 +1144,7 @@ const ScheduledContentPage: React.FC = () => {
               </Box>
 
               {/* Title */}
-              <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#1D1D1F', mb: 1 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#141418', mb: 1 }}>
                 {selectedPost.title || 'Untitled'}
               </Typography>
 
@@ -1233,7 +1233,7 @@ const ScheduledContentPage: React.FC = () => {
                     bgcolor: 'rgba(0,122,255,0.05)',
                     borderLeft: '3px solid #007AFF'
                   }}>
-                    <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                    <Typography sx={{ color: '#141418', fontSize: '0.9rem', fontStyle: 'italic' }}>
                       "{selectedPost.hook}"
                     </Typography>
                   </Box>
@@ -1246,7 +1246,7 @@ const ScheduledContentPage: React.FC = () => {
                   <Typography sx={{ fontSize: '0.75rem', color: '#86868B', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
                     Description
                   </Typography>
-                  <Typography sx={{ color: '#1D1D1F', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                  <Typography sx={{ color: '#141418', fontSize: '0.9rem', lineHeight: 1.6 }}>
                     {selectedPost.description}
                   </Typography>
                 </Box>

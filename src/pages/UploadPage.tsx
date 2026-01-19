@@ -430,36 +430,32 @@ const UploadPage: React.FC = () => {
       >
         {/* Title Field */}
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-              Title
-            </Typography>
-            <Chip
-              label="Required"
-              size="small"
-              sx={{ background: 'rgba(255,59,48,0.2)', color: '#FF6B6B', fontWeight: 600, fontSize: '0.7rem' }}
-            />
-          </Box>
-          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1.5, fontSize: '0.85rem' }}>
-            Give your {isAudioUpload ? 'audio' : 'video'} a title
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+            Title
           </Typography>
           <TextField
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
             fullWidth
+            inputProps={{ maxLength: 100 }}
+            helperText={`${title.length}/100`}
             placeholder={`Enter ${isAudioUpload ? 'audio' : 'video'} title`}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '12px',
-                background: 'rgba(255,255,255,0.05)',
+                borderRadius: '16px',
+                background: 'rgba(255,255,255,0.03)',
                 color: '#fff',
-                '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                fontSize: '0.95rem',
+                '& fieldset': { borderColor: title ? '#007AFF' : 'rgba(255,255,255,0.1)' },
+                '&:hover fieldset': { borderColor: title ? '#007AFF' : 'rgba(255,255,255,0.2)' },
                 '&.Mui-focused fieldset': { borderColor: '#007AFF' },
               },
               '& .MuiInputBase-input': {
                 '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+              },
+              '& .MuiFormHelperText-root': {
+                color: 'rgba(255,255,255,0.5)',
               },
             }}
           />

@@ -116,7 +116,7 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({
             fontSize: { xs: '1.75rem', md: '2.25rem' },
             fontWeight: 700,
             fontFamily: '"Fredoka", "Nunito", sans-serif',
-            color: darkMode ? '#fff' : '#1D1D1F',
+            color: darkMode ? '#fff' : '#141418',
             mb: 1,
           }}
         >
@@ -166,7 +166,7 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({
             },
           }}
         >
-          <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: darkMode ? '#fff' : '#1D1D1F' }}>
+          <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: darkMode ? '#fff' : '#141418' }}>
             Compare All Features
           </Typography>
         </AccordionSummary>
@@ -260,7 +260,7 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                           sx={{
                             fontWeight: 500,
                             fontSize: '0.85rem',
-                            color: darkMode ? 'rgba(255,255,255,0.9)' : '#1D1D1F',
+                            color: darkMode ? 'rgba(255,255,255,0.9)' : '#141418',
                             borderBottom: darkMode ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.04)',
                             py: 1.5,
                           }}

@@ -808,7 +808,6 @@ const MotionCapturePage: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
           py: 4,
           px: { xs: 2, sm: 3 },
         }}
@@ -958,7 +957,6 @@ const MotionCapturePage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
         py: 4,
         px: { xs: 2, sm: 3 },
       }}

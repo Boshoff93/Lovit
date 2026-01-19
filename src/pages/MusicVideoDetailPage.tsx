@@ -983,7 +983,7 @@ const MusicVideoDetailPage: React.FC = () => {
                     sx={{
                       fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: '#1D1D1F',
+                      color: '#141418',
                       letterSpacing: '0.02em',
                     }}
                   >
@@ -1358,7 +1358,7 @@ const MusicVideoDetailPage: React.FC = () => {
                   sx={{
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#1D1D1F',
+                    color: '#141418',
                     letterSpacing: '0.02em',
                   }}
                 >

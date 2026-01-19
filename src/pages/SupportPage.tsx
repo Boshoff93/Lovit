@@ -68,7 +68,7 @@ const SupportPage: React.FC = () => {
           <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
             Support & FAQ
           </Typography>
           <Typography sx={{ color: '#86868B' }}>
@@ -81,7 +81,7 @@ const SupportPage: React.FC = () => {
       <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
               Contact Support
             </Typography>
             <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
@@ -111,7 +111,7 @@ const SupportPage: React.FC = () => {
         <CardContent sx={{ p: 3 }}>
           {/* FAQ Header */}
           <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 0.5 }}>
               Frequently Asked Questions
             </Typography>
             <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
@@ -142,7 +142,7 @@ const SupportPage: React.FC = () => {
                   }
                 } : {
                   backgroundColor: 'rgba(0,0,0,0.04)',
-                  color: '#1D1D1F',
+                  color: '#141418',
                   '&:hover': {
                     backgroundColor: 'rgba(0,0,0,0.08)',
                   }
@@ -174,7 +174,7 @@ const SupportPage: React.FC = () => {
                     }
                   } : {
                     backgroundColor: 'rgba(0,0,0,0.04)',
-                    color: '#1D1D1F',
+                    color: '#141418',
                     '&:hover': {
                       backgroundColor: 'rgba(0,0,0,0.08)',
                     }
@@ -245,7 +245,7 @@ const SupportPage: React.FC = () => {
                     <Typography
                       sx={{
                         fontWeight: 500,
-                        color: '#1D1D1F',
+                        color: '#141418',
                         fontSize: '0.95rem'
                       }}
                     >

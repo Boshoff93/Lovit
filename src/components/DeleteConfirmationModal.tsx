@@ -7,9 +7,11 @@ import {
   DialogActions,
   Button,
   Box,
-  Typography
+  Typography,
+  CircularProgress
 } from '@mui/material';
-import WarningIcon from '@mui/icons-material/Warning';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { GhostButton } from './GhostButton';
 
 interface DeleteConfirmationModalProps {
   open: boolean;
@@ -36,40 +38,69 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
       aria-describedby="delete-dialog-description"
       maxWidth="xs"
       fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: '16px',
+          bgcolor: '#141418',
+          maxWidth: 400,
+        }
+      }}
     >
       <DialogTitle id="delete-dialog-title" sx={{ pb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <WarningIcon color="error" />
-          <Typography variant="h6" component="span">{title}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            bgcolor: 'rgba(255,59,48,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <DeleteIcon sx={{ fontSize: 24, color: '#FF3B30' }} />
+          </Box>
+          <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#fff' }}>{title}</Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="delete-dialog-description">
+        <DialogContentText id="delete-dialog-description" sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
           {message}
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button 
-          onClick={onClose} 
-          variant="outlined" 
+      <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+        <GhostButton
+          onClick={onClose}
           disabled={isDeleting}
-          sx={{ borderRadius: 2 }}
+          sx={{ flex: 1, py: 1.25 }}
         >
           Cancel
-        </Button>
-        <Button 
-          onClick={onConfirm} 
-          color="error" 
-          variant="contained" 
+        </GhostButton>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
           autoFocus
           disabled={isDeleting}
-          sx={{ borderRadius: 2 }}
+          fullWidth
+          sx={{
+            flex: 1,
+            py: 1.25,
+            borderRadius: '12px',
+            textTransform: 'none',
+            fontWeight: 600,
+            background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+            boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+              boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
+            },
+            '&:disabled': { opacity: 0.7 },
+          }}
         >
-          {isDeleting ? 'Deleting...' : 'Delete'}
+          {isDeleting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Delete'}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default DeleteConfirmationModal; 
+export default DeleteConfirmationModal;

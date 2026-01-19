@@ -36,11 +36,11 @@ export const gruviGradients = {
   textGradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%)',
 
   // Header gradient (dark)
-  header: 'linear-gradient(135deg, #1D1D1F 0%, #2D2D30 100%)',
+  header: 'linear-gradient(135deg, #141418 0%, #2D2D30 100%)',
 
   // Glass effects
   glassLight: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)',
-  glassDark: 'linear-gradient(135deg, rgba(29, 29, 31, 0.95) 0%, rgba(45, 45, 48, 0.9) 100%)',
+  glassDark: 'linear-gradient(135deg, rgba(20, 20, 24, 0.95) 0%, rgba(45, 45, 48, 0.9) 100%)',
 };
 
 // Animation keyframe definitions for reuse
@@ -121,8 +121,8 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     background: {
-      default: '#0D0D0F', // Dark background
-      paper: '#1D1D1F', // Dark paper
+      default: '#16161a', // Dark background
+      paper: '#141418', // Dark paper (sidebar/drawer)
     },
     text: {
       primary: '#FFFFFF', // White text
@@ -250,7 +250,7 @@ const theme = createTheme({
           },
           '&.MuiButton-contained': {
             background: '#FFFFFF',
-            color: '#1D1D1F',
+            color: '#141418',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
             '&:hover': {
               background: '#F0F0F0',
@@ -340,20 +340,33 @@ const theme = createTheme({
         root: {
           borderRadius: 20,
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
-          backgroundColor: 'rgba(29, 29, 31, 0.8)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backgroundColor: '#141418 !important',
+          backgroundImage: 'none !important',
           border: '1px solid rgba(255, 255, 255, 0.1)',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#141418 !important',
+          backgroundImage: 'none !important',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1D1D1F',
+          backgroundColor: '#1C1C20 !important',
+          backgroundImage: 'none !important',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
         },
         rounded: {
           borderRadius: 16,
+        },
+        elevation0: {
+          boxShadow: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
         },
         elevation1: {
           boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)',
@@ -468,9 +481,8 @@ const theme = createTheme({
     MuiMenu: {
       styleOverrides: {
         paper: {
-          backgroundColor: 'rgba(29, 29, 31, 0.95)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backgroundColor: '#141418 !important',
+          backgroundImage: 'none !important',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
@@ -479,12 +491,11 @@ const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: 'rgba(29, 29, 31, 0.95)',
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)',
+          backgroundColor: '#141418 !important',
+          backgroundImage: 'none !important',
           boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 24,
+          borderRadius: 16,
         },
       },
     },
@@ -502,9 +513,8 @@ const theme = createTheme({
     MuiAutocomplete: {
       styleOverrides: {
         paper: {
-          backgroundColor: 'rgba(29, 29, 31, 0.95)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backgroundColor: '#141418 !important',
+          backgroundImage: 'none !important',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
         },
         option: {

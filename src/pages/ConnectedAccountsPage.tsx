@@ -576,7 +576,7 @@ const ConnectedAccountsPage: React.FC = () => {
             <LinkIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               Social Media Integrations
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
@@ -668,7 +668,7 @@ const ConnectedAccountsPage: React.FC = () => {
       {/* Available to Connect Section */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-          <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '1.1rem' }}>
+          <Typography sx={{ fontWeight: 600, color: '#141418', fontSize: '1.1rem' }}>
             Available to Connect
           </Typography>
           <Chip
@@ -784,7 +784,7 @@ const ConnectedAccountsPage: React.FC = () => {
                       <IconComponent />
                     </Box>
                     <Box>
-                      <Typography sx={{ fontWeight: 700, color: '#1D1D1F', fontSize: '1.1rem' }}>
+                      <Typography sx={{ fontWeight: 700, color: '#141418', fontSize: '1.1rem' }}>
                         {platform.name}
                       </Typography>
                       <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>

@@ -460,7 +460,6 @@ const CreateNarrativePage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)',
         py: 4,
         px: { xs: 2, sm: 3 },
       }}
@@ -1261,7 +1260,7 @@ const CreateNarrativePage: React.FC = () => {
             sx: {
               mt: 1,
               borderRadius: '16px',
-              background: '#1D1D1F',
+              background: '#141418',
               border: '1px solid rgba(255,255,255,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               minWidth: 280,

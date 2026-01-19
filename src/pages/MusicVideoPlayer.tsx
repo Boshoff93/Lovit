@@ -48,6 +48,9 @@ import {
   Public as PublicIcon,
   VideoLibrary as VideoLibraryIcon,
   Casino,
+  TouchApp,
+  CheckBoxOutlineBlank,
+  CheckBox as CheckBoxIcon,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -1224,7 +1227,7 @@ const MusicVideoPlayer: React.FC = () => {
         }}
       >
         <CircularProgress sx={{ color: '#007AFF', mb: 2 }} size={48} />
-        <Typography sx={{ color: '#1d1d1f' }}>Loading video...</Typography>
+        <Typography sx={{ color: '#fff' }}>Loading video...</Typography>
       </Box>
     );
   }
@@ -1246,7 +1249,7 @@ const MusicVideoPlayer: React.FC = () => {
         {isProcessing ? (
           <>
             <CircularProgress sx={{ mb: 2, color: '#007AFF' }} />
-            <Typography variant="h6" sx={{ color: '#1D1D1F', mb: 1 }}>
+            <Typography variant="h6" sx={{ color: '#fff', mb: 1 }}>
               Video is still processing...
             </Typography>
             <Typography variant="body2" sx={{ color: '#86868B', mb: 2 }}>
@@ -1291,7 +1294,7 @@ const MusicVideoPlayer: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: 2,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 12px rgba(255,255,255,0.15)',
           }}
         >
           {scheduleBanner.type === 'success' ? (
@@ -1343,10 +1346,10 @@ const MusicVideoPlayer: React.FC = () => {
           <VideoLibraryIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
             {videoData.songTitle || 'Music Video'}
           </Typography>
-          <Typography sx={{ color: '#86868B' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
             Watch, edit, and share your video
           </Typography>
         </Box>
@@ -1439,7 +1442,7 @@ const MusicVideoPlayer: React.FC = () => {
                       background: 'rgba(255,255,255,0.95)',
                       boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
                       '&:hover': {
-                        background: '#fff',
+                        background: 'rgba(255,255,255,0.03)',
                         transform: 'scale(1.1)',
                       },
                       transition: 'transform 0.2s ease',
@@ -1533,7 +1536,7 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                   label={songData.genre}
                   size="small"
-                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(0,122,255,0.1)', color: '#007AFF' }}
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(0,122,255,0.15)', color: '#fff', border: '1px solid rgba(0,122,255,0.3)' }}
                 />
               )}
               {moodImageUrl && songData?.mood && (
@@ -1549,7 +1552,7 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                   label={songData.mood}
                   size="small"
-                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(88,86,214,0.1)', color: '#5856D6' }}
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(88,86,214,0.15)', color: '#fff', border: '1px solid rgba(88,86,214,0.3)' }}
                 />
               )}
               {videoData.videoType && (
@@ -1557,16 +1560,16 @@ const MusicVideoPlayer: React.FC = () => {
                   icon={<Movie sx={{ fontSize: { xs: 12, sm: 14 }, color: '#FF9500' }} />}
                   label={videoData.videoType === 'still' ? 'Still' : 'Cinematic'}
                   size="small"
-                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
+                  sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.65rem', sm: '0.75rem' }, background: 'rgba(255,149,0,0.15)', color: '#fff', border: '1px solid rgba(255,149,0,0.3)' }}
                 />
               )}
             </Box>
             
             {/* Title */}
-            <Typography 
-              sx={{ 
-                fontWeight: 800, 
-                color: '#1d1d1f', 
+            <Typography
+              sx={{
+                fontWeight: 800,
+                color: '#fff',
                 fontSize: { xs: '1.1rem', sm: '1.5rem' },
                 lineHeight: 1.2,
                 mb: 0.25,
@@ -1577,25 +1580,25 @@ const MusicVideoPlayer: React.FC = () => {
             >
               {videoData.songTitle || 'Music Video'}
             </Typography>
-            
+
             {/* Metadata line: Duration • Aspect • Date */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, flexWrap: 'wrap', mb: 1.5 }}>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                 {formatTime(displayDuration)}
               </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                 {videoData.aspectRatio === 'landscape' ? '16:9' : '9:16'}
               </Typography>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
-              <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                 {formatDate(videoData.createdAt)}
               </Typography>
             </Box>
             
             {/* Action Buttons - Share and Download */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Share Button - Icon on xs/sm, full button on md+ */}
+              {/* Post Button - Icon on xs/sm, full button on md+ */}
               <IconButton
                 onClick={() => {
                   const element = socialSectionRef.current || document.getElementById('social-sharing-section');
@@ -1614,7 +1617,7 @@ const MusicVideoPlayer: React.FC = () => {
                   '&:hover': { bgcolor: '#0066CC' },
                 }}
               >
-                <Share sx={{ fontSize: 18 }} />
+                <CloudUpload sx={{ fontSize: 18 }} />
               </IconButton>
               <Button
                 onClick={() => {
@@ -1625,7 +1628,7 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                 }}
                 variant="contained"
-                startIcon={<Share sx={{ fontSize: 20 }} />}
+                startIcon={<CloudUpload sx={{ fontSize: 20 }} />}
                 sx={{
                   display: { xs: 'none', md: 'inline-flex' },
                   bgcolor: '#007AFF',
@@ -1640,59 +1643,60 @@ const MusicVideoPlayer: React.FC = () => {
                   '&:hover': { bgcolor: '#0066CC' },
                 }}
               >
-                Share
+                Post
               </Button>
               
-              {/* Download Button - Icon on xs/sm, full button on md+ */}
+              {/* Download Button - Ghost style with blue icon */}
               <IconButton
                 onClick={handleDownload}
                 disabled={!videoData.videoUrl}
                 sx={{
                   display: { xs: 'flex', md: 'none' },
-                  border: '1px solid rgba(0,0,0,0.15)',
-                  color: '#007AFF',
+                  border: '1px solid #3B82F6',
+                  color: '#3B82F6',
                   width: 36,
                   height: 36,
-                  '&:hover': { borderColor: '#007AFF', bgcolor: 'rgba(0,122,255,0.05)' },
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: '#3B82F6',
+                    bgcolor: 'transparent',
+                    boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
+                  },
                   '&:disabled': { opacity: 0.4 },
                 }}
               >
                 <Download sx={{ fontSize: 18 }} />
               </IconButton>
-              <Button
+              <GhostButton
                 onClick={handleDownload}
                 disabled={!videoData.videoUrl}
-                variant="outlined"
-                startIcon={<Download sx={{ fontSize: 20, color: '#007AFF' }} />}
+                startIcon={<Download sx={{ fontSize: 20 }} />}
                 sx={{
                   display: { xs: 'none', md: 'inline-flex' },
-                  color: '#007AFF !important',
-                  borderColor: 'rgba(0,0,0,0.15)',
-                  borderRadius: '10px',
                   px: 2,
                   py: 0.75,
-                  textTransform: 'none',
-                  fontWeight: 600,
                   fontSize: '0.9rem',
-                  '& .MuiButton-startIcon': { color: '#007AFF' },
-                  '& .MuiSvgIcon-root': { color: '#007AFF' },
-                  '&:hover': { borderColor: '#007AFF', bgcolor: 'rgba(0,122,255,0.05)' },
-                  '&:disabled': { opacity: 0.4, color: '#007AFF !important' },
+                  '&:disabled': { opacity: 0.4 },
                 }}
               >
                 Download
-              </Button>
-              
-              {/* Delete Button - Icon on xs/sm, full button on md+ */}
+              </GhostButton>
+
+              {/* Delete Button - Ghost style with red icon and shadow */}
               <IconButton
                 onClick={() => setShowDeleteDialog(true)}
                 sx={{
                   display: { xs: 'flex', md: 'none' },
-                  border: '1px solid rgba(255,59,48,0.3)',
+                  border: '1px solid #FF3B30',
                   color: '#FF3B30',
                   width: 36,
                   height: 36,
-                  '&:hover': { borderColor: '#FF3B30', bgcolor: 'rgba(255,59,48,0.05)' },
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: '#FF3B30',
+                    bgcolor: 'transparent',
+                    boxShadow: '0 0 12px rgba(255, 59, 48, 0.4)',
+                  },
                 }}
               >
                 <Delete sx={{ fontSize: 18 }} />
@@ -1703,17 +1707,21 @@ const MusicVideoPlayer: React.FC = () => {
                 startIcon={<Delete sx={{ fontSize: 20, color: '#FF3B30' }} />}
                 sx={{
                   display: { xs: 'none', md: 'inline-flex' },
-                  color: '#FF3B30 !important',
-                  borderColor: 'rgba(255,59,48,0.3)',
-                  borderRadius: '10px',
+                  color: '#fff',
+                  borderColor: '#FF3B30',
+                  borderRadius: '12px',
                   px: 2,
                   py: 0.75,
                   textTransform: 'none',
                   fontWeight: 600,
                   fontSize: '0.9rem',
-                  '& .MuiButton-startIcon': { color: '#FF3B30' },
-                  '& .MuiSvgIcon-root': { color: '#FF3B30' },
-                  '&:hover': { borderColor: '#FF3B30', bgcolor: 'rgba(255,59,48,0.05)' },
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: '#FF3B30',
+                    bgcolor: 'transparent',
+                    boxShadow: '0 0 12px rgba(255, 59, 48, 0.4)',
+                    transform: 'translateY(-2px)',
+                  },
                 }}
               >
                 Delete
@@ -1726,10 +1734,10 @@ const MusicVideoPlayer: React.FC = () => {
         {lyrics && (
         <Box
           sx={{
-            border: '1px solid rgba(0,0,0,0.08)',
+            border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '12px',
             overflow: 'hidden',
-            background: '#fff',
+            background: 'rgba(255,255,255,0.03)',
             mb: 2,
           }}
         >
@@ -1741,12 +1749,12 @@ const MusicVideoPlayer: React.FC = () => {
               justifyContent: 'space-between',
               p: 2,
               cursor: 'pointer',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.02)' },
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Lyrics sx={{ fontSize: 20, color: '#007AFF' }} />
-              <Typography sx={{ fontWeight: 600, color: '#1d1d1f', fontSize: '0.95rem' }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>
                 Lyrics
               </Typography>
               {lyrics && (
@@ -1772,7 +1780,7 @@ const MusicVideoPlayer: React.FC = () => {
             <Box sx={{ px: 2, pb: 2, maxHeight: 300, overflow: 'auto' }}>
               <Typography
                 sx={{
-                  color: '#1d1d1f',
+                  color: '#fff',
                   lineHeight: 1.8,
                   whiteSpace: 'pre-wrap',
                   fontSize: '0.9rem',
@@ -1824,17 +1832,19 @@ const MusicVideoPlayer: React.FC = () => {
               borderRadius: '16px',
               p: { xs: 2, sm: 2.5 },
               mb: 2,
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.06)',
+              background: 'rgba(255,255,255,0.03)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Share sx={{ fontSize: 20, color: '#007AFF' }} />
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
                     ? 'Posting Video...'
-                    : 'Share to Social Media'}
+                    : 'Post to Your Social Accounts'}
                 </Typography>
               </Box>
               {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
@@ -1844,18 +1854,17 @@ const MusicVideoPlayer: React.FC = () => {
               )}
             </Box>
 
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-              {/* YouTube - Selectable */}
+            {/* Social Account Grid with names */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              {/* YouTube Account */}
               <Box
                 onClick={() => {
                   if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!youtubeConnected) {
-                    // Connect first
-                    handleYouTubeUpload();
+                    navigate('/settings/connected-accounts');
                   } else {
-                    // Toggle selection
-                    setSelectedPlatforms(prev => 
-                      prev.includes('youtube') 
+                    setSelectedPlatforms(prev =>
+                      prev.includes('youtube')
                         ? prev.filter(p => p !== 'youtube')
                         : [...prev, 'youtube']
                     );
@@ -1863,80 +1872,85 @@ const MusicVideoPlayer: React.FC = () => {
                 }}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  border: selectedPlatforms.includes('youtube') 
-                    ? '2px solid #34C759' 
-                    : youtubeConnected 
-                      ? '2px solid #FF0000' 
-                      : '1px solid rgba(0,0,0,0.1)',
-                  background: selectedPlatforms.includes('youtube') 
-                    ? 'rgba(52,199,89,0.08)' 
-                    : youtubeConnected 
-                      ? 'rgba(255,0,0,0.05)' 
-                      : '#fff',
+                  gap: 0.75,
                   cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
                   opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
-                    borderColor: youtubeConnected ? '#FF0000' : '#FF0000',
-                    background: 'rgba(255,0,0,0.02)',
+                  '&:hover': {
+                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
                   },
                 }}
               >
-                {youtubeConnected && (
-                  <Checkbox
-                    checked={selectedPlatforms.includes('youtube')}
-                    size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#FF0000', '&.Mui-checked': { color: '#34C759' } }}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => {
-                      setSelectedPlatforms(prev => 
-                        prev.includes('youtube') 
-                          ? prev.filter(p => p !== 'youtube')
-                          : [...prev, 'youtube']
-                      );
+                {/* Avatar circle */}
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      border: selectedPlatforms.includes('youtube')
+                        ? '2.5px solid #34C759'
+                        : 'none',
+                      background: youtubeConnected ? '#FF0000' : 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedPlatforms.includes('youtube') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
-                  />
-                )}
-                <Box sx={{
-                  width: 36, height: 36, borderRadius: '10px',
-                  background: 'rgba(255,0,0,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                    <CircularProgress size={18} sx={{ color: '#FF0000' }} />
-                  ) : (
-                    <YouTube sx={{ fontSize: 22, color: '#FF0000' }} />
-                  )}
-                </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>YouTube</Typography>
-                    {youtubeConnected && (
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
+                  >
+                    {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <YouTube sx={{ fontSize: 24, color: '#fff' }} />
                     )}
                   </Box>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                      ? 'Uploading...'
-                      : youtubeConnected ? (youtubeChannel?.channelTitle || 'Connected') : 'Click to connect'}
-                  </Typography>
+                  {/* Selection checkmark */}
+                  {selectedPlatforms.includes('youtube') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -4,
+                        right: -4,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        bgcolor: '#34C759',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Check sx={{ fontSize: 12, color: '#fff' }} />
+                    </Box>
+                  )}
                 </Box>
+                {/* Account name */}
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: youtubeConnected ? '#fff' : 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    maxWidth: 70,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {youtubeConnected ? (youtubeChannel?.channelTitle || 'YouTube') : 'Connect'}
+                </Typography>
               </Box>
 
-              {/* TikTok - Selectable */}
+              {/* TikTok Account */}
               <Box
                 onClick={() => {
                   if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!tiktokConnected) {
-                    handleConnectTikTok();
+                    navigate('/settings/connected-accounts');
                   } else {
-                    setSelectedPlatforms(prev => 
-                      prev.includes('tiktok') 
+                    setSelectedPlatforms(prev =>
+                      prev.includes('tiktok')
                         ? prev.filter(p => p !== 'tiktok')
                         : [...prev, 'tiktok']
                     );
@@ -1944,82 +1958,84 @@ const MusicVideoPlayer: React.FC = () => {
                 }}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  border: selectedPlatforms.includes('tiktok') 
-                    ? '2px solid #34C759' 
-                    : tiktokConnected 
-                      ? '2px solid #000000' 
-                      : '1px solid rgba(0,0,0,0.1)',
-                  background: selectedPlatforms.includes('tiktok') 
-                    ? 'rgba(52,199,89,0.08)' 
-                    : tiktokConnected 
-                      ? 'rgba(0,0,0,0.05)' 
-                      : '#fff',
+                  gap: 0.75,
                   cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
                   opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
-                    borderColor: tiktokConnected ? '#000000' : '#000000',
-                    background: 'rgba(0,0,0,0.02)',
+                  '&:hover': {
+                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
                   },
                 }}
               >
-                {tiktokConnected && (
-                  <Checkbox
-                    checked={selectedPlatforms.includes('tiktok')}
-                    size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#000', '&.Mui-checked': { color: '#34C759' } }}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => {
-                      setSelectedPlatforms(prev => 
-                        prev.includes('tiktok') 
-                          ? prev.filter(p => p !== 'tiktok')
-                          : [...prev, 'tiktok']
-                      );
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      border: selectedPlatforms.includes('tiktok')
+                        ? '2.5px solid #34C759'
+                        : 'none',
+                      background: tiktokConnected ? '#000' : 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedPlatforms.includes('tiktok') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
-                  />
-                )}
-                <Box sx={{
-                  width: 36, height: 36, borderRadius: '10px',
-                  background: 'rgba(0,0,0,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                    <CircularProgress size={18} sx={{ color: '#000' }} />
-                  ) : (
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#000' }}>
-                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                  >
+                    {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                      </Box>
+                    )}
+                  </Box>
+                  {selectedPlatforms.includes('tiktok') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -4,
+                        right: -4,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        bgcolor: '#34C759',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Check sx={{ fontSize: 12, color: '#fff' }} />
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>TikTok</Typography>
-                    {tiktokConnected && (
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
-                    )}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                      ? 'Uploading...'
-                      : tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'Connected') : 'Click to connect'}
-                  </Typography>
-                </Box>
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: tiktokConnected ? '#fff' : 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    maxWidth: 70,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'TikTok') : 'Connect'}
+                </Typography>
               </Box>
 
-              {/* Instagram */}
+              {/* Instagram Account */}
               <Box
                 onClick={() => {
                   if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!instagramConnected) {
-                    handleConnectInstagram();
+                    navigate('/settings/connected-accounts');
                   } else {
-                    setSelectedPlatforms(prev => 
-                      prev.includes('instagram') 
+                    setSelectedPlatforms(prev =>
+                      prev.includes('instagram')
                         ? prev.filter(p => p !== 'instagram')
                         : [...prev, 'instagram']
                     );
@@ -2027,90 +2043,86 @@ const MusicVideoPlayer: React.FC = () => {
                 }}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  border: selectedPlatforms.includes('instagram') 
-                    ? '2px solid #34C759' 
-                    : instagramConnected 
-                      ? '2px solid #E4405F' 
-                      : '1px solid rgba(0,0,0,0.1)',
-                  background: selectedPlatforms.includes('instagram') 
-                    ? 'rgba(52,199,89,0.08)' 
-                    : instagramConnected 
-                      ? 'rgba(228,64,95,0.05)' 
-                      : '#fff',
+                  gap: 0.75,
                   cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
                   opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
-                    borderColor: instagramConnected ? '#E4405F' : '#E4405F',
-                    background: 'rgba(228,64,95,0.02)',
+                  '&:hover': {
+                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
                   },
                 }}
               >
-                {instagramConnected && (
-                  <Checkbox
-                    checked={selectedPlatforms.includes('instagram')}
-                    size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#E4405F', '&.Mui-checked': { color: '#34C759' } }}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => {
-                      setSelectedPlatforms(prev => 
-                        prev.includes('instagram') 
-                          ? prev.filter(p => p !== 'instagram')
-                          : [...prev, 'instagram']
-                      );
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      border: selectedPlatforms.includes('instagram')
+                        ? '2.5px solid #34C759'
+                        : 'none',
+                      background: instagramConnected
+                        ? 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)'
+                        : 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedPlatforms.includes('instagram') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
-                  />
-                )}
-                <Box sx={{
-                  width: 36, height: 36, borderRadius: '10px',
-                  background: 'linear-gradient(135deg, rgba(228,64,95,0.1) 0%, rgba(131,58,180,0.1) 100%)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                    <CircularProgress size={18} sx={{ color: '#E4405F' }} />
-                  ) : (
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18 }}>
-                      <defs>
-                        <linearGradient id="ig-grad-select" x1="0%" y1="100%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#FFDC80" />
-                          <stop offset="50%" stopColor="#E1306C" />
-                          <stop offset="100%" stopColor="#833AB4" />
-                        </linearGradient>
-                      </defs>
-                      <path fill="url(#ig-grad-select)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                  >
+                    {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                      </Box>
+                    )}
+                  </Box>
+                  {selectedPlatforms.includes('instagram') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -4,
+                        right: -4,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        bgcolor: '#34C759',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Check sx={{ fontSize: 12, color: '#fff' }} />
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>Instagram</Typography>
-                    {instagramConnected && (
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
-                    )}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                      ? 'Uploading...'
-                      : instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Connected') : 'Click to connect'}
-                  </Typography>
-                </Box>
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: instagramConnected ? '#fff' : 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    maxWidth: 70,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Instagram') : 'Connect'}
+                </Typography>
               </Box>
 
-              {/* Facebook */}
+              {/* Facebook Account */}
               <Box
                 onClick={() => {
                   if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!facebookConnected) {
-                    // Facebook uses same OAuth as Instagram
-                    handleConnectInstagram();
+                    navigate('/settings/connected-accounts');
                   } else {
-                    setSelectedPlatforms(prev => 
-                      prev.includes('facebook') 
+                    setSelectedPlatforms(prev =>
+                      prev.includes('facebook')
                         ? prev.filter(p => p !== 'facebook')
                         : [...prev, 'facebook']
                     );
@@ -2118,82 +2130,84 @@ const MusicVideoPlayer: React.FC = () => {
                 }}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  border: selectedPlatforms.includes('facebook') 
-                    ? '2px solid #34C759' 
-                    : facebookConnected 
-                      ? '2px solid #1877F2' 
-                      : '1px solid rgba(0,0,0,0.1)',
-                  background: selectedPlatforms.includes('facebook') 
-                    ? 'rgba(52,199,89,0.08)' 
-                    : facebookConnected 
-                      ? 'rgba(24,119,242,0.05)' 
-                      : '#fff',
+                  gap: 0.75,
                   cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
                   opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
-                    borderColor: facebookConnected ? '#1877F2' : '#1877F2',
-                    background: 'rgba(24,119,242,0.02)',
+                  '&:hover': {
+                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
                   },
                 }}
               >
-                {facebookConnected && (
-                  <Checkbox
-                    checked={selectedPlatforms.includes('facebook')}
-                    size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#1877F2', '&.Mui-checked': { color: '#34C759' } }}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => {
-                      setSelectedPlatforms(prev => 
-                        prev.includes('facebook') 
-                          ? prev.filter(p => p !== 'facebook')
-                          : [...prev, 'facebook']
-                      );
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      border: selectedPlatforms.includes('facebook')
+                        ? '2.5px solid #34C759'
+                        : 'none',
+                      background: facebookConnected ? '#1877F2' : 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedPlatforms.includes('facebook') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
-                  />
-                )}
-                <Box sx={{
-                  width: 36, height: 36, borderRadius: '10px',
-                  background: 'rgba(24,119,242,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                    <CircularProgress size={18} sx={{ color: '#1877F2' }} />
-                  ) : (
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#1877F2' }}>
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  >
+                    {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </Box>
+                    )}
+                  </Box>
+                  {selectedPlatforms.includes('facebook') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -4,
+                        right: -4,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        bgcolor: '#34C759',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Check sx={{ fontSize: 12, color: '#fff' }} />
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>Facebook</Typography>
-                    {facebookConnected && (
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
-                    )}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                      ? 'Uploading...'
-                      : facebookConnected ? (facebookPageName || 'Page Connected') : 'Click to connect'}
-                  </Typography>
-                </Box>
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: facebookConnected ? '#fff' : 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    maxWidth: 70,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {facebookConnected ? (facebookPageName || 'Facebook') : 'Connect'}
+                </Typography>
               </Box>
 
-              {/* LinkedIn */}
+              {/* LinkedIn Account */}
               <Box
                 onClick={() => {
                   if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
                   if (!linkedinConnected) {
-                    handleConnectLinkedin();
+                    navigate('/settings/connected-accounts');
                   } else {
-                    setSelectedPlatforms(prev => 
-                      prev.includes('linkedin') 
+                    setSelectedPlatforms(prev =>
+                      prev.includes('linkedin')
                         ? prev.filter(p => p !== 'linkedin')
                         : [...prev, 'linkedin']
                     );
@@ -2201,196 +2215,119 @@ const MusicVideoPlayer: React.FC = () => {
                 }}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  border: selectedPlatforms.includes('linkedin') 
-                    ? '2px solid #34C759' 
-                    : linkedinConnected 
-                      ? '2px solid #0077B5' 
-                      : '1px solid rgba(0,0,0,0.1)',
-                  background: selectedPlatforms.includes('linkedin') 
-                    ? 'rgba(52,199,89,0.08)' 
-                    : linkedinConnected 
-                      ? 'rgba(0,119,181,0.05)' 
-                      : '#fff',
+                  gap: 0.75,
                   cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
                   opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
                   transition: 'all 0.2s ease',
-                  '&:hover': (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? {} : { 
-                    borderColor: linkedinConnected ? '#0077B5' : '#0077B5',
-                    background: 'rgba(0,119,181,0.02)',
+                  '&:hover': {
+                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
                   },
                 }}
               >
-                {linkedinConnected && (
-                  <Checkbox
-                    checked={selectedPlatforms.includes('linkedin')}
-                    size="small"
-                    sx={{ p: 0, mr: -0.5, color: '#0077B5', '&.Mui-checked': { color: '#34C759' } }}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => {
-                      setSelectedPlatforms(prev => 
-                        prev.includes('linkedin') 
-                          ? prev.filter(p => p !== 'linkedin')
-                          : [...prev, 'linkedin']
-                      );
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      border: selectedPlatforms.includes('linkedin')
+                        ? '2.5px solid #34C759'
+                        : 'none',
+                      background: linkedinConnected ? '#0077B5' : 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedPlatforms.includes('linkedin') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
-                  />
-                )}
-                <Box sx={{
-                  width: 36, height: 36, borderRadius: '10px',
-                  background: 'rgba(0,119,181,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                    <CircularProgress size={18} sx={{ color: '#0077B5' }} />
-                  ) : (
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#0077B5' }}>
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  >
+                    {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </Box>
+                    )}
+                  </Box>
+                  {selectedPlatforms.includes('linkedin') && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -4,
+                        right: -4,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        bgcolor: '#34C759',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Check sx={{ fontSize: 12, color: '#fff' }} />
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.9rem' }}>LinkedIn</Typography>
-                    {linkedinConnected && (
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34C759' }} />
-                    )}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B' }}>
-                    {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                      ? 'Uploading...'
-                      : linkedinConnected ? (linkedinName || 'Connected') : 'Click to connect'}
-                  </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: linkedinConnected ? '#fff' : 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    maxWidth: 70,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {linkedinConnected ? (linkedinName || 'LinkedIn') : 'Connect'}
+                </Typography>
+              </Box>
+
+              {/* Add More Account Button */}
+              <Box
+                onClick={() => navigate('/settings/connected-accounts')}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    border: '2px dashed rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.03)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.4)',
+                      background: 'rgba(255,255,255,0.06)',
+                    },
+                  }}
+                >
+                  <Add sx={{ fontSize: 24, color: 'rgba(255,255,255,0.5)' }} />
                 </Box>
+                <Typography
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                  }}
+                >
+                  Add
+                </Typography>
               </Box>
             </Box>
-
-            {/* Upload Results Summary */}
-            {Object.keys(socialUploadResults).length > 0 && (socialUploadStatus === 'completed' || socialUploadStatus === 'partial' || socialUploadStatus === 'failed') && (
-              <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
-                      Last Upload
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <CheckCircle sx={{ fontSize: 16, color: '#34C759' }} />
-                        <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>Success</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Error sx={{ fontSize: 16, color: '#FF3B30' }} />
-                        <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>Failed</Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Button
-                    size="small"
-                    onClick={async () => {
-                      setSocialUploadResults({});
-                      setSocialUploadStatus('idle');
-                      // Clear backend status so it doesn't show again on page reload
-                      try {
-                        await videosApi.resetSocialUploadStatus(user!.userId, videoId!);
-                      } catch (err) {
-                        console.error('Failed to reset social upload status:', err);
-                      }
-                    }}
-                    sx={{
-                      fontSize: '0.75rem',
-                      color: '#86868B',
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      minWidth: 'auto',
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: '8px',
-                      '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', color: '#1D1D1F' }
-                    }}
-                  >
-                    Dismiss all
-                  </Button>
-                </Box>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {Object.entries(socialUploadResults).map(([platform, result]) => (
-                    <Tooltip
-                      key={platform}
-                      title={result.success ? (result.url ? 'Click to view' : 'Posted successfully') : (result.error || 'Upload failed')}
-                      arrow
-                      placement="top"
-                    >
-                      <Box
-                        component={result.success && result.url ? 'a' : 'div'}
-                        href={result.success && result.url ? result.url : undefined}
-                        target={result.success && result.url ? '_blank' : undefined}
-                        rel={result.success && result.url ? 'noopener noreferrer' : undefined}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1,
-                          px: 1.5,
-                          py: 0.75,
-                          borderRadius: '10px',
-                          border: result.success ? '1px solid rgba(52,199,89,0.3)' : '1px solid rgba(255,59,48,0.25)',
-                          bgcolor: result.success ? 'rgba(52,199,89,0.06)' : 'rgba(255,59,48,0.04)',
-                          textDecoration: 'none',
-                          cursor: result.success && result.url ? 'pointer' : 'default',
-                          transition: 'all 0.15s ease',
-                          '&:hover': result.success && result.url ? {
-                            bgcolor: 'rgba(52,199,89,0.12)',
-                            borderColor: 'rgba(52,199,89,0.5)',
-                          } : {},
-                        }}
-                      >
-                        {result.success ? (
-                          <CheckCircle sx={{ fontSize: 16, color: '#34C759' }} />
-                        ) : (
-                          <Error sx={{ fontSize: 16, color: '#FF3B30' }} />
-                        )}
-                        <Typography sx={{
-                          fontSize: '0.85rem',
-                          fontWeight: 500,
-                          color: '#1D1D1F',
-                          textTransform: 'capitalize',
-                        }}>
-                          {platform}
-                        </Typography>
-                        <IconButton
-                          size="small"
-                          onClick={async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const newResults = { ...socialUploadResults };
-                            delete newResults[platform];
-                            setSocialUploadResults(newResults);
-                            if (Object.keys(newResults).length === 0) {
-                              setSocialUploadStatus('idle');
-                            }
-                            // Clear this platform's status from backend so it doesn't reappear on page reload
-                            try {
-                              await videosApi.resetSocialUploadStatus(user!.userId, videoId!, platform);
-                            } catch (err) {
-                              console.error(`Failed to reset ${platform} upload status:`, err);
-                            }
-                          }}
-                          sx={{
-                            p: 0.25,
-                            color: '#C7C7CC',
-                            '&:hover': { color: '#86868B', bgcolor: 'transparent' }
-                          }}
-                        >
-                          <Close sx={{ fontSize: 14 }} />
-                        </IconButton>
-                      </Box>
-                    </Tooltip>
-                  ))}
-                </Box>
-              </Box>
-            )}
 
           </Paper>
 
@@ -2401,20 +2338,13 @@ const MusicVideoPlayer: React.FC = () => {
               borderRadius: '16px',
               p: { xs: 2, sm: 2.5 },
               mb: 2,
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.06)',
+              background: 'rgba(255,255,255,0.03)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, gap: 2 }}>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem', mb: 0.5 }}>
-                  Video Details
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#86868B' }}>
-                  Enter details manually or use AI to generate title, description, and tags
-                </Typography>
-              </Box>
-
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
               {/* Generate with AI button */}
               <Button
                 variant="contained"
@@ -2457,28 +2387,38 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Title */}
             <Box sx={{ mb: 2 }}>
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Title
               </Typography>
               <TextField
                 fullWidth
                 value={editedMetadata?.title || ''}
-                onChange={(e) => setEditedMetadata(prev => ({ 
+                onChange={(e) => setEditedMetadata(prev => ({
                   title: e.target.value,
                   description: prev?.description || '',
                   tags: prev?.tags || [],
                   hook: prev?.hook || '',
                   location: prev?.location,
                 }))}
-                size="small"
                 inputProps={{ maxLength: 100 }}
                 helperText={`${editedMetadata?.title?.length || 0}/100`}
                 placeholder="Enter a catchy title"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    borderRadius: '12px',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
+                    '& fieldset': { borderColor: editedMetadata?.title ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editedMetadata?.title ? '2px' : '1px' },
+                    '&:hover fieldset': { borderColor: editedMetadata?.title ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                  },
+                  '& .MuiInputBase-input': {
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: 'rgba(255,255,255,0.5)',
                   },
                 }}
               />
@@ -2486,7 +2426,7 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Description */}
             <Box sx={{ position: 'relative', mb: 2 }}>
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Description
               </Typography>
               <TextField
@@ -2500,14 +2440,21 @@ const MusicVideoPlayer: React.FC = () => {
                   location: prev?.location,
                 }))}
                 multiline
-                rows={3}
-                size="small"
+                rows={5}
                 placeholder="Describe your video..."
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    lineHeight: 1.6,
+                    '& fieldset': { borderColor: editedMetadata?.description ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editedMetadata?.description ? '2px' : '1px' },
+                    '&:hover fieldset': { borderColor: editedMetadata?.description ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                  },
+                  '& .MuiInputBase-input': {
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                   },
                 }}
               />
@@ -2515,19 +2462,31 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Call to Action */}
             <Box sx={{ mb: 2 }}>
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Call to Action (optional)
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <FormControl size="small" sx={{ minWidth: 180 }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                <FormControl sx={{ minWidth: 220 }}>
                   <Select
                     value={ctaType}
                     onChange={(e) => setCtaType(e.target.value)}
                     displayEmpty
+                    startAdornment={
+                      <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                        <TouchApp sx={{ fontSize: 20, color: 'rgba(255,255,255,0.7)' }} />
+                      </Box>
+                    }
                     sx={{
-                      borderRadius: '10px',
-                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      borderRadius: '12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: '#fff',
+                      fontSize: '0.9rem',
+                      '& .MuiSelect-select': { py: 1.5, pl: 1, pr: 2, display: 'flex', alignItems: 'center' },
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: ctaType ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: ctaType ? '2px' : '1px' },
+                      '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: ctaType ? '#007AFF' : 'rgba(255,255,255,0.1) !important' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF', borderWidth: '2px' },
+                      '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.6)' },
                     }}
                   >
                     <MenuItem value="">No CTA</MenuItem>
@@ -2545,32 +2504,39 @@ const MusicVideoPlayer: React.FC = () => {
                 </FormControl>
                 {ctaType && (
                   <TextField
-                    size="small"
                     placeholder="https://your-website.com"
                     value={ctaUrl}
                     onChange={(e) => setCtaUrl(e.target.value)}
-                    sx={{ 
+                    sx={{
                       flex: 1,
-                      minWidth: 200,
+                      minWidth: 220,
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: '10px',
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                        borderRadius: '12px',
+                        background: 'rgba(255,255,255,0.05)',
+                        color: '#fff',
+                        fontSize: '0.9rem',
+                        '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
+                        '& fieldset': { borderColor: ctaUrl ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: ctaUrl ? '2px' : '1px' },
+                        '&:hover fieldset': { borderColor: ctaUrl ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                        '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                      },
+                      '& .MuiInputBase-input': {
+                        '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                       },
                     }}
                   />
                 )}
               </Box>
               {ctaType && (
-                <Typography variant="caption" sx={{ color: '#86868B', mt: 0.5, display: 'block' }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, display: 'block' }}>
                   Link will be added to your video description
                 </Typography>
               )}
             </Box>
 
             {/* Tags */}
-            <Box sx={{ mb: 0 }}>
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Tags
               </Typography>
               {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
@@ -2583,8 +2549,9 @@ const MusicVideoPlayer: React.FC = () => {
                       onDelete={() => handleRemoveTag(tag)}
                       sx={{
                         borderRadius: '100px',
-                        bgcolor: 'rgba(0,122,255,0.1)',
-                        color: '#007AFF',
+                        bgcolor: 'transparent',
+                        border: '1.5px solid #007AFF',
+                        color: '#fff',
                         fontWeight: 500,
                         '& .MuiChip-deleteIcon': { color: '#007AFF' },
                       }}
@@ -2604,45 +2571,39 @@ const MusicVideoPlayer: React.FC = () => {
                       handleAddTag();
                     }
                   }}
-                  sx={{ 
-                    flex: 1, 
+                  sx={{
+                    flex: 1,
                     maxWidth: 200,
                     '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' },
+                      borderRadius: '16px',
+                      background: 'rgba(255,255,255,0.03)',
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                      '&.Mui-focused fieldset': { borderColor: '#007AFF' },
+                    },
+                    '& .MuiInputBase-input': {
+                      '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                     },
                   }}
                 />
-                <IconButton 
-                  onClick={handleAddTag} 
-                  disabled={!newTag.trim()} 
+                <IconButton
+                  onClick={handleAddTag}
+                  disabled={!newTag.trim()}
                   size="small"
                   sx={{
                     width: 36,
                     height: 36,
-                    background: newTag.trim() ? 'rgba(0,122,255,0.1)' : 'rgba(0,0,0,0.04)',
-                    '&:hover': { background: 'rgba(0,122,255,0.2)' },
+                    background: 'rgba(255,255,255,0.1)',
+                    '&:hover': { background: 'rgba(255,255,255,0.15)' },
                   }}
                 >
-                  <Add sx={{ color: newTag.trim() ? '#007AFF' : '#86868B' }} />
+                  <Add sx={{ color: '#fff' }} />
                 </IconButton>
               </Box>
             </Box>
-          </Paper>
 
-          {/* Thumbnail Section - Own Paper */}
-          <Paper
-            elevation={0}
-            sx={{
-              borderRadius: '16px',
-              p: { xs: 2, sm: 2.5 },
-              mb: 2,
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.06)',
-            }}
-          >
-            <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2, fontSize: '0.95rem' }}>
+            {/* Thumbnail Section */}
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
               Select Thumbnail
             </Typography>
             
@@ -2709,9 +2670,9 @@ const MusicVideoPlayer: React.FC = () => {
                           overflow: 'hidden',
                           width: thumbWidth,
                           height: thumbHeight,
-                          border: isSelected ? '3px solid #34C759' : '2px solid rgba(0,0,0,0.1)',
+                          border: isSelected ? '3px solid #34C759' : '2px solid rgba(255,255,255,0.1)',
                           transition: 'all 0.2s',
-                          '&:hover': { transform: 'scale(1.02)', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' },
+                          '&:hover': { transform: 'scale(1.02)', boxShadow: '0 4px 16px rgba(255,255,255,0.1)' },
                           '&:hover .expand-btn': { opacity: 1 },
                         }}
                       >
@@ -2762,28 +2723,28 @@ const MusicVideoPlayer: React.FC = () => {
                       width: thumbWidth,
                       height: thumbHeight,
                       borderRadius: 0.5,
-                      border: showCreatePanel ? '2px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
+                      border: showCreatePanel ? '2px solid #007AFF' : '2px solid rgba(255,255,255,0.1)',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      bgcolor: showCreatePanel ? 'rgba(0,122,255,0.08)' : '#fff',
+                      bgcolor: showCreatePanel ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
                       transition: 'all 0.2s',
                       position: 'relative',
                       overflow: 'hidden',
-                      '&:hover': { 
-                        borderColor: '#007AFF', 
+                      '&:hover': {
+                        borderColor: '#007AFF',
                         bgcolor: showCreatePanel ? 'rgba(0,122,255,0.12)' : 'rgba(0,122,255,0.04)',
                       },
                     }}
                   >
                     <AutoAwesome sx={{ fontSize: 20, color: '#007AFF', mb: 0.5 }} />
-                    <Typography sx={{ fontSize: '8px', color: '#007AFF', fontWeight: 600, textAlign: 'center' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#fff', fontWeight: 600, textAlign: 'center' }}>
                       Create
                     </Typography>
                   </Box>
-                  
+
                   {/* Upload Thumbnail Button */}
                   <Box
                     component="label"
@@ -2791,22 +2752,22 @@ const MusicVideoPlayer: React.FC = () => {
                       width: thumbWidth,
                       height: thumbHeight,
                       borderRadius: 0.5,
-                      border: '2px solid rgba(0,0,0,0.1)',
+                      border: '2px solid rgba(255,255,255,0.1)',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      bgcolor: '#fff',
+                      bgcolor: 'rgba(255,255,255,0.03)',
                       transition: 'all 0.2s',
-                      '&:hover': { 
-                        borderColor: '#007AFF', 
+                      '&:hover': {
+                        borderColor: '#007AFF',
                         bgcolor: 'rgba(0,122,255,0.04)',
                       },
                     }}
                   >
                     <CloudUpload sx={{ fontSize: 20, color: '#007AFF', mb: 0.5 }} />
-                    <Typography sx={{ fontSize: '8px', color: '#007AFF', fontWeight: 600, textAlign: 'center' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#fff', fontWeight: 600, textAlign: 'center' }}>
                       Upload
                     </Typography>
                     <input type="file" hidden accept="image/*" multiple onChange={handleThumbnailUpload} />
@@ -2825,9 +2786,12 @@ const MusicVideoPlayer: React.FC = () => {
                 bgcolor: 'rgba(0,122,255,0.02)',
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body1" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
-                    Generate New Thumbnail
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AutoAwesome sx={{ fontSize: 20, color: '#007AFF' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      Generate New Thumbnail
+                    </Typography>
+                  </Box>
                   <IconButton 
                     size="small" 
                     onClick={() => setSelectedCharacterIds([])}
@@ -2836,7 +2800,7 @@ const MusicVideoPlayer: React.FC = () => {
                       width: 28,
                       height: 28,
                       borderRadius: '50%',
-                      border: '1px solid rgba(0,0,0,0.1)',
+                      border: '1px solid rgba(255,255,255,0.1)',
                       p: 0,
                     }}
                   >
@@ -2901,18 +2865,18 @@ const MusicVideoPlayer: React.FC = () => {
                             flex: 1,
                             p: 1.5,
                             borderRadius: '10px',
-                            border: `2px solid ${thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
-                            bgcolor: thumbnailGenMode === 'images' ? 'rgba(0,122,255,0.05)' : '#fff',
+                            border: `2px solid ${thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                            bgcolor: thumbnailGenMode === 'images' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             textAlign: 'center',
-                            '&:hover': { borderColor: thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                            '&:hover': { borderColor: thumbnailGenMode === 'images' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
                           }}
                         >
-                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: thumbnailGenMode === 'images' ? '#007AFF' : '#1D1D1F' }}>
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#fff' }}>
                             From Images
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>
+                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', display: 'block' }}>
                             Use reference images
                           </Typography>
                         </Box>
@@ -2922,18 +2886,18 @@ const MusicVideoPlayer: React.FC = () => {
                             flex: 1,
                             p: 1.5,
                             borderRadius: '10px',
-                            border: `2px solid ${thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
-                            bgcolor: thumbnailGenMode === 'text' ? 'rgba(0,122,255,0.05)' : '#fff',
+                            border: `2px solid ${thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                            bgcolor: thumbnailGenMode === 'text' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             textAlign: 'center',
-                            '&:hover': { borderColor: thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
+                            '&:hover': { borderColor: thumbnailGenMode === 'text' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
                           }}
                         >
-                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: thumbnailGenMode === 'text' ? '#007AFF' : '#1D1D1F' }}>
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#fff' }}>
                             From Text
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>
+                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', display: 'block' }}>
                             Describe your thumbnail
                           </Typography>
                         </Box>
@@ -2944,13 +2908,13 @@ const MusicVideoPlayer: React.FC = () => {
                         <>
                           <Box sx={{ mb: 1 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <Typography variant="body2" sx={{ color: '#1D1D1F', fontWeight: 600 }}>
+                              <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600 }}>
                                 Select reference images
                               </Typography>
                               <Typography variant="caption" sx={{
-                                color: '#007AFF',
+                                color: '#fff',
                                 fontWeight: 600,
-                                bgcolor: 'rgba(0,122,255,0.1)',
+                                bgcolor: 'rgba(255,255,255,0.1)',
                                 px: 1.5, py: 0.5, borderRadius: '100px',
                               }}>
                                 {realSelectedIds.length}/{maxSelections}
@@ -2985,10 +2949,10 @@ const MusicVideoPlayer: React.FC = () => {
                                       cursor: canSelect ? 'pointer' : 'not-allowed',
                                       borderRadius: 0.5,
                                       overflow: 'hidden',
-                                      border: isSelected ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                                      border: isSelected ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
                                       opacity: canSelect ? 1 : 0.4,
                                       transition: 'all 0.2s',
-                                      '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : {},
+                                      '&:hover': canSelect ? { boxShadow: '0 2px 8px rgba(255,255,255,0.1)' } : {},
                                     }}
                                   >
                                     <Box component="img" src={img.url} alt={img.label} sx={{ width: refThumbWidth, height: refThumbHeight, objectFit: 'cover', display: 'block', minWidth: 0 }} />
@@ -3010,9 +2974,14 @@ const MusicVideoPlayer: React.FC = () => {
                       )}
 
                       {/* Hook Text */}
-                      <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
-                        Hook Text
-                      </Typography>
+                      <Box sx={{ mb: 1 }}>
+                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600 }}>
+                          Hook Text
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mt: 0.5 }}>
+                          Text overlay displayed on your thumbnail
+                        </Typography>
+                      </Box>
                       <TextField
                         fullWidth
                         value={hookText}
@@ -3020,28 +2989,67 @@ const MusicVideoPlayer: React.FC = () => {
                           setHookText(e.target.value);
                           setEditedMetadata(prev => prev ? { ...prev, hook: e.target.value } : { title: '', description: '', tags: [], hook: e.target.value });
                         }}
-                        size="small"
                         placeholder="e.g., 'Epic Adventure Awaits!'"
-                        sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
+                        sx={{
+                          mb: 2,
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            background: 'rgba(255,255,255,0.05)',
+                            color: '#fff',
+                            fontSize: '0.9rem',
+                            '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
+                            '& fieldset': {
+                              borderColor: hookText ? '#007AFF' : 'rgba(255,255,255,0.1)',
+                              borderWidth: hookText ? '2px' : '1px',
+                            },
+                            '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                            '&:hover fieldset': { borderColor: hookText ? '#007AFF' : 'rgba(255,255,255,0.1)' },
+                            '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                          },
+                          '& .MuiInputBase-input': {
+                            '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                          },
+                        }}
                       />
 
                       {/* Thumbnail Description */}
-                      <Typography variant="body2" sx={{ mb: 0.5, color: '#1D1D1F', fontWeight: 500 }}>
-                        Thumbnail Description {thumbnailGenMode === 'images' && <Typography component="span" sx={{ color: '#86868B', fontWeight: 400 }}>(Optional)</Typography>}
-                        {thumbnailGenMode === 'text' && <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>}
-                      </Typography>
+                      <Box sx={{ mb: 1 }}>
+                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600 }}>
+                          Thumbnail Description {thumbnailGenMode === 'images' && <Typography component="span" sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 400 }}>(Optional)</Typography>}
+                          {thumbnailGenMode === 'text' && <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#86868B', display: 'block', mt: 0.5 }}>
+                          {thumbnailGenMode === 'text' ? 'Describe the scene you want AI to generate' : 'Additional guidance for the AI to enhance your thumbnail'}
+                        </Typography>
+                      </Box>
                       <TextField
                         fullWidth
                         value={thumbnailDescription}
                         onChange={(e) => setThumbnailDescription(e.target.value)}
                         size="small"
                         multiline
-                        rows={2}
+                        rows={3}
                         placeholder={thumbnailGenMode === 'text'
                           ? "Describe the scene, characters, style, and mood for your thumbnail..."
                           : "e.g., 'Show the character looking up at the sky with a glowing aura'"
                         }
-                        sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '8px', bgcolor: '#fff' } }}
+                        sx={{
+                          mb: 2,
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '16px',
+                            background: 'rgba(255,255,255,0.05)',
+                            color: '#fff',
+                            '& fieldset': {
+                              borderColor: thumbnailDescription ? '#007AFF' : 'rgba(255,255,255,0.1)',
+                              borderWidth: thumbnailDescription ? '2px' : '1px',
+                            },
+                            '&:hover fieldset': { borderColor: thumbnailDescription ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                            '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                          },
+                          '& .MuiInputBase-input': {
+                            '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                          },
+                        }}
                       />
 
                       {/* Actions */}
@@ -3052,7 +3060,7 @@ const MusicVideoPlayer: React.FC = () => {
                           onClick={handleGenerateThumbnail}
                           disabled={isGeneratingThumbnail || !hookText.trim() || (thumbnailGenMode === 'images' && realSelectedIds.length === 0) || (thumbnailGenMode === 'text' && !thumbnailDescription.trim())}
                           size="small"
-                          sx={{ bgcolor: '#007AFF', borderRadius: '8px', textTransform: 'none', fontWeight: 600, '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)' } }}
+                          sx={{ bgcolor: '#007AFF', borderRadius: '8px', textTransform: 'none', fontWeight: 600, '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)' } }}
                         >
                           {isGeneratingThumbnail ? 'Generating...' : 'Generate (10 credits)'}
                         </Button>
@@ -3062,29 +3070,32 @@ const MusicVideoPlayer: React.FC = () => {
                 })()}
               </Box>
             )}
-          </Paper>
 
-          {/* TikTok Specific Settings - Separate card shown when TikTok is selected */}
-          {selectedPlatforms.includes('tiktok') && (
-            <Paper
-              elevation={0}
-              sx={{
-                mt: 3,
-                p: 2.5,
-                borderRadius: '16px',
-                border: '1px solid rgba(0,0,0,0.08)',
-                bgcolor: '#fff',
-              }}
-            >
-              {/* Creator Info Header - Required by TikTok UX Guidelines */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, pb: 2, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                <Box component="svg" viewBox="0 0 24 24" sx={{ width: 20, height: 20, fill: '#000' }}>
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F', fontSize: '0.95rem' }}>
-                    Posting to TikTok
-                  </Typography>
+            {/* TikTok Specific Settings - shown when TikTok is selected */}
+            {selectedPlatforms.includes('tiktok') && (
+              <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                {/* Creator Info Header - Required by TikTok UX Guidelines */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #25F4EE 0%, #FE2C55 50%, #000 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(254, 44, 85, 0.3)',
+                    }}
+                  >
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </Box>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      TikTok Settings
+                    </Typography>
                   <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>
                     {tiktokCreatorInfoLoading ? (
                       'Loading account info...'
@@ -3115,7 +3126,7 @@ const MusicVideoPlayer: React.FC = () => {
               )}
 
               {/* Post Mode Selection */}
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Post Mode
               </Typography>
               <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
@@ -3125,17 +3136,17 @@ const MusicVideoPlayer: React.FC = () => {
                     flex: 1,
                     p: 1.5,
                     borderRadius: '10px',
-                    border: tiktokPostMode === 'draft' ? '2px solid #000' : '1px solid rgba(0,0,0,0.15)',
-                    bgcolor: tiktokPostMode === 'draft' ? 'rgba(0,0,0,0.03)' : '#fff',
+                    border: tiktokPostMode === 'draft' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                    bgcolor: tiktokPostMode === 'draft' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    '&:hover': { borderColor: '#000' },
+                    '&:hover': { borderColor: tiktokPostMode === 'draft' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
                   }}
                 >
-                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#1D1D1F' }}>
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
                     Save as Draft
                   </Typography>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
+                  <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>
                     Video appears in your TikTok inbox to review and post
                   </Typography>
                 </Box>
@@ -3147,29 +3158,28 @@ const MusicVideoPlayer: React.FC = () => {
                     flex: 1,
                     p: 1.5,
                     borderRadius: '10px',
-                    border: tiktokPostMode === 'direct' ? '2px solid #000' : '1px solid rgba(0,0,0,0.15)',
-                    bgcolor: tiktokPostMode === 'direct' ? 'rgba(0,0,0,0.03)' : '#fff',
+                    border: tiktokPostMode === 'direct' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                    bgcolor: tiktokPostMode === 'direct' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    '&:hover': { borderColor: '#000' },
+                    '&:hover': { borderColor: tiktokPostMode === 'direct' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
                   }}
                 >
-                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#1D1D1F' }}>
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
                     Direct Post
                   </Typography>
-                  <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mt: 0.5 }}>
+                  <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>
                     Post directly to your TikTok profile
                   </Typography>
                 </Box>
               </Box>
 
               {/* Privacy Level - Options from API, NO default value (TikTok requirement) */}
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
-                Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontSize: '0.75rem' }}>*</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>
               </Typography>
               <Select
                 fullWidth
-                size="small"
                 value={tiktokPrivacyLevel}
                 onChange={(e) => {
                   setTiktokPrivacyLevel(e.target.value);
@@ -3178,7 +3188,24 @@ const MusicVideoPlayer: React.FC = () => {
                   }
                 }}
                 displayEmpty
-                sx={{ borderRadius: '10px', mb: tiktokPrivacyLevel !== '' ? 2 : 1 }}
+                sx={{
+                  borderRadius: '12px',
+                  mb: tiktokPrivacyLevel !== '' ? 2 : 1,
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#fff',
+                  fontSize: '0.9rem',
+                  '& .MuiSelect-select': { py: 1.5, px: 2, display: 'flex', alignItems: 'center' },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: tiktokPrivacyLevel ? '#007AFF' : 'rgba(255,255,255,0.1)',
+                    borderWidth: tiktokPrivacyLevel ? '2px' : '1px',
+                  },
+                  '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: tiktokPrivacyLevel ? '#007AFF' : 'rgba(255,255,255,0.1) !important',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF', borderWidth: '2px' },
+                  '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.6)' },
+                }}
               >
                 <MenuItem value="" disabled>
                   <Typography sx={{ color: '#86868B' }}>Select privacy level</Typography>
@@ -3204,7 +3231,7 @@ const MusicVideoPlayer: React.FC = () => {
               )}
 
               {/* Interaction Settings - Disabled if creator has them off in TikTok settings */}
-              <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#1D1D1F', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
                 Allow viewers to:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
@@ -3215,12 +3242,16 @@ const MusicVideoPlayer: React.FC = () => {
                       onChange={(e) => setTiktokAllowComment(e.target.checked)}
                       disabled={tiktokCreatorInfo?.commentDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
+                      icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                      checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                      sx={{
+                        '&.Mui-disabled': { opacity: 0.3 },
+                      }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.commentDisabled ? '#C7C7CC' : 'inherit' }}>Comment</Typography>
+                      <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.commentDisabled ? '#C7C7CC' : 'inherit' }}>Comment</Typography>
                       <Tooltip title={tiktokCreatorInfo?.commentDisabled ? 'Comments are disabled in your TikTok settings' : 'Allow viewers to leave comments on your video'} arrow>
                         <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.commentDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
@@ -3235,12 +3266,16 @@ const MusicVideoPlayer: React.FC = () => {
                       onChange={(e) => setTiktokAllowDuet(e.target.checked)}
                       disabled={tiktokCreatorInfo?.duetDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
+                      icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                      checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                      sx={{
+                        '&.Mui-disabled': { opacity: 0.3 },
+                      }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.duetDisabled ? '#C7C7CC' : 'inherit' }}>Duet</Typography>
+                      <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.duetDisabled ? '#C7C7CC' : 'inherit' }}>Duet</Typography>
                       <Tooltip title={tiktokCreatorInfo?.duetDisabled ? 'Duet is disabled in your TikTok settings' : 'Allow others to create a video side-by-side with yours'} arrow>
                         <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.duetDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
@@ -3255,12 +3290,16 @@ const MusicVideoPlayer: React.FC = () => {
                       onChange={(e) => setTiktokAllowStitch(e.target.checked)}
                       disabled={tiktokCreatorInfo?.stitchDisabled}
                       size="small"
-                      sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' }, '&.Mui-disabled': { color: '#E0E0E0' } }}
+                      icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                      checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                      sx={{
+                        '&.Mui-disabled': { opacity: 0.3 },
+                      }}
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokCreatorInfo?.stitchDisabled ? '#C7C7CC' : 'inherit' }}>Stitch</Typography>
+                      <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.stitchDisabled ? '#C7C7CC' : 'inherit' }}>Stitch</Typography>
                       <Tooltip title={tiktokCreatorInfo?.stitchDisabled ? 'Stitch is disabled in your TikTok settings' : 'Allow others to clip up to 5 seconds of your video into theirs'} arrow>
                         <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.stitchDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                       </Tooltip>
@@ -3281,11 +3320,13 @@ const MusicVideoPlayer: React.FC = () => {
                     }
                   }}
                   size="small"
-                  sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#000' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#000' } }}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' },
+                  }}
                 />
                 <Box>
-                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>Content disclosure</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>Indicate if this promotes a brand, product, or service</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>
+                  <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>Indicate if this promotes a brand, product, or service</Typography>
                 </Box>
               </Box>
 
@@ -3298,12 +3339,13 @@ const MusicVideoPlayer: React.FC = () => {
                           checked={tiktokBrandOrganic}
                           onChange={(e) => setTiktokBrandOrganic(e.target.checked)}
                           size="small"
-                          sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                          icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                          checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
                         />
                       }
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>Your brand</Typography>
+                          <Typography sx={{ fontSize: '0.95rem', lineHeight: 1 }}>Your brand</Typography>
                           <Tooltip title="You're promoting yourself or your own business" arrow>
                             <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                           </Tooltip>
@@ -3323,12 +3365,13 @@ const MusicVideoPlayer: React.FC = () => {
                           }}
                           size="small"
                           disabled={tiktokPrivacyLevel === 'SELF_ONLY'}
-                          sx={{ color: '#86868B', '&.Mui-checked': { color: '#000' } }}
+                          icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                          checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
                         />
                       }
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Typography sx={{ fontSize: '0.85rem', lineHeight: 1, color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : 'inherit' }}>Branded content</Typography>
+                          <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : 'inherit' }}>Branded content</Typography>
                           <Tooltip title={tiktokPrivacyLevel === 'SELF_ONLY' ? 'Branded content cannot be private' : "You're promoting another brand or third party"} arrow>
                             <InfoOutlined sx={{ fontSize: '1rem', color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
                           </Tooltip>
@@ -3337,13 +3380,39 @@ const MusicVideoPlayer: React.FC = () => {
                     />
                   </Box>
                   {(tiktokBrandOrganic || tiktokBrandedContent) && (
-                    <Alert severity="info" sx={{ mt: 1.5, py: 0.5, borderRadius: '8px', '& .MuiAlert-message': { fontSize: '0.75rem' } }}>
-                      Your video will be labeled as "{tiktokBrandedContent ? 'Paid partnership' : 'Promotional content'}"
+                    <Alert
+                      severity="info"
+                      icon={<InfoOutlined />}
+                      sx={{
+                        mt: 1.5,
+                        borderRadius: '10px',
+                        bgcolor: 'rgba(0,122,255,0.08)',
+                        border: '1px solid rgba(0,122,255,0.2)',
+                        '& .MuiAlert-icon': { color: '#007AFF' },
+                        '& .MuiAlert-message': { color: '#fff' }
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                        Your video will be labeled as "{tiktokBrandedContent ? 'Paid partnership' : 'Promotional content'}"
+                      </Typography>
                     </Alert>
                   )}
                   {!tiktokBrandOrganic && !tiktokBrandedContent && (
-                    <Alert severity="warning" sx={{ mt: 1.5, py: 0.5, borderRadius: '8px', '& .MuiAlert-message': { fontSize: '0.75rem' } }}>
-                      Select at least one option to indicate what you're promoting
+                    <Alert
+                      severity="warning"
+                      icon={<InfoOutlined />}
+                      sx={{
+                        mt: 1.5,
+                        borderRadius: '10px',
+                        bgcolor: 'rgba(245,158,11,0.08)',
+                        border: '1px solid rgba(245,158,11,0.2)',
+                        '& .MuiAlert-icon': { color: '#F59E0B' },
+                        '& .MuiAlert-message': { color: '#fff' }
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                        Select at least one option to indicate what you're promoting
+                      </Typography>
                     </Alert>
                   )}
                 </>
@@ -3359,7 +3428,7 @@ const MusicVideoPlayer: React.FC = () => {
                   bgcolor: 'rgba(0,122,255,0.08)',
                   border: '1px solid rgba(0,122,255,0.2)',
                   '& .MuiAlert-icon': { color: '#007AFF' },
-                  '& .MuiAlert-message': { color: '#1D1D1F' }
+                  '& .MuiAlert-message': { color: '#fff' }
                 }}
               >
                 <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
@@ -3371,7 +3440,7 @@ const MusicVideoPlayer: React.FC = () => {
               </Alert>
 
               {/* Consent Declaration */}
-              <Typography sx={{ fontSize: '0.75rem', color: '#86868B', lineHeight: 1.5, mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+              <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 By posting, you agree to TikTok's{' '}
                 {tiktokBrandedContent && (
                   <>
@@ -3380,7 +3449,7 @@ const MusicVideoPlayer: React.FC = () => {
                       href="https://www.tiktok.com/legal/bc-policy"
                       target="_blank"
                       rel="noopener noreferrer"
-                      sx={{ fontSize: '0.75rem', color: '#007AFF', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                      sx={{ fontSize: '0.75rem', color: '#fff', textDecoration: 'underline', '&:hover': { opacity: 0.8 } }}
                     >
                       Branded Content Policy
                     </Typography>
@@ -3392,13 +3461,14 @@ const MusicVideoPlayer: React.FC = () => {
                   href="https://www.tiktok.com/legal/music-usage-confirmation"
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ fontSize: '0.75rem', color: '#007AFF', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                  sx={{ fontSize: '0.75rem', color: '#fff', textDecoration: 'underline', '&:hover': { opacity: 0.8 } }}
                 >
                   Music Usage Confirmation
                 </Typography>
               </Typography>
-            </Paper>
-          )}
+              </Box>
+            )}
+          </Paper>
 
           {/* Upload Button */}
           {(() => {
@@ -3443,7 +3513,7 @@ const MusicVideoPlayer: React.FC = () => {
                     textTransform: 'none',
                     boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
                     '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                    '&:disabled': { bgcolor: 'rgba(0,0,0,0.12)', boxShadow: 'none' },
+                    '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none' },
                   }}
                 >
                   {buttonText}
@@ -3488,7 +3558,7 @@ const MusicVideoPlayer: React.FC = () => {
                 icon={<CloudUpload />}
                 sx={{ mb: 2, borderRadius: '10px' }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>
                   We're uploading your video. You'll receive an email when it's ready.
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#666', display: 'block', mt: 0.5 }}>
@@ -3533,7 +3603,7 @@ const MusicVideoPlayer: React.FC = () => {
                   display: 'flex', alignItems: 'center', gap: 2, p: 2, 
                   bgcolor: uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(0,0,0,0.03)', 
                   borderRadius: '12px', 
-                  border: `1px solid ${uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(0,0,0,0.2)'}` 
+                  border: `1px solid ${uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}` 
                 }}>
                   <Box component="svg" viewBox="0 0 24 24" sx={{ width: 32, height: 32, fill: '#000' }}>
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
@@ -3647,7 +3717,7 @@ const MusicVideoPlayer: React.FC = () => {
                 {/* Details */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
-                  <Typography variant="body2" sx={{ color: '#1D1D1F', mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: '#fff', mb: 0.5 }}>
                     <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5,
@@ -3661,13 +3731,13 @@ const MusicVideoPlayer: React.FC = () => {
                         <Chip key={i} label={tag} size="small" sx={{ fontSize: '0.7rem', height: 22 }} />
                       ))}
                       {editedMetadata.tags.length > 5 && (
-                        <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(0,0,0,0.08)' }} />
+                        <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, bgcolor: 'rgba(255,255,255,0.08)' }} />
                       )}
                     </Box>
                   )}
                   {/* Call to Action */}
                   {ctaType && ctaUrl && (
-                    <Typography variant="body2" sx={{ color: '#1D1D1F', mt: 1 }}>
+                    <Typography variant="body2" sx={{ color: '#fff', mt: 1 }}>
                       <strong>CTA:</strong> {ctaType} → {ctaUrl}
                     </Typography>
                   )}
@@ -3678,7 +3748,7 @@ const MusicVideoPlayer: React.FC = () => {
             {/* Publish Now / Schedule Toggle */}
             {!isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.5, color: '#1D1D1F' }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.5, color: '#fff' }}>
                   When to publish?
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1.5 }}>
@@ -3688,8 +3758,8 @@ const MusicVideoPlayer: React.FC = () => {
                       flex: 1,
                       p: 2,
                       borderRadius: '12px',
-                      border: `2px solid ${uploadMode === 'now' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
-                      bgcolor: uploadMode === 'now' ? 'rgba(0,122,255,0.05)' : '#fff',
+                      border: `2px solid ${uploadMode === 'now' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                      bgcolor: uploadMode === 'now' ? 'rgba(0,122,255,0.05)' : 'rgba(255,255,255,0.03)',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       '&:hover': { borderColor: uploadMode === 'now' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
@@ -3697,7 +3767,7 @@ const MusicVideoPlayer: React.FC = () => {
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                       <CloudUpload sx={{ fontSize: 20, color: uploadMode === 'now' ? '#007AFF' : '#86868B' }} />
-                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'now' ? '#007AFF' : '#1D1D1F' }}>
+                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'now' ? '#007AFF' : '#141418' }}>
                         Publish Now
                       </Typography>
                     </Box>
@@ -3727,8 +3797,8 @@ const MusicVideoPlayer: React.FC = () => {
                       flex: 1,
                       p: 2,
                       borderRadius: '12px',
-                      border: `2px solid ${uploadMode === 'schedule' ? '#007AFF' : 'rgba(0,0,0,0.1)'}`,
-                      bgcolor: uploadMode === 'schedule' ? 'rgba(0,122,255,0.05)' : '#fff',
+                      border: `2px solid ${uploadMode === 'schedule' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                      bgcolor: uploadMode === 'schedule' ? 'rgba(0,122,255,0.05)' : 'rgba(255,255,255,0.03)',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       '&:hover': { borderColor: uploadMode === 'schedule' ? '#007AFF' : 'rgba(0,122,255,0.3)' },
@@ -3736,7 +3806,7 @@ const MusicVideoPlayer: React.FC = () => {
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                       <Schedule sx={{ fontSize: 20, color: uploadMode === 'schedule' ? '#007AFF' : '#86868B' }} />
-                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'schedule' ? '#007AFF' : '#1D1D1F' }}>
+                      <Typography sx={{ fontWeight: 600, color: uploadMode === 'schedule' ? '#007AFF' : '#141418' }}>
                         Schedule
                       </Typography>
                     </Box>
@@ -3767,9 +3837,9 @@ const MusicVideoPlayer: React.FC = () => {
                             sx: {
                               '& .MuiOutlinedInput-root': {
                                 borderRadius: '12px',
-                                background: '#fff',
+                                background: 'rgba(255,255,255,0.05)',
                                 '& fieldset': {
-                                  borderColor: 'rgba(0,0,0,0.1)',
+                                  borderColor: 'rgba(255,255,255,0.1)',
                                 },
                                 '&:hover fieldset': {
                                   borderColor: 'rgba(0,122,255,0.3)',
@@ -3782,6 +3852,7 @@ const MusicVideoPlayer: React.FC = () => {
                                 py: 1.5,
                                 px: 1.5,
                                 fontSize: '0.95rem',
+                                color: '#fff',
                               },
                             },
                           },
@@ -3789,7 +3860,7 @@ const MusicVideoPlayer: React.FC = () => {
                             sx: {
                               '& .MuiPaper-root': {
                                 borderRadius: '16px',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                                boxShadow: '0 8px 32px rgba(255,255,255,0.1)',
                               },
                               '& .MuiPickersDay-root.Mui-selected': {
                                 backgroundColor: '#007AFF',
@@ -3818,7 +3889,7 @@ const MusicVideoPlayer: React.FC = () => {
             )}
 
           </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 1, borderTop: '1px solid rgba(0,0,0,0.08)', bgcolor: '#fff', position: 'sticky', bottom: 0 }}>
+          <DialogActions sx={{ p: 2, pt: 1, borderTop: '1px solid rgba(255,255,255,0.08)', bgcolor: '#141418', position: 'sticky', bottom: 0 }}>
             {!isUploading && Object.values(uploadProgress).some(s => s === 'success' || s === 'error') ? (
               <Button 
                 variant="contained"
@@ -4090,7 +4161,7 @@ const MusicVideoPlayer: React.FC = () => {
         PaperProps={{
           sx: {
             borderRadius: '16px',
-            bgcolor: '#1D1D1F',
+            bgcolor: '#fff',
             maxWidth: 400,
             mx: 2,
           }
@@ -4184,7 +4255,7 @@ const MusicVideoPlayer: React.FC = () => {
             <Schedule sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
           <Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.25rem', color: '#1D1D1F' }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '1.25rem', color: '#fff' }}>
               Post Scheduled!
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
@@ -4207,8 +4278,8 @@ const MusicVideoPlayer: React.FC = () => {
               fontWeight: 600,
               py: 1.5,
               fontSize: '1rem',
-              color: '#1d1d1f',
-              border: '1px solid rgba(0,0,0,0.15)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.15)',
               '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
             }}
           >
@@ -4273,7 +4344,7 @@ const MusicVideoPlayer: React.FC = () => {
               <AutoAwesome sx={{ fontSize: 28, color: '#fff' }} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#1D1D1F', mb: 0.5 }}>
+              <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#fff', mb: 0.5 }}>
                 Generate with AI
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B' }}>
@@ -4318,7 +4389,7 @@ const MusicVideoPlayer: React.FC = () => {
                     }}>
                       <Casino sx={{ fontSize: 22, color: '#fff' }} />
                     </Box>
-                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: '#1D1D1F', mb: 0.5 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: '#fff', mb: 0.5 }}>
                       Gruvi Roulette Active
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#86868B' }}>
@@ -4383,7 +4454,7 @@ const MusicVideoPlayer: React.FC = () => {
                         },
                         '&:hover .text': {
                           background: 'none',
-                          WebkitTextFillColor: '#fff',
+                          WebkitTextFillColor: 'rgba(255,255,255,0.03)',
                         },
                       }}
                     >
@@ -4465,9 +4536,9 @@ const MusicVideoPlayer: React.FC = () => {
               const isDisabled = isGeneratingMetadata ||
                 ((!videoData?.isUserUpload && !useGruviRoulette && !uploadedVideoContext.trim()) ||
                  (videoData?.isUserUpload && !uploadedVideoContext.trim()));
-              const textColor = isDisabled ? '#999' : '#fff';
+              const textColor = isDisabled ? '#999' : 'rgba(255,255,255,0.03)';
               return (
-                <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: `1px solid ${isDisabled ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)'}`, pl: 1.5, ml: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: `1px solid ${isDisabled ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)'}`, pl: 1.5, ml: 0.5 }}>
                   <Typography component="span" sx={{ fontSize: '0.85rem', fontWeight: 600, color: textColor }}>10</Typography>
                   <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 400, mx: 0.5, color: textColor }}>x</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}><GruviCoin size={16} /></Box>

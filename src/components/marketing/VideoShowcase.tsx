@@ -485,7 +485,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
             sx={{
               fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
               fontWeight: 800,
-              color: darkMode ? '#fff' : '#1D1D1F',
+              color: darkMode ? '#fff' : '#141418',
               mb: 2,
               letterSpacing: '-0.02em',
               lineHeight: 1.2,
@@ -536,7 +536,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
                   ? 'linear-gradient(to right, rgba(46,26,26,1) 0%, transparent 100%)'
                   : 'linear-gradient(to right, rgba(255,255,255,1) 0%, transparent 100%)',
                 cursor: 'pointer',
-                color: darkMode ? '#fff' : '#1D1D1F',
+                color: darkMode ? '#fff' : '#141418',
                 transition: 'opacity 0.2s ease',
                 '&:active': {
                   opacity: 0.7,
@@ -565,7 +565,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
                   ? 'linear-gradient(to left, rgba(46,26,26,1) 0%, transparent 100%)'
                   : 'linear-gradient(to left, rgba(255,255,255,1) 0%, transparent 100%)',
                 cursor: 'pointer',
-                color: darkMode ? '#fff' : '#1D1D1F',
+                color: darkMode ? '#fff' : '#141418',
                 transition: 'opacity 0.2s ease',
                 '&:active': {
                   opacity: 0.7,

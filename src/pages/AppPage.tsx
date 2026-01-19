@@ -1563,7 +1563,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     borderRadius: '12px',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                     mt: 1,
-                    bgcolor: '#1D1D1F',
+                    bgcolor: '#141418',
                     border: '1px solid rgba(255,255,255,0.1)',
                   }
                 }
@@ -1673,7 +1673,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
                     borderRadius: '12px',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                     mt: 1,
-                    bgcolor: '#1D1D1F',
+                    bgcolor: '#141418',
                     border: '1px solid rgba(255,255,255,0.1)',
                   }
                 }
@@ -2422,7 +2422,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -2501,11 +2501,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           backdrop: { invisible: true }, // Allow interaction with drawer while menu is open
         }}
         PaperProps={{
+          elevation: 0,
           sx: {
-            borderRadius: 2,
+            borderRadius: '16px',
             minWidth: 180,
             boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -2576,11 +2578,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setSongToDelete(null);
         }}
         PaperProps={{
+          elevation: 0,
           sx: {
-            borderRadius: 3,
+            borderRadius: '16px',
             p: 1,
             minWidth: 340,
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -2656,11 +2660,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           backdrop: { invisible: true }, // Allow interaction with drawer while menu is open
         }}
         PaperProps={{
+          elevation: 0,
           sx: {
-            borderRadius: 2,
+            borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             minWidth: 160,
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -2739,11 +2745,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           setVideoToDelete(null);
         }}
         PaperProps={{
+          elevation: 0,
           sx: {
-            borderRadius: 3,
+            borderRadius: '16px',
             p: 1,
             minWidth: 340,
-            bgcolor: '#1D1D1F',
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -2776,13 +2784,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             Are you sure you want to delete this video? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
           <GhostButton
             onClick={() => {
               setVideoDeleteConfirmOpen(false);
               setVideoToDelete(null);
             }}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, py: 1.25 }}
           >
             Cancel
           </GhostButton>
@@ -2791,11 +2799,15 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             variant="contained"
             sx={{
               flex: 1,
-              borderRadius: 2,
+              py: 1.25,
+              borderRadius: '12px',
               textTransform: 'none',
-              background: '#FF3B30',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%)',
+              boxShadow: '0 4px 12px rgba(255, 59, 48, 0.3)',
               '&:hover': {
-                background: '#E53528',
+                background: 'linear-gradient(135deg, #E53528 0%, #FF5252 100%)',
+                boxShadow: '0 6px 16px rgba(255, 59, 48, 0.4)',
               },
             }}
           >

@@ -43,12 +43,16 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
       hideBackdrop
       disableEscapeKeyDown
       PaperProps={{
+        elevation: 0,
         sx: {
           borderRadius: '20px',
           maxWidth: 500,
           width: '90%',
           p: 0,
           overflow: 'hidden',
+          bgcolor: '#141418 !important',
+          backgroundImage: 'none !important',
+          border: '1px solid rgba(255,255,255,0.1)',
         }
       }}
       sx={{
@@ -93,7 +97,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
           variant="h5"
           sx={{
             fontWeight: 700,
-            color: '#1D1D1F',
+            color: '#fff',
             mb: 1,
             textAlign: 'center',
           }}
@@ -104,7 +108,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
         {/* Description */}
         <Typography
           sx={{
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.7)',
             textAlign: 'center',
             mb: 3,
             lineHeight: 1.5,
@@ -112,23 +116,23 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
         >
           {description || 'This feature requires a Gruvi subscription plan.'}
           <br />
-          <strong style={{ color: '#1D1D1F' }}>Choose a plan that works for you!</strong>
+          <strong style={{ color: '#fff' }}>Choose a plan that works for you!</strong>
         </Typography>
 
         {/* Plans Available */}
         <Box
           sx={{
             width: '100%',
-            background: 'rgba(0,0,0,0.02)',
+            background: 'rgba(255,255,255,0.05)',
             borderRadius: '14px',
-            border: '1px solid rgba(0,0,0,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
             p: 2,
             mb: 3,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
             <AutoAwesomeIcon sx={{ fontSize: 18, color: '#8B5CF6' }} />
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#1D1D1F' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
               Available in these plans:
             </Typography>
           </Box>
@@ -143,9 +147,8 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
                   px: 2,
                   py: 1,
                   borderRadius: '12px',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  backgroundColor: '#fff',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: 'rgba(255,255,255,0.05)',
                 }}
               >
                 <Box
@@ -158,7 +161,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
                     objectFit: 'contain',
                   }}
                 />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#1D1D1F' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#fff' }}>
                   {plan.name}
                 </Typography>
               </Box>
@@ -176,6 +179,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
             borderRadius: '12px',
             fontWeight: 600,
             fontSize: '1rem',
+            textTransform: 'none',
             background: 'linear-gradient(135deg, #EC4899 0%, #F97316 100%)',
             boxShadow: '0 4px 16px rgba(236,72,153,0.3)',
             display: 'flex',
@@ -194,7 +198,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
         {/* Subtext */}
         <Typography
           sx={{
-            color: '#86868B',
+            color: 'rgba(255,255,255,0.5)',
             fontSize: '0.8rem',
             mt: 1.5,
             textAlign: 'center',

@@ -209,7 +209,7 @@ const AccountPage: React.FC = () => {
           <AccountCircleIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
             Account
           </Typography>
           <Typography sx={{ color: '#86868B' }}>
@@ -235,7 +235,7 @@ const AccountPage: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Box sx={{ flex: 1, minWidth: 200 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
                   {user?.username || 'Loading...'}
                 </Typography>
                 <Chip
@@ -255,7 +255,7 @@ const AccountPage: React.FC = () => {
             <Box sx={{ display: 'flex', gap: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
-                <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                <Typography sx={{ fontWeight: 600, color: '#141418' }}>
                   {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
                 </Typography>
               </Box>
@@ -274,14 +274,14 @@ const AccountPage: React.FC = () => {
       {allowances && (
         <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
           <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 2 }}>
               Your Tokens
             </Typography>
             <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <GruviCoin size={40} sx={{ mr: 1.5 }} />
                 <Box>
-                  <Typography sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+                  <Typography sx={{ fontWeight: 600, color: '#141418' }}>
                     Tokens
                   </Typography>
                   <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
@@ -355,7 +355,7 @@ const AccountPage: React.FC = () => {
       {/* Subscription Details */}
       <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
         <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 2 }}>
             Subscription Details
           </Typography>
           <Box sx={{
@@ -424,13 +424,13 @@ const AccountPage: React.FC = () => {
       {/* Personal Information */}
       <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
         <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 3 }}>
             Personal Information
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Profile Name */}
             <Box>
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, fontSize: '0.9rem' }}>
+              <Typography sx={{ fontWeight: 600, color: '#141418', mb: 1, fontSize: '0.9rem' }}>
                 Profile Name
               </Typography>
               <TextField
@@ -486,7 +486,7 @@ const AccountPage: React.FC = () => {
 
             {/* Email Address */}
             <Box>
-              <Typography sx={{ fontWeight: 600, color: '#1D1D1F', mb: 1, fontSize: '0.9rem' }}>
+              <Typography sx={{ fontWeight: 600, color: '#141418', mb: 1, fontSize: '0.9rem' }}>
                 Email Address
               </Typography>
               <TextField
@@ -560,7 +560,7 @@ const AccountPage: React.FC = () => {
       >
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1D1D1F' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
               Need More Tokens?
             </Typography>
             <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
@@ -626,7 +626,7 @@ const AccountPage: React.FC = () => {
                 <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#141418', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         {bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
                       </Typography>
                       <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>

@@ -221,7 +221,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 sx={{
                   fontWeight: 700,
                   fontSize: '1.25rem',
-                  color: '#1D1D1F',
+                  color: '#141418',
                 }}
               >
                 Choose Your Plan
@@ -325,7 +325,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                       gap: 0.5,
                     }}>
                       <AddIcon sx={{ fontSize: 14, color: plan.borderColor }} />
-                      <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#1D1D1F' }}>
+                      <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#141418' }}>
                         {plan.tokens.toLocaleString()}
                       </Typography>
                       <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>x</Typography>
@@ -370,7 +370,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                       sx={{
                         fontSize: '2rem',
                         fontWeight: 800,
-                        color: '#1D1D1F',
+                        color: '#141418',
                         lineHeight: 1,
                       }}
                     >
@@ -395,7 +395,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
           flexDirection: 'column',
         }}>
           {/* Billing Frequency */}
-          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#1D1D1F', mb: 2 }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#141418', mb: 2 }}>
             Billing Frequency
           </Typography>
 
@@ -409,7 +409,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 cursor: 'pointer',
               }}
             >
-              <Typography sx={{ fontSize: '0.9rem', color: '#1D1D1F' }}>Monthly</Typography>
+              <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Monthly</Typography>
               <Radio
                 checked={!isYearly}
                 sx={{ color: '#D1D1D6', '&.Mui-checked': { color: '#007AFF' } }}
@@ -425,7 +425,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography sx={{ fontSize: '0.9rem', color: '#1D1D1F' }}>Annually</Typography>
+                <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Annually</Typography>
                 <Box
                   sx={{
                     px: 1,
@@ -452,8 +452,8 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
 
           {/* Monthly Total */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography sx={{ fontSize: '0.9rem', color: '#1D1D1F' }}>Monthly total</Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#1D1D1F' }}>
+            <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Monthly total</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#141418' }}>
               ${currentPrice}
             </Typography>
           </Box>

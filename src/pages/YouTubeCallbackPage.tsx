@@ -124,7 +124,7 @@ const YouTubeCallbackPage: React.FC = () => {
 
       {status === 'processing' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connecting to YouTube
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B', mb: 3 }}>
@@ -136,7 +136,7 @@ const YouTubeCallbackPage: React.FC = () => {
 
       {status === 'success' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connected!
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B' }}>
@@ -147,7 +147,7 @@ const YouTubeCallbackPage: React.FC = () => {
 
       {status === 'error' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connection Failed
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B' }}>

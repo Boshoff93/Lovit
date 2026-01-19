@@ -169,7 +169,7 @@ const SettingsPage: React.FC = () => {
           <SettingsIcon sx={{ color: '#fff', fontSize: 24 }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1D1D1F', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
             Settings
           </Typography>
           <Typography sx={{ color: '#86868B' }}>
@@ -201,7 +201,7 @@ const SettingsPage: React.FC = () => {
                 variant="body1" 
                 sx={{ 
                   fontWeight: 600, 
-                  color: '#1D1D1F',
+                  color: '#141418',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -274,7 +274,7 @@ const SettingsPage: React.FC = () => {
                       secondary={item.description}
                       sx={{ 
                         '& .MuiTypography-root': { 
-                          color: '#1D1D1F',
+                          color: '#141418',
                           fontWeight: 500
                         },
                         '& .MuiTypography-body2': {
@@ -457,7 +457,7 @@ const SettingsPage: React.FC = () => {
                       {bundle.badge}
                     </Box>
                   )}
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#1D1D1F', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.75rem', color: '#141418', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     {bundle.tokens.toLocaleString()} x <GruviCoin size={16} />
                   </Typography>
                   <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#007AFF' }}>

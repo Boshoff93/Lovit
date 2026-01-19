@@ -1780,7 +1780,7 @@ const CreateVideoPage: React.FC = () => {
             sx: {
               mt: 1,
               borderRadius: '16px',
-              background: '#1D1D1F',
+              background: '#141418',
               border: '1px solid rgba(255,255,255,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               minWidth: 280,
@@ -1959,7 +1959,7 @@ const CreateVideoPage: React.FC = () => {
             sx: {
               mt: 1,
               borderRadius: '16px',
-              background: '#1D1D1F',
+              background: '#141418',
               border: '1px solid rgba(255,255,255,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               minWidth: 320,
@@ -2018,7 +2018,7 @@ const CreateVideoPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'rgba(29,29,31,0.8)',
+              background: 'rgba(20,20,24,0.8)',
               zIndex: 1,
             }}>
               <CircularProgress size={24} sx={{ color: '#007AFF' }} />
@@ -2223,7 +2223,7 @@ const CreateVideoPage: React.FC = () => {
             sx: {
               mt: 1,
               borderRadius: '16px',
-              background: '#1D1D1F',
+              background: '#141418',
               border: '1px solid rgba(255,255,255,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               minWidth: 320,

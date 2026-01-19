@@ -120,7 +120,7 @@ const LinkedInCallbackPage: React.FC = () => {
 
       {status === 'processing' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connecting to LinkedIn
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B', mb: 3 }}>
@@ -132,7 +132,7 @@ const LinkedInCallbackPage: React.FC = () => {
 
       {status === 'success' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connected!
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B' }}>
@@ -143,7 +143,7 @@ const LinkedInCallbackPage: React.FC = () => {
 
       {status === 'error' && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#1D1D1F' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
             Connection Failed
           </Typography>
           <Typography variant="body1" sx={{ color: '#86868B' }}>
