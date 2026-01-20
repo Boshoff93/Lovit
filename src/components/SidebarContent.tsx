@@ -3,7 +3,6 @@ import {
   Box,
   List,
   Typography,
-  Divider,
   IconButton,
   ListItem,
   ListItemButton,
@@ -283,7 +282,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.6)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -351,7 +350,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.6)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -409,8 +408,6 @@ const SidebarContent = memo<SidebarContentProps>(({
           })}
         </List>
 
-        <Divider sx={{ mx: 2, my: 1 }} />
-
         {/* CONTENT Section */}
         <Typography
           variant="caption"
@@ -418,7 +415,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.6)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -599,8 +596,6 @@ const SidebarContent = memo<SidebarContentProps>(({
           })}
         </List>
 
-        <Divider sx={{ mx: 2, my: 1 }} />
-
         {/* PUBLISH Section */}
         <Typography
           variant="caption"
@@ -608,7 +603,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.6)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -676,7 +671,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             px: 3,
             py: 1,
             display: 'block',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.6)',
             fontWeight: 600,
             fontSize: '0.65rem',
             letterSpacing: '0.5px',
@@ -731,51 +726,49 @@ const SidebarContent = memo<SidebarContentProps>(({
               </ListItem>
             );
           })}
+          {/* Sign Out - Part of scroll list */}
+          <ListItem disablePadding sx={{ mb: 0.25 }}>
+            <ListItemButton
+              onClick={onLogoutClick}
+              sx={{
+                borderRadius: '10px',
+                py: 1,
+                px: 2,
+                '&:hover': {
+                  backgroundColor: 'rgba(255,59,48,0.08)',
+                },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Box
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '8px',
+                    background: signOutItem.gradient,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  <LogoutIcon sx={{ fontSize: 16, color: '#fff' }} />
+                </Box>
+              </ListItemIcon>
+              <ListItemText
+                primary="Sign Out"
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                  color: '#FF3B30',
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Box>
 
-      {/* Sign Out - Separated at bottom */}
-      <Box sx={{ px: 2, pb: 1 }}>
-        <ListItemButton
-          onClick={onLogoutClick}
-          sx={{
-            borderRadius: '10px',
-            py: 1,
-            px: 2,
-            '&:hover': {
-              backgroundColor: 'rgba(255,59,48,0.08)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 40 }}>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '8px',
-                background: signOutItem.gradient,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-              }}
-            >
-              <LogoutIcon sx={{ fontSize: 16, color: '#fff' }} />
-            </Box>
-          </ListItemIcon>
-          <ListItemText
-            primary="Sign Out"
-            primaryTypographyProps={{
-              fontWeight: 500,
-              fontSize: '0.875rem',
-              color: '#FF3B30',
-            }}
-          />
-        </ListItemButton>
-      </Box>
-
       {/* Footer Links - matches GlobalAudioPlayer height */}
-      <Divider sx={{ mx: 2 }} />
       <Box sx={{display: 'flex', gap: 2, justifyContent: 'center', height: 72, alignItems: 'center' }}>
         {footerItems.map((item) => (
           <Typography

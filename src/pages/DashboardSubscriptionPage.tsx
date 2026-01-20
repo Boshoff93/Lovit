@@ -338,10 +338,10 @@ const DashboardSubscriptionPage: React.FC = () => {
             <CreditCardIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               Subscription
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
               Manage your plan and billing
             </Typography>
           </Box>
@@ -372,11 +372,11 @@ const DashboardSubscriptionPage: React.FC = () => {
               }}
             />
             <Box>
-              <Typography sx={{ fontWeight: 600, color: '#141418', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                 Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
               </Typography>
               {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
-                <Typography sx={{ color: '#86868B', fontSize: { xs: '0.8rem', sm: '0.85rem' } }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.8rem', sm: '0.85rem' } }}>
                   Next billing: {new Date(Number(subscription.currentPeriodEnd) * 1000).toLocaleDateString()}
                 </Typography>
               )}
@@ -464,18 +464,19 @@ const DashboardSubscriptionPage: React.FC = () => {
                 sx={{
                   borderRadius: '16px',
                   cursor: 'pointer',
+                  bgcolor: '#1E1E22',
                   border: selectedPlan === plan.id
                     ? `2px solid ${plan.badgeColor}`
-                    : '1px solid rgba(0,0,0,0.08)',
+                    : '1px solid rgba(255,255,255,0.1)',
                   boxShadow: selectedPlan === plan.id
                     ? `0 8px 24px ${plan.badgeColor}30`
-                    : '0 2px 8px rgba(0,0,0,0.04)',
+                    : 'none',
                   transition: 'all 0.2s ease',
                   position: 'relative',
                   overflow: 'visible',
                   '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
                   },
                 }}
               >
@@ -544,14 +545,14 @@ const DashboardSubscriptionPage: React.FC = () => {
                               mb: 0.5,
                             }}
                           />
-                          <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
                             {plan.tagline}
                           </Typography>
                         </Box>
                         <Box sx={{ textAlign: 'right' }}>
-                          <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#141418', lineHeight: 1 }}>
+                          <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                             ${isYearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice}
-                            <Typography component="span" sx={{ fontSize: '0.9rem', fontWeight: 500, color: '#86868B' }}>
+                            <Typography component="span" sx={{ fontSize: '0.9rem', fontWeight: 500, color: 'rgba(255,255,255,0.6)' }}>
                               /mo
                             </Typography>
                           </Typography>
@@ -568,7 +569,7 @@ const DashboardSubscriptionPage: React.FC = () => {
                         {plan.features.slice(0, 6).map((feature, idx) => (
                           <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                             <CheckCircleIcon sx={{ fontSize: 14, color: plan.badgeColor }} />
-                            <Typography sx={{ fontSize: '0.85rem', color: '#141418' }}>{feature}</Typography>
+                            <Typography sx={{ fontSize: '0.85rem', color: '#fff' }}>{feature}</Typography>
                           </Box>
                         ))}
                       </Box>
@@ -576,7 +577,7 @@ const DashboardSubscriptionPage: React.FC = () => {
                       {/* Bottom: Social platforms + Select button */}
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                         <Box>
-                          <Typography sx={{ fontSize: '0.7rem', color: '#86868B', mb: 0.5 }}>
+                          <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', mb: 0.5 }}>
                             Publish to All Platforms
                           </Typography>
                           <SocialPlatformIconsMini />
@@ -616,10 +617,10 @@ const DashboardSubscriptionPage: React.FC = () => {
 
         {/* Right sidebar: Checkout Card */}
         <Box sx={{ width: { xs: '100%', lg: 300 }, flexShrink: 0, position: { lg: 'sticky' }, top: 20, alignSelf: 'flex-start' }}>
-          <Card sx={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)' }}>
+          <Card sx={{ borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', bgcolor: '#1E1E22' }}>
             <CardContent sx={{ p: 3 }}>
               {/* Billing Frequency */}
-              <Typography sx={{ fontWeight: 600, color: '#141418', mb: 1.5 }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', mb: 1.5 }}>
                 Billing Frequency
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
@@ -632,20 +633,20 @@ const DashboardSubscriptionPage: React.FC = () => {
                     justifyContent: 'space-between',
                     p: 1.5,
                     borderRadius: '10px',
-                    border: !isYearly ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
-                    background: !isYearly ? 'rgba(0,122,255,0.04)' : '#fff',
+                    border: !isYearly ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.15)',
+                    background: !isYearly ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <Typography sx={{ fontWeight: 500, color: '#141418' }}>Monthly</Typography>
+                  <Typography sx={{ fontWeight: 500, color: '#fff' }}>Monthly</Typography>
                   <Box
                     sx={{
                       width: 20,
                       height: 20,
                       borderRadius: '50%',
-                      border: !isYearly ? '6px solid #007AFF' : '2px solid rgba(0,0,0,0.2)',
-                      background: '#fff',
+                      border: !isYearly ? '6px solid #007AFF' : '2px solid rgba(255,255,255,0.3)',
+                      background: !isYearly ? '#007AFF' : 'transparent',
                     }}
                   />
                 </Box>
@@ -658,14 +659,14 @@ const DashboardSubscriptionPage: React.FC = () => {
                     justifyContent: 'space-between',
                     p: 1.5,
                     borderRadius: '10px',
-                    border: isYearly ? '2px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
-                    background: isYearly ? 'rgba(0,122,255,0.04)' : '#fff',
+                    border: isYearly ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.15)',
+                    background: isYearly ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ fontWeight: 500, color: '#141418' }}>Yearly</Typography>
+                    <Typography sx={{ fontWeight: 500, color: '#fff' }}>Yearly</Typography>
                     <Chip
                       label="Save 25%"
                       size="small"
@@ -683,8 +684,8 @@ const DashboardSubscriptionPage: React.FC = () => {
                       width: 20,
                       height: 20,
                       borderRadius: '50%',
-                      border: isYearly ? '6px solid #007AFF' : '2px solid rgba(0,0,0,0.2)',
-                      background: '#fff',
+                      border: isYearly ? '6px solid #007AFF' : '2px solid rgba(255,255,255,0.3)',
+                      background: isYearly ? '#007AFF' : 'transparent',
                     }}
                   />
                 </Box>
@@ -693,7 +694,7 @@ const DashboardSubscriptionPage: React.FC = () => {
               {/* Tokens display - only show when plan selected */}
               {selectedPlan && (
                 <>
-                  <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+                  <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', my: 2 }} />
                   <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -722,14 +723,14 @@ const DashboardSubscriptionPage: React.FC = () => {
               )}
 
               {/* Divider */}
-              <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+              <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', my: 2 }} />
 
               {/* Monthly Total */}
               {selectedPlan ? (
                 <>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 0.5 }}>
-                    <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>Monthly total</Typography>
-                    <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: '#141418' }}>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>Monthly total</Typography>
+                    <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: '#fff' }}>
                       ${isYearly
                         ? Math.round((plans.find(p => p.id === selectedPlan)?.yearlyPrice || 0) / 12)
                         : plans.find(p => p.id === selectedPlan)?.monthlyPrice || 0}
@@ -737,8 +738,8 @@ const DashboardSubscriptionPage: React.FC = () => {
                   </Box>
                   {isYearly && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>Billed yearly</Typography>
-                      <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>Billed yearly</Typography>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
                         ${plans.find(p => p.id === selectedPlan)?.yearlyPrice || 0}
                       </Typography>
                     </Box>
@@ -747,7 +748,7 @@ const DashboardSubscriptionPage: React.FC = () => {
                 </>
               ) : (
                 <Box sx={{ mb: 2 }}>
-                  <Typography sx={{ color: '#86868B', fontSize: '0.9rem', textAlign: 'center' }}>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', textAlign: 'center' }}>
                     Select a plan to continue
                   </Typography>
                 </Box>
@@ -755,7 +756,6 @@ const DashboardSubscriptionPage: React.FC = () => {
 
               {/* CTA Button */}
               <Button
-                fullWidth
                 variant="contained"
                 disabled={!selectedPlan || isLoading || isManagingSubscription}
                 onClick={isSubscribed ? handleManageSubscription : handleProceedToPayment}
@@ -772,8 +772,8 @@ const DashboardSubscriptionPage: React.FC = () => {
                     boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
                   },
                   '&.Mui-disabled': {
-                    background: 'rgba(0,0,0,0.1)',
-                    color: 'rgba(0,0,0,0.3)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'rgba(255,255,255,0.3)',
                   },
                 }}
               >
@@ -790,10 +790,10 @@ const DashboardSubscriptionPage: React.FC = () => {
 
           {/* Token Top-ups - Only show in sidebar on large screens */}
           <Box id="topup" sx={{ mt: 3, scrollMarginTop: '80px', display: { xs: 'none', lg: 'block' } }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 0.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
               Need More Tokens?
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 2 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 2 }}>
               Top-up tokens never expire!
             </Typography>
 
@@ -821,7 +821,8 @@ const DashboardSubscriptionPage: React.FC = () => {
                   sx={{
                     borderRadius: '16px',
                     cursor: 'pointer',
-                    border: '1px solid rgba(0,0,0,0.08)',
+                    bgcolor: '#1E1E22',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     transition: 'all 0.2s ease',
                     position: 'relative',
                     overflow: 'visible',
@@ -854,16 +855,16 @@ const DashboardSubscriptionPage: React.FC = () => {
                   <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                     {/* Top row: token amount left, price right */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                      <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#141418', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         +{bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
                       </Typography>
-                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
+                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>
                         ${bundle.price}
                       </Typography>
                     </Box>
                     {/* Buy button - full width */}
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       size="small"
                       fullWidth
                       sx={{
@@ -872,11 +873,10 @@ const DashboardSubscriptionPage: React.FC = () => {
                         fontWeight: 600,
                         fontSize: '0.75rem',
                         py: 0.5,
-                        borderColor: '#007AFF',
-                        color: '#007AFF',
+                        background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                        color: '#fff',
                         '&:hover': {
-                          background: 'rgba(0,122,255,0.08)',
-                          borderColor: '#007AFF',
+                          background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
                         },
                       }}
                     >
@@ -892,10 +892,10 @@ const DashboardSubscriptionPage: React.FC = () => {
 
       {/* Token Top-ups - Show at very bottom on smaller screens */}
       <Box sx={{ mt: 4, display: { xs: 'block', lg: 'none' } }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 0.5 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
           Need More Tokens?
         </Typography>
-        <Typography sx={{ color: '#86868B', fontSize: '0.85rem', mb: 2 }}>
+        <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 2 }}>
           Top-up tokens never expire!
         </Typography>
 
@@ -923,7 +923,8 @@ const DashboardSubscriptionPage: React.FC = () => {
               sx={{
                 borderRadius: '12px',
                 cursor: 'pointer',
-                border: '1px solid rgba(0,0,0,0.08)',
+                bgcolor: '#1E1E22',
+                border: '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.2s ease',
                 position: 'relative',
                 overflow: 'visible',
@@ -957,16 +958,16 @@ const DashboardSubscriptionPage: React.FC = () => {
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 {/* Top row: token amount left, price right */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#141418', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     +{bundle.tokens.toLocaleString()} x <GruviCoin size={20} />
                   </Typography>
-                  <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#007AFF' }}>
+                  <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>
                     ${bundle.price}
                   </Typography>
                 </Box>
                 {/* Buy button - full width */}
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   fullWidth
                   sx={{
@@ -975,11 +976,10 @@ const DashboardSubscriptionPage: React.FC = () => {
                     fontWeight: 600,
                     fontSize: '0.75rem',
                     py: 0.5,
-                    borderColor: '#007AFF',
-                    color: '#007AFF',
+                    background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                    color: '#fff',
                     '&:hover': {
-                      background: 'rgba(0,122,255,0.08)',
-                      borderColor: '#007AFF',
+                      background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
                     },
                   }}
                 >

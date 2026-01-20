@@ -304,7 +304,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
       setCurrentViewingItem
     }}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', background: '#16161a' }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh', background: '#14171f' }}>
         {/* Desktop Permanent Sidebar */}
         {!isMobile && (
           <Drawer
@@ -320,7 +320,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 width: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
                 boxSizing: 'border-box',
                 borderRight: '1px solid rgba(255,255,255,0.06)',
-                backgroundColor: '#141418',
+                backgroundColor: '#14171f',
                 transition: theme.transitions.create('width', {
                   easing: theme.transitions.easing.sharp,
                   duration: theme.transitions.duration.leavingScreen,
@@ -343,7 +343,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               left: 0,
               right: 0,
               height: 56,
-              backgroundColor: '#141418',
+              backgroundColor: '#14171f',
               borderBottom: '1px solid rgba(255,255,255,0.06)',
               zIndex: theme.zIndex.drawer,
               display: 'flex',
@@ -415,7 +415,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               '& .MuiDrawer-paper': {
                 width: sidebarWidth,
                 boxSizing: 'border-box',
-                backgroundColor: '#141418',
+                backgroundColor: '#14171f',
               },
             }}
           >

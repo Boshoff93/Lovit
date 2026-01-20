@@ -262,6 +262,114 @@ export const faqItems = [
   },
 
   // ============================================
+  // MOTION CAPTURE
+  // ============================================
+  {
+    category: "Motion Capture",
+    question: "What is Motion Capture and how does it work?",
+    answer: "Motion Capture lets you transfer motion from any reference video to a new character or scene. Upload a video of someone dancing, talking, or moving, transform the first frame with AI, and the motion transfers to your new character.",
+    detailedAnswer: "Motion Capture is one of the hottest AI video trends right now. Here's how it works:\n\n**The Process:**\n1. Upload a reference video (up to 30 seconds)\n2. Our AI extracts the first frame\n3. You transform the first frame with a new character/scene\n4. The motion from your video transfers to the new character\n\n**What Gets Transferred:**\n- Body movements and poses\n- Facial expressions and lip sync\n- Camera movement\n- Timing and rhythm\n\n**Use Cases:**\n- Turn yourself into any character\n- Create viral AI character swap content\n- Make brand mascots come to life\n- Transform dance videos with new characters"
+  },
+  {
+    category: "Motion Capture",
+    question: "What makes a good reference video for Motion Capture?",
+    answer: "Use videos with a single person clearly visible, good lighting, upper or full body in frame, and movements that aren't too fast or complex. 10-30 second clips work best.",
+    detailedAnswer: "Getting great Motion Capture results starts with the right reference video:\n\n**Ideal Reference Video:**\n- Single person clearly visible (not multiple people)\n- Upper body or full body in frame\n- Good lighting (not too dark)\n- Stable camera or smooth movements\n- 10-30 seconds in length\n\n**What Works Well:**\n- Dancing and choreography\n- Talking/presenting to camera\n- Simple gestures and expressions\n- Walking or basic movements\n\n**What to Avoid:**\n- Multiple people in frame\n- Fast, chaotic movements\n- Poor lighting or silhouettes\n- Extremely close-up face shots\n- Videos longer than 30 seconds\n\n**Pro Tip:** Record your own reference videos for the most control, or find clips on TikTok/YouTube with clear single-person shots."
+  },
+  {
+    category: "Motion Capture",
+    question: "How do I transform the first frame for Motion Capture?",
+    answer: "After uploading your reference video, describe your new character or scene in the prompt. Keep the pose and position identical - only change the appearance. The AI will generate a transformed first frame that the motion applies to.",
+    detailedAnswer: "The first frame transformation is crucial for good results:\n\n**How to Transform:**\n1. Upload your reference video\n2. The AI extracts the first frame automatically\n3. Describe what you want changed in the prompt\n4. Click 'Transform' to generate your new first frame\n\n**What You Can Change:**\n- The character (person to cartoon, man to woman, etc.)\n- The background/environment\n- Clothing and style\n- Art style (realistic to anime, etc.)\n\n**Critical Rule:** Keep the pose EXACTLY the same!\n- Same body position\n- Same arm placement\n- Same head angle\n- Same frame composition\n\n**Example Prompts:**\n- 'Replace the person with a cartoon character in the same pose'\n- 'Transform into a futuristic robot, keep exact same position'\n- 'Change to anime style character, same pose and framing'"
+  },
+  {
+    category: "Motion Capture",
+    question: "What's the difference between Replace and Move modes?",
+    answer: "Replace mode keeps the background and only swaps the character. Move mode creates an entirely new scene with both new character AND new background. Use Replace for face swaps, Move for complete scene changes.",
+    detailedAnswer: "Understanding the two modes helps you get the right result:\n\n**Replace Mode:**\n- Keeps the original background/environment\n- Only the character changes\n- Best for: Face swaps, character transformations\n- Example: Person dancing in a room → Cartoon dancing in same room\n\n**Move Mode:**\n- Creates entirely new scene\n- Both character AND background change\n- Best for: Complete scene transformations\n- Example: Person dancing in room → Robot dancing on Mars\n\n**When to Use Each:**\n- **Replace:** You like the original setting, just want a different character\n- **Move:** You want to transport the motion to a completely different world\n\n**Pro Tip:** Replace mode often produces more stable results since the background stays consistent. Start with Replace if you're new to Motion Capture."
+  },
+  {
+    category: "Motion Capture",
+    question: "Should I change the voice after Motion Capture?",
+    answer: "If you change the character's gender, age, or ethnicity significantly, yes! The original audio stays with the video, so use voice transformation to match your new character for a seamless result.",
+    detailedAnswer: "Voice matching is key for believable Motion Capture videos:\n\n**When to Change Voice:**\n- Male to female character (or vice versa)\n- Adult to child character\n- Significant ethnicity/accent change\n- Human to creature/robot\n\n**When to Keep Original Voice:**\n- Similar character type\n- No dialogue in the video\n- Intentional contrast for humor\n\n**How Voice Change Works:**\n- Original audio is preserved in the video\n- Voice transformation keeps the delivery and timing\n- Only the voice characteristics change\n- Result: Lip sync stays perfect!\n\n**Pro Tip:** For videos without speech (just dancing or movement), you don't need voice change - just add new music!"
+  },
+  {
+    category: "Motion Capture",
+    question: "How long can Motion Capture videos be?",
+    answer: "Up to 30 seconds for best quality. Shorter clips (10-15 seconds) often produce the most stable and viral-worthy results. Complex movements may work better in shorter segments.",
+    detailedAnswer: "Video length affects quality and processing:\n\n**Recommended Lengths:**\n- **Optimal:** 10-15 seconds (best quality, fastest)\n- **Good:** 15-25 seconds (great for most content)\n- **Maximum:** 30 seconds (may have quality tradeoffs)\n\n**Why Shorter is Better:**\n- More stable motion tracking\n- Faster processing time\n- Less chance of drift or artifacts\n- Perfect for social media formats\n\n**For Longer Content:**\n- Break into multiple clips\n- Process each segment separately\n- Edit together in post-production\n\n**Social Media Sweet Spots:**\n- TikTok: 15-30 seconds\n- Instagram Reels: 15-30 seconds\n- YouTube Shorts: 15-60 seconds\n\n**Pro Tip:** The most viral Motion Capture videos are usually 10-20 seconds with a single impressive transformation."
+  },
+  {
+    category: "Motion Capture",
+    question: "How can I make my Motion Capture videos go viral?",
+    answer: "Use trending audio, create unexpected transformations (the more surprising the better), keep it short (10-15 seconds), show before/after, and start with your most impressive moment as the hook.",
+    detailedAnswer: "Tips from creators getting millions of views:\n\n**Content Strategy:**\n1. **Unexpected Transformations** - The more surprising, the more shares\n2. **Trending Audio** - Pair with popular songs or sounds\n3. **Show Before/After** - People love seeing the transformation\n4. **Hook in First 2 Seconds** - Start with the most impressive moment\n\n**What Goes Viral:**\n- Celebrity transformations\n- Pop culture characters\n- Extreme style changes (realistic to cartoon)\n- Dancing/movement that looks impossible for the character\n\n**Technical Tips:**\n- Clean, well-lit reference video\n- High-contrast transformation (don't be subtle!)\n- Perfect lip sync if there's dialogue\n- Smooth, not glitchy motion\n\n**Posting Strategy:**\n- Post when your audience is active\n- Use relevant hashtags\n- Engage with comments quickly\n- Cross-post to multiple platforms"
+  },
+
+  // ============================================
+  // AI ASSETS & CHARACTERS
+  // ============================================
+  {
+    category: "AI Assets",
+    question: "What are AI Assets and why should I create them?",
+    answer: "AI Assets are custom characters, products, or people you upload to Gruvi. They appear in your music videos and content with consistent likeness. Create assets of yourself, your brand mascot, or products for personalized content.",
+    detailedAnswer: "AI Assets are your secret weapon for personalized content:\n\n**What You Can Create:**\n- **Characters:** Yourself, friends, fictional personas\n- **Products:** Your merchandise, brand items\n- **Mascots:** Brand characters with consistent look\n- **People:** Celebrities (for personal use), historical figures\n\n**Why Create AI Assets:**\n- Consistent character appearance across videos\n- Personalized content that stands out\n- Brand recognition and identity\n- Faster video creation (reuse assets)\n\n**Use Cases:**\n- Feature yourself in music videos\n- Put your product in promotional content\n- Create recurring characters for a series\n- Make personalized gifts featuring friends/family"
+  },
+  {
+    category: "AI Assets",
+    question: "How do I create an AI Asset with strong likeness?",
+    answer: "Upload 3-5 clear photos from different angles, with good lighting, consistent appearance, and the face/subject clearly visible. Front-facing photos work best. Avoid sunglasses, hats, or heavy shadows.",
+    detailedAnswer: "Getting great AI Asset likeness requires good reference images:\n\n**Photo Requirements:**\n- 3-5 images minimum (more = better likeness)\n- Clear, well-lit photos\n- Face clearly visible (no obstructions)\n- Consistent appearance across photos\n\n**Best Angles to Include:**\n- Front-facing (most important)\n- 3/4 angle (slight turn)\n- Profile (side view)\n- Different expressions if possible\n\n**What to Avoid:**\n- Sunglasses or hats covering face\n- Heavy shadows or backlighting\n- Blurry or low-resolution images\n- Different hairstyles/looks across photos\n- Group photos (confuses the AI)\n\n**Pro Tips:**\n- Selfies work great if well-lit\n- Consistent lighting across all photos\n- Neutral backgrounds help AI focus on subject\n- Include full body shots if you want body likeness too"
+  },
+  {
+    category: "AI Assets",
+    question: "How do I use AI Assets in music videos?",
+    answer: "When creating a video, select your AI Asset from 'My AI Assets'. The character will appear in scenes matching your chosen art style. Mention them in your video prompt for better integration.",
+    detailedAnswer: "Using AI Assets in your videos:\n\n**How to Include:**\n1. Go to Create Video\n2. Click 'Add AI Asset' or select from your assets\n3. Choose which asset(s) to include\n4. Generate your video\n\n**Prompt Tips for Better Results:**\n- Reference the character in your prompt\n- Describe what they're doing in the scene\n- Specify their role (main character, background, etc.)\n\n**Example Prompts:**\n- 'The character walking through a neon city at night'\n- 'Show the character performing on stage with dramatic lighting'\n- 'The character sitting at a cafe, looking thoughtful'\n\n**Art Style Integration:**\n- Your asset adapts to any art style\n- Anime, 3D, cinematic - likeness carries through\n- Each style interprets the character differently"
+  },
+  {
+    category: "AI Assets",
+    question: "Can I use AI Assets in Motion Capture videos?",
+    answer: "Yes! AI Assets work great with Motion Capture. Upload your reference video, then use your AI Asset as the character in the transformed first frame for even stronger likeness.",
+    detailedAnswer: "Combining AI Assets with Motion Capture:\n\n**The Power Combo:**\n- AI Asset provides consistent character likeness\n- Motion Capture provides realistic movement\n- Result: Your character moving naturally\n\n**How to Do It:**\n1. Create an AI Asset first (with multiple good photos)\n2. Go to Motion Capture\n3. Upload your reference video\n4. Select your AI Asset for the transformation\n5. The motion applies to your custom character\n\n**Why This Works Better:**\n- Stronger likeness than single-prompt transformations\n- Consistent character across multiple videos\n- AI already knows what your character looks like\n\n**Use Cases:**\n- Put yourself in dance videos\n- Make your mascot perform actions\n- Create a virtual presenter/influencer"
+  },
+  {
+    category: "AI Assets",
+    question: "How many AI Assets can I create?",
+    answer: "All subscription plans include AI Asset creation. Starter allows 5 assets, Pro allows 20 assets, and Premium allows unlimited AI Assets. Delete unused assets to make room for new ones.",
+    detailedAnswer: "AI Asset limits by plan:\n\n**Starter Plan:**\n- 5 AI Assets\n- Great for personal use and basic branding\n\n**Pro Plan:**\n- 20 AI Assets\n- Ideal for content creators with multiple characters\n\n**Premium Plan:**\n- Unlimited AI Assets\n- Perfect for agencies and heavy users\n\n**Managing Your Assets:**\n- Delete unused assets to free up slots\n- You can always recreate deleted assets\n- Assets persist month to month\n\n**Pro Tip:** Create fewer, higher-quality assets with more reference images rather than many assets with few images each."
+  },
+
+  // ============================================
+  // VOICEOVERS & NARRATIVES
+  // ============================================
+  {
+    category: "Voiceovers",
+    question: "What are Voiceovers and how do I create them?",
+    answer: "Voiceovers let you generate professional narration from text. Type or paste your script, choose a voice, and get studio-quality audio. Perfect for video narration, podcasts, and content without music.",
+    detailedAnswer: "Create professional voiceovers in seconds:\n\n**How It Works:**\n1. Go to Create Voiceover\n2. Type or paste your script\n3. Choose a voice from our library\n4. Click Generate\n5. Download your audio\n\n**Voice Options:**\n- Male and female voices\n- Different ages and styles\n- Multiple languages\n- Various accents\n\n**Use Cases:**\n- Video narration and explainers\n- Podcast intros/outros\n- Audiobook creation\n- Presentation voiceovers\n- Documentary-style content\n\n**Pricing:**\n- 20 tokens per 1000 characters\n- Much cheaper than music generation\n- Great for text-heavy content"
+  },
+  {
+    category: "Voiceovers",
+    question: "How do I get natural-sounding voiceovers?",
+    answer: "Write conversationally, use punctuation for pacing, break long sentences into shorter ones, and include natural pauses. Avoid ALL CAPS and excessive exclamation marks.",
+    detailedAnswer: "Tips for natural-sounding voiceovers:\n\n**Writing for Voice:**\n- Write how you speak, not how you write\n- Use contractions (don't, can't, won't)\n- Keep sentences short and punchy\n- Read your script out loud before generating\n\n**Punctuation for Pacing:**\n- Commas = short pause\n- Periods = medium pause\n- Ellipses (...) = longer pause\n- Question marks = natural upturn\n\n**What to Avoid:**\n- ALL CAPS (sounds like shouting)\n- Too many exclamation marks!!!\n- Run-on sentences without breaks\n- Technical jargon that's hard to pronounce\n\n**Pro Tips:**\n- Add '[pause]' for deliberate pauses\n- Numbers often sound better spelled out\n- Test different voices for your content type\n- Formal voices for business, casual for social"
+  },
+  {
+    category: "Voiceovers",
+    question: "Can I use voiceovers in my music videos?",
+    answer: "Yes! Create a voiceover, save it to My Voiceovers, then use it as audio in video creation. Perfect for documentary-style content, explainer videos, or adding narration to visual stories.",
+    detailedAnswer: "Combining voiceovers with video:\n\n**How to Use Voiceovers in Videos:**\n1. Create your voiceover and save it\n2. Go to Create Video\n3. Select 'Upload Audio' instead of generating music\n4. Choose your voiceover from My Voiceovers\n5. Generate video to match your narration\n\n**Content Types:**\n- Documentary-style videos\n- Product explainer videos\n- Educational content\n- Story narration\n- Brand videos with voiceover\n\n**Tips:**\n- Write your script first, then create visuals\n- Time your scenes to match narration beats\n- Consider adding background music separately\n\n**Pro Workflow:**\n1. Write script\n2. Generate voiceover\n3. Create video with voiceover as audio\n4. Add subtle background music in post"
+  },
+  {
+    category: "Voiceovers",
+    question: "What's the difference between Voiceovers and AI Music with vocals?",
+    answer: "Voiceovers are spoken narration from text - perfect for presentations, explainers, and podcasts. AI Music with vocals is sung music with instruments - perfect for songs and entertainment content.",
+    detailedAnswer: "Understanding the difference:\n\n**Voiceovers (Narration):**\n- Spoken word, not sung\n- From your written script\n- No instruments or music\n- 20 tokens per 1000 characters\n- Use for: Explainers, podcasts, presentations\n\n**AI Music (Songs):**\n- Sung vocals with lyrics\n- Full musical arrangement\n- Complete song production\n- 20 tokens per song\n- Use for: Entertainment, music videos, social content\n\n**When to Use Each:**\n- **Voiceover:** You need someone to speak your exact words\n- **Music:** You want a song with emotional impact\n\n**Combine Them:**\n- Use voiceover for intro, then music for main content\n- Create educational videos with narration + background music\n- Mix narration with musical breaks"
+  },
+
+  // ============================================
   // SPECIAL USE CASES
   // ============================================
   {
@@ -516,22 +624,20 @@ const FAQPage: React.FC = () => {
                 fontWeight: 500,
                 transition: 'all 0.2s ease',
                 ...(activeCategory === null ? {
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  color: '#3B82F6',
-                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  backgroundColor: '#007AFF',
+                  color: '#fff',
+                  boxShadow: 'none',
+                  border: 'none',
                   '&:hover': {
-                    background: 'rgba(59, 130, 246, 0.2)',
-                    transform: 'translateY(-1px)',
+                    backgroundColor: '#007AFF',
+                    boxShadow: 'none',
                   }
                 } : {
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'rgba(255,255,255,0.7)',
+                  backgroundColor: 'rgba(255,255,255,0.08)',
+                  color: '#fff',
+                  border: 'none',
                   '&:hover': {
-                    background: 'rgba(255,255,255,0.05)',
-                    borderColor: 'rgba(59, 130, 246, 0.3)',
-                    color: '#3B82F6',
-                    transform: 'translateY(-1px)',
+                    backgroundColor: 'rgba(255,255,255,0.12)',
                   }
                 })
               }}
@@ -551,22 +657,20 @@ const FAQPage: React.FC = () => {
                   fontWeight: 500,
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
-                    background: 'rgba(59, 130, 246, 0.15)',
-                    color: '#3B82F6',
-                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    backgroundColor: '#007AFF',
+                    color: '#fff',
+                    boxShadow: 'none',
+                    border: 'none',
                     '&:hover': {
-                      background: 'rgba(59, 130, 246, 0.2)',
-                      transform: 'translateY(-1px)',
+                      backgroundColor: '#007AFF',
+                      boxShadow: 'none',
                     }
                   } : {
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.7)',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    color: '#fff',
+                    border: 'none',
                     '&:hover': {
-                      background: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(59, 130, 246, 0.3)',
-                      color: '#3B82F6',
-                      transform: 'translateY(-1px)',
+                      backgroundColor: 'rgba(255,255,255,0.12)',
                     }
                   })
                 }}
@@ -590,22 +694,20 @@ const FAQPage: React.FC = () => {
                   fontWeight: 500,
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
-                    background: 'rgba(59, 130, 246, 0.15)',
-                    color: '#3B82F6',
-                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    backgroundColor: '#007AFF',
+                    color: '#fff',
+                    boxShadow: 'none',
+                    border: 'none',
                     '&:hover': {
-                      background: 'rgba(59, 130, 246, 0.2)',
-                      transform: 'translateY(-1px)',
+                      backgroundColor: '#007AFF',
+                      boxShadow: 'none',
                     }
                   } : {
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.7)',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    color: '#fff',
+                    border: 'none',
                     '&:hover': {
-                      background: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(59, 130, 246, 0.3)',
-                      color: '#3B82F6',
-                      transform: 'translateY(-1px)',
+                      backgroundColor: 'rgba(255,255,255,0.12)',
                     }
                   })
                 }}

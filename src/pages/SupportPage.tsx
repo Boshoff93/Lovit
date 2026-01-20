@@ -3,14 +3,14 @@ import {
   Box,
   Typography,
   Button,
-  Card,
-  CardContent,
+  Paper,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EmailIcon from '@mui/icons-material/Email';
 import { faqItems } from './FAQPage';
 
 const SupportPage: React.FC = () => {
@@ -68,53 +68,64 @@ const SupportPage: React.FC = () => {
           <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
             Support & FAQ
           </Typography>
-          <Typography sx={{ color: '#86868B' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)' }}>
             Get help and find answers to your questions
           </Typography>
         </Box>
       </Box>
 
-      {/* Contact Support Card */}
-      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
-              Contact Support
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-              We typically respond within 24 hours
-            </Typography>
+      {/* Main Content Paper */}
+      <Paper sx={{
+        borderRadius: '16px',
+        bgcolor: '#1E1E22',
+        border: '1px solid rgba(255,255,255,0.06)',
+        p: 3,
+      }}>
+        {/* Contact Support Section */}
+        <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                Contact Support
+              </Typography>
+              <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                We typically respond within 24 hours
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              onClick={handleEmailClick}
+              startIcon={<EmailIcon />}
+              sx={{
+                borderRadius: '10px',
+                px: 3,
+                py: 1.25,
+                fontWeight: 600,
+                textTransform: 'none',
+                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                  boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
+                }
+              }}
+            >
+              Email Support Team
+            </Button>
           </Box>
-          <Button
-            variant="contained"
-            onClick={handleEmailClick}
-            style={{
-              borderRadius: '10px',
-              padding: '12px 24px',
-              fontWeight: 600,
-              textTransform: 'none',
-              backgroundColor: '#007AFF',
-              color: '#fff',
-              boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-            }}
-          >
-            Email Support Team
-          </Button>
-        </CardContent>
-      </Card>
+        </Box>
 
-      {/* FAQ Section */}
-      <Card sx={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
-        <CardContent sx={{ p: 3 }}>
+        {/* FAQ Section */}
+        <Box>
           {/* FAQ Header */}
           <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 0.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
               Frequently Asked Questions
             </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+            <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
               Everything you need to know about Gruvi
             </Typography>
           </Box>
@@ -141,10 +152,10 @@ const SupportPage: React.FC = () => {
                     boxShadow: 'none',
                   }
                 } : {
-                  backgroundColor: 'rgba(0,0,0,0.04)',
-                  color: '#141418',
+                  backgroundColor: 'rgba(255,255,255,0.08)',
+                  color: '#fff',
                   '&:hover': {
-                    backgroundColor: 'rgba(0,0,0,0.08)',
+                    backgroundColor: 'rgba(255,255,255,0.12)',
                   }
                 })
               }}
@@ -173,10 +184,10 @@ const SupportPage: React.FC = () => {
                       boxShadow: 'none',
                     }
                   } : {
-                    backgroundColor: 'rgba(0,0,0,0.04)',
-                    color: '#141418',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    color: '#fff',
                     '&:hover': {
-                      backgroundColor: 'rgba(0,0,0,0.08)',
+                      backgroundColor: 'rgba(255,255,255,0.12)',
                     }
                   })
                 }}
@@ -187,7 +198,7 @@ const SupportPage: React.FC = () => {
           </Box>
 
           {/* FAQ Count */}
-          <Typography sx={{ color: '#86868B', mb: 2, fontSize: '0.85rem' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
             Showing {filteredFAQs.length} of {faqItems.length} questions
           </Typography>
 
@@ -206,17 +217,17 @@ const SupportPage: React.FC = () => {
                     '&:before': {
                       display: 'none',
                     },
-                    backgroundColor: 'rgba(0,0,0,0.02)',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
                     boxShadow: 'none',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      backgroundColor: 'rgba(0,0,0,0.03)',
+                      backgroundColor: 'rgba(255,255,255,0.06)',
                     },
                     '&.Mui-expanded': {
-                      backgroundColor: '#fff',
-                      border: '1px solid rgba(0,122,255,0.2)',
-                      boxShadow: '0 4px 12px rgba(0,122,255,0.08)',
+                      backgroundColor: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(0,122,255,0.3)',
+                      boxShadow: '0 4px 12px rgba(0,122,255,0.15)',
                     }
                   }}
                 >
@@ -245,7 +256,7 @@ const SupportPage: React.FC = () => {
                     <Typography
                       sx={{
                         fontWeight: 500,
-                        color: '#141418',
+                        color: '#fff',
                         fontSize: '0.95rem'
                       }}
                     >
@@ -255,7 +266,7 @@ const SupportPage: React.FC = () => {
                   <AccordionDetails sx={{ px: 2.5, pb: 2.5 }}>
                     <Typography
                       sx={{
-                        color: '#86868B',
+                        color: 'rgba(255,255,255,0.7)',
                         lineHeight: 1.7,
                         fontSize: '0.9rem'
                       }}
@@ -267,8 +278,8 @@ const SupportPage: React.FC = () => {
               );
             })}
           </Box>
-        </CardContent>
-      </Card>
+        </Box>
+      </Paper>
     </Box>
   );
 };

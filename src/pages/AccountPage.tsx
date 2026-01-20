@@ -209,86 +209,94 @@ const AccountPage: React.FC = () => {
           <AccountCircleIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#141418', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
             Account
           </Typography>
-          <Typography sx={{ color: '#86868B' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)' }}>
             Manage your profile and subscription
           </Typography>
         </Box>
       </Box>
 
       {(error || fetchError) && (
-        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }} onClose={() => setError(null)}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 3,
+            borderRadius: '12px',
+            bgcolor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#fff',
+            '& .MuiAlert-icon': { color: '#EF4444' },
+          }}
+          onClose={() => setError(null)}
+        >
           {error || fetchError}
         </Alert>
       )}
 
-      {/* User Info Card */}
-      <Card sx={{
-        mb: 3,
+      {/* Main Content Paper */}
+      <Paper sx={{
         borderRadius: '16px',
-        border: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: 'none',
+        bgcolor: '#1E1E22',
+        border: '1px solid rgba(255,255,255,0.06)',
+        p: 3,
       }}>
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-            <Box sx={{ flex: 1, minWidth: 200 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
-                  {user?.username || 'Loading...'}
-                </Typography>
-                <Chip
-                  label={user?.isVerified ? 'Verified' : 'Unverified'}
-                  size="small"
-                  sx={{
-                    fontWeight: 500,
-                    background: user?.isVerified ? 'rgba(52,199,89,0.1)' : 'rgba(255,149,0,0.1)',
-                    color: user?.isVerified ? '#34C759' : '#FF9500',
-                  }}
-                />
-              </Box>
-              <Typography sx={{ color: '#86868B', fontSize: '0.9rem' }}>
-                {user?.artistName || user?.name || 'No artist name set'}
+        {/* User Info Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Box sx={{ flex: 1, minWidth: 200 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                {user?.email || 'Loading...'}
+              </Typography>
+              <Chip
+                label={user?.isVerified ? 'Verified' : 'Unverified'}
+                size="small"
+                sx={{
+                  fontWeight: 500,
+                  background: user?.isVerified ? 'rgba(52,199,89,0.15)' : 'rgba(255,149,0,0.15)',
+                  color: user?.isVerified ? '#34C759' : '#FF9500',
+                }}
+              />
+            </Box>
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>
+              {user?.artistName || user?.name || 'No profile name set'}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 3 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
+              <Typography sx={{ fontWeight: 600, color: '#fff' }}>
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', gap: 3 }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
-                <Typography sx={{ fontWeight: 600, color: '#141418' }}>
-                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Plan</Typography>
+              <Typography sx={{ fontWeight: 600, color: '#007AFF' }}>
+                {formatTier(subscription?.tier || 'free')}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Tokens Section */}
+        {allowances && (
+          <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
+            Your Tokens
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <GruviCoin size={40} sx={{ mr: 1.5 }} />
+              <Box>
+                <Typography sx={{ fontWeight: 600, color: '#fff' }}>
+                  Tokens
                 </Typography>
-              </Box>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ color: '#86868B', fontSize: '0.8rem', mb: 0.5 }}>Plan</Typography>
-                <Typography sx={{ fontWeight: 600, color: '#007AFF' }}>
-                  {formatTier(subscription?.tier || 'free')}
+                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                  Use tokens across all Gruvi features
                 </Typography>
               </Box>
             </Box>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Tokens Section */}
-      {allowances && (
-        <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 2 }}>
-              Your Tokens
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <GruviCoin size={40} sx={{ mr: 1.5 }} />
-                <Box>
-                  <Typography sx={{ fontWeight: 600, color: '#141418' }}>
-                    Tokens
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-                    Use tokens across all Gruvi features
-                  </Typography>
-                </Box>
-              </Box>
               <Button
                 variant="contained"
                 size="small"
@@ -319,13 +327,13 @@ const AccountPage: React.FC = () => {
               return (
                 <>
                   <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#007AFF' }}>
+                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
                       {remaining.toLocaleString()}
-                      <Typography component="span" sx={{ fontSize: '0.9rem', color: '#86868B', ml: 1 }}>
+                      <Typography component="span" sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', ml: 1 }}>
                         tokens remaining
                       </Typography>
                     </Typography>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
                       {used.toLocaleString()} / {total.toLocaleString()} used
                     </Typography>
                   </Box>
@@ -348,14 +356,12 @@ const AccountPage: React.FC = () => {
                 </>
               );
             })()}
-          </CardContent>
-        </Card>
-      )}
+          </Box>
+        )}
 
-      {/* Subscription Details */}
-      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 2 }}>
+        {/* Subscription Details */}
+        <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
             Subscription Details
           </Typography>
           <Box sx={{
@@ -373,25 +379,25 @@ const AccountPage: React.FC = () => {
                 sx={{ height: 72, width: 'auto', flexShrink: 0 }}
               />
               <Box>
-              <Typography sx={{ fontWeight: 600, color: '#007AFF', mb: 0.5 }}>
-                {formatTier(subscription?.tier || 'free')} Plan
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                <Box sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
-                }} />
-                <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-                  Status: {subscription?.status || 'Active'}
+                <Typography sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                  {formatTier(subscription?.tier || 'free')} Plan
                 </Typography>
-              </Box>
-              <Typography sx={{ fontSize: '0.85rem', color: '#86868B' }}>
-                {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
-                  ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                  : 'No renewal date'}
-              </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                  <Box sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
+                  }} />
+                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                    Status: {subscription?.status || 'Active'}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                  {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
+                    ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                    : 'No renewal date'}
+                </Typography>
               </Box>
             </Box>
             <Button
@@ -418,30 +424,38 @@ const AccountPage: React.FC = () => {
               {portalLoading ? 'Loading...' : (isFreeTier ? 'Upgrade Plan' : 'Manage Subscription')}
             </Button>
           </Box>
-        </CardContent>
-      </Card>
+        </Box>
 
-      {/* Personal Information */}
-      <Card sx={{ mb: 3, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418', mb: 3 }}>
+        {/* Personal Information */}
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 3 }}>
             Personal Information
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Profile Name */}
-            <Box>
-              <Typography sx={{ fontWeight: 600, color: '#141418', mb: 1, fontSize: '0.9rem' }}>
-                Profile Name
-              </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Profile Name */}
+          <Box>
+            <Typography sx={{ fontWeight: 600, color: '#fff', mb: 1, fontSize: '0.9rem' }}>
+              Profile Name
+            </Typography>
               <TextField
                 fullWidth
                 placeholder="Enter your artist or director name"
                 value={artistName}
                 onChange={(e) => setArtistName(e.target.value)}
-                size="small"
                 disabled={!isEditingName}
                 InputProps={{
-                  sx: { borderRadius: '10px' },
+                  sx: {
+                    borderRadius: '12px',
+                    bgcolor: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    '& input': { color: '#fff', py: 1.5, fontSize: '1rem' },
+                    '& input::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' },
+                    '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.03)' },
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2) !important' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF !important' },
+                  },
                   endAdornment: (
                     <InputAdornment position="end">
                       {isEditingName ? (
@@ -486,26 +500,31 @@ const AccountPage: React.FC = () => {
 
             {/* Email Address */}
             <Box>
-              <Typography sx={{ fontWeight: 600, color: '#141418', mb: 1, fontSize: '0.9rem' }}>
+              <Typography sx={{ fontWeight: 600, color: '#fff', mb: 1, fontSize: '0.9rem' }}>
                 Email Address
               </Typography>
               <TextField
                 fullWidth
                 value={user?.email || ''}
-                size="small"
                 disabled
                 InputProps={{
-                  sx: { borderRadius: '10px', bgcolor: 'rgba(0,0,0,0.02)' }
+                  sx: {
+                    borderRadius: '12px',
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    color: 'rgba(255,255,255,0.5)',
+                    '& input': { color: 'rgba(255,255,255,0.5)', py: 1.5, fontSize: '1rem' },
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                  }
                 }}
               />
-              <Typography sx={{ color: '#86868B', mt: 0.5, fontSize: '0.8rem' }}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, fontSize: '0.8rem' }}>
                 Email cannot be changed
               </Typography>
             </Box>
 
             {/* Email Notifications */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontSize: '0.9rem', color: '#86868B' }}>
+            <Typography sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
               Email Notifications:
             </Typography>
             <FormControlLabel
@@ -532,9 +551,9 @@ const AccountPage: React.FC = () => {
                     label={user?.emailPreferences?.notifications ? 'Enabled' : 'Disabled'}
                     size="small"
                     sx={{
-                      fontWeight: 500,
-                      background: user?.emailPreferences?.notifications ? 'rgba(52,199,89,0.1)' : 'rgba(0,0,0,0.05)',
-                      color: user?.emailPreferences?.notifications ? '#34C759' : '#86868B',
+                      fontWeight: 600,
+                      background: user?.emailPreferences?.notifications ? '#34C759' : 'rgba(255,255,255,0.1)',
+                      color: '#fff',
                     }}
                   />
                 )
@@ -543,8 +562,9 @@ const AccountPage: React.FC = () => {
             />
           </Box>
         </Box>
-        </CardContent>
-      </Card>
+        </Box>
+      </Paper>
+
       {/* Top Up Modal */}
       <Dialog
         open={topUpModalOpen}

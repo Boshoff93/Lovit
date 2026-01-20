@@ -121,8 +121,8 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     background: {
-      default: '#16161a', // Dark background
-      paper: '#141418', // Dark paper (sidebar/drawer)
+      default: '#14171f', // Dark blue-gray background (Fable style)
+      paper: '#1E1E22', // Dark paper (cards/panels)
     },
     text: {
       primary: '#FFFFFF', // White text
@@ -340,7 +340,7 @@ const theme = createTheme({
         root: {
           borderRadius: 20,
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
-          backgroundColor: '#141418 !important',
+          backgroundColor: '#1E1E22 !important',
           backgroundImage: 'none !important',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
@@ -357,9 +357,9 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1C1C20 !important',
+          backgroundColor: '#1E1E22 !important',
           backgroundImage: 'none !important',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
         },
         rounded: {
           borderRadius: 16,

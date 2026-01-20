@@ -1423,35 +1423,6 @@ const MusicVideoPlayer: React.FC = () => {
                 </Box>
               )}
 
-              {/* Play Button Overlay (when paused) */}
-              {!isPlaying && !isBuffering && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 10,
-                  }}
-                >
-                  <IconButton
-                    onClick={handlePlayPause}
-                    sx={{
-                      width: 56,
-                      height: 56,
-                      background: '#007AFF',
-                      boxShadow: '0 4px 20px rgba(0,122,255,0.4)',
-                      '&:hover': {
-                        background: '#0066DD',
-                        transform: 'scale(1.1)',
-                      },
-                      transition: 'transform 0.2s ease',
-                    }}
-                  >
-                    <PlayArrowRounded sx={{ fontSize: 32, color: '#fff' }} />
-                  </IconButton>
-                </Box>
-              )}
 
               {/* Control Bar */}
               <Box
