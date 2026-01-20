@@ -121,7 +121,7 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     background: {
-      default: '#14171f', // Dark blue-gray background (Fable style)
+      default: '#16161a', // Dark background
       paper: '#1E1E22', // Dark paper (cards/panels)
     },
     text: {
@@ -349,7 +349,7 @@ const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#141418 !important',
+          backgroundColor: '#1a1a1e !important',
           backgroundImage: 'none !important',
         },
       },

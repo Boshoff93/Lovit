@@ -10,6 +10,7 @@ import FeatureLockedModal from './components/FeatureLockedModal';
 import Layout from './components/Layout';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 import AuthInitializer from './components/AuthInitializer';
 
 // Pages
@@ -236,6 +237,7 @@ const seoRoutes = getAllRoutePaths().filter(path => path !== '/');
 function App() {
   return (
     <AudioPlayerProvider>
+      <SidebarProvider>
       <Router>
         <ScrollToTop />
         <AuthInitializer>
@@ -532,6 +534,7 @@ function App() {
         <GlobalAudioPlayer />
         </AuthInitializer>
       </Router>
+      </SidebarProvider>
     </AudioPlayerProvider>
   );
 }

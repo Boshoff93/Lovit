@@ -831,8 +831,6 @@ const ConnectedAccountsPage: React.FC = () => {
                             '&:hover': {
                               borderColor: '#FF3B30',
                               background: 'rgba(255,59,48,0.1)',
-                              '& .btn-text': { color: '#FF3B30' },
-                              '& .btn-icon': { color: '#FF3B30' },
                             },
                           }}
                         >

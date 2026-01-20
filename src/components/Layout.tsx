@@ -29,6 +29,7 @@ import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
 import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext';
 import { SidebarContent, CollapsedSidebarContent, CurrentViewingItem } from './SidebarContent';
 
 // Create a context for the Layout functions
@@ -36,6 +37,7 @@ interface LayoutContextType {
   openCharacter: () => void;
   isDrawerOpen: boolean;
   drawerWidth: number;
+  sidebarCollapsed: boolean;
   setCurrentViewingItem: (item: CurrentViewingItem | null) => void;
 }
 
@@ -50,9 +52,9 @@ export const useLayout = () => {
   return context;
 };
 
-// Sidebar dimensions
-const sidebarWidth = 260;
-const sidebarCollapsedWidth = 72;
+// Sidebar dimensions - use constants from context
+const sidebarWidth = SIDEBAR_WIDTH;
+const sidebarCollapsedWidth = SIDEBAR_COLLAPSED_WIDTH;
 const mobileTopBarHeight = 56;
 
 const Main = styled('main', { shouldForwardProp: (prop) => !['sidebarOpen', 'isMobile', 'sidebarCollapsed'].includes(prop as string) })<{
@@ -90,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { subscription } = useSelector((state: RootState) => state.auth);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { sidebarCollapsed, setSidebarCollapsed } = useSidebar();
 
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -302,6 +304,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       openCharacter,
       isDrawerOpen: mobileOpen,
       drawerWidth: sidebarCollapsed ? sidebarCollapsedWidth : sidebarWidth,
+      sidebarCollapsed,
       setCurrentViewingItem
     }}>
       <Box sx={{ display: 'flex', minHeight: '100vh', background: '#14171f' }}>

@@ -7,6 +7,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLocation } from 'react-router-dom';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
+import { useSidebar } from '../contexts/SidebarContext';
 
 // Marketing pages that should show full-width player (no sidebar offset)
 const MARKETING_PATHS = [
@@ -136,6 +137,7 @@ const formatTime = (seconds: number): string => {
 
 const GlobalAudioPlayer: React.FC = () => {
   const location = useLocation();
+  const { sidebarWidth } = useSidebar();
   const {
     currentSong,
     isPlaying,
@@ -175,11 +177,11 @@ const GlobalAudioPlayer: React.FC = () => {
   // Use local progress while dragging/seeking, otherwise use actual progress
   const displayProgress = localProgress !== null ? localProgress : progress;
 
-  // Dark theme colors
+  // Dark theme colors - match sidebar (#14171f)
   const theme = {
-    bg: '#1A1A1F',
-    border: 'rgba(255,255,255,0.1)',
-    shadow: '0 -4px 24px rgba(0,0,0,0.4)',
+    bg: '#14171f',
+    border: 'rgba(255,255,255,0.08)',
+    shadow: '0 -2px 12px rgba(0,0,0,0.5)',
     text: '#fff',
     textSecondary: 'rgba(255,255,255,0.6)',
     sliderRail: 'rgba(255,255,255,0.25)',
@@ -194,7 +196,7 @@ const GlobalAudioPlayer: React.FC = () => {
         position: 'fixed',
         bottom: 0,
         // On mobile or marketing pages: full width. On desktop dashboard: start after sidebar
-        left: isMarketingPage ? 0 : { xs: 0, md: 240 },
+        left: isMarketingPage ? 0 : { xs: 0, md: sidebarWidth },
         right: 0,
         zIndex: 1300,
         background: theme.bg,
@@ -202,7 +204,7 @@ const GlobalAudioPlayer: React.FC = () => {
         boxShadow: theme.shadow,
         px: { xs: 2, sm: 3 },
         py: 1.5,
-        transition: 'background 0.3s ease, border-color 0.3s ease',
+        transition: 'all 0.3s ease',
       }}
     >
       <Box sx={{ maxWidth: 'lg', mx: 'auto', display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, width: '100%' }}>

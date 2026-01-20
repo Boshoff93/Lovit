@@ -760,7 +760,7 @@ const SidebarContent = memo<SidebarContentProps>(({
                 primaryTypographyProps={{
                   fontWeight: 500,
                   fontSize: '0.875rem',
-                  color: '#FF3B30',
+                  color: '#fff',
                 }}
               />
             </ListItemButton>
@@ -769,7 +769,14 @@ const SidebarContent = memo<SidebarContentProps>(({
       </Box>
 
       {/* Footer Links - matches GlobalAudioPlayer height */}
-      <Box sx={{display: 'flex', gap: 2, justifyContent: 'center', height: 72, alignItems: 'center' }}>
+      <Box sx={{
+        display: 'flex',
+        gap: 2,
+        justifyContent: 'center',
+        height: 72,
+        alignItems: 'center',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+      }}>
         {footerItems.map((item) => (
           <Typography
             key={item.path}
@@ -911,40 +918,39 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
               </ListItem>
             );
           })}
+          {/* Sign Out - right after account items */}
+          <ListItem disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
+            <ListItemButton
+              onClick={onLogoutClick}
+              sx={{
+                borderRadius: '10px',
+                py: 1,
+                px: 1,
+                minWidth: 0,
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: 'rgba(255,59,48,0.08)',
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '8px',
+                  background: signOutItem.gradient,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                <LogoutIcon sx={{ fontSize: 18, color: '#fff' }} />
+              </Box>
+            </ListItemButton>
+          </ListItem>
         </List>
-      </Box>
-
-      {/* Sign Out - at bottom */}
-      <Box sx={{ px: 1, pb: 2, display: 'flex', justifyContent: 'center' }}>
-        <ListItemButton
-          onClick={onLogoutClick}
-          sx={{
-            borderRadius: '10px',
-            py: 1,
-            px: 1,
-            minWidth: 0,
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            '&:hover': {
-              backgroundColor: 'rgba(255,59,48,0.08)',
-            },
-          }}
-        >
-          <Box
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: '8px',
-              background: signOutItem.gradient,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-            }}
-          >
-            <LogoutIcon sx={{ fontSize: 18, color: '#fff' }} />
-          </Box>
-        </ListItemButton>
       </Box>
     </Box>
   );
