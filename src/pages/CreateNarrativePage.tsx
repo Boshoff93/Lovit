@@ -454,7 +454,8 @@ const CreateNarrativePage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        py: 4,
+        pt: { xs: 0, md: 2 },
+        pb: 4,
         px: { xs: 2, sm: 3 },
       }}
     >

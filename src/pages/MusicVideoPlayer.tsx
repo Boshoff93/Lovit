@@ -1278,7 +1278,7 @@ const MusicVideoPlayer: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', maxWidth: '100%' }}>
-      <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, pb: 16 }}>
+      <Box sx={{ pt: { xs: 0, md: 2 }, px: { xs: 2, sm: 3, md: 4 }, pb: 16 }}>
       {/* Top Schedule Banner */}
       {scheduleBanner.show && (
         <Box

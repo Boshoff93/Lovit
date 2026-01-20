@@ -360,7 +360,7 @@ const MyNarrativesPage: React.FC = () => {
   const hasActiveFilters = searchQuery || typeFilter;
 
   return (
-    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+    <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
       <Box sx={{
         display: 'flex',

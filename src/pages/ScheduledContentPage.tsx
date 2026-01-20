@@ -20,7 +20,6 @@ import {
   Facebook as FacebookIcon,
   LinkedIn as LinkedInIcon,
   CalendarMonth as CalendarMonthIcon,
-  Delete as DeleteIcon,
   Schedule as ScheduleIcon,
   Add as AddIcon,
   CheckCircle as CheckCircleIcon,
@@ -285,7 +284,7 @@ const ScheduledContentPage: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
       {/* Header - Same style as Create Music page */}
-      <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, background: 'transparent' }}>
+      <Box sx={{ pt: { xs: 0, md: 2 }, pb: 3, px: { xs: 2, sm: 3, md: 4 }, background: 'transparent' }}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
@@ -784,30 +783,6 @@ const ScheduledContentPage: React.FC = () => {
                                     </Typography>
                                   )}
                                 </Box>
-                                {/* Delete button - only show for scheduled posts */}
-                                {post.status === 'scheduled' && (
-                                  <IconButton
-                                    className="delete-btn"
-                                    size="small"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleCancelClick(post);
-                                    }}
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 2,
-                                      right: 2,
-                                      p: 0.25,
-                                      color: '#FF3B30',
-                                      opacity: 0,
-                                      transition: 'opacity 0.2s',
-                                      background: 'rgba(255,255,255,0.9)',
-                                      '&:hover': { background: 'rgba(255,59,48,0.1)' },
-                                    }}
-                                  >
-                                    <DeleteIcon sx={{ fontSize: 12 }} />
-                                  </IconButton>
-                                )}
                               </Box>
                             );
                           })}
@@ -1080,11 +1055,15 @@ const ScheduledContentPage: React.FC = () => {
           <Button
             onClick={() => setCancelDialogOpen(false)}
             disabled={cancelling}
+            variant="outlined"
             sx={{
               borderRadius: '10px',
               color: 'rgba(255,255,255,0.7)',
               borderColor: 'rgba(255,255,255,0.2)',
-              '&:hover': { borderColor: 'rgba(255,255,255,0.4)' },
+              '&:hover': {
+                borderColor: 'rgba(255,255,255,0.4)',
+                bgcolor: 'rgba(255,255,255,0.05)',
+              },
             }}
           >
             Keep Scheduled
@@ -1092,11 +1071,17 @@ const ScheduledContentPage: React.FC = () => {
           <Button
             onClick={handleConfirmCancel}
             variant="contained"
-            color="error"
             disabled={cancelling}
-            sx={{ borderRadius: '10px' }}
+            sx={{
+              borderRadius: '10px',
+              bgcolor: '#007AFF',
+              color: '#fff',
+              '&:hover': {
+                bgcolor: '#0066DD',
+              },
+            }}
           >
-            {cancelling ? <CircularProgress size={20} /> : 'Cancel Post'}
+            {cancelling ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Cancel Post'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1375,11 +1360,16 @@ const ScheduledContentPage: React.FC = () => {
                     handleCancelClick(selectedPost);
                   }}
                   variant="outlined"
-                  color="error"
                   sx={{
                     borderRadius: '10px',
                     textTransform: 'none',
                     fontWeight: 600,
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    color: 'rgba(255,255,255,0.8)',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                    },
                   }}
                 >
                   Cancel Post

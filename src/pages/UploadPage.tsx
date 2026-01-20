@@ -324,7 +324,8 @@ const UploadPage: React.FC = () => {
 
   return (
     <Box sx={{
-      py: { xs: 3, md: 4 },
+      pt: { xs: 0, md: 2 },
+      pb: 4,
       px: { xs: 2, sm: 3, md: 4 },
       width: '100%',
       maxWidth: 1200,
@@ -589,6 +590,7 @@ const UploadPage: React.FC = () => {
                   px: 2,
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: 1.5,
                   cursor: 'pointer',
                   borderRadius: '12px',
@@ -624,6 +626,7 @@ const UploadPage: React.FC = () => {
                   px: 2,
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: 1.5,
                   cursor: 'pointer',
                   borderRadius: '12px',

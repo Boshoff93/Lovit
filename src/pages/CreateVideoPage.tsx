@@ -728,7 +728,7 @@ const CreateVideoPage: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto' }}>
+    <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto' }}>
       {/* Header */}
       <Box sx={{
         display: 'flex',
