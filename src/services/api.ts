@@ -184,8 +184,8 @@ export const songsApi = {
 export const videosApi = {
   generateVideo: (data: {
     userId: string;
-    songId?: string | null; // Required for music videos, optional for narrative
-    narrativeId?: string | null; // Required for narrative videos (type is fetched from narrative record)
+    songId?: string | null; // Required for music videos, optional for other types
+    narrativeId?: string | null; // Required for story/ugc-voiceover videos
     videoType: 'still' | 'standard' | 'professional'; // still=slideshow, standard=Seedance, professional=Kling
     style?: string;
     videoPrompt?: string;
@@ -194,7 +194,8 @@ export const videosApi = {
     placeDescription?: string; // Optional: User's description of their property/location for web search
     creativity?: number; // 0-10: 0 = exact prompt adherence, 10 = creative interpretation
     rouletteMode?: boolean; // Let AI pick the video concept based on the track
-    contentType?: 'music' | 'narrative'; // 'music' for music videos, 'narrative' for UGC/influencer content
+    videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar'; // Specific video content type
+    avatarVideoDuration?: 5 | 10 | 15; // Duration for avatar videos in seconds
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {

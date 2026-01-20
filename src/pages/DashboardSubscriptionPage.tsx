@@ -177,10 +177,11 @@ const DashboardSubscriptionPage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const [isEndingTrial, setIsEndingTrial] = useState<boolean>(false);
+  const [loadingTopUpId, setLoadingTopUpId] = useState<string | null>(null);
   const location = useLocation();
 
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, subscription } = useSelector((state: RootState) => state.auth);
+  const { subscription } = useSelector((state: RootState) => state.auth);
   const { fetchAccountData } = useAccountData(false);
 
   // Check if subscription is in trial
@@ -755,16 +756,18 @@ const DashboardSubscriptionPage: React.FC = () => {
               )}
 
               {/* CTA Button */}
+              <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', sm: 'center', lg: 'stretch' } }}>
               <Button
                 variant="contained"
-                disabled={!selectedPlan || isLoading || isManagingSubscription}
+                disabled={!selectedPlan || isManagingSubscription}
                 onClick={isSubscribed ? handleManageSubscription : handleProceedToPayment}
-                endIcon={!isLoading && !isManagingSubscription && <ChevronRightIcon />}
+                endIcon={!isManagingSubscription && <ChevronRightIcon />}
                 sx={{
                   py: 1.5,
                   borderRadius: '12px',
                   fontWeight: 600,
                   fontSize: '1rem',
+                  width: { xs: '100%', sm: 'auto', lg: '100%' },
                   background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
                   boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
                   '&:hover': {
@@ -772,19 +775,25 @@ const DashboardSubscriptionPage: React.FC = () => {
                     boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
                   },
                   '&.Mui-disabled': {
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.3)',
+                    background: isManagingSubscription
+                      ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                      : 'rgba(255,255,255,0.1)',
+                    color: isManagingSubscription ? '#fff' : 'rgba(255,255,255,0.3)',
                   },
                 }}
               >
-                {isLoading || isManagingSubscription ? (
-                  <CircularProgress size={24} color="inherit" />
+                {isManagingSubscription ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} color="inherit" />
+                    <span>Loading...</span>
+                  </Box>
                 ) : isSubscribed ? (
                   'Manage Subscription'
                 ) : (
                   'Unlock Gruvi'
                 )}
               </Button>
+              </Box>
             </CardContent>
           </Card>
 
@@ -802,35 +811,20 @@ const DashboardSubscriptionPage: React.FC = () => {
               flexDirection: 'column',
               gap: 2,
             }}>
-              {topUpBundles.map((bundle, index) => (
+              {topUpBundles.map((bundle) => {
+                const isThisBundleLoading = loadingTopUpId === bundle.id;
+                const isAnyLoading = loadingTopUpId !== null;
+                return (
                 <Card
                   key={bundle.id}
-                  onClick={async () => {
-                    try {
-                      const resultAction = await dispatch(createCheckoutSession({
-                        priceId: bundle.priceId,
-                        productId: bundle.productId
-                      }));
-                      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-                        window.location.href = resultAction.payload.url;
-                      }
-                    } catch (err: any) {
-                      setError(err.message || 'Failed to create checkout session');
-                    }
-                  }}
                   sx={{
                     borderRadius: '16px',
-                    cursor: 'pointer',
                     bgcolor: '#1E1E22',
                     border: '1px solid rgba(255,255,255,0.1)',
                     transition: 'all 0.2s ease',
                     position: 'relative',
                     overflow: 'visible',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
-                      borderColor: '#007AFF',
-                    },
+                    opacity: isAnyLoading && !isThisBundleLoading ? 0.5 : 1,
                   }}
                 >
                   {/* Badge */}
@@ -867,6 +861,25 @@ const DashboardSubscriptionPage: React.FC = () => {
                       variant="contained"
                       size="small"
                       fullWidth
+                      disabled={isAnyLoading}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (isAnyLoading) return;
+                        try {
+                          setLoadingTopUpId(bundle.id);
+                          const resultAction = await dispatch(createCheckoutSession({
+                            priceId: bundle.priceId,
+                            productId: bundle.productId
+                          }));
+                          if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                            window.location.href = resultAction.payload.url;
+                          }
+                        } catch (err: any) {
+                          setError(err.message || 'Failed to create checkout session');
+                        } finally {
+                          setLoadingTopUpId(null);
+                        }
+                      }}
                       sx={{
                         borderRadius: '8px',
                         textTransform: 'none',
@@ -878,13 +891,27 @@ const DashboardSubscriptionPage: React.FC = () => {
                         '&:hover': {
                           background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
                         },
+                        '&.Mui-disabled': {
+                          background: isThisBundleLoading
+                            ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                            : 'rgba(255,255,255,0.12)',
+                          color: isThisBundleLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                        },
                       }}
                     >
-                      Buy Now
+                      {isThisBundleLoading ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <CircularProgress size={14} sx={{ color: '#fff' }} />
+                          <span>Loading...</span>
+                        </Box>
+                      ) : (
+                        'Buy Now'
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+              );
+              })}
             </Box>
           </Box>
         </Box>
@@ -904,35 +931,20 @@ const DashboardSubscriptionPage: React.FC = () => {
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
           gap: 2,
         }}>
-          {topUpBundles.map((bundle) => (
+          {topUpBundles.map((bundle) => {
+            const isThisBundleLoading = loadingTopUpId === bundle.id;
+            const isAnyLoading = loadingTopUpId !== null;
+            return (
             <Card
               key={bundle.id}
-              onClick={async () => {
-                try {
-                  const resultAction = await dispatch(createCheckoutSession({
-                    priceId: bundle.priceId,
-                    productId: bundle.productId
-                  }));
-                  if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-                    window.location.href = resultAction.payload.url;
-                  }
-                } catch (err: any) {
-                  setError(err.message || 'Failed to create checkout session');
-                }
-              }}
               sx={{
                 borderRadius: '12px',
-                cursor: 'pointer',
                 bgcolor: '#1E1E22',
                 border: '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.2s ease',
                 position: 'relative',
                 overflow: 'visible',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
-                  borderColor: '#007AFF',
-                },
+                opacity: isAnyLoading && !isThisBundleLoading ? 0.5 : 1,
               }}
             >
               {/* Badge */}
@@ -970,6 +982,25 @@ const DashboardSubscriptionPage: React.FC = () => {
                   variant="contained"
                   size="small"
                   fullWidth
+                  disabled={isAnyLoading}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (isAnyLoading) return;
+                    try {
+                      setLoadingTopUpId(bundle.id);
+                      const resultAction = await dispatch(createCheckoutSession({
+                        priceId: bundle.priceId,
+                        productId: bundle.productId
+                      }));
+                      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                        window.location.href = resultAction.payload.url;
+                      }
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to create checkout session');
+                    } finally {
+                      setLoadingTopUpId(null);
+                    }
+                  }}
                   sx={{
                     borderRadius: '8px',
                     textTransform: 'none',
@@ -981,13 +1012,27 @@ const DashboardSubscriptionPage: React.FC = () => {
                     '&:hover': {
                       background: 'linear-gradient(135deg, #0066CC 0%, #4AB8EA 100%)',
                     },
+                    '&.Mui-disabled': {
+                      background: isThisBundleLoading
+                        ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                        : 'rgba(255,255,255,0.12)',
+                      color: isThisBundleLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                    },
                   }}
                 >
-                  Buy Now
+                  {isThisBundleLoading ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={14} sx={{ color: '#fff' }} />
+                      <span>Loading...</span>
+                    </Box>
+                  ) : (
+                    'Buy Now'
+                  )}
                 </Button>
               </CardContent>
             </Card>
-          ))}
+          );
+          })}
         </Box>
       </Box>
     </Box>

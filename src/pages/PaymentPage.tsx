@@ -289,6 +289,7 @@ const PaymentPage: React.FC = () => {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const [loadingTopUpId, setLoadingTopUpId] = useState<string | null>(null);
   const [topUpError, setTopUpError] = useState<string | null>(null);
 
   // Auth modal state
@@ -922,6 +923,7 @@ const PaymentPage: React.FC = () => {
                 borderRadius: '100px',
                 px: 3,
                 py: 1.25,
+                minWidth: 180,
                 boxShadow: `0 4px 12px ${colors.shadowColor}`,
                 transition: 'all 0.2s ease',
                 '&:hover': {
@@ -931,7 +933,10 @@ const PaymentPage: React.FC = () => {
               }}
             >
               {isManagingSubscription ? (
-                <CircularProgress size={20} color="inherit" />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={18} color="inherit" />
+                  <span>Loading...</span>
+                </Box>
               ) : (
                 'Manage Subscription'
               )}
@@ -1288,7 +1293,10 @@ const PaymentPage: React.FC = () => {
                   }}
                 >
                   {loadingPlanId === plan.id ? (
-                    <CircularProgress size={24} sx={{ color: '#fff' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                      <span>Loading...</span>
+                    </Box>
                   ) : (
                     'Start Your Free Trial'
                   )}
@@ -1576,27 +1584,12 @@ const PaymentPage: React.FC = () => {
               maxWidth: '800px',
               mx: 'auto',
             }}>
-              {topUpBundles.map((bundle, index) => (
+              {topUpBundles.map((bundle, index) => {
+                const isThisBundleLoading = loadingTopUpId === bundle.id;
+                const isAnyLoading = loadingTopUpId !== null;
+                return (
                 <Card
                   key={bundle.id}
-                  onClick={async () => {
-                    if (!subscription || subscription.tier === 'free') {
-                      setTopUpError('Please subscribe to a plan first before purchasing top-up tokens.');
-                      return;
-                    }
-                    try {
-                      setTopUpError(null);
-                      const resultAction = await dispatch(createCheckoutSession({
-                        priceId: bundle.priceId,
-                        productId: bundle.productId
-                      }));
-                      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-                        window.location.href = resultAction.payload.url;
-                      }
-                    } catch (err: any) {
-                      setTopUpError(err.message || 'Failed to create checkout session');
-                    }
-                  }}
                   sx={{
                     flex: { sm: 1 },
                     maxWidth: { sm: 240 },
@@ -1606,13 +1599,8 @@ const PaymentPage: React.FC = () => {
                     borderRadius: '16px',
                     position: 'relative',
                     overflow: 'visible',
-                    cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 24px rgba(59,130,246,0.25)',
-                      borderColor: '#3B82F6',
-                    },
+                    opacity: isAnyLoading && !isThisBundleLoading ? 0.5 : 1,
                   }}
                 >
                   {bundle.badge && (
@@ -1628,6 +1616,7 @@ const PaymentPage: React.FC = () => {
                         color: '#fff',
                         fontWeight: 600,
                         fontSize: '0.6rem',
+                        zIndex: 1,
                       }}
                     />
                   )}
@@ -1635,12 +1624,65 @@ const PaymentPage: React.FC = () => {
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
                       {bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#3B82F6' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#3B82F6', mb: 1.5 }}>
                       ${bundle.price}
                     </Typography>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      disabled={isAnyLoading || !subscription || subscription.tier === 'free'}
+                      onClick={async () => {
+                        if (isAnyLoading) return;
+                        if (!subscription || subscription.tier === 'free') {
+                          setTopUpError('Please subscribe to a plan first before purchasing top-up tokens.');
+                          return;
+                        }
+                        try {
+                          setTopUpError(null);
+                          setLoadingTopUpId(bundle.id);
+                          const resultAction = await dispatch(createCheckoutSession({
+                            priceId: bundle.priceId,
+                            productId: bundle.productId
+                          }));
+                          if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                            window.location.href = resultAction.payload.url;
+                          }
+                        } catch (err: any) {
+                          setTopUpError(err.message || 'Failed to create checkout session');
+                        } finally {
+                          setLoadingTopUpId(null);
+                        }
+                      }}
+                      sx={{
+                        py: 1,
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #2563EB 0%, #0891B2 100%)',
+                        },
+                        '&.Mui-disabled': {
+                          background: isThisBundleLoading
+                            ? 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)'
+                            : 'rgba(255,255,255,0.12)',
+                          color: isThisBundleLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                        },
+                      }}
+                    >
+                      {isThisBundleLoading ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <CircularProgress size={18} sx={{ color: '#fff' }} />
+                          <span>Loading...</span>
+                        </Box>
+                      ) : (
+                        'Buy Now'
+                      )}
+                    </Button>
                   </CardContent>
                 </Card>
-              ))}
+              );
+              })}
             </Box>
 
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mt: 2, textAlign: 'center', fontStyle: 'italic' }}>

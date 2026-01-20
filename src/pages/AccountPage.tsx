@@ -405,7 +405,6 @@ const AccountPage: React.FC = () => {
               size="small"
               onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
               disabled={isLoading || portalLoading}
-              startIcon={portalLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
               sx={{
                 borderRadius: '10px',
                 px: 2.5,
@@ -413,15 +412,26 @@ const AccountPage: React.FC = () => {
                 fontWeight: 600,
                 textTransform: 'none',
                 width: { xs: '100%', sm: 'auto' },
+                minWidth: { sm: 180 },
                 background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
                 boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
                   boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                }
+                },
+                '&.Mui-disabled': {
+                  background: portalLoading
+                    ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                    : 'rgba(255,255,255,0.12)',
+                  color: portalLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                },
               }}
             >
-              {portalLoading ? 'Loading...' : (isFreeTier ? 'Upgrade Plan' : 'Manage Subscription')}
+              {portalLoading ? (
+                <CircularProgress size={20} sx={{ color: '#fff' }} />
+              ) : (
+                isFreeTier ? 'Upgrade Plan' : 'Manage Subscription'
+              )}
             </Button>
           </Box>
         </Box>
@@ -575,55 +585,40 @@ const AccountPage: React.FC = () => {
           sx: {
             borderRadius: '20px',
             p: 1,
+            bgcolor: '#1E1E22',
+            border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
       >
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#141418' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
               Need More Tokens?
             </Typography>
-            <Typography sx={{ color: '#86868B', fontSize: '0.85rem' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
               Top-up tokens never expire!
             </Typography>
           </Box>
-          <IconButton onClick={() => setTopUpModalOpen(false)} size="small">
+          <IconButton onClick={() => setTopUpModalOpen(false)} size="small" sx={{ color: 'rgba(255,255,255,0.7)' }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ overflow: 'visible', pt: 2 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            {topUpBundles.map((bundle, index) => (
+            {topUpBundles.map((bundle, index) => {
+              const isThisBundleLoading = checkoutLoading === bundle.id;
+              const isAnyLoading = checkoutLoading !== null;
+              return (
               <Card
                 key={bundle.id}
-                onClick={async () => {
-                  try {
-                    setCheckoutLoading(bundle.id);
-                    const resultAction = await dispatch(createCheckoutSession({
-                      priceId: bundle.priceId,
-                      productId: bundle.productId
-                    }));
-                    if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-                      window.location.href = resultAction.payload.url;
-                    }
-                  } catch (err: any) {
-                    setError(err.message || 'Failed to create checkout session');
-                  } finally {
-                    setCheckoutLoading(null);
-                  }
-                }}
                 sx={{
                   borderRadius: '16px',
-                  cursor: 'pointer',
-                  border: '1px solid rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  bgcolor: '#141418',
                   transition: 'all 0.2s ease',
                   position: 'relative',
                   overflow: 'visible',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(0,122,255,0.15)',
-                    borderColor: '#007AFF',
-                  },
+                  opacity: isAnyLoading && !isThisBundleLoading ? 0.5 : 1,
                 }}
               >
                 {bundle.badge && (
@@ -640,35 +635,75 @@ const AccountPage: React.FC = () => {
                       color: '#fff',
                       fontWeight: 600,
                       fontSize: '0.65rem',
+                      zIndex: 1,
                     }}
                   />
                 )}
                 <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                     <Box>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#141418', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        {bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        +{bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
                       </Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
                         Never expires
                       </Typography>
                     </Box>
-                    <Box sx={{ textAlign: 'right' }}>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#007AFF' }}>
-                        ${bundle.price}
-                      </Typography>
-                      {checkoutLoading === bundle.id ? (
-                        <CircularProgress size={16} sx={{ color: '#007AFF' }} />
-                      ) : (
-                        <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
-                          One-time
-                        </Typography>
-                      )}
-                    </Box>
+                    <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff' }}>
+                      ${bundle.price}
+                    </Typography>
                   </Box>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    disabled={isAnyLoading}
+                    onClick={async () => {
+                      if (isAnyLoading) return;
+                      try {
+                        setCheckoutLoading(bundle.id);
+                        const resultAction = await dispatch(createCheckoutSession({
+                          priceId: bundle.priceId,
+                          productId: bundle.productId
+                        }));
+                        if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
+                          window.location.href = resultAction.payload.url;
+                        }
+                      } catch (err: any) {
+                        setError(err.message || 'Failed to create checkout session');
+                      } finally {
+                        setCheckoutLoading(null);
+                      }
+                    }}
+                    sx={{
+                      py: 1,
+                      borderRadius: '10px',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                      },
+                      '&.Mui-disabled': {
+                        background: isThisBundleLoading
+                          ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                          : 'rgba(255,255,255,0.12)',
+                        color: isThisBundleLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                      },
+                    }}
+                  >
+                    {isThisBundleLoading ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={18} sx={{ color: '#fff' }} />
+                        <span>Loading...</span>
+                      </Box>
+                    ) : (
+                      'Buy Now'
+                    )}
+                  </Button>
                 </CardContent>
               </Card>
-            ))}
+            );
+            })}
           </Box>
         </DialogContent>
       </Dialog>

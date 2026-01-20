@@ -63,9 +63,9 @@ interface Character {
 
 // Cost per 1000 characters
 const COST_PER_1000_CHARS = 20;
-// Story narratives: 1 character + 1 product max
+// Story narratives: up to 5 AI assets of any type
 // UGC narratives: just 1 product/place/app (no character needed)
-const MAX_CAST_MEMBERS_STORY = 2;
+const MAX_CAST_MEMBERS_STORY = 5;
 const MAX_CAST_MEMBERS_UGC = 1;
 
 // Character type icons
@@ -220,11 +220,10 @@ const CreateNarrativePage: React.FC = () => {
   }, {} as Record<string, Character[]>);
 
   // Check if selection is allowed for a character type
-  // Story mode: 1 character + 1 product max
+  // Story mode: up to 5 AI assets of any type
   // UGC mode: just 1 product/place/app (no characters)
   const canSelectCharacter = (char: Character) => {
     const isCharacter = char.characterType === 'Human' || char.characterType === 'Non-Human' || !char.characterType;
-    const isProduct = char.characterType === 'Product' || char.characterType === 'App' || char.characterType === 'Business' || char.characterType === 'Place';
 
     // UGC mode: only allow products/places/apps, max 1
     if (narrativeType === 'ugc') {
@@ -232,13 +231,8 @@ const CreateNarrativePage: React.FC = () => {
       return selectedCastMembers.length < MAX_CAST_MEMBERS_UGC;
     }
 
-    // Story mode: 1 character + 1 product max
-    const hasCharacter = selectedCastMembers.some(c => c.characterType === 'Human' || c.characterType === 'Non-Human' || !c.characterType);
-    const hasProduct = selectedCastMembers.some(c => c.characterType === 'Product' || c.characterType === 'App' || c.characterType === 'Business' || c.characterType === 'Place');
-
-    if (isCharacter && hasCharacter) return false;
-    if (isProduct && hasProduct) return false;
-    return true;
+    // Story mode: up to 5 AI assets of any type
+    return selectedCastMembers.length < MAX_CAST_MEMBERS_STORY;
   };
 
   // Load characters on mount
@@ -743,7 +737,7 @@ const CreateNarrativePage: React.FC = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1 }}>
                 {narrativeType === 'ugc'
                   ? 'Select AI asset (1 product/place/app)'
-                  : 'Add AI assets (1 character + 1 product/place max)'}
+                  : 'Add AI assets (up to 5 max)'}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center',  }}>
                 {/* Dropdown button */}
