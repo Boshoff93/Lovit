@@ -50,13 +50,13 @@ export const faqItems = [
     category: "Getting Started",
     question: "What can I create with Gruvi?",
     answer: "Create AI-generated songs, music videos, product promo videos, Airbnb/property videos, brand videos, and more. All with original music and stunning visuals.",
-    detailedAnswer: "Gruvi is a complete creative platform for multiple use cases:\n\n**Music Creation:**\n- Original songs in 60+ genres\n- Vocals in 24+ languages\n- Instrumental tracks\n- Jingles and sound effects\n\n**Music Videos:**\n- Full cinematic music videos\n- 16 art styles (anime, 3D, cinematic, etc.)\n- Custom characters from your photos\n- Portrait (TikTok) and landscape (YouTube) formats\n\n**Promotional Videos:**\n- Product showcase videos for e-commerce\n- Airbnb and property tour videos\n- Restaurant and food promo videos\n- Brand marketing videos\n- Social media ad content\n\n**Business Uses:**\n- YouTube content creation\n- Podcast intros and outros\n- Background music for videos\n- Event and wedding music\n- Gaming and streaming content"
+    detailedAnswer: "Gruvi is a complete creative platform for multiple use cases:\n\n**Music Creation:**\n- Original songs in 100+ genre and mood combinations\n- Vocals in 24+ languages\n- Instrumental tracks\n- Jingles and sound effects\n\n**Music Videos:**\n- Full cinematic music videos\n- 15 art styles (Animation, 3D Cartoon, Realistic, etc.)\n- Custom characters from your photos\n- Portrait (TikTok) and landscape (YouTube) formats\n\n**Promotional Videos:**\n- Product showcase videos for e-commerce\n- Airbnb and property tour videos\n- Restaurant and food promo videos\n- Brand marketing videos\n- Social media ad content\n\n**Business Uses:**\n- YouTube content creation\n- Podcast intros and outros\n- Background music for videos\n- Event and wedding music\n- Gaming and streaming content"
   },
   {
     category: "Getting Started",
     question: "How long does it take to generate a song or video?",
-    answer: "Songs generate in 15-30 seconds. Music videos take 2-5 minutes depending on complexity. Pro and Premium users get priority processing for faster results.",
-    detailedAnswer: "Generation times vary by content type:\n\n**Song Generation:**\n- Standard: 15-30 seconds\n- Complex prompts: Up to 1 minute\n- Priority queue (Pro/Premium): ~10 seconds\n\n**Video Generation:**\n- Still image videos: 1-2 minutes\n- Full cinematic videos: 2-5 minutes\n- Videos with custom characters: +30 seconds\n\n**Factors Affecting Speed:**\n- Video length and complexity\n- Number of reference images\n- Current server demand\n- Your subscription tier\n\n**Tips for Faster Results:**\n- Use clear, concise prompts\n- Optimize reference images (they're auto-compressed)\n- Upgrade for priority access\n- Generate during off-peak hours"
+    answer: "Songs generate in 15-30 seconds. Music videos take 2-5 minutes depending on complexity. Scale and Content Engine users get priority processing for faster results.",
+    detailedAnswer: "Generation times vary by content type:\n\n**Song Generation:**\n- Standard: 15-30 seconds\n- Complex prompts: Up to 1 minute\n- Priority queue (Scale/Content Engine): ~10 seconds\n\n**Video Generation:**\n- Still image videos: 1-2 minutes\n- Full cinematic videos: 2-5 minutes\n- Videos with custom characters: +30 seconds\n\n**Factors Affecting Speed:**\n- Video length and complexity\n- Number of reference images\n- Current server demand\n- Your subscription tier\n\n**Tips for Faster Results:**\n- Use clear, concise prompts\n- Optimize reference images (they're auto-compressed)\n- Upgrade for priority access\n- Generate during off-peak hours"
   },
 
   // ============================================
@@ -65,7 +65,7 @@ export const faqItems = [
   {
     category: "Music Creation",
     question: "What music genres can Gruvi create?",
-    answer: "Gruvi supports 60+ genres including Pop, Rock, Hip-Hop, Jazz, Classical, Electronic, R&B, Country, Latin, K-Pop, Afrobeats, Lo-Fi, Metal, Indie, Folk, and many more.",
+    answer: "Gruvi supports 100+ genre and mood combinations including Pop, Rock, Hip-Hop, Jazz, Classical, Electronic, R&B, Country, Latin, K-Pop, Afrobeats, Lo-Fi, Metal, Indie, Folk, and many more.",
     detailedAnswer: "We support an incredibly diverse range of musical genres:\n\n**Popular Genres:** Pop, Rock, Hip-Hop, Rap, R&B, Soul, Country, Jazz, Blues, Classical, Electronic, EDM, House, Techno, Trance, Dubstep\n\n**World Music:** K-Pop, J-Pop, Latin, Reggaeton, Afrobeats, Bollywood, Flamenco, Bossa Nova, Samba, Reggae, Dancehall\n\n**Modern Subgenres:** Trap, Drill, Phonk, Lo-Fi, Synthwave, Retrowave, Vaporwave, Chillhop, Boom Bap, Grime\n\n**Rock Subgenres:** Alternative, Indie Rock, Metal, Punk, Grunge, Classic Rock, Hard Rock, Progressive Rock\n\n**Other Styles:** Folk, Acoustic, Singer-Songwriter, Gospel, Christian, Ambient, New Age, Cinematic, Orchestral\n\nYou can even blend genres to create unique fusion styles!"
   },
   {
@@ -77,8 +77,8 @@ export const faqItems = [
   {
     category: "Music Creation",
     question: "How long are the songs Gruvi creates?",
-    answer: "By default, Gruvi creates songs around 2-3 minutes in length - the perfect duration for streaming and social media. Custom lengths are available on higher plans.",
-    detailedAnswer: "Song duration options vary by use case:\n\n**Default Length:**\n- 2-3 minutes: Ideal for streaming platforms, social media, and general use\n\n**Short Form:**\n- 30-60 seconds: Perfect for TikTok, Instagram Reels, YouTube Shorts, ads, and intros\n\n**Extended Versions:**\n- 3-5 minutes: Available on Pro and Premium plans for longer compositions\n\n**Custom Lengths:**\n- Premium users can specify exact durations\n- Great for film scoring, podcasts, and specific use cases\n\nMost songs are optimized for modern streaming, where 2-3 minutes is the sweet spot for listener engagement."
+    answer: "By default, Gruvi creates songs around 2-3 minutes in length - perfect for streaming and social media. Premium users can control the exact length up to 3 minutes.",
+    detailedAnswer: "Song duration options vary by plan:\n\n**Default Length:**\n- 2-3 minutes: Ideal for streaming platforms, social media, and general use\n\n**Premium Duration Control:**\n- Choose your exact song length up to 3 minutes\n- Perfect for matching specific video lengths\n- Great for content that needs precise timing\n\n**Short Form:**\n- 30-60 seconds: Perfect for TikTok, Instagram Reels, YouTube Shorts, ads, and intros\n\nMost songs are optimized for modern streaming, where 2-3 minutes is the sweet spot for listener engagement."
   },
   {
     category: "Music Creation",
@@ -105,14 +105,14 @@ export const faqItems = [
   {
     category: "Music Videos",
     question: "How do I create AI music videos?",
-    answer: "After generating a song, select 'Create Video' and choose from 16 art styles including anime, 3D cartoon, cinematic, and more. Upload character or product references if desired, then generate.",
-    detailedAnswer: "Creating music videos with Gruvi is seamless:\n\n**Step 1: Generate Your Song**\nStart by creating your AI-generated track, or use your own music\n\n**Step 2: Choose Your Art Style**\nSelect from 16 distinct visual styles:\n- Cinematic (film-quality visuals)\n- Anime/Animation\n- 3D Cartoon (Pixar-style)\n- Photorealistic\n- Watercolor\n- Pixel Art\n- Cyberpunk\n- And 9 more!\n\n**Step 3: Add Characters, Products, or Places (Optional)**\n- Upload reference images of people to star in your video\n- Add product photos for promotional videos\n- Upload property photos for Airbnb/hotel videos\n\n**Step 4: Generate**\nOur AI creates a fully animated music video synchronized to your song, with dynamic scenes, camera movements, and professional transitions.\n\n**Video Formats:**\n- **Portrait (9:16):** Perfect for TikTok, Instagram Reels, YouTube Shorts\n- **Landscape (16:9):** Ideal for YouTube, presentations, websites"
+    answer: "After generating a song, select 'Create Video' and choose from 15 art styles including Animation, 3D Cartoon, Realistic, and more. Upload character or product references if desired, then generate.",
+    detailedAnswer: "Creating music videos with Gruvi is seamless:\n\n**Step 1: Generate Your Song**\nStart by creating your AI-generated track, or use your own music\n\n**Step 2: Choose Your Art Style**\nSelect from 15 distinct visual styles:\n- 3D Cartoon (Pixar-style)\n- Animation (Anime)\n- Realistic\n- Claymation\n- Comic Book\n- Watercolor\n- 2D Game (Pixel)\n- And 8 more!\n\n**Step 3: Add Characters, Products, or Places (Optional)**\n- Upload reference images of people to star in your video\n- Add product photos for promotional videos\n- Upload property photos for Airbnb/hotel videos\n\n**Step 4: Generate**\nOur AI creates a fully animated music video synchronized to your song, with dynamic scenes, camera movements, and professional transitions.\n\n**Video Formats:**\n- **Portrait (9:16):** Perfect for TikTok, Instagram Reels, YouTube Shorts\n- **Landscape (16:9):** Ideal for YouTube, presentations, websites"
   },
   {
     category: "Music Videos",
     question: "What art styles are available for music videos?",
-    answer: "Choose from 16 styles: 3D Cartoon, Anime, Photorealistic, Watercolor, Pixel Art, Cyberpunk, Comic Book, Claymation, Oil Painting, Sketch, Minimalist, and more.",
-    detailedAnswer: "Our 16 art styles cover every aesthetic:\n\n**Animation Styles:**\n- 3D Cartoon (Pixar-like)\n- Anime/Manga\n- 2D Classic Animation\n- Claymation/Stop Motion\n\n**Artistic Styles:**\n- Watercolor\n- Oil Painting\n- Sketch/Pencil\n- Comic Book/Graphic Novel\n\n**Modern/Digital:**\n- Cyberpunk/Neon\n- Pixel Art/8-Bit\n- Vaporwave/Retro\n- Minimalist/Abstract\n\n**Realistic:**\n- Photorealistic\n- Cinematic\n- Film Noir\n- Vintage/Retro\n\nEach style is optimized to create stunning visuals that match your music's mood and genre."
+    answer: "Choose from 15 styles: 3D Cartoon, Animation, Realistic, Claymation, Comic Book, Watercolor, 2D Game, B&W Sketch, Children's Book, Origami, and more.",
+    detailedAnswer: "Our 15 art styles cover every aesthetic:\n\n**Animation Styles:**\n- 3D Cartoon (Pixar-like)\n- Animation (Anime)\n- Claymation\n- 2D Game (Pixel Art)\n\n**Artistic Styles:**\n- Watercolor\n- B&W Sketch\n- Spray Paint\n- Crayon\n- Comic Book\n\n**Creative Styles:**\n- Children's Book\n- Origami\n- Cozy Woolknit\n- Sugarpop\n- Classic Blocks\n\n**Realistic:**\n- Realistic (Photorealistic)\n\nEach style is optimized to create stunning visuals that match your music's mood and genre."
   },
   {
     category: "Music Videos",
@@ -123,8 +123,8 @@ export const faqItems = [
   {
     category: "Music Videos",
     question: "What's the difference between still image and cinematic videos?",
-    answer: "Still image videos feature a single scene with subtle motion (100 tokens), while cinematic videos include full AI-generated motion, scene changes, and professional effects (1,000 tokens).",
-    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (100 tokens):**\n- Single beautiful scene\n- Subtle motion effects (parallax, particles)\n- Faster to generate\n- More affordable\n- Great for lyric videos, social posts\n\n**Cinematic Videos (1,000 tokens):**\n- Multiple scenes and transitions\n- Full AI-generated motion\n- Dynamic camera movements\n- Scene changes matching the music\n- Professional music video quality\n- Mix of Seedance & Kling AI models\n\n**When to Use Each:**\n- **Still:** Social media clips, quick content, testing ideas\n- **Cinematic:** Professional releases, YouTube, presentations"
+    answer: "Still image videos use beautiful static images - perfect for storytelling and storybook-style content (200 tokens flat). Cinematic videos feature actual video footage with dynamic camera angles, lip sync, and motion (50 tokens per 10 seconds based on audio length).",
+    detailedAnswer: "Choose the video type that fits your needs:\n\n**Still Image Videos (200 tokens flat):**\n- Video with still images and smooth transitions\n- Perfect for storytelling and storybook-style content\n- Great when movement isn't needed\n- Faster to generate\n- Ideal for lyric videos, story content, social posts\n\n**Cinematic Videos (50 tokens per 10 seconds):**\n- Actual video footage in your video\n- Dynamic camera angles and movements\n- Lip sync for characters\n- Full motion and animation\n- Professional music video quality\n- Price based on audio duration\n\n**When to Use Each:**\n- **Still:** Storybook content, lyric videos, narration-focused content, testing ideas\n- **Cinematic:** Professional releases, YouTube, presentations, character-focused videos"
   },
 
   // ============================================
@@ -161,8 +161,8 @@ export const faqItems = [
   {
     category: "Licensing",
     question: "Can I use Gruvi music commercially?",
-    answer: "Yes! Pro and Premium subscribers get a full commercial license. Use your music for YouTube, TikTok, podcasts, games, films, and any commercial project royalty-free.",
-    detailedAnswer: "Commercial licensing is one of Gruvi's standout features:\n\n**What's Included (Pro/Premium):**\n- Full commercial license for all generated music\n- Use in YouTube videos, TikTok, Instagram, all platforms\n- Include in podcasts, games, films, advertisements\n- Stream on Spotify, Apple Music, and other platforms\n- No royalty payments ever\n- No attribution required\n- Monetize your content freely\n\n**What You Can Do:**\n- Release songs commercially as an artist\n- Use as background music in content\n- Create jingles and ads\n- License to others (Premium)\n- Build a music catalog"
+    answer: "Yes! Scale and Content Engine subscribers get a full commercial license. Use your music for YouTube, TikTok, podcasts, games, films, and any commercial project royalty-free.",
+    detailedAnswer: "Commercial licensing is one of Gruvi's standout features:\n\n**What's Included (Scale/Content Engine):**\n- Full commercial license for all generated music\n- Use in YouTube videos, TikTok, Instagram, all platforms\n- Include in podcasts, games, films, advertisements\n- Stream on Spotify, Apple Music, and other platforms\n- No royalty payments ever\n- No attribution required\n- Monetize your content freely\n\n**What You Can Do:**\n- Release songs commercially as an artist\n- Use as background music in content\n- Create jingles and ads\n- License to others (Premium)\n- Build a music catalog"
   },
   {
     category: "Licensing",
@@ -173,8 +173,8 @@ export const faqItems = [
   {
     category: "Licensing",
     question: "Can I upload AI music to Spotify and streaming platforms?",
-    answer: "Yes! Pro and Premium users can distribute their AI-generated music to Spotify, Apple Music, and all major streaming platforms. The music is yours to release.",
-    detailedAnswer: "Distribute your AI music anywhere:\n\n**Supported Platforms:**\n- Spotify\n- Apple Music\n- Amazon Music\n- YouTube Music\n- Tidal\n- Deezer\n- SoundCloud\n- Bandcamp\n- All major streaming services\n\n**How to Distribute:**\n1. Download your songs from Gruvi\n2. Use a distribution service (DistroKid, TuneCore, etc.)\n3. Upload and release\n4. Keep 100% of your royalties\n\n**Requirements:**\n- Pro or Premium subscription\n- Download high-quality audio\n- Your name as the artist"
+    answer: "Yes! Download your songs from Gruvi and use a distribution service like DistroKid to release on Spotify, Apple Music, and all major streaming platforms.",
+    detailedAnswer: "Release your AI music anywhere:\n\n**How It Works:**\nGruvi doesn't distribute music directly. You download your songs and use a third-party distribution service to release them.\n\n**Popular Distribution Services:**\n- DistroKid (recommended)\n- TuneCore\n- CD Baby\n- Amuse\n- UnitedMasters\n\n**Supported Platforms (via distributors):**\n- Spotify\n- Apple Music\n- Amazon Music\n- YouTube Music\n- Tidal\n- Deezer\n- SoundCloud\n- And 150+ more\n\n**Steps to Release:**\n1. Generate and download your song from Gruvi\n2. Sign up for a distribution service\n3. Upload your track and artwork\n4. Release and keep 100% of your royalties"
   },
   {
     category: "Licensing",
@@ -189,14 +189,14 @@ export const faqItems = [
   {
     category: "Pricing",
     question: "How does Gruvi's pricing work?",
-    answer: "Gruvi offers three plans: Starter ($9.99/mo), Pro ($39.99/mo), and Premium ($79.99/mo). Each includes monthly tokens for creating songs and cinematic videos, plus commercial licensing.",
-    detailedAnswer: "Our pricing is designed to fit every creator:\n\n**Starter - $9.99/month**\n- 1,000 tokens (~50 songs or 1 cinematic video)\n- Standard audio quality\n- Commercial license\n- Perfect for hobbyists\n\n**Pro - $39.99/month**\n- 5,000 tokens (~250 songs or 5 cinematic videos)\n- High-quality audio\n- Full commercial license\n- Best for content creators\n\n**Premium - $79.99/month**\n- 10,000 tokens (~500 songs or 10 cinematic videos)\n- Highest-quality audio\n- Priority generation\n- Priority support\n- Best for professionals\n\n**Annual Plans:** Save 10% with yearly billing!"
+    answer: "Gruvi offers three plans: Starter ($29/mo yearly), Scale ($69/mo yearly), and Content Engine ($149/mo yearly). Each includes monthly tokens for creating songs and cinematic videos, plus commercial licensing.",
+    detailedAnswer: "Our pricing is designed to fit every creator:\n\n**Starter - $29/month (yearly) or $39/month**\n- 5,000 tokens/month\n- Standard audio quality\n- Commercial license\n- Perfect for getting started\n\n**Scale - $69/month (yearly) or $99/month**\n- 20,000 tokens/month\n- High-quality audio\n- Full commercial license\n- Best for content creators\n\n**Content Engine - $149/month (yearly) or $199/month**\n- 50,000 tokens/month\n- Highest-quality audio\n- Priority generation\n- Priority support\n- Best for professionals and agencies\n\n**Annual Plans:** Save up to 30% with yearly billing!"
   },
   {
     category: "Pricing",
     question: "How does the token system work?",
-    answer: "Tokens are used to generate content: 1 song = 20 tokens, still image video = 100 tokens, cinematic video = 1,000 tokens. Tokens reset monthly with your subscription.",
-    detailedAnswer: "Understanding tokens:\n\n**Token Costs:**\n- **1 Song:** 20 tokens\n- **Still Image Video:** 100 tokens\n- **Cinematic Video:** 1,000 tokens\n- **Regeneration:** Same cost as original\n\n**Monthly Allowances:**\n- Starter: 1,000 tokens\n- Pro: 5,000 tokens\n- Premium: 10,000 tokens\n\n**Token Math Examples:**\n- 1,000 tokens = 50 songs OR 10 still videos OR 1 cinematic video\n- 5,000 tokens = 250 songs OR 50 still videos OR 5 cinematic videos\n- Mix and match based on your needs\n\n**Tips:**\n- Tokens reset at billing cycle start\n- Unused tokens don't roll over\n- Top-up bundles available: 1K ($12.99), 5K ($49.99), 10K ($89.99)"
+    answer: "Tokens are used to generate content: 1 song = 25-50 tokens, still image video = 200 tokens, cinematic video = 50 tokens per second, AI voiceover = 25 tokens, motion capture = 50 tokens per second. Tokens reset monthly with your subscription.",
+    detailedAnswer: "Understanding tokens:\n\n**Token Costs:**\n- **Short Song (~30-90s):** 25 tokens\n- **Standard Song (~1.5-3min):** 50 tokens\n- **Still Image Video:** 200 tokens flat\n- **Cinematic Video:** 50 tokens per second (based on audio length)\n- **AI Voiceover:** 25 tokens\n- **Motion Capture/Character Swap:** 50 tokens per second\n- **Regeneration:** Same cost as original\n\n**Monthly Allowances:**\n- Starter: 5,000 tokens\n- Scale: 20,000 tokens\n- Content Engine: 50,000 tokens\n\n**Token Math Examples:**\n- 5,000 tokens = ~200 songs OR ~25 still videos OR ~200 voiceovers\n- 20,000 tokens = ~800 songs OR ~100 still videos OR ~800 voiceovers\n- Mix and match based on your needs\n\n**Tips:**\n- Tokens reset at billing cycle start\n- Unused tokens don't roll over\n- Top-up bundles available for purchase"
   },
   {
     category: "Pricing",
@@ -246,19 +246,19 @@ export const faqItems = [
     category: "Quality",
     question: "What audio quality does Gruvi produce?",
     answer: "Gruvi produces professional-quality audio. Starter gets standard quality, Pro gets high quality, and Premium gets studio-grade audio suitable for commercial releases.",
-    detailedAnswer: "Audio quality by plan:\n\n**Starter Plan:**\n- Standard quality MP3\n- Good for personal use\n- Suitable for social media\n- Demo-quality output\n\n**Pro Plan:**\n- High-quality audio\n- Better bitrate and clarity\n- Great for YouTube and podcasts\n- Semi-professional standard\n\n**Premium Plan:**\n- Studio-grade quality\n- High-resolution audio\n- Streaming-platform ready\n- Professional release quality\n- Suitable for Spotify/Apple Music"
+    detailedAnswer: "Audio quality by plan:\n\n**Starter Plan:**\n- Standard quality MP3\n- Good for personal use\n- Suitable for social media\n- Demo-quality output\n\n**Scale Plan:**\n- High-quality audio\n- Better bitrate and clarity\n- Great for YouTube and podcasts\n- Semi-professional standard\n\n**Content Engine Plan:**\n- Studio-grade quality\n- High-resolution audio\n- Streaming-platform ready\n- Professional release quality\n- Suitable for Spotify/Apple Music"
   },
   {
     category: "Quality",
     question: "Can I download stems or separate tracks?",
     answer: "Premium subscribers can access stem separation - download separate vocal, instrumental, drum, and bass tracks for advanced mixing and production work.",
-    detailedAnswer: "Stem separation for professionals:\n\n**Available Stems:**\n- Vocals (isolated)\n- Instrumental (full backing)\n- Drums/Percussion\n- Bass\n- Other/Melodic elements\n\n**Use Cases:**\n- Custom mixing in your DAW\n- Creating remixes\n- Adjusting vocal levels\n- Extracting instrumentals\n- Professional post-production\n\n**How to Access:**\n- Premium plan required\n- Select 'Download Stems' option\n- Receive ZIP file with all tracks\n- Import into any DAW"
+    detailedAnswer: "Stem separation for professionals:\n\n**Available Stems:**\n- Vocals (isolated)\n- Instrumental (full backing)\n- Drums/Percussion\n- Bass\n- Other/Melodic elements\n\n**Use Cases:**\n- Custom mixing in your DAW\n- Creating remixes\n- Adjusting vocal levels\n- Extracting instrumentals\n- Professional post-production\n\n**How to Access:**\n- Content Engine plan required\n- Select 'Download Stems' option\n- Receive ZIP file with all tracks\n- Import into any DAW"
   },
   {
     category: "Quality",
     question: "How fast is AI music generation?",
-    answer: "Most songs generate in 15-30 seconds. Music videos take 1-3 minutes depending on complexity. Pro and Premium users get priority generation for faster results.",
-    detailedAnswer: "Generation speed breakdown:\n\n**Song Generation:**\n- Typical: 15-30 seconds\n- Complex prompts: Up to 1 minute\n- Priority queue (Pro/Premium): ~10 seconds\n\n**Video Generation:**\n- Still image: 1-2 minutes\n- Full animation: 2-5 minutes\n- With custom characters: +30 seconds\n\n**Factors Affecting Speed:**\n- Server load\n- Prompt complexity\n- Video style chosen\n- Subscription tier\n\n**Tips for Faster Results:**\n- Use clear, concise prompts\n- Generate during off-peak hours\n- Upgrade for priority access"
+    answer: "Most songs generate in 15-30 seconds. Music videos take 1-3 minutes depending on complexity. Scale and Content Engine users get priority generation for faster results.",
+    detailedAnswer: "Generation speed breakdown:\n\n**Song Generation:**\n- Typical: 15-30 seconds\n- Complex prompts: Up to 1 minute\n- Priority queue (Scale/Content Engine): ~10 seconds\n\n**Video Generation:**\n- Still image: 1-2 minutes\n- Full animation: 2-5 minutes\n- With custom characters: +30 seconds\n\n**Factors Affecting Speed:**\n- Server load\n- Prompt complexity\n- Video style chosen\n- Subscription tier\n\n**Tips for Faster Results:**\n- Use clear, concise prompts\n- Generate during off-peak hours\n- Upgrade for priority access"
   },
 
   // ============================================
@@ -284,9 +284,9 @@ export const faqItems = [
   },
   {
     category: "Motion Capture",
-    question: "What's the difference between Replace and Move modes?",
-    answer: "Replace mode keeps the background and only swaps the character. Move mode creates an entirely new scene with both new character AND new background. Use Replace for face swaps, Move for complete scene changes.",
-    detailedAnswer: "Understanding the two modes helps you get the right result:\n\n**Replace Mode:**\n- Keeps the original background/environment\n- Only the character changes\n- Best for: Face swaps, character transformations\n- Example: Person dancing in a room → Cartoon dancing in same room\n\n**Move Mode:**\n- Creates entirely new scene\n- Both character AND background change\n- Best for: Complete scene transformations\n- Example: Person dancing in room → Robot dancing on Mars\n\n**When to Use Each:**\n- **Replace:** You like the original setting, just want a different character\n- **Move:** You want to transport the motion to a completely different world\n\n**Pro Tip:** Replace mode often produces more stable results since the background stays consistent. Start with Replace if you're new to Motion Capture."
+    question: "What's the difference between the Motion Capture modes?",
+    answer: "Replace Character keeps the original background and swaps only the character. Replace Character + Environment creates an entirely new scene with both new character AND new background. Replace + Custom Prompt lets you describe your desired transformation in detail (videos must be 30 seconds or less).",
+    detailedAnswer: "Understanding the three modes helps you get the right result:\n\n**Replace Character:**\n- Keeps the original background/environment\n- Only the character changes\n- Best for: Face swaps, character transformations\n- Example: Person dancing in a room → Cartoon dancing in same room\n\n**Replace Character + Environment:**\n- Creates entirely new scene\n- Both character AND background change\n- Best for: Complete scene transformations\n- Example: Person dancing in room → Robot dancing on Mars\n\n**Replace + Custom Prompt:**\n- Describe exactly what you want in a text prompt\n- Maximum creative control\n- Limited to videos 30 seconds or less\n- Best for: Specific artistic visions\n\n**When to Use Each:**\n- **Replace Character:** You like the original setting, just want a different character\n- **Replace Character + Environment:** You want to transport the motion to a completely different world\n- **Replace + Custom Prompt:** You have a specific transformation in mind\n\n**Pro Tip:** Replace Character often produces more stable results since the background stays consistent. Start with Replace Character if you're new to Motion Capture."
   },
   {
     category: "Motion Capture",
@@ -337,8 +337,8 @@ export const faqItems = [
   {
     category: "AI Assets",
     question: "How many AI Assets can I create?",
-    answer: "All subscription plans include AI Asset creation. Starter allows 5 assets, Pro allows 20 assets, and Premium allows unlimited AI Assets. Delete unused assets to make room for new ones.",
-    detailedAnswer: "AI Asset limits by plan:\n\n**Starter Plan:**\n- 5 AI Assets\n- Great for personal use and basic branding\n\n**Pro Plan:**\n- 20 AI Assets\n- Ideal for content creators with multiple characters\n\n**Premium Plan:**\n- Unlimited AI Assets\n- Perfect for agencies and heavy users\n\n**Managing Your Assets:**\n- Delete unused assets to free up slots\n- You can always recreate deleted assets\n- Assets persist month to month\n\n**Pro Tip:** Create fewer, higher-quality assets with more reference images rather than many assets with few images each."
+    answer: "All subscription plans include AI Asset creation. Starter allows 5 assets, Scale allows 20 assets, and Content Engine allows unlimited AI Assets. Delete unused assets to make room for new ones.",
+    detailedAnswer: "AI Asset limits by plan:\n\n**Starter Plan:**\n- 5 AI Assets\n- Great for personal use and basic branding\n\n**Scale Plan:**\n- 20 AI Assets\n- Ideal for content creators with multiple characters\n\n**Content Engine Plan:**\n- Unlimited AI Assets\n- Perfect for agencies and heavy users\n\n**Managing Your Assets:**\n- Delete unused assets to free up slots\n- You can always recreate deleted assets\n- Assets persist month to month\n\n**Pro Tip:** Create fewer, higher-quality assets with more reference images rather than many assets with few images each."
   },
 
   // ============================================
@@ -348,7 +348,7 @@ export const faqItems = [
     category: "Voiceovers",
     question: "What are Voiceovers and how do I create them?",
     answer: "Voiceovers let you generate professional narration from text. Type or paste your script, choose a voice, and get studio-quality audio. Perfect for video narration, podcasts, and content without music.",
-    detailedAnswer: "Create professional voiceovers in seconds:\n\n**How It Works:**\n1. Go to Create Voiceover\n2. Type or paste your script\n3. Choose a voice from our library\n4. Click Generate\n5. Download your audio\n\n**Voice Options:**\n- Male and female voices\n- Different ages and styles\n- Multiple languages\n- Various accents\n\n**Use Cases:**\n- Video narration and explainers\n- Podcast intros/outros\n- Audiobook creation\n- Presentation voiceovers\n- Documentary-style content\n\n**Pricing:**\n- 20 tokens per 1000 characters\n- Much cheaper than music generation\n- Great for text-heavy content"
+    detailedAnswer: "Create professional voiceovers in seconds:\n\n**How It Works:**\n1. Go to Create Voiceover\n2. Type or paste your script\n3. Choose a voice from our library\n4. Click Generate\n5. Download your audio\n\n**Voice Options:**\n- Male and female voices\n- Different ages and styles\n- Multiple languages\n- Various accents\n\n**Use Cases:**\n- Video narration and explainers\n- Podcast intros/outros\n- Audiobook creation\n- Presentation voiceovers\n- Documentary-style content\n\n**Pricing:**\n- ~20 tokens per voiceover\n- Cost-effective for narration\n- Great for text-heavy content"
   },
   {
     category: "Voiceovers",
@@ -366,7 +366,7 @@ export const faqItems = [
     category: "Voiceovers",
     question: "What's the difference between Voiceovers and AI Music with vocals?",
     answer: "Voiceovers are spoken narration from text - perfect for presentations, explainers, and podcasts. AI Music with vocals is sung music with instruments - perfect for songs and entertainment content.",
-    detailedAnswer: "Understanding the difference:\n\n**Voiceovers (Narration):**\n- Spoken word, not sung\n- From your written script\n- No instruments or music\n- 20 tokens per 1000 characters\n- Use for: Explainers, podcasts, presentations\n\n**AI Music (Songs):**\n- Sung vocals with lyrics\n- Full musical arrangement\n- Complete song production\n- 20 tokens per song\n- Use for: Entertainment, music videos, social content\n\n**When to Use Each:**\n- **Voiceover:** You need someone to speak your exact words\n- **Music:** You want a song with emotional impact\n\n**Combine Them:**\n- Use voiceover for intro, then music for main content\n- Create educational videos with narration + background music\n- Mix narration with musical breaks"
+    detailedAnswer: "Understanding the difference:\n\n**Voiceovers (Narration):**\n- Spoken word, not sung\n- From your written script\n- No instruments or music\n- ~20 tokens per voiceover\n- Use for: Explainers, podcasts, presentations\n\n**AI Music (Songs):**\n- Sung vocals with lyrics\n- Full musical arrangement\n- Complete song production\n- 25-50 tokens per song\n- Use for: Entertainment, music videos, social content\n\n**When to Use Each:**\n- **Voiceover:** You need someone to speak your exact words\n- **Music:** You want a song with emotional impact\n\n**Combine Them:**\n- Use voiceover for intro, then music for main content\n- Create educational videos with narration + background music\n- Mix narration with musical breaks"
   },
 
   // ============================================
@@ -437,14 +437,14 @@ export const faqItems = [
   {
     category: "Comparison",
     question: "How is Gruvi different from other AI music generators?",
-    answer: "Gruvi combines music AND video generation in one platform. We offer 60+ genres, 24 languages, 16 video styles, and custom characters - all with commercial licensing.",
-    detailedAnswer: "What makes Gruvi unique:\n\n**All-in-One Platform:**\n- Music + video creation together\n- No need for multiple subscriptions\n- Seamless creative workflow\n\n**Creative Range:**\n- 60+ genres (more than competitors)\n- 24+ languages\n- 16 video art styles\n- Custom character support\n\n**Business Value:**\n- Full commercial licensing\n- No hidden royalty fees\n- Competitive pricing\n- Generous token allowances\n\n**Quality:**\n- State-of-the-art AI\n- Professional audio output\n- Stunning video production"
+    answer: "Gruvi combines music AND video generation in one platform. We offer 100+ genre and mood combinations, 24 languages, 15 art styles, and custom characters - all with commercial licensing.",
+    detailedAnswer: "What makes Gruvi unique:\n\n**All-in-One Platform:**\n- Music + video creation together\n- No need for multiple subscriptions\n- Seamless creative workflow\n\n**Creative Range:**\n- 100+ genre and mood combinations (more than competitors)\n- 24+ languages\n- 15 art styles\n- Custom character support\n\n**Business Value:**\n- Full commercial licensing\n- No hidden royalty fees\n- Competitive pricing\n- Generous token allowances\n\n**Quality:**\n- State-of-the-art AI\n- Professional audio output\n- Stunning video production"
   },
   {
     category: "Comparison",
     question: "Is Gruvi better than hiring a music producer?",
     answer: "Gruvi is faster and more affordable for quick projects. For complex productions, professional producers offer nuanced expertise. Many creators use both - Gruvi for rapid content, producers for major releases.",
-    detailedAnswer: "Gruvi vs. Traditional Production:\n\n**Gruvi Advantages:**\n- Instant results (seconds vs. weeks)\n- Much lower cost ($7-25/mo vs. $500+/song)\n- Unlimited iterations\n- No scheduling or communication delays\n- Available 24/7\n\n**Producer Advantages:**\n- Nuanced creative direction\n- Industry connections\n- Live instruments possible\n- Complex arrangements\n- Mixing/mastering expertise\n\n**Best of Both:**\n- Use Gruvi for demos and concepts\n- Rapid content creation\n- Reserve producers for major releases\n- Let Gruvi handle volume, producers handle flagship"
+    detailedAnswer: "Gruvi vs. Traditional Production:\n\n**Gruvi Advantages:**\n- Instant results (seconds vs. weeks)\n- Much lower cost ($29-149/mo vs. $500+/song)\n- Unlimited iterations\n- No scheduling or communication delays\n- Available 24/7\n\n**Producer Advantages:**\n- Nuanced creative direction\n- Industry connections\n- Live instruments possible\n- Complex arrangements\n- Mixing/mastering expertise\n\n**Best of Both:**\n- Use Gruvi for demos and concepts\n- Rapid content creation\n- Reserve producers for major releases\n- Let Gruvi handle volume, producers handle flagship"
   },
   {
     category: "Comparison",

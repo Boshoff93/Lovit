@@ -61,8 +61,8 @@ interface Character {
   imageUrls?: string[];
 }
 
-// Cost per 1000 characters
-const COST_PER_1000_CHARS = 20;
+// Flat cost per voiceover
+const VOICEOVER_COST = 25;
 // Story narratives: up to 5 AI assets of any type
 // UGC narratives: just 1 product/place/app (no character needed)
 const MAX_CAST_MEMBERS_STORY = 5;
@@ -207,8 +207,8 @@ const CreateNarrativePage: React.FC = () => {
     severity: 'info',
   });
 
-  // Calculate cost
-  const estimatedCost = Math.ceil(text.length / 1000) * COST_PER_1000_CHARS;
+  // Flat cost per voiceover
+  const estimatedCost = VOICEOVER_COST;
 
   // Derived state for characters
   const selectedCastMembers = characters.filter(c => selectedCharacterIds.includes(c.characterId));

@@ -58,8 +58,8 @@ const plans: PlanOption[] = [
     mascotImage: '/gruvi/gruvi-started.png',
     features: [
       'AI Music Videos',
-      'Cinematic Videos',
-      'AI Songs',
+      'AI Voiceovers',
+      'UGC Avatar Videos',
       'Commercial License',
     ],
   },
@@ -80,15 +80,15 @@ const plans: PlanOption[] = [
     mascotImage: '/gruvi/gruvi-scale.png',
     features: [
       'AI Music Videos',
-      'Cinematic Videos',
-      'AI Songs',
-      'Schedule Posts',
+      'AI Voiceovers',
+      'UGC Avatar Videos',
+      'Priority Generation',
     ],
     popular: true,
   },
   {
     id: 'beast',
-    name: 'Beast',
+    name: 'Content Engine',
     tagline: 'Flood the feed while the competition falls behind',
     monthlyPrice: 199,
     yearlyPrice: 149,
@@ -103,8 +103,8 @@ const plans: PlanOption[] = [
     mascotImage: '/gruvi/gruvi-beast.png',
     features: [
       'AI Music Videos',
-      'Cinematic Videos',
-      'AI Songs',
+      'AI Voiceovers',
+      'UGC Avatar Videos',
       'Dedicated Support',
     ],
   },
@@ -163,7 +163,8 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
           maxHeight: '90vh',
           p: 0,
           overflow: 'hidden',
-          background: '#fff',
+          background: '#1E1E22',
+          border: '1px solid rgba(255,255,255,0.1)',
         }
       }}
       sx={{
@@ -184,7 +185,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
         <Box sx={{
           flex: 1,
           p: { xs: 2.5, sm: 3 },
-          borderRight: { md: '1px solid rgba(0,0,0,0.08)' },
+          borderRight: { md: '1px solid rgba(255,255,255,0.08)' },
           overflow: 'auto',
         }}>
           {/* Header */}
@@ -221,14 +222,14 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 sx={{
                   fontWeight: 700,
                   fontSize: '1.25rem',
-                  color: '#141418',
+                  color: '#fff',
                 }}
               >
                 Choose Your Plan
               </Typography>
               <Typography
                 sx={{
-                  color: '#86868B',
+                  color: 'rgba(255,255,255,0.6)',
                   fontSize: '0.85rem',
                 }}
               >
@@ -252,14 +253,14 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                     alignItems: 'center',
                     p: 2,
                     borderRadius: '16px',
-                    border: isSelected ? `2px solid ${plan.borderColor}` : '2px solid rgba(0,0,0,0.06)',
-                    background: `linear-gradient(135deg, ${plan.bgColor} 0%, rgba(255,255,255,0.98) 60%, rgba(255,255,255,1) 100%)`,
+                    border: isSelected ? `2px solid ${plan.borderColor}` : '2px solid rgba(255,255,255,0.08)',
+                    background: isSelected ? plan.bgColor : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: isSelected ? `0 4px 20px ${plan.bgColor}` : 'none',
                     '&:hover': {
-                      borderColor: isSelected ? plan.borderColor : 'rgba(0,0,0,0.12)',
-                      boxShadow: `0 4px 20px ${plan.bgColor}`,
+                      borderColor: isSelected ? plan.borderColor : 'rgba(255,255,255,0.15)',
+                      background: isSelected ? plan.bgColor : 'rgba(255,255,255,0.05)',
                     },
                   }}
                 >
@@ -309,7 +310,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                     </Box>
                     <Typography
                       sx={{
-                        color: '#86868B',
+                        color: 'rgba(255,255,255,0.6)',
                         fontSize: '0.8rem',
                         lineHeight: 1.3,
                         mb: 0.75,
@@ -325,10 +326,10 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                       gap: 0.5,
                     }}>
                       <AddIcon sx={{ fontSize: 14, color: plan.borderColor }} />
-                      <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#141418' }}>
+                      <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>
                         {plan.tokens.toLocaleString()}
                       </Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>x</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>x</Typography>
                       <Box
                         component="img"
                         src="/gruvi/gruvi-coin.png"
@@ -339,7 +340,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                           objectFit: 'contain',
                         }}
                       />
-                      <Typography sx={{ fontSize: '0.75rem', color: '#86868B', ml: 0.25 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', ml: 0.25 }}>
                         tokens / month
                       </Typography>
                     </Box>
@@ -357,7 +358,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                     {plan.features.map((feature, idx) => (
                       <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <CheckCircleIcon sx={{ fontSize: 14, color: plan.borderColor }} />
-                        <Typography sx={{ fontSize: '0.75rem', color: '#555' }}>
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
                           {feature}
                         </Typography>
                       </Box>
@@ -370,13 +371,13 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                       sx={{
                         fontSize: '2rem',
                         fontWeight: 800,
-                        color: '#141418',
+                        color: '#fff',
                         lineHeight: 1,
                       }}
                     >
                       ${price}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#86868B' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
                       / month
                     </Typography>
                   </Box>
@@ -390,12 +391,12 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
         <Box sx={{
           width: { xs: '100%', md: 260 },
           p: { xs: 2.5, sm: 3 },
-          background: 'rgba(0,0,0,0.02)',
+          background: 'rgba(255,255,255,0.03)',
           display: 'flex',
           flexDirection: 'column',
         }}>
           {/* Billing Frequency */}
-          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#141418', mb: 2 }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff', mb: 2 }}>
             Billing Frequency
           </Typography>
 
@@ -409,10 +410,10 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 cursor: 'pointer',
               }}
             >
-              <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Monthly</Typography>
+              <Typography sx={{ fontSize: '0.9rem', color: '#fff' }}>Monthly</Typography>
               <Radio
                 checked={!isYearly}
-                sx={{ color: '#D1D1D6', '&.Mui-checked': { color: '#007AFF' } }}
+                sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }}
               />
             </Box>
             <Box
@@ -425,7 +426,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Annually</Typography>
+                <Typography sx={{ fontSize: '0.9rem', color: '#fff' }}>Annually</Typography>
                 <Box
                   sx={{
                     px: 1,
@@ -442,18 +443,18 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
               </Box>
               <Radio
                 checked={isYearly}
-                sx={{ color: '#D1D1D6', '&.Mui-checked': { color: '#007AFF' } }}
+                sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }}
               />
             </Box>
           </Box>
 
           {/* Divider */}
-          <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+          <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.08)', my: 2 }} />
 
           {/* Monthly Total */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography sx={{ fontSize: '0.9rem', color: '#141418' }}>Monthly total</Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#141418' }}>
+            <Typography sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Monthly total</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff' }}>
               ${currentPrice}
             </Typography>
           </Box>
@@ -479,8 +480,8 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
               },
               '&.Mui-disabled': {
-                background: 'rgba(0,0,0,0.1)',
-                color: 'rgba(0,0,0,0.3)',
+                background: 'rgba(255,255,255,0.1)',
+                color: 'rgba(255,255,255,0.3)',
               },
             }}
           >
@@ -495,7 +496,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
 
           {/* Trial info */}
           {!trialExpired && (
-            <Typography sx={{ color: '#86868B', fontSize: '0.75rem', textAlign: 'center', mt: 1.5 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', textAlign: 'center', mt: 1.5 }}>
               You won't be charged until {formattedTrialEnd}.
             </Typography>
           )}

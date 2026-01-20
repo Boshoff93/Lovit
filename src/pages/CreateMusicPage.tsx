@@ -261,8 +261,8 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
 };
 
 // Pricing constants
-const SONG_COST_SHORT = 20;      // Short tracks (~30-90s)
-const SONG_COST_STANDARD = 40;   // Standard tracks (~1.5-3min)
+const SONG_COST_SHORT = 25;      // Short tracks (~30-90s)
+const SONG_COST_STANDARD = 50;   // Standard tracks (~1.5-3min)
 const PREMIUM_COST_PER_30S = 50; // Premium tracks: 50 credits per 30 seconds
 
 // Premium duration options (in seconds)
@@ -1260,13 +1260,13 @@ const CreateMusicPage: React.FC = () => {
                   <TimerIcon sx={{ fontSize: 28, color: songLength === 'short' ? '#007AFF' : 'rgba(255,255,255,0.5)' }} />
                   <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: songLength === 'short' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Short</Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>~30-90 seconds</Typography>
-                  <Typography variant="body2" sx={{ color: songLength === 'short' ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>20 credits</Typography>
+                  <Typography variant="body2" sx={{ color: songLength === 'short' ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>25 credits</Typography>
                 </ToggleButton>
                 <ToggleButton value="standard" sx={{ flexDirection: 'column', gap: 0.5, py: 2 }}>
                   <MusicNoteIcon sx={{ fontSize: 28, color: songLength === 'standard' ? '#007AFF' : 'rgba(255,255,255,0.5)' }} />
                   <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: songLength === 'standard' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Standard</Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>~1.5-3 minutes</Typography>
-                  <Typography variant="body2" sx={{ color: songLength === 'standard' ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>40 credits</Typography>
+                  <Typography variant="body2" sx={{ color: songLength === 'standard' ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>50 credits</Typography>
                 </ToggleButton>
               </ToggleButtonGroup>
             </>

@@ -189,7 +189,7 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                   >
                     Feature
                   </TableCell>
-                  {['Starter', 'Scale', 'Beast Mode'].map((tier, index) => (
+                  {['Starter', 'Scale', 'Content Engine'].map((tier, index) => (
                     <TableCell
                       key={tier}
                       align="center"

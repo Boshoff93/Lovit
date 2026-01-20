@@ -580,16 +580,15 @@ const UploadPage: React.FC = () => {
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1.5, fontSize: '0.85rem' }}>
               Choose the format for your video
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
               <Box
                 onClick={() => setAspectRatio('portrait')}
                 sx={{
                   flex: 1,
-                  py: 2,
-                  px: 3,
+                  py: 1.5,
+                  px: 2,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
                   gap: 1.5,
                   cursor: 'pointer',
                   borderRadius: '12px',
@@ -610,24 +609,21 @@ const UploadPage: React.FC = () => {
                   borderColor: aspectRatio === 'portrait' ? '#007AFF' : 'rgba(255,255,255,0.5)',
                   flexShrink: 0
                 }} />
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff' }}>
-                    Portrait
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
-                    9:16
-                  </Typography>
-                </Box>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff' }}>
+                  Portrait
+                </Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+                  9:16
+                </Typography>
               </Box>
               <Box
                 onClick={() => setAspectRatio('landscape')}
                 sx={{
                   flex: 1,
-                  py: 2,
-                  px: 3,
+                  py: 1.5,
+                  px: 2,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
                   gap: 1.5,
                   cursor: 'pointer',
                   borderRadius: '12px',
@@ -648,14 +644,12 @@ const UploadPage: React.FC = () => {
                   borderColor: aspectRatio === 'landscape' ? '#007AFF' : 'rgba(255,255,255,0.5)',
                   flexShrink: 0
                 }} />
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff' }}>
-                    Landscape
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
-                    16:9
-                  </Typography>
-                </Box>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff' }}>
+                  Landscape
+                </Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+                  16:9
+                </Typography>
               </Box>
             </Box>
           </Box>

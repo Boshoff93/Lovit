@@ -33,7 +33,7 @@ const FeatureLockedModal: React.FC<FeatureLockedModalProps> = ({
   const plans = [
     { name: 'Starter', image: '/gruvi/gruvi-started.png' },
     { name: 'Scale', image: '/gruvi/gruvi-scale.png' },
-    { name: 'Beast', image: '/gruvi/gruvi-beast.png' },
+    { name: 'Content Engine', image: '/gruvi/gruvi-beast.png' },
   ];
 
   return (

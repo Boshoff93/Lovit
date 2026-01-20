@@ -425,14 +425,14 @@ const MyNarrativesPage: React.FC = () => {
               startIcon={<AddIcon />}
               onClick={() => navigate('/create/narrative')}
               sx={{
-                background: '#00D4AA',
+                background: '#007AFF',
                 borderRadius: '10px',
                 textTransform: 'none',
                 fontWeight: 600,
                 px: 2,
                 py: 0.75,
-                boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
-                '&:hover': { background: '#00B894' },
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': { background: '#0066DD' },
               }}
             >
               Create New
@@ -451,10 +451,10 @@ const MyNarrativesPage: React.FC = () => {
               sx={{
                 width: 44,
                 height: 44,
-                background: '#00D4AA',
+                background: '#007AFF',
                 color: '#fff',
-                boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
-                '&:hover': { background: '#00B894' },
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': { background: '#0066DD' },
               }}
             >
               <AddIcon sx={{ fontSize: 22 }} />

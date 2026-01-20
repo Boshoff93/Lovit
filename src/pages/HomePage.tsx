@@ -728,9 +728,9 @@ const languages = [
 // Subscription plans
 // Token-based pricing system
 // Token costs:
-// 1 Song = 20 tokens
-// 1 Still Image Video = 100 tokens
-// 1 Animated/Cinematic Video = 1,000 tokens
+// 1 Short Song = 25 tokens, 1 Standard Song = 50 tokens
+// 1 Still Image Video = 200 tokens
+// 1 Cinematic Video = 50 tokens per 10 seconds
 
 interface PricePlan {
   id: string;
@@ -760,10 +760,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     features: [
       '5,000 AI Media Tokens/month',
-      '~50 music promo videos',
-      '~5 cinematic music videos',
-      '~250 AI songs',
-      'AI Music Generation',
+      '~2 music videos',
+      '~5 avatar videos',
+      '~200 AI songs',
+      '~200 AI voiceovers',
+      '~2 character swap videos',
       'Commercial license',
     ],
     stripePrices: {
@@ -783,9 +784,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
     features: [
       '20,000 AI Media Tokens/month',
-      '~200 music promo videos',
-      '~20 cinematic music videos',
-      '~1,000 AI songs',
+      '~8 music videos',
+      '~20 avatar videos',
+      '~800 AI songs',
+      '~800 AI voiceovers',
+      '~8 character swap videos',
       'Priority generation',
       'Commercial license',
     ],
@@ -797,7 +800,7 @@ const plans: PricePlan[] = [
   },
   {
     id: 'beast',
-    title: 'Beast Mode',
+    title: 'Content Engine',
     tagline: 'Flood the feed while the competition falls behind',
     monthlyPrice: 199,
     yearlyPrice: 1788, // $149/mo × 12 (25% off)
@@ -805,9 +808,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
     features: [
       '50,000 AI Media Tokens/month',
-      '~500 music promo videos',
-      '~50 cinematic music videos',
-      '~2,500 AI songs',
+      '~20 music videos',
+      '~50 avatar videos',
+      '~2,000 AI songs',
+      '~2,000 AI voiceovers',
+      '~20 character swap videos',
       'Priority generation',
       'Dedicated support',
       'Commercial license',

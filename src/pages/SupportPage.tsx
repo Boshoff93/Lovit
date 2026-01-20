@@ -153,7 +153,7 @@ const SupportPage: React.FC = () => {
                   }
                 } : {
                   backgroundColor: 'rgba(255,255,255,0.08)',
-                  color: '#fff',
+                  color: '#fff !important',
                   '&:hover': {
                     backgroundColor: 'rgba(255,255,255,0.12)',
                   }
@@ -185,7 +185,7 @@ const SupportPage: React.FC = () => {
                     }
                   } : {
                     backgroundColor: 'rgba(255,255,255,0.08)',
-                    color: '#fff',
+                    color: '#fff !important',
                     '&:hover': {
                       backgroundColor: 'rgba(255,255,255,0.12)',
                     }

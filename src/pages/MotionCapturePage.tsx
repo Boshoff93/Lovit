@@ -108,8 +108,8 @@ const steps = ['Select Video', 'Swap Mode', 'Select Character', 'Voice (Optional
 // Swap mode types
 type SwapMode = 'wan-replace' | 'wan-move' | 'kling-motion';
 
-// Pricing: 50 tokens per 10 seconds (rounded up)
-const TOKENS_PER_10_SECONDS = 50;
+// Pricing: 50 tokens per second
+const TOKENS_PER_SECOND = 50;
 
 // Max video duration: 3 minutes (180 seconds)
 const MAX_VIDEO_DURATION_SECONDS = 180;
@@ -120,11 +120,10 @@ const MAX_KLING_DURATION_SECONDS = 30;
 // Voice change: 50 tokens per minute (rounded up)
 const VOICE_TOKENS_PER_MINUTE = 50;
 
-// Calculate video swap cost based on duration
+// Calculate video swap cost based on duration (50 tokens per second, rounded down to benefit user)
+// Backend will truncate videos slightly over thresholds (e.g., 60.05s -> 60s)
 const calculateSwapCost = (durationSeconds: number): number => {
-  // Round up to next 10 seconds
-  const roundedSeconds = Math.ceil(durationSeconds / 10) * 10;
-  return (roundedSeconds / 10) * TOKENS_PER_10_SECONDS;
+  return Math.floor(durationSeconds) * TOKENS_PER_SECOND;
 };
 
 // Calculate voice change cost based on duration (50 tokens per minute, rounded up)
@@ -1159,7 +1158,7 @@ const MotionCapturePage: React.FC = () => {
                     </Typography>
                   </Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', mb: 3 }}>
-                    Choose how you want to apply the character swap. Pricing: 50 tokens per 10 seconds of video (rounded up).
+                    Choose how you want to apply the character swap. Pricing: 50 tokens per second of video.
                   </Typography>
 
                   <Box sx={{ width: { xs: '100%', md: '50%' }, mb: 3 }}>
@@ -1216,7 +1215,7 @@ const MotionCapturePage: React.FC = () => {
                       </Typography>
                     </Box>
                     <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem' }}>
-                      50 tokens per 10 seconds of video (rounded up to next 10s).
+                      50 tokens per second of video.
                       {selectedVideo?.duration && (
                         <> Your {Math.round(selectedVideo.duration)}s video = <strong>{calculateSwapCost(selectedVideo.duration)} tokens</strong>.</>
                       )}

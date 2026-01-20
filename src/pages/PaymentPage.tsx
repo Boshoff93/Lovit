@@ -155,9 +155,9 @@ const SocialPlatformIcons: React.FC = () => (
 );
 
 // Token costs:
-// 1 Song = 20 tokens
-// 1 Still Image Video = 100 tokens
-// 1 Animated/Cinematic Video = 1,000 tokens
+// 1 Short Song = 25 tokens, 1 Standard Song = 50 tokens
+// 1 Still Image Video = 200 tokens
+// 1 Cinematic Video = 50 tokens per 10 seconds
 
 const plans: PricePlan[] = [
   {
@@ -170,10 +170,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     features: [
       '5,000 AI Media Tokens/month',
-      '~50 music promo videos',
-      '~5 cinematic music videos',
-      '~250 AI songs',
-      'AI Music Generation',
+      '~2 music videos',
+      '~5 avatar videos',
+      '~200 AI songs',
+      '~200 AI voiceovers',
+      '~2 character swap videos',
       'Commercial license',
     ],
     stripePrices: {
@@ -193,10 +194,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
     features: [
       '20,000 AI Media Tokens/month',
-      '~200 music promo videos',
-      '~20 cinematic music videos',
-      '~1,000 AI songs',
-      'AI Music Generation',
+      '~8 music videos',
+      '~20 avatar videos',
+      '~800 AI songs',
+      '~800 AI voiceovers',
+      '~8 character swap videos',
       'Priority generation',
       'Commercial license',
     ],
@@ -208,7 +210,7 @@ const plans: PricePlan[] = [
   },
   {
     id: 'beast',
-    title: 'Beast Mode',
+    title: 'Content Engine',
     tagline: 'Flood the feed while the competition falls behind',
     monthlyPrice: 199,
     yearlyPrice: 1788, // $149/mo × 12 (25% off)
@@ -216,10 +218,11 @@ const plans: PricePlan[] = [
     gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
     features: [
       '50,000 AI Media Tokens/month',
-      '~500 music promo videos',
-      '~50 cinematic music videos',
-      '~2,500 AI songs',
-      'AI Music Generation',
+      '~20 music videos',
+      '~50 avatar videos',
+      '~2,000 AI songs',
+      '~2,000 AI voiceovers',
+      '~20 character swap videos',
       'Priority generation',
       'Dedicated support',
       'Commercial license',
@@ -712,8 +715,8 @@ const PaymentPage: React.FC = () => {
       {/* SEO */}
       <SEO
         title="Gruvi Pricing & Plans | AI Music Promo Generator | Create & Publish Everywhere"
-        description="Choose the perfect Gruvi plan. Starter $29/mo (5,000 tokens), Scale $69/mo (20,000 tokens), or Beast $149/mo (50,000 tokens). Create AI music videos and publish to all social platforms. Save 25% with yearly billing."
-        keywords="Gruvi pricing, AI music promo generator, music video generator pricing, subscription plans, AI content creator, viral video maker, token pricing, Gruvi Scale, Gruvi Beast, commercial license"
+        description="Choose the perfect Gruvi plan. Starter $29/mo (5,000 tokens), Scale $69/mo (20,000 tokens), or Content Engine $149/mo (50,000 tokens). Create AI music videos and publish to all social platforms. Save 25% with yearly billing."
+        keywords="Gruvi pricing, AI music promo generator, music video generator pricing, subscription plans, AI content creator, viral video maker, token pricing, Gruvi Scale, Gruvi Content Engine, commercial license"
         ogTitle="Gruvi AI: The AI Music Promo Generator | Pricing & Plans"
         ogDescription="Create viral music promos with AI. Publish to YouTube, TikTok, Instagram & more. Plans from $29/mo with yearly savings."
         ogType="website"
@@ -902,7 +905,7 @@ const PaymentPage: React.FC = () => {
               </Box>
               <Box>
                 <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '1.1rem' }}>
-                  {subscription.tier === 'premium' ? 'Beast Mode' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} Plan
+                  {subscription.tier === 'premium' ? 'Content Engine' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} Plan
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                   {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0
@@ -1752,7 +1755,7 @@ const PaymentPage: React.FC = () => {
           {[
             {
               question: 'What are AI Media Tokens?',
-              answer: 'AI Media Tokens are the credits you use to generate content on Gruvi. Different types of content cost different amounts: AI songs cost ~20 tokens, still image promo videos cost ~100 tokens, and cinematic animated videos cost ~1,000 tokens. Your monthly tokens refresh at the start of each billing cycle.',
+              answer: 'AI Media Tokens are the credits you use to generate content on Gruvi. Different types of content cost different amounts: AI songs cost 25-50 tokens (short/standard), still image videos cost 200 tokens, and cinematic videos cost 50 tokens per 10 seconds based on audio length. Your monthly tokens refresh at the start of each billing cycle.',
             },
             {
               question: 'Can I cancel my subscription anytime?',

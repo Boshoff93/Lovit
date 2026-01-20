@@ -106,10 +106,11 @@ const plans: PricePlan[] = [
     badgeColor: '#3B82F6',
     icon: '/gruvi/gruvi-started.png',
     features: [
-      '~50 music promo videos',
-      '~5 cinematic music videos',
-      '~250 AI songs',
-      'AI Music Generation',
+      '~2 music videos ',
+      '~5 avatar videos',
+      '~200 AI songs',
+      '~200 AI voiceovers',
+      '~2 character swap videos',
       'Scheduled Posts',
       'Commercial license',
     ],
@@ -131,9 +132,11 @@ const plans: PricePlan[] = [
     badgeColor: '#EC4899',
     icon: '/gruvi/gruvi-scale.png',
     features: [
-      '~200 music promo videos',
-      '~20 cinematic music videos',
-      '~1,000 AI songs',
+      '~8 music videos ',
+      '~20 avatar videos',
+      '~800 AI songs',
+      '~800 AI voiceovers',
+      '~8 character swap videos',
       'Priority generation',
       'Scheduled Posts',
       'Commercial license',
@@ -146,7 +149,7 @@ const plans: PricePlan[] = [
   },
   {
     id: 'beast',
-    title: 'Beast',
+    title: 'Content Engine',
     tagline: 'Flood the feed while the competition falls behind',
     monthlyPrice: 199,
     yearlyPrice: 1788,
@@ -155,9 +158,12 @@ const plans: PricePlan[] = [
     badgeColor: '#F97316',
     icon: '/gruvi/gruvi-beast.png',
     features: [
-      '~500 music promo videos',
-      '~50 cinematic music videos',
-      '~2,500 AI songs',
+      '~20 music videos ',
+      '~50 avatar videos',
+      '~2,000 AI songs',
+      '~2,000 AI voiceovers',
+      '~20 character swap videos',
+      'Priority generation',
       'Dedicated support',
       'Scheduled Posts',
       'Commercial license',
@@ -374,7 +380,7 @@ const DashboardSubscriptionPage: React.FC = () => {
             />
             <Box>
               <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                Current Plan: {subscription.tier === 'premium' ? 'Beast' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
+                Current Plan: {subscription.tier === 'premium' ? 'Content Engine' : subscription.tier === 'pro' ? 'Scale' : subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)}
               </Typography>
               {subscription.currentPeriodEnd && subscription.currentPeriodEnd > 0 && (
                 <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.8rem', sm: '0.85rem' } }}>

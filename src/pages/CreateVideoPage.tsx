@@ -56,6 +56,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import CasinoIcon from '@mui/icons-material/Casino';
 import TimerIcon from '@mui/icons-material/Timer';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import GruviCoin from '../components/GruviCoin';
 import { useAudioPlayer, Song as AudioPlayerSong } from '../contexts/AudioPlayerContext';
 
@@ -221,10 +222,20 @@ const avatarDurationMarks = [
 const getAvatarTokenCost = (duration: number) => (duration / 5) * 50;
 
 // Video type options (DropdownOption format)
-// Token costs: Still image video = 40 tokens, Cinematic video = 1000 tokens
-const videoTypes: (DropdownOption & { credits: number; IconComponent: React.ElementType })[] = [
-  { id: 'still', label: 'Still Image', description: '40 credits', credits: 40, IconComponent: ImageIcon },
-  { id: 'standard', label: 'Cinematic', description: '1000 credits', credits: 1000, IconComponent: AnimationIcon },
+// Token costs: Still image video = 200 tokens flat, Cinematic video = 50 tokens per second
+const STILL_VIDEO_COST = 200;
+const CINEMATIC_TOKENS_PER_SECOND = 50;
+
+// Calculate cinematic video cost based on audio duration (50 tokens per second, rounded down to benefit user)
+// Backend will truncate audio slightly over thresholds (e.g., 60.05s -> 60s)
+const getCinematicCost = (audioDurationSeconds: number | undefined) => {
+  if (!audioDurationSeconds) return CINEMATIC_TOKENS_PER_SECOND * 10; // Default 10s = 500 tokens
+  return Math.floor(audioDurationSeconds) * CINEMATIC_TOKENS_PER_SECOND;
+};
+
+const videoTypes: (DropdownOption & { baseCredits: number; IconComponent: React.ElementType; tooltip: string })[] = [
+  { id: 'still', label: 'Still Image', description: '200 credits', baseCredits: STILL_VIDEO_COST, IconComponent: ImageIcon, tooltip: 'Video with still images. Perfect for storytelling and storybook-style videos where movement isn\'t needed.' },
+  { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. Price based on audio length (50 credits per second).' },
 ];
 
 // Aspect ratio options (DropdownOption format)
@@ -608,9 +619,28 @@ const CreateVideoPage: React.FC = () => {
     });
   };
 
+  // Get audio duration from selected song or narrative
+  const getAudioDuration = (): number | undefined => {
+    if (needsSong && selectedSongId) {
+      const song = songs.find(s => s.songId === selectedSongId);
+      return song?.actualDuration;
+    }
+    if (needsVoiceover && selectedNarrativeId) {
+      const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
+      // durationMs is in milliseconds, convert to seconds
+      return narrative?.durationMs ? narrative.durationMs / 1000 : undefined;
+    }
+    return undefined;
+  };
+
   // Get credits for selected video type
   const getCredits = () => {
-    return videoTypes.find(t => t.id === videoType)?.credits || 0;
+    if (videoType === 'still') {
+      return STILL_VIDEO_COST;
+    }
+    // Cinematic: 50 tokens per 10 seconds based on audio duration
+    const audioDuration = getAudioDuration();
+    return getCinematicCost(audioDuration);
   };
 
   const handleGenerate = async () => {
@@ -1446,9 +1476,32 @@ const CreateVideoPage: React.FC = () => {
 
               {/* Video Type */}
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                  Video Type
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.5 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                    Video Type
+                  </Typography>
+                  <Tooltip
+                    title="Still Image videos use AI-generated images with your audio. Cinematic videos use actual video footage with dynamic camera angles, lip sync, and motion - priced based on audio length."
+                    placement="top"
+                    arrow
+                    slotProps={{
+                      tooltip: {
+                        sx: {
+                          bgcolor: '#1E1E22',
+                          color: '#fff',
+                          fontSize: '0.8rem',
+                          maxWidth: 280,
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          '& .MuiTooltip-arrow': {
+                            color: '#1E1E22',
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.4)', cursor: 'help' }} />
+                  </Tooltip>
+                </Box>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
                   Choose between still images or cinematic video
                 </Typography>
@@ -1487,29 +1540,56 @@ const CreateVideoPage: React.FC = () => {
                     const isSelected = videoType === type.id;
                     // Disable "Still" for UGC with voiceover (UGC uses OmniHuman which requires cinematic)
                     const isDisabled = type.id === 'still' && isUgcVoiceover;
+                    // Calculate credits: Still is flat 200, Cinematic is based on audio duration
+                    const typeCredits = type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
+                    const creditsText = type.id === 'still'
+                      ? `${STILL_VIDEO_COST} credits`
+                      : getAudioDuration()
+                        ? `${typeCredits} credits`
+                        : '50 credits/10s';
                     return (
-                      <ToggleButton
+                      <Tooltip
                         key={type.id}
-                        value={type.id}
-                        disabled={isDisabled}
-                        sx={{
-                          flexDirection: 'column',
-                          gap: 0.5,
-                          py: 2,
-                          opacity: isDisabled ? 0.4 : 1,
-                          '&.Mui-disabled': {
-                            color: 'rgba(255,255,255,0.3)',
+                        title={type.tooltip}
+                        placement="top"
+                        arrow
+                        slotProps={{
+                          tooltip: {
+                            sx: {
+                              bgcolor: '#1E1E22',
+                              color: '#fff',
+                              fontSize: '0.8rem',
+                              maxWidth: 250,
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              '& .MuiTooltip-arrow': {
+                                color: '#1E1E22',
+                              },
+                            },
                           },
                         }}
                       >
-                        <TypeIcon sx={{ fontSize: 28, color: isDisabled ? 'rgba(255,255,255,0.3)' : isSelected ? '#007AFF' : 'rgba(255,255,255,0.5)' }} />
-                        <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: isDisabled ? 'rgba(255,255,255,0.3)' : isSelected ? '#fff' : 'rgba(255,255,255,0.7)' }}>
-                          {type.label}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: isDisabled ? 'rgba(255,255,255,0.2)' : isSelected ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>
-                          {isDisabled ? 'Not available for UGC' : `${type.credits} credits`}
-                        </Typography>
-                      </ToggleButton>
+                        <ToggleButton
+                          value={type.id}
+                          disabled={isDisabled}
+                          sx={{
+                            flexDirection: 'column',
+                            gap: 0.5,
+                            py: 2,
+                            opacity: isDisabled ? 0.4 : 1,
+                            '&.Mui-disabled': {
+                              color: 'rgba(255,255,255,0.3)',
+                            },
+                          }}
+                        >
+                          <TypeIcon sx={{ fontSize: 28, color: isDisabled ? 'rgba(255,255,255,0.3)' : isSelected ? '#007AFF' : 'rgba(255,255,255,0.5)' }} />
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: isDisabled ? 'rgba(255,255,255,0.3)' : isSelected ? '#fff' : 'rgba(255,255,255,0.7)' }}>
+                            {type.label}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: isDisabled ? 'rgba(255,255,255,0.2)' : isSelected ? '#5AC8FA' : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 600 }}>
+                            {isDisabled ? 'Not available for UGC' : creditsText}
+                          </Typography>
+                        </ToggleButton>
+                      </Tooltip>
                     );
                   })}
                 </ToggleButtonGroup>
