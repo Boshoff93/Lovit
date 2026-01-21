@@ -492,11 +492,11 @@ const CreateNarrativePage: React.FC = () => {
                 width: 56,
                 height: 56,
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #00D4AA 0%, #007AFF 100%)',
+                background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 8px 24px rgba(0, 212, 170, 0.3)',
+                boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
                 flexShrink: 0,
               }}
             >
@@ -540,13 +540,14 @@ const CreateNarrativePage: React.FC = () => {
             onClick={() => navigate('/my-narratives')}
             sx={{
               display: { xs: 'flex', sm: 'none' },
-              background: 'rgba(255,255,255,0.08)',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
               color: '#fff',
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: 'none',
               flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
               '&:hover': {
-                background: 'rgba(255,255,255,0.12)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'linear-gradient(135deg, #2563EB 0%, #0891B2 100%)',
+                boxShadow: '0 6px 16px rgba(59, 130, 246, 0.4)',
               },
             }}
           >

@@ -106,11 +106,11 @@ const plans: PricePlan[] = [
     badgeColor: '#3B82F6',
     icon: '/gruvi/gruvi-started.png',
     features: [
-      '~2 music videos ',
-      '~5 avatar videos',
-      '~200 AI songs',
-      '~200 AI voiceovers',
-      '~2 character swap videos',
+      'AI Music Videos',
+      'AI Avatar Videos',
+      'AI Songs',
+      'AI Voiceovers',
+      'Character Swap Videos',
       'Scheduled Posts',
       'Commercial license',
     ],
@@ -132,13 +132,13 @@ const plans: PricePlan[] = [
     badgeColor: '#EC4899',
     icon: '/gruvi/gruvi-scale.png',
     features: [
-      '~8 music videos ',
-      '~20 avatar videos',
-      '~800 AI songs',
-      '~800 AI voiceovers',
-      '~8 character swap videos',
-      'Priority generation',
+      'AI Music Videos',
+      'AI Avatar Videos',
+      'AI Songs',
+      'AI Voiceovers',
+      'Character Swap Videos',
       'Scheduled Posts',
+      'Priority generation',
       'Commercial license',
     ],
     stripePrices: {
@@ -158,14 +158,14 @@ const plans: PricePlan[] = [
     badgeColor: '#F97316',
     icon: '/gruvi/gruvi-beast.png',
     features: [
-      '~20 music videos ',
-      '~50 avatar videos',
-      '~2,000 AI songs',
-      '~2,000 AI voiceovers',
-      '~20 character swap videos',
+      'AI Music Videos',
+      'AI Avatar Videos',
+      'AI Songs',
+      'AI Voiceovers',
+      'Character Swap Videos',
+      'Scheduled Posts',
       'Priority generation',
       'Dedicated support',
-      'Scheduled Posts',
       'Commercial license',
     ],
     stripePrices: {
@@ -573,7 +573,7 @@ const DashboardSubscriptionPage: React.FC = () => {
 
                       {/* Features list */}
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 2 }}>
-                        {plan.features.slice(0, 6).map((feature, idx) => (
+                        {plan.features.map((feature, idx) => (
                           <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                             <CheckCircleIcon sx={{ fontSize: 14, color: plan.badgeColor }} />
                             <Typography sx={{ fontSize: '0.85rem', color: '#fff' }}>{feature}</Typography>
