@@ -125,7 +125,7 @@ const plans: PricePlan[] = [
     productId: stripeConfig.starter.productId
   },
   {
-    id: 'scale',
+    id: 'pro',
     title: 'Scale',
     tagline: 'Go viral while competitors are still planning',
     monthlyPrice: 99,
@@ -152,7 +152,7 @@ const plans: PricePlan[] = [
     productId: stripeConfig.scale.productId
   },
   {
-    id: 'beast',
+    id: 'premium',
     title: 'Content Engine',
     tagline: 'Flood the feed while the competition falls behind',
     monthlyPrice: 199,
@@ -204,8 +204,12 @@ const DashboardSubscriptionPage: React.FC = () => {
     ? Math.max(0, Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
 
+  console.log('RENDER - subscription:', subscription, 'selectedPlan:', selectedPlan);
+
   useEffect(() => {
+    console.log('useEffect running - tier:', subscription?.tier, 'selectedPlan:', selectedPlan);
     if (subscription?.tier && subscription.tier !== 'free' && !selectedPlan) {
+      console.log('Setting selectedPlan to:', subscription.tier);
       setSelectedPlan(subscription.tier);
     }
   }, [subscription, selectedPlan]);
@@ -230,11 +234,17 @@ const DashboardSubscriptionPage: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const successParam = params.get('success');
+    const subscriptionParam = params.get('subscription');
+    const topupParam = params.get('topup');
 
-    if (successParam === 'true') {
+    if (successParam === 'true' || subscriptionParam === 'true') {
       setSuccess('Payment successful! Your subscription has been updated.');
       window.history.replaceState({}, document.title, window.location.pathname);
-      fetchAccountData(true);
+      setTimeout(() => fetchAccountData(true), 2000);
+    } else if (topupParam === 'true') {
+      setSuccess('Top-up successful! Tokens have been added to your account.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => fetchAccountData(true), 2000);
     } else if (successParam === 'false') {
       setError('Payment was not completed. Please try again.');
       window.history.replaceState({}, document.title, window.location.pathname);
