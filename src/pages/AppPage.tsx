@@ -2677,12 +2677,11 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
             if (menuVideo) handleDeleteVideo(menuVideo);
             handleVideoMenuClose();
           }}
-          sx={{ color: '#FF3B30' }}
         >
           <ListItemIcon>
             <DeleteIcon sx={{ color: '#FF3B30' }} />
           </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ sx: { color: '#FF3B30' } }} />
+          <ListItemText primary="Delete" primaryTypographyProps={{ sx: { color: '#fff' } }} />
         </MenuItem>
       </Menu>
 
