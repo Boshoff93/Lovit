@@ -388,7 +388,10 @@ const CreateNarrativePage: React.FC = () => {
           setIsLoading(false);
           // Refresh tokens (refund)
           dispatch(fetchSubscription());
-          setPageError(narrative.errorMessage || 'Generation failed');
+          // Sanitize error message - never show raw API errors to users
+          const rawError = narrative.errorMessage || 'Generation failed';
+          const isApiError = rawError.includes('API error') || rawError.includes('x-api-key') || rawError.includes('authentication');
+          setPageError(isApiError ? 'Something went wrong. Please try again later.' : rawError);
         }
       } catch (error) {
         console.error('Polling error:', error);
@@ -1217,10 +1220,10 @@ const CreateNarrativePage: React.FC = () => {
             {currentNarrative.status === 'failed' && (
               <Box>
                 <Typography sx={{ color: '#FF4444', fontWeight: 600 }}>
-                  Generation Failed
+                  Oops, something went wrong
                 </Typography>
                 <Typography sx={{ color: 'rgba(255,255,255,0.6)', mt: 1 }}>
-                  {currentNarrative.errorMessage || 'An error occurred'}
+                  Please try again later.
                 </Typography>
               </Box>
             )}
