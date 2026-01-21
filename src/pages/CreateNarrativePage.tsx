@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { narrativesApi, charactersApi, Narrative } from '../services/api';
-import { getTokensFromAllowances, createCheckoutSession, fetchSubscription, setTokensRemaining } from '../store/authSlice';
+import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
@@ -178,7 +178,6 @@ const CreateNarrativePage: React.FC = () => {
   // UI state
   const [isLoading, setIsLoading] = useState(false);
   const [currentNarrative, setCurrentNarrative] = useState<Narrative | null>(null);
-  const [pollingInterval, setPollingIntervalState] = useState<NodeJS.Timeout | null>(null);
 
   // Error state - show at top of page
   const [pageError, setPageError] = useState<string | null>(null);
@@ -270,14 +269,11 @@ const CreateNarrativePage: React.FC = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
       if (audioRef.current) {
         audioRef.current.pause();
       }
     };
-  }, [pollingInterval]);
+  }, []);
 
   const handleVoiceSelect = (voiceId: string) => {
     const voice = VOICE_OPTIONS.find(v => v.id === voiceId);
@@ -338,15 +334,8 @@ const CreateNarrativePage: React.FC = () => {
       // Update local token count
       dispatch(setTokensRemaining(response.data.tokensRemaining));
 
-      // Start polling for status
-      const narrativeId = response.data.narrativeId;
-      startPolling(narrativeId);
-
-      setSnackbar({
-        open: true,
-        message: 'Generating audio...',
-        severity: 'info',
-      });
+      // Redirect to My Voiceovers page - generation will continue in background
+      navigate('/my-narratives');
     } catch (error: any) {
       console.error('Failed to create narrative:', error);
       setIsLoading(false);
@@ -361,44 +350,6 @@ const CreateNarrativePage: React.FC = () => {
         setPageError(error.response?.data?.error || 'Failed to generate audio');
       }
     }
-  };
-
-  const startPolling = (narrativeId: string) => {
-    if (!userId) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const response = await narrativesApi.getNarrative(userId, narrativeId);
-        const narrative = response.data;
-
-        setCurrentNarrative(narrative);
-
-        if (narrative.status === 'completed') {
-          clearInterval(interval);
-          setPollingIntervalState(null);
-          setIsLoading(false);
-          setSnackbar({
-            open: true,
-            message: 'Audio generated successfully!',
-            severity: 'success',
-          });
-        } else if (narrative.status === 'failed') {
-          clearInterval(interval);
-          setPollingIntervalState(null);
-          setIsLoading(false);
-          // Refresh tokens (refund)
-          dispatch(fetchSubscription());
-          // Sanitize error message - never show raw API errors to users
-          const rawError = narrative.errorMessage || 'Generation failed';
-          const isApiError = rawError.includes('API error') || rawError.includes('x-api-key') || rawError.includes('authentication');
-          setPageError(isApiError ? 'Something went wrong. Please try again later.' : rawError);
-        }
-      } catch (error) {
-        console.error('Polling error:', error);
-      }
-    }, 2000);
-
-    setPollingIntervalState(interval);
   };
 
   const handlePlayPause = () => {
