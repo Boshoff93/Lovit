@@ -143,16 +143,22 @@ interface Character {
   description?: string;
 }
 
-// Helper to get character type icon and color
-const getCharacterTypeIcon = (characterType?: string): { icon: React.ElementType; color: string } => {
+// Helper to get character type icon, color, and gradient background
+const getCharacterTypeStyle = (characterType?: string): { icon: React.ElementType; color: string; iconBg: string; label: string } => {
   switch (characterType) {
-    case 'Product': return { icon: InventoryIcon, color: '#34C759' };
-    case 'Place': return { icon: HomeIcon, color: '#AF52DE' };
-    case 'App': return { icon: PhoneIphoneIcon, color: '#5856D6' };
-    case 'Business': return { icon: BusinessIcon, color: '#FF3B30' };
-    case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' };
-    default: return { icon: PersonIcon, color: '#007AFF' };
+    case 'Product': return { icon: InventoryIcon, color: '#8B5CF6', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)', label: 'Products' };
+    case 'Place': return { icon: HomeIcon, color: '#22C55E', iconBg: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)', label: 'Places' };
+    case 'App': return { icon: PhoneIphoneIcon, color: '#EC4899', iconBg: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)', label: 'Software & Apps' };
+    case 'Business': return { icon: BusinessIcon, color: '#EAB308', iconBg: 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)', label: 'Businesses' };
+    case 'Non-Human': return { icon: PetsIcon, color: '#F97316', iconBg: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)', label: 'Non-Humans' };
+    default: return { icon: PersonIcon, color: '#3B82F6', iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', label: 'Humans' };
   }
+};
+
+// Backwards compatibility alias
+const getCharacterTypeIcon = (characterType?: string) => {
+  const style = getCharacterTypeStyle(characterType);
+  return { icon: style.icon, color: style.color };
 };
 
 // Character Avatar component that shows icon when no image
@@ -160,32 +166,34 @@ const CharacterAvatar: React.FC<{
   character: Character;
   size?: number;
   sx?: object;
-}> = ({ character, size = 40, sx = {} }) => {
+  square?: boolean;
+}> = ({ character, size = 40, sx = {}, square = false }) => {
   const hasImage = character.imageUrls && character.imageUrls.length > 0 && character.imageUrls[0];
 
   if (hasImage) {
     return (
       <Avatar
         src={character.imageUrls![0]}
-        sx={{ width: size, height: size, ...sx }}
+        sx={{ width: size, height: size, borderRadius: square ? '8px' : '50%', ...sx }}
+        variant={square ? 'rounded' : 'circular'}
       />
     );
   }
 
-  const { icon: IconComponent, color } = getCharacterTypeIcon(character.characterType);
+  const { icon: IconComponent, iconBg } = getCharacterTypeStyle(character.characterType);
   return (
     <Box sx={{
       width: size,
       height: size,
-      borderRadius: '50%',
+      borderRadius: square ? '8px' : '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: `${color}15`,
-      border: `2px solid ${color}30`,
+      background: iconBg,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
       ...sx
     }}>
-      <IconComponent sx={{ fontSize: size * 0.55, color }} />
+      <IconComponent sx={{ fontSize: size * 0.55, color: '#fff' }} />
     </Box>
   );
 };
@@ -814,7 +822,9 @@ const CreateMusicPage: React.FC = () => {
                     key={char.characterId}
                     label={char.characterName}
                     onDelete={() => {
-                      // Remove from prompt (case-insensitive)
+                      // Remove from selected characters
+                      setSelectedCharacterIds(prev => prev.filter(id => id !== char.characterId));
+                      // Also remove from prompt (case-insensitive)
                       const mentionPattern = new RegExp(`@${char.characterName}\\b`, 'gi');
                       setSongPrompt(prev => prev.replace(mentionPattern, '').replace(/\s+/g, ' ').trim());
                     }}
@@ -1733,6 +1743,7 @@ const CreateMusicPage: React.FC = () => {
           {characterTypeOrder.map((type) => {
             const chars = groupedCharacters[type];
             if (!chars || chars.length === 0) return null;
+            const typeStyle = getCharacterTypeStyle(type);
             return (
               <Box key={type}>
                 <Typography
@@ -1746,7 +1757,7 @@ const CreateMusicPage: React.FC = () => {
                     letterSpacing: '0.5px',
                   }}
                 >
-                  {type === 'Non-Human' ? 'Non-Humans' : type === 'Place' ? 'Places' : type + 's'}
+                  {typeStyle.label}
                 </Typography>
                 {chars.map((char) => {
                   const isSelected = selectedCharacterIds.includes(char.characterId);
@@ -1761,7 +1772,7 @@ const CreateMusicPage: React.FC = () => {
                         }}
                         disabled={isDisabled}
                         sx={{
-                          py: 1,
+                          py: 0.5,
                           px: 2,
                           background: isSelected ? 'rgba(0,122,255,0.15)' : 'transparent',
                           '&:hover': {
@@ -1772,11 +1783,21 @@ const CreateMusicPage: React.FC = () => {
                           },
                         }}
                       >
-                        <CharacterAvatar character={char} size={32} sx={{ mr: 1.5 }} />
+                        <CharacterAvatar character={char} size={28} square sx={{ mr: 1.5, flexShrink: 0 }} />
                         <ListItemText
                           primary={char.characterName}
+                          secondary={char.description || type}
                           primaryTypographyProps={{
                             sx: { fontWeight: 500, color: '#fff', fontSize: '0.9rem' }
+                          }}
+                          secondaryTypographyProps={{
+                            sx: {
+                              color: 'rgba(255,255,255,0.5)',
+                              fontSize: '0.75rem',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }
                           }}
                         />
                         {isSelected && <CheckIcon sx={{ color: '#007AFF', fontSize: 20 }} />}

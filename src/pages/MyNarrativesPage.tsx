@@ -44,6 +44,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import VideocamIcon from '@mui/icons-material/Videocam';
 import { GhostButton, GhostIconButton } from '../components/GhostButton';
 
 // Type options for filter
@@ -895,10 +896,10 @@ const MyNarrativesPage: React.FC = () => {
                       sx={{
                         width: { xs: 36, md: 40 },
                         height: { xs: 36, md: 40 },
-                        background: '#00D4AA',
+                        background: '#007AFF',
                         color: '#fff',
                         '&:hover': {
-                          background: '#00B894',
+                          background: '#0066DD',
                         },
                       }}
                     >
@@ -968,6 +969,18 @@ const MyNarrativesPage: React.FC = () => {
           },
         }}
       >
+        <MenuItem onClick={() => {
+          if (selectedNarrative) {
+            const videoType = selectedNarrative.narrativeType === 'story' ? 'story' : 'ugc-voiceover';
+            navigate(`/create/video?narrativeId=${selectedNarrative.narrativeId}&type=${videoType}`);
+          }
+          handleMenuClose();
+        }}>
+          <ListItemIcon>
+            <VideocamIcon sx={{ color: '#00D4AA' }} />
+          </ListItemIcon>
+          <ListItemText primary="Create Video" primaryTypographyProps={{ sx: { color: '#fff' } }} />
+        </MenuItem>
         <MenuItem onClick={handleDownload}>
           <ListItemIcon>
             <DownloadIcon sx={{ color: '#3B82F6' }} />

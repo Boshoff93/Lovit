@@ -68,42 +68,50 @@ const VOICEOVER_COST = 25;
 const MAX_CAST_MEMBERS_STORY = 5;
 const MAX_CAST_MEMBERS_UGC = 1;
 
-// Character type icons
-const characterTypeIcons: Record<string, React.ReactNode> = {
-  'Human': <PersonIcon sx={{ fontSize: 20 }} />,
-  'Non-Human': <PetsIcon sx={{ fontSize: 20 }} />,
-  'Product': <InventoryIcon sx={{ fontSize: 20 }} />,
-  'Place': <HomeIcon sx={{ fontSize: 20 }} />,
-  'App': <PhoneIphoneIcon sx={{ fontSize: 20 }} />,
-  'Business': <BusinessIcon sx={{ fontSize: 20 }} />,
+
+// Helper to get character type style with gradient
+const getCharacterTypeStyle = (characterType?: string): { icon: React.ElementType; color: string; iconBg: string; label: string } => {
+  switch (characterType) {
+    case 'Product': return { icon: InventoryIcon, color: '#8B5CF6', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)', label: 'Products' };
+    case 'Place': return { icon: HomeIcon, color: '#22C55E', iconBg: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)', label: 'Places' };
+    case 'App': return { icon: PhoneIphoneIcon, color: '#EC4899', iconBg: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)', label: 'Software & Apps' };
+    case 'Business': return { icon: BusinessIcon, color: '#EAB308', iconBg: 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)', label: 'Businesses' };
+    case 'Non-Human': return { icon: PetsIcon, color: '#F97316', iconBg: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)', label: 'Non-Humans' };
+    default: return { icon: PersonIcon, color: '#3B82F6', iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', label: 'Humans' };
+  }
 };
 
 // Character Avatar component
-const CharacterAvatar: React.FC<{ character: Character; size?: number; sx?: any }> = ({ character, size = 40, sx }) => {
+const CharacterAvatar: React.FC<{ character: Character; size?: number; sx?: any; square?: boolean }> = ({ character, size = 40, sx, square = false }) => {
   const hasImage = character.imageUrls && character.imageUrls.length > 0;
-  const type = character.characterType || 'Human';
 
   if (hasImage) {
     return (
       <Avatar
         src={character.imageUrls![0]}
-        sx={{ width: size, height: size, ...sx }}
+        sx={{ width: size, height: size, borderRadius: square ? '8px' : '50%', ...sx }}
+        variant={square ? 'rounded' : 'circular'}
       />
     );
   }
 
+  const { icon: IconComponent, iconBg } = getCharacterTypeStyle(character.characterType);
   return (
-    <Avatar
+    <Box
       sx={{
         width: size,
         height: size,
-        bgcolor: 'rgba(0,122,255,0.2)',
-        color: '#007AFF',
+        borderRadius: square ? '8px' : '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: iconBg,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
         ...sx
       }}
     >
-      {characterTypeIcons[type] || <PersonIcon sx={{ fontSize: size * 0.5 }} />}
-    </Avatar>
+      <IconComponent sx={{ fontSize: size * 0.5, color: '#fff' }} />
+    </Box>
   );
 };
 
@@ -1284,6 +1292,7 @@ const CreateNarrativePage: React.FC = () => {
             return allowedTypes.map((type) => {
               const typeCharacters = groupedCharacters[type];
               if (!typeCharacters || typeCharacters.length === 0) return null;
+              const typeStyle = getCharacterTypeStyle(type);
               return (
                 <Box key={type}>
                   <Typography
@@ -1298,7 +1307,7 @@ const CreateNarrativePage: React.FC = () => {
                       letterSpacing: '0.05em',
                     }}
                   >
-                    {type === 'Non-Human' ? 'Non-Humans' : type === 'Place' ? 'Places' : type + 's'}
+                    {typeStyle.label}
                   </Typography>
                   {typeCharacters.map((char) => {
                     const isSelected = selectedCharacterIds.includes(char.characterId);
@@ -1313,7 +1322,7 @@ const CreateNarrativePage: React.FC = () => {
                           }}
                           disabled={isDisabled}
                           sx={{
-                            py: 1.5,
+                            py: 0.5,
                             px: 2,
                             background: isSelected ? 'rgba(0, 122, 255, 0.15)' : 'transparent',
                             opacity: isDisabled ? 0.5 : 1,
@@ -1321,12 +1330,12 @@ const CreateNarrativePage: React.FC = () => {
                             '&:hover': { background: isDisabled ? 'transparent' : 'rgba(255,255,255,0.08)' },
                           }}
                         >
-                          <ListItemAvatar sx={{ minWidth: 44 }}>
-                            <CharacterAvatar character={char} size={32} />
+                          <ListItemAvatar sx={{ minWidth: 40, flexShrink: 0 }}>
+                            <CharacterAvatar character={char} size={28} square />
                           </ListItemAvatar>
                           <ListItemText
                             primary={char.characterName}
-                            secondary={char.description?.slice(0, 30) || type}
+                            secondary={char.description || type}
                             primaryTypographyProps={{
                               sx: { color: '#fff', fontWeight: 500, fontSize: '0.9rem' }
                             }}

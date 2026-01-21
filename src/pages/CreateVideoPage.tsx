@@ -27,7 +27,7 @@ import {
   Slider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import MovieIcon from '@mui/icons-material/Movie';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
@@ -244,16 +244,22 @@ const aspectRatios: (DropdownOption & { Icon: React.ElementType; ratio: string }
   { id: 'landscape', label: 'Landscape (16:9)', description: 'Best for TV & YouTube', Icon: TvIcon, ratio: '16:9' },
 ];
 
-// Helper to get character type icon and color
-const getCharacterTypeIcon = (characterType?: string): { icon: React.ElementType; color: string } => {
+// Helper to get character type icon, color, and gradient background
+const getCharacterTypeStyle = (characterType?: string): { icon: React.ElementType; color: string; iconBg: string; label: string } => {
   switch (characterType) {
-    case 'Product': return { icon: InventoryIcon, color: '#34C759' };
-    case 'Place': return { icon: HomeIcon, color: '#AF52DE' };
-    case 'App': return { icon: PhoneIphoneIcon, color: '#5856D6' };
-    case 'Business': return { icon: BusinessIcon, color: '#FF3B30' };
-    case 'Non-Human': return { icon: PetsIcon, color: '#FF9500' };
-    default: return { icon: PersonIcon, color: '#007AFF' };
+    case 'Product': return { icon: InventoryIcon, color: '#8B5CF6', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)', label: 'Products' };
+    case 'Place': return { icon: HomeIcon, color: '#22C55E', iconBg: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)', label: 'Places' };
+    case 'App': return { icon: PhoneIphoneIcon, color: '#EC4899', iconBg: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)', label: 'Software & Apps' };
+    case 'Business': return { icon: BusinessIcon, color: '#EAB308', iconBg: 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)', label: 'Businesses' };
+    case 'Non-Human': return { icon: PetsIcon, color: '#F97316', iconBg: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)', label: 'Non-Humans' };
+    default: return { icon: PersonIcon, color: '#3B82F6', iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', label: 'Humans' };
   }
+};
+
+// Backwards compatibility alias
+const getCharacterTypeIcon = (characterType?: string) => {
+  const style = getCharacterTypeStyle(characterType);
+  return { icon: style.icon, color: style.color };
 };
 
 // Character Avatar component that shows icon when no image
@@ -261,32 +267,34 @@ const CharacterAvatar: React.FC<{
   character: Character;
   size?: number;
   sx?: object;
-}> = ({ character, size = 40, sx = {} }) => {
+  square?: boolean;
+}> = ({ character, size = 40, sx = {}, square = false }) => {
   const hasImage = character.imageUrls && character.imageUrls.length > 0 && character.imageUrls[0];
 
   if (hasImage) {
     return (
       <Avatar
         src={character.imageUrls![0]}
-        sx={{ width: size, height: size, ...sx }}
+        sx={{ width: size, height: size, borderRadius: square ? '8px' : '50%', ...sx }}
+        variant={square ? 'rounded' : 'circular'}
       />
     );
   }
 
-  const { icon: IconComponent, color } = getCharacterTypeIcon(character.characterType);
+  const { icon: IconComponent, iconBg } = getCharacterTypeStyle(character.characterType);
   return (
     <Box sx={{
       width: size,
       height: size,
-      borderRadius: '50%',
+      borderRadius: square ? '8px' : '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: `${color}15`,
-      border: `2px solid ${color}30`,
+      background: iconBg,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
       ...sx
     }}>
-      <IconComponent sx={{ fontSize: size * 0.55, color }} />
+      <IconComponent sx={{ fontSize: size * 0.55, color: '#fff' }} />
     </Box>
   );
 };
@@ -357,10 +365,15 @@ const ScrollableListWrapper: React.FC<ScrollableListProps> = ({ children, maxHei
 
 const CreateVideoPage: React.FC = () => {
   const { songId: urlSongId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
   const { playSong, pauseSong, currentSong, isPlaying } = useAudioPlayer();
+
+  // Get URL params for preselecting narrative
+  const urlNarrativeId = searchParams.get('narrativeId');
+  const urlVideoType = searchParams.get('type') as 'story' | 'ugc-voiceover' | null;
 
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
@@ -599,6 +612,24 @@ const CreateVideoPage: React.FC = () => {
 
     fetchNarratives();
   }, [user?.userId]);
+
+  // Handle URL params for preselecting narrative and video type
+  useEffect(() => {
+    if (urlNarrativeId && narratives.length > 0) {
+      const narrative = narratives.find(n => n.narrativeId === urlNarrativeId);
+      if (narrative) {
+        setSelectedNarrativeId(urlNarrativeId);
+        // Set video content type based on URL param or narrative type
+        if (urlVideoType === 'story' || urlVideoType === 'ugc-voiceover') {
+          setVideoContentType(urlVideoType);
+        } else if (narrative.narrativeType === 'story') {
+          setVideoContentType('story');
+        } else if (narrative.narrativeType === 'ugc' || narrative.narrativeType === 'content') {
+          setVideoContentType('ugc-voiceover');
+        }
+      }
+    }
+  }, [urlNarrativeId, urlVideoType, narratives]);
 
   // Auto-select Cinematic video type when UGC with voiceover is selected (Still not supported for UGC)
   useEffect(() => {
@@ -2002,22 +2033,45 @@ const CreateVideoPage: React.FC = () => {
             characterTypeOrder.map((type) => {
               const typeCharacters = groupedCharacters[type];
               if (!typeCharacters || typeCharacters.length === 0) return null;
+              const typeStyle = getCharacterTypeStyle(type);
+              const TypeIcon = typeStyle.icon;
               return (
                 <Box key={type}>
-                  <Typography
+                  <Box
                     sx={{
-                      display: 'block',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
                       px: 2,
-                      py: 0.75,
-                      color: 'rgba(255,255,255,0.4)',
-                      fontWeight: 600,
-                      fontSize: '0.7rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      py: 1,
                     }}
                   >
-                    {type === 'Non-Human' ? 'Non-Humans' : type === 'Place' ? 'Places' : type + 's'}
-                  </Typography>
+                    <Box
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: typeStyle.iconBg,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      <TypeIcon sx={{ fontSize: 14, color: '#fff' }} />
+                    </Box>
+                    <Typography
+                      sx={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      {typeStyle.label}
+                    </Typography>
+                  </Box>
                   {typeCharacters.map((char) => {
                     const isSelected = selectedCharacterIds.includes(char.characterId);
                     const isDisabled = !isSelected && !canSelectCharacter(char);
@@ -2031,7 +2085,7 @@ const CreateVideoPage: React.FC = () => {
                           }}
                           disabled={isDisabled}
                           sx={{
-                            py: 1.5,
+                            py: 0.5,
                             px: 2,
                             background: isSelected ? 'rgba(0, 122, 255, 0.15)' : 'transparent',
                             opacity: isDisabled ? 0.5 : 1,
@@ -2039,12 +2093,12 @@ const CreateVideoPage: React.FC = () => {
                             '&:hover': { background: isDisabled ? 'transparent' : 'rgba(255,255,255,0.08)' },
                           }}
                         >
-                          <ListItemAvatar sx={{ minWidth: 44 }}>
-                            <CharacterAvatar character={char} size={32} />
+                          <ListItemAvatar sx={{ minWidth: 40, flexShrink: 0 }}>
+                            <CharacterAvatar character={char} size={28} square />
                           </ListItemAvatar>
                           <ListItemText
                             primary={char.characterName}
-                            secondary={char.description?.slice(0, 30) || type}
+                            secondary={char.description || type}
                             primaryTypographyProps={{
                               sx: { color: '#fff', fontWeight: 500, fontSize: '0.9rem' }
                             }}
