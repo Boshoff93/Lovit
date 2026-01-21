@@ -58,6 +58,7 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { videosApi } from '../services/api';
 import { useAccountData } from '../hooks/useAccountData';
 import { GhostButton, GhostIconButton } from '../components/GhostButton';
+import { VideoLoadingPlaceholder } from '../components/VideoLoadingPlaceholder';
 
 // Genre options for filter with images
 const genreOptions = [
@@ -374,26 +375,34 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         } : {},
       }}
     >
-      {/* Thumbnail Image - always visible as background, video overlays on top */}
-      <Box
-        component="img"
-        src={
-          video.status === 'completed'
-            ? (video.thumbnailUrl || (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg'))
-            : video.status === 'failed'
-              ? (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
-              : (video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg')
-        }
-        alt={video.songTitle || 'Music Video'}
-        sx={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
-        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-          e.currentTarget.src = video.aspectRatio === 'landscape' ? '/gruvi/octopus-landscape-wait.jpeg' : '/gruvi/octopus-portrait-wait.jpeg';
-        }}
-      />
+      {/* Thumbnail Image or Loading Placeholder */}
+      {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
+        <VideoLoadingPlaceholder
+          aspectRatio={video.aspectRatio as 'landscape' | 'portrait'}
+          progress={video.progress || 0}
+          message={video.progressMessage || 'Creating your video...'}
+          isQueued={video.status === 'queued'}
+          queuePosition={video.queuePosition}
+        />
+      ) : (
+        <Box
+          component="img"
+          src={
+            video.status === 'completed'
+              ? (video.thumbnailUrl || '/gruvi/gruvi-with-background.jpeg')
+              : (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
+          }
+          alt={video.songTitle || 'Music Video'}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+            e.currentTarget.src = '/gruvi/gruvi-with-background.jpeg';
+          }}
+        />
+      )}
 
       {/* Video Preview on Hover */}
       {video.status === 'completed' && videoUrlRef.current && isHovered && (
@@ -419,7 +428,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         />
       )}
 
-      {/* Info overlay at bottom */}
+      {/* Info overlay at bottom - only for completed/failed videos */}
+      {(video.status === 'completed' || video.status === 'failed') && (
       <Box
         sx={{
           position: 'absolute',
@@ -434,69 +444,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {video.songTitle || 'Music Video'}
         </Typography>
-        {(video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted') ? (
-          <Tooltip title={video.status === 'queued'
-            ? `Queued${video.queuePosition ? ` (position ${video.queuePosition})` : ''}`
-            : `${video.progress || 0}% - ${video.progressMessage || 'Creating your video...'}`
-          } arrow>
-            <Box
-              sx={{
-                position: 'relative',
-                height: 28,
-                width: '100%',
-                borderRadius: '100px',
-                background: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Progress fill with shimmer */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  width: video.status === 'queued' ? '100%' : `${video.progress || 0}%`,
-                  background: video.status === 'queued'
-                    ? 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 100%)'
-                    : 'linear-gradient(90deg, #10B981 0%, #34D399 100%)',
-                  transition: 'width 0.5s ease',
-                  animation: video.status === 'queued' ? 'shimmer 2s infinite' : 'none',
-                  '@keyframes shimmer': {
-                    '0%': { backgroundPosition: '-200% 0' },
-                    '100%': { backgroundPosition: '200% 0' },
-                  },
-                  backgroundSize: video.status === 'queued' ? '200% 100%' : '100% 100%',
-                }}
-              />
-              {/* Progress text */}
-              <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Typography sx={{
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  color: '#fff',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                }}>
-                  {video.status === 'queued'
-                    ? `In Queue${video.queuePosition ? ` (#${video.queuePosition})` : ''}`
-                    : `${video.progress || 0}%`
-                  }
-                </Typography>
-              </Box>
-            </Box>
-          </Tooltip>
-        ) : video.status === 'failed' ? (
+        {video.status === 'failed' ? (
           <Chip
             label="Failed"
             size="small"
@@ -527,6 +475,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
           />
         )}
       </Box>
+      )}
 
       {/* More Menu Button - Top right */}
       <IconButton
@@ -2566,7 +2515,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <ListItemIcon>
             <DeleteIcon sx={{ color: '#FF3B30' }} />
           </ListItemIcon>
-          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#FF3B30' } }}>Delete</ListItemText>
+          <ListItemText primary="Delete" primaryTypographyProps={{ sx: { color: '#FF3B30' } }} />
         </MenuItem>
       </Menu>
 
@@ -2733,7 +2682,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
           <ListItemIcon>
             <DeleteIcon sx={{ color: '#FF3B30' }} />
           </ListItemIcon>
-          <ListItemText sx={{ '& .MuiListItemText-primary': { color: '#FF3B30' } }}>Delete</ListItemText>
+          <ListItemText primary="Delete" primaryTypographyProps={{ sx: { color: '#FF3B30' } }} />
         </MenuItem>
       </Menu>
 

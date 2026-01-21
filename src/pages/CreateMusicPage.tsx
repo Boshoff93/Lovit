@@ -945,14 +945,14 @@ const CreateMusicPage: React.FC = () => {
                     },
                   }}
                 >
-                  <AutoAwesomeIcon className="auto-icon" sx={{ fontSize: 14, color: autoPickGenre ? '#fff' : '#007AFF', transition: 'color 0.2s ease' }} />
+                  <AutoAwesomeIcon className="auto-icon" sx={{ fontSize: 14, color: '#fff', transition: 'color 0.2s ease' }} />
                   <Box
                     component="span"
                     className="auto-text"
                     sx={{
                       fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: autoPickGenre ? '#fff' : '#007AFF',
+                      color: '#fff',
                       transition: 'color 0.2s ease',
                     }}
                   >
@@ -1023,14 +1023,14 @@ const CreateMusicPage: React.FC = () => {
                     },
                   }}
                 >
-                  <AutoAwesomeIcon className="auto-icon-mood" sx={{ fontSize: 14, color: autoPickMood ? '#fff' : '#007AFF', transition: 'color 0.2s ease' }} />
+                  <AutoAwesomeIcon className="auto-icon-mood" sx={{ fontSize: 14, color: '#fff', transition: 'color 0.2s ease' }} />
                   <Box
                     component="span"
                     className="auto-text-mood"
                     sx={{
                       fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: autoPickMood ? '#fff' : '#007AFF',
+                      color: '#fff',
                       transition: 'color 0.2s ease',
                     }}
                   >

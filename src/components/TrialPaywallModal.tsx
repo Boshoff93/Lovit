@@ -60,6 +60,8 @@ const plans: PlanOption[] = [
       'AI Music Videos',
       'AI Voiceovers',
       'UGC Avatar Videos',
+      'Character Swap Videos',
+      'Scheduled Posting',
       'Commercial License',
     ],
   },
@@ -82,6 +84,8 @@ const plans: PlanOption[] = [
       'AI Music Videos',
       'AI Voiceovers',
       'UGC Avatar Videos',
+      'Character Swap Videos',
+      'Scheduled Posting',
       'Priority Generation',
     ],
     popular: true,
@@ -105,6 +109,9 @@ const plans: PlanOption[] = [
       'AI Music Videos',
       'AI Voiceovers',
       'UGC Avatar Videos',
+      'Character Swap Videos',
+      'Scheduled Posting',
+      'Priority Generation',
       'Dedicated Support',
     ],
   },
@@ -152,7 +159,7 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
 
   return (
     <Dialog
-      open={open}
+      open={open || isLoading}
       disableEscapeKeyDown
       maxWidth={false}
       PaperProps={{
@@ -480,13 +487,13 @@ const TrialPaywallModal: React.FC<TrialPaywallModalProps> = ({ open, trialExpire
                 boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
               },
               '&.Mui-disabled': {
-                background: 'rgba(255,255,255,0.1)',
-                color: 'rgba(255,255,255,0.3)',
+                background: isLoading ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' : 'rgba(255,255,255,0.1)',
+                color: isLoading ? '#fff' : 'rgba(255,255,255,0.3)',
               },
             }}
           >
             {isLoading ? (
-              <CircularProgress size={18} sx={{ color: '#fff' }} />
+              <CircularProgress size={20} sx={{ color: '#fff' }} />
             ) : trialExpired ? (
               <>Subscribe Now &nbsp;›</>
             ) : (
