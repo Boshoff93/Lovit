@@ -4247,7 +4247,7 @@ const MusicVideoPlayer: React.FC = () => {
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
+        <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, lineHeight: 1.6 }}>
           Your video has been scheduled and will be automatically posted at the scheduled time. Would you like to view your scheduled posts?
         </Typography>
 
@@ -4255,15 +4255,19 @@ const MusicVideoPlayer: React.FC = () => {
           <Button
             onClick={() => setShowScheduleSuccessDialog(false)}
             fullWidth
+            variant="outlined"
             sx={{
-              borderRadius: '100px',
+              borderRadius: '10px',
               textTransform: 'none',
               fontWeight: 600,
               py: 1.5,
               fontSize: '1rem',
               color: '#fff',
-              border: '1px solid rgba(255,255,255,0.15)',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
+              borderColor: 'rgba(255,255,255,0.2)',
+              '&:hover': {
+                borderColor: 'rgba(255,255,255,0.4)',
+                bgcolor: 'rgba(255,255,255,0.05)',
+              },
             }}
           >
             Maybe Later
@@ -4282,11 +4286,12 @@ const MusicVideoPlayer: React.FC = () => {
             variant="contained"
             sx={{
               bgcolor: '#007AFF',
-              borderRadius: '100px',
+              borderRadius: '10px',
               textTransform: 'none',
               fontWeight: 600,
               py: 1.5,
               fontSize: '1rem',
+              color: '#fff',
               boxShadow: 'none',
               '&:hover': { bgcolor: '#0066DD', boxShadow: 'none' },
             }}
