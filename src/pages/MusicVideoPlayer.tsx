@@ -3080,12 +3080,20 @@ const MusicVideoPlayer: React.FC = () => {
                 </Alert>
               )}
 
-              {/* Video duration warning */}
-              {tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec && (
-                <Alert severity="warning" sx={{ mb: 2, borderRadius: '10px' }}>
-                  Your video ({Math.round(videoData.durationSeconds)}s) exceeds TikTok's maximum duration ({tiktokCreatorInfo.maxVideoPostDurationSec}s). Please use a shorter video.
-                </Alert>
-              )}
+              {/* Video duration info/warning */}
+              {tiktokCreatorInfo && (videoData?.durationSeconds || displayDuration) && (() => {
+                const videoDuration = videoData?.durationSeconds || displayDuration || 0;
+                const maxDuration = tiktokCreatorInfo.maxVideoPostDurationSec;
+                const exceeds = videoDuration > maxDuration;
+                return (
+                  <Alert severity={exceeds ? 'warning' : 'info'} sx={{ mb: 2, borderRadius: '10px' }}>
+                    {exceeds
+                      ? `Your video (${Math.round(videoDuration)}s) exceeds TikTok's maximum duration (${maxDuration}s). Please use a shorter video.`
+                      : `Video duration: ${Math.round(videoDuration)}s (max ${maxDuration}s allowed)`
+                    }
+                  </Alert>
+                );
+              })()}
 
               {/* Post Mode Selection */}
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
@@ -3438,7 +3446,8 @@ const MusicVideoPlayer: React.FC = () => {
             const tiktokSelected = selectedPlatforms.includes('tiktok');
             // User must manually select privacy level (TikTok UX requirement - no default)
             const tiktokPrivacyMissing = tiktokSelected && tiktokPrivacyLevel === '';
-            const tiktokDurationExceeds = tiktokSelected && tiktokCreatorInfo && videoData?.durationSeconds && videoData.durationSeconds > tiktokCreatorInfo.maxVideoPostDurationSec;
+            const videoDurationForCheck = videoData?.durationSeconds || displayDuration || 0;
+            const tiktokDurationExceeds = tiktokSelected && tiktokCreatorInfo && videoDurationForCheck > tiktokCreatorInfo.maxVideoPostDurationSec;
             const tiktokCommercialIncomplete = tiktokSelected && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent;
             const tiktokCantPost = tiktokSelected && tiktokCreatorInfo?.canPost === false;
 
