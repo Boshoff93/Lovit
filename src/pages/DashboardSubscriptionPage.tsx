@@ -9,6 +9,10 @@ import {
   Alert,
   Snackbar,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
@@ -184,6 +188,7 @@ const DashboardSubscriptionPage: React.FC = () => {
   const [isManagingSubscription, setIsManagingSubscription] = useState<boolean>(false);
   const [isEndingTrial, setIsEndingTrial] = useState<boolean>(false);
   const [loadingTopUpId, setLoadingTopUpId] = useState<string | null>(null);
+  const [showEndTrialConfirm, setShowEndTrialConfirm] = useState<boolean>(false);
   const location = useLocation();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -288,7 +293,12 @@ const DashboardSubscriptionPage: React.FC = () => {
     }
   }, [dispatch]);
 
-  const handleEndTrial = useCallback(async () => {
+  const handleEndTrialClick = useCallback(() => {
+    setShowEndTrialConfirm(true);
+  }, []);
+
+  const handleEndTrialConfirm = useCallback(async () => {
+    setShowEndTrialConfirm(false);
     try {
       setError(null);
       setIsEndingTrial(true);
@@ -296,7 +306,7 @@ const DashboardSubscriptionPage: React.FC = () => {
       const response = await subscriptionApi.endTrialNow();
 
       if (response.data.success) {
-        setSuccess('Your trial has ended and your subscription is now active!');
+        setSuccess('Your subscription is now active! Your full token allowance has been added.');
         // Refresh subscription data
         dispatch(fetchSubscription());
         fetchAccountData(true);
@@ -434,7 +444,7 @@ const DashboardSubscriptionPage: React.FC = () => {
               </Box>
               <Button
                 variant="contained"
-                onClick={handleEndTrial}
+                onClick={handleEndTrialClick}
                 disabled={isEndingTrial}
                 sx={{
                   bgcolor: '#fff',
@@ -1041,6 +1051,66 @@ const DashboardSubscriptionPage: React.FC = () => {
           })}
         </Box>
       </Box>
+
+      {/* End Trial Confirmation Dialog */}
+      <Dialog
+        open={showEndTrialConfirm}
+        onClose={() => setShowEndTrialConfirm(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            background: '#1E1E22',
+            border: '1px solid rgba(255,255,255,0.1)',
+            maxWidth: 420,
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: '#fff', fontWeight: 700, pb: 1 }}>
+          Start Your Subscription Now?
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 2 }}>
+            This will immediately charge your card and activate your full subscription benefits:
+          </Typography>
+          <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', p: 2, mb: 2 }}>
+            <Typography sx={{ color: '#3B82F6', fontWeight: 600, mb: 1 }}>
+              You'll receive:
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+              • Full monthly token allowance for your plan
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+              • All premium features unlocked
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+              • Priority generation queue
+            </Typography>
+          </Box>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
+            Your billing cycle will start today.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button
+            onClick={() => setShowEndTrialConfirm(false)}
+            sx={{ color: 'rgba(255,255,255,0.6)' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleEndTrialConfirm}
+            variant="contained"
+            sx={{
+              bgcolor: '#3B82F6',
+              fontWeight: 600,
+              px: 3,
+              '&:hover': { bgcolor: '#2563EB' },
+            }}
+          >
+            Yes, Start Now
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
