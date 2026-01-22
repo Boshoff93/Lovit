@@ -187,12 +187,7 @@ const MusicVideoPlayer: React.FC = () => {
   const [backgroundUploadStarted, setBackgroundUploadStarted] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
-  
-  // Social upload status (persistent across dialog open/close)
-  const [socialUploadStatus, setSocialUploadStatus] = useState<'idle' | 'queued' | 'uploading' | 'completed' | 'partial' | 'failed'>('idle');
-  const [socialUploadResults, setSocialUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({});
-  const [socialUploadPlatforms, setSocialUploadPlatforms] = useState<string[]>([]);
-  
+
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
   const [tiktokUsername, setTiktokUsername] = useState<string | null>(null);
@@ -372,63 +367,17 @@ const MusicVideoPlayer: React.FC = () => {
     }
   }, [videoData, videoId, setCurrentViewingItem]);
 
-  // Poll for social upload status when upload is in progress
-  useEffect(() => {
-    if (!user?.userId || !videoId) return;
-    
-    // Only poll if status is queued or uploading
-    if (socialUploadStatus !== 'queued' && socialUploadStatus !== 'uploading') return;
-    
-    const pollStatus = async () => {
-      try {
-        const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
-        const { status, platforms, results } = response.data;
-
-        setSocialUploadStatus(status);
-        setSocialUploadPlatforms(platforms);
-        setSocialUploadResults(results || {});
-
-        // If completed, update the uploaded flags for each platform
-        if (status === 'completed' || status === 'partial') {
-          if (results?.youtube?.success) setYoutubeUrl(results.youtube.url || null);
-          if (results?.tiktok?.success) setTiktokUploaded(true);
-          if (results?.instagram?.success) setInstagramUploaded(true);
-          if (results?.facebook?.success) setFacebookUploaded(true);
-          if (results?.linkedin?.success) setLinkedinUploaded(true);
-        }
-      } catch (err) {
-        console.error('Failed to poll upload status:', err);
-      }
-    };
-    
-    // Poll every 5 seconds
-    const interval = setInterval(pollStatus, 5000);
-    
-    // Also poll immediately
-    pollStatus();
-    
-    return () => clearInterval(interval);
-  }, [user?.userId, videoId, socialUploadStatus]);
-
-  // Load initial social upload status when video data is loaded
-  // Restore upload status from backend - persists until user dismisses
+  // Load previously successful uploads when video data is loaded
+  // Shows checkmarks on platforms that already have this video
   useEffect(() => {
     if (!user?.userId || !videoId || !videoData) return;
 
-    const loadInitialStatus = async () => {
+    const loadPreviousUploads = async () => {
       try {
         const response = await videosApi.getSocialUploadStatus(user.userId, videoId);
-        const { status, platforms, results } = response.data;
-
-        // Restore status if there's any (idle means already dismissed)
-        if (status && status !== 'idle') {
-          setSocialUploadStatus(status);
-          setSocialUploadPlatforms(platforms || []);
-          setSocialUploadResults(results || {});
-        }
+        const { results } = response.data;
 
         // Update the uploaded flags for platforms that were previously successful
-        // This shows checkmarks on platforms that already have this video
         if (results) {
           if (results.youtube?.success) setYoutubeUrl(results.youtube.url || null);
           if (results.tiktok?.success) setTiktokUploaded(true);
@@ -441,7 +390,7 @@ const MusicVideoPlayer: React.FC = () => {
       }
     };
 
-    loadInitialStatus();
+    loadPreviousUploads();
   }, [user?.userId, videoId, videoData]);
 
   // Fetch characters used in this video
@@ -1809,20 +1758,11 @@ const MusicVideoPlayer: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Share sx={{ fontSize: 20, color: '#007AFF' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                  {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading')
-                    ? 'Posting Video...'
-                    : 'Post to Your Social Accounts'}
-                </Typography>
-              </Box>
-              {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
-                <Typography variant="caption" sx={{ color: '#86868B' }}>
-                  You'll receive an email when complete
-                </Typography>
-              )}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Share sx={{ fontSize: 20, color: '#007AFF' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                Schedule Post
+              </Typography>
             </Box>
 
             {/* Social Account Grid with names */}
@@ -1830,8 +1770,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* YouTube Account */}
               <Box
                 onClick={() => {
-                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
-                  if (!youtubeConnected) {
+                                    if (!youtubeConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
                     setSelectedPlatforms(prev =>
@@ -1846,11 +1785,11 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 0.75,
-                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
-                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
+                  cursor: 'pointer',
+                  opacity: 1,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
+                    transform: 'scale(1.02)',
                   },
                 }}
               >
@@ -1871,11 +1810,7 @@ const MusicVideoPlayer: React.FC = () => {
                       boxShadow: selectedPlatforms.includes('youtube') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
                   >
-                    {socialUploadPlatforms.includes('youtube') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                      <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    ) : (
-                      <YouTube sx={{ fontSize: 24, color: '#fff' }} />
-                    )}
+                    <YouTube sx={{ fontSize: 24, color: '#fff' }} />
                   </Box>
                   {/* Selection checkmark */}
                   {selectedPlatforms.includes('youtube') && (
@@ -1916,8 +1851,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* TikTok Account */}
               <Box
                 onClick={() => {
-                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
-                  if (!tiktokConnected) {
+                                    if (!tiktokConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
                     setSelectedPlatforms(prev =>
@@ -1932,11 +1866,11 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 0.75,
-                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
-                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
+                  cursor: 'pointer',
+                  opacity: 1,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
+                    transform: 'scale(1.02)',
                   },
                 }}
               >
@@ -1956,13 +1890,9 @@ const MusicVideoPlayer: React.FC = () => {
                       boxShadow: selectedPlatforms.includes('tiktok') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
                   >
-                    {socialUploadPlatforms.includes('tiktok') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                      <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    ) : (
-                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                       </Box>
-                    )}
                   </Box>
                   {selectedPlatforms.includes('tiktok') && (
                     <Box
@@ -2001,8 +1931,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* Instagram Account */}
               <Box
                 onClick={() => {
-                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
-                  if (!instagramConnected) {
+                                    if (!instagramConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
                     setSelectedPlatforms(prev =>
@@ -2017,11 +1946,11 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 0.75,
-                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
-                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
+                  cursor: 'pointer',
+                  opacity: 1,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
+                    transform: 'scale(1.02)',
                   },
                 }}
               >
@@ -2043,13 +1972,9 @@ const MusicVideoPlayer: React.FC = () => {
                       boxShadow: selectedPlatforms.includes('instagram') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
                   >
-                    {socialUploadPlatforms.includes('instagram') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                      <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    ) : (
-                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
                       </Box>
-                    )}
                   </Box>
                   {selectedPlatforms.includes('instagram') && (
                     <Box
@@ -2088,8 +2013,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* Facebook Account */}
               <Box
                 onClick={() => {
-                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
-                  if (!facebookConnected) {
+                                    if (!facebookConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
                     setSelectedPlatforms(prev =>
@@ -2104,11 +2028,11 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 0.75,
-                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
-                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
+                  cursor: 'pointer',
+                  opacity: 1,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
+                    transform: 'scale(1.02)',
                   },
                 }}
               >
@@ -2128,13 +2052,9 @@ const MusicVideoPlayer: React.FC = () => {
                       boxShadow: selectedPlatforms.includes('facebook') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
                   >
-                    {socialUploadPlatforms.includes('facebook') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                      <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    ) : (
-                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                       </Box>
-                    )}
                   </Box>
                   {selectedPlatforms.includes('facebook') && (
                     <Box
@@ -2173,8 +2093,7 @@ const MusicVideoPlayer: React.FC = () => {
               {/* LinkedIn Account */}
               <Box
                 onClick={() => {
-                  if (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') return;
-                  if (!linkedinConnected) {
+                                    if (!linkedinConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
                     setSelectedPlatforms(prev =>
@@ -2189,11 +2108,11 @@ const MusicVideoPlayer: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 0.75,
-                  cursor: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'not-allowed' : 'pointer',
-                  opacity: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 0.5 : 1,
+                  cursor: 'pointer',
+                  opacity: 1,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    transform: (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? 'none' : 'scale(1.02)',
+                    transform: 'scale(1.02)',
                   },
                 }}
               >
@@ -2213,13 +2132,9 @@ const MusicVideoPlayer: React.FC = () => {
                       boxShadow: selectedPlatforms.includes('linkedin') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
                     }}
                   >
-                    {socialUploadPlatforms.includes('linkedin') && (socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') ? (
-                      <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    ) : (
-                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                       </Box>
-                    )}
                   </Box>
                   {selectedPlatforms.includes('linkedin') && (
                     <Box
@@ -3451,7 +3366,7 @@ const MusicVideoPlayer: React.FC = () => {
             const tiktokCommercialIncomplete = tiktokSelected && tiktokDiscloseContent && !tiktokBrandOrganic && !tiktokBrandedContent;
             const tiktokCantPost = tiktokSelected && tiktokCreatorInfo?.canPost === false;
 
-            const isDisabled = isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title || socialUploadStatus === 'queued' || socialUploadStatus === 'uploading' || tiktokPrivacyMissing || tiktokDurationExceeds || tiktokCommercialIncomplete || tiktokCantPost;
+            const isDisabled = isUploading || selectedPlatforms.length === 0 || !editedMetadata?.title || tiktokPrivacyMissing || tiktokDurationExceeds || tiktokCommercialIncomplete || tiktokCantPost;
 
             let buttonText = 'Publish Video';
             if (isUploading) buttonText = 'Publishing...';
@@ -3462,12 +3377,7 @@ const MusicVideoPlayer: React.FC = () => {
             else if (tiktokCommercialIncomplete) buttonText = 'Complete Commercial Disclosure';
 
             return (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                {(socialUploadStatus === 'queued' || socialUploadStatus === 'uploading') && (
-                  <Typography variant="caption" sx={{ color: '#666' }}>
-                    Upload in progress... You can start a new upload once this one completes.
-                  </Typography>
-                )}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
                 <Button
                   variant="contained"
                   size="large"
