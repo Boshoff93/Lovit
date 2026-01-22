@@ -2198,23 +2198,27 @@ const HomePage: React.FC = () => {
             >
               <Box
                 component="span"
-            sx={{
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 50%, #06B6D4 100%)',
-                  backgroundSize: '200% 200%',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  animation: 'gradientShift 4s ease infinite',
-                  '@keyframes gradientShift': {
-                    '0%, 100%': { backgroundPosition: '0% 50%' },
-                    '50%': { backgroundPosition: '100% 50%' },
-                  },
-                }}
+                sx={{ color: '#FFFFFF' }}
               >
                 {heroHeadingParts.length > 1 ? heroHeadingParts[0] : headers.hero.title}
               </Box>
               {heroHeadingParts.length > 1 && (
-                <Box component="span" sx={{ display: 'block', color: '#FFFFFF' }}>
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'block',
+                    background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 50%, #06B6D4 100%)',
+                    backgroundSize: '200% 200%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    animation: 'gradientShift 4s ease infinite',
+                    '@keyframes gradientShift': {
+                      '0%, 100%': { backgroundPosition: '0% 50%' },
+                      '50%': { backgroundPosition: '100% 50%' },
+                    },
+                  }}
+                >
                   {heroHeadingParts[1]}
                 </Box>
               )}

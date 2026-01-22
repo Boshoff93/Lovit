@@ -2645,8 +2645,8 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     twitterDescription: 'AI UGC Agents create and distribute video content for you. Unlimited AI videos to every platform.',
     breadcrumbName: 'Home',
     heroTagline: 'Your AI Content Army',
-    heroHeading: 'AI UGC Agents\nCreate & Distribute For You',
-    heroSubtext: 'Products, characters, Airbnbs, businesses — AI generates unlimited content and posts to every platform. No camera. No editing. Just results.',
+    heroHeading: 'AI UGC Agents for Content Creators\nLet AI Create & Promote for You',
+    heroSubtext: "Stop wasting $1000's on influencer deals that flop. Create and distribute content at a fraction of the price. No camera. No editing. Let Gruvi AI do the work for you.",
     examplePrompts: ['Product showcase video', 'Airbnb property tour', 'Business promo video', 'Character animation']
   },
 
