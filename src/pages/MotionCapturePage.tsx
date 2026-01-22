@@ -115,6 +115,9 @@ const MAX_VIDEO_DURATION_SECONDS = 180;
 // Max duration for Kling mode: 30 seconds
 const MAX_KLING_DURATION_SECONDS = 30;
 
+// Max duration for Kling "image" orientation mode: 10 seconds
+const MAX_IMAGE_ORIENTATION_SECONDS = 10;
+
 // Voice change: 50 tokens per minute (rounded up)
 const VOICE_TOKENS_PER_MINUTE = 50;
 
@@ -411,6 +414,7 @@ const MotionCapturePage: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [swapMode, setSwapMode] = useState<SwapMode>('wan-replace');
   const [klingPrompt, setKlingPrompt] = useState('');
+  const [characterOrientation, setCharacterOrientation] = useState<'image' | 'video'>('video');
   const [enableVoiceChange, setEnableVoiceChange] = useState(false);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>('albus');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -446,6 +450,13 @@ const MotionCapturePage: React.FC = () => {
       setSwapMode('wan-replace');
     }
   }, [selectedVideo]);
+
+  // Reset character orientation to 'video' if video > 10s and 'image' is selected
+  useEffect(() => {
+    if (selectedVideo && (selectedVideo.duration || 0) > MAX_IMAGE_ORIENTATION_SECONDS && characterOrientation === 'image') {
+      setCharacterOrientation('video');
+    }
+  }, [selectedVideo, characterOrientation]);
 
   const loadUserVideos = async (page: number = 1, append: boolean = false) => {
     if (append) {
@@ -592,6 +603,7 @@ const MotionCapturePage: React.FC = () => {
   const videoDuration = selectedVideo?.duration || 0;
   const isVideoTooLong = videoDuration > MAX_VIDEO_DURATION_SECONDS;
   const isVideoTooLongForKling = videoDuration > MAX_KLING_DURATION_SECONDS;
+  const isVideoTooLongForImageOrientation = videoDuration > MAX_IMAGE_ORIENTATION_SECONDS;
 
   // Swap mode options - dynamically disable Kling for videos > 30 seconds
   const swapModeOptions: DropdownOption[] = useMemo(() => [
@@ -675,6 +687,7 @@ const MotionCapturePage: React.FC = () => {
         artStyle: selectedStyle,
         swapMode,
         klingPrompt: swapMode === 'kling-motion' && klingPrompt.trim() ? klingPrompt.trim() : undefined,
+        characterOrientation: swapMode === 'kling-motion' ? characterOrientation : undefined,
         enableVoiceChange,
         voiceId: enableVoiceChange ? selectedVoiceId : undefined,
       });
@@ -924,38 +937,105 @@ const MotionCapturePage: React.FC = () => {
                     />
                   </Box>
 
-                  {/* Kling Mode Prompt - only shown when Kling is selected */}
+                  {/* Kling Mode Options - only shown when Kling is selected */}
                   {swapMode === 'kling-motion' && (
-                    <Box sx={{ mb: 3 }}>
-                      <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem', mb: 1 }}>
-                        Kling Prompt (Optional)
-                      </Typography>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
-                        Describe the motion or action you want. E.g., "An African American woman dancing energetically"
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={2}
-                        placeholder="Describe the motion or action..."
-                        value={klingPrompt}
-                        onChange={(e) => setKlingPrompt(e.target.value)}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            background: 'rgba(255,255,255,0.03)',
-                            color: '#fff',
-                            fontSize: '0.95rem',
-                            '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
-                            '&.Mui-focused fieldset': { borderColor: '#8B5CF6' },
-                          },
-                          '& .MuiInputBase-input': {
-                            '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
-                          },
-                        }}
-                      />
-                    </Box>
+                    <>
+                      <Box sx={{ mb: 3 }}>
+                        <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem', mb: 1 }}>
+                          Kling Prompt (Optional)
+                        </Typography>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                          Describe the motion or action you want. E.g., "An African American woman dancing energetically"
+                        </Typography>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={2}
+                          placeholder="Describe the motion or action..."
+                          value={klingPrompt}
+                          onChange={(e) => setKlingPrompt(e.target.value)}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: '12px',
+                              background: 'rgba(255,255,255,0.03)',
+                              color: '#fff',
+                              fontSize: '0.95rem',
+                              '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                              '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                              '&.Mui-focused fieldset': { borderColor: '#8B5CF6' },
+                            },
+                            '& .MuiInputBase-input': {
+                              '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                            },
+                          }}
+                        />
+                      </Box>
+
+                      {/* Character Orientation Selector */}
+                      <Box sx={{ mb: 3 }}>
+                        <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem', mb: 1 }}>
+                          Character Orientation
+                        </Typography>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                          Controls whether the output character's orientation matches your reference image or source video
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                          <Box
+                            onClick={() => setCharacterOrientation('video')}
+                            sx={{
+                              flex: 1,
+                              p: 2,
+                              borderRadius: '12px',
+                              border: `2px solid ${characterOrientation === 'video' ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`,
+                              background: characterOrientation === 'video' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255,255,255,0.03)',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              '&:hover': { borderColor: characterOrientation === 'video' ? '#8B5CF6' : 'rgba(255,255,255,0.3)' },
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
+                                Follow Video
+                              </Typography>
+                              <Typography sx={{ fontSize: '0.7rem', color: '#8B5CF6', fontWeight: 500 }}>
+                                (max 30s)
+                              </Typography>
+                            </Box>
+                            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>
+                              Orientation matches the source video. Better for complex motions like dancing or talking.
+                            </Typography>
+                          </Box>
+                          <Box
+                            onClick={() => !isVideoTooLongForImageOrientation && setCharacterOrientation('image')}
+                            sx={{
+                              flex: 1,
+                              p: 2,
+                              borderRadius: '12px',
+                              border: `2px solid ${characterOrientation === 'image' ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`,
+                              background: characterOrientation === 'image' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255,255,255,0.03)',
+                              cursor: isVideoTooLongForImageOrientation ? 'not-allowed' : 'pointer',
+                              opacity: isVideoTooLongForImageOrientation ? 0.5 : 1,
+                              transition: 'all 0.2s ease',
+                              '&:hover': { borderColor: isVideoTooLongForImageOrientation ? 'rgba(255,255,255,0.1)' : (characterOrientation === 'image' ? '#8B5CF6' : 'rgba(255,255,255,0.3)') },
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                              <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
+                                Follow Reference Image
+                              </Typography>
+                              <Typography sx={{ fontSize: '0.7rem', color: '#F59E0B', fontWeight: 500 }}>
+                                (max 10s)
+                              </Typography>
+                            </Box>
+                            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>
+                              {isVideoTooLongForImageOrientation
+                                ? `Video too long (${Math.round(videoDuration)}s). This mode only supports videos up to 10s.`
+                                : 'Orientation matches your reference image. Better for following camera movements.'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </>
                   )}
 
                   {/* Pricing explanation */}

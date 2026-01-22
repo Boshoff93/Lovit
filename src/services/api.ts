@@ -495,6 +495,7 @@ export const swapStudioApi = {
     artStyle?: string;
     swapMode: 'wan-replace' | 'wan-move' | 'kling-motion';
     klingPrompt?: string;
+    characterOrientation?: 'image' | 'video';
     enableVoiceChange?: boolean;
     voiceId?: string;
   }) => api.post('/api/gruvi/swap-studio/create', data),
