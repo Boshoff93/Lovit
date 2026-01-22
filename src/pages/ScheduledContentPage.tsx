@@ -1339,9 +1339,9 @@ const ScheduledContentPage: React.FC = () => {
                         <Typography sx={{ fontWeight: 500, textTransform: 'capitalize', flex: 1, color: '#fff' }}>
                           {result.platform}
                         </Typography>
-                        {result.error && (
+                        {result.status !== 'success' && (
                           <Typography sx={{ fontSize: '0.75rem', color: '#EF4444' }}>
-                            {result.error}
+                            Oops, something went wrong
                           </Typography>
                         )}
                       </Box>

@@ -23,6 +23,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import PersonIcon from '@mui/icons-material/Person';
 import GoogleIcon from '@mui/icons-material/Google';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import MovieFilterIcon from '@mui/icons-material/MovieFilter';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
@@ -34,10 +38,11 @@ const blogPosts = [
   {
     id: 'motion-control-viral-content',
     slug: 'motion-control-viral-content',
-    title: 'How to Go Viral with AI Character Swaps Using Kling Motion Control',
-    excerpt: 'AI character swaps are taking over social media. Learn how creators like @minchoi and @levelsio generate millions of views with Kling motion control and how you can do it too.',
+    title: 'AI Character Swap: Go Viral with WAN 2.2 & Kling',
+    excerpt: 'AI Character Swap is taking over social media. Learn how creators generate millions of views with WAN 2.2 and Kling motion control—and how you can do it too.',
     category: 'tutorials',
-    image: '/blog/motion-control-hero.jpg',
+    icon: SwapHorizIcon,
+    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
     author: 'Gruvi Team',
     date: 'Jan 18, 2026',
     readTime: '5 min read',
@@ -50,7 +55,8 @@ const blogPosts = [
     title: 'How to Create a Promo Music Video with AI in Minutes',
     excerpt: 'Learn how to create stunning promotional music videos for your brand, product, or business using AI-generated music and visuals. No video editing experience required.',
     category: 'tutorials',
-    image: '/genres/cinematic.jpeg',
+    icon: MovieFilterIcon,
+    gradient: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%)',
     author: 'Gruvi Team',
     date: 'Jan 15, 2026',
     readTime: '6 min read',
@@ -184,7 +190,21 @@ const BlogPage: React.FC = () => {
   }, [googleLogin, getGoogleIdToken, resendVerificationEmail, navigate, handleCloseAuth, authError]);
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0D0D0F 0%, #1A1A2E 50%, #0D0D0F 100%)' }}>
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #1a1a2e 0%, #12121a 15%, #0a0a0c 30%, #0a0a0c 100%)',
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '100%',
+        background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 40%), radial-gradient(ellipse 60% 30% at 70% 10%, rgba(236, 72, 153, 0.1) 0%, transparent 40%)',
+        pointerEvents: 'none',
+      },
+    }}>
       <SEO
         title="Blog | AI Music Tips, Tutorials & News | Gruvi"
         description="Stay up to date with the latest in AI music generation, social media tips, tutorials, and news from the Gruvi team."
@@ -259,8 +279,9 @@ const BlogPage: React.FC = () => {
       {blogPosts.length > 0 && (
         <Box sx={{
           py: { xs: 6, md: 10 },
+          position: 'relative',
         }}>
-          <Container maxWidth="lg">
+          <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
             <Typography
               variant="h2"
               sx={{
@@ -278,10 +299,10 @@ const BlogPage: React.FC = () => {
                   <Box
                     onClick={() => (post as any).slug && navigate(`/blog/${(post as any).slug}`)}
                     sx={{
-                      borderRadius: '24px',
+                      borderRadius: '20px',
                       overflow: 'hidden',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
                       height: '100%',
@@ -294,70 +315,94 @@ const BlogPage: React.FC = () => {
                         to: { opacity: 1, transform: 'translateY(0)' },
                       },
                       '&:hover': {
-                        transform: 'translateY(-6px)',
-                        background: 'rgba(255,255,255,0.05)',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                        '& img': { transform: 'scale(1.05)' },
+                        transform: 'translateY(-4px)',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
                       },
                     }}
                   >
-                    <Box sx={{ position: 'relative', height: 220, overflow: 'hidden' }}>
-                      <Box
-                        component="img"
-                        src={post.image}
-                        alt={post.title}
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          transition: 'transform 0.5s ease',
-                        }}
-                      />
-                      <Chip
-                        label="Featured"
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: 16,
-                          left: 16,
-                          background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                          color: '#000',
-                          fontWeight: 700,
-                          fontSize: '0.7rem',
-                        }}
-                      />
+                    <Box sx={{
+                      position: 'relative',
+                      height: 200,
+                      overflow: 'hidden',
+                      background: post.gradient,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      {/* Decorative background pattern */}
+                      <Box sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        opacity: 0.15,
+                        background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 40%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 40%)',
+                      }} />
+                      {/* Icon */}
+                      <Box sx={{
+                        width: 80,
+                        height: 80,
+                        borderRadius: '20px',
+                        background: 'rgba(255,255,255,0.15)',
+                        backdropFilter: 'blur(10px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                      }}>
+                        <post.icon sx={{ fontSize: 40, color: '#fff' }} />
+                      </Box>
+                      {/* Featured badge */}
+                      {post.featured && (
+                        <Chip
+                          label="Featured"
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: 16,
+                            left: 16,
+                            background: 'rgba(255,255,255,0.2)',
+                            backdropFilter: 'blur(10px)',
+                            color: '#fff',
+                            fontWeight: 700,
+                            fontSize: '0.7rem',
+                            border: '1px solid rgba(255,255,255,0.3)',
+                          }}
+                        />
+                      )}
                     </Box>
-                    <Box sx={{ p: 3, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ p: { xs: 2.5, md: 3 }, flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <Chip
                         label={post.category}
                         size="small"
                         sx={{
                           alignSelf: 'flex-start',
                           mb: 2,
-                          background: 'rgba(139, 92, 246, 0.15)',
-                          color: '#8B5CF6',
+                          background: 'rgba(139, 92, 246, 0.12)',
+                          color: '#A78BFA',
                           fontWeight: 600,
                           fontSize: '0.7rem',
+                          height: 24,
                         }}
                       />
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', mb: 1.5 }}>
+                      <Typography sx={{ fontSize: { xs: '1.1rem', md: '1.2rem' }, fontWeight: 700, color: '#fff', mb: 1.5, lineHeight: 1.3 }}>
                         {post.title}
                       </Typography>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.6, mb: 2, flex: 1 }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.9rem', lineHeight: 1.6, mb: 'auto', pb: 2 }}>
                         {post.excerpt}
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', pt: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>
                           {post.author}
                         </Typography>
-                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)' }} />
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                        <Box sx={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+                        <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>
                           {post.date}
                         </Typography>
-                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)' }} />
+                        <Box sx={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <AccessTimeIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }} />
-                          <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                          <AccessTimeIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+                          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>
                             {post.readTime}
                           </Typography>
                         </Box>

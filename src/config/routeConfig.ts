@@ -2636,17 +2636,17 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
   // Default route
   '/': {
     path: '/',
-    title: 'Create AI Videos & Distribute to All Platforms | Gruvi',
-    description: 'Create AI videos of products, characters, Airbnbs, businesses and distribute them with 1 click to all social platforms. No camera or video skills required.',
-    keywords: 'ai video generator, distribute to social platforms, product videos, business videos, airbnb videos, one click distribution, ai content creator, social media automation',
-    ogTitle: 'Create AI Videos & Distribute to All Platforms | Gruvi',
-    ogDescription: 'Create AI videos of products, characters, Airbnbs, businesses. Distribute with 1 click to all social platforms.',
-    twitterTitle: 'Create AI Videos & Distribute to All Platforms',
-    twitterDescription: 'Create AI videos of products, characters, Airbnbs, businesses. Distribute with 1 click to all platforms.',
+    title: 'AI UGC Agents - Create & Distribute Content Automatically | Gruvi',
+    description: 'AI UGC Agents create and distribute video content for you. Products, characters, Airbnbs, businesses — unlimited AI videos posted to every platform automatically.',
+    keywords: 'ai ugc agents, ai content creator, automatic content distribution, ai video generator, ugc automation, social media automation, ai marketing',
+    ogTitle: 'AI UGC Agents - Create & Distribute Content Automatically | Gruvi',
+    ogDescription: 'AI UGC Agents create and distribute video content for you. Unlimited AI videos posted to every platform automatically.',
+    twitterTitle: 'AI UGC Agents - Create & Distribute Automatically',
+    twitterDescription: 'AI UGC Agents create and distribute video content for you. Unlimited AI videos to every platform.',
     breadcrumbName: 'Home',
-    heroTagline: 'Create. Distribute. Go Viral.',
-    heroHeading: 'Create AI Promo Videos\nDistribute with 1 Click',
-    heroSubtext: 'Products, characters, Airbnbs, businesses — create stunning AI videos and distribute them to all social platforms instantly. No camera needed.',
+    heroTagline: 'Your AI Content Army',
+    heroHeading: 'AI UGC Agents\nCreate & Distribute For You',
+    heroSubtext: 'Products, characters, Airbnbs, businesses — AI generates unlimited content and posts to every platform. No camera. No editing. Just results.',
     examplePrompts: ['Product showcase video', 'Airbnb property tour', 'Business promo video', 'Character animation']
   },
 
@@ -2871,6 +2871,75 @@ export const routeConfigs: { [key: string]: RouteConfig } = {
     heroSubtext: 'Create viral TikTok content without filming yourself. AI generates trending-style videos with visuals, music, and effects that capture attention. Perfect for growing your TikTok following without appearing on camera.',
     examplePrompts: ['Trending TikTok video style', 'Viral TikTok content idea', 'TikTok growth content faceless', 'For You Page worthy video'],
     routeCategory: 'platform'
+  },
+
+  // AI Character Swap routes
+  '/ai-character-swap': {
+    path: '/ai-character-swap',
+    title: 'AI Character Swap - Transform Any Character in Your Videos | Gruvi',
+    description: 'Swap characters in your videos with AI motion control. Transfer natural movement to new characters, create viral content, and go faceless. Powered by WAN and Kling.',
+    keywords: 'ai character swap, motion control video, face swap ai, video to video ai, character transformation, viral content, kling motion, wan video',
+    ogTitle: 'AI Character Swap - Transform Any Character in Your Videos',
+    ogDescription: 'Swap characters in your videos with AI motion control. Create viral content without showing your face.',
+    twitterTitle: 'AI Character Swap - Transform Any Character',
+    twitterDescription: 'Swap characters in your videos with AI motion control.',
+    breadcrumbName: 'AI Character Swap',
+    heroTagline: 'Motion Control Technology',
+    heroHeading: 'AI Character Swap\nTransform Any Video',
+    heroSubtext: 'Swap characters in your videos while preserving natural movement. Transfer your performance to any character—cartoon, mascot, celebrity style, or custom creation. The viral trend taking over social media.',
+    examplePrompts: ['Swap me into a cartoon character', 'Turn this video into anime style', 'Replace character with brand mascot', 'Create faceless viral content'],
+    routeCategory: 'videoStyle'
+  },
+
+  '/motion-control-video': {
+    path: '/motion-control-video',
+    title: 'Motion Control Video - AI Video to Video Transfer | Gruvi',
+    description: 'Create motion control videos with AI. Transfer movement from any video to new characters and scenes. Perfect for viral content, brand videos, and faceless creators.',
+    keywords: 'motion control video, video to video ai, motion transfer, character animation, ai video transformation, viral video creator',
+    ogTitle: 'Motion Control Video - AI Video to Video Transfer',
+    ogDescription: 'Transfer movement from any video to new characters and scenes with AI.',
+    twitterTitle: 'Motion Control Video - AI Video Transfer',
+    twitterDescription: 'Transfer movement from any video to new characters with AI.',
+    breadcrumbName: 'Motion Control Video',
+    heroTagline: 'Video to Video AI',
+    heroHeading: 'Motion Control Video\nAI Video Transfer',
+    heroSubtext: 'Take any video and transfer the movement to a completely new character or scene. The AI preserves body movements, facial expressions, and timing for seamless transformations.',
+    examplePrompts: ['Transfer dance moves to character', 'Apply motion to mascot', 'Create character animation from video', 'Video to video transformation'],
+    routeCategory: 'videoStyle'
+  },
+
+  '/face-swap-video': {
+    path: '/face-swap-video',
+    title: 'Face Swap Video - AI-Powered Video Face Swap | Gruvi',
+    description: 'Create face swap videos with AI. Swap faces in videos while keeping natural movement and expressions. Perfect for content creators, brands, and entertainment.',
+    keywords: 'face swap video, ai face swap, video face replacement, deepfake alternative, character swap video, face transformation',
+    ogTitle: 'Face Swap Video - AI-Powered Video Face Swap',
+    ogDescription: 'Swap faces in videos while keeping natural movement and expressions with AI.',
+    twitterTitle: 'Face Swap Video - AI Face Swap',
+    twitterDescription: 'Swap faces in videos while keeping natural movement with AI.',
+    breadcrumbName: 'Face Swap Video',
+    heroTagline: 'Advanced Face Technology',
+    heroHeading: 'Face Swap Video\nAI-Powered Transformation',
+    heroSubtext: 'Swap faces in your videos while preserving natural movement, expressions, and lip sync. The AI handles complex movements so the result looks authentic and engaging.',
+    examplePrompts: ['Swap face in testimonial video', 'Create anonymous content', 'Replace speaker in video', 'Face swap for brand content'],
+    routeCategory: 'videoStyle'
+  },
+
+  '/viral-character-content': {
+    path: '/viral-character-content',
+    title: 'Create Viral Character Content with AI | Gruvi',
+    description: 'Create viral character-based content with AI. Build a faceless brand, create mascot content, or swap yourself into any character for millions of views.',
+    keywords: 'viral character content, ai character creator, faceless content, mascot video, character-based marketing, viral social content',
+    ogTitle: 'Create Viral Character Content with AI',
+    ogDescription: 'Build a faceless brand or create mascot content with AI character swaps.',
+    twitterTitle: 'Create Viral Character Content with AI',
+    twitterDescription: 'Build a faceless brand with AI character swaps.',
+    breadcrumbName: 'Viral Character Content',
+    heroTagline: 'Go Viral with Characters',
+    heroHeading: 'Viral Character Content\nBuild Your Faceless Brand',
+    heroSubtext: 'Create engaging character-based content that goes viral. Build a faceless brand, develop a mascot personality, or swap yourself into any character for maximum engagement without showing your face.',
+    examplePrompts: ['Build faceless character brand', 'Create mascot content series', 'Viral character swap videos', 'Anonymous viral content'],
+    routeCategory: 'contentCreator'
   },
 
   '/viral-youtube-content': {

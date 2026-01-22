@@ -68,6 +68,12 @@ const VOICEOVER_COST = 25;
 const MAX_CAST_MEMBERS_STORY = 5;
 const MAX_CAST_MEMBERS_UGC = 1;
 
+// Character limits for prompts
+// UGC is limited to 60s audio (~900 characters at 150 wpm), so cap at 800 to be safe
+// Stories can be longer
+const MAX_CHARS_STORY = 2000;
+const MAX_CHARS_UGC = 800;
+
 
 // Helper to get character type style with gradient
 const getCharacterTypeStyle = (characterType?: string): { icon: React.ElementType; color: string; iconBg: string; label: string } => {
@@ -313,8 +319,9 @@ const CreateNarrativePage: React.FC = () => {
       return;
     }
 
-    if (text.length > 10000) {
-      setPageError('Text is too long (max 10,000 characters)');
+    const maxChars = narrativeType === 'ugc' ? MAX_CHARS_UGC : MAX_CHARS_STORY;
+    if (text.length > maxChars) {
+      setPageError(`Text is too long (max ${maxChars.toLocaleString()} characters for ${narrativeType === 'ugc' ? 'UGC' : 'stories'})`);
       return;
     }
 
@@ -816,7 +823,7 @@ const CreateNarrativePage: React.FC = () => {
               placeholder={narrativeType === 'story'
                 ? "A magical adventure about a young wizard discovering their powers..."
                 : "Promote my new skincare product that helps with acne and gives glowing skin..."}
-              inputProps={{ maxLength: 2000 }}
+              inputProps={{ maxLength: narrativeType === 'ugc' ? MAX_CHARS_UGC : MAX_CHARS_STORY }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '16px',
@@ -833,8 +840,15 @@ const CreateNarrativePage: React.FC = () => {
                 },
               }}
             />
-            <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mt: 1 }}>
-              {text.length.toLocaleString()} / 2,000 characters
+            <Typography sx={{
+              color: text.length > (narrativeType === 'ugc' ? MAX_CHARS_UGC * 0.9 : MAX_CHARS_STORY * 0.9)
+                ? '#FF9500'
+                : 'rgba(255,255,255,0.5)',
+              fontSize: '0.8rem',
+              mt: 1
+            }}>
+              {text.length.toLocaleString()} / {(narrativeType === 'ugc' ? MAX_CHARS_UGC : MAX_CHARS_STORY).toLocaleString()} characters
+              {narrativeType === 'ugc' && <span style={{ marginLeft: 8, opacity: 0.7 }}>(UGC max 60s audio)</span>}
             </Typography>
           </Box>
 

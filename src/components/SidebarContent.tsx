@@ -45,7 +45,7 @@ const createItems = [
   { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon, gradient: gradients.create },
   { path: '/create/narrative', label: 'Create Voiceover', icon: HeadsetMicIcon, gradient: gradients.create },
   { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
-  { path: '/motion-capture', label: 'Create Motion Capture', icon: SwapHorizIcon, gradient: gradients.create },
+  { path: '/motion-capture', label: 'AI Character Swap', icon: SwapHorizIcon, gradient: gradients.create },
   { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getTokensFromAllowances, setAllowances } from '../store/authSlice';
@@ -11,7 +11,6 @@ import {
   Alert,
   TextField,
   Paper,
-  LinearProgress,
   Chip,
   Switch,
   FormControlLabel,
@@ -33,7 +32,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import PersonIcon from '@mui/icons-material/Person';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import DownloadIcon from '@mui/icons-material/Download';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BrushIcon from '@mui/icons-material/Brush';
@@ -185,15 +183,6 @@ interface VideoInfo {
   thumbnailUrl?: string;
   duration?: number;
   title?: string;
-}
-
-interface SwapResult {
-  swapId: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  resultVideoUrl?: string;
-  progress?: number;
-  progressMessage?: string;
-  error?: string;
 }
 
 // Format duration as mm:ss
@@ -425,7 +414,6 @@ const MotionCapturePage: React.FC = () => {
   const [enableVoiceChange, setEnableVoiceChange] = useState(false);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>('albus');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [swapResult, setSwapResult] = useState<SwapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -442,9 +430,6 @@ const MotionCapturePage: React.FC = () => {
   const [loadingMoreVideos, setLoadingMoreVideos] = useState(false);
   const VIDEOS_PER_PAGE = 12;
 
-  // Refs
-  const resultVideoRef = useRef<HTMLVideoElement>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load user videos and characters
   useEffect(() => {
@@ -454,14 +439,6 @@ const MotionCapturePage: React.FC = () => {
     }
   }, [userId]);
 
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-    };
-  }, []);
 
   // Reset swap mode to wan-replace if user selects a video > 30s and has Kling selected
   useEffect(() => {
@@ -702,94 +679,19 @@ const MotionCapturePage: React.FC = () => {
         voiceId: enableVoiceChange ? selectedVoiceId : undefined,
       });
 
-      const swapId = response.data.swapId;
-      setSwapResult({
-        swapId,
-        status: 'processing',
-        progress: 0,
-      });
-
       // Update allowances if returned
       if (response.data.allowances) {
         dispatch(setAllowances(response.data.allowances));
       }
 
-      // Start polling for status
-      startPolling(swapId);
+      // Navigate to My Videos page - generation continues in background
+      navigate('/my-videos');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to start swap');
       setIsGenerating(false);
     }
   };
 
-  // Poll for swap status
-  const startPolling = (swapId: string) => {
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current);
-    }
-
-    pollingRef.current = setInterval(async () => {
-      try {
-        const response = await swapStudioApi.getSwapStatus(userId, swapId);
-        const data = response.data;
-
-        setSwapResult({
-          swapId,
-          status: data.status,
-          resultVideoUrl: data.videoUrl,
-          progress: data.progress || 0,
-          progressMessage: data.progressMessage,
-          error: data.error,
-        });
-
-        if (data.status === 'completed' || data.status === 'failed') {
-          if (pollingRef.current) {
-            clearInterval(pollingRef.current);
-            pollingRef.current = null;
-          }
-          setIsGenerating(false);
-
-          if (data.status === 'completed') {
-            setSuccessMessage('Motion capture completed!');
-          } else if (data.error) {
-            setError(data.error);
-          }
-        }
-      } catch (err) {
-        console.error('Polling error:', err);
-      }
-    }, 3000);
-  };
-
-  // Download result video
-  const handleDownload = async () => {
-    if (!swapResult?.resultVideoUrl) return;
-
-    try {
-      const response = await fetch(swapResult.resultVideoUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `motion-capture-${swapResult.swapId}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      setError('Failed to download video');
-    }
-  };
-
-  // Reset and try again
-  const handleReset = () => {
-    setSelectedVideo(null);
-    setSelectedCharacter(null);
-    setCharacterPrompt('');
-    setSwapResult(null);
-    setError(null);
-    setIsGenerating(false);
-  };
 
   // Handle voice selection with premium check
   const handleVoiceSelect = (voiceId: string) => {
@@ -800,157 +702,6 @@ const MotionCapturePage: React.FC = () => {
     }
     setSelectedVoiceId(voiceId);
   };
-
-  // If generating or completed, show result view
-  if (swapResult) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          py: 4,
-          px: { xs: 2, sm: 3 },
-        }}
-      >
-        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-          {/* Header */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
-              }}
-            >
-              <SwapHorizIcon sx={{ fontSize: 28, color: '#fff' }} />
-            </Box>
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-                Motion Capture
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                {swapResult.status === 'processing' ? 'Generating your video...' : swapResult.status === 'completed' ? 'Your video is ready!' : 'Generation failed'}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.03)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            }}
-          >
-            {swapResult.status === 'processing' && (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <CircularProgress sx={{ mb: 2, color: '#8B5CF6' }} />
-                <Typography variant="h6" sx={{ mb: 1, color: '#fff' }}>
-                  {swapResult.progressMessage || 'Processing...'}
-                </Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={swapResult.progress || 0}
-                  sx={{
-                    mb: 1,
-                    borderRadius: 1,
-                    maxWidth: 400,
-                    mx: 'auto',
-                    bgcolor: 'rgba(255,255,255,0.1)',
-                    '& .MuiLinearProgress-bar': {
-                      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                    },
-                  }}
-                />
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                  {swapResult.progress || 0}% complete
-                </Typography>
-              </Box>
-            )}
-
-            {swapResult.status === 'completed' && swapResult.resultVideoUrl && (
-              <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <CheckCircleIcon sx={{ color: '#22C55E' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                    Motion Capture Complete!
-                  </Typography>
-                </Box>
-
-                <Box sx={{ borderRadius: 2, overflow: 'hidden', mb: 3, maxWidth: 600, mx: 'auto' }}>
-                  <video
-                    ref={resultVideoRef}
-                    src={swapResult.resultVideoUrl}
-                    controls
-                    style={{
-                      width: '100%',
-                      maxHeight: '500px',
-                      background: '#000',
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<DownloadIcon />}
-                    onClick={handleDownload}
-                    sx={{
-                      background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
-                      px: 3,
-                    }}
-                  >
-                    Download
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleReset}
-                    sx={{
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      color: '#fff',
-                      '&:hover': {
-                        borderColor: 'rgba(255,255,255,0.5)',
-                        background: 'rgba(255,255,255,0.05)',
-                      },
-                    }}
-                  >
-                    Create Another
-                  </Button>
-                </Box>
-              </Box>
-            )}
-
-            {swapResult.status === 'failed' && (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="h6" sx={{ color: '#EF4444', mb: 2 }}>
-                  Generation Failed
-                </Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.6)', mb: 3 }}>
-                  {swapResult.error || 'An error occurred'}
-                </Typography>
-                <Button
-                  variant="contained"
-                  onClick={handleReset}
-                  sx={{
-                    background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-                  }}
-                >
-                  Try Again
-                </Button>
-              </Box>
-            )}
-          </Paper>
-        </Box>
-      </Box>
-    );
-  }
 
   return (
     <Box
@@ -982,10 +733,10 @@ const MotionCapturePage: React.FC = () => {
             </Box>
             <Box sx={{ minWidth: 0 }}>
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-                Motion Capture
+                AI Character Swap
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-                Create viral character swaps with AI motion control
+                Transform any character in your videos with AI
               </Typography>
             </Box>
           </Box>
@@ -1501,7 +1252,7 @@ const MotionCapturePage: React.FC = () => {
                       {isGenerating ? (
                         <CircularProgress size={24} sx={{ color: '#fff' }} />
                       ) : (
-                        'Generate Motion Capture'
+                        'Generate Character Swap'
                       )}
                     </Button>
                   </Box>
@@ -1665,7 +1416,7 @@ const MotionCapturePage: React.FC = () => {
                         {isGenerating ? (
                           <CircularProgress size={24} sx={{ color: '#fff' }} />
                         ) : (
-                          'Generate Motion Capture'
+                          'Generate Character Swap'
                         )}
                       </Button>
                     </Box>
