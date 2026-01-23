@@ -4,3 +4,4 @@ export { default as CTASection } from './CTASection';
 export { default as MarketingSection } from './MarketingSection';
 export { default as VideoShowcase } from './VideoShowcase';
 export { default as MarketingHeader } from './MarketingHeader';
+export { default as AngledVideoBackdrop } from './AngledVideoBackdrop';

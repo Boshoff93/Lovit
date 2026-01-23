@@ -304,16 +304,20 @@ interface Video {
   duration?: number;
   aspectRatio?: 'portrait' | 'landscape';
   videoCategory?: 'app' | 'place' | 'product' | 'music'; // Type of video based on characters used
+  videoType?: string; // Type of video generation (swap, standard, still, avatar)
 }
 
 // Helper to get video category label for display
-const getVideoCategoryLabel = (category?: string): string => {
+const getVideoCategoryLabel = (category?: string, videoType?: string): string => {
+  // For swap/motion capture videos, just use "Video"
+  if (videoType === 'swap') return 'Video';
+
   switch (category) {
     case 'app': return 'App Video';
     case 'place': return 'Place Video';
     case 'product': return 'Product Video';
-    case 'music':
-    default: return 'Music Video';
+    case 'music': return 'Music Video';
+    default: return 'Video'; // Default to just "Video" instead of "Music Video"
   }
 };
 
@@ -328,6 +332,7 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMenuClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [thumbnailFailed, setThumbnailFailed] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // Store the video URL when hover starts to prevent URL changes from resetting playback
   const videoUrlRef = useRef<string | null>(null);
@@ -384,22 +389,44 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
           isQueued={video.status === 'queued'}
           queuePosition={video.queuePosition}
         />
-      ) : (
+      ) : video.status === 'completed' && video.thumbnailUrl && !thumbnailFailed ? (
+        // Completed video with thumbnail - show thumbnail (with fallback on error)
         <Box
           component="img"
-          src={
-            video.status === 'completed'
-              ? (video.thumbnailUrl || '/gruvi/gruvi-with-background.jpeg')
-              : (video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg')
-          }
-          alt={video.songTitle || 'Music Video'}
+          src={video.thumbnailUrl}
+          alt=""
+          onError={() => setThumbnailFailed(true)}
           sx={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
           }}
-          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-            e.currentTarget.src = '/gruvi/gruvi-with-background.jpeg';
+        />
+      ) : video.status === 'completed' && video.videoUrl ? (
+        // Completed video without thumbnail (or thumbnail failed) - show video first frame
+        <Box
+          component="video"
+          src={video.videoUrl}
+          muted
+          playsInline
+          preload="metadata"
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            background: '#1a1a2e',
+          }}
+        />
+      ) : (
+        // Failed video - show fail image
+        <Box
+          component="img"
+          src={video.aspectRatio === 'landscape' ? '/gruvi/gruvi-fail-landscape.jpeg' : '/gruvi/gruvi-fail-portrait.jpeg'}
+          alt={video.songTitle || 'Video'}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
           }}
         />
       )}
@@ -442,7 +469,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
         }}
       >
         <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', mb: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {video.songTitle || 'Music Video'}
+          {video.songTitle || 'Video'}
         </Typography>
         {video.status === 'failed' ? (
           <Chip
@@ -460,7 +487,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
           />
         ) : (
           <Chip
-            label={getVideoCategoryLabel(video.videoCategory)}
+            label={getVideoCategoryLabel(video.videoCategory, video.videoType)}
             size="small"
             sx={{
               background: 'rgba(255,255,255,0.15)',
@@ -1172,7 +1199,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
       
       setNotification({
         open: true,
-        message: `Downloaded "${video.songTitle || 'Music Video'}"`,
+        message: `Downloaded "${video.songTitle || 'Video'}"`,
         severity: 'success'
       });
     } catch (error) {

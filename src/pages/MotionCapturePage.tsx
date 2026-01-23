@@ -338,20 +338,43 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isSelected, onClick, isToo
         },
       }}
     >
-      {/* Thumbnail Image */}
-      <Box
-        component="img"
-        src={video.thumbnailUrl || '/gruvi/octopus-portrait-wait.jpeg'}
-        alt={video.title || 'Video'}
-        sx={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
-        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-          e.currentTarget.src = '/gruvi/octopus-portrait-wait.jpeg';
-        }}
-      />
+      {/* Thumbnail Image or Video Frame */}
+      {video.thumbnailUrl ? (
+        <Box
+          component="img"
+          src={video.thumbnailUrl}
+          alt={video.title || 'Video'}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      ) : video.videoUrl ? (
+        <Box
+          component="video"
+          src={video.videoUrl}
+          muted
+          playsInline
+          preload="metadata"
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      ) : (
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        />
+      )}
 
       {/* Video Preview on Hover */}
       {videoUrlRef.current && isHovered && !isTooLong && (

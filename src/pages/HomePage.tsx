@@ -81,7 +81,7 @@ import UpgradePopup from '../components/UpgradePopup';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 // PauseRoundedIcon replaced with AudioEqualizer component
 import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
-import { AvatarShowcase, CTASection, MarketingSection, MarketingHeader, VideoShowcase } from '../components/marketing';
+import { AvatarShowcase, CTASection, MarketingSection, MarketingHeader, VideoShowcase, AngledVideoBackdrop } from '../components/marketing';
 import { AnimatedPrice, PulsingBadge } from '../components/pricing';
 import DiamondIcon from '@mui/icons-material/Diamond';
 
@@ -618,6 +618,18 @@ const musicVideosLandscape: VideoItem[] = [
     videoUrl: 'https://gruvimusic.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
     tag: "One Piece",
   },
+];
+
+// Portrait videos for hero backdrop - uses videos from AI Video Shorts page
+const heroBackdropVideos = [
+  { id: '564c0a00-5064-4713-a6d5-b191f2ab751f', thumbnail: '/thumbnails/skiis.jpeg' },
+  { id: 'b19d1ce4-6650-40dc-afdb-c3d12800ffac', thumbnail: '/thumbnails/chanel.jpeg' },
+  { id: 'ef807231-faab-4a97-a51b-08f574fbae52', thumbnail: '/thumbnails/rolex.jpeg' },
+  { id: '134e4aed-1b25-4d0b-a41a-73a683f76225', thumbnail: '/thumbnails/pokeball.jpeg' },
+  { id: '9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5', thumbnail: '/thumbnails/labubu.jpeg' },
+  { id: '18061fda-525d-4aba-a6b9-cbd41b1748c5', thumbnail: '/thumbnails/kiss.jpeg' },
+  { id: '5405e955-ec86-453e-ae75-ae666a0f693c', thumbnail: '/thumbnails/tent.jpeg' },
+  { id: 'da4d792d-a24b-45d8-87ba-5b41778496e8', thumbnail: '/thumbnails/duck.jpeg' },
 ];
 
 // Genres data - matching the genres we support with images
@@ -2059,17 +2071,19 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchVideoUrls = async () => {
       const urls: Record<string, string> = {};
-      const allVideos = [...promoVideosPortrait.slice(0, 3), ...promoVideosLandscape];
+      // Combine all videos and deduplicate by ID to avoid redundant fetches
+      const allVideos = [...promoVideosPortrait.slice(0, 3), ...promoVideosLandscape, ...heroBackdropVideos];
+      const uniqueVideoIds = Array.from(new Set(allVideos.map(v => v.id)));
 
       await Promise.all(
-        allVideos.map(async (video) => {
+        uniqueVideoIds.map(async (videoId) => {
           try {
-            const response = await api.get(`/api/public/videos/${video.id}`);
+            const response = await api.get(`/api/public/videos/${videoId}`);
             if (response.data?.videoUrl) {
-              urls[video.id] = response.data.videoUrl;
+              urls[videoId] = response.data.videoUrl;
             }
           } catch (err) {
-            console.error(`Error fetching video URL for ${video.id}:`, err);
+            console.error(`Error fetching video URL for ${videoId}:`, err);
           }
         })
       );
@@ -2140,31 +2154,16 @@ const HomePage: React.FC = () => {
         position: 'relative',
         zIndex: 1,
         background: 'transparent',
-        // Subtle gradient accent on edges
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: '-10%',
-          width: '50%',
-          height: '100%',
-          background: 'radial-gradient(ellipse at center, rgba(13, 185, 180, 0.12) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-          pointerEvents: 'none',
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          top: '20%',
-          right: '-10%',
-          width: '50%',
-          height: '80%',
-          background: 'radial-gradient(ellipse at center, rgba(6, 182, 212, 0.1) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-          pointerEvents: 'none',
-        },
+        overflow: 'hidden',
       }}>
-        <Container maxWidth="lg">
+        {/* Angled Video Backdrop */}
+        <AngledVideoBackdrop
+          videos={heroBackdropVideos}
+          angle={-12}
+          overlayOpacity={0.85}
+        />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
           <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
             {/* Badge */}
             <Chip
@@ -2207,7 +2206,7 @@ const HomePage: React.FC = () => {
                   component="span"
                   sx={{
                     display: 'block',
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 50%, #06B6D4 100%)',
+                    background: 'linear-gradient(90deg, #00D4FF 0%, #00E5C3 50%, #00CDB0 100%)',
                     backgroundSize: '200% 200%',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
@@ -2306,17 +2305,10 @@ const HomePage: React.FC = () => {
 
       </Box>
 
-      {/* Section Divider */}
-      <Box sx={{
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent)',
-        my: 0
-      }} />
-
       {/* ============================================
           PROMO VIDEOS SECTION - Using VideoShowcase Component
           ============================================ */}
-      <Box id="promo-videos-section" sx={{ position: 'relative', background: 'transparent' }}>
+      <Box id="promo-videos-section" sx={{ position: 'relative', background: 'transparent', mt: 8 }}>
         <VideoShowcase
           videos={promoVideosPortrait.slice(0, 3).map(v => ({
             id: v.id,
