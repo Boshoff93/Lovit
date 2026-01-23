@@ -441,7 +441,7 @@ export interface ScheduledPost {
   ctaType?: string;
   ctaUrl?: string;
   aspectRatio?: 'portrait' | 'landscape';
-  status: 'scheduled' | 'publishing' | 'published' | 'failed' | 'cancelled';
+  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled';
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;

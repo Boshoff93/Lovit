@@ -24,6 +24,7 @@ import {
   Add as AddIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
+  Warning as WarningIcon,
   HourglassTop as HourglassIcon,
   Close as CloseIcon,
   PlayArrow as PlayArrowIcon,
@@ -188,6 +189,8 @@ const ScheduledContentPage: React.FC = () => {
     switch (status) {
       case 'published':
         return { bg: 'rgba(34, 197, 94, 0.15)', border: '#22C55E', text: '#4ADE80' };
+      case 'partial':
+        return { bg: 'rgba(234, 179, 8, 0.15)', border: '#EAB308', text: '#FACC15' }; // Yellow for partial success
       case 'failed':
         return { bg: 'rgba(239, 68, 68, 0.15)', border: '#EF4444', text: '#F87171' };
       case 'publishing':
@@ -721,6 +724,7 @@ const ScheduledContentPage: React.FC = () => {
                                 {/* Title row with status icon */}
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: 2 }}>
                                   {post.status === 'published' && <CheckCircleIcon sx={{ fontSize: 10, color: '#22C55E' }} />}
+                                  {post.status === 'partial' && <WarningIcon sx={{ fontSize: 10, color: '#EAB308' }} />}
                                   {post.status === 'failed' && <ErrorIcon sx={{ fontSize: 10, color: '#EF4444' }} />}
                                   {post.status === 'publishing' && <HourglassIcon sx={{ fontSize: 10, color: '#F97316' }} />}
                                   {post.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 10, color: '#007AFF' }} />}
@@ -969,6 +973,7 @@ const ScheduledContentPage: React.FC = () => {
                               >
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                                   {post.status === 'published' && <CheckCircleIcon sx={{ fontSize: 8, color: '#22C55E' }} />}
+                                  {post.status === 'partial' && <WarningIcon sx={{ fontSize: 8, color: '#EAB308' }} />}
                                   {post.status === 'failed' && <ErrorIcon sx={{ fontSize: 8, color: '#EF4444' }} />}
                                   {post.status === 'publishing' && <HourglassIcon sx={{ fontSize: 8, color: '#F97316' }} />}
                                   {post.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 8, color: '#007AFF' }} />}
@@ -1101,11 +1106,13 @@ const ScheduledContentPage: React.FC = () => {
                       borderRadius: '20px',
                       bgcolor: selectedPost.status === 'scheduled' ? 'rgba(0,122,255,0.1)'
                         : selectedPost.status === 'published' ? 'rgba(34,197,94,0.1)'
+                        : selectedPost.status === 'partial' ? 'rgba(234,179,8,0.1)'
                         : selectedPost.status === 'failed' ? 'rgba(239,68,68,0.1)'
                         : selectedPost.status === 'publishing' ? 'rgba(249,115,22,0.1)'
                         : 'rgba(156,163,175,0.1)',
                       color: selectedPost.status === 'scheduled' ? '#007AFF'
                         : selectedPost.status === 'published' ? '#22C55E'
+                        : selectedPost.status === 'partial' ? '#EAB308'
                         : selectedPost.status === 'failed' ? '#EF4444'
                         : selectedPost.status === 'publishing' ? '#F97316'
                         : '#9CA3AF',
@@ -1113,6 +1120,7 @@ const ScheduledContentPage: React.FC = () => {
                   >
                     {selectedPost.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'published' && <CheckCircleIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'partial' && <WarningIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'failed' && <ErrorIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'publishing' && <HourglassIcon sx={{ fontSize: 16 }} />}
                     <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' }}>

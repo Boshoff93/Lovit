@@ -451,6 +451,10 @@ const CreateVideoPage: React.FC = () => {
   const [castPickerAnchor, setCastPickerAnchor] = useState<HTMLElement | null>(null);
   const [narrativePickerAnchor, setNarrativePickerAnchor] = useState<HTMLElement | null>(null);
 
+  // Narrative audio preview state
+  const [previewingNarrativeId, setPreviewingNarrativeId] = useState<string | null>(null);
+  const narrativeAudioRef = useRef<HTMLAudioElement | null>(null);
+
   // Song picker search and pagination (server-side)
   const [songSearchQuery, setSongSearchQuery] = useState('');
   const [songPickerPage, setSongPickerPage] = useState(1);
@@ -626,6 +630,21 @@ const CreateVideoPage: React.FC = () => {
     }
   }, [isUgcVoiceover, videoType]);
 
+  // Stop narrative audio preview when picker closes
+  useEffect(() => {
+    if (!narrativePickerOpen && previewingNarrativeId) {
+      narrativeAudioRef.current?.pause();
+      setPreviewingNarrativeId(null);
+    }
+  }, [narrativePickerOpen, previewingNarrativeId]);
+
+  // Cleanup narrative audio on unmount
+  useEffect(() => {
+    return () => {
+      narrativeAudioRef.current?.pause();
+    };
+  }, []);
+
   // Toggle character selection
   const handleCharacterToggle = (characterId: string) => {
     setSelectedCharacterIds(prev => {
@@ -748,6 +767,39 @@ const CreateVideoPage: React.FC = () => {
   const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, open: false }));
   }, []);
+
+  // Handle narrative audio preview
+  const handleNarrativePreview = useCallback((narrative: Narrative, e: React.MouseEvent) => {
+    e.stopPropagation(); // Don't select the narrative when clicking play
+
+    if (!narrative.audioUrl) return;
+
+    // If already playing this narrative, stop it
+    if (previewingNarrativeId === narrative.narrativeId) {
+      narrativeAudioRef.current?.pause();
+      setPreviewingNarrativeId(null);
+      return;
+    }
+
+    // Stop any currently playing audio
+    narrativeAudioRef.current?.pause();
+
+    // Create and play new audio
+    const audio = new Audio(narrative.audioUrl);
+    narrativeAudioRef.current = audio;
+    audio.play();
+    setPreviewingNarrativeId(narrative.narrativeId);
+
+    // Reset when audio ends
+    audio.onended = () => {
+      setPreviewingNarrativeId(null);
+    };
+  }, [previewingNarrativeId]);
+
+  // Helper to get narrator character for a narrative
+  const getNarratorForNarrative = useCallback((narrative: Narrative) => {
+    return characters.find(c => c.characterId === narrative.narratorId);
+  }, [characters]);
 
   return (
     <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 },width: '100%', minWidth: 0, display: "flex", flexDirection: "column", mx: 'auto' }}>
@@ -1001,20 +1053,37 @@ const CreateVideoPage: React.FC = () => {
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
                     {selectedNarrativeId ? (
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <RecordVoiceOverIcon sx={{ fontSize: 16, color: '#fff' }} />
-                      </Box>
+                      (() => {
+                        const selectedNarrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
+                        const narrator = selectedNarrative ? getNarratorForNarrative(selectedNarrative) : null;
+                        const narratorImage = narrator?.imageUrls?.[0];
+                        return narratorImage ? (
+                          <Avatar
+                            src={narratorImage}
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              flexShrink: 0,
+                              border: '2px solid #5856D6',
+                            }}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '50%',
+                              background: 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <RecordVoiceOverIcon sx={{ fontSize: 16, color: '#fff' }} />
+                          </Box>
+                        );
+                      })()
                     ) : (
                       <RecordVoiceOverIcon sx={{ fontSize: 20, color: 'rgba(255,255,255,0.5)' }} />
                     )}
@@ -2486,6 +2555,10 @@ const CreateVideoPage: React.FC = () => {
           ) : (
             filteredNarratives.map((narrative) => {
               const isSelected = selectedNarrativeId === narrative.narrativeId;
+              const isPlaying = previewingNarrativeId === narrative.narrativeId;
+              const narrator = getNarratorForNarrative(narrative);
+              const narratorImage = narrator?.imageUrls?.[0];
+
               return (
                 <ListItem key={narrative.narrativeId} disablePadding>
                   <ListItemButton
@@ -2501,22 +2574,34 @@ const CreateVideoPage: React.FC = () => {
                       '&:hover': { background: 'rgba(255,255,255,0.08)' },
                     }}
                   >
+                    {/* Narrator Avatar */}
                     <ListItemAvatar sx={{ minWidth: 48 }}>
-                      <Box
-                        sx={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: '50%',
-                          background: isSelected
-                            ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
-                            : 'rgba(88,86,214,0.2)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <RecordVoiceOverIcon sx={{ fontSize: 18, color: isSelected ? '#fff' : '#5856D6' }} />
-                      </Box>
+                      {narratorImage ? (
+                        <Avatar
+                          src={narratorImage}
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            border: isSelected ? '2px solid #5856D6' : '2px solid transparent',
+                          }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            background: isSelected
+                              ? 'linear-gradient(135deg, #5856D6 0%, #AF52DE 100%)'
+                              : 'rgba(88,86,214,0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <RecordVoiceOverIcon sx={{ fontSize: 18, color: isSelected ? '#fff' : '#5856D6' }} />
+                        </Box>
+                      )}
                     </ListItemAvatar>
 
                     <ListItemText
@@ -2537,6 +2622,27 @@ const CreateVideoPage: React.FC = () => {
                         }
                       }}
                     />
+
+                    {/* Play/Pause Preview Button */}
+                    {narrative.audioUrl && (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleNarrativePreview(narrative, e)}
+                        sx={{
+                          ml: 1,
+                          width: 32,
+                          height: 32,
+                          background: isPlaying ? 'rgba(88,86,214,0.3)' : 'rgba(255,255,255,0.08)',
+                          '&:hover': { background: isPlaying ? 'rgba(88,86,214,0.4)' : 'rgba(255,255,255,0.15)' },
+                        }}
+                      >
+                        {isPlaying ? (
+                          <PauseIcon sx={{ fontSize: 18, color: '#5856D6' }} />
+                        ) : (
+                          <PlayArrowIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)' }} />
+                        )}
+                      </IconButton>
+                    )}
 
                     {isSelected && (
                       <CheckIcon sx={{ color: '#5856D6', fontSize: 20, ml: 1 }} />
