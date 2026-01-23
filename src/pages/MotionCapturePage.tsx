@@ -39,7 +39,8 @@ import BrushIcon from '@mui/icons-material/Brush';
 import MicIcon from '@mui/icons-material/Mic';
 import GruviCoin from '../components/GruviCoin';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
-import { swapStudioApi, videosApi, charactersApi, Character } from '../services/api';
+import { swapStudioApi, videosApi, Character } from '../services/api';
+import { useGetUserVideosQuery, useGetUserCharactersQuery, Video } from '../store/apiSlice';
 
 // Custom stepper connector
 const GradientConnector = styled(StepConnector)(({ theme }) => ({
@@ -514,26 +515,59 @@ const MotionCapturePage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Data loading
-  const [userVideos, setUserVideos] = useState<VideoInfo[]>([]);
-  const [userCharacters, setUserCharacters] = useState<Character[]>([]);
-  const [loadingVideos, setLoadingVideos] = useState(false);
-  const [loadingCharacters, setLoadingCharacters] = useState(false);
   const [loadingDuration, setLoadingDuration] = useState(false);
 
-  // Pagination state
-  const [videoPage, setVideoPage] = useState(1);
-  const [hasMoreVideos, setHasMoreVideos] = useState(true);
-  const [loadingMoreVideos, setLoadingMoreVideos] = useState(false);
+  // Pagination state for additional video pages (beyond the first RTK Query page)
   const VIDEOS_PER_PAGE = 12;
+  const [additionalVideos, setAdditionalVideos] = useState<VideoInfo[]>([]);
+  const [videoPage, setVideoPage] = useState(1);
+  const [loadingMoreVideos, setLoadingMoreVideos] = useState(false);
 
+  // RTK Query for videos (first page)
+  const videosQuery = useGetUserVideosQuery(
+    { userId, page: 1, limit: VIDEOS_PER_PAGE },
+    { skip: !userId }
+  );
 
-  // Load user videos and characters
-  useEffect(() => {
-    if (userId) {
-      loadUserVideos();
-      loadUserCharacters();
-    }
-  }, [userId]);
+  // RTK Query for characters
+  const charactersQuery = useGetUserCharactersQuery(
+    { userId },
+    { skip: !userId }
+  );
+
+  // Filter and map videos to VideoInfo format
+  const firstPageVideos: VideoInfo[] = useMemo(() => {
+    if (!videosQuery.data?.videos) return [];
+    return videosQuery.data.videos
+      .filter((v: Video) => v.status === 'completed' && v.videoKey)
+      .map((v: Video) => ({
+        videoId: v.videoId,
+        videoKey: v.videoKey,
+        videoUrl: v.videoUrl,
+        thumbnailUrl: v.thumbnailUrl,
+        duration: v.duration,
+        title: v.songTitle || 'Untitled Video',
+      }));
+  }, [videosQuery.data?.videos]);
+
+  // Combine first page videos with additional loaded videos
+  const userVideos = useMemo(() => {
+    return [...firstPageVideos, ...additionalVideos];
+  }, [firstPageVideos, additionalVideos]);
+
+  // Get characters from RTK Query
+  const userCharacters = charactersQuery.data?.characters || [];
+
+  // Calculate if there are more videos to load
+  const hasMoreVideos = useMemo(() => {
+    if (!videosQuery.data) return false;
+    const loadedCount = firstPageVideos.length + additionalVideos.length;
+    return loadedCount < videosQuery.data.totalCount;
+  }, [videosQuery.data, firstPageVideos.length, additionalVideos.length]);
+
+  // Loading states
+  const loadingVideos = videosQuery.isLoading;
+  const loadingCharacters = charactersQuery.isLoading;
 
 
   // Reset swap mode to wan-replace if user selects a video > 30s and has Kling selected
@@ -550,17 +584,18 @@ const MotionCapturePage: React.FC = () => {
     }
   }, [selectedVideo, characterOrientation]);
 
-  const loadUserVideos = async (page: number = 1, append: boolean = false) => {
-    if (append) {
-      setLoadingMoreVideos(true);
-    } else {
-      setLoadingVideos(true);
-    }
+  // Load additional video pages (page 2+) - first page is handled by RTK Query
+  const loadMoreVideos = async () => {
+    if (!videosQuery.data || loadingMoreVideos) return;
+
+    setLoadingMoreVideos(true);
     try {
+      const nextPage = videoPage + 1;
       const response = await videosApi.getUserVideos(userId, {
-        page,
+        page: nextPage,
         limit: VIDEOS_PER_PAGE,
       });
+
       // Filter to only show completed videos that have a videoKey
       const videos: VideoInfo[] = (response.data.videos || [])
         .filter((v: any) => v.status === 'completed' && v.videoKey)
@@ -573,78 +608,17 @@ const MotionCapturePage: React.FC = () => {
           title: v.title || v.songTitle || v.name || 'Untitled Video',
         }));
 
-      if (append) {
-        setUserVideos(prev => [...prev, ...videos]);
-      } else {
-        setUserVideos(videos);
-      }
-
-      // Check if there are more videos to load
-      const totalCount = response.data.totalCount || response.data.videos?.length || 0;
-      const loadedCount = append ? userVideos.length + videos.length : videos.length;
-      setHasMoreVideos(loadedCount < totalCount);
-      setVideoPage(page);
-
-      // Fetch missing durations in the background
-      fetchMissingDurations(videos);
+      setAdditionalVideos(prev => [...prev, ...videos]);
+      setVideoPage(nextPage);
     } catch (err) {
-      console.error('Failed to load videos:', err);
+      console.error('Failed to load more videos:', err);
     } finally {
-      setLoadingVideos(false);
       setLoadingMoreVideos(false);
     }
   };
 
-  // Fetch durations for videos that don't have them (runs in background)
-  const fetchMissingDurations = async (videos: VideoInfo[]) => {
-    const videosWithoutDuration = videos.filter(v => !v.duration && v.videoUrl);
-    if (videosWithoutDuration.length === 0) return;
-
-    // Fetch durations in parallel (limit to 4 concurrent to avoid overwhelming browser)
-    const batchSize = 4;
-    for (let i = 0; i < videosWithoutDuration.length; i += batchSize) {
-      const batch = videosWithoutDuration.slice(i, i + batchSize);
-      const results = await Promise.allSettled(
-        batch.map(async (video) => {
-          try {
-            const duration = await getVideoDuration(video.videoUrl!);
-            return { videoId: video.videoId, duration };
-          } catch {
-            return null;
-          }
-        })
-      );
-
-      // Update state with fetched durations
-      const updates = results
-        .filter((r): r is PromiseFulfilledResult<{ videoId: string; duration: number } | null> =>
-          r.status === 'fulfilled' && r.value !== null
-        )
-        .map(r => r.value!);
-
-      if (updates.length > 0) {
-        setUserVideos(prev => prev.map(v => {
-          const update = updates.find(u => u.videoId === v.videoId);
-          return update ? { ...v, duration: update.duration } : v;
-        }));
-      }
-    }
-  };
-
   const handleLoadMoreVideos = () => {
-    loadUserVideos(videoPage + 1, true);
-  };
-
-  const loadUserCharacters = async () => {
-    setLoadingCharacters(true);
-    try {
-      const response = await charactersApi.getUserCharacters(userId);
-      setUserCharacters(response.data.characters || []);
-    } catch (err) {
-      console.error('Failed to load characters:', err);
-    } finally {
-      setLoadingCharacters(false);
-    }
+    loadMoreVideos();
   };
 
   // Handle video selection - fetch duration from video metadata if not available
@@ -663,10 +637,6 @@ const MotionCapturePage: React.FC = () => {
         const duration = await getVideoDuration(video.videoUrl);
         const videoWithDuration = { ...video, duration };
         setSelectedVideo(videoWithDuration);
-        // Also update the video in the list so duration is cached
-        setUserVideos(prev => prev.map(v =>
-          v.videoId === video.videoId ? videoWithDuration : v
-        ));
         setActiveStep(1);
       } catch (err) {
         console.error('Failed to get video duration:', err);

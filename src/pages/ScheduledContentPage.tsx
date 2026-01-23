@@ -34,6 +34,7 @@ import {
   scheduledPostsApi,
   ScheduledPost,
 } from '../services/api';
+import { useGetScheduledPostsQuery } from '../store/apiSlice';
 
 // TikTok icon component
 const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
@@ -54,8 +55,12 @@ type ViewMode = 'day' | 'week' | 'month';
 const ScheduledContentPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // RTK Query for scheduled posts
+  const scheduledPostsQuery = useGetScheduledPostsQuery();
+  const scheduledPosts = scheduledPostsQuery.data?.scheduledPosts || [];
+  const loading = scheduledPostsQuery.isLoading;
+
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -109,23 +114,6 @@ const ScheduledContentPage: React.FC = () => {
     setSelectedPost(post);
     setDetailsDialogOpen(true);
   }, []);
-
-  // Load scheduled posts
-  useEffect(() => {
-    loadScheduledPosts();
-  }, []);
-
-  const loadScheduledPosts = async () => {
-    try {
-      setLoading(true);
-      const response = await scheduledPostsApi.getScheduledPosts();
-      setScheduledPosts(response.data.scheduledPosts || []);
-    } catch (error) {
-      console.error('Failed to load scheduled posts:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Calendar navigation
   const navigateDate = (direction: 'prev' | 'next') => {
@@ -265,13 +253,8 @@ const ScheduledContentPage: React.FC = () => {
     try {
       setCancelling(true);
       await scheduledPostsApi.cancelScheduledPost(postToCancel.scheduleId);
-      setScheduledPosts(posts =>
-        posts.map(p =>
-          p.scheduleId === postToCancel.scheduleId
-            ? { ...p, status: 'cancelled' as const }
-            : p
-        )
-      );
+      // Refetch to get updated data
+      scheduledPostsQuery.refetch();
       setCancelDialogOpen(false);
       setPostToCancel(null);
     } catch (error) {

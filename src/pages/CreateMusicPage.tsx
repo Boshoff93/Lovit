@@ -23,7 +23,8 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import { songsApi, charactersApi } from '../services/api';
+import { songsApi, Character } from '../services/api';
+import { useGetUserCharactersQuery } from '../store/apiSlice';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
@@ -133,15 +134,6 @@ const languages: DropdownOption[] = [
   { id: 'ko', label: 'Korean', image: '/locales/ko.png' },
   { id: 'zh', label: 'Chinese', image: '/locales/zh.png' },
 ];
-
-// Character interface
-interface Character {
-  characterId: string;
-  characterName: string;
-  imageUrls?: string[];
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
-  description?: string;
-}
 
 // Helper to get character type icon, color, and gradient background
 const getCharacterTypeStyle = (characterType?: string): { icon: React.ElementType; color: string; iconBg: string; label: string } => {
@@ -343,10 +335,14 @@ const CreateMusicPage: React.FC = () => {
   // Validation
   const [showSongPromptError, setShowSongPromptError] = useState(false);
 
-  // Characters for AI assets selection
-  const [characters, setCharacters] = useState<Character[]>([]);
+  // Characters for AI assets selection - using RTK Query
+  const charactersQuery = useGetUserCharactersQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const characters = charactersQuery.data?.characters || [];
+  const isLoadingCharacters = charactersQuery.isLoading;
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
-  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
 
   // Notification
   const [notification, setNotification] = useState<{
@@ -354,23 +350,6 @@ const CreateMusicPage: React.FC = () => {
     message: string;
     severity: 'success' | 'error' | 'info';
   }>({ open: false, message: '', severity: 'success' });
-
-  // Load characters
-  useEffect(() => {
-    const loadCharacters = async () => {
-      if (!user?.userId) return;
-      setIsLoadingCharacters(true);
-      try {
-        const response = await charactersApi.getUserCharacters(user.userId);
-        setCharacters(response.data.characters || []);
-      } catch (error) {
-        console.error('Failed to load characters:', error);
-      } finally {
-        setIsLoadingCharacters(false);
-      }
-    };
-    loadCharacters();
-  }, [user?.userId]);
 
   // Handle URL parameters for "Generate Similar" functionality
   useEffect(() => {

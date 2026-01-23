@@ -17,6 +17,13 @@ import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi } from '../services/api';
+import {
+  useGetYouTubeStatusQuery,
+  useGetTikTokStatusQuery,
+  useGetInstagramStatusQuery,
+  useGetFacebookStatusQuery,
+  useGetLinkedInStatusQuery,
+} from '../store/apiSlice';
 import { GhostButton } from '../components/GhostButton';
 
 // Social platform configurations
@@ -141,10 +148,54 @@ interface ConnectionStatus {
 const ConnectedAccountsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector((state: RootState) => state.auth);
+  const userId = user?.userId || '';
 
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({});
+  // RTK Query hooks for each platform status
+  const youtubeQuery = useGetYouTubeStatusQuery({ userId }, { skip: !userId });
+  const tiktokQuery = useGetTikTokStatusQuery({ userId }, { skip: !userId });
+  const instagramQuery = useGetInstagramStatusQuery({ userId }, { skip: !userId });
+  const facebookQuery = useGetFacebookStatusQuery({ userId }, { skip: !userId });
+  const linkedinQuery = useGetLinkedInStatusQuery({ userId }, { skip: !userId });
+
+  // Local state for connect/disconnect loading (since those redirect)
+  const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Derive connectionStatus from RTK Query results
+  const connectionStatus: ConnectionStatus = useMemo(() => ({
+    youtube: {
+      connected: youtubeQuery.data?.connected || false,
+      channelName: youtubeQuery.data?.channelInfo?.channelTitle,
+      channelId: youtubeQuery.data?.channelInfo?.channelId,
+      loading: youtubeQuery.isLoading || connectingPlatform === 'youtube',
+    },
+    tiktok: {
+      connected: tiktokQuery.data?.connected || false,
+      username: tiktokQuery.data?.username,
+      avatarUrl: tiktokQuery.data?.avatarUrl,
+      loading: tiktokQuery.isLoading || connectingPlatform === 'tiktok',
+    },
+    instagram: {
+      connected: instagramQuery.data?.connected || false,
+      username: instagramQuery.data?.username,
+      avatarUrl: instagramQuery.data?.profilePictureUrl,
+      loading: instagramQuery.isLoading || connectingPlatform === 'instagram',
+    },
+    facebook: {
+      connected: facebookQuery.data?.connected || false,
+      channelName: facebookQuery.data?.pageName,
+      channelId: facebookQuery.data?.pageId,
+      loading: facebookQuery.isLoading || connectingPlatform === 'facebook',
+    },
+    linkedin: {
+      connected: linkedinQuery.data?.connected || false,
+      channelName: linkedinQuery.data?.name,
+      avatarUrl: linkedinQuery.data?.profilePictureUrl,
+      loading: linkedinQuery.isLoading || connectingPlatform === 'linkedin',
+    },
+  }), [youtubeQuery, tiktokQuery, instagramQuery, facebookQuery, linkedinQuery, connectingPlatform]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -197,311 +248,67 @@ const ConnectedAccountsPage: React.FC = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Check connection status on mount
-  useEffect(() => {
-    const checkConnections = async () => {
-      if (!user?.userId) return;
-
-      // Check YouTube
-      setConnectionStatus(prev => ({
-        ...prev,
-        youtube: { ...prev.youtube, loading: true, connected: false },
-        tiktok: { ...prev.tiktok, loading: true, connected: false },
-        instagram: { ...prev.instagram, loading: true, connected: false },
-        facebook: { ...prev.facebook, loading: true, connected: false },
-      }));
-
-      // Check YouTube status
-      try {
-        const response = await youtubeApi.getStatus(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          youtube: {
-            connected: response.data.connected,
-            channelName: response.data.channelInfo?.channelTitle,
-            channelId: response.data.channelInfo?.channelId,
-            loading: false,
-          },
-        }));
-      } catch (err) {
-        setConnectionStatus(prev => ({
-          ...prev,
-          youtube: { connected: false, loading: false },
-        }));
-      }
-
-      // Check TikTok status
-      try {
-        const response = await tiktokApi.getStatus(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          tiktok: {
-            connected: response.data.connected,
-            username: response.data.username,
-            avatarUrl: response.data.avatarUrl,
-            loading: false,
-          },
-        }));
-      } catch (err) {
-        setConnectionStatus(prev => ({
-          ...prev,
-          tiktok: { connected: false, loading: false },
-        }));
-      }
-
-      // Check Instagram status
-      try {
-        const response = await instagramApi.getStatus(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          instagram: {
-            connected: response.data.connected,
-            username: response.data.username,
-            avatarUrl: response.data.profilePictureUrl,
-            loading: false,
-          },
-        }));
-      } catch (err) {
-        setConnectionStatus(prev => ({
-          ...prev,
-          instagram: { connected: false, loading: false },
-        }));
-      }
-
-      // Check Facebook status (shares auth with Instagram)
-      try {
-        const response = await facebookApi.getStatus(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          facebook: {
-            connected: response.data.connected,
-            channelName: response.data.pageName,
-            channelId: response.data.pageId,
-            loading: false,
-          },
-        }));
-      } catch (err) {
-        setConnectionStatus(prev => ({
-          ...prev,
-          facebook: { connected: false, loading: false },
-        }));
-      }
-
-      // Check LinkedIn status
-      try {
-        const response = await linkedinApi.getStatus(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          linkedin: {
-            connected: response.data.connected,
-            channelName: response.data.name,
-            avatarUrl: response.data.profilePictureUrl,
-            loading: false,
-          },
-        }));
-      } catch (err) {
-        setConnectionStatus(prev => ({
-          ...prev,
-          linkedin: { connected: false, loading: false },
-        }));
-      }
-    };
-
-    checkConnections();
-  }, [user?.userId]);
-
   const handleConnect = async (platformId: string) => {
-    if (!user?.userId) return;
+    if (!userId) return;
 
-    if (platformId === 'youtube') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        youtube: { ...prev.youtube, loading: true },
-      }));
+    setConnectingPlatform(platformId);
 
-      try {
-        const response = await youtubeApi.getAuthUrl(user.userId);
-        window.location.href = response.data.authUrl;
-
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to start YouTube connection');
-        setConnectionStatus(prev => ({
-          ...prev,
-          youtube: { connected: false, loading: false },
-        }));
+    try {
+      let authUrl: string;
+      switch (platformId) {
+        case 'youtube':
+          authUrl = (await youtubeApi.getAuthUrl(userId)).data.authUrl;
+          break;
+        case 'tiktok':
+          authUrl = (await tiktokApi.getAuthUrl(userId)).data.authUrl;
+          break;
+        case 'instagram':
+        case 'facebook': // Facebook shares auth with Instagram
+          authUrl = (await instagramApi.getAuthUrl(userId)).data.authUrl;
+          break;
+        case 'linkedin':
+          authUrl = (await linkedinApi.getAuthUrl(userId)).data.authUrl;
+          break;
+        default:
+          throw new Error('Unknown platform');
       }
-    }
-
-    if (platformId === 'tiktok') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        tiktok: { ...prev.tiktok, loading: true },
-      }));
-
-      try {
-        const response = await tiktokApi.getAuthUrl(user.userId);
-        window.location.href = response.data.authUrl;
-
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to start TikTok connection');
-        setConnectionStatus(prev => ({
-          ...prev,
-          tiktok: { connected: false, loading: false },
-        }));
-      }
-    }
-
-    if (platformId === 'instagram') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        instagram: { ...prev.instagram, loading: true },
-      }));
-
-      try {
-        const response = await instagramApi.getAuthUrl(user.userId);
-        window.location.href = response.data.authUrl;
-
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to start Instagram connection');
-        setConnectionStatus(prev => ({
-          ...prev,
-          instagram: { connected: false, loading: false },
-        }));
-      }
-    }
-
-    if (platformId === 'facebook') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        facebook: { ...prev.facebook, loading: true },
-      }));
-
-      try {
-        const response = await instagramApi.getAuthUrl(user.userId);
-        window.location.href = response.data.authUrl;
-
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to start Facebook connection');
-        setConnectionStatus(prev => ({
-          ...prev,
-          facebook: { connected: false, loading: false },
-        }));
-      }
-    }
-
-    if (platformId === 'linkedin') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        linkedin: { ...prev.linkedin, loading: true },
-      }));
-
-      try {
-        const response = await linkedinApi.getAuthUrl(user.userId);
-        window.location.href = response.data.authUrl;
-
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to start LinkedIn connection');
-        setConnectionStatus(prev => ({
-          ...prev,
-          linkedin: { connected: false, loading: false },
-        }));
-      }
+      window.location.href = authUrl;
+    } catch (err: any) {
+      setError(err.response?.data?.error || `Failed to start ${platformId} connection`);
+      setConnectingPlatform(null);
     }
   };
 
   const handleDisconnect = async (platformId: string) => {
-    if (!user?.userId) return;
+    if (!userId) return;
 
-    if (platformId === 'youtube') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        youtube: { ...prev.youtube, loading: true },
-      }));
+    setConnectingPlatform(platformId);
 
-      try {
-        await youtubeApi.disconnect(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          youtube: { connected: false, loading: false },
-        }));
-        setSuccess('YouTube account disconnected');
-        setTimeout(() => setSuccess(null), 3000);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to disconnect YouTube');
-        setConnectionStatus(prev => ({
-          ...prev,
-          youtube: { ...prev.youtube, loading: false },
-        }));
+    try {
+      switch (platformId) {
+        case 'youtube':
+          await youtubeApi.disconnect(userId);
+          youtubeQuery.refetch();
+          break;
+        case 'tiktok':
+          await tiktokApi.disconnect(userId);
+          tiktokQuery.refetch();
+          break;
+        case 'instagram':
+          await instagramApi.disconnect(userId);
+          instagramQuery.refetch();
+          break;
+        case 'linkedin':
+          await linkedinApi.disconnect(userId);
+          linkedinQuery.refetch();
+          break;
       }
-    }
-
-    if (platformId === 'tiktok') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        tiktok: { ...prev.tiktok, loading: true },
-      }));
-
-      try {
-        await tiktokApi.disconnect(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          tiktok: { connected: false, loading: false },
-        }));
-        setSuccess('TikTok account disconnected');
-        setTimeout(() => setSuccess(null), 3000);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to disconnect TikTok');
-        setConnectionStatus(prev => ({
-          ...prev,
-          tiktok: { ...prev.tiktok, loading: false },
-        }));
-      }
-    }
-
-    if (platformId === 'instagram') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        instagram: { ...prev.instagram, loading: true },
-      }));
-
-      try {
-        await instagramApi.disconnect(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          instagram: { connected: false, loading: false },
-        }));
-        setSuccess('Instagram account disconnected');
-        setTimeout(() => setSuccess(null), 3000);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to disconnect Instagram');
-        setConnectionStatus(prev => ({
-          ...prev,
-          instagram: { ...prev.instagram, loading: false },
-        }));
-      }
-    }
-
-    if (platformId === 'linkedin') {
-      setConnectionStatus(prev => ({
-        ...prev,
-        linkedin: { ...prev.linkedin, loading: true },
-      }));
-
-      try {
-        await linkedinApi.disconnect(user.userId);
-        setConnectionStatus(prev => ({
-          ...prev,
-          linkedin: { connected: false, loading: false },
-        }));
-        setSuccess('LinkedIn account disconnected');
-        setTimeout(() => setSuccess(null), 3000);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to disconnect LinkedIn');
-        setConnectionStatus(prev => ({
-          ...prev,
-          linkedin: { ...prev.linkedin, loading: false },
-        }));
-      }
+      setSuccess(`${platformId.charAt(0).toUpperCase() + platformId.slice(1)} account disconnected`);
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || `Failed to disconnect ${platformId}`);
+    } finally {
+      setConnectingPlatform(null);
     }
   };
 

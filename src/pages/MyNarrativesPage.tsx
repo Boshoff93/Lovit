@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -29,7 +29,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { narrativesApi, Narrative } from '../services/api';
+import { useGetUserNarrativesQuery, useDeleteNarrativeMutation } from '../store/apiSlice';
+import { Narrative } from '../services/api';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -117,11 +118,61 @@ const MyNarrativesPage: React.FC = () => {
   const isAuthenticated = !!token;
   const userId = user?.userId || '';
 
-  // Data state
-  const [narratives, setNarratives] = useState<Narrative[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
+  // Track processing IDs for completion notifications
+  const processingIdsRef = useRef<Set<string>>(new Set());
+
+  // RTK Query - fetches and caches narratives, polls when processing
+  const { data, isLoading, isFetching, error: queryError } = useGetUserNarrativesQuery(
+    { userId },
+    {
+      skip: !userId || !isAuthenticated,
+      // Poll every 5 seconds when there are processing narratives
+      pollingInterval: processingIdsRef.current.size > 0 ? 5000 : 0,
+    }
+  );
+
+  // Sort and derive narratives from query data
+  const narratives = useMemo(() => {
+    if (!data?.narratives) return [];
+    return [...data.narratives].sort((a, b) => b.createdAt - a.createdAt);
+  }, [data?.narratives]);
+
+  const totalCount = narratives.length;
+  const error = queryError ? 'Failed to load narratives' : null;
+
+  // Check for processing narratives and update polling
+  const hasProcessing = useMemo(() => {
+    const currentProcessingIds = narratives
+      .filter((n) => n.status === 'processing')
+      .map((n) => n.narrativeId);
+    return currentProcessingIds.length > 0;
+  }, [narratives]);
+
+  // Update processing IDs ref and show completion notifications
+  useEffect(() => {
+    const currentProcessingIds = narratives
+      .filter((n) => n.status === 'processing')
+      .map((n) => n.narrativeId);
+
+    // Check for completed narratives
+    const completedIds = Array.from(processingIdsRef.current).filter(
+      id => !currentProcessingIds.includes(id)
+    );
+
+    if (completedIds.length > 0 && processingIdsRef.current.size > 0) {
+      setNotification({
+        open: true,
+        message: completedIds.length === 1 ? 'Your voiceover is ready! 🎙️' : `${completedIds.length} voiceovers are ready! 🎙️`,
+        severity: 'success'
+      });
+    }
+
+    // Update tracking
+    processingIdsRef.current = new Set(currentProcessingIds);
+  }, [narratives]);
+
+  // Delete mutation
+  const [deleteNarrative, { isLoading: isDeleting }] = useDeleteNarrativeMutation();
 
   // Audio state
   const [playingId, setPlayingId] = useState<string | null>(null);
@@ -136,7 +187,6 @@ const MyNarrativesPage: React.FC = () => {
 
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -148,91 +198,6 @@ const MyNarrativesPage: React.FC = () => {
     message: '',
     severity: 'success'
   });
-
-  // Polling for processing narratives
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const processingIdsRef = useRef<Set<string>>(new Set());
-
-  // Load narratives
-  const loadNarratives = useCallback(async (showLoading = true) => {
-    if (!userId || !isAuthenticated) return;
-
-    if (showLoading) setIsLoading(true);
-    try {
-      setError(null);
-      const response = await narrativesApi.getUserNarratives(userId);
-      let fetched = response.data.narratives || [];
-
-      // Sort by createdAt descending (newest first)
-      fetched = fetched.sort((a: Narrative, b: Narrative) => b.createdAt - a.createdAt);
-
-      setNarratives(fetched);
-      setTotalCount(fetched.length);
-
-      // Return processing IDs for polling
-      const processingIds = fetched
-        .filter((n: Narrative) => n.status === 'processing')
-        .map((n: Narrative) => n.narrativeId);
-      return processingIds as string[];
-    } catch (err: any) {
-      console.error('Failed to load narratives:', err);
-      setError(err.response?.data?.error || 'Failed to load narratives');
-      return [] as string[];
-    } finally {
-      if (showLoading) setIsLoading(false);
-    }
-  }, [userId, isAuthenticated]);
-
-  // Start polling for processing updates
-  const startPolling = useCallback((initialProcessingIds: string[]) => {
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-    }
-
-    initialProcessingIds.forEach(id => processingIdsRef.current.add(id));
-
-    pollingIntervalRef.current = setInterval(async () => {
-      const currentProcessingIds = await loadNarratives(false);
-      const processingIds = currentProcessingIds || [];
-
-      const completedIds = Array.from(processingIdsRef.current).filter(
-        id => !processingIds.includes(id)
-      );
-
-      if (completedIds.length > 0) {
-        setNotification({
-          open: true,
-          message: completedIds.length === 1 ? 'Your voiceover is ready! 🎙️' : `${completedIds.length} voiceovers are ready! 🎙️`,
-          severity: 'success'
-        });
-        completedIds.forEach(id => processingIdsRef.current.delete(id));
-      }
-
-      processingIds.forEach(id => processingIdsRef.current.add(id));
-
-      if (processingIds.length === 0 && pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-      }
-    }, 5000);
-  }, [loadNarratives]);
-
-  // Load narratives on mount
-  useEffect(() => {
-    if (userId && isAuthenticated) {
-      loadNarratives().then((processingIds) => {
-        if (processingIds && processingIds.length > 0) {
-          startPolling(processingIds);
-        }
-      });
-    }
-
-    return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-      }
-    };
-  }, [userId, isAuthenticated, loadNarratives, startPolling]);
 
   // Cleanup audio on unmount
   useEffect(() => {
@@ -311,10 +276,7 @@ const MyNarrativesPage: React.FC = () => {
     if (!selectedNarrative) return;
 
     try {
-      setIsDeleting(true);
-      await narrativesApi.deleteNarrative(userId, selectedNarrative.narrativeId);
-      setNarratives(prev => prev.filter(n => n.narrativeId !== selectedNarrative.narrativeId));
-      setTotalCount(prev => prev - 1);
+      await deleteNarrative({ userId, narrativeId: selectedNarrative.narrativeId }).unwrap();
 
       if (playingId === selectedNarrative.narrativeId) {
         if (audioRef.current) {
@@ -336,7 +298,6 @@ const MyNarrativesPage: React.FC = () => {
         severity: 'error'
       });
     } finally {
-      setIsDeleting(false);
       setDeleteDialogOpen(false);
       setSelectedNarrative(null);
     }
@@ -468,7 +429,6 @@ const MyNarrativesPage: React.FC = () => {
       {error && (
         <Alert
           severity="error"
-          onClose={() => setError(null)}
           sx={{
             mb: 2,
             maxWidth: 400,

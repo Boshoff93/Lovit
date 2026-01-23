@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -20,6 +20,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import { useGetUserCharactersQuery, useDeleteCharacterMutation } from '../store/apiSlice';
+import { Character } from '../services/api';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -29,7 +31,6 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import { charactersApi } from '../services/api';
 import { GhostButton } from '../components/GhostButton';
 
 // Avatar with skeleton loading state
@@ -79,18 +80,6 @@ const LoadingAvatar: React.FC<{
     </Box>
   );
 };
-
-interface Character {
-  characterId: string;
-  characterName: string;
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
-  gender?: string;
-  age?: string;
-  description?: string;
-  imageUrls?: string[];
-  imageKeys?: string[];
-  createdAt: string;
-}
 
 // Helper to get character type icon and color (matching CreateAIAssetPage icons)
 const getCharacterTypeIcon = (characterType?: string, description?: string): { icon: React.ElementType; color: string } => {
@@ -152,36 +141,24 @@ const CharacterAvatar: React.FC<{
 const CharactersPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
-  
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // RTK Query - auto-fetches, caches, and shows stale data while revalidating
+  const { data, isLoading, isFetching } = useGetUserCharactersQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const characters = data?.characters || [];
+
+  // Delete mutation
+  const [deleteCharacter, { isLoading: isDeleting }] = useDeleteCharacterMutation();
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
     severity: 'success' | 'error';
   }>({ open: false, message: '', severity: 'success' });
-
-  const fetchCharacters = useCallback(async () => {
-    if (!user?.userId) return;
-    
-    try {
-      setIsLoading(true);
-      const response = await charactersApi.getUserCharacters(user.userId);
-      setCharacters(response.data.characters || []);
-    } catch (error) {
-      console.error('Error fetching characters:', error);
-      setCharacters([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.userId]);
-
-  useEffect(() => {
-    fetchCharacters();
-  }, [fetchCharacters]);
 
   const handleDeleteClick = (e: React.MouseEvent, character: Character) => {
     e.stopPropagation(); // Prevent navigating to edit page
@@ -191,11 +168,9 @@ const CharactersPage: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!user?.userId || !characterToDelete) return;
-    
-    setIsDeleting(true);
+
     try {
-      await charactersApi.deleteCharacter(user.userId, characterToDelete.characterId);
-      setCharacters(prev => prev.filter(c => c.characterId !== characterToDelete.characterId));
+      await deleteCharacter({ userId: user.userId, characterId: characterToDelete.characterId }).unwrap();
       setNotification({
         open: true,
         message: `"${characterToDelete.characterName}" deleted successfully`,
@@ -209,7 +184,6 @@ const CharactersPage: React.FC = () => {
         severity: 'error'
       });
     } finally {
-      setIsDeleting(false);
       setDeleteDialogOpen(false);
       setCharacterToDelete(null);
     }

@@ -46,7 +46,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { RootState } from '../store/store';
-import { videosApi, charactersApi, songsApi, narrativesApi, Narrative } from '../services/api';
+import { useGetUserCharactersQuery, useGetUserNarrativesQuery, useGetUserSongsQuery } from '../store/apiSlice';
+import { videosApi, songsApi, Narrative } from '../services/api';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -393,20 +394,42 @@ const CreateVideoPage: React.FC = () => {
   // Avatar video duration (for ugc-avatar mode): 5, 10, or 15 seconds
   const [avatarVideoDuration, setAvatarVideoDuration] = useState<5 | 10 | 15>(5);
 
+  // RTK Query for characters - cached and shared across app
+  const { data: charactersData, isLoading: isLoadingCharacters } = useGetUserCharactersQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const characters = charactersData?.characters || [];
+
+  // RTK Query for narratives - cached and shared across app
+  const { data: narrativesData, isLoading: isLoadingNarratives } = useGetUserNarrativesQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  // Only show completed narratives
+  const narratives = (narrativesData?.narratives || []).filter((n: Narrative) => n.status === 'completed');
+
+  // RTK Query for songs (first page) - cached and shared across app
+  const { data: songsData, isLoading: isLoadingSongsInitial } = useGetUserSongsQuery(
+    { userId: user?.userId || '', page: 1, limit: 20 },
+    { skip: !user?.userId }
+  );
+  // Filter to completed songs only
+  const cachedSongs = (songsData?.songs || []).filter((s: Song) => s.status === 'completed');
+
+  // Additional songs from "load more" - local state for pagination
+  const [additionalSongs, setAdditionalSongs] = useState<Song[]>([]);
+  const songs = [...cachedSongs, ...additionalSongs.filter(s => !cachedSongs.find(c => c.songId === s.songId))];
+  const isLoadingSongs = isLoadingSongsInitial;
+
   // Narrative selection state (for narrative videos)
-  const [narratives, setNarratives] = useState<Narrative[]>([]);
   const [selectedNarrativeId, setSelectedNarrativeId] = useState<string | null>(null);
-  const [isLoadingNarratives, setIsLoadingNarratives] = useState(false);
 
   // Song selection state
-  const [songs, setSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState<string | null>(urlSongId || null);
-  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
 
   // Character selection state
-  const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
-  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
 
   const [notification, setNotification] = useState<{
     open: boolean;
@@ -496,14 +519,19 @@ const CreateVideoPage: React.FC = () => {
   // Order of character types for display
   const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App', 'Business'];
 
-  // Fetch songs for picker with server-side search/pagination
+  // Load more songs for pagination (beyond cached first page)
   const fetchSongsForPicker = useCallback(async (page = 1, search = '', append = false) => {
     if (!user?.userId) return;
 
+    // Page 1 without search is handled by RTK Query cache
+    if (page === 1 && !search) {
+      setSongPickerPage(1);
+      setSongPickerTotalCount(songsData?.totalCount || cachedSongs.length);
+      return;
+    }
+
     if (append) {
       setIsLoadingMoreSongs(true);
-    } else {
-      setIsLoadingSongs(true);
     }
 
     try {
@@ -520,9 +548,10 @@ const CreateVideoPage: React.FC = () => {
       const pagination = response.data?.pagination;
 
       if (append) {
-        setSongs(prev => [...prev, ...fetchedSongs]);
+        setAdditionalSongs(prev => [...prev, ...fetchedSongs]);
       } else {
-        setSongs(fetchedSongs);
+        // For search results, replace additional songs
+        setAdditionalSongs(fetchedSongs);
       }
 
       if (pagination?.totalCount !== undefined) {
@@ -534,15 +563,9 @@ const CreateVideoPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch songs:', error);
     } finally {
-      setIsLoadingSongs(false);
       setIsLoadingMoreSongs(false);
     }
-  }, [user?.userId]);
-
-  // Initial fetch on mount
-  useEffect(() => {
-    fetchSongsForPicker(1, '');
-  }, [fetchSongsForPicker]);
+  }, [user?.userId, songsData?.totalCount, cachedSongs.length]);
 
   // Track previous search query to detect actual changes
   const prevSongSearchQueryRef = useRef(songSearchQuery);
@@ -571,47 +594,12 @@ const CreateVideoPage: React.FC = () => {
     };
   }, [songSearchQuery, songPickerOpen, fetchSongsForPicker]);
 
-  // Fetch user's characters on mount
+  // Set initial song picker count from RTK Query data
   useEffect(() => {
-    const fetchCharacters = async () => {
-      if (!user?.userId) return;
-
-      setIsLoadingCharacters(true);
-      try {
-        const response = await charactersApi.getUserCharacters(user.userId);
-        setCharacters(response.data?.characters || []);
-      } catch (error) {
-        console.error('Failed to fetch characters:', error);
-      } finally {
-        setIsLoadingCharacters(false);
-      }
-    };
-
-    fetchCharacters();
-  }, [user?.userId]);
-
-  // Fetch user's narratives on mount
-  useEffect(() => {
-    const fetchNarratives = async () => {
-      if (!user?.userId) return;
-
-      setIsLoadingNarratives(true);
-      try {
-        const response = await narrativesApi.getUserNarratives(user.userId);
-        // Filter to only completed narratives with audio
-        const completedNarratives = (response.data?.narratives || []).filter(
-          (n: Narrative) => n.status === 'completed' && n.audioUrl
-        );
-        setNarratives(completedNarratives);
-      } catch (error) {
-        console.error('Failed to fetch narratives:', error);
-      } finally {
-        setIsLoadingNarratives(false);
-      }
-    };
-
-    fetchNarratives();
-  }, [user?.userId]);
+    if (songsData?.totalCount) {
+      setSongPickerTotalCount(songsData.totalCount);
+    }
+  }, [songsData?.totalCount]);
 
   // Handle URL params for preselecting narrative and video type
   useEffect(() => {

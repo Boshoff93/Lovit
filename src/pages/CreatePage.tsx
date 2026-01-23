@@ -33,6 +33,7 @@ import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAudioPlayer, Song as AudioSong } from '../contexts/AudioPlayerContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
+import { useGetUserCharactersQuery, useGetUserSongsQuery } from '../store/apiSlice';
 import { songsApi, videosApi, charactersApi } from '../services/api';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
@@ -501,11 +502,20 @@ const CreatePage: React.FC = () => {
   const [hairLengthPickerOpen, setHairLengthPickerOpen] = useState(false);
   const [eyeColorPickerOpen, setEyeColorPickerOpen] = useState(false);
   
-  // Fetched data
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+  // RTK Query for characters - cached and shared across app
+  const { data: charactersData, isLoading: isLoadingCharacters } = useGetUserCharactersQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const characters = charactersData?.characters || [];
+
+  // RTK Query for songs - cached and shared across app
+  const { data: songsData, isLoading: isLoadingSongs } = useGetUserSongsQuery(
+    { userId: user?.userId || '', page: 1, limit: 20 },
+    { skip: !user?.userId }
+  );
+  // Filter to completed songs only for song picker
+  const songs = (songsData?.songs || []).filter((s: Song) => s.status === 'completed');
   const [songSearchQuery, setSongSearchQuery] = useState('');
   const [songSearchResults, setSongSearchResults] = useState<Song[]>([]);
   const [isSearchingSongs, setIsSearchingSongs] = useState(false);
@@ -517,7 +527,8 @@ const CreatePage: React.FC = () => {
   const [songCastCanScroll, setSongCastCanScroll] = useState({ left: false, right: false });
   const [videoCastCanScroll, setVideoCastCanScroll] = useState({ left: false, right: false });
   const [songsPage, setSongsPage] = useState(1);
-  const [hasMoreSongs, setHasMoreSongs] = useState(true);
+  const [additionalSongs, setAdditionalSongs] = useState<Song[]>([]); // Songs from "load more" pagination
+  const [hasMoreSongsState, setHasMoreSongsState] = useState(true);
   const [isLoadingMoreSongs, setIsLoadingMoreSongs] = useState(false);
   
   const [notification, setNotification] = useState<{
@@ -681,68 +692,31 @@ const CreatePage: React.FC = () => {
     }
   }, [location.search]);
 
-  // Fetch user's characters and songs
+  // Handle pre-selected song from URL (if not in cached data)
+  const [preSelectedSongData, setPreSelectedSongData] = useState<Song | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const preSelectedSong = params.get('song');
 
-    const fetchCharacters = async () => {
-      if (!user?.userId) return;
-
-      setIsLoadingCharacters(true);
-      try {
-        const response = await charactersApi.getUserCharacters(user.userId);
-        setCharacters(response.data.characters || []);
-      } catch (error) {
-        console.error('Error fetching characters:', error);
-      } finally {
-        setIsLoadingCharacters(false);
-      }
-    };
-
-    const fetchSongs = async () => {
-      if (!user?.userId) return;
-
-      setIsLoadingSongs(true);
-      setSongsPage(1);
-      try {
-        // Fetch recent songs for recommendations (limit 20)
-        const response = await songsApi.getUserSongs(user.userId, { page: 1, limit: 20 });
-        // Only show completed songs
-        const completedSongs = (response.data.songs || [])
-          .filter((s: Song) => s.status === 'completed');
-        setSongs(completedSongs);
-
-        // Check if there are more songs
-        const pagination = response.data.pagination;
-        setHasMoreSongs(pagination?.hasNextPage ?? completedSongs.length >= 20);
-
-        // If a song is pre-selected (from URL) but not in the list, fetch it separately
-        const preSelectedSong = params.get('song');
-        if (preSelectedSong && !completedSongs.find((s: Song) => s.songId === preSelectedSong)) {
-          try {
-            const singleSongResponse = await songsApi.getSongsByIds(user.userId, [preSelectedSong]);
-            const fetchedSong = singleSongResponse.data?.songs?.[0];
-            if (fetchedSong && fetchedSong.status === 'completed') {
-              // Add to beginning, but ensure no duplicates
-              setSongs(prev => {
-                const filtered = prev.filter(s => s.songId !== fetchedSong.songId);
-                return [fetchedSong, ...filtered];
-              });
-            }
-          } catch (err) {
-            console.warn('Could not fetch pre-selected song:', err);
+    // If song is pre-selected but not in cached songs, fetch it
+    if (preSelectedSong && user?.userId && songs.length > 0 && !songs.find((s: Song) => s.songId === preSelectedSong)) {
+      songsApi.getSongsByIds(user.userId, [preSelectedSong])
+        .then(response => {
+          const fetchedSong = response.data?.songs?.[0];
+          if (fetchedSong && fetchedSong.status === 'completed') {
+            setPreSelectedSongData(fetchedSong);
           }
-        }
-      } catch (error) {
-        console.error('Error fetching songs:', error);
-      } finally {
-        setIsLoadingSongs(false);
-      }
-    };
+        })
+        .catch(err => console.warn('Could not fetch pre-selected song:', err));
+    }
+  }, [location.search, user?.userId, songs]);
 
-    fetchCharacters();
-    fetchSongs();
-  }, [user?.userId, location.search]);
+  // Combine cached songs with pre-selected song and additional loaded songs
+  const allSongs = [
+    ...(preSelectedSongData && !songs.find(s => s.songId === preSelectedSongData.songId) ? [preSelectedSongData] : []),
+    ...songs,
+    ...additionalSongs.filter(s => !songs.find(existing => existing.songId === s.songId)),
+  ];
 
   // Server-side song search with debounce
   useEffect(() => {
@@ -786,31 +760,31 @@ const CreatePage: React.FC = () => {
 
   // Load more songs for pagination
   const loadMoreSongs = useCallback(async () => {
-    if (!user?.userId || isLoadingMoreSongs || !hasMoreSongs) return;
-    
+    if (!user?.userId || isLoadingMoreSongs || !hasMoreSongsState) return;
+
     setIsLoadingMoreSongs(true);
     const nextPage = songsPage + 1;
-    
+
     try {
       const response = await songsApi.getUserSongs(user.userId, { page: nextPage, limit: 20 });
       const newSongs = (response.data.songs || []).filter((s: Song) => s.status === 'completed');
-      
-      setSongs(prev => {
-        // Avoid duplicates
+
+      setAdditionalSongs(prev => {
+        // Avoid duplicates with existing additional songs
         const existingIds = new Set(prev.map(s => s.songId));
         const uniqueNewSongs = newSongs.filter((s: Song) => !existingIds.has(s.songId));
         return [...prev, ...uniqueNewSongs];
       });
-      
+
       setSongsPage(nextPage);
       const pagination = response.data.pagination;
-      setHasMoreSongs(pagination?.hasNextPage ?? newSongs.length >= 20);
+      setHasMoreSongsState(pagination?.hasNextPage ?? newSongs.length >= 20);
     } catch (error) {
       console.error('Error loading more songs:', error);
     } finally {
       setIsLoadingMoreSongs(false);
     }
-  }, [user?.userId, songsPage, isLoadingMoreSongs, hasMoreSongs]);
+  }, [user?.userId, songsPage, isLoadingMoreSongs, hasMoreSongsState]);
 
   const handleCloseNotification = useCallback((_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return; // Don't close on clickaway
@@ -2497,9 +2471,9 @@ const CreatePage: React.FC = () => {
                       <ListItemButton
                         onClick={() => {
                           setSelectedSong(song.songId);
-                          // If song is from search results, add it to songs array so it can be displayed
-                          if (!songs.find(s => s.songId === song.songId)) {
-                            setSongs(prev => [song, ...prev]);
+                          // If song is from search results, add it to additional songs so it can be displayed
+                          if (!allSongs.find(s => s.songId === song.songId)) {
+                            setAdditionalSongs(prev => [song, ...prev]);
                           }
                           setSongPickerOpen(false);
                           setSongSearchQuery('');
@@ -2623,7 +2597,7 @@ const CreatePage: React.FC = () => {
                     </ListItem>
                   ))}
                       {/* Load More Button - only show when not searching and there are more songs */}
-                      {!isSearching && hasMoreSongs && (
+                      {!isSearching && hasMoreSongsState && (
                         <Box sx={{ py: 2, textAlign: 'center' }}>
                           <Button
                             onClick={loadMoreSongs}

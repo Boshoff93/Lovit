@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -25,7 +25,8 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
-import { charactersApi } from '../services/api';
+import { charactersApi, Character } from '../services/api';
+import { useGetUserCharactersQuery } from '../store/apiSlice';
 import { useLayout } from '../components/Layout';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 
@@ -178,9 +179,9 @@ const CreateCharacterPage: React.FC = () => {
 
   // Edit mode state
   const isEditMode = !!characterId;
-  const [isLoadingCharacter, setIsLoadingCharacter] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
   const [imagesChanged, setImagesChanged] = useState(false);
+  const [formPopulated, setFormPopulated] = useState(false);
 
   // Character state
   const [characterName, setCharacterName] = useState('');
@@ -198,80 +199,73 @@ const CreateCharacterPage: React.FC = () => {
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
 
-  // Fetch character data in edit mode
-  const fetchCharacter = useCallback(async () => {
-    if (!isEditMode || !user?.userId || !characterId) return;
+  // RTK Query for characters (used in edit mode to find the character)
+  const charactersQuery = useGetUserCharactersQuery(
+    { userId: user?.userId || '' },
+    { skip: !isEditMode || !user?.userId }
+  );
+  const isLoadingCharacter = charactersQuery.isLoading;
 
-    setIsLoadingCharacter(true);
-    try {
-      const response = await charactersApi.getUserCharacters(user.userId);
-      const characters = response.data.characters || [];
-      const character = characters.find((c: any) => c.characterId === characterId);
+  // Find the character being edited from cached data
+  const editingCharacter = useMemo(() => {
+    if (!isEditMode || !characterId || !charactersQuery.data?.characters) return null;
+    return charactersQuery.data.characters.find((c: Character) => c.characterId === characterId);
+  }, [isEditMode, characterId, charactersQuery.data?.characters]);
 
-      if (character) {
-        setCharacterName(character.characterName || '');
-        setCharacterGender(character.gender || 'Male');
-        setCharacterAge(character.age || 'Child');
-        setExistingImageUrls(character.imageUrls || []);
-
-        // Parse the description to extract user-written description vs auto-generated traits
-        const desc = character.description || '';
-
-        // Check for character kind
-        if (desc.includes('Place')) {
-          setCharacterKind('Place');
-        } else if (desc.includes('App')) {
-          setCharacterKind('App');
-        } else if (desc.includes('Product')) {
-          setCharacterKind('Product');
-        } else if (desc.includes('Business')) {
-          setCharacterKind('Business');
-        } else if (desc.includes('Non-Human')) {
-          setCharacterKind('Non-Human');
-        }
-
-        // Extract hair color/length/eye color if present in description
-        const hairColorMatch = desc.match(/Hair: ([^,]+),/);
-        if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
-        const hairLengthMatch = desc.match(/Hair: [^,]+, ([^.]+)/);
-        if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
-        const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
-        if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
-
-        // Extract only the user-written description (the part before the auto-generated traits)
-        // The auto-generated part starts with "Human," or "Non-Human,"
-        const userDescParts = desc.split(/\.\s*(Human|Non-Human),/);
-        if (userDescParts.length > 1 && userDescParts[0].trim()) {
-          setCharacterDescription(userDescParts[0].trim());
-        } else if (!desc.match(/^(Human|Non-Human),/)) {
-          // If description doesn't start with auto-generated traits, it might be all user content
-          // But check if it contains any auto-generated patterns
-          const cleanDesc = desc
-            .replace(/\.\s*(Human|Non-Human), (Male|Female), [^.]+\./g, '')
-            .replace(/\.\s*Hair: [^.]+\./g, '')
-            .replace(/\.\s*Eyes: [^.]+/g, '')
-            .trim();
-          setCharacterDescription(cleanDesc || '');
-        } else {
-          // Description is all auto-generated, leave description empty
-          setCharacterDescription('');
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching character:', error);
-      setNotification({
-        open: true,
-        message: 'Failed to load character',
-        severity: 'error'
-      });
-    } finally {
-      setIsLoadingCharacter(false);
-    }
-  }, [isEditMode, user?.userId, characterId]);
-
+  // Populate form fields when character data is available (edit mode)
   useEffect(() => {
-    fetchCharacter();
-  }, [fetchCharacter]);
+    if (!editingCharacter || formPopulated) return;
+
+    setCharacterName(editingCharacter.characterName || '');
+    setCharacterGender(editingCharacter.gender || 'Male');
+    setCharacterAge(editingCharacter.age || 'Child');
+    setExistingImageUrls(editingCharacter.imageUrls || []);
+
+    // Parse the description to extract user-written description vs auto-generated traits
+    const desc = editingCharacter.description || '';
+
+    // Check for character kind
+    if (desc.includes('Place')) {
+      setCharacterKind('Place');
+    } else if (desc.includes('App')) {
+      setCharacterKind('App');
+    } else if (desc.includes('Product')) {
+      setCharacterKind('Product');
+    } else if (desc.includes('Business')) {
+      setCharacterKind('Business');
+    } else if (desc.includes('Non-Human')) {
+      setCharacterKind('Non-Human');
+    }
+
+    // Extract hair color/length/eye color if present in description
+    const hairColorMatch = desc.match(/Hair: ([^,]+),/);
+    if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
+    const hairLengthMatch = desc.match(/Hair: [^,]+, ([^.]+)/);
+    if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
+    const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
+    if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
+
+    // Extract only the user-written description (the part before the auto-generated traits)
+    // The auto-generated part starts with "Human," or "Non-Human,"
+    const userDescParts = desc.split(/\.\s*(Human|Non-Human),/);
+    if (userDescParts.length > 1 && userDescParts[0].trim()) {
+      setCharacterDescription(userDescParts[0].trim());
+    } else if (!desc.match(/^(Human|Non-Human),/)) {
+      // If description doesn't start with auto-generated traits, it might be all user content
+      // But check if it contains any auto-generated patterns
+      const cleanDesc = desc
+        .replace(/\.\s*(Human|Non-Human), (Male|Female), [^.]+\./g, '')
+        .replace(/\.\s*Hair: [^.]+\./g, '')
+        .replace(/\.\s*Eyes: [^.]+/g, '')
+        .trim();
+      setCharacterDescription(cleanDesc || '');
+    } else {
+      // Description is all auto-generated, leave description empty
+      setCharacterDescription('');
+    }
+
+    setFormPopulated(true);
+  }, [editingCharacter, formPopulated]);
 
   // Set the current viewing item for sidebar navigation when editing
   useEffect(() => {

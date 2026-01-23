@@ -23,7 +23,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import { narrativesApi, charactersApi, Narrative } from '../services/api';
+import { narrativesApi, Narrative, Character } from '../services/api';
+import { useGetUserCharactersQuery } from '../store/apiSlice';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
@@ -52,15 +53,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 // Narrative type options
 type NarrativeType = 'story' | 'ugc';
-
-// Character type matching the API response
-interface Character {
-  characterId: string;
-  characterName: string;
-  characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
-  description?: string;
-  imageUrls?: string[];
-}
 
 // Flat cost per voiceover
 const VOICEOVER_COST = 25;
@@ -216,9 +208,13 @@ const CreateNarrativePage: React.FC = () => {
   const [selectedVoice, setSelectedVoice] = useState<string>('albus');
   const [narrativeType, setNarrativeType] = useState<NarrativeType>('story');
 
-  // AI Assets state
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
+  // AI Assets state - using RTK Query for characters
+  const charactersQuery = useGetUserCharactersQuery(
+    { userId },
+    { skip: !userId || !isAuthenticated }
+  );
+  const characters = charactersQuery.data?.characters || [];
+  const isLoadingCharacters = charactersQuery.isLoading;
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [castPickerOpen, setCastPickerOpen] = useState(false);
   const [castPickerAnchor, setCastPickerAnchor] = useState<HTMLElement | null>(null);
@@ -280,26 +276,6 @@ const CreateNarrativePage: React.FC = () => {
 
     // Story mode: up to 5 AI assets of any type
     return selectedCastMembers.length < MAX_CAST_MEMBERS_STORY;
-  };
-
-  // Load characters on mount
-  useEffect(() => {
-    if (userId && isAuthenticated) {
-      loadCharacters();
-    }
-  }, [userId, isAuthenticated]);
-
-  const loadCharacters = async () => {
-    if (!userId) return;
-    setIsLoadingCharacters(true);
-    try {
-      const response = await charactersApi.getUserCharacters(userId);
-      setCharacters(response.data.characters || []);
-    } catch (error) {
-      console.error('Failed to load characters:', error);
-    } finally {
-      setIsLoadingCharacters(false);
-    }
   };
 
   const handleCharacterToggle = (characterId: string) => {

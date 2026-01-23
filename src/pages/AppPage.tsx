@@ -35,6 +35,14 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import {
+  useGetUserVideosQuery,
+  useGetUserSongsQuery,
+  useDeleteVideoMutation,
+  useDeleteSongMutation,
+  Song,
+  Video,
+} from '../store/apiSlice';
 import { songsApi } from '../services/api';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -266,47 +274,6 @@ const getMoodImage = (mood: string): string => {
   const normalizedMood = mood.toLowerCase().replace(/\s+/g, '-');
   return moodImages[normalizedMood] || '/moods/happy.jpeg';
 };
-
-interface Song {
-  songId: string;
-  songTitle: string;
-  genre: string;
-  mood?: string;
-  actualDuration?: number;
-  createdAt: string;
-  status: 'processing' | 'completed' | 'failed';
-  progress?: number;
-  progressMessage?: string;
-  audioUrl?: string;
-  coverUrl?: string; // Cover art URL for user-uploaded songs
-  lyrics?: string;
-  lyricsWithTags?: string;
-  songPrompt?: string; // Original prompt used to generate the song
-  language?: string;
-  customInstructions?: string;
-  creativity?: number; // 0-10 scale for prompt adherence
-  songLength?: 'short' | 'standard'; // Song duration preference
-  isUserUpload?: boolean; // Flag for user-uploaded content
-  artist?: string; // Artist name for user-uploaded songs
-  isPremium?: boolean; // Premium track (ElevenLabs)
-}
-
-interface Video {
-  videoId: string;
-  songId: string;
-  songTitle?: string;
-  thumbnailUrl?: string;
-  videoUrl?: string;
-  status: 'queued' | 'processing' | 'completed' | 'failed' | 'interrupted';
-  progress?: number;
-  progressMessage?: string;
-  queuePosition?: number; // Position in queue (1-indexed)
-  createdAt: string;
-  duration?: number;
-  aspectRatio?: 'portrait' | 'landscape';
-  videoCategory?: 'app' | 'place' | 'product' | 'music'; // Type of video based on characters used
-  videoType?: string; // Type of video generation (swap, standard, still, avatar)
-}
 
 // Helper to get video category label for display
 const getVideoCategoryLabel = (category?: string, videoType?: string): string => {
@@ -547,7 +514,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user } = useSelector((state: RootState) => state.auth);
-  
+
   // Determine initial tab from: prop > URL path > URL param > default
   const getInitialTab = (): 'songs' | 'videos' => {
     if (defaultTab) return defaultTab;
@@ -556,22 +523,39 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     return 'songs';
   };
 
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [isLoadingSongs, setIsLoadingSongs] = useState(true);
-  const [isLoadingVideos, setIsLoadingVideos] = useState(true);
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentVideoPage, setCurrentVideoPage] = useState(1);
-  const [totalSongsCount, setTotalSongsCount] = useState(0);
-  const [totalVideosCount, setTotalVideosCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'songs' | 'videos'>(getInitialTab());
-  
-  // Search and filter state
+
+  // Search and filter state (with debounced search)
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [genreFilter, setGenreFilter] = useState<string>('');
   const [moodFilter, setMoodFilter] = useState<string>('');
+
+  // Debounce search query
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 300);
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Reset page on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [genreFilter, moodFilter]);
 
   // Update tab when route changes or tab query param changes
   useEffect(() => {
@@ -581,10 +565,51 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const songsPerPage = 10;
   const videosPerPage = 12; // 12 videos per page (works well with 4-column grid)
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const videoPollingRef = useRef<NodeJS.Timeout | null>(null);
-  const processingSongIdsRef = useRef<Set<string>>(new Set()); // Track IDs of songs we're waiting for
-  const processingVideoIdsRef = useRef<Set<string>>(new Set()); // Track IDs of videos we're waiting for
+
+  // Track processing IDs for notifications
+  const processingSongIdsRef = useRef<Set<string>>(new Set());
+  const processingVideoIdsRef = useRef<Set<string>>(new Set());
+
+  // RTK Query for songs - auto-caches per filter combination, polls when processing
+  const songsQuery = useGetUserSongsQuery(
+    {
+      userId: user?.userId || '',
+      page: currentPage,
+      limit: songsPerPage,
+      search: debouncedSearch || undefined,
+      genre: genreFilter || undefined,
+      mood: moodFilter || undefined,
+    },
+    {
+      skip: !user?.userId,
+      pollingInterval: processingSongIdsRef.current.size > 0 ? 5000 : 0,
+    }
+  );
+
+  // RTK Query for videos - polls when processing
+  const videosQuery = useGetUserVideosQuery(
+    {
+      userId: user?.userId || '',
+      page: currentVideoPage,
+      limit: videosPerPage,
+    },
+    {
+      skip: !user?.userId,
+      pollingInterval: processingVideoIdsRef.current.size > 0 ? 5000 : 0,
+    }
+  );
+
+  // Delete mutations
+  const [deleteSong] = useDeleteSongMutation();
+  const [deleteVideo] = useDeleteVideoMutation();
+
+  // Derive data from queries
+  const songs = songsQuery.data?.songs || [];
+  const videos = videosQuery.data?.videos || [];
+  const totalSongsCount = songsQuery.data?.totalCount || 0;
+  const totalVideosCount = videosQuery.data?.totalCount || 0;
+  const isLoadingSongs = songsQuery.isLoading;
+  const isLoadingVideos = videosQuery.isLoading;
   
   // Global audio player
   const { 
@@ -620,167 +645,55 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     severity: 'success'
   });
 
-  // Fetch songs from API
-  // Fetch songs with server-side pagination and filtering
-  const fetchSongs = useCallback(async (showLoading = true, page = currentPage) => {
-    if (!user?.userId) return;
+  // Track processing songs and show completion notifications
+  useEffect(() => {
+    const currentProcessingIds = songs
+      .filter((s) => s.status === 'processing')
+      .map((s) => s.songId);
 
-    if (showLoading) setIsLoadingSongs(true);
-    try {
-      const response = await songsApi.getUserSongs(user.userId, {
-        page,
-        limit: songsPerPage,
-        search: searchQuery || undefined,
-        genre: genreFilter || undefined,
-        mood: moodFilter || undefined,
+    // Check for completed songs
+    const completedIds = Array.from(processingSongIdsRef.current).filter(
+      id => !currentProcessingIds.includes(id)
+    );
+
+    if (completedIds.length > 0 && processingSongIdsRef.current.size > 0) {
+      setNotification({
+        open: true,
+        message: completedIds.length === 1 ? 'Your song is ready! 🎵' : `${completedIds.length} songs are ready! 🎵`,
+        severity: 'success'
       });
-      const fetchedSongs = response.data.songs || [];
-      const pagination = response.data.pagination;
-
-      setSongs(fetchedSongs);
-      // Use pagination.totalCount if available, otherwise fallback to songs length
-      if (pagination?.totalCount !== undefined) {
-        setTotalSongsCount(pagination.totalCount);
-      } else {
-        setTotalSongsCount(fetchedSongs.length);
-      }
-
-      // Return list of processing song IDs
-      const processingSongIds = fetchedSongs
-        .filter((s: Song) => s.status === 'processing')
-        .map((s: Song) => s.songId);
-      return processingSongIds as string[];
-    } catch (error) {
-      console.error('[Songs] Error fetching songs:', error);
-    } finally {
-      if (showLoading) setIsLoadingSongs(false);
     }
-    return [] as string[];
-  }, [user?.userId, currentPage, searchQuery, genreFilter, moodFilter]);
 
-  // Refetch when filters change (with debounce for search)
-  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
-  useEffect(() => {
-    // Clear any pending debounce
-    if (searchDebounceRef.current) {
-      clearTimeout(searchDebounceRef.current);
-    }
-    
-    // Debounce search queries to avoid too many requests while typing
-    if (searchQuery) {
-      searchDebounceRef.current = setTimeout(() => {
-        setCurrentPage(1);
-        fetchSongs(true, 1);
-      }, 300);
-    } else {
-      // For non-search filter changes, fetch immediately
-      setCurrentPage(1);
-      fetchSongs(true, 1);
-    }
-    
-    return () => {
-      if (searchDebounceRef.current) {
-        clearTimeout(searchDebounceRef.current);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, genreFilter, moodFilter]);
-
-  // Start polling for song updates
-  const startPolling = useCallback((initialProcessingIds: string[]) => {
-    // Clear any existing interval
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-    }
-    
-    // Track the song IDs we're waiting for
-    initialProcessingIds.forEach(id => processingSongIdsRef.current.add(id));
-    
-    // Poll every 5 seconds
-    pollingIntervalRef.current = setInterval(async () => {
-      const currentProcessingIds = await fetchSongs(false);
-
-      // Check if any songs we were waiting for have completed
-      const processingIds = currentProcessingIds || [];
-      const completedIds = Array.from(processingSongIdsRef.current).filter(
-        id => !processingIds.includes(id)
-      );
-
-      // Show notification for each completed song
-      if (completedIds.length > 0) {
-        setNotification({
-          open: true,
-          message: completedIds.length === 1 ? 'Your song is ready! 🎵' : `${completedIds.length} songs are ready! 🎵`,
-          severity: 'success'
-        });
-        // Remove completed songs from tracking
-        completedIds.forEach(id => processingSongIdsRef.current.delete(id));
-      }
-
-      // Add any new processing songs to tracking
-      processingIds.forEach(id => processingSongIdsRef.current.add(id));
-
-      // Stop polling if no more songs to track
-      if (processingIds.length === 0 && pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-        processingSongIdsRef.current.clear();
-      }
-    }, 5000);
-  }, [fetchSongs]);
-
-  // Initial fetch and polling setup
-  useEffect(() => {
-    const initFetch = async () => {
-      const processingIds = await fetchSongs(true);
-      
-      // If there are processing songs, start polling
-      if (processingIds && processingIds.length > 0) {
-        startPolling(processingIds);
-      }
-    };
-    
-    if (user?.userId) {
-      initFetch();
-    }
-    
-    return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-      }
-    };
-  }, [user?.userId, fetchSongs, startPolling]);
+    // Update tracking
+    processingSongIdsRef.current = new Set(currentProcessingIds);
+  }, [songs]);
 
   // Handle generating=true query param (coming from create page)
   useEffect(() => {
     const isGenerating = searchParams.get('generating') === 'true';
-    const activeTab = searchParams.get('tab');
-    
+    const tabParam = searchParams.get('tab');
+    const isVideoGeneration = defaultTab === 'videos' || tabParam === 'videos';
+
     if (isGenerating) {
-      // Show appropriate notification based on what's being generated
-      const isVideoGeneration = activeTab === 'videos';
       setNotification({
         open: true,
-        message: isVideoGeneration 
+        message: isVideoGeneration
           ? 'Your video is being created... This usually takes a few minutes.'
           : 'Your song is being created... This usually takes about a minute or two.',
         severity: 'info'
       });
-      
-      // Fetch songs to get processing IDs, then start polling
-      (async () => {
-        const processingIds = await fetchSongs(false);
-        if (processingIds && processingIds.length > 0) {
-          startPolling(processingIds);
-        }
-      })();
-      
+
+      // Trigger refetch to get processing items (RTK Query handles polling)
+      if (!isVideoGeneration) {
+        songsQuery.refetch();
+      }
+
       // Remove the query param from URL
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('generating');
       window.history.replaceState({}, '', newUrl.toString());
     }
-  }, [searchParams, startPolling, fetchSongs]);
+  }, [searchParams, defaultTab, songsQuery]);
 
   // Account data hook for refreshing after purchases
   const { fetchAccountData } = useAccountData();
@@ -811,94 +724,28 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     }
   }, [searchParams, fetchAccountData]);
 
-  // Fetch videos
-  // Fetch videos with server-side pagination
-  const fetchVideos = useCallback(async (showLoading = true, page = currentVideoPage): Promise<boolean> => {
-    if (!user?.userId) return false;
-    
-    if (showLoading) {
-      setIsLoadingVideos(true);
-    }
-    
-    try {
-      const response = await videosApi.getUserVideos(user.userId, { page, limit: videosPerPage });
-      const fetchedVideos = response.data.videos || [];
-      
-      setVideos(fetchedVideos);
-      const pagination = response.data.pagination;
-      // Use pagination.totalCount if available, otherwise fallback to videos length
-      if (pagination?.totalCount !== undefined) {
-        setTotalVideosCount(pagination.totalCount);
-      } else {
-        setTotalVideosCount(fetchedVideos.length);
-      }
-      
-      // Check if any videos are still processing, queued, or interrupted (will auto-retry)
-      const hasProcessing = (response.data.videos || []).some(
-        (video: Video) => video.status === 'processing' || video.status === 'queued' || video.status === 'interrupted'
-      );
-      
-      return hasProcessing;
-    } catch (error) {
-      console.error('Error fetching videos:', error);
-      return false;
-    } finally {
-      if (showLoading) {
-        setIsLoadingVideos(false);
-      }
-    }
-  }, [user?.userId, currentVideoPage]);
-
-  // Start video polling only when there are processing videos
-  const startVideoPolling = useCallback((initialProcessingIds: string[]) => {
-    if (videoPollingRef.current) {
-      clearInterval(videoPollingRef.current);
-    }
-
-    // Track the video IDs we're waiting for
-    initialProcessingIds.forEach(id => processingVideoIdsRef.current.add(id));
-
-    videoPollingRef.current = setInterval(async () => {
-      const hasProcessing = await fetchVideos(false);
-
-      // Stop polling if no more processing videos
-      if (!hasProcessing && videoPollingRef.current) {
-        clearInterval(videoPollingRef.current);
-        videoPollingRef.current = null;
-
-        // Show notification if we were tracking any videos
-        if (processingVideoIdsRef.current.size > 0) {
-          setNotification({
-            open: true,
-            message: 'Your video is ready! 🎬',
-            severity: 'success'
-          });
-        }
-        processingVideoIdsRef.current.clear();
-      }
-    }, 5000);
-  }, [fetchVideos]);
-
-  // Fetch videos on mount and start polling if needed
+  // Track processing videos and show completion notifications
   useEffect(() => {
-    const initVideoFetch = async () => {
-      const hasProcessing = await fetchVideos(true);
-      if (hasProcessing) {
-        // Get processing video IDs from the response (fetchVideos updates state, so we check after)
-        startVideoPolling([]);
-      }
-    };
+    const currentProcessingIds = videos
+      .filter((v) => v.status === 'processing' || v.status === 'queued' || v.status === 'interrupted')
+      .map((v) => v.videoId);
 
-    if (user?.userId) {
-      initVideoFetch();
+    // Check for completed videos
+    const completedIds = Array.from(processingVideoIdsRef.current).filter(
+      id => !currentProcessingIds.includes(id)
+    );
+
+    if (completedIds.length > 0 && processingVideoIdsRef.current.size > 0) {
+      setNotification({
+        open: true,
+        message: 'Your video is ready! 🎬',
+        severity: 'success'
+      });
     }
 
-    return () => {
-      if (videoPollingRef.current) {
-        clearInterval(videoPollingRef.current);
-      }
-    };
-  }, [user?.userId, fetchVideos, startVideoPolling]);
+    // Update tracking
+    processingVideoIdsRef.current = new Set(currentProcessingIds);
+  }, [videos]);
 
   // Preload cover/genre images when songs load
   useEffect(() => {
@@ -1133,16 +980,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const confirmDeleteSong = async () => {
     if (!user?.userId || !songToDelete) return;
-    
+
     setDeleteConfirmOpen(false);
     setDeletingSongId(songToDelete.songId);
-    
+
     try {
-      await songsApi.deleteSong(user.userId, songToDelete.songId);
-      
-      // Remove from local state
-      setSongs(prev => prev.filter(s => s.songId !== songToDelete.songId));
-      
+      await deleteSong({ userId: user.userId, songId: songToDelete.songId }).unwrap();
+
       setNotification({
         open: true,
         message: `"${songToDelete.songTitle}" deleted`,
@@ -1222,16 +1066,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const confirmDeleteVideo = async () => {
     if (!user?.userId || !videoToDelete) return;
-    
+
     setVideoDeleteConfirmOpen(false);
     setDeletingVideoId(videoToDelete.videoId);
-    
+
     try {
-      await videosApi.deleteVideo(user.userId, videoToDelete.videoId);
-      
-      // Remove from local state
-      setVideos(prev => prev.filter(v => v.videoId !== videoToDelete.videoId));
-      
+      await deleteVideo({ userId: user.userId, videoId: videoToDelete.videoId }).unwrap();
+
       setNotification({
         open: true,
         message: `Video deleted`,
@@ -1263,8 +1104,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
-    // Always fetch from server (filtering is now server-side)
-    fetchSongs(true, page);
+    // RTK Query automatically fetches when page changes (query params update)
   };
 
   // Filter songs based on search query, genre, and mood
@@ -1285,8 +1125,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
   const handleVideoPageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentVideoPage(page);
-    // Fetch data for the new page
-    fetchVideos(true, page);
+    // RTK Query automatically fetches when page changes (query params update)
   };
 
   return (
