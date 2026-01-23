@@ -186,7 +186,6 @@ const VOICE_OPTIONS: DropdownOption[] = [
   { id: 'Annie', label: 'Annie', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #9370DB 0%, #BA55D3 100%)', audioPreview: '/voices/annie.mp3', description: 'Bright, clear, engaging narrator', isPremium: false },
   { id: 'Kurt', label: 'Kurt', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #4169E1 0%, #6495ED 100%)', audioPreview: '/voices/kurt.mp3', description: 'Friendly, captivating storyteller', isPremium: false },
   { id: 'Nathan', label: 'Nathan', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #DC143C 0%, #FF4500 100%)', audioPreview: '/voices/nathan.mp3', description: 'Expressive British social media', isPremium: false },
-  { id: 'Jake', label: 'Jake (Titan)', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #2F4F4F 0%, #556B2F 100%)', description: 'Deep, bold, powerful narrator', isPremium: false },
 ];
 
 // Character type ordering

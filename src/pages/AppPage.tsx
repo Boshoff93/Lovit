@@ -37,6 +37,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { songsApi } from '../services/api';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
@@ -403,20 +404,20 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, isDeleting, onWatch, onMen
           }}
         />
       ) : video.status === 'completed' && video.videoUrl ? (
-        // Completed video without thumbnail (or thumbnail failed) - show video first frame
+        // Completed video without thumbnail (or thumbnail failed) - show static placeholder
+        // Video will play on hover instead of showing video element here (prevents scroll flicker)
         <Box
-          component="video"
-          src={video.videoUrl}
-          muted
-          playsInline
-          preload="metadata"
           sx={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
-            background: '#1a1a2e',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #2d1f3d 50%, #1a1a2e 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
+        >
+          <PlayArrowIcon sx={{ fontSize: 48, color: 'rgba(255,255,255,0.3)' }} />
+        </Box>
       ) : (
         // Failed video - show fail image
         <Box
