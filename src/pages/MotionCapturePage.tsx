@@ -40,7 +40,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import GruviCoin from '../components/GruviCoin';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 import { swapStudioApi, videosApi, Character } from '../services/api';
-import { useGetUserVideosQuery, useGetUserCharactersQuery, Video } from '../store/apiSlice';
+import { useGetUserVideosQuery, useGetUserCharactersQuery, Video, apiSlice } from '../store/apiSlice';
 
 // Custom stepper connector
 const GradientConnector = styled(StepConnector)(({ theme }) => ({
@@ -759,6 +759,9 @@ const MotionCapturePage: React.FC = () => {
       if (response.data.allowances) {
         dispatch(setAllowances(response.data.allowances));
       }
+
+      // Invalidate videos cache so My Videos page shows the new processing video
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Videos', id: 'LIST' }]));
 
       // Navigate to My Videos page - generation continues in background
       navigate('/my-videos');

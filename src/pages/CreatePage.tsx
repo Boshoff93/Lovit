@@ -33,7 +33,7 @@ import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAudioPlayer, Song as AudioSong } from '../contexts/AudioPlayerContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import { useGetUserCharactersQuery, useGetUserSongsQuery } from '../store/apiSlice';
+import { useGetUserCharactersQuery, useGetUserSongsQuery, apiSlice } from '../store/apiSlice';
 import { songsApi, videosApi, charactersApi } from '../services/api';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
@@ -920,11 +920,14 @@ const CreatePage: React.FC = () => {
       if (response.data.tokensRemaining !== undefined) {
         dispatch(setTokensRemaining(response.data.tokensRemaining));
       }
-      
+
+      // Invalidate songs cache so My Library shows the new processing song
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Songs', id: 'LIST' }]));
+
       // Clear form
       setSongPrompt('');
       setShowSongPromptError(false);
-      
+
       // Navigate immediately to library - song will appear in loading state
       navigate('/my-library?tab=songs&generating=true');
     } catch (error: any) {
@@ -991,11 +994,14 @@ const CreatePage: React.FC = () => {
       if (response.data.tokensRemaining !== undefined) {
         dispatch(setTokensRemaining(response.data.tokensRemaining));
       }
-      
+
+      // Invalidate videos cache so My Videos page shows the new processing video
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Videos', id: 'LIST' }]));
+
       setVideoPrompt('');
       setShowVideoPromptError(false);
       setShowSongSelectionError(false);
-      
+
       // Navigate immediately to Music Videos tab
       navigate('/my-library?tab=videos&generating=true');
     } catch (error: any) {

@@ -46,7 +46,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { RootState } from '../store/store';
-import { useGetUserCharactersQuery, useGetUserNarrativesQuery, useGetUserSongsQuery } from '../store/apiSlice';
+import { useGetUserCharactersQuery, useGetUserNarrativesQuery, useGetUserSongsQuery, apiSlice } from '../store/apiSlice';
 import { videosApi, songsApi, Narrative } from '../services/api';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
@@ -728,6 +728,9 @@ const CreateVideoPage: React.FC = () => {
       if (response.data.tokensRemaining !== undefined) {
         dispatch(setTokensRemaining(response.data.tokensRemaining));
       }
+
+      // Invalidate videos cache so My Videos page shows the new processing video
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Videos', id: 'LIST' }]));
 
       navigate('/my-videos?generating=true');
     } catch (error: any) {

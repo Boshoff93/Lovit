@@ -24,7 +24,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { songsApi, Character } from '../services/api';
-import { useGetUserCharactersQuery } from '../store/apiSlice';
+import { useGetUserCharactersQuery, apiSlice } from '../store/apiSlice';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
@@ -554,6 +554,9 @@ const CreateMusicPage: React.FC = () => {
 
       // Update tokens - setTokensRemaining expects remaining tokens count
       dispatch(setTokensRemaining(remainingTokens - songCost));
+
+      // Invalidate songs cache so My Music shows the new processing song
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Songs', id: 'LIST' }]));
 
       navigate('/my-music?generating=true');
     } catch (error: any) {

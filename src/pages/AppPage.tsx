@@ -570,6 +570,10 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
   const processingSongIdsRef = useRef<Set<string>>(new Set());
   const processingVideoIdsRef = useRef<Set<string>>(new Set());
 
+  // State to trigger re-render when processing status changes (refs don't trigger re-renders)
+  const [hasProcessingSongs, setHasProcessingSongs] = useState(false);
+  const [hasProcessingVideos, setHasProcessingVideos] = useState(false);
+
   // RTK Query for songs - auto-caches per filter combination, polls when processing
   const songsQuery = useGetUserSongsQuery(
     {
@@ -582,7 +586,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     },
     {
       skip: !user?.userId,
-      pollingInterval: processingSongIdsRef.current.size > 0 ? 5000 : 0,
+      pollingInterval: hasProcessingSongs ? 5000 : 0,
     }
   );
 
@@ -595,7 +599,7 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
     },
     {
       skip: !user?.userId,
-      pollingInterval: processingVideoIdsRef.current.size > 0 ? 5000 : 0,
+      pollingInterval: hasProcessingVideos ? 5000 : 0,
     }
   );
 
@@ -666,6 +670,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
     // Update tracking
     processingSongIdsRef.current = new Set(currentProcessingIds);
+    // Update state to trigger polling interval change
+    setHasProcessingSongs(currentProcessingIds.length > 0);
   }, [songs]);
 
   // Handle generating=true query param (coming from create page)
@@ -745,6 +751,8 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
 
     // Update tracking
     processingVideoIdsRef.current = new Set(currentProcessingIds);
+    // Update state to trigger polling interval change
+    setHasProcessingVideos(currentProcessingIds.length > 0);
   }, [videos]);
 
   // Preload cover/genre images when songs load

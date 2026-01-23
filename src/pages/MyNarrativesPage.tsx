@@ -120,6 +120,8 @@ const MyNarrativesPage: React.FC = () => {
 
   // Track processing IDs for completion notifications
   const processingIdsRef = useRef<Set<string>>(new Set());
+  // State to trigger re-render when processing status changes (refs don't trigger re-renders)
+  const [hasProcessingNarratives, setHasProcessingNarratives] = useState(false);
 
   // RTK Query - fetches and caches narratives, polls when processing
   const { data, isLoading, isFetching, error: queryError } = useGetUserNarrativesQuery(
@@ -127,7 +129,7 @@ const MyNarrativesPage: React.FC = () => {
     {
       skip: !userId || !isAuthenticated,
       // Poll every 5 seconds when there are processing narratives
-      pollingInterval: processingIdsRef.current.size > 0 ? 5000 : 0,
+      pollingInterval: hasProcessingNarratives ? 5000 : 0,
     }
   );
 
@@ -169,6 +171,8 @@ const MyNarrativesPage: React.FC = () => {
 
     // Update tracking
     processingIdsRef.current = new Set(currentProcessingIds);
+    // Update state to trigger polling interval change
+    setHasProcessingNarratives(currentProcessingIds.length > 0);
   }, [narratives]);
 
   // Delete mutation

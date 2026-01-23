@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { narrativesApi, Narrative, Character } from '../services/api';
-import { useGetUserCharactersQuery } from '../store/apiSlice';
+import { useGetUserCharactersQuery, apiSlice } from '../store/apiSlice';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { TopUpBundle } from '../config/stripe';
 import UpgradePopup from '../components/UpgradePopup';
@@ -358,6 +358,9 @@ const CreateNarrativePage: React.FC = () => {
 
       // Update local token count
       dispatch(setTokensRemaining(response.data.tokensRemaining));
+
+      // Invalidate narratives cache so My Voiceovers shows the new processing narrative
+      dispatch(apiSlice.util.invalidateTags([{ type: 'Narratives', id: 'LIST' }]));
 
       // Redirect to My Voiceovers page - generation will continue in background
       navigate('/my-narratives');
