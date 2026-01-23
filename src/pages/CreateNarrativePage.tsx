@@ -46,6 +46,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import MicIcon from '@mui/icons-material/Mic';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
@@ -121,8 +122,9 @@ const CharacterAvatar: React.FC<{ character: Character; size?: number; sx?: any;
   );
 };
 
-// Voice data - copied from Fable with local assets
+// Voice data - includes both custom Gruvi voices and ElevenLabs default voices
 const VOICE_OPTIONS: DropdownOption[] = [
+  // ===== Gruvi Custom Voices (with images) =====
   // Free voices
   { id: 'albus', label: 'Sir Albus', image: '/voices/avatars/albus.jpeg', audioPreview: '/voices/albus.mp3', description: 'Wise storyteller', isPremium: false },
   { id: 'beth', label: 'Aunt Beth', image: '/voices/avatars/beth.jpeg', audioPreview: '/voices/beth.mp3', description: 'Warm & nurturing', isPremium: false },
@@ -152,6 +154,39 @@ const VOICE_OPTIONS: DropdownOption[] = [
   { id: 'quinn', label: 'Quinn', image: '/voices/avatars/quinn.jpeg', audioPreview: '/voices/quinn.mp3', description: 'Modern & fresh', isPremium: true },
   { id: 'polly', label: 'Polly', image: '/voices/avatars/polly.jpeg', audioPreview: '/voices/polly.mp3', description: 'Cheerful spirit', isPremium: true },
   { id: 'khali', label: 'Khali', image: '/voices/avatars/khali.jpeg', audioPreview: '/voices/khali.mp3', description: 'Rich & soulful', isPremium: true },
+  // ===== ElevenLabs Default Voices (with mic icons + gradients) =====
+  // Female voices
+  { id: 'Alice', label: 'Alice', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #10B981 0%, #34D399 100%)', audioPreview: '/voices/alice.mp3', description: 'Clear, engaging educator', isPremium: false },
+  { id: 'Bella', label: 'Bella', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)', audioPreview: '/voices/bella.mp3', description: 'Professional, bright, warm', isPremium: false },
+  { id: 'Jessica', label: 'Jessica', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)', audioPreview: '/voices/jessica.mp3', description: 'Playful, bright, warm', isPremium: false },
+  { id: 'Laura', label: 'Laura', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)', audioPreview: '/voices/laura.mp3', description: 'Enthusiast, quirky attitude', isPremium: false },
+  { id: 'Lily', label: 'Lily', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #F472B6 0%, #FB7185 100%)', audioPreview: '/voices/lily.mp3', description: 'Velvety actress', isPremium: false },
+  { id: 'Matilda', label: 'Matilda', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #6366F1 0%, #818CF8 100%)', audioPreview: '/voices/matilda.mp3', description: 'Knowledgeable, professional', isPremium: false },
+  { id: 'Sarah', label: 'Sarah', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)', audioPreview: '/voices/sarah.mp3', description: 'Mature, reassuring, confident', isPremium: false },
+  // Male voices
+  { id: 'Adam', label: 'Adam', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', audioPreview: '/voices/adam.mp3', description: 'Dominant, firm', isPremium: false },
+  { id: 'Bill', label: 'Bill', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%)', audioPreview: '/voices/bill.mp3', description: 'Wise, mature, balanced', isPremium: false },
+  { id: 'Brian', label: 'Brian', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)', audioPreview: '/voices/brian.mp3', description: 'Deep, resonant & comforting', isPremium: false },
+  { id: 'Callum', label: 'Callum', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)', audioPreview: '/voices/callum.mp3', description: 'Husky trickster', isPremium: false },
+  { id: 'Charlie', label: 'Charlie', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%)', audioPreview: '/voices/charlie.mp3', description: 'Deep, confident, energetic', isPremium: false },
+  { id: 'Chris', label: 'Chris', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #06B6D4 0%, #22D3EE 100%)', audioPreview: '/voices/chris.mp3', description: 'Charming, down-to-earth', isPremium: false },
+  { id: 'Daniel', label: 'Daniel', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)', audioPreview: '/voices/daniel.mp3', description: 'Steady broadcaster', isPremium: false },
+  { id: 'Eric', label: 'Eric', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)', audioPreview: '/voices/eric.mp3', description: 'Smooth, trustworthy', isPremium: false },
+  { id: 'George', label: 'George', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', audioPreview: '/voices/george.mp3', description: 'Warm, captivating storyteller', isPremium: false },
+  { id: 'Harry', label: 'Harry', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)', audioPreview: '/voices/harry.mp3', description: 'Fierce warrior', isPremium: false },
+  { id: 'Liam', label: 'Liam', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)', audioPreview: '/voices/liam.mp3', description: 'Energetic, social media creator', isPremium: false },
+  { id: 'Roger', label: 'Roger', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', audioPreview: '/voices/roger.mp3', description: 'Laid-back, casual, resonant', isPremium: false },
+  { id: 'Will', label: 'Will', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #10B981 0%, #34D399 100%)', audioPreview: '/voices/will.mp3', description: 'Relaxed optimist', isPremium: false },
+  // Non-binary
+  { id: 'River', label: 'River', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', audioPreview: '/voices/river.mp3', description: 'Relaxed, neutral, informative', isPremium: false },
+  // ===== Social Media & Influencer Voices =====
+  { id: 'Kristen', label: 'Kristen', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)', audioPreview: '/voices/kristen.mp3', description: 'Upbeat social media influencer', isPremium: false },
+  { id: 'Gracie', label: 'Gracie', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%)', audioPreview: '/voices/gracie.mp3', description: 'Valley girl, seductive & sassy', isPremium: false },
+  { id: 'Emily', label: 'Emily', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%)', audioPreview: '/voices/emily.mp3', description: 'Northern Irish, engaging & natural', isPremium: false },
+  { id: 'Annie', label: 'Annie', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #9370DB 0%, #BA55D3 100%)', audioPreview: '/voices/annie.mp3', description: 'Bright, clear, engaging narrator', isPremium: false },
+  { id: 'Kurt', label: 'Kurt', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #4169E1 0%, #6495ED 100%)', audioPreview: '/voices/kurt.mp3', description: 'Friendly, captivating storyteller', isPremium: false },
+  { id: 'Nathan', label: 'Nathan', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #DC143C 0%, #FF4500 100%)', audioPreview: '/voices/nathan.mp3', description: 'Expressive British social media', isPremium: false },
+  { id: 'Jake', label: 'Jake (Titan)', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #2F4F4F 0%, #556B2F 100%)', description: 'Deep, bold, powerful narrator', isPremium: false },
 ];
 
 // Character type ordering
@@ -886,24 +921,37 @@ const CreateNarrativePage: React.FC = () => {
               </Box>
 
               {/* Voice chip */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.75,
-                px: 1.5,
-                py: 0.75,
-                borderRadius: '20px',
-                background: 'rgba(88, 86, 214, 0.15)',
-                border: '1px solid rgba(88, 86, 214, 0.3)',
-              }}>
-                <Avatar
-                  src={VOICE_OPTIONS.find(v => v.id === selectedVoice)?.image}
-                  sx={{ width: 18, height: 18 }}
-                />
-                <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
-                  {VOICE_OPTIONS.find(v => v.id === selectedVoice)?.label}
-                </Typography>
-              </Box>
+              {(() => {
+                const voice = VOICE_OPTIONS.find(v => v.id === selectedVoice);
+                return (
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: '20px',
+                    background: 'rgba(88, 86, 214, 0.15)',
+                    border: '1px solid rgba(88, 86, 214, 0.3)',
+                  }}>
+                    {voice?.image ? (
+                      <Avatar src={voice.image} sx={{ width: 18, height: 18 }} />
+                    ) : voice?.icon ? (
+                      <Box sx={{
+                        width: 18, height: 18, borderRadius: '5px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: voice.iconBg || 'rgba(0, 122, 255, 0.2)',
+                        color: '#fff', fontSize: 11
+                      }}>
+                        {voice.icon}
+                      </Box>
+                    ) : null}
+                    <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 500 }}>
+                      {voice?.label}
+                    </Typography>
+                  </Box>
+                );
+              })()}
 
               {/* Characters chip - only if selected */}
               {selectedCastMembers.length > 0 && (
@@ -1037,15 +1085,28 @@ const CreateNarrativePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Voice</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
-                    <Avatar
-                      src={VOICE_OPTIONS.find(v => v.id === selectedVoice)?.image}
-                      sx={{ width: 22, height: 22 }}
-                    />
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
-                      {VOICE_OPTIONS.find(v => v.id === selectedVoice)?.label}
-                    </Typography>
-                  </Box>
+                  {(() => {
+                    const voice = VOICE_OPTIONS.find(v => v.id === selectedVoice);
+                    return (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                        {voice?.image ? (
+                          <Avatar src={voice.image} sx={{ width: 22, height: 22 }} />
+                        ) : voice?.icon ? (
+                          <Box sx={{
+                            width: 22, height: 22, borderRadius: '6px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: voice.iconBg || 'rgba(0, 122, 255, 0.2)',
+                            color: '#fff', fontSize: 13
+                          }}>
+                            {voice.icon}
+                          </Box>
+                        ) : null}
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', color: '#fff' }}>
+                          {voice?.label}
+                        </Typography>
+                      </Box>
+                    );
+                  })()}
                 </Box>
                 <Box sx={{ display: 'flex', mb: 1.5 }}>
                   <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Prompt Length</Typography>

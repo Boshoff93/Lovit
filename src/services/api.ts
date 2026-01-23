@@ -498,6 +498,7 @@ export const swapStudioApi = {
     characterOrientation?: 'image' | 'video';
     enableVoiceChange?: boolean;
     voiceId?: string;
+    removeBackgroundNoise?: boolean;
   }) => api.post('/api/gruvi/swap-studio/create', data),
 
   // Get swap status
