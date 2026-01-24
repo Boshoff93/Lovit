@@ -1272,34 +1272,22 @@ const ScheduledContentPage: React.FC = () => {
                 </Box>
               )}
 
-              {/* CTA */}
-              {selectedPost.ctaType && (
+              {/* Video Footer */}
+              {selectedPost.videoFooter && (
                 <Box sx={{ mb: 3 }}>
                   <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
-                    Call to Action
+                    Video Footer
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Chip
-                      label={selectedPost.ctaType}
-                      size="small"
-                      sx={{ bgcolor: 'rgba(16,185,129,0.15)', color: '#34D399', fontWeight: 600 }}
-                    />
-                    {selectedPost.ctaUrl && (
-                      <Typography
-                        component="a"
-                        href={selectedPost.ctaUrl}
-                        target="_blank"
-                        sx={{
-                          fontSize: '0.85rem',
-                          color: '#007AFF',
-                          textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' }
-                        }}
-                      >
-                        {selectedPost.ctaUrl}
-                      </Typography>
-                    )}
-                  </Box>
+                  <Typography
+                    sx={{
+                      fontSize: '0.85rem',
+                      color: 'rgba(255,255,255,0.8)',
+                      whiteSpace: 'pre-wrap',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {selectedPost.videoFooter}
+                  </Typography>
                 </Box>
               )}
 

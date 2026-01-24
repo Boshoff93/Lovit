@@ -231,8 +231,7 @@ export const videosApi = {
     tags?: string[];
     hook?: string;
     location?: string;
-    ctaType?: string;
-    ctaUrl?: string;
+    videoFooter?: string;
   }) => api.put(`/api/gruvi/videos/${userId}/${videoId}/social-metadata`, data),
   
   generateSocialThumbnail: (userId: string, videoId: string, data: {
@@ -438,8 +437,7 @@ export interface ScheduledPost {
   thumbnailUrl: string;
   hook?: string;
   tags?: string[];
-  ctaType?: string;
-  ctaUrl?: string;
+  videoFooter?: string;
   aspectRatio?: 'portrait' | 'landscape';
   status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled';
   createdAt: string;
@@ -465,8 +463,7 @@ export const scheduledPostsApi = {
     thumbnailUrl?: string;
     hook?: string;
     tags?: string[];
-    ctaType?: string;
-    ctaUrl?: string;
+    videoFooter?: string;
     aspectRatio?: 'portrait' | 'landscape';
   }) => api.post('/api/gruvi/scheduled-posts', data),
 

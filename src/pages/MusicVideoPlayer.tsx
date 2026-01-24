@@ -48,7 +48,6 @@ import {
   Public as PublicIcon,
   VideoLibrary as VideoLibraryIcon,
   Casino,
-  TouchApp,
   CheckBoxOutlineBlank,
   CheckBox as CheckBoxIcon,
 } from '@mui/icons-material';
@@ -174,8 +173,10 @@ const MusicVideoPlayer: React.FC = () => {
   const [thumbnailDescription, setThumbnailDescription] = useState(''); // Optional description for AI thumbnail generation
   const [thumbnailGenMode, setThumbnailGenMode] = useState<'images' | 'text'>('images'); // Toggle between image-based and text-based generation
   const [newTag, setNewTag] = useState('');
-  const [ctaType, setCtaType] = useState<string>('');
-  const [ctaUrl, setCtaUrl] = useState('');
+  const [videoFooter, setVideoFooter] = useState<string>(() => {
+    // Load from localStorage on init
+    return localStorage.getItem('gruvi_video_footer') || '';
+  });
   const [uploadedVideoContext, setUploadedVideoContext] = useState(''); // Context for uploaded videos
   const [showContextModal, setShowContextModal] = useState(false); // Modal for uploaded video context
   const [useGruviRoulette, setUseGruviRoulette] = useState(true); // Toggle for Gruvi Roulette in modal
@@ -296,6 +297,11 @@ const MusicVideoPlayer: React.FC = () => {
     setShowUpgradePopup(false);
     navigate('/payment');
   };
+
+  // Persist video footer to localStorage
+  useEffect(() => {
+    localStorage.setItem('gruvi_video_footer', videoFooter);
+  }, [videoFooter]);
 
   // Fetch video and song data
   useEffect(() => {
@@ -447,8 +453,6 @@ const MusicVideoPlayer: React.FC = () => {
           setSocialMetadata(response.data.socialMetadata);
           setEditedMetadata(response.data.socialMetadata);
           setHookText(response.data.socialMetadata.hook || '');
-          setCtaType(response.data.socialMetadata.ctaType || '');
-          setCtaUrl(response.data.socialMetadata.ctaUrl || '');
         }
         // Load all previously generated thumbnails
         if (response.data.generatedThumbnails && response.data.generatedThumbnails.length > 0) {
@@ -549,10 +553,6 @@ const MusicVideoPlayer: React.FC = () => {
     setSocialError(null);
     setShowContextModal(false);
 
-    // Preserve current CTA values before generating
-    const currentCtaType = ctaType;
-    const currentCtaUrl = ctaUrl;
-
     try {
       const response = await videosApi.generateSocialMetadata(user.userId, videoId, {
         userContext: options.useRoulette ? undefined : options.context,
@@ -561,10 +561,6 @@ const MusicVideoPlayer: React.FC = () => {
       setSocialMetadata(newMetadata);
       setEditedMetadata(newMetadata);
       setHookText(newMetadata.hook || '');
-
-      // Restore CTA values (don't let generation overwrite them)
-      setCtaType(currentCtaType);
-      setCtaUrl(currentCtaUrl);
 
       // Update tokens in UI with actual value from backend
       if (response.data.tokensRemaining !== undefined) {
@@ -876,8 +872,7 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
-        ctaType: ctaType || '',
-        ctaUrl: ctaUrl || '',
+        videoFooter: videoFooter || '',
       });
       
       // Then upload to YouTube
@@ -932,8 +927,7 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
-        ctaType: ctaType || '',
-        ctaUrl: ctaUrl || '',
+        videoFooter: videoFooter || '',
       });
       
       // Upload to TikTok
@@ -986,8 +980,7 @@ const MusicVideoPlayer: React.FC = () => {
         description: editedMetadata.description || '',
         tags: editedMetadata.tags || [],
         hook: editedMetadata.hook || hookText || '',
-        ctaType: ctaType || '',
-        ctaUrl: ctaUrl || '',
+        videoFooter: videoFooter || '',
       });
       
       // Upload to Instagram
@@ -2259,11 +2252,20 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
 
 
-            {/* Title */}
+            {/* Title (Hook) */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
-                Title
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Title (Hook)
+                </Typography>
+                <Tooltip
+                  title="The hook is the attention-grabbing first line viewers see. Make it compelling to stop the scroll!"
+                  arrow
+                  placement="top"
+                >
+                  <InfoOutlined sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', cursor: 'help' }} />
+                </Tooltip>
+              </Box>
               <TextField
                 fullWidth
                 value={editedMetadata?.title || ''}
@@ -2334,78 +2336,46 @@ const MusicVideoPlayer: React.FC = () => {
               />
             </Box>
 
-            {/* Call to Action */}
+            {/* Video Footer */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
-                Call to Action (optional)
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-                <FormControl sx={{ minWidth: 220 }}>
-                  <Select
-                    value={ctaType}
-                    onChange={(e) => setCtaType(e.target.value)}
-                    displayEmpty
-                    startAdornment={
-                      <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                        <TouchApp sx={{ fontSize: 20, color: 'rgba(255,255,255,0.7)' }} />
-                      </Box>
-                    }
-                    sx={{
-                      borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: '#fff',
-                      fontSize: '0.9rem',
-                      '& .MuiSelect-select': { py: 1.5, pl: 1, pr: 2, display: 'flex', alignItems: 'center' },
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: ctaType ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: ctaType ? '2px' : '1px' },
-                      '&:hover': { background: 'rgba(255,255,255,0.08)' },
-                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: ctaType ? '#007AFF' : 'rgba(255,255,255,0.1) !important' },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF', borderWidth: '2px' },
-                      '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.6)' },
-                    }}
-                  >
-                    <MenuItem value="">No CTA</MenuItem>
-                    <MenuItem value="Learn More">Learn More</MenuItem>
-                    <MenuItem value="Shop Now">Shop Now</MenuItem>
-                    <MenuItem value="Download">Download</MenuItem>
-                    <MenuItem value="Sign Up">Sign Up</MenuItem>
-                    <MenuItem value="Book Now">Book Now</MenuItem>
-                    <MenuItem value="Get Started">Get Started</MenuItem>
-                    <MenuItem value="Watch More">Watch More</MenuItem>
-                    <MenuItem value="Subscribe">Subscribe</MenuItem>
-                    <MenuItem value="Contact Us">Contact Us</MenuItem>
-                    <MenuItem value="Visit Website">Visit Website</MenuItem>
-                  </Select>
-                </FormControl>
-                {ctaType && (
-                  <TextField
-                    placeholder="https://your-website.com"
-                    value={ctaUrl}
-                    onChange={(e) => setCtaUrl(e.target.value)}
-                    sx={{
-                      flex: 1,
-                      minWidth: 220,
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: '#fff',
-                        fontSize: '0.9rem',
-                        '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
-                        '& fieldset': { borderColor: ctaUrl ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: ctaUrl ? '2px' : '1px' },
-                        '&:hover fieldset': { borderColor: ctaUrl ? '#007AFF' : 'rgba(255,255,255,0.2)' },
-                        '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
-                      },
-                      '& .MuiInputBase-input': {
-                        '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
-                      },
-                    }}
-                  />
-                )}
-              </Box>
-              {ctaType && (
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, display: 'block' }}>
-                  Link will be added to your video description
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Video Footer
                 </Typography>
-              )}
+                <Tooltip
+                  title="Text that will be appended to the end of your video descriptions. Great for brand links, social handles, or subscribe prompts. This persists across all your videos."
+                  arrow
+                  placement="top"
+                >
+                  <InfoOutlined sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', cursor: 'help' }} />
+                </Tooltip>
+              </Box>
+              <TextField
+                fullWidth
+                value={videoFooter}
+                onChange={(e) => setVideoFooter(e.target.value)}
+                multiline
+                rows={3}
+                placeholder="e.g., Follow me for more content! Check out my website: https://mysite.com"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    lineHeight: 1.6,
+                    '& fieldset': { borderColor: videoFooter ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: videoFooter ? '2px' : '1px' },
+                    '&:hover fieldset': { borderColor: videoFooter ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                  },
+                  '& .MuiInputBase-input': {
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                  },
+                }}
+              />
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, display: 'block' }}>
+                This footer is saved and will be used for all your videos
+              </Typography>
             </Box>
 
             {/* Tags */}
@@ -3617,10 +3587,10 @@ const MusicVideoPlayer: React.FC = () => {
                       )}
                     </Box>
                   )}
-                  {/* Call to Action */}
-                  {ctaType && ctaUrl && (
-                    <Typography variant="body2" sx={{ color: '#fff', mt: 1 }}>
-                      <strong>CTA:</strong> {ctaType} → {ctaUrl}
+                  {/* Video Footer */}
+                  {videoFooter && (
+                    <Typography variant="body2" sx={{ color: '#fff', mt: 1, whiteSpace: 'pre-wrap' }}>
+                      <strong>Footer:</strong> {videoFooter.length > 100 ? `${videoFooter.substring(0, 100)}...` : videoFooter}
                     </Typography>
                   )}
                 </Box>
@@ -3863,8 +3833,7 @@ const MusicVideoPlayer: React.FC = () => {
                             description: editedMetadata.description || '',
                             tags: editedMetadata.tags || [],
                             hook: editedMetadata.hook || hookText || '',
-                            ctaType: ctaType || '',
-                            ctaUrl: ctaUrl || '',
+                            videoFooter: videoFooter || '',
                           });
                         }
 
@@ -3887,8 +3856,7 @@ const MusicVideoPlayer: React.FC = () => {
                           thumbnailUrl: selectedThumbnailUrl || videoData?.thumbnailUrl || '',
                           hook: editedMetadata?.hook || hookText || '',
                           tags: editedMetadata?.tags || [],
-                          ctaType: ctaType || '',
-                          ctaUrl: ctaUrl || '',
+                          videoFooter: videoFooter || '',
                           aspectRatio: videoData?.aspectRatio || 'portrait',
                         });
 
@@ -3951,8 +3919,7 @@ const MusicVideoPlayer: React.FC = () => {
                           description: editedMetadata.description || '',
                           tags: editedMetadata.tags || [],
                           hook: editedMetadata.hook || hookText || '',
-                          ctaType: ctaType || '',
-                          ctaUrl: ctaUrl || '',
+                          videoFooter: videoFooter || '',
                         });
                       }
 
@@ -3975,8 +3942,7 @@ const MusicVideoPlayer: React.FC = () => {
                         thumbnailUrl: selectedThumbnailUrl || videoData?.thumbnailUrl || '',
                         hook: editedMetadata?.hook || hookText || '',
                         tags: editedMetadata?.tags || [],
-                        ctaType: ctaType || '',
-                        ctaUrl: ctaUrl || '',
+                        videoFooter: videoFooter || '',
                         aspectRatio: videoData?.aspectRatio || 'portrait',
                       });
 

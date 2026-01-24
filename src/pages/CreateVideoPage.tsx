@@ -611,6 +611,10 @@ const CreateVideoPage: React.FC = () => {
       const narrative = narratives.find(n => n.narrativeId === urlNarrativeId);
       if (narrative) {
         setSelectedNarrativeId(urlNarrativeId);
+        // Auto-load characters from the narrative (if any)
+        if (narrative.characterIds && narrative.characterIds.length > 0) {
+          setSelectedCharacterIds(narrative.characterIds);
+        }
         // Set video content type based on URL param or narrative type
         if (urlVideoType === 'story' || urlVideoType === 'ugc-voiceover') {
           setVideoContentType(urlVideoType);
@@ -2564,6 +2568,10 @@ const CreateVideoPage: React.FC = () => {
                   <ListItemButton
                     onClick={() => {
                       setSelectedNarrativeId(narrative.narrativeId);
+                      // Auto-load characters from the narrative (if any)
+                      if (narrative.characterIds && narrative.characterIds.length > 0) {
+                        setSelectedCharacterIds(narrative.characterIds);
+                      }
                       setNarrativePickerOpen(false);
                       setNarrativePickerAnchor(null);
                     }}

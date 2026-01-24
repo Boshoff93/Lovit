@@ -12,7 +12,7 @@ import {
   Paper,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -26,7 +26,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { charactersApi, Character } from '../services/api';
-import { useGetUserCharactersQuery } from '../store/apiSlice';
+import { useGetUserCharactersQuery, apiSlice } from '../store/apiSlice';
 import { useLayout } from '../components/Layout';
 import StyledDropdown, { DropdownOption } from '../components/StyledDropdown';
 
@@ -172,6 +172,7 @@ const compressImage = (file: File, maxWidth = 1920, maxHeight = 1920, quality = 
 
 const CreateCharacterPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { characterId } = useParams<{ characterId?: string }>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { setCurrentViewingItem } = useLayout();
@@ -372,12 +373,12 @@ const CreateCharacterPage: React.FC = () => {
         : [];
 
       // Build description from character attributes
-      // Product, Place, and App types don't have age, gender, hair, eye color
-      const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business';
-      const fullDescription = isProductOrPlaceOrApp
+      // Product, Place, App, Business, and Non-Human types don't have hair/eye color fields
+      const isNonHumanType = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business' || characterKind === 'Non-Human';
+      const fullDescription = isNonHumanType
         ? [
             characterDescription,
-            characterKind, // "Product" or "Place"
+            characterKind, // "Product", "Place", "Non-Human", etc.
           ].filter(Boolean).join('. ')
         : [
             characterDescription,
@@ -391,7 +392,7 @@ const CreateCharacterPage: React.FC = () => {
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
           characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
-          ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
+          ...(isNonHumanType ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
@@ -399,6 +400,10 @@ const CreateCharacterPage: React.FC = () => {
         console.log('Character/Product/App/Business update response:', response.data);
 
         const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')));
+
+        // Invalidate characters cache so the list refreshes
+        dispatch(apiSlice.util.invalidateTags([{ type: 'Characters', id: 'LIST' }]));
+
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" updated successfully!`,
@@ -410,7 +415,7 @@ const CreateCharacterPage: React.FC = () => {
           userId: user.userId,
           characterName: characterName.trim(),
           characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
-          ...(isProductOrPlaceOrApp ? {} : { gender: characterGender, age: characterAge }),
+          ...(isNonHumanType ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
@@ -418,6 +423,10 @@ const CreateCharacterPage: React.FC = () => {
         console.log('Character/Product/Place/App/Business creation response:', response.data);
 
         const typeLabel = characterKind === 'Place' ? 'Place' : (characterKind === 'Product' ? 'Product' : (characterKind === 'App' ? 'App' : (characterKind === 'Business' ? 'Business' : 'Character')));
+
+        // Invalidate characters cache so the list refreshes
+        dispatch(apiSlice.util.invalidateTags([{ type: 'Characters', id: 'LIST' }]));
+
         setNotification({
           open: true,
           message: `${typeLabel} "${characterName}" created successfully!`,
