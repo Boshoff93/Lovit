@@ -507,7 +507,7 @@ interface AppPageProps {
 }
 
 const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
   // Account data is cached globally - no need to fetch here
@@ -694,12 +694,13 @@ const AppPage: React.FC<AppPageProps> = ({ defaultTab }) => {
         songsQuery.refetch();
       }
 
-      // Remove the query param from URL
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete('generating');
-      window.history.replaceState({}, '', newUrl.toString());
+      // Remove the query param from URL using React Router (properly updates state)
+      setSearchParams(prev => {
+        prev.delete('generating');
+        return prev;
+      }, { replace: true });
     }
-  }, [searchParams, defaultTab, songsQuery]);
+  }, [searchParams, defaultTab, songsQuery, setSearchParams]);
 
   // Account data hook for refreshing after purchases
   const { fetchAccountData } = useAccountData();

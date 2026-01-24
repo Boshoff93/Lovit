@@ -18,8 +18,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import MaleIcon from '@mui/icons-material/Male';
-import FemaleIcon from '@mui/icons-material/Female';
 import PetsIcon from '@mui/icons-material/Pets';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HomeIcon from '@mui/icons-material/Home';
@@ -49,80 +47,6 @@ const characterTypeIcons: Record<string, React.ReactNode> = {
   'App': <PhoneIphoneIcon sx={{ fontSize: 20 }} />,
   'Business': <BusinessIcon sx={{ fontSize: 20 }} />,
 };
-
-// Gender options
-const genderOptions: DropdownOption[] = [
-  { id: 'Male', label: 'Male' },
-  { id: 'Female', label: 'Female' },
-];
-
-// Age options
-const ageOptions: DropdownOption[] = [
-  { id: 'Baby', label: 'Baby (0-2)' },
-  { id: 'Toddler', label: 'Toddler (2-4)' },
-  { id: 'Child', label: 'Child (5-12)' },
-  { id: 'Teen', label: 'Teen (13-19)' },
-  { id: 'Young Adult', label: 'Young Adult (20-35)' },
-  { id: 'Adult', label: 'Adult (35-55)' },
-  { id: 'Senior', label: 'Senior (55+)' },
-];
-
-// Hair color to file name mapping
-const hairColorFileMap: Record<string, string> = {
-  'Black': 'black',
-  'Dark Brown': 'brown',
-  'Light Brown': 'light_brown',
-  'Blonde': 'blonde',
-  'Strawberry Blonde': 'strawberry_blonde',
-  'Red': 'red',
-  'Grey': 'grey',
-  'White': 'white',
-};
-
-// Hair length to file prefix mapping
-const hairLengthPrefixMap: Record<string, string> = {
-  'Short': 'short',
-  'Medium': 'medium',
-  'Long': 'long',
-  'Very Long': 'very_long',
-  'Bald': 'bald',
-};
-
-// Function to get hair color options based on selected hair length
-const getHairColorOptions = (hairLength: string): DropdownOption[] => {
-  const prefix = hairLengthPrefixMap[hairLength] || 'medium';
-  return [
-    { id: 'Black', label: 'Black', image: `/hair/${prefix}_black.jpeg` },
-    { id: 'Dark Brown', label: 'Dark Brown', image: `/hair/${prefix}_brown.jpeg` },
-    { id: 'Light Brown', label: 'Light Brown', image: `/hair/${prefix}_light_brown.jpeg` },
-    { id: 'Blonde', label: 'Blonde', image: `/hair/${prefix}_blonde.jpeg` },
-    { id: 'Strawberry Blonde', label: 'Strawberry Blonde', image: `/hair/${prefix}_strawberry_blonde.jpeg` },
-    { id: 'Red', label: 'Red / Orange', image: `/hair/${prefix}_red.jpeg` },
-    { id: 'Grey', label: 'Grey', image: `/hair/${prefix}_grey.jpeg` },
-    { id: 'White', label: 'White', image: `/hair/${prefix}_white.jpeg` },
-  ];
-};
-
-// Function to get hair length options based on selected hair color
-const getHairLengthOptions = (hairColor: string): DropdownOption[] => {
-  const colorFile = hairColorFileMap[hairColor] || 'brown';
-  return [
-    { id: 'Short', label: 'Short', image: `/hair/short_${colorFile}.jpeg` },
-    { id: 'Medium', label: 'Medium', image: `/hair/medium_${colorFile}.jpeg` },
-    { id: 'Long', label: 'Long', image: `/hair/long_${colorFile}.jpeg` },
-    { id: 'Very Long', label: 'Very Long', image: `/hair/very_long_${colorFile}.jpeg` },
-    { id: 'Bald', label: 'Bald', image: '/hair/bald.jpeg' },
-  ];
-};
-
-// Eye color options with images
-const eyeColorOptions: DropdownOption[] = [
-  { id: 'Brown', label: 'Brown', image: '/eyes/brown.jpg' },
-  { id: 'Blue', label: 'Blue', image: '/eyes/blue.jpg' },
-  { id: 'Green', label: 'Green', image: '/eyes/green.jpg' },
-  { id: 'Hazel', label: 'Hazel', image: '/eyes/hazel.jpg' },
-  { id: 'Grey', label: 'Grey', image: '/eyes/grey.jpg' },
-];
 
 // Max images: 20 for Places (property photos), 10 for others
 const MAX_IMAGES_PLACE = 20;
@@ -188,11 +112,6 @@ const CreateCharacterPage: React.FC = () => {
   const [characterName, setCharacterName] = useState('');
   const [characterDescription, setCharacterDescription] = useState('');
   const [characterKind, setCharacterKind] = useState('Human');
-  const [characterGender, setCharacterGender] = useState('Male');
-  const [characterAge, setCharacterAge] = useState('Child');
-  const [characterHairColor, setCharacterHairColor] = useState('Dark Brown');
-  const [characterHairLength, setCharacterHairLength] = useState('Medium');
-  const [characterEyeColor, setCharacterEyeColor] = useState('Brown');
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   const [showCharacterNameError, setShowCharacterNameError] = useState(false);
@@ -218,8 +137,6 @@ const CreateCharacterPage: React.FC = () => {
     if (!editingCharacter || formPopulated) return;
 
     setCharacterName(editingCharacter.characterName || '');
-    setCharacterGender(editingCharacter.gender || 'Male');
-    setCharacterAge(editingCharacter.age || 'Child');
     setExistingImageUrls(editingCharacter.imageUrls || []);
 
     // Parse the description to extract user-written description vs auto-generated traits
@@ -237,14 +154,6 @@ const CreateCharacterPage: React.FC = () => {
     } else if (desc.includes('Non-Human')) {
       setCharacterKind('Non-Human');
     }
-
-    // Extract hair color/length/eye color if present in description
-    const hairColorMatch = desc.match(/Hair: ([^,]+),/);
-    if (hairColorMatch) setCharacterHairColor(hairColorMatch[1]);
-    const hairLengthMatch = desc.match(/Hair: [^,]+, ([^.]+)/);
-    if (hairLengthMatch) setCharacterHairLength(hairLengthMatch[1]);
-    const eyeColorMatch = desc.match(/Eyes: ([^.]+)/);
-    if (eyeColorMatch) setCharacterEyeColor(eyeColorMatch[1]);
 
     // Extract only the user-written description (the part before the auto-generated traits)
     // The auto-generated part starts with "Human," or "Non-Human,"
@@ -372,27 +281,14 @@ const CreateCharacterPage: React.FC = () => {
           )
         : [];
 
-      // Build description from character attributes
-      // Product, Place, App, Business, and Non-Human types don't have hair/eye color fields
-      const isNonHumanType = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business' || characterKind === 'Non-Human';
-      const fullDescription = isNonHumanType
-        ? [
-            characterDescription,
-            characterKind, // "Product", "Place", "Non-Human", etc.
-          ].filter(Boolean).join('. ')
-        : [
-            characterDescription,
-            `${characterKind}, ${characterGender}, ${characterAge}`,
-            `Hair: ${characterHairColor}, ${characterHairLength}`,
-            `Eyes: ${characterEyeColor}`,
-          ].filter(Boolean).join('. ');
+      // Just use the user's description - no auto-generated traits
+      const fullDescription = characterDescription;
 
       if (isEditMode && characterId) {
         // Update existing character/product/place
         const response = await charactersApi.updateCharacter(user.userId, characterId, {
           characterName: characterName.trim(),
           characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
-          ...(isNonHumanType ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           ...(imagesChanged && { imageBase64Array }),
         });
@@ -415,7 +311,6 @@ const CreateCharacterPage: React.FC = () => {
           userId: user.userId,
           characterName: characterName.trim(),
           characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
-          ...(isNonHumanType ? {} : { gender: characterGender, age: characterAge }),
           description: fullDescription,
           imageBase64Array,
         });
@@ -458,9 +353,6 @@ const CreateCharacterPage: React.FC = () => {
     message: '',
     severity: 'success'
   });
-
-  // Check if this is a non-human type (Product, Place, App, Business)
-  const isProductOrPlaceOrApp = characterKind === 'Product' || characterKind === 'Place' || characterKind === 'App' || characterKind === 'Business';
 
   return (
     <Box sx={{
@@ -605,193 +497,130 @@ const CreateCharacterPage: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Two-column grid for form fields on md+ */}
+        {/* Two-column layout: Left (Type + Description) | Right (Reference Images) */}
         <Box sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          gap: { xs: 0, md: 3 },
-          alignItems: 'start',
-          mb: 3
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 3,
+          mb: 3,
+          alignItems: { md: 'stretch' }
         }}>
-          {/* Type Dropdown */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-              Type
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
-              This determines how AI generates and showcases your video content
-            </Typography>
-            <StyledDropdown
-              options={characterKindOptions}
-              value={characterKind}
-              onChange={setCharacterKind}
-              placeholder="Select type..."
-              icon={characterTypeIcons[characterKind]}
-              fullWidth
-            />
+          {/* Left Column: Type + Description */}
+          <Box sx={{ flex: { md: 1 }, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Type Dropdown */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Type
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
+                This determines how AI generates and showcases your video content
+              </Typography>
+              <StyledDropdown
+                options={characterKindOptions}
+                value={characterKind}
+                onChange={setCharacterKind}
+                placeholder="Select type..."
+                icon={characterTypeIcons[characterKind]}
+                fullWidth
+              />
+            </Box>
+
+            {/* Description */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                {characterKind === 'Place'
+                  ? 'Property Details'
+                  : characterKind === 'Product'
+                    ? 'Product Description'
+                    : characterKind === 'App'
+                      ? 'App Description'
+                      : characterKind === 'Business'
+                        ? 'Business Description'
+                        : 'Description'} (Optional)
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
+                {characterKind === 'Place'
+                  ? 'Describe the location, style, key features, amenities, and vibe'
+                  : characterKind === 'Product'
+                    ? 'Describe the product features, materials, colors, and unique details'
+                    : characterKind === 'App'
+                      ? 'Describe the app, its key features, target users, and what makes it unique'
+                      : characterKind === 'Business'
+                        ? 'Describe your business, services, brand identity, and what sets you apart'
+                        : 'Add extra details about personality, appearance, features, or traits'}
+              </Typography>
+              <TextField
+                fullWidth
+                value={characterDescription}
+                onChange={(e) => setCharacterDescription(e.target.value)}
+                multiline
+                minRows={6}
+                placeholder={
+                  characterKind === 'Place'
+                    ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms"
+                    : characterKind === 'Product'
+                      ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side"
+                      : characterKind === 'App'
+                        ? "e.g., A fitness tracking app with clean UI, progress charts, workout plans, social features, and gamification elements"
+                        : characterKind === 'Business'
+                          ? "e.g., A modern coffee shop with artisan roasts, cozy atmosphere, community events, and sustainable sourcing"
+                          : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
+                }
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.05)',
+                    border: characterDescription.trim() ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff',
+                    transition: 'all 0.2s ease',
+                    '& textarea': {
+                      color: '#fff',
+                      '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                    },
+                    '&:hover': {
+                      backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.08)',
+                      borderColor: characterDescription.trim() ? '#3B82F6' : 'rgba(255,255,255,0.2)',
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: 'rgba(59,130,246,0.1)',
+                      borderColor: '#3B82F6',
+                    },
+                    '& fieldset': { border: 'none' },
+                  },
+                }}
+              />
+            </Box>
           </Box>
 
-          {/* Gender - Only for Human and Non-Human */}
-          {!isProductOrPlaceOrApp && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Gender
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: 40 } }}>
-                Select the gender identity for your character
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1.5 }}>
-                {genderOptions.map((gender) => {
-                  const isSelected = characterGender === gender.id;
-                  const isMale = gender.id === 'Male';
-                  return (
-                    <Box
-                      key={gender.id}
-                      onClick={() => setCharacterGender(gender.id)}
-                      sx={{
-                        flex: '1 1 0',
-                        minWidth: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 1,
-                        py: 1.5,
-                        minHeight: 52,
-                        borderRadius: '12px',
-                        background: isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
-                        border: isSelected ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          background: isSelected ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)',
-                          borderColor: isSelected ? '#007AFF' : 'rgba(255,255,255,0.2)',
-                        },
-                      }}
-                    >
-                      {isMale ? (
-                        <MaleIcon sx={{ fontSize: 22, color: isSelected ? '#007AFF' : '#007AFF' }} />
-                      ) : (
-                        <FemaleIcon sx={{ fontSize: 22, color: isSelected ? '#007AFF' : '#EC4899' }} />
-                      )}
-                      <Typography sx={{
-                        fontWeight: isSelected ? 600 : 500,
-                        color: '#fff',
-                        fontSize: '0.9rem',
-                      }}>
-                        {gender.label}
-                      </Typography>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </Box>
-          )}
-
-          {/* Age - Only for Human and Non-Human */}
-          {!isProductOrPlaceOrApp && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Age
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
-                Select the age range for your character
-              </Typography>
-              <StyledDropdown
-                options={ageOptions}
-                value={characterAge}
-                onChange={setCharacterAge}
-                placeholder="Select age..."
-                fullWidth
-              />
-            </Box>
-          )}
-
-          {/* Hair Length - Only for humans */}
-          {characterKind === 'Human' && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Hair Length
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
-                Select the hair length style for your character
-              </Typography>
-              <StyledDropdown
-                options={getHairLengthOptions(characterHairColor)}
-                value={characterHairLength}
-                onChange={setCharacterHairLength}
-                placeholder="Select hair length..."
-                fullWidth
-              />
-            </Box>
-          )}
-
-          {/* Hair Color - Only for humans with hair (not bald) */}
-          {characterKind === 'Human' && characterHairLength !== 'Bald' && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Hair Color
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
-                Choose the hair color for your character
-              </Typography>
-              <StyledDropdown
-                options={getHairColorOptions(characterHairLength)}
-                value={characterHairColor}
-                onChange={setCharacterHairColor}
-                placeholder="Select hair color..."
-                fullWidth
-              />
-            </Box>
-          )}
-
-          {/* Eye Color - Only for Human and Non-Human */}
-          {!isProductOrPlaceOrApp && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Eye Color
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem', minHeight: { md: '1.3em' } }}>
-                Pick the eye color for your character
-              </Typography>
-              <StyledDropdown
-                options={eyeColorOptions}
-                value={characterEyeColor}
-                onChange={setCharacterEyeColor}
-                placeholder="Select eye color..."
-                fullWidth
-              />
-            </Box>
-          )}
-        </Box>
-
-        {/* Reference Images */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-            Reference Images
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.85rem' }}>
-            Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : characterKind === 'Business' ? 'showcasing your business, storefront, or brand' : 'for appearance in music videos'}
-          </Typography>
-          {characterKind === 'Product' && (
-            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Create one product entry per item. For example, if you have different shoe colors or variants, create a separate entry for each one.
+          {/* Right Column: Reference Images */}
+          <Box sx={{ flex: { md: 1 }, display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+              Reference Images
+              <Chip label="Required" size="small" sx={{ background: 'rgba(255,59,48,0.2)', color: '#FF6B6B', fontWeight: 600, fontSize: '0.7rem' }} />
             </Typography>
-          )}
-          {characterKind === 'Place' && (
-            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Upload up to 20 photos! Include interior rooms, exterior views, surrounding area (beachfront, garden, pool), and unique features. Each photo becomes a scene in your video.
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.85rem' }}>
+              Upload up to {maxImages} reference images {characterKind === 'Place' ? 'to showcase your property' : characterKind === 'Product' ? 'showing your product from different angles' : characterKind === 'App' ? 'showing your app screens and features' : characterKind === 'Business' ? 'showcasing your business, storefront, or brand' : 'for appearance in music videos'}
             </Typography>
-          )}
-          {characterKind === 'App' && (
-            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Include app screenshots, UI mockups, logo, and feature highlights. Show key screens and user flows for the best promo video.
-            </Typography>
-          )}
-          {characterKind === 'Business' && (
-            <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
-              💡 Tip: Include your logo, storefront, team photos, office space, and any branded materials. Show what makes your business unique.
-            </Typography>
-          )}
+            {characterKind === 'Product' && (
+              <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+                💡 Tip: Create one product entry per item. For example, if you have different shoe colors or variants, create a separate entry for each one.
+              </Typography>
+            )}
+            {characterKind === 'Place' && (
+              <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+                💡 Tip: Upload up to 20 photos! Include interior rooms, exterior views, surrounding area (beachfront, garden, pool), and unique features. Each photo becomes a scene in your video.
+              </Typography>
+            )}
+            {characterKind === 'App' && (
+              <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+                💡 Tip: Include app screenshots, UI mockups, logo, and feature highlights. Show key screens and user flows for the best promo video.
+              </Typography>
+            )}
+            {characterKind === 'Business' && (
+              <Typography sx={{ color: '#007AFF', mb: 2, fontSize: '0.8rem', fontStyle: 'italic' }}>
+                💡 Tip: Include your logo, storefront, team photos, office space, and any branded materials. Show what makes your business unique.
+              </Typography>
+            )}
 
           {/* Drag and drop area */}
           <Box
@@ -802,7 +631,8 @@ const CreateCharacterPage: React.FC = () => {
             onClick={() => fileInputRef.current?.click()}
             sx={{
               width: '100%',
-              minHeight: 120,
+              flex: 1,
+              minHeight: 180,
               borderRadius: '12px',
               border: isDragging ? '2px dashed #007AFF' : '2px dashed rgba(255,255,255,0.2)',
               backgroundColor: isDragging ? 'rgba(0,122,255,0.1)' : 'rgba(255,255,255,0.02)',
@@ -888,72 +718,7 @@ const CreateCharacterPage: React.FC = () => {
               </Box>
             </Box>
           )}
-        </Box>
-
-        {/* Description */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-            {characterKind === 'Place'
-              ? 'Property Details'
-              : characterKind === 'Product'
-                ? 'Product Description'
-                : characterKind === 'App'
-                  ? 'App Description'
-                  : characterKind === 'Business'
-                    ? 'Business Description'
-                    : 'Description'} (Optional)
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
-            {characterKind === 'Place'
-              ? 'Describe the location, style, key features, amenities, and vibe'
-              : characterKind === 'Product'
-                ? 'Describe the product features, materials, colors, and unique details'
-                : characterKind === 'App'
-                  ? 'Describe the app, its key features, target users, and what makes it unique'
-                  : characterKind === 'Business'
-                    ? 'Describe your business, services, brand identity, and what sets you apart'
-                    : 'Add extra details about personality, appearance, features, or traits'}
-          </Typography>
-          <TextField
-            fullWidth
-            value={characterDescription}
-            onChange={(e) => setCharacterDescription(e.target.value)}
-            multiline
-            rows={3}
-            placeholder={
-              characterKind === 'Place'
-                ? "e.g., Beachfront villa in Cape Town with ocean views, modern coastal decor, infinity pool, 3 bedrooms with en-suite bathrooms"
-                : characterKind === 'Product'
-                  ? "e.g., Sleek red sneakers with white soles, premium leather material, iconic logo on side"
-                  : characterKind === 'App'
-                    ? "e.g., A fitness tracking app with clean UI, progress charts, workout plans, social features, and gamification elements"
-                    : characterKind === 'Business'
-                      ? "e.g., A modern coffee shop with artisan roasts, cozy atmosphere, community events, and sustainable sourcing"
-                      : "e.g., A cheerful girl who loves adventures, always wears a red scarf"
-            }
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '12px',
-                backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.05)',
-                border: characterDescription.trim() ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)',
-                color: '#fff',
-                transition: 'all 0.2s ease',
-                '& textarea': {
-                  color: '#fff',
-                  '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
-                },
-                '&:hover': {
-                  backgroundColor: characterDescription.trim() ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.08)',
-                  borderColor: characterDescription.trim() ? '#3B82F6' : 'rgba(255,255,255,0.2)',
-                },
-                '&.Mui-focused': {
-                  backgroundColor: 'rgba(59,130,246,0.1)',
-                  borderColor: '#3B82F6',
-                },
-                '& fieldset': { border: 'none' },
-              },
-            }}
-          />
+          </Box>
         </Box>
 
         {/* Create/Update Button */}
@@ -961,7 +726,7 @@ const CreateCharacterPage: React.FC = () => {
           <Button
             variant="contained"
             onClick={handleCreateCharacter}
-            disabled={isCreatingCharacter || isLoadingCharacter}
+            disabled={isCreatingCharacter || isLoadingCharacter || (existingImageUrls.length + uploadedImages.length === 0)}
             sx={{
               py: 2,
               borderRadius: '16px',
