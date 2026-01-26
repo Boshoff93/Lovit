@@ -197,6 +197,8 @@ export const videosApi = {
     rouletteMode?: boolean; // Let AI pick the video concept based on the track
     videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar'; // Specific video content type
     avatarVideoDuration?: 5 | 10 | 15; // Duration for avatar videos in seconds
+    includeBackgroundMusic?: boolean; // Add instrumental background music to narration (50 tokens/30s)
+    backgroundMusicPrompt?: string; // Optional music style hint (e.g., "upbeat electronic", "calm piano")
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {
@@ -348,10 +350,10 @@ export const tiktokApi = {
     api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`),
 };
 
-// Instagram API
+// Instagram API (also used for Facebook since they share Meta's OAuth flow)
 export const instagramApi = {
-  getAuthUrl: (userId: string) =>
-    api.get(`/api/gruvi/instagram/auth-url?userId=${userId}`),
+  getAuthUrl: (userId: string, platform: 'instagram' | 'facebook' = 'instagram') =>
+    api.get(`/api/gruvi/instagram/auth-url?userId=${userId}&platform=${platform}`),
   
   handleCallback: (code: string, state: string) =>
     api.post('/api/gruvi/instagram/callback', { code, state }),

@@ -263,8 +263,10 @@ const ConnectedAccountsPage: React.FC = () => {
           authUrl = (await tiktokApi.getAuthUrl(userId)).data.authUrl;
           break;
         case 'instagram':
-        case 'facebook': // Facebook shares auth with Instagram
-          authUrl = (await instagramApi.getAuthUrl(userId)).data.authUrl;
+          authUrl = (await instagramApi.getAuthUrl(userId, 'instagram')).data.authUrl;
+          break;
+        case 'facebook':
+          authUrl = (await instagramApi.getAuthUrl(userId, 'facebook')).data.authUrl;
           break;
         case 'linkedin':
           authUrl = (await linkedinApi.getAuthUrl(userId)).data.authUrl;

@@ -394,6 +394,10 @@ const CreateVideoPage: React.FC = () => {
   // Avatar video duration (for ugc-avatar mode): 5, 10, or 15 seconds
   const [avatarVideoDuration, setAvatarVideoDuration] = useState<5 | 10 | 15>(5);
 
+  // Background music options (for narrative videos)
+  const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(false);
+  const [backgroundMusicPrompt, setBackgroundMusicPrompt] = useState('');
+
   // RTK Query for characters - cached and shared across app
   const { data: charactersData, isLoading: isLoadingCharacters } = useGetUserCharactersQuery(
     { userId: user?.userId || '' },
@@ -745,6 +749,8 @@ const CreateVideoPage: React.FC = () => {
         rouletteMode: isAvatarVideo ? false : rouletteMode,
         videoContentType, // 'music', 'story', 'ugc-voiceover', or 'ugc-avatar'
         avatarVideoDuration: isAvatarVideo ? avatarVideoDuration : undefined,
+        includeBackgroundMusic: needsVoiceover ? includeBackgroundMusic : undefined,
+        backgroundMusicPrompt: needsVoiceover && includeBackgroundMusic ? backgroundMusicPrompt : undefined,
       });
 
       // Update tokens in UI with actual value from backend
@@ -1117,6 +1123,125 @@ const CreateVideoPage: React.FC = () => {
                 <KeyboardArrowDownIcon sx={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
               </Box>
             </Box>
+            )}
+
+            {/* Background Music Option - only for narrative videos */}
+            {needsVoiceover && selectedNarrativeId && (
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  <MusicNoteIcon sx={{ fontSize: 20, color: '#AF52DE' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                    Background Music
+                  </Typography>
+                  <Chip
+                    label="Optional"
+                    size="small"
+                    sx={{
+                      ml: 'auto',
+                      background: 'rgba(175,82,222,0.1)',
+                      color: '#AF52DE',
+                      fontWeight: 600,
+                      fontSize: '0.7rem'
+                    }}
+                  />
+                </Box>
+
+                {/* Toggle for background music */}
+                <Box
+                  onClick={() => setIncludeBackgroundMusic(!includeBackgroundMusic)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    py: 1.5,
+                    px: 2,
+                    borderRadius: '12px',
+                    border: includeBackgroundMusic ? '2px solid #AF52DE' : '1px solid rgba(255,255,255,0.1)',
+                    background: includeBackgroundMusic ? 'rgba(175,82,222,0.1)' : 'rgba(255,255,255,0.05)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: includeBackgroundMusic ? 'rgba(175,82,222,0.15)' : 'rgba(255,255,255,0.08)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '4px',
+                        border: includeBackgroundMusic ? '2px solid #AF52DE' : '2px solid rgba(255,255,255,0.3)',
+                        background: includeBackgroundMusic ? '#AF52DE' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {includeBackgroundMusic && <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />}
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>
+                        Add instrumental background music
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                        Soft music that plays behind your narration
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <GruviCoin size={14} />
+                    <Typography sx={{ fontSize: '0.75rem', color: '#AF52DE', fontWeight: 600 }}>
+                      +{(() => {
+                        const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
+                        const durationSecs = narrative?.durationMs ? narrative.durationMs / 1000 : 60;
+                        return Math.ceil(durationSecs / 30) * 50;
+                      })()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Music style hint - only show if background music is enabled */}
+                {includeBackgroundMusic && (
+                  <Box sx={{ mt: 2 }}>
+                    <TextField
+                      fullWidth
+                      placeholder="Describe the music style (optional)"
+                      value={backgroundMusicPrompt}
+                      onChange={(e) => setBackgroundMusicPrompt(e.target.value)}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          background: 'rgba(255,255,255,0.05)',
+                          borderRadius: '10px',
+                          '& fieldset': {
+                            borderColor: 'rgba(255,255,255,0.1)',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: 'rgba(175,82,222,0.3)',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#AF52DE',
+                          },
+                        },
+                        '& .MuiOutlinedInput-input': {
+                          color: '#fff',
+                          fontSize: '0.85rem',
+                          '&::placeholder': {
+                            color: 'rgba(255,255,255,0.4)',
+                          },
+                        },
+                      }}
+                      helperText={
+                        <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', mt: 0.5 }}>
+                          E.g., "upbeat electronic", "calm piano", "cinematic orchestral"
+                        </Typography>
+                      }
+                    />
+                  </Box>
+                )}
+              </Box>
             )}
 
             {/* Song Selection - only for music videos */}
