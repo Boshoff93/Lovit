@@ -226,12 +226,19 @@ const getAvatarTokenCost = (duration: number) => (duration / 5) * 50;
 // Token costs: Still image video = 200 tokens flat, Cinematic video = 50 tokens per second
 const STILL_VIDEO_COST = 200;
 const CINEMATIC_TOKENS_PER_SECOND = 50;
+const BACKGROUND_MUSIC_TOKENS_PER_30S = 50; // 50 tokens per 30 seconds of background music
 
 // Calculate cinematic video cost based on audio duration (50 tokens per second, rounded down to benefit user)
 // Backend will truncate audio slightly over thresholds (e.g., 60.05s -> 60s)
 const getCinematicCost = (audioDurationSeconds: number | undefined) => {
   if (!audioDurationSeconds) return CINEMATIC_TOKENS_PER_SECOND * 10; // Default 10s = 500 tokens
   return Math.floor(audioDurationSeconds) * CINEMATIC_TOKENS_PER_SECOND;
+};
+
+// Calculate background music cost (50 tokens per 30 seconds, rounded up)
+const getBackgroundMusicCost = (audioDurationSeconds: number | undefined) => {
+  if (!audioDurationSeconds) return BACKGROUND_MUSIC_TOKENS_PER_30S; // Default 1 unit
+  return Math.ceil(audioDurationSeconds / 30) * BACKGROUND_MUSIC_TOKENS_PER_30S;
 };
 
 const videoTypes: (DropdownOption & { baseCredits: number; IconComponent: React.ElementType; tooltip: string })[] = [
@@ -394,9 +401,8 @@ const CreateVideoPage: React.FC = () => {
   // Avatar video duration (for ugc-avatar mode): 5, 10, or 15 seconds
   const [avatarVideoDuration, setAvatarVideoDuration] = useState<5 | 10 | 15>(5);
 
-  // Background music options (for narrative videos)
+  // Background music option (for narrative videos) - style is AI-generated based on story
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(false);
-  const [backgroundMusicPrompt, setBackgroundMusicPrompt] = useState('');
 
   // RTK Query for characters - cached and shared across app
   const { data: charactersData, isLoading: isLoadingCharacters } = useGetUserCharactersQuery(
@@ -679,14 +685,24 @@ const CreateVideoPage: React.FC = () => {
     return undefined;
   };
 
-  // Get credits for selected video type
+  // Get credits for selected video type (includes background music if enabled)
   const getCredits = () => {
+    let baseCost = 0;
     if (videoType === 'still') {
-      return STILL_VIDEO_COST;
+      baseCost = STILL_VIDEO_COST;
+    } else {
+      // Cinematic: 50 tokens per second based on audio duration
+      const audioDuration = getAudioDuration();
+      baseCost = getCinematicCost(audioDuration);
     }
-    // Cinematic: 50 tokens per 10 seconds based on audio duration
-    const audioDuration = getAudioDuration();
-    return getCinematicCost(audioDuration);
+
+    // Add background music cost if enabled (only for voiceover videos)
+    if (needsVoiceover && includeBackgroundMusic) {
+      const audioDuration = getAudioDuration();
+      baseCost += getBackgroundMusicCost(audioDuration);
+    }
+
+    return baseCost;
   };
 
   const handleGenerate = async () => {
@@ -750,7 +766,7 @@ const CreateVideoPage: React.FC = () => {
         videoContentType, // 'music', 'story', 'ugc-voiceover', or 'ugc-avatar'
         avatarVideoDuration: isAvatarVideo ? avatarVideoDuration : undefined,
         includeBackgroundMusic: needsVoiceover ? includeBackgroundMusic : undefined,
-        backgroundMusicPrompt: needsVoiceover && includeBackgroundMusic ? backgroundMusicPrompt : undefined,
+        // backgroundMusicPrompt is now AI-generated based on the story content
       });
 
       // Update tokens in UI with actual value from backend
@@ -1202,45 +1218,7 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                 </Box>
 
-                {/* Music style hint - only show if background music is enabled */}
-                {includeBackgroundMusic && (
-                  <Box sx={{ mt: 2 }}>
-                    <TextField
-                      fullWidth
-                      placeholder="Describe the music style (optional)"
-                      value={backgroundMusicPrompt}
-                      onChange={(e) => setBackgroundMusicPrompt(e.target.value)}
-                      size="small"
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          background: 'rgba(255,255,255,0.05)',
-                          borderRadius: '10px',
-                          '& fieldset': {
-                            borderColor: 'rgba(255,255,255,0.1)',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: 'rgba(175,82,222,0.3)',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#AF52DE',
-                          },
-                        },
-                        '& .MuiOutlinedInput-input': {
-                          color: '#fff',
-                          fontSize: '0.85rem',
-                          '&::placeholder': {
-                            color: 'rgba(255,255,255,0.4)',
-                          },
-                        },
-                      }}
-                      helperText={
-                        <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', mt: 0.5 }}>
-                          E.g., "upbeat electronic", "calm piano", "cinematic orchestral"
-                        </Typography>
-                      }
-                    />
-                  </Box>
-                )}
+                {/* Music style is now AI-generated based on the story content */}
               </Box>
             )}
 
