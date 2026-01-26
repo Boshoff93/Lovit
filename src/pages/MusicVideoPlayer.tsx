@@ -930,8 +930,17 @@ const MusicVideoPlayer: React.FC = () => {
         videoFooter: videoFooter || '',
       });
       
-      // Upload to TikTok
-      await tiktokApi.upload(user.userId, videoId);
+      // Upload to TikTok with user's selected settings
+      await tiktokApi.upload(user.userId, videoId, {
+        postMode: tiktokPostMode,
+        privacyLevel: tiktokPrivacyLevel,
+        allowComment: tiktokAllowComment,
+        allowDuet: tiktokAllowDuet,
+        allowStitch: tiktokAllowStitch,
+        discloseContent: tiktokDiscloseContent,
+        brandOrganic: tiktokBrandOrganic,
+        brandedContent: tiktokBrandedContent,
+      });
       setTiktokUploaded(true);
       // Individual platform banner will show instead of generic socialSuccess
     } catch (err: any) {
@@ -1297,11 +1306,13 @@ const MusicVideoPlayer: React.FC = () => {
 
       <Container maxWidth={false} sx={{ px: 0 }} disableGutters>
         {/* Video + Details - Portrait: side-by-side, Landscape: stacked */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: videoData.aspectRatio === 'landscape' ? 'column' : 'row',
-          gap: { xs: 2, sm: 3 }, 
-          mb: 3 
+        <Box sx={{
+          display: videoData.aspectRatio === 'landscape' ? 'flex' : 'grid',
+          flexDirection: videoData.aspectRatio === 'landscape' ? 'column' : undefined,
+          gridTemplateColumns: videoData.aspectRatio === 'landscape' ? undefined : 'auto 1fr',
+          alignItems: videoData.aspectRatio === 'landscape' ? undefined : 'stretch',
+          gap: { xs: 2, sm: 3 },
+          mb: 3
         }}>
           {/* Video Player */}
           <Paper
@@ -1313,10 +1324,16 @@ const MusicVideoPlayer: React.FC = () => {
               background: '#000',
               position: 'relative',
               aspectRatio: videoData.aspectRatio === 'landscape' ? '16/9' : '9/16',
-              height: videoData.aspectRatio === 'landscape' 
+              height: videoData.aspectRatio === 'landscape'
                 ? 'auto'
-                : { xs: 320, sm: 380, md: 420 },
-              width: videoData.aspectRatio === 'landscape' 
+                : '100%',
+              minHeight: videoData.aspectRatio === 'landscape'
+                ? undefined
+                : { xs: 200, sm: 240, md: 280 },
+              maxHeight: videoData.aspectRatio === 'landscape'
+                ? undefined
+                : { xs: 400, sm: 450, md: 500 },
+              width: videoData.aspectRatio === 'landscape'
                 ? '100%'
                 : 'auto',
               flexShrink: 0,
@@ -1424,13 +1441,13 @@ const MusicVideoPlayer: React.FC = () => {
               </Box>
           </Paper>
 
-          {/* Video Details - Right side, aligned to bottom like TrackDetailPage */}
-          <Box sx={{ 
-            flex: 1, 
-            display: 'flex', 
-            flexDirection: 'column', 
+          {/* Video Details - Right side, aligned to bottom */}
+          <Box sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'flex-end',
-            minWidth: 0, 
+            minWidth: 0,
           }}>
             {/* Tags */}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 0.5 }}>
@@ -3873,6 +3890,19 @@ const MusicVideoPlayer: React.FC = () => {
                           tags: editedMetadata?.tags || [],
                           videoFooter: videoFooter || '',
                           aspectRatio: videoData?.aspectRatio || 'portrait',
+                          // Pass TikTok settings if TikTok is selected
+                          ...(selectedPlatforms.includes('tiktok') && {
+                            tiktokSettings: {
+                              postMode: tiktokPostMode,
+                              privacyLevel: tiktokPrivacyLevel,
+                              allowComment: tiktokAllowComment,
+                              allowDuet: tiktokAllowDuet,
+                              allowStitch: tiktokAllowStitch,
+                              discloseContent: tiktokDiscloseContent,
+                              brandOrganic: tiktokBrandOrganic,
+                              brandedContent: tiktokBrandedContent,
+                            },
+                          }),
                         });
 
                         // Get the scheduleId from response
@@ -3959,6 +3989,19 @@ const MusicVideoPlayer: React.FC = () => {
                         tags: editedMetadata?.tags || [],
                         videoFooter: videoFooter || '',
                         aspectRatio: videoData?.aspectRatio || 'portrait',
+                        // Pass TikTok settings if TikTok is selected
+                        ...(selectedPlatforms.includes('tiktok') && {
+                          tiktokSettings: {
+                            postMode: tiktokPostMode,
+                            privacyLevel: tiktokPrivacyLevel,
+                            allowComment: tiktokAllowComment,
+                            allowDuet: tiktokAllowDuet,
+                            allowStitch: tiktokAllowStitch,
+                            discloseContent: tiktokDiscloseContent,
+                            brandOrganic: tiktokBrandOrganic,
+                            brandedContent: tiktokBrandedContent,
+                          },
+                        }),
                       });
 
                       // Get the scheduleId from response

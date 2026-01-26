@@ -346,8 +346,17 @@ export const tiktokApi = {
   disconnect: (userId: string) =>
     api.delete(`/api/gruvi/tiktok/disconnect?userId=${userId}`),
 
-  upload: (userId: string, videoId: string) =>
-    api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`),
+  upload: (userId: string, videoId: string, tiktokSettings?: {
+    postMode?: 'draft' | 'direct';
+    privacyLevel: string;
+    allowComment: boolean;
+    allowDuet: boolean;
+    allowStitch: boolean;
+    discloseContent: boolean;
+    brandOrganic: boolean;
+    brandedContent: boolean;
+  }) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/tiktok-upload`, { tiktokSettings }),
 };
 
 // Instagram API (also used for Facebook since they share Meta's OAuth flow)
@@ -473,6 +482,16 @@ export const scheduledPostsApi = {
     tags?: string[];
     videoFooter?: string;
     aspectRatio?: 'portrait' | 'landscape';
+    tiktokSettings?: {
+      postMode?: 'draft' | 'direct';
+      privacyLevel: string;
+      allowComment: boolean;
+      allowDuet: boolean;
+      allowStitch: boolean;
+      discloseContent: boolean;
+      brandOrganic: boolean;
+      brandedContent: boolean;
+    };
   }) => api.post('/api/gruvi/scheduled-posts', data),
 
   // Get all scheduled posts for the current user
