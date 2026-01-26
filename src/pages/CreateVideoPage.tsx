@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { setTokensRemaining } from '../store/authSlice';
@@ -416,20 +416,30 @@ const CreateVideoPage: React.FC = () => {
     { userId: user?.userId || '' },
     { skip: !user?.userId }
   );
-  // Only show completed narratives
-  const narratives = (narrativesData?.narratives || []).filter((n: Narrative) => n.status === 'completed');
+  // Only show completed narratives - memoize to prevent infinite loop in useEffect
+  const narratives = useMemo(
+    () => (narrativesData?.narratives || []).filter((n: Narrative) => n.status === 'completed'),
+    [narrativesData?.narratives]
+  );
 
   // RTK Query for songs (first page) - cached and shared across app
   const { data: songsData, isLoading: isLoadingSongsInitial } = useGetUserSongsQuery(
     { userId: user?.userId || '', page: 1, limit: 20 },
     { skip: !user?.userId }
   );
-  // Filter to completed songs only
-  const cachedSongs = (songsData?.songs || []).filter((s: Song) => s.status === 'completed');
+  // Filter to completed songs only - memoize to prevent re-renders
+  const cachedSongs = useMemo(
+    () => (songsData?.songs || []).filter((s: Song) => s.status === 'completed'),
+    [songsData?.songs]
+  );
 
   // Additional songs from "load more" - local state for pagination
   const [additionalSongs, setAdditionalSongs] = useState<Song[]>([]);
-  const songs = [...cachedSongs, ...additionalSongs.filter(s => !cachedSongs.find(c => c.songId === s.songId))];
+  // Combine cached and additional songs - memoize to prevent re-renders
+  const songs = useMemo(
+    () => [...cachedSongs, ...additionalSongs.filter(s => !cachedSongs.find(c => c.songId === s.songId))],
+    [cachedSongs, additionalSongs]
+  );
   const isLoadingSongs = isLoadingSongsInitial;
 
   // Narrative selection state (for narrative videos)
@@ -481,12 +491,15 @@ const CreateVideoPage: React.FC = () => {
   const needsVoiceover = isStory || isUgcVoiceover;
   const needsSong = isMusic;
 
-  // Filter narratives based on video content type
-  const filteredNarratives = narratives.filter(n => {
-    if (isStory) return n.narrativeType === 'story';
-    if (isUgcVoiceover) return n.narrativeType === 'ugc';
-    return true; // Show all for other modes (shouldn't be used)
-  });
+  // Filter narratives based on video content type - memoize for performance
+  const filteredNarratives = useMemo(
+    () => narratives.filter(n => {
+      if (isStory) return n.narrativeType === 'story';
+      if (isUgcVoiceover) return n.narrativeType === 'ugc';
+      return true; // Show all for other modes (shouldn't be used)
+    }),
+    [narratives, isStory, isUgcVoiceover]
+  );
 
   // Max cast members allowed:
   // - Music video: max 5
