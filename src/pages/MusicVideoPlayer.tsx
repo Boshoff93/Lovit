@@ -3567,15 +3567,37 @@ const MusicVideoPlayer: React.FC = () => {
                 )}
                 {/* Details */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Video Details</Typography>
-                  <Typography variant="body2" sx={{ color: '#fff', mb: 0.5 }}>
-                    <strong>Title:</strong> {editedMetadata?.title || 'Untitled'}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#86868B', mb: 0.5,
-                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                  <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Video Details</Typography>
+                  <Typography variant="body2" sx={{
+                    mb: 0.5,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}>
-                    <strong>Description:</strong> {editedMetadata?.description?.slice(0, 100) || 'No description'}...
+                    <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Title:</Box>
+                    <Box component="span" sx={{ color: '#86868B' }}> {editedMetadata?.title || 'Untitled'}</Box>
                   </Typography>
+                  <Typography variant="body2" sx={{
+                    mb: 0.5,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Description:</Box>
+                    <Box component="span" sx={{ color: '#86868B' }}> {editedMetadata?.description || 'No description'}</Box>
+                  </Typography>
+                  {/* Video Footer */}
+                  {videoFooter && (
+                    <Typography variant="body2" sx={{
+                      mt: 0.5,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Footer:</Box>
+                      <Box component="span" sx={{ color: '#86868B' }}> {videoFooter}</Box>
+                    </Typography>
+                  )}
                   {editedMetadata?.tags && editedMetadata.tags.length > 0 && (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
                       {editedMetadata.tags.slice(0, 5).map((tag, i) => (
@@ -3585,12 +3607,6 @@ const MusicVideoPlayer: React.FC = () => {
                         <Chip label={`+${editedMetadata.tags.length - 5} more`} size="small" sx={{ fontSize: '0.7rem', height: 22, color: '#fff', bgcolor: 'rgba(255,255,255,0.08)' }} />
                       )}
                     </Box>
-                  )}
-                  {/* Video Footer */}
-                  {videoFooter && (
-                    <Typography variant="body2" sx={{ color: '#fff', mt: 1, whiteSpace: 'pre-wrap' }}>
-                      <strong>Footer:</strong> {videoFooter.length > 100 ? `${videoFooter.substring(0, 100)}...` : videoFooter}
-                    </Typography>
                   )}
                 </Box>
               </Box>
