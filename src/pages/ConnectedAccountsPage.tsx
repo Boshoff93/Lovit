@@ -302,6 +302,10 @@ const ConnectedAccountsPage: React.FC = () => {
           await linkedinApi.disconnect(userId);
           linkedinQuery.refetch();
           break;
+        case 'facebook':
+          await facebookApi.disconnect(userId);
+          facebookQuery.refetch();
+          break;
       }
       setSuccess(`${platformId.charAt(0).toUpperCase() + platformId.slice(1)} account disconnected`);
       setTimeout(() => setSuccess(null), 3000);

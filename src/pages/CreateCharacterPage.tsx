@@ -104,8 +104,7 @@ const CreateCharacterPage: React.FC = () => {
 
   // Edit mode state
   const isEditMode = !!characterId;
-  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
-  const [imagesChanged, setImagesChanged] = useState(false);
+  const [existingImages, setExistingImages] = useState<Array<{ url: string; key: string }>>([]);
   const [formPopulated, setFormPopulated] = useState(false);
 
   // Character state
@@ -137,23 +136,15 @@ const CreateCharacterPage: React.FC = () => {
     if (!editingCharacter || formPopulated) return;
 
     setCharacterName(editingCharacter.characterName || '');
-    setExistingImageUrls(editingCharacter.imageUrls || []);
+    // Pair URLs with keys for tracking
+    const urls = editingCharacter.imageUrls || [];
+    const keys = editingCharacter.imageKeys || [];
+    setExistingImages(urls.map((url, i) => ({ url, key: keys[i] || '' })));
 
-    // Parse the description to extract user-written description vs auto-generated traits
+    // Use characterType from API directly (default to Human for legacy data without characterType)
+    setCharacterKind(editingCharacter.characterType || 'Human');
+
     const desc = editingCharacter.description || '';
-
-    // Check for character kind
-    if (desc.includes('Place')) {
-      setCharacterKind('Place');
-    } else if (desc.includes('App')) {
-      setCharacterKind('App');
-    } else if (desc.includes('Product')) {
-      setCharacterKind('Product');
-    } else if (desc.includes('Business')) {
-      setCharacterKind('Business');
-    } else if (desc.includes('Non-Human')) {
-      setCharacterKind('Non-Human');
-    }
 
     // Extract only the user-written description (the part before the auto-generated traits)
     // The auto-generated part starts with "Human," or "Non-Human,"
@@ -196,19 +187,16 @@ const CreateCharacterPage: React.FC = () => {
     if (files) {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
-      setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages));
-      setImagesChanged(true);
+      setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages - existingImages.length));
     }
   };
 
   const handleRemoveImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
-    setImagesChanged(true);
   };
 
   const handleRemoveExistingImage = (index: number) => {
-    setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
-    setImagesChanged(true);
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
   };
 
   // Drag and drop handlers
@@ -239,8 +227,7 @@ const CreateCharacterPage: React.FC = () => {
       const newFiles = Array.from(files);
       const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
       if (imageFiles.length > 0) {
-        setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages));
-        setImagesChanged(true);
+        setUploadedImages(prev => [...prev, ...imageFiles].slice(0, maxImages - existingImages.length));
       } else {
         setNotification({
           open: true,
@@ -290,7 +277,8 @@ const CreateCharacterPage: React.FC = () => {
           characterName: characterName.trim(),
           characterType: characterKind as 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business',
           description: fullDescription,
-          ...(imagesChanged && { imageBase64Array }),
+          keepImageKeys: existingImages.map(img => img.key),
+          ...(imageBase64Array.length > 0 && { imageBase64Array }),
         });
 
         console.log('Character/Product/App/Business update response:', response.data);
@@ -653,7 +641,7 @@ const CreateCharacterPage: React.FC = () => {
               {isDragging ? 'Drop images here' : 'Drag & drop or click to upload'}
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, fontSize: '0.85rem' }}>
-              {existingImageUrls.length + uploadedImages.length}/{maxImages} images
+              {existingImages.length + uploadedImages.length}/{maxImages} images
             </Typography>
             <input
               type="file"
@@ -666,16 +654,16 @@ const CreateCharacterPage: React.FC = () => {
           </Box>
 
           {/* Existing images (in edit mode) */}
-          {existingImageUrls.length > 0 && (
+          {existingImages.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 1, fontSize: '0.8rem' }}>
                 Current images:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1.5, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)' }}>
-                {existingImageUrls.map((url, index) => (
+                {existingImages.map((img, index) => (
                   <Box key={`existing-${index}`} sx={{ position: 'relative', width: 70, height: 70 }}>
                     <img
-                      src={url}
+                      src={img.url}
                       alt={`Existing ${index}`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                     />
@@ -726,7 +714,7 @@ const CreateCharacterPage: React.FC = () => {
           <Button
             variant="contained"
             onClick={handleCreateCharacter}
-            disabled={isCreatingCharacter || isLoadingCharacter || (existingImageUrls.length + uploadedImages.length === 0)}
+            disabled={isCreatingCharacter || isLoadingCharacter || (existingImages.length + uploadedImages.length === 0)}
             sx={{
               py: 2,
               borderRadius: '16px',

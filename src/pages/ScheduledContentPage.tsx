@@ -63,6 +63,7 @@ const ScheduledContentPage: React.FC = () => {
   const loading = scheduledPostsQuery.isLoading;
 
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'partial' | 'failed'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [postToCancel, setPostToCancel] = useState<ScheduledPost | null>(null);
@@ -180,7 +181,9 @@ const ScheduledContentPage: React.FC = () => {
   const getPostsForDate = (date: Date) => {
     return scheduledPosts.filter(post => {
       const postDate = new Date(post.scheduledTime);
-      return postDate.toDateString() === date.toDateString() && post.status !== 'cancelled';
+      const matchesDate = postDate.toDateString() === date.toDateString() && post.status !== 'cancelled';
+      const matchesFilter = statusFilter === 'all' || post.status === statusFilter;
+      return matchesDate && matchesFilter;
     });
   };
 
@@ -236,7 +239,9 @@ const ScheduledContentPage: React.FC = () => {
   const getPostsForSlot = (date: Date, hour: number) => {
     return scheduledPosts.filter(post => {
       const postDate = new Date(post.scheduledTime);
-      return postDate.toDateString() === date.toDateString() && postDate.getHours() === hour && post.status !== 'cancelled';
+      const matchesSlot = postDate.toDateString() === date.toDateString() && postDate.getHours() === hour && post.status !== 'cancelled';
+      const matchesFilter = statusFilter === 'all' || post.status === statusFilter;
+      return matchesSlot && matchesFilter;
     });
   };
 
@@ -464,12 +469,12 @@ const ScheduledContentPage: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Status Legend */}
+      {/* Status Filter */}
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: { xs: 1.5, sm: 3 },
+          gap: { xs: 1, sm: 2 },
           px: { xs: 2, sm: 3, md: 4 },
           py: 1,
           background: '#1E1E22',
@@ -478,23 +483,96 @@ const ScheduledContentPage: React.FC = () => {
         }}
       >
         <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500, mr: 0.5 }}>
-          Status:
+          Filter:
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box
+          onClick={() => setStatusFilter('all')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'all' ? 'rgba(255,255,255,0.1)' : 'transparent',
+            border: statusFilter === 'all' ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
+          }}
+        >
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'all' ? '#fff' : 'rgba(255,255,255,0.7)' }}>All</Typography>
+        </Box>
+        <Box
+          onClick={() => setStatusFilter('scheduled')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'scheduled' ? 'rgba(0,122,255,0.15)' : 'transparent',
+            border: statusFilter === 'scheduled' ? '1px solid rgba(0,122,255,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(0,122,255,0.1)' },
+          }}
+        >
           <ScheduleIcon sx={{ fontSize: 14, color: '#007AFF' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#fff' }}>Scheduled</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'scheduled' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Scheduled</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <HourglassIcon sx={{ fontSize: 14, color: '#F97316' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#fff' }}>Publishing</Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box
+          onClick={() => setStatusFilter('published')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'published' ? 'rgba(34,197,94,0.15)' : 'transparent',
+            border: statusFilter === 'published' ? '1px solid rgba(34,197,94,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(34,197,94,0.1)' },
+          }}
+        >
           <CheckCircleIcon sx={{ fontSize: 14, color: '#22C55E' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#fff' }}>Published</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'published' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Published</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box
+          onClick={() => setStatusFilter('partial')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'partial' ? 'rgba(234,179,8,0.15)' : 'transparent',
+            border: statusFilter === 'partial' ? '1px solid rgba(234,179,8,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(234,179,8,0.1)' },
+          }}
+        >
+          <WarningIcon sx={{ fontSize: 14, color: '#EAB308' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'partial' ? '#FACC15' : 'rgba(255,255,255,0.7)' }}>Partial</Typography>
+        </Box>
+        <Box
+          onClick={() => setStatusFilter('failed')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'failed' ? 'rgba(239,68,68,0.15)' : 'transparent',
+            border: statusFilter === 'failed' ? '1px solid rgba(239,68,68,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' },
+          }}
+        >
           <ErrorIcon sx={{ fontSize: 14, color: '#EF4444' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#fff' }}>Failed</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'failed' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Failed</Typography>
         </Box>
       </Box>
 
@@ -1307,10 +1385,10 @@ const ScheduledContentPage: React.FC = () => {
                           gap: 1,
                           p: 1,
                           borderRadius: '8px',
-                          bgcolor: result.status === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                          bgcolor: result.success ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
                         }}
                       >
-                        {result.status === 'success' ? (
+                        {result.success ? (
                           <CheckCircleIcon sx={{ fontSize: 18, color: '#22C55E' }} />
                         ) : (
                           <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />
@@ -1318,7 +1396,7 @@ const ScheduledContentPage: React.FC = () => {
                         <Typography sx={{ fontWeight: 500, textTransform: 'capitalize', flex: 1, color: '#fff' }}>
                           {result.platform}
                         </Typography>
-                        {result.status !== 'success' && (
+                        {!result.success && (
                           <Typography sx={{ fontSize: '0.75rem', color: '#EF4444' }}>
                             Oops, something went wrong
                           </Typography>

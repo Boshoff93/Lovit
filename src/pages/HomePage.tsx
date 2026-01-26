@@ -78,6 +78,7 @@ import { faqItems } from './FAQPage';
 import { songsApi } from '../services/api';
 import api from '../utils/axiosConfig';
 import UpgradePopup from '../components/UpgradePopup';
+import GruviAlert from '../components/GruviAlert';
 import { topUpBundles, TopUpBundle } from '../config/stripe';
 // PauseRoundedIcon replaced with AudioEqualizer component
 import { SEO, createMusicPlaylistStructuredData, createSoftwareAppStructuredData, createOrganizationStructuredData } from '../utils/seoHelper';
@@ -4197,7 +4198,8 @@ const HomePage: React.FC = () => {
         my: 0
       }} />
 
-      {/* Pricing Section */}
+      {/* Pricing Section - Only show for non-subscribed users */}
+      {(!isLoggedIn || !subscription || subscription.tier === 'free') && (
       <Box
         sx={{
           py: { xs: 8, md: 12 },
@@ -4601,6 +4603,7 @@ const HomePage: React.FC = () => {
 
         </Container>
       </Box>
+      )}
 
       {/* Section Divider */}
       <Box sx={{
@@ -5279,27 +5282,11 @@ const HomePage: React.FC = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{ mt: 7 }}
       >
-        <Alert 
-          onClose={handleSnackbarClose} 
+        <GruviAlert
+          onClose={handleSnackbarClose}
           severity={snackbarSeverity}
-          sx={{ 
-            borderRadius: '12px',
-            background: snackbarSeverity === 'error' 
-              ? 'rgba(255, 59, 48, 0.1)' 
-              : 'rgba(6, 182, 212, 0.1)',
-            border: snackbarSeverity === 'error'
-              ? '1px solid rgba(255, 59, 48, 0.2)'
-              : '1px solid rgba(6, 182, 212, 0.2)',
-            color: snackbarSeverity === 'error' ? '#D70015' : '#06B6D4',
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            '& .MuiAlert-icon': { 
-              color: snackbarSeverity === 'error' ? '#D70015' : '#06B6D4'
-            },
-          }}
-        >
-          {snackbarMessage}
-        </Alert>
+          message={snackbarMessage}
+        />
       </Snackbar>
 
       {/* Tokens Upgrade Popup */}

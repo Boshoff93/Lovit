@@ -3557,9 +3557,8 @@ const MusicVideoPlayer: React.FC = () => {
                     src={localThumbnailFile?.dataUrl || selectedThumbnailUrl || videoData?.thumbnailUrl}
                     alt="Thumbnail"
                     sx={{
-                      width: 100,
-                      height: 'auto',
-                      aspectRatio: videoData?.aspectRatio === 'portrait' ? '9/16' : '16/9',
+                      width: videoData?.aspectRatio === 'portrait' ? 56 : 100,
+                      height: videoData?.aspectRatio === 'portrait' ? 100 : 56,
                       borderRadius: '8px',
                       objectFit: 'cover',
                       flexShrink: 0,

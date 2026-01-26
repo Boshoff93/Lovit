@@ -11,6 +11,7 @@ export interface Character {
   age?: string;
   description?: string;
   imageUrls?: string[];
+  imageKeys?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -370,7 +371,10 @@ export const facebookApi = {
   // Facebook uses same auth flow as Instagram - no separate auth needed
   getStatus: (userId: string) =>
     api.get(`/api/gruvi/facebook/status?userId=${userId}`),
-  
+
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/facebook/disconnect?userId=${userId}`),
+
   upload: (userId: string, videoId: string) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/facebook-upload`),
 };
@@ -412,6 +416,7 @@ export const charactersApi = {
     description?: string;
     characterType?: 'Human' | 'Non-Human' | 'Product' | 'Place' | 'App' | 'Business';
     imageBase64Array?: string[];
+    keepImageKeys?: string[];
   }) => api.put(`/api/gruvi/characters/${userId}/${characterId}`, data),
   
   getUserCharacters: (userId: string) => 
@@ -445,8 +450,9 @@ export interface ScheduledPost {
   publishedAt?: string;
   uploadResults?: Array<{
     platform: string;
-    status: string;
-    message?: string;
+    success: boolean;
+    postId?: string;
+    postUrl?: string;
     error?: string;
   }>;
 }
