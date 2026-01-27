@@ -510,23 +510,52 @@ const CreateVideoPage: React.FC = () => {
     isStory ? 8 :
     isUgcVoiceover ? 2 : 5;
 
+  // Helper to get asset type group (Place and Business are treated as same category)
+  const getAssetGroup = (type?: string) =>
+    (type === 'Place' || type === 'Business') ? 'Place/Business' : type;
+
   // Check if selection is allowed for a character type
   const canSelectCharacter = (char: Character) => {
-    // Music video, Story, or Avatar: simple count limit
-    if (isMusic || isStory || isAvatarVideo) {
-      return selectedCharacterIds.length < MAX_CAST_MEMBERS;
-    }
-
-    // UGC with voiceover: 1 character + 1 product/app/place
     const isCharacter = char.characterType === 'Human' || char.characterType === 'Non-Human' || !char.characterType;
-    const isProduct = char.characterType === 'Product' || char.characterType === 'App' || char.characterType === 'Business' || char.characterType === 'Place';
+    const isAsset = char.characterType === 'Product' || char.characterType === 'App' ||
+                    char.characterType === 'Business' || char.characterType === 'Place';
 
     const selectedChars = characters.filter(c => selectedCharacterIds.includes(c.characterId));
-    const hasCharacter = selectedChars.some(c => c.characterType === 'Human' || c.characterType === 'Non-Human' || !c.characterType);
-    const hasProduct = selectedChars.some(c => c.characterType === 'Product' || c.characterType === 'App' || c.characterType === 'Business' || c.characterType === 'Place');
+    const selectedCharacterCount = selectedChars.filter(c =>
+      c.characterType === 'Human' || c.characterType === 'Non-Human' || !c.characterType
+    ).length;
+    const selectedAssets = selectedChars.filter(c =>
+      c.characterType === 'Product' || c.characterType === 'App' ||
+      c.characterType === 'Business' || c.characterType === 'Place'
+    );
+    const selectedAssetGroup = selectedAssets.length > 0
+      ? getAssetGroup(selectedAssets[0].characterType) : null;
 
-    if (isCharacter && hasCharacter) return false;
-    if (isProduct && hasProduct) return false;
+    // UGC with voiceover: 1 character + 1 product/app/place (special mode)
+    if (isUgcVoiceover) {
+      const hasCharacter = selectedCharacterCount > 0;
+      const hasAsset = selectedAssets.length > 0;
+      if (isCharacter && hasCharacter) return false;
+      if (isAsset && hasAsset) return false;
+      return true;
+    }
+
+    // General rules for Music/Story/Avatar videos:
+    // 1. Max 4 characters (Human/Non-Human) when any asset is selected
+    // 2. Only ONE asset type allowed (Product OR App OR Place/Business)
+    // 3. Total count limit still applies
+
+    // Check total count limit
+    if (selectedCharacterIds.length >= MAX_CAST_MEMBERS) return false;
+
+    // Character limit: max 4 when assets are selected
+    if (isCharacter && selectedAssets.length > 0 && selectedCharacterCount >= 4) return false;
+
+    // Asset mixing rule: can't mix different asset types
+    if (isAsset && selectedAssetGroup && selectedAssetGroup !== getAssetGroup(char.characterType)) {
+      return false;
+    }
+
     return true;
   };
 
