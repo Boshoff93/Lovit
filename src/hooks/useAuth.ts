@@ -38,8 +38,8 @@ export const useAuth = () => {
   }, [dispatch]);
 
   // Sign up with email, password, and username
-  const signup = useCallback(async (email: string, password: string, username: string) => {
-    return dispatch(signupWithEmail({ email, password, username }));
+  const signup = useCallback(async (email: string, password: string, username: string, turnstileToken?: string) => {
+    return dispatch(signupWithEmail({ email, password, username, turnstileToken }));
   }, [dispatch]);
 
   // Login with Google

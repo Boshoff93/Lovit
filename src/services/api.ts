@@ -21,8 +21,8 @@ export const authApi = {
   login: (email: string, password: string) => 
     api.post('/auth/login', { email, password }),
   
-  signup: (email: string, password: string, username: string) => 
-    api.post('/auth/signup', { email, password, username }),
+  signup: (email: string, password: string, username: string, turnstileToken?: string) =>
+    api.post('/auth/signup', { email, password, username, turnstileToken }),
   
   googleLogin: (token: string) => 
     api.post('/auth/google', { token }),

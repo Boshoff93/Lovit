@@ -160,12 +160,13 @@ export const loginWithEmail = createAsyncThunk(
 
 export const signupWithEmail = createAsyncThunk(
   'auth/signupWithEmail',
-  async ({ email, password, username }: { email: string; password: string; username: string }, { rejectWithValue }) => {
+  async ({ email, password, username, turnstileToken }: { email: string; password: string; username: string; turnstileToken?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post(`/auth/signup`, {
         email,
         password,
-        username
+        username,
+        turnstileToken,
       });
       
       // Store auth data in cookies and localStorage

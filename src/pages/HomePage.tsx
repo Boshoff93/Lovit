@@ -1668,6 +1668,8 @@ const HomePage: React.FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
   const [authTab, setAuthTab] = useState<number>(0);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileContainerRef = useRef<HTMLDivElement>(null);
   const [prompt, setPrompt] = useState<string>('');
   const [isYearly, setIsYearly] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -1837,6 +1839,62 @@ const HomePage: React.FC = () => {
     }
   }, [user, open, navigate]);
 
+  // Load and render Cloudflare Turnstile CAPTCHA when signup form is shown
+  useEffect(() => {
+    // Only load Turnstile when modal is open and on signup tab (authTab === 1)
+    if (!open || authTab !== 1) {
+      setTurnstileToken(null);
+      return;
+    }
+
+    // Load Turnstile script if not already loaded
+    const scriptId = 'turnstile-script';
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+
+    const renderWidget = () => {
+      if (turnstileContainerRef.current && (window as any).turnstile) {
+        // Clear any existing widget
+        turnstileContainerRef.current.innerHTML = '';
+
+        (window as any).turnstile.render(turnstileContainerRef.current, {
+          sitekey: '0x4AAAAAACVH3kKfzISLK2MH',
+          theme: 'dark',
+          callback: (token: string) => {
+            setTurnstileToken(token);
+          },
+          'expired-callback': () => {
+            setTurnstileToken(null);
+          },
+          'error-callback': () => {
+            setTurnstileToken(null);
+          },
+        });
+      }
+    };
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = () => {
+        // Small delay to ensure turnstile is ready
+        setTimeout(renderWidget, 100);
+      };
+      document.head.appendChild(script);
+    } else if ((window as any).turnstile) {
+      // Script already loaded, render immediately
+      setTimeout(renderWidget, 100);
+    }
+
+    return () => {
+      // Cleanup widget when unmounting
+      if (turnstileContainerRef.current) {
+        turnstileContainerRef.current.innerHTML = '';
+      }
+    };
+  }, [open, authTab]);
+
   const handleClickOpen = useCallback(async () => {
     if (user) {
       // Navigate to dashboard - token check happens when user tries to generate
@@ -1907,7 +1965,13 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      const result = await signup(email, password, username);
+      if (!turnstileToken) {
+        setError('Please complete the security check');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await signup(email, password, username, turnstileToken);
       
       if (result.type.endsWith('/fulfilled')) {
         setIsLoading(false);
@@ -1921,7 +1985,7 @@ const HomePage: React.FC = () => {
       setIsLoading(false);
       setError(authError || 'Signup failed. Please try again.');
     }
-  }, [signup, authError, email, password, confirmPassword, username, handleClose]);
+  }, [signup, authError, email, password, confirmPassword, username, turnstileToken, handleClose]);
 
   const handleGoogleSignup = useCallback(async () => {
     try {
@@ -5174,13 +5238,23 @@ const HomePage: React.FC = () => {
                     '& .MuiInputBase-input': { color: '#FFFFFF' },
                   }}
                 />
-                <Button 
-                  fullWidth 
-                  variant="contained" 
+                {/* Cloudflare Turnstile CAPTCHA widget */}
+                <Box
+                  ref={turnstileContainerRef}
+                  sx={{
+                    mb: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    minHeight: '65px',
+                  }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
                   onClick={handleEmailSignup}
-                  disabled={isLoading}
-                  sx={{ 
-                    mb: 2, 
+                  disabled={isLoading || !turnstileToken}
+                  sx={{
+                    mb: 2,
                     py: 1.5,
                     borderRadius: '12px',
                     background: '#141418',
@@ -5188,6 +5262,10 @@ const HomePage: React.FC = () => {
                     fontWeight: 600,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     '&:hover': { background: '#000' },
+                    '&.Mui-disabled': {
+                      background: 'rgba(20, 20, 24, 0.5)',
+                      color: 'rgba(255, 255, 255, 0.4)',
+                    },
                   }}
                 >
                   {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Create Account'}
