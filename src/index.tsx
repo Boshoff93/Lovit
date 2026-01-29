@@ -581,6 +581,7 @@ const theme = createTheme({
         root: {
           borderRadius: 12,
         },
+        // Standard variant
         standardSuccess: {
           backgroundColor: 'rgba(52, 199, 89, 0.15)',
           border: '1px solid rgba(52, 199, 89, 0.3)',
@@ -590,6 +591,33 @@ const theme = createTheme({
           backgroundColor: 'rgba(255, 59, 48, 0.15)',
           border: '1px solid rgba(255, 59, 48, 0.3)',
           color: '#FF6961',
+        },
+        standardWarning: {
+          backgroundColor: 'rgba(255, 149, 0, 0.15)',
+          border: '1px solid rgba(255, 149, 0, 0.3)',
+          color: '#FFAC33',
+        },
+        standardInfo: {
+          backgroundColor: 'rgba(0, 122, 255, 0.15)',
+          border: '1px solid rgba(0, 122, 255, 0.3)',
+          color: '#4DA3FF',
+        },
+        // Filled variant
+        filledSuccess: {
+          backgroundColor: '#34C759',
+          color: '#fff',
+        },
+        filledError: {
+          backgroundColor: '#FF3B30',
+          color: '#fff',
+        },
+        filledWarning: {
+          backgroundColor: '#FF9500',
+          color: '#fff',
+        },
+        filledInfo: {
+          backgroundColor: '#007AFF',
+          color: '#fff',
         },
       },
     },

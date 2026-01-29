@@ -408,6 +408,15 @@ export const linkedinApi = {
     api.post(`/api/gruvi/videos/${userId}/${videoId}/linkedin-upload`),
 };
 
+// Social Accounts API (multi-account support)
+export const socialAccountsApi = {
+  getAll: (userId: string) =>
+    api.get(`/api/gruvi/social-accounts?userId=${userId}`),
+
+  disconnect: (userId: string, accountId: string) =>
+    api.delete(`/api/gruvi/social-accounts/${accountId}?userId=${userId}`),
+};
+
 // Characters API
 export const charactersApi = {
   createCharacter: (data: {

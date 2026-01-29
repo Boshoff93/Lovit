@@ -219,9 +219,18 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Social Media Connection Status
+    // Social Accounts (multi-account)
+    getSocialAccounts: builder.query<
+      { accounts: Array<{ accountId: string; platform: string; accountName?: string; username?: string; avatarUrl?: string; connectedAt?: string }> },
+      { userId: string }
+    >({
+      query: ({ userId }) => `/api/gruvi/social-accounts?userId=${userId}`,
+      providesTags: ['SocialConnections'],
+    }),
+
+    // Social Media Connection Status (legacy per-platform queries)
     getYouTubeStatus: builder.query<
-      { connected: boolean; channelInfo?: { channelTitle?: string; channelId?: string } },
+      { connected: boolean; channelInfo?: { channelTitle?: string; channelId?: string }; accounts?: Array<{ accountId: string; channelTitle?: string; channelId?: string; avatarUrl?: string }> },
       { userId: string }
     >({
       query: ({ userId }) => `/api/gruvi/youtube/status?userId=${userId}`,
@@ -229,7 +238,7 @@ export const apiSlice = createApi({
     }),
 
     getTikTokStatus: builder.query<
-      { connected: boolean; username?: string; avatarUrl?: string },
+      { connected: boolean; username?: string; avatarUrl?: string; accounts?: Array<{ accountId: string; username?: string; avatarUrl?: string }> },
       { userId: string }
     >({
       query: ({ userId }) => `/api/gruvi/tiktok/status?userId=${userId}`,
@@ -237,7 +246,7 @@ export const apiSlice = createApi({
     }),
 
     getInstagramStatus: builder.query<
-      { connected: boolean; username?: string; profilePictureUrl?: string },
+      { connected: boolean; username?: string; profilePictureUrl?: string; accounts?: Array<{ accountId: string; username?: string; name?: string; profilePictureUrl?: string }> },
       { userId: string }
     >({
       query: ({ userId }) => `/api/gruvi/instagram/status?userId=${userId}`,
@@ -245,7 +254,7 @@ export const apiSlice = createApi({
     }),
 
     getFacebookStatus: builder.query<
-      { connected: boolean; pageName?: string; pageId?: string },
+      { connected: boolean; pageName?: string; pageId?: string; accounts?: Array<{ accountId: string; pageName?: string; pageId?: string }> },
       { userId: string }
     >({
       query: ({ userId }) => `/api/gruvi/facebook/status?userId=${userId}`,
@@ -253,7 +262,7 @@ export const apiSlice = createApi({
     }),
 
     getLinkedInStatus: builder.query<
-      { connected: boolean; name?: string; profilePictureUrl?: string },
+      { connected: boolean; name?: string; profilePictureUrl?: string; accounts?: Array<{ accountId: string; name?: string; profilePictureUrl?: string }> },
       { userId: string }
     >({
       query: ({ userId }) => `/api/gruvi/linkedin/status?userId=${userId}`,
@@ -282,6 +291,7 @@ export const {
   useDeleteVideoMutation,
   useDeleteSongMutation,
   // Social Media
+  useGetSocialAccountsQuery,
   useGetYouTubeStatusQuery,
   useGetTikTokStatusQuery,
   useGetInstagramStatusQuery,

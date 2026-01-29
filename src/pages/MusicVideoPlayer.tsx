@@ -53,7 +53,7 @@ import {
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, socialAccountsApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import GruviCoin from '../components/GruviCoin';
@@ -234,6 +234,8 @@ const MusicVideoPlayer: React.FC = () => {
   
   // Platform selection & upload confirmation
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [selectedAccountMap, setSelectedAccountMap] = useState<Record<string, string>>({}); // platform → accountId
+  const [socialAccounts, setSocialAccounts] = useState<Array<{ accountId: string; platform: string; accountName?: string; username?: string }>>([]);
   const [showUploadConfirm, setShowUploadConfirm] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, 'pending' | 'uploading' | 'success' | 'error'>>({});
 
@@ -534,8 +536,16 @@ const MusicVideoPlayer: React.FC = () => {
       } catch {
         // LinkedIn not connected
       }
+
+      // Fetch all social accounts (multi-account support)
+      try {
+        const saResponse = await socialAccountsApi.getAll(user.userId);
+        setSocialAccounts(saResponse.data.accounts || []);
+      } catch {
+        // Social accounts table may not be deployed yet
+      }
     };
-    
+
     loadSocialData();
   }, [user?.userId, videoId]);
 
@@ -1781,11 +1791,18 @@ const MusicVideoPlayer: React.FC = () => {
                                     if (!youtubeConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
+                    const isSelected = selectedPlatforms.includes('youtube');
                     setSelectedPlatforms(prev =>
-                      prev.includes('youtube')
+                      isSelected
                         ? prev.filter(p => p !== 'youtube')
                         : [...prev, 'youtube']
                     );
+                    if (!isSelected) {
+                      const ytAccount = socialAccounts.find(a => a.platform === 'youtube');
+                      if (ytAccount) setSelectedAccountMap(prev => ({ ...prev, youtube: ytAccount.accountId }));
+                    } else {
+                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.youtube; return next; });
+                    }
                   }
                 }}
                 sx={{
@@ -1862,11 +1879,18 @@ const MusicVideoPlayer: React.FC = () => {
                                     if (!tiktokConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
+                    const isSelected = selectedPlatforms.includes('tiktok');
                     setSelectedPlatforms(prev =>
-                      prev.includes('tiktok')
+                      isSelected
                         ? prev.filter(p => p !== 'tiktok')
                         : [...prev, 'tiktok']
                     );
+                    if (!isSelected) {
+                      const ttAccount = socialAccounts.find(a => a.platform === 'tiktok');
+                      if (ttAccount) setSelectedAccountMap(prev => ({ ...prev, tiktok: ttAccount.accountId }));
+                    } else {
+                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.tiktok; return next; });
+                    }
                   }
                 }}
                 sx={{
@@ -1942,11 +1966,18 @@ const MusicVideoPlayer: React.FC = () => {
                                     if (!instagramConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
+                    const isSelected = selectedPlatforms.includes('instagram');
                     setSelectedPlatforms(prev =>
-                      prev.includes('instagram')
+                      isSelected
                         ? prev.filter(p => p !== 'instagram')
                         : [...prev, 'instagram']
                     );
+                    if (!isSelected) {
+                      const igAccount = socialAccounts.find(a => a.platform === 'instagram');
+                      if (igAccount) setSelectedAccountMap(prev => ({ ...prev, instagram: igAccount.accountId }));
+                    } else {
+                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.instagram; return next; });
+                    }
                   }
                 }}
                 sx={{
@@ -2024,11 +2055,18 @@ const MusicVideoPlayer: React.FC = () => {
                                     if (!facebookConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
+                    const isSelected = selectedPlatforms.includes('facebook');
                     setSelectedPlatforms(prev =>
-                      prev.includes('facebook')
+                      isSelected
                         ? prev.filter(p => p !== 'facebook')
                         : [...prev, 'facebook']
                     );
+                    if (!isSelected) {
+                      const fbAccount = socialAccounts.find(a => a.platform === 'facebook');
+                      if (fbAccount) setSelectedAccountMap(prev => ({ ...prev, facebook: fbAccount.accountId }));
+                    } else {
+                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.facebook; return next; });
+                    }
                   }
                 }}
                 sx={{
@@ -2104,11 +2142,18 @@ const MusicVideoPlayer: React.FC = () => {
                                     if (!linkedinConnected) {
                     navigate('/settings/connected-accounts');
                   } else {
+                    const isSelected = selectedPlatforms.includes('linkedin');
                     setSelectedPlatforms(prev =>
-                      prev.includes('linkedin')
+                      isSelected
                         ? prev.filter(p => p !== 'linkedin')
                         : [...prev, 'linkedin']
                     );
+                    if (!isSelected) {
+                      const liAccount = socialAccounts.find(a => a.platform === 'linkedin');
+                      if (liAccount) setSelectedAccountMap(prev => ({ ...prev, linkedin: liAccount.accountId }));
+                    } else {
+                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.linkedin; return next; });
+                    }
                   }
                 }}
                 sx={{
@@ -2228,7 +2273,7 @@ const MusicVideoPlayer: React.FC = () => {
 
             {/* Post Details Section */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
-              {/* Generate Post Metadata button */}
+              {/* Generate Metadata button */}
               <Button
                 variant="contained"
                 size="small"
@@ -2264,7 +2309,7 @@ const MusicVideoPlayer: React.FC = () => {
                   },
                 }}
               >
-                {isGeneratingMetadata ? <><CircularProgress size={14} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Post Metadata'}
+                {isGeneratingMetadata ? <><CircularProgress size={14} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Metadata'}
               </Button>
             </Box>
 
@@ -3872,6 +3917,7 @@ const MusicVideoPlayer: React.FC = () => {
                         // Create scheduled post
                         const platformConfigs = selectedPlatforms.map(platform => ({
                           platform,
+                          accountId: selectedAccountMap[platform] || undefined,
                           accountName: (platform === 'youtube' ? youtubeChannel?.channelTitle :
                                        platform === 'tiktok' ? tiktokUsername :
                                        platform === 'instagram' ? instagramUsername :
@@ -4270,7 +4316,7 @@ const MusicVideoPlayer: React.FC = () => {
             </Box>
             <Box>
               <Typography sx={{ fontWeight: 600, fontSize: '1.25rem', color: '#fff', mb: 0.5 }}>
-                Generate Post Metadata
+                Generate Metadata
               </Typography>
               <Typography variant="body2" sx={{ color: '#86868B' }}>
                 Create a title, description, and tags for your post
@@ -4476,6 +4522,7 @@ const MusicVideoPlayer: React.FC = () => {
               borderRadius: '10px',
               textTransform: 'none',
               fontWeight: 600,
+              whiteSpace: 'nowrap',
               px: 2,
               py: 1,
               color: '#fff',
@@ -4491,7 +4538,7 @@ const MusicVideoPlayer: React.FC = () => {
               },
             }}
           >
-            {isGeneratingMetadata ? <><CircularProgress size={16} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Post Metadata'}
+            {isGeneratingMetadata ? <><CircularProgress size={16} sx={{ color: '#fff', mr: 1 }} /> Generating...</> : 'Generate Metadata'}
           </Button>
         </DialogActions>
       </Dialog>
