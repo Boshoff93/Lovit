@@ -3768,6 +3768,9 @@ const MusicVideoPlayer: React.FC = () => {
                           accountName: account.accountName || account.username || undefined,
                         }));
 
+                        console.log('[Schedule] Selected accounts:', selectedAccounts);
+                        console.log('[Schedule] Platform configs being sent:', platformConfigs);
+
                         const response = await scheduledPostsApi.createScheduledPost({
                           videoId: videoId!,
                           platforms: platformConfigs,
@@ -3866,6 +3869,9 @@ const MusicVideoPlayer: React.FC = () => {
                         accountId: account.accountId,
                         accountName: account.accountName || account.username || undefined,
                       }));
+
+                      console.log('[Post Now] Selected accounts:', selectedAccounts);
+                      console.log('[Post Now] Platform configs being sent:', platformConfigs);
 
                       const response = await scheduledPostsApi.createScheduledPost({
                         videoId: videoId!,
