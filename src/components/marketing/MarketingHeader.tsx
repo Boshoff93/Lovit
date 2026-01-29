@@ -230,8 +230,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               src="/gruvi.png"
               alt="Gruvi"
               sx={{
-                height: 36,
-                width: 36,
+                height: 28,
+                width: 28,
                 objectFit: 'contain',
               }}
             />
@@ -242,7 +242,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               sx={{
                 fontFamily: '"Fredoka", "Inter", sans-serif',
                 fontWeight: 600,
-                fontSize: '1.4rem',
+                fontSize: '1.8rem',
                 letterSpacing: '-0.01em',
                 background: 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
                 WebkitBackgroundClip: 'text',
@@ -510,13 +510,13 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               component="img"
               src="/gruvi.png"
               alt="Gruvi"
-              sx={{ height: 32, width: 32, objectFit: 'contain' }}
+              sx={{ height: 24, width: 24, objectFit: 'contain' }}
             />
             <Typography
               sx={{
                 fontFamily: '"Fredoka", "Inter", sans-serif',
                 fontWeight: 600,
-                fontSize: '1.25rem',
+                fontSize: '1.5rem',
                 background: 'linear-gradient(135deg, #00D4AA, #5AC8FA)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',

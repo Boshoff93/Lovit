@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { videosApi, songsApi, charactersApi, narrativesApi, Character, Narrative } from '../services/api';
+import { videosApi, songsApi, charactersApi, narrativesApi, socialAccountsApi, Character, Narrative } from '../services/api';
 
 // Types
 interface Video {
@@ -21,6 +21,14 @@ interface Song {
   [key: string]: any;
 }
 
+interface SocialAccount {
+  accountId: string;
+  platform: string;
+  accountName?: string;
+  username?: string;
+  avatarUrl?: string;
+}
+
 // State interfaces - simplified, no cache timestamps
 interface DataList<T> {
   items: T[];
@@ -35,6 +43,7 @@ interface DataState {
   songs: DataList<Song>;
   characters: DataList<Character>;
   narratives: DataList<Narrative>;
+  socialAccounts: DataList<SocialAccount>;
 }
 
 const initialDataList = <T>(): DataList<T> => ({
@@ -50,6 +59,7 @@ const initialState: DataState = {
   songs: initialDataList<Song>(),
   characters: initialDataList<Character>(),
   narratives: initialDataList<Narrative>(),
+  socialAccounts: initialDataList<SocialAccount>(),
 };
 
 // Async thunks - always fetch fresh, let HTTP caching handle it
@@ -126,6 +136,20 @@ export const fetchNarratives = createAsyncThunk(
   }
 );
 
+export const fetchSocialAccounts = createAsyncThunk(
+  'data/fetchSocialAccounts',
+  async ({ userId }: { userId: string }, { rejectWithValue }) => {
+    try {
+      const response = await socialAccountsApi.getAll(userId);
+      return {
+        accounts: response.data.accounts || [],
+      };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch social accounts');
+    }
+  }
+);
+
 // Slice
 const dataSlice = createSlice({
   name: 'data',
@@ -137,6 +161,7 @@ const dataSlice = createSlice({
       state.songs = initialDataList<Song>();
       state.characters = initialDataList<Character>();
       state.narratives = initialDataList<Narrative>();
+      state.socialAccounts = initialDataList<SocialAccount>();
     },
     // Update a single video (for optimistic updates)
     updateVideo: (state, action: PayloadAction<Video>) => {
@@ -191,6 +216,22 @@ const dataSlice = createSlice({
     removeNarrative: (state, action: PayloadAction<string>) => {
       state.narratives.items = state.narratives.items.filter(n => n.narrativeId !== action.payload);
       state.narratives.totalCount -= 1;
+    },
+    // Set social accounts
+    setSocialAccounts: (state, action: PayloadAction<SocialAccount[]>) => {
+      state.socialAccounts.items = action.payload;
+      state.socialAccounts.totalCount = action.payload.length;
+      state.socialAccounts.isLoading = false;
+    },
+    // Add a new social account (optimistic)
+    addSocialAccount: (state, action: PayloadAction<SocialAccount>) => {
+      state.socialAccounts.items.push(action.payload);
+      state.socialAccounts.totalCount += 1;
+    },
+    // Remove a social account (optimistic)
+    removeSocialAccount: (state, action: PayloadAction<string>) => {
+      state.socialAccounts.items = state.socialAccounts.items.filter(a => a.accountId !== action.payload);
+      state.socialAccounts.totalCount -= 1;
     },
   },
   extraReducers: (builder) => {
@@ -259,6 +300,22 @@ const dataSlice = createSlice({
         state.narratives.isLoading = false;
         state.narratives.error = action.payload as string;
       });
+
+    // Social Accounts
+    builder
+      .addCase(fetchSocialAccounts.pending, (state) => {
+        state.socialAccounts.isLoading = true;
+        state.socialAccounts.error = null;
+      })
+      .addCase(fetchSocialAccounts.fulfilled, (state, action) => {
+        state.socialAccounts.isLoading = false;
+        state.socialAccounts.items = action.payload.accounts;
+        state.socialAccounts.totalCount = action.payload.accounts.length;
+      })
+      .addCase(fetchSocialAccounts.rejected, (state, action) => {
+        state.socialAccounts.isLoading = false;
+        state.socialAccounts.error = action.payload as string;
+      });
   },
 });
 
@@ -274,6 +331,9 @@ export const {
   removeSong,
   removeCharacter,
   removeNarrative,
+  setSocialAccounts,
+  addSocialAccount,
+  removeSocialAccount,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

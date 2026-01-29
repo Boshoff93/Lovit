@@ -45,7 +45,7 @@ const socialPlatforms = [
       </Box>
     ),
     color: '#000000',
-    gradient: 'linear-gradient(135deg, #25F4EE 0%, #FE2C55 50%, #000000 100%)',
+    gradient: '#000000',
     available: true,
   },
   {
@@ -61,7 +61,7 @@ const socialPlatforms = [
       </Box>
     ),
     color: '#E4405F',
-    gradient: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+    gradient: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
     available: true,
   },
   {
@@ -422,14 +422,16 @@ const ConnectedAccountsPage: React.FC = () => {
                 {/* Platform Icon + Name */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: { xs: '100%', sm: 140 }, flexShrink: 0 }}>
                   <Box sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '10px',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
                     background: platform.gradient,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
+                    border: hasAccounts ? '2px solid #34C759' : 'none',
+                    boxSizing: 'border-box',
                   }}>
                     <IconComponent />
                   </Box>
@@ -443,6 +445,21 @@ const ConnectedAccountsPage: React.FC = () => {
                   {platformAccounts.map((account) => (
                     <Chip
                       key={account.accountId}
+                      avatar={
+                        account.avatarUrl ? (
+                          <Box
+                            component="img"
+                            src={account.avatarUrl}
+                            alt=""
+                            sx={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: '50%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        ) : undefined
+                      }
                       label={getAccountDisplayName(account)}
                       onDelete={() => handleDisconnect(account.accountId, platform.name)}
                       deleteIcon={
@@ -451,13 +468,24 @@ const ConnectedAccountsPage: React.FC = () => {
                           : <Close sx={{ fontSize: 16 }} />
                       }
                       sx={{
-                        bgcolor: `${platform.color}22`,
+                        bgcolor: 'rgba(255,255,255,0.08)',
                         color: '#fff',
                         fontWeight: 500,
                         fontSize: '0.8rem',
-                        height: 32,
-                        borderRadius: '8px',
-                        border: `1px solid ${platform.color}44`,
+                        height: 38,
+                        borderRadius: '19px',
+                        px: 0.5,
+                        py: 0.5,
+                        border: '2px solid #007AFF',
+                        '&:hover': {
+                          bgcolor: 'rgba(255,255,255,0.12)',
+                          borderColor: '#3399FF',
+                        },
+                        '& .MuiChip-avatar': {
+                          width: 24,
+                          height: 24,
+                          ml: 0.5,
+                        },
                         '& .MuiChip-deleteIcon': {
                           color: 'rgba(255,255,255,0.5)',
                           '&:hover': { color: '#FF3B30' },

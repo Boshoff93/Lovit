@@ -148,8 +148,8 @@ const SidebarContent = memo<SidebarContentProps>(({
             src="/gruvi.png"
             alt="Gruvi"
             sx={{
-              height: 36,
-              width: 36,
+              height: 32,
+              width: 32,
               objectFit: 'contain',
               filter: 'drop-shadow(0 2px 8px rgba(0, 210, 211, 0.5))',
             }}
@@ -160,7 +160,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             sx={{
               fontFamily: '"Fredoka", "Inter", sans-serif',
               fontWeight: 600,
-              fontSize: '1.4rem',
+              fontSize: '1.5rem',
               letterSpacing: '-0.01em',
               background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
               WebkitBackgroundClip: 'text',
@@ -849,8 +849,8 @@ const CollapsedSidebarContent = memo<CollapsedSidebarContentProps>(({
             src="/gruvi.png"
             alt="Gruvi"
             sx={{
-              height: 36,
-              width: 36,
+              height: 32,
+              width: 32,
               objectFit: 'contain',
               filter: 'drop-shadow(0 2px 8px rgba(0, 210, 211, 0.5))',
             }}

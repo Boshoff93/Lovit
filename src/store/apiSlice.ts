@@ -89,7 +89,7 @@ export const apiSlice = createApi({
     },
   }),
   // Tag types for cache invalidation
-  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections'],
+  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts'],
   endpoints: (builder) => ({
     // Videos
     getUserVideos: builder.query<
@@ -275,7 +275,7 @@ export const apiSlice = createApi({
       void
     >({
       query: () => `/api/gruvi/scheduled-posts`,
-      providesTags: ['SocialConnections'],
+      providesTags: ['ScheduledPosts'],
     }),
   }),
 });

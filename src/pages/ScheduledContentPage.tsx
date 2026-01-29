@@ -111,6 +111,18 @@ const ScheduledContentPage: React.FC = () => {
     }
   }, [highlightedPostId, scheduledPosts, loading]);
 
+  // Preload thumbnail images when posts are loaded (so they're cached when popup opens)
+  useEffect(() => {
+    if (scheduledPosts.length > 0) {
+      scheduledPosts.forEach(post => {
+        if (post.thumbnailUrl) {
+          const img = new Image();
+          img.src = post.thumbnailUrl;
+        }
+      });
+    }
+  }, [scheduledPosts]);
+
   // Handle post tile click - show details dialog
   const handlePostClick = useCallback((post: ScheduledPost) => {
     setSelectedPost(post);

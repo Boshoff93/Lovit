@@ -53,7 +53,8 @@ import {
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, socialAccountsApi, Character } from '../services/api';
+import { useGetSocialAccountsQuery, apiSlice } from '../store/apiSlice';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import GruviCoin from '../components/GruviCoin';
@@ -233,9 +234,24 @@ const MusicVideoPlayer: React.FC = () => {
   const [linkedinUploaded, setLinkedinUploaded] = useState(false);
   
   // Platform selection & upload confirmation
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [selectedAccountMap, setSelectedAccountMap] = useState<Record<string, string>>({}); // platform → accountId
-  const [socialAccounts, setSocialAccounts] = useState<Array<{ accountId: string; platform: string; accountName?: string; username?: string }>>([]);
+  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<string>>(new Set());
+  // Use RTK Query for social accounts (cached automatically)
+  const { data: socialAccountsData, isLoading: socialAccountsLoading } = useGetSocialAccountsQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const socialAccounts = socialAccountsData?.accounts || [];
+
+  // Derived values for selected accounts
+  const selectedAccounts = useMemo(() =>
+    socialAccounts.filter(a => selectedAccountIds.has(a.accountId)),
+    [socialAccounts, selectedAccountIds]
+  );
+  const selectedPlatforms = useMemo(() =>
+    Array.from(new Set(selectedAccounts.map(a => a.platform))),
+    [selectedAccounts]
+  );
+
   const [showUploadConfirm, setShowUploadConfirm] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, 'pending' | 'uploading' | 'success' | 'error'>>({});
 
@@ -537,17 +553,11 @@ const MusicVideoPlayer: React.FC = () => {
         // LinkedIn not connected
       }
 
-      // Fetch all social accounts (multi-account support)
-      try {
-        const saResponse = await socialAccountsApi.getAll(user.userId);
-        setSocialAccounts(saResponse.data.accounts || []);
-      } catch {
-        // Social accounts table may not be deployed yet
-      }
+      // Social accounts are fetched via RTK Query (useGetSocialAccountsQuery) with automatic caching
     };
 
     loadSocialData();
-  }, [user?.userId, videoId]);
+  }, [user?.userId, videoId, dispatch]);
 
   // Social sharing handlers
   const handleGenerateMetadata = async (options?: { context?: string; useRoulette?: boolean }) => {
@@ -1286,6 +1296,7 @@ const MusicVideoPlayer: React.FC = () => {
             justifyContent: 'center',
             boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
             flexShrink: 0,
+                              border: '2px solid #34C759',
             animation: 'iconEntrance 0.5s ease-out',
             '@keyframes iconEntrance': {
               '0%': {
@@ -1347,6 +1358,7 @@ const MusicVideoPlayer: React.FC = () => {
                 ? '100%'
                 : 'auto',
               flexShrink: 0,
+                              border: '2px solid #34C759',
             }}
           >
               {/* Video Element */}
@@ -1776,453 +1788,244 @@ const MusicVideoPlayer: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Share sx={{ fontSize: 20, color: '#007AFF' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                Schedule Post
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Share sx={{ fontSize: 20, color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Schedule Post
+                </Typography>
+              </Box>
+              <Chip
+                label={selectedAccountIds.size > 0 ? 'Deselect All' : 'Select All'}
+                onClick={() => {
+                  if (selectedAccountIds.size > 0) {
+                    setSelectedAccountIds(new Set());
+                  } else {
+                    setSelectedAccountIds(new Set(socialAccounts.map(a => a.accountId)));
+                  }
+                }}
+                size="small"
+                sx={{
+                  bgcolor: selectedAccountIds.size > 0 ? '#007AFF' : 'transparent',
+                  border: '1px solid #007AFF',
+                  color: '#fff',
+                  fontWeight: 500,
+                  '&:hover': { bgcolor: selectedAccountIds.size > 0 ? '#0066DD' : 'rgba(0,122,255,0.1)' },
+                }}
+              />
             </Box>
 
-            {/* Social Account Grid with names */}
+            {/* Social Account Grid - Sorted by platform */}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {/* YouTube Account */}
-              <Box
-                onClick={() => {
-                                    if (!youtubeConnected) {
-                    navigate('/settings/connected-accounts');
-                  } else {
-                    const isSelected = selectedPlatforms.includes('youtube');
-                    setSelectedPlatforms(prev =>
-                      isSelected
-                        ? prev.filter(p => p !== 'youtube')
-                        : [...prev, 'youtube']
-                    );
-                    if (!isSelected) {
-                      const ytAccount = socialAccounts.find(a => a.platform === 'youtube');
-                      if (ytAccount) setSelectedAccountMap(prev => ({ ...prev, youtube: ytAccount.accountId }));
-                    } else {
-                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.youtube; return next; });
-                    }
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  cursor: 'pointer',
-                  opacity: 1,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
+              {(() => {
+                const platformConfig: Record<string, { color: string; gradient?: string; icon: React.ReactNode }> = {
+                  youtube: {
+                    color: '#FF0000',
+                    icon: <YouTube sx={{ fontSize: 14, color: '#fff' }} />,
                   },
-                }}
-              >
-                {/* Avatar circle */}
-                <Box sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      border: selectedPlatforms.includes('youtube')
-                        ? '2.5px solid #34C759'
-                        : 'none',
-                      background: youtubeConnected ? '#FF0000' : 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: selectedPlatforms.includes('youtube') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
-                    }}
-                  >
-                    <YouTube sx={{ fontSize: 24, color: '#fff' }} />
-                  </Box>
-                  {/* Selection checkmark */}
-                  {selectedPlatforms.includes('youtube') && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -4,
-                        width: 18,
-                        height: 18,
-                        borderRadius: '50%',
-                        bgcolor: '#34C759',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Check sx={{ fontSize: 12, color: '#fff' }} />
-                    </Box>
-                  )}
-                </Box>
-                {/* Account name */}
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    color: youtubeConnected ? '#fff' : 'rgba(255,255,255,0.4)',
-                    textAlign: 'center',
-                    maxWidth: 70,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {youtubeConnected ? (youtubeChannel?.channelTitle || 'YouTube') : 'Connect'}
-                </Typography>
-              </Box>
-
-              {/* TikTok Account */}
-              <Box
-                onClick={() => {
-                                    if (!tiktokConnected) {
-                    navigate('/settings/connected-accounts');
-                  } else {
-                    const isSelected = selectedPlatforms.includes('tiktok');
-                    setSelectedPlatforms(prev =>
-                      isSelected
-                        ? prev.filter(p => p !== 'tiktok')
-                        : [...prev, 'tiktok']
-                    );
-                    if (!isSelected) {
-                      const ttAccount = socialAccounts.find(a => a.platform === 'tiktok');
-                      if (ttAccount) setSelectedAccountMap(prev => ({ ...prev, tiktok: ttAccount.accountId }));
-                    } else {
-                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.tiktok; return next; });
-                    }
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  cursor: 'pointer',
-                  opacity: 1,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
-                  },
-                }}
-              >
-                <Box sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      border: selectedPlatforms.includes('tiktok')
-                        ? '2.5px solid #34C759'
-                        : 'none',
-                      background: tiktokConnected ? '#000' : 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: selectedPlatforms.includes('tiktok') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
-                    }}
-                  >
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                  tiktok: {
+                    color: '#000000',
+                    icon: (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}>
                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                       </Box>
-                  </Box>
-                  {selectedPlatforms.includes('tiktok') && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -4,
-                        width: 18,
-                        height: 18,
-                        borderRadius: '50%',
-                        bgcolor: '#34C759',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Check sx={{ fontSize: 12, color: '#fff' }} />
-                    </Box>
-                  )}
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    color: tiktokConnected ? '#fff' : 'rgba(255,255,255,0.4)',
-                    textAlign: 'center',
-                    maxWidth: 70,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {tiktokConnected ? (tiktokUsername ? `@${tiktokUsername}` : 'TikTok') : 'Connect'}
-                </Typography>
-              </Box>
-
-              {/* Instagram Account */}
-              <Box
-                onClick={() => {
-                                    if (!instagramConnected) {
-                    navigate('/settings/connected-accounts');
-                  } else {
-                    const isSelected = selectedPlatforms.includes('instagram');
-                    setSelectedPlatforms(prev =>
-                      isSelected
-                        ? prev.filter(p => p !== 'instagram')
-                        : [...prev, 'instagram']
-                    );
-                    if (!isSelected) {
-                      const igAccount = socialAccounts.find(a => a.platform === 'instagram');
-                      if (igAccount) setSelectedAccountMap(prev => ({ ...prev, instagram: igAccount.accountId }));
-                    } else {
-                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.instagram; return next; });
-                    }
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  cursor: 'pointer',
-                  opacity: 1,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
+                    ),
                   },
-                }}
-              >
-                <Box sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      border: selectedPlatforms.includes('instagram')
-                        ? '2.5px solid #34C759'
-                        : 'none',
-                      background: instagramConnected
-                        ? 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)'
-                        : 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: selectedPlatforms.includes('instagram') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
-                    }}
-                  >
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                  instagram: {
+                    color: '#E4405F',
+                    gradient: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
+                    icon: (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}>
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
                       </Box>
-                  </Box>
-                  {selectedPlatforms.includes('instagram') && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -4,
-                        width: 18,
-                        height: 18,
-                        borderRadius: '50%',
-                        bgcolor: '#34C759',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Check sx={{ fontSize: 12, color: '#fff' }} />
-                    </Box>
-                  )}
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    color: instagramConnected ? '#fff' : 'rgba(255,255,255,0.4)',
-                    textAlign: 'center',
-                    maxWidth: 70,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {instagramConnected ? (instagramUsername ? `@${instagramUsername}` : 'Instagram') : 'Connect'}
-                </Typography>
-              </Box>
-
-              {/* Facebook Account */}
-              <Box
-                onClick={() => {
-                                    if (!facebookConnected) {
-                    navigate('/settings/connected-accounts');
-                  } else {
-                    const isSelected = selectedPlatforms.includes('facebook');
-                    setSelectedPlatforms(prev =>
-                      isSelected
-                        ? prev.filter(p => p !== 'facebook')
-                        : [...prev, 'facebook']
-                    );
-                    if (!isSelected) {
-                      const fbAccount = socialAccounts.find(a => a.platform === 'facebook');
-                      if (fbAccount) setSelectedAccountMap(prev => ({ ...prev, facebook: fbAccount.accountId }));
-                    } else {
-                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.facebook; return next; });
-                    }
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  cursor: 'pointer',
-                  opacity: 1,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
+                    ),
                   },
-                }}
-              >
-                <Box sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      border: selectedPlatforms.includes('facebook')
-                        ? '2.5px solid #34C759'
-                        : 'none',
-                      background: facebookConnected ? '#1877F2' : 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: selectedPlatforms.includes('facebook') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
-                    }}
-                  >
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                  facebook: {
+                    color: '#1877F2',
+                    icon: (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}>
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                       </Box>
-                  </Box>
-                  {selectedPlatforms.includes('facebook') && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -4,
-                        width: 18,
-                        height: 18,
-                        borderRadius: '50%',
-                        bgcolor: '#34C759',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Check sx={{ fontSize: 12, color: '#fff' }} />
-                    </Box>
-                  )}
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    color: facebookConnected ? '#fff' : 'rgba(255,255,255,0.4)',
-                    textAlign: 'center',
-                    maxWidth: 70,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {facebookConnected ? (facebookPageName || 'Facebook') : 'Connect'}
-                </Typography>
-              </Box>
-
-              {/* LinkedIn Account */}
-              <Box
-                onClick={() => {
-                                    if (!linkedinConnected) {
-                    navigate('/settings/connected-accounts');
-                  } else {
-                    const isSelected = selectedPlatforms.includes('linkedin');
-                    setSelectedPlatforms(prev =>
-                      isSelected
-                        ? prev.filter(p => p !== 'linkedin')
-                        : [...prev, 'linkedin']
-                    );
-                    if (!isSelected) {
-                      const liAccount = socialAccounts.find(a => a.platform === 'linkedin');
-                      if (liAccount) setSelectedAccountMap(prev => ({ ...prev, linkedin: liAccount.accountId }));
-                    } else {
-                      setSelectedAccountMap(prev => { const next = { ...prev }; delete next.linkedin; return next; });
-                    }
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  cursor: 'pointer',
-                  opacity: 1,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
+                    ),
                   },
-                }}
-              >
-                <Box sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      border: selectedPlatforms.includes('linkedin')
-                        ? '2.5px solid #34C759'
-                        : 'none',
-                      background: linkedinConnected ? '#0077B5' : 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: selectedPlatforms.includes('linkedin') ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
-                    }}
-                  >
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                  linkedin: {
+                    color: '#0077B5',
+                    icon: (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}>
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                       </Box>
-                  </Box>
-                  {selectedPlatforms.includes('linkedin') && (
+                    ),
+                  },
+                };
+
+                // Sort accounts by platform order
+                const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin'];
+                const sortedAccounts = [...socialAccounts].sort((a, b) => {
+                  return platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform);
+                });
+
+                return sortedAccounts.map((account) => {
+                  const isSelected = selectedAccountIds.has(account.accountId);
+                  const config = platformConfig[account.platform] || { color: '#666', icon: null };
+                  const displayName = account.username ? `@${account.username}` : account.accountName || account.platform;
+
+                  return (
                     <Box
+                      key={account.accountId}
+                      onClick={() => {
+                        setSelectedAccountIds(prev => {
+                          const next = new Set(prev);
+                          if (next.has(account.accountId)) {
+                            next.delete(account.accountId);
+                          } else {
+                            next.add(account.accountId);
+                          }
+                          return next;
+                        });
+                      }}
                       sx={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -4,
-                        width: 18,
-                        height: 18,
-                        borderRadius: '50%',
-                        bgcolor: '#34C759',
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        gap: 0.75,
+                        cursor: 'pointer',
+                        opacity: 1,
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          transform: 'scale(1.02)',
+                        },
                       }}
                     >
-                      <Check sx={{ fontSize: 12, color: '#fff' }} />
+                      <Box sx={{ position: 'relative' }}>
+                        {/* Main circle - Avatar */}
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            border: isSelected ? '2.5px solid #34C759' : 'none',
+                            background: account.avatarUrl ? 'transparent' : (config.gradient || config.color),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: isSelected ? '0 0 12px rgba(52,199,89,0.4)' : 'none',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {account.avatarUrl ? (
+                            <Box
+                              component="img"
+                              src={account.avatarUrl}
+                              alt={displayName}
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          ) : (
+                            <Box sx={{ transform: 'scale(1.5)' }}>{config.icon}</Box>
+                          )}
+                        </Box>
+                        {isSelected && (
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: -4,
+                              right: -4,
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              bgcolor: '#34C759',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Check sx={{ fontSize: 12, color: '#fff' }} />
+                          </Box>
+                        )}
+                        {/* Platform badge */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: -6,
+                            right: -6,
+                            width: 28,
+                            height: 28,
+                            borderRadius: '50%',
+                            background: config.gradient || config.color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '2px solid #1a1a2e',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                          }}
+                        >
+                          <Box sx={{ transform: 'scale(1.2)' }}>{config.icon}</Box>
+                        </Box>
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: '#fff',
+                          textAlign: 'center',
+                          maxWidth: 70,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {displayName}
+                      </Typography>
                     </Box>
-                  )}
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    color: linkedinConnected ? '#fff' : 'rgba(255,255,255,0.4)',
-                    textAlign: 'center',
-                    maxWidth: 70,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {linkedinConnected ? (linkedinName || 'LinkedIn') : 'Connect'}
-                </Typography>
-              </Box>
+                  );
+                });
+              })()}
 
+              {/* Show placeholder shells while loading */}
+              {socialAccountsLoading && socialAccounts.length === 0 && (
+                <>
+                  {/* YouTube shell */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, opacity: 0.3 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: '#FF0000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <YouTube sx={{ fontSize: 24, color: '#fff' }} />
+                    </Box>
+                  </Box>
+                  {/* TikTok shell */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, opacity: 0.3 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                      </Box>
+                    </Box>
+                  </Box>
+                  {/* Instagram shell */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, opacity: 0.3 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                      </Box>
+                    </Box>
+                  </Box>
+                  {/* Facebook shell */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, opacity: 0.3 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: '#1877F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </Box>
+                    </Box>
+                  </Box>
+                  {/* LinkedIn shell */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, opacity: 0.3 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: '#0077B5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </Box>
+                    </Box>
+                  </Box>
+                </>
+              )}
               {/* Add More Account Button */}
               <Box
                 onClick={() => navigate('/settings/connected-accounts')}
@@ -3400,7 +3203,7 @@ const MusicVideoPlayer: React.FC = () => {
 
             let buttonText = 'Publish Video';
             if (isUploading) buttonText = 'Publishing...';
-            else if (selectedPlatforms.length === 0) buttonText = 'Select a Platform';
+            else if (selectedPlatforms.length === 0) buttonText = 'Select an Account';
             else if (!editedMetadata?.title) buttonText = 'Enter Title First';
             else if (tiktokPrivacyMissing) buttonText = 'Select TikTok Privacy Level';
             else if (tiktokDurationExceeds) buttonText = 'Video Too Long for TikTok';
@@ -3487,127 +3290,170 @@ const MusicVideoPlayer: React.FC = () => {
               }
             </Typography>
 
-            {/* Selected Platforms with Progress Indicators */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-              {selectedPlatforms.includes('youtube') && (
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', gap: 2, p: 2,
-                  bgcolor: uploadProgress.youtube === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.youtube === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,255,255,0.05)',
-                  borderRadius: '12px',
-                  border: `1px solid ${uploadProgress.youtube === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.youtube === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}`
-                }}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#FF0000', border: '2.5px solid #34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <YouTube sx={{ fontSize: 22, color: '#fff' }} />
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#fff' }}>YouTube</Typography>
-                    <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      {youtubeChannel?.channelTitle || 'Your Channel'}
-                    </Typography>
-                  </Box>
-                  {uploadProgress.youtube === 'uploading' && <CircularProgress size={20} sx={{ color: '#FF0000' }} />}
-                  {uploadProgress.youtube === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
-                  {uploadProgress.youtube === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
-                  {uploadProgress.youtube === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
-                </Box>
-              )}
-              {selectedPlatforms.includes('tiktok') && (
-                <Box sx={{ 
-                  display: 'flex', alignItems: 'center', gap: 2, p: 2, 
-                  bgcolor: uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,255,255,0.05)', 
-                  borderRadius: '12px', 
-                  border: `1px solid ${uploadProgress.tiktok === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.tiktok === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}` 
-                }}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#000', border: '2.5px solid #34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#fff' }}>
+            {/* Selected Platforms - Grouped Compact View */}
+            {(() => {
+              const modalPlatformConfig: Record<string, { color: string; gradient?: string; icon: React.ReactNode }> = {
+                youtube: {
+                  color: '#FF0000',
+                  icon: <YouTube sx={{ fontSize: 22, color: '#fff' }} />,
+                },
+                tiktok: {
+                  color: '#000000',
+                  icon: (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                       <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                     </Box>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#fff' }}>TikTok</Typography>
-                    <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      {tiktokUsername ? `@${tiktokUsername}` : 'Your Account'}
-                    </Typography>
-                  </Box>
-                  {uploadProgress.tiktok === 'uploading' && <CircularProgress size={20} sx={{ color: '#000' }} />}
-                  {uploadProgress.tiktok === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
-                  {uploadProgress.tiktok === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
-                  {uploadProgress.tiktok === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
-                </Box>
-              )}
-              {selectedPlatforms.includes('instagram') && (
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', gap: 2, p: 2,
-                  bgcolor: uploadProgress.instagram === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.instagram === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,255,255,0.05)',
-                  borderRadius: '12px',
-                  border: `1px solid ${uploadProgress.instagram === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.instagram === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}`
-                }}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, #FFDC80 0%, #E1306C 50%, #833AB4 100%)', border: '2.5px solid #34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#fff' }}>
+                  ),
+                },
+                instagram: {
+                  color: '#E4405F',
+                  gradient: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
+                  icon: (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
                     </Box>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#fff' }}>Instagram</Typography>
-                    <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      {instagramUsername ? `@${instagramUsername}` : 'Your Account'}
-                    </Typography>
-                  </Box>
-                  {uploadProgress.instagram === 'uploading' && <CircularProgress size={20} sx={{ color: '#E4405F' }} />}
-                  {uploadProgress.instagram === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
-                  {uploadProgress.instagram === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
-                  {uploadProgress.instagram === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
-                </Box>
-              )}
-              {selectedPlatforms.includes('facebook') && (
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', gap: 2, p: 2,
-                  bgcolor: uploadProgress.facebook === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.facebook === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,255,255,0.05)',
-                  borderRadius: '12px',
-                  border: `1px solid ${uploadProgress.facebook === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.facebook === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}`
-                }}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#1877F2', border: '2.5px solid #34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#fff' }}>
+                  ),
+                },
+                facebook: {
+                  color: '#1877F2',
+                  icon: (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </Box>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#fff' }}>Facebook</Typography>
-                    <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      {facebookPageName || 'Your Page'}
-                    </Typography>
-                  </Box>
-                  {uploadProgress.facebook === 'uploading' && <CircularProgress size={20} sx={{ color: '#1877F2' }} />}
-                  {uploadProgress.facebook === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
-                  {uploadProgress.facebook === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
-                  {uploadProgress.facebook === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
-                </Box>
-              )}
-              {selectedPlatforms.includes('linkedin') && (
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', gap: 2, p: 2,
-                  bgcolor: uploadProgress.linkedin === 'success' ? 'rgba(52,199,89,0.1)' : uploadProgress.linkedin === 'error' ? 'rgba(255,59,48,0.1)' : 'rgba(255,255,255,0.05)',
-                  borderRadius: '12px',
-                  border: `1px solid ${uploadProgress.linkedin === 'success' ? 'rgba(52,199,89,0.3)' : uploadProgress.linkedin === 'error' ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.2)'}`
-                }}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#0077B5', border: '2.5px solid #34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 18, height: 18, fill: '#fff' }}>
+                  ),
+                },
+                linkedin: {
+                  color: '#0077B5',
+                  icon: (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </Box>
+                  ),
+                },
+              };
+
+              // Group accounts by platform
+              const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin'];
+              const groupedAccounts = platformOrder
+                .map(platform => ({
+                  platform,
+                  accounts: selectedAccounts.filter(a => a.platform === platform),
+                }))
+                .filter(group => group.accounts.length > 0);
+
+              return (
+                <Box sx={{
+                  bgcolor: 'rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
+                  p: 2,
+                  mb: 3,
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  {/* Grouped by Platform */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    {groupedAccounts.map(({ platform, accounts }) => {
+                      const config = modalPlatformConfig[platform] || { color: '#666', icon: null };
+                      return (
+                        <Box key={platform} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          {/* Platform icon */}
+                          <Box
+                            sx={{
+                              width: 44,
+                              height: 44,
+                              borderRadius: '50%',
+                              background: config.gradient || config.color,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              border: '2px solid #34C759',
+                            }}
+                          >
+                            {config.icon}
+                          </Box>
+                          {/* Account avatars for this platform */}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            {accounts.map((account) => {
+                              const progress = uploadProgress[account.accountId] || uploadProgress[account.platform];
+                              const displayName = account.username || account.accountName || 'Account';
+                              return (
+                                <Box
+                                  key={account.accountId}
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.75,
+                                    px: 1,
+                                    py: 1,
+                                    borderRadius: '20px',
+                                    bgcolor: progress === 'success'
+                                      ? 'rgba(52,199,89,0.15)'
+                                      : progress === 'error'
+                                        ? 'rgba(255,59,48,0.15)'
+                                        : 'rgba(255,255,255,0.05)',
+                                    border: progress === 'success'
+                                      ? '2px solid rgba(52,199,89,0.6)'
+                                      : progress === 'error'
+                                        ? '2px solid rgba(255,59,48,0.6)'
+                                        : '2px solid #007AFF',
+                                  }}
+                                >
+                                  {/* Avatar */}
+                                  {account.avatarUrl ? (
+                                    <Box
+                                      component="img"
+                                      src={account.avatarUrl}
+                                      sx={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                      }}
+                                    />
+                                  ) : (
+                                    <Box
+                                      sx={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: '50%',
+                                        bgcolor: 'rgba(255,255,255,0.2)',
+                                      }}
+                                    />
+                                  )}
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: '#fff',
+                                      fontWeight: 500,
+                                      maxWidth: 100,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  >
+                                    @{displayName}
+                                  </Typography>
+                                  {/* Status indicator */}
+                                  {progress === 'uploading' && (
+                                    <CircularProgress size={12} sx={{ color: config.color }} />
+                                  )}
+                                  {progress === 'success' && (
+                                    <CheckCircle sx={{ color: '#34C759', fontSize: 14 }} />
+                                  )}
+                                  {progress === 'error' && (
+                                    <Error sx={{ color: '#FF3B30', fontSize: 14 }} />
+                                  )}
+                                </Box>
+                              );
+                            })}
+                          </Box>
+                        </Box>
+                      );
+                    })}
                   </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 600, color: '#fff' }}>LinkedIn</Typography>
-                    <Typography variant="caption" sx={{ color: '#86868B' }}>
-                      {linkedinName || 'Your Profile'}
-                    </Typography>
-                  </Box>
-                  {uploadProgress.linkedin === 'uploading' && <CircularProgress size={20} sx={{ color: '#0077B5' }} />}
-                  {uploadProgress.linkedin === 'success' && <CheckCircle sx={{ color: '#34C759', fontSize: 24 }} />}
-                  {uploadProgress.linkedin === 'error' && <Error sx={{ color: '#FF3B30', fontSize: 24 }} />}
-                  {uploadProgress.linkedin === 'pending' && isUploading && <Box sx={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #ccc' }} />}
                 </Box>
-              )}
-            </Box>
+              );
+            })()}
 
             {/* Video Details Summary - only show before uploading */}
             {!isUploading && !Object.values(uploadProgress).some(s => s === 'success' || s === 'error') && (
@@ -3624,6 +3470,7 @@ const MusicVideoPlayer: React.FC = () => {
                       borderRadius: '8px',
                       objectFit: 'cover',
                       flexShrink: 0,
+                              border: '2px solid #34C759',
                     }}
                   />
                 )}
@@ -3914,15 +3761,11 @@ const MusicVideoPlayer: React.FC = () => {
                           });
                         }
 
-                        // Create scheduled post
-                        const platformConfigs = selectedPlatforms.map(platform => ({
-                          platform,
-                          accountId: selectedAccountMap[platform] || undefined,
-                          accountName: (platform === 'youtube' ? youtubeChannel?.channelTitle :
-                                       platform === 'tiktok' ? tiktokUsername :
-                                       platform === 'instagram' ? instagramUsername :
-                                       platform === 'facebook' ? facebookPageName :
-                                       platform === 'linkedin' ? linkedinName : undefined) || undefined,
+                        // Create scheduled post with all selected accounts
+                        const platformConfigs = selectedAccounts.map(account => ({
+                          platform: account.platform,
+                          accountId: account.accountId,
+                          accountName: account.accountName || account.username || undefined,
                         }));
 
                         const response = await scheduledPostsApi.createScheduledPost({
@@ -3953,6 +3796,9 @@ const MusicVideoPlayer: React.FC = () => {
 
                         // Get the scheduleId from response
                         const newScheduleId = response.data?.scheduledPost?.scheduleId;
+
+                        // Invalidate scheduled posts cache so calendar updates
+                        dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
 
                         setIsScheduling(false);
                         setShowUploadConfirm(false);
@@ -4014,14 +3860,11 @@ const MusicVideoPlayer: React.FC = () => {
                         });
                       }
 
-                      // Create scheduled post for 5 minutes from now
-                      const platformConfigs = selectedPlatforms.map(platform => ({
-                        platform,
-                        accountName: (platform === 'youtube' ? youtubeChannel?.channelTitle :
-                                     platform === 'tiktok' ? tiktokUsername :
-                                     platform === 'instagram' ? instagramUsername :
-                                     platform === 'facebook' ? facebookPageName :
-                                     platform === 'linkedin' ? linkedinName : undefined) || undefined,
+                      // Create scheduled post for 5 minutes from now with all selected accounts
+                      const platformConfigs = selectedAccounts.map(account => ({
+                        platform: account.platform,
+                        accountId: account.accountId,
+                        accountName: account.accountName || account.username || undefined,
                       }));
 
                       const response = await scheduledPostsApi.createScheduledPost({
@@ -4052,6 +3895,9 @@ const MusicVideoPlayer: React.FC = () => {
 
                       // Get the scheduleId from response
                       const newScheduleId = response.data?.scheduledPost?.scheduleId;
+
+                      // Invalidate scheduled posts cache so calendar updates
+                      dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
 
                       setIsScheduling(false);
                       setShowUploadConfirm(false);
@@ -4310,6 +4156,7 @@ const MusicVideoPlayer: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
+                              border: '2px solid #34C759',
               boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
             }}>
               <AutoAwesome sx={{ fontSize: 28, color: '#fff' }} />

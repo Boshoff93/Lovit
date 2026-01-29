@@ -389,7 +389,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 sx={{
                   fontFamily: '"Fredoka", "Inter", sans-serif',
                   fontWeight: 600,
-                  fontSize: '1.2rem',
+                  fontSize: '1.8rem',
                   letterSpacing: '-0.01em',
                   background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                   WebkitBackgroundClip: 'text',
