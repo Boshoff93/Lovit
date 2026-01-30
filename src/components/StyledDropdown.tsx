@@ -390,7 +390,8 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                   sx={{
                     py: 1.5,
                     px: 2,
-                    background: isSelected ? 'rgba(0, 122, 255, 0.15)' : 'transparent',
+                    background: isSelected ? 'rgba(0, 122, 255, 0.2)' : 'transparent',
+                    borderLeft: isSelected ? '3px solid #007AFF' : '3px solid transparent',
                     opacity: isDisabled ? 0.5 : 1,
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     '&:hover': { background: isDisabled ? 'transparent' : 'rgba(255,255,255,0.08)' },

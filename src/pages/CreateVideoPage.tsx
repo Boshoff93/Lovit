@@ -55,6 +55,7 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import FaceIcon from '@mui/icons-material/Face';
 import CasinoIcon from '@mui/icons-material/Casino';
 import TimerIcon from '@mui/icons-material/Timer';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -203,12 +204,11 @@ const artStyles: DropdownOption[] = [
 ];
 
 // Video content type options for the main dropdown
-// Determines the audio source and generation method
+// Simplified to 3 main types with sub-options via toggles
 const videoContentTypes: DropdownOption[] = [
-  { id: 'music', label: 'Music Video', description: 'Song-driven content' },
-  { id: 'story', label: 'Story with Voiceover', description: 'Story-driven content' },
-  { id: 'ugc-voiceover', label: 'UGC with Voiceover', description: 'UGC/Influencer content' },
-  { id: 'ugc-avatar', label: 'UGC with Prompt', description: 'UGC/Influencer content' },
+  { id: 'ai-video', label: 'Cinematic Story', description: 'AI-generated scenes' },
+  { id: 'ugc', label: 'UGC Creator', description: 'Influencer-style content' },
+  { id: 'app-showcase', label: 'App Showcase', description: 'App screenshots + audio' },
 ];
 
 // Avatar video duration slider marks
@@ -381,7 +381,7 @@ const CreateVideoPage: React.FC = () => {
 
   // Get URL params for preselecting narrative
   const urlNarrativeId = searchParams.get('narrativeId');
-  const urlVideoType = searchParams.get('type') as 'story' | 'ugc-voiceover' | null;
+  const urlVideoType = searchParams.get('type') as 'story' | 'ugc' | null;
 
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
   const [videoType, setVideoType] = useState<string>('still');
@@ -391,14 +391,22 @@ const CreateVideoPage: React.FC = () => {
   const [showPromptError, setShowPromptError] = useState(false);
   const [rouletteMode, setRouletteMode] = useState(false);
 
-  // Video content type: determines what audio source and generation method to use
-  // 'music' - Music video with song
-  // 'story' - Story video with story-type voiceover
-  // 'ugc-voiceover' - UGC/Influencer with custom voiceover
-  // 'ugc-avatar' - UGC/Influencer prompt-driven (no audio, uses WAN image-to-video)
-  const [videoContentType, setVideoContentType] = useState<'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar'>('music');
+  // Video content type: main categories
+  // 'ai-video' - AI-generated scenes (music or story)
+  // 'ugc' - UGC/Influencer content (voiceover or avatar)
+  // 'app-showcase' - App screenshots video (uses Remotion)
+  const [videoContentType, setVideoContentType] = useState<'ai-video' | 'ugc' | 'app-showcase'>('ai-video');
 
-  // Avatar video duration (for ugc-avatar mode): 5, 10, or 15 seconds
+  // AI Video audio source toggle: 'music' (song) or 'voiceover' (narrative)
+  const [aiVideoAudioSource, setAiVideoAudioSource] = useState<'music' | 'voiceover'>('music');
+
+  // UGC mode toggle: 'voiceover' (OmniHuman) or 'avatar' (WAN prompt-driven)
+  const [ugcMode, setUgcMode] = useState<'voiceover' | 'avatar'>('voiceover');
+
+  // Audio source toggle for App Showcase mode: 'music' or 'voiceover'
+  const [appShowcaseAudioSource, setAppShowcaseAudioSource] = useState<'music' | 'voiceover'>('music');
+
+  // Avatar video duration (for ugc avatar mode): 5, 10, or 15 seconds
   const [avatarVideoDuration, setAvatarVideoDuration] = useState<5 | 10 | 15>(5);
 
   // Background music option (for narrative videos) - style is AI-generated based on story
@@ -483,32 +491,56 @@ const CreateVideoPage: React.FC = () => {
   const songSearchDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const SONGS_PAGE_SIZE = 10;
 
-  // Derive content type helpers from videoContentType
-  const isMusic = videoContentType === 'music';
-  const isStory = videoContentType === 'story';
-  const isUgcVoiceover = videoContentType === 'ugc-voiceover';
-  const isAvatarVideo = videoContentType === 'ugc-avatar';
-  const needsVoiceover = isStory || isUgcVoiceover;
-  const needsSong = isMusic;
+  // Derive content type helpers from videoContentType and sub-toggles
+  const isAiVideo = videoContentType === 'ai-video';
+  const isUgc = videoContentType === 'ugc';
+  const isAppShowcase = videoContentType === 'app-showcase';
+
+  // AI Video sub-types (derived from toggle)
+  const isMusic = isAiVideo && aiVideoAudioSource === 'music';
+  const isStory = isAiVideo && aiVideoAudioSource === 'voiceover';
+
+  // UGC sub-types (derived from toggle)
+  const isUgcVoiceover = isUgc && ugcMode === 'voiceover';
+  const isAvatarVideo = isUgc && ugcMode === 'avatar';
+
+  // App Showcase audio source (derived from toggle)
+  const appShowcaseNeedsMusic = isAppShowcase && appShowcaseAudioSource === 'music';
+  const appShowcaseNeedsVoiceover = isAppShowcase && appShowcaseAudioSource === 'voiceover';
+
+  // What audio sources are needed for the current configuration
+  const needsVoiceover = isStory || isUgcVoiceover || appShowcaseNeedsVoiceover;
+  const needsSong = isMusic || appShowcaseNeedsMusic;
 
   // Filter narratives based on video content type - memoize for performance
   const filteredNarratives = useMemo(
     () => narratives.filter(n => {
       if (isStory) return n.narrativeType === 'story';
       if (isUgcVoiceover) return n.narrativeType === 'ugc';
-      return true; // Show all for other modes (shouldn't be used)
+      if (appShowcaseNeedsVoiceover) return true; // App Showcase can use any narrative
+      return true;
     }),
-    [narratives, isStory, isUgcVoiceover]
+    [narratives, isStory, isUgcVoiceover, appShowcaseNeedsVoiceover]
+  );
+
+  // Filter characters for App Showcase - only show App type
+  const filteredCharacters = useMemo(
+    () => isAppShowcase
+      ? characters.filter(c => c.characterType === 'App')
+      : characters,
+    [characters, isAppShowcase]
   );
 
   // Max cast members allowed:
   // - Music video: max 5
   // - Story video: max 8 of any type
-  // - UGC with voiceover: max 1 character + 1 product/app/place
+  // - UGC with voiceover: max 2 (1 character + 1 product/app/place)
   // - Avatar video: max 5
+  // - App Showcase: max 1 (single app)
   const MAX_CAST_MEMBERS = isMusic ? 5 :
     isStory ? 8 :
-    isUgcVoiceover ? 2 : 5;
+    isUgcVoiceover ? 2 :
+    isAppShowcase ? 1 : 5;
 
   // Helper to get asset type group (Place and Business are treated as same category)
   const getAssetGroup = (type?: string) =>
@@ -530,6 +562,11 @@ const CreateVideoPage: React.FC = () => {
     );
     const selectedAssetGroup = selectedAssets.length > 0
       ? getAssetGroup(selectedAssets[0].characterType) : null;
+
+    // App Showcase: only allow App type assets
+    if (isAppShowcase) {
+      return char.characterType === 'App' && selectedCharacterIds.length < 1;
+    }
 
     // UGC with voiceover: 1 character + 1 product/app/place (special mode)
     if (isUgcVoiceover) {
@@ -564,16 +601,18 @@ const CreateVideoPage: React.FC = () => {
     selectedCharacterIds.includes(char.characterId)
   );
 
-  // Group characters by type
-  const groupedCharacters = characters.reduce((acc, char) => {
+  // Group characters by type - use filteredCharacters for App Showcase
+  const groupedCharacters = filteredCharacters.reduce((acc, char) => {
     const type = char.characterType || 'Human';
     if (!acc[type]) acc[type] = [];
     acc[type].push(char);
     return acc;
   }, {} as Record<string, Character[]>);
 
-  // Order of character types for display
-  const characterTypeOrder = ['Human', 'Non-Human', 'Product', 'Place', 'App', 'Business'];
+  // Order of character types for display - App Showcase only shows App type
+  const characterTypeOrder = isAppShowcase
+    ? ['App']
+    : ['Human', 'Non-Human', 'Product', 'Place', 'App', 'Business'];
 
   // Load more songs for pagination (beyond cached first page)
   const fetchSongsForPicker = useCallback(async (page = 1, search = '', append = false) => {
@@ -668,24 +707,24 @@ const CreateVideoPage: React.FC = () => {
           setSelectedCharacterIds(narrative.characterIds);
         }
         // Set video content type based on URL param or narrative type
-        if (urlVideoType === 'story' || urlVideoType === 'ugc-voiceover') {
-          setVideoContentType(urlVideoType);
+        if (urlVideoType === 'story') {
+          setVideoContentType('ai-video');
+          setAiVideoAudioSource('voiceover');
+        } else if (urlVideoType === 'ugc') {
+          setVideoContentType('ugc');
+          setUgcMode('voiceover');
         } else if (narrative.narrativeType === 'story') {
-          setVideoContentType('story');
+          setVideoContentType('ai-video');
+          setAiVideoAudioSource('voiceover');
         } else if (narrative.narrativeType === 'ugc' || narrative.narrativeType === 'content') {
-          setVideoContentType('ugc-voiceover');
+          setVideoContentType('ugc');
+          setUgcMode('voiceover');
         }
       }
     }
   }, [urlNarrativeId, urlVideoType, narratives]);
 
   // Auto-select Cinematic video type when UGC with voiceover is selected (Still not supported for UGC)
-  useEffect(() => {
-    if (isUgcVoiceover && videoType === 'still') {
-      setVideoType('standard');
-    }
-  }, [isUgcVoiceover, videoType]);
-
   // Stop narrative audio preview when picker closes
   useEffect(() => {
     if (!narrativePickerOpen && previewingNarrativeId) {
@@ -748,7 +787,17 @@ const CreateVideoPage: React.FC = () => {
   };
 
   const handleGenerate = async () => {
-    // For music videos, require a song
+    // For App Showcase, require an app asset
+    if (isAppShowcase && selectedCharacterIds.length === 0) {
+      setNotification({
+        open: true,
+        message: 'Please select an app first',
+        severity: 'error'
+      });
+      return;
+    }
+
+    // For music videos or App Showcase with music, require a song
     if (needsSong && !selectedSongId) {
       setNotification({
         open: true,
@@ -758,7 +807,7 @@ const CreateVideoPage: React.FC = () => {
       return;
     }
 
-    // For voiceover videos, require a voiceover
+    // For voiceover videos or App Showcase with voiceover, require a voiceover
     if (needsVoiceover && !selectedNarrativeId) {
       setNotification({
         open: true,
@@ -768,8 +817,9 @@ const CreateVideoPage: React.FC = () => {
       return;
     }
 
-    // Validation: either need prompt or roulette mode (avatar video always needs prompt, no roulette)
-    if (!videoPrompt.trim() && !rouletteMode) {
+    // Validation: prompt is required for all except roulette mode (avatar/app showcase don't support roulette)
+    // App Showcase prompt is optional - it will use default if not provided
+    if (!videoPrompt.trim() && !rouletteMode && !isAppShowcase) {
       setShowPromptError(true);
       setNotification({
         open: true,
@@ -777,7 +827,9 @@ const CreateVideoPage: React.FC = () => {
           ? 'Please describe your music video concept or use Gruvi Roulette'
           : isAvatarVideo
           ? 'Please describe what you want to happen in your video'
-          : 'Please describe your voiceover video content or use Gruvi Roulette',
+          : (isStory || isUgcVoiceover)
+          ? 'Please describe your video content or use Gruvi Roulette'
+          : 'Please describe your video concept',
         severity: 'error'
       });
       return;
@@ -795,6 +847,21 @@ const CreateVideoPage: React.FC = () => {
     setIsGenerating(true);
 
     try {
+      // Map frontend consolidated types to backend types
+      // AI Video: 'music' or 'story' based on aiVideoAudioSource
+      // UGC: 'ugc-voiceover' or 'ugc-avatar' based on ugcMode
+      // App Showcase: 'app-promo-music' or 'app-promo-voiceover' based on appShowcaseAudioSource
+      let backendVideoContentType: 'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar' | 'app-promo-music' | 'app-promo-voiceover';
+      if (isAiVideo) {
+        backendVideoContentType = aiVideoAudioSource === 'music' ? 'music' : 'story';
+      } else if (isUgc) {
+        backendVideoContentType = ugcMode === 'voiceover' ? 'ugc-voiceover' : 'ugc-avatar';
+      } else if (isAppShowcase) {
+        backendVideoContentType = appShowcaseAudioSource === 'music' ? 'app-promo-music' : 'app-promo-voiceover';
+      } else {
+        backendVideoContentType = 'music'; // fallback
+      }
+
       const response = await videosApi.generateVideo({
         userId: user.userId,
         songId: needsSong ? selectedSongId : undefined,
@@ -804,11 +871,10 @@ const CreateVideoPage: React.FC = () => {
         videoPrompt: rouletteMode ? '' : videoPrompt.trim(),
         aspectRatio: aspectRatio as 'portrait' | 'landscape',
         characterIds: rouletteMode ? [] : selectedCharacterIds,
-        rouletteMode: isAvatarVideo ? false : rouletteMode,
-        videoContentType, // 'music', 'story', 'ugc-voiceover', or 'ugc-avatar'
+        rouletteMode: isAvatarVideo || isAppShowcase ? false : rouletteMode,
+        videoContentType: backendVideoContentType,
         avatarVideoDuration: isAvatarVideo ? avatarVideoDuration : undefined,
-        includeBackgroundMusic: needsVoiceover ? includeBackgroundMusic : undefined,
-        // backgroundMusicPrompt is now AI-generated based on the story content
+        includeBackgroundMusic: needsVoiceover && !isAppShowcase ? includeBackgroundMusic : undefined,
       });
 
       // Update tokens in UI with actual value from backend
@@ -993,20 +1059,13 @@ const CreateVideoPage: React.FC = () => {
                 options={videoContentTypes}
                 value={videoContentType}
                 onChange={(value) => {
-                  setVideoContentType(value as 'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar');
+                  setVideoContentType(value as 'ai-video' | 'ugc' | 'app-showcase');
                   // Clear selections when switching modes
                   setSelectedCharacterIds([]);
-                  const newIsMusic = value === 'music';
-                  const newNeedsVoiceover = value === 'story' || value === 'ugc-voiceover';
-                  const newIsAvatarVideo = value === 'ugc-avatar';
-                  if (!newIsMusic) {
-                    setSelectedSongId(null);
-                  }
-                  if (!newNeedsVoiceover) {
-                    setSelectedNarrativeId(null);
-                  }
-                  // Avatar videos don't support roulette mode
-                  if (newIsAvatarVideo) {
+                  setSelectedSongId(null);
+                  setSelectedNarrativeId(null);
+                  // UGC Avatar and App Showcase don't support roulette mode
+                  if (value === 'ugc' || value === 'app-showcase') {
                     setRouletteMode(false);
                   }
                 }}
@@ -1014,6 +1073,170 @@ const CreateVideoPage: React.FC = () => {
                 fullWidth
               />
             </Box>
+
+            {/* AI Video Audio Source Toggle */}
+            {isAiVideo && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Audio Source
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                Choose music or voiceover for your video
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  onClick={() => { setAiVideoAudioSource('music'); setSelectedNarrativeId(null); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${aiVideoAudioSource === 'music' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: aiVideoAudioSource === 'music' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: aiVideoAudioSource === 'music' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <MusicNoteIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Music</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>Sync to song</Typography>
+                </Box>
+                <Box
+                  onClick={() => { setAiVideoAudioSource('voiceover'); setSelectedSongId(null); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${aiVideoAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: aiVideoAudioSource === 'voiceover' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: aiVideoAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <RecordVoiceOverIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Voiceover</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>Story narration</Typography>
+                </Box>
+              </Box>
+            </Box>
+            )}
+
+            {/* UGC Mode Toggle */}
+            {isUgc && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                UGC Style
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                Choose voiceover or avatar mode
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  onClick={() => { setUgcMode('voiceover'); setRouletteMode(false); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${ugcMode === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: ugcMode === 'voiceover' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: ugcMode === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <RecordVoiceOverIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Avatar - Voiceover</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Narrate with voiceover</Typography>
+                </Box>
+                <Box
+                  onClick={() => { setUgcMode('avatar'); setRouletteMode(false); setSelectedNarrativeId(null); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${ugcMode === 'avatar' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: ugcMode === 'avatar' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: ugcMode === 'avatar' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <FaceIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Avatar - Prompt Driven</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Prompt what you want</Typography>
+                </Box>
+              </Box>
+            </Box>
+            )}
+
+            {/* App Showcase Audio Source Toggle */}
+            {isAppShowcase && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Audio Source
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                Choose music or voiceover for your app showcase
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  onClick={() => { setAppShowcaseAudioSource('music'); setSelectedNarrativeId(null); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${appShowcaseAudioSource === 'music' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: appShowcaseAudioSource === 'music' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderColor: appShowcaseAudioSource === 'music' ? '#007AFF' : 'rgba(255,255,255,0.2)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <MusicNoteIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Music</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
+                    Sync to song beats
+                  </Typography>
+                </Box>
+                <Box
+                  onClick={() => setAppShowcaseAudioSource('voiceover')}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${appShowcaseAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: appShowcaseAudioSource === 'voiceover' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderColor: appShowcaseAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.2)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <RecordVoiceOverIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Voiceover</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
+                    Sync to narration
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            )}
 
             {/* Avatar Video Duration - only for ugc-avatar mode */}
             {isAvatarVideo && (
@@ -1071,7 +1294,7 @@ const CreateVideoPage: React.FC = () => {
             {/* Voiceover Selection - only for story and ugc-voiceover modes */}
             {needsVoiceover && (
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Select Voiceover
                 </Typography>
@@ -1402,7 +1625,9 @@ const CreateVideoPage: React.FC = () => {
               {!rouletteMode && (
               <Box sx={{ mb: 2 }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1 }}>
-                  {isUgcVoiceover
+                  {isAppShowcase
+                    ? 'Select your app (App type only):'
+                    : isUgcVoiceover
                     ? 'Add AI assets (1 character + 1 product/place max):'
                     : `Add AI assets to your video (max ${MAX_CAST_MEMBERS}):`}
                 </Typography>
@@ -1778,8 +2003,8 @@ const CreateVideoPage: React.FC = () => {
                   {videoTypes.map((type) => {
                     const TypeIcon = type.IconComponent;
                     const isSelected = videoType === type.id;
-                    // Disable "Still" for UGC with voiceover (UGC uses OmniHuman which requires cinematic)
-                    const isDisabled = type.id === 'still' && isUgcVoiceover;
+                    // Disable "Still" for UGC with voiceover (uses OmniHuman) and App Showcase (uses Remotion)
+                    const isDisabled = type.id === 'still' && (isUgcVoiceover || isAppShowcase);
                     // Calculate credits: Still is flat 200, Cinematic is based on audio duration
                     const typeCredits = type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
                     const creditsText = type.id === 'still'
@@ -2020,7 +2245,7 @@ const CreateVideoPage: React.FC = () => {
                   {isGenerating ? (
                     <CircularProgress size={24} sx={{ color: '#fff' }} />
                   ) : (
-                    isMusic ? 'Generate Music Video' :
+                    needsSong ? 'Generate Music Video' :
                     isAvatarVideo ? 'Generate Avatar Video' :
                     'Generate Voiceover Video'
                   )}
@@ -2146,7 +2371,7 @@ const CreateVideoPage: React.FC = () => {
               {isGenerating ? (
                 <CircularProgress size={24} sx={{ color: '#fff' }} />
               ) : (
-                isMusic ? 'Generate Music Video' :
+                needsSong ? 'Generate Music Video' :
                 isAvatarVideo ? 'Generate Avatar Video' :
                 'Generate Voiceover Video'
               )}
@@ -2214,10 +2439,10 @@ const CreateVideoPage: React.FC = () => {
           '&::-webkit-scrollbar': { width: 0, background: 'transparent' },
           scrollbarWidth: 'none',
         }}>
-          {characters.length === 0 ? (
+          {filteredCharacters.length === 0 ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 2 }}>
-                No AI assets yet
+                {isAppShowcase ? 'No App assets yet - create one first' : 'No AI assets yet'}
               </Typography>
               <Button
                 variant="outlined"
@@ -2680,7 +2905,7 @@ const CreateVideoPage: React.FC = () => {
           {filteredNarratives.length === 0 ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 2 }}>
-                {isStory ? 'No story voiceovers yet' : 'No UGC voiceovers yet'}
+{isStory ? 'No story voiceovers yet' : isUgcVoiceover ? 'No UGC voiceovers yet' : 'No voiceovers yet'}
               </Typography>
               <Button
                 variant="outlined"
