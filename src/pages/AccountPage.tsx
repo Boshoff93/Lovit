@@ -755,7 +755,7 @@ const AccountPage: React.FC = () => {
               borderRadius: '8px',
               fontFamily: 'monospace',
               fontSize: '0.8rem',
-              color: '#8B5CF6',
+              color: '#fff',
             }}>
               export GRUVI_KEY="gruvi_agent_xxxx"
             </Box>
@@ -989,7 +989,7 @@ const AccountPage: React.FC = () => {
                 <Typography sx={{
                   fontFamily: 'monospace',
                   fontSize: '0.9rem',
-                  color: '#8B5CF6',
+                  color: '#fff',
                   wordBreak: 'break-all',
                   mb: 2,
                 }}>
@@ -1007,12 +1007,12 @@ const AccountPage: React.FC = () => {
                       fontWeight: 600,
                       textTransform: 'none',
                       background: copySuccess
-                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
-                        : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%) !important'
+                        : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%) !important',
                       '&:hover': {
                         background: copySuccess
-                          ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%)'
-                          : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                          ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%) !important'
+                          : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%) !important',
                       }
                     }}
                   >
