@@ -677,7 +677,7 @@ const AccountPage: React.FC = () => {
                 No agent keys yet
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
-                Create an agent key to let Claude, ChatGPT, or other AI assistants use Gruvi on your behalf
+                Create an agent key to let Claude, OpenClaw, or other AI assistants use Gruvi on your behalf
               </Typography>
             </Box>
           ) : (
