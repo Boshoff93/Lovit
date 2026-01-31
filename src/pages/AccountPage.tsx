@@ -27,7 +27,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Tooltip,
-  Snackbar,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -1005,13 +1004,17 @@ const AccountPage: React.FC = () => {
                     py: 1.5,
                     fontWeight: 600,
                     textTransform: 'none',
-                    background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+                    background: copySuccess
+                      ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
+                      : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                      background: copySuccess
+                        ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%)'
+                        : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
                     }
                   }}
                 >
-                  Copy to Clipboard
+                  {copySuccess ? 'Copied!' : 'Copy to Clipboard'}
                 </Button>
               </Box>
             </Box>
@@ -1114,15 +1117,7 @@ const AccountPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Copy Success Snackbar */}
-      <Snackbar
-        open={copySuccess}
-        autoHideDuration={2000}
-        onClose={() => setCopySuccess(false)}
-        message="Copied to clipboard!"
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      />
-    </Box>
+          </Box>
   );
 };
 
