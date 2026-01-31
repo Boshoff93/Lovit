@@ -40,13 +40,31 @@ export const authApi = {
     api.post('/auth/password-reset', { email }),
 };
 
+// Agent Key interface
+export interface AgentKey {
+  keyId: string;
+  name: string;
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
 // User profile API
 export const userApi = {
-  getAccount: () => 
+  getAccount: () =>
     api.get('/api/user/account'),
-  
-  updateProfile: (data: { name?: string; artistName?: string; directorName?: string }) => 
+
+  updateProfile: (data: { name?: string; artistName?: string; directorName?: string }) =>
     api.put('/api/user/profile', data),
+
+  // Agent Keys
+  listAgentKeys: () =>
+    api.get<{ keys: AgentKey[] }>('/api/user/agent-keys'),
+
+  createAgentKey: (name: string) =>
+    api.post<{ key: string; keyId: string; name: string; createdAt: string }>('/api/user/agent-keys', { name }),
+
+  deleteAgentKey: (keyId: string) =>
+    api.delete(`/api/user/agent-keys/${keyId}`),
 };
 
 // User subscription API
