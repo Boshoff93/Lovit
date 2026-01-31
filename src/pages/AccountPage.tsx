@@ -260,6 +260,7 @@ const AccountPage: React.FC = () => {
     setCreateKeyDialogOpen(false);
     setNewlyCreatedKey(null);
     setNewKeyName('');
+    setCopySuccess(false);
   }, []);
 
   return (
