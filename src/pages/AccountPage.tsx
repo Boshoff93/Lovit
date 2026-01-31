@@ -995,28 +995,30 @@ const AccountPage: React.FC = () => {
                 }}>
                   {newlyCreatedKey}
                 </Typography>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<ContentCopyIcon />}
-                  onClick={() => handleCopyKey(newlyCreatedKey)}
-                  sx={{
-                    borderRadius: '10px',
-                    py: 1.5,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    background: copySuccess
-                      ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
-                      : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
-                    '&:hover': {
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<ContentCopyIcon />}
+                    onClick={() => handleCopyKey(newlyCreatedKey)}
+                    sx={{
+                      borderRadius: '10px',
+                      px: 3,
+                      py: 1,
+                      fontWeight: 600,
+                      textTransform: 'none',
                       background: copySuccess
-                        ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%)'
-                        : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
-                    }
-                  }}
-                >
-                  {copySuccess ? 'Copied!' : 'Copy to Clipboard'}
-                </Button>
+                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
+                        : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+                      '&:hover': {
+                        background: copySuccess
+                          ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%)'
+                          : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                      }
+                    }}
+                  >
+                    {copySuccess ? 'Copied!' : 'Copy'}
+                  </Button>
+                </Box>
               </Box>
             </Box>
           ) : (
