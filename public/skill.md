@@ -143,7 +143,7 @@ Options:
 - `songId`: Required for music/app-promo-music types
 - `narrativeId`: Required for story/ugc-voiceover/app-promo-voiceover types
 - `characterIds`: Array of character IDs to appear in the video
-- `style`: `3D Cartoon`, `Anime`, `Cinematic`, `Photo-Realism`
+- `style`: `3D Cartoon`, `Anime`, `Cinematic`, `Photo-Realism` (not used for app-promo)
 - `aspectRatio`: `portrait` (9:16), `landscape` (16:9), `square` (1:1)
 
 **Check status** (poll every 30s)
@@ -153,6 +153,54 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
 ```
 
 Cost: 50 tokens/second
+
+---
+
+## App Showcase Videos
+
+Create animated app promo videos with motion effects from your app screenshots.
+
+**Step 1: Create an App asset** (upload 3-10 screenshots)
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "characterName": "My App",
+    "characterType": "App",
+    "description": "A productivity app for task management"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/characters
+# Then upload screenshots to the returned character
+```
+
+**Step 2: Generate song OR voiceover** (see Songs/Voiceovers sections)
+
+**Step 3: Generate app showcase video**
+```bash
+# With music:
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "videoContentType": "app-promo-music",
+    "songId": "your-song-id",
+    "characterIds": ["your-app-asset-id"],
+    "aspectRatio": "portrait"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/videos/generate
+
+# With voiceover:
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "videoContentType": "app-promo-voiceover",
+    "narrativeId": "your-narrative-id",
+    "characterIds": ["your-app-asset-id"],
+    "aspectRatio": "portrait"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/videos/generate
+```
+
+The video will animate through your app screenshots with smooth motion effects synced to the audio.
 
 ---
 

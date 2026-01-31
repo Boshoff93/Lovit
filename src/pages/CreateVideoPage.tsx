@@ -441,12 +441,15 @@ const CreateVideoPage: React.FC = () => {
     [songsData?.songs]
   );
 
-  // Additional songs from "load more" - local state for pagination
+  // Additional songs from "load more" or search - local state for pagination/search
   const [additionalSongs, setAdditionalSongs] = useState<Song[]>([]);
-  // Combine cached and additional songs - memoize to prevent re-renders
+  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
+  // When searching, only show search results. Otherwise combine cached + paginated songs
   const songs = useMemo(
-    () => [...cachedSongs, ...additionalSongs.filter(s => !cachedSongs.find(c => c.songId === s.songId))],
-    [cachedSongs, additionalSongs]
+    () => isSearchingSongs
+      ? additionalSongs
+      : [...cachedSongs, ...additionalSongs.filter(s => !cachedSongs.find(c => c.songId === s.songId))],
+    [cachedSongs, additionalSongs, isSearchingSongs]
   );
   const isLoadingSongs = isLoadingSongsInitial;
 
@@ -674,6 +677,9 @@ const CreateVideoPage: React.FC = () => {
     if (prevSongSearchQueryRef.current === songSearchQuery) return;
     prevSongSearchQueryRef.current = songSearchQuery;
 
+    // Update search mode
+    setIsSearchingSongs(!!songSearchQuery.trim());
+
     if (songSearchDebounceRef.current) {
       clearTimeout(songSearchDebounceRef.current);
     }
@@ -870,7 +876,7 @@ const CreateVideoPage: React.FC = () => {
         style: selectedStyle,
         videoPrompt: rouletteMode ? '' : videoPrompt.trim(),
         aspectRatio: aspectRatio as 'portrait' | 'landscape',
-        characterIds: rouletteMode ? [] : selectedCharacterIds,
+        characterIds: selectedCharacterIds,
         rouletteMode: isAvatarVideo || isAppShowcase ? false : rouletteMode,
         videoContentType: backendVideoContentType,
         avatarVideoDuration: isAvatarVideo ? avatarVideoDuration : undefined,
@@ -1621,8 +1627,7 @@ const CreateVideoPage: React.FC = () => {
                 )}
               </Box>
 
-              {/* Cast Selection - hidden in roulette mode */}
-              {!rouletteMode && (
+              {/* Cast Selection - always visible (even in roulette mode) */}
               <Box sx={{ mb: 2 }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1 }}>
                   {isAppShowcase
@@ -1738,7 +1743,6 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                 )}
               </Box>
-              )}
 
               {/* Text field with integrated Roulette button */}
               {rouletteMode ? (
@@ -1922,7 +1926,8 @@ const CreateVideoPage: React.FC = () => {
 
             {/* Visual Style, Video Type, Aspect Ratio - Each on own row */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Visual Style */}
+              {/* Visual Style - hidden for App Showcase (uses app screenshots directly) */}
+              {!isAppShowcase && (
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
                   Visual Style
@@ -1938,6 +1943,7 @@ const CreateVideoPage: React.FC = () => {
                     fullWidth
                   />
               </Box>
+              )}
 
               {/* Video Type */}
               <Box>
@@ -2596,6 +2602,8 @@ const CreateVideoPage: React.FC = () => {
           setSongPickerOpen(false);
           setSongPickerAnchor(null);
           setSongSearchQuery('');
+          setIsSearchingSongs(false);
+          setAdditionalSongs([]);
         }}
         anchorOrigin={{
           vertical: 'bottom',
@@ -2727,6 +2735,8 @@ const CreateVideoPage: React.FC = () => {
                           setSongPickerOpen(false);
                           setSongPickerAnchor(null);
                           setSongSearchQuery('');
+                          setIsSearchingSongs(false);
+                          setAdditionalSongs([]);
                         }}
                         sx={{
                           py: 1.5,
