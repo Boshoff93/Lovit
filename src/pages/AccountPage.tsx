@@ -746,15 +746,33 @@ const AccountPage: React.FC = () => {
             borderRadius: '10px',
             border: '1px solid rgba(139,92,246,0.2)',
           }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', mb: 1 }}>
-              Give your agent key to an AI assistant to let it create content for you. Example:
+            <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', mb: 1.5, fontWeight: 600 }}>
+              Tell your AI assistant:
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', mb: 1 }}>
+              1. First, get the Gruvi skill:
             </Typography>
             <Box sx={{
               p: 1.5,
               bgcolor: 'rgba(0,0,0,0.3)',
               borderRadius: '8px',
               fontFamily: 'monospace',
-              fontSize: '0.8rem',
+              fontSize: '0.75rem',
+              color: '#fff',
+              mb: 2,
+              overflowX: 'auto',
+            }}>
+              curl -s https://agentgruvi.com/skill.md -o ~/.claude/skills/gruvi/SKILL.md
+            </Box>
+            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', mb: 1 }}>
+              2. Then set your agent key:
+            </Typography>
+            <Box sx={{
+              p: 1.5,
+              bgcolor: 'rgba(0,0,0,0.3)',
+              borderRadius: '8px',
+              fontFamily: 'monospace',
+              fontSize: '0.75rem',
               color: '#fff',
             }}>
               export GRUVI_KEY="gruvi_agent_xxxx"
