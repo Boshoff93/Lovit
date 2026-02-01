@@ -143,8 +143,30 @@ Options:
 - `songId`: Required for music/app-promo-music types
 - `narrativeId`: Required for story/ugc-voiceover/app-promo-voiceover types
 - `characterIds`: Array of character IDs to appear in the video
-- `style`: `3D Cartoon`, `Anime`, `Cinematic`, `Photo-Realism` (not used for app-promo)
+- `style`: `3D Cartoon`, `Anime`, `Cinematic`, `Photo-Realism` (not used for app-promo/ugc)
 - `aspectRatio`: `portrait` (9:16), `landscape` (16:9), `square` (1:1)
+
+### UGC Videos (Talking Head)
+
+UGC videos create influencer-style talking head content. The system auto-generates an appropriate avatar if none is provided.
+
+**Best approach:**
+1. Create a UGC voiceover with a hook-driven script
+2. Optionally add a Human character (becomes the talking head)
+3. Optionally add a Product/Business asset (informs the avatar context)
+4. Generate video with `videoContentType: "ugc-voiceover"`
+
+**UGC voiceover prompts should include:**
+- A strong hook (first 3 seconds matter!)
+- Clear value proposition
+- Call to action
+- Keep under 60 seconds
+
+Example UGC prompt:
+```
+"Create a UGC video about [Product]. Hook: 'I was skeptical at first but...'
+Mention the key benefit, show enthusiasm, end with 'Link in bio!'"
+```
 
 **Check status** (poll every 30s)
 ```bash
