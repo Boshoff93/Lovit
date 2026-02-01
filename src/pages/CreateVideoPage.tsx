@@ -384,7 +384,7 @@ const CreateVideoPage: React.FC = () => {
   const urlVideoType = searchParams.get('type') as 'story' | 'ugc' | null;
 
   const [selectedStyle, setSelectedStyle] = useState<string>('3d-cartoon');
-  const [videoType, setVideoType] = useState<string>('still');
+  const [videoType, setVideoType] = useState<string>('standard');
   const [aspectRatio, setAspectRatio] = useState<string>('portrait');
   const [videoPrompt, setVideoPrompt] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -2009,8 +2009,8 @@ const CreateVideoPage: React.FC = () => {
                   {videoTypes.map((type) => {
                     const TypeIcon = type.IconComponent;
                     const isSelected = videoType === type.id;
-                    // Disable "Still" for UGC with voiceover (uses OmniHuman) and App Showcase (uses Remotion)
-                    const isDisabled = type.id === 'still' && (isUgcVoiceover || isAppShowcase);
+                    // Disable "Still" for all UGC (uses OmniHuman) and App Showcase (uses Remotion)
+                    const isDisabled = type.id === 'still' && (isUgc || isAppShowcase);
                     // Calculate credits: Still is flat 200, Cinematic is based on audio duration
                     const typeCredits = type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
                     const creditsText = type.id === 'still'
