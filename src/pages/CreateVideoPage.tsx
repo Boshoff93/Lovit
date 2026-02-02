@@ -58,6 +58,8 @@ import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import FaceIcon from '@mui/icons-material/Face';
 import CasinoIcon from '@mui/icons-material/Casino';
 import TimerIcon from '@mui/icons-material/Timer';
+import MicIcon from '@mui/icons-material/Mic';
+import MicNoneIcon from '@mui/icons-material/MicNone';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import GruviCoin from '../components/GruviCoin';
 import { useAudioPlayer, Song as AudioPlayerSong } from '../contexts/AudioPlayerContext';
@@ -246,6 +248,30 @@ const videoTypes: (DropdownOption & { baseCredits: number; IconComponent: React.
   { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. Price based on audio length (50 credits per second).' },
 ];
 
+// Voice options for avatar prompt-driven mode (optional voice swap)
+const avatarVoiceOptions: DropdownOption[] = [
+  // No voice change option (use native AI-generated audio)
+  { id: 'native', label: 'AI Generated', icon: <MicNoneIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #6B7280 0%, #9CA3AF 100%)', description: 'Auto-generated voice', isPremium: false },
+  // Gruvi Custom Voices
+  { id: 'albus', label: 'Sir Albus', image: '/voices/avatars/albus.jpeg', audioPreview: '/voices/albus.mp3', description: 'Wise storyteller', isPremium: false },
+  { id: 'beth', label: 'Aunt Beth', image: '/voices/avatars/beth.jpeg', audioPreview: '/voices/beth.mp3', description: 'Warm & nurturing', isPremium: false },
+  { id: 'fiona', label: 'Fiona', image: '/voices/avatars/fiona.jpeg', audioPreview: '/voices/fiona.mp3', description: 'Elegant narrator', isPremium: false },
+  { id: 'ash', label: 'Ash', image: '/voices/avatars/ash.jpeg', audioPreview: '/voices/ash.mp3', description: 'Young & energetic', isPremium: false },
+  { id: 'optimus', label: 'Optimus', image: '/voices/avatars/optimus.jpeg', audioPreview: '/voices/optimus.mp3', description: 'Deep & powerful', isPremium: false },
+  { id: 'shimmer', label: 'Cherry Twinkle', image: '/voices/avatars/shimmer.jpg', audioPreview: '/voices/shimmer.mp3', description: 'Magical & whimsical', isPremium: false },
+  { id: 'queen', label: 'Queen Bee', image: '/voices/avatars/queen.jpeg', audioPreview: '/voices/queen.mp3', description: 'Regal & commanding', isPremium: false },
+  { id: 'arthur', label: 'King Arthur', image: '/voices/avatars/arthur.jpeg', audioPreview: '/voices/arthur.mp3', description: 'Noble & heroic', isPremium: false },
+  // ElevenLabs Default Voices
+  { id: 'Aria', label: 'Aria', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #A855F7 0%, #EC4899 100%)', audioPreview: '/voices/aria.mp3', description: 'Confident, warm', isPremium: false },
+  { id: 'Alice', label: 'Alice', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #10B981 0%, #34D399 100%)', audioPreview: '/voices/alice.mp3', description: 'Clear, engaging', isPremium: false },
+  { id: 'Jessica', label: 'Jessica', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)', audioPreview: '/voices/jessica.mp3', description: 'Playful, bright', isPremium: false },
+  { id: 'Roger', label: 'Roger', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', audioPreview: '/voices/roger.mp3', description: 'Laid-back, casual', isPremium: false },
+  { id: 'Brian', label: 'Brian', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)', audioPreview: '/voices/brian.mp3', description: 'Deep, resonant', isPremium: false },
+  { id: 'Liam', label: 'Liam', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)', audioPreview: '/voices/liam.mp3', description: 'Energetic, social media', isPremium: false },
+  { id: 'Kristen', label: 'Kristen', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)', audioPreview: '/voices/kristen.mp3', description: 'Upbeat influencer', isPremium: false },
+  { id: 'Gracie', label: 'Gracie', icon: <MicIcon sx={{ fontSize: 18 }} />, iconBg: 'linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%)', audioPreview: '/voices/gracie.mp3', description: 'Valley girl, sassy', isPremium: false },
+];
+
 // Aspect ratio options (DropdownOption format)
 const aspectRatios: (DropdownOption & { Icon: React.ElementType; ratio: string })[] = [
   { id: 'portrait', label: 'Portrait (9:16)', description: 'Best for mobile & social', Icon: SmartphoneIcon, ratio: '9:16' },
@@ -409,6 +435,9 @@ const CreateVideoPage: React.FC = () => {
   // Avatar video duration (for ugc avatar mode): 5, 10, or 15 seconds
   const [avatarVideoDuration, setAvatarVideoDuration] = useState<5 | 10 | 15>(5);
 
+  // Avatar voice selection (for ugc avatar mode): 'native' = use Vidu's generated audio, or voice ID for ElevenLabs swap
+  const [avatarVoiceId, setAvatarVoiceId] = useState<string>('native');
+
   // Background music option (for narrative videos) - style is AI-generated based on story
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(false);
 
@@ -476,11 +505,17 @@ const CreateVideoPage: React.FC = () => {
   const [castPickerOpen, setCastPickerOpen] = useState(false);
   const [songPickerOpen, setSongPickerOpen] = useState(false);
   const [narrativePickerOpen, setNarrativePickerOpen] = useState(false);
+  const [voicePickerOpen, setVoicePickerOpen] = useState(false);
 
   // Anchor elements for popovers
   const [songPickerAnchor, setSongPickerAnchor] = useState<HTMLElement | null>(null);
   const [castPickerAnchor, setCastPickerAnchor] = useState<HTMLElement | null>(null);
   const [narrativePickerAnchor, setNarrativePickerAnchor] = useState<HTMLElement | null>(null);
+  const [voicePickerAnchor, setVoicePickerAnchor] = useState<HTMLElement | null>(null);
+
+  // Voice preview state
+  const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
+  const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Narrative audio preview state
   const [previewingNarrativeId, setPreviewingNarrativeId] = useState<string | null>(null);
@@ -746,6 +781,21 @@ const CreateVideoPage: React.FC = () => {
     };
   }, []);
 
+  // Stop voice audio when picker closes
+  useEffect(() => {
+    if (!voicePickerOpen && previewingVoiceId) {
+      voiceAudioRef.current?.pause();
+      setPreviewingVoiceId(null);
+    }
+  }, [voicePickerOpen, previewingVoiceId]);
+
+  // Cleanup voice audio on unmount
+  useEffect(() => {
+    return () => {
+      voiceAudioRef.current?.pause();
+    };
+  }, []);
+
   // Toggle character selection
   const handleCharacterToggle = (characterId: string) => {
     setSelectedCharacterIds(prev => {
@@ -880,6 +930,7 @@ const CreateVideoPage: React.FC = () => {
         rouletteMode: isAvatarVideo || isAppShowcase ? false : rouletteMode,
         videoContentType: backendVideoContentType,
         avatarVideoDuration: isAvatarVideo ? avatarVideoDuration : undefined,
+        avatarVoiceId: isAvatarVideo && avatarVoiceId !== 'native' ? avatarVoiceId : undefined, // Voice swap for avatar mode
         includeBackgroundMusic: needsVoiceover && !isAppShowcase ? includeBackgroundMusic : undefined,
       });
 
@@ -1180,6 +1231,95 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Prompt what you want</Typography>
                 </Box>
+              </Box>
+            </Box>
+            )}
+
+            {/* Avatar Voice Selection - only for ugc avatar mode */}
+            {isUgc && ugcMode === 'avatar' && (
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Select Voice
+                </Typography>
+                <Chip
+                  label="Optional"
+                  size="small"
+                  sx={{
+                    ml: 'auto',
+                    background: 'rgba(0,122,255,0.1)',
+                    color: '#007AFF',
+                    fontWeight: 600,
+                    fontSize: '0.7rem'
+                  }}
+                />
+              </Box>
+
+              <Box
+                onClick={(e) => {
+                  setVoicePickerAnchor(e.currentTarget);
+                  setVoicePickerOpen(true);
+                }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  py: 1.5,
+                  px: 2,
+                  borderRadius: '12px',
+                  border: (avatarVoiceId !== 'native' || voicePickerOpen) ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                  background: voicePickerOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    background: 'rgba(255,255,255,0.08)',
+                    borderColor: (avatarVoiceId !== 'native' || voicePickerOpen) ? '#007AFF' : 'rgba(0,122,255,0.3)',
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
+                  {(() => {
+                    const selectedVoice = avatarVoiceOptions.find(v => v.id === avatarVoiceId);
+                    if (selectedVoice?.image) {
+                      return (
+                        <Avatar
+                          src={selectedVoice.image}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            flexShrink: 0,
+                            border: avatarVoiceId !== 'native' ? '2px solid #007AFF' : 'none',
+                          }}
+                        />
+                      );
+                    }
+                    return (
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          background: selectedVoice?.iconBg || 'linear-gradient(135deg, #6B7280 0%, #9CA3AF 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <MicIcon sx={{ fontSize: 16, color: '#fff' }} />
+                      </Box>
+                    );
+                  })()}
+                  <Box sx={{ textAlign: 'left', overflow: 'hidden' }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {avatarVoiceOptions.find(v => v.id === avatarVoiceId)?.label || 'AI Generated'}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                      {avatarVoiceOptions.find(v => v.id === avatarVoiceId)?.description || 'Auto-generated voice'}
+                    </Typography>
+                  </Box>
+                </Box>
+                <KeyboardArrowDownIcon sx={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
               </Box>
             </Box>
             )}
@@ -3040,6 +3180,180 @@ const CreateVideoPage: React.FC = () => {
               );
             })
           )}
+        </List>
+      </Popover>
+
+      {/* Voice Picker Popover */}
+      <Popover
+        open={voicePickerOpen}
+        anchorEl={voicePickerAnchor}
+        onClose={() => {
+          setVoicePickerOpen(false);
+          setVoicePickerAnchor(null);
+          // Stop audio preview when closing
+          if (voiceAudioRef.current) {
+            voiceAudioRef.current.pause();
+            voiceAudioRef.current = null;
+          }
+          setPreviewingVoiceId(null);
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              borderRadius: '16px',
+              background: '#141418',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              minWidth: 320,
+              maxWidth: 400,
+              maxHeight: 420,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            },
+          },
+        }}
+      >
+        {/* Header */}
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>
+            Select Voice
+          </Typography>
+        </Box>
+
+        {/* Voice list */}
+        <List sx={{
+          py: 0.5,
+          maxHeight: 340,
+          overflowY: 'auto',
+          '&::-webkit-scrollbar': { width: 0, background: 'transparent' },
+          scrollbarWidth: 'none',
+        }}>
+          {avatarVoiceOptions.map((voice) => {
+            const isSelected = avatarVoiceId === voice.id;
+            const isPlaying = previewingVoiceId === voice.id;
+
+            return (
+              <ListItem key={voice.id} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    setAvatarVoiceId(voice.id);
+                    setVoicePickerOpen(false);
+                    setVoicePickerAnchor(null);
+                    // Stop audio preview
+                    if (voiceAudioRef.current) {
+                      voiceAudioRef.current.pause();
+                      voiceAudioRef.current = null;
+                    }
+                    setPreviewingVoiceId(null);
+                  }}
+                  sx={{
+                    py: 1.5,
+                    px: 2,
+                    background: isSelected ? 'rgba(0, 122, 255, 0.15)' : 'transparent',
+                    '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                  }}
+                >
+                  {/* Voice Avatar */}
+                  <ListItemAvatar sx={{ minWidth: 48 }}>
+                    {voice.image ? (
+                      <Avatar
+                        src={voice.image}
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: '50%',
+                          background: voice.iconBg || 'linear-gradient(135deg, #6B7280 0%, #9CA3AF 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: isSelected ? '2px solid #007AFF' : '2px solid transparent',
+                        }}
+                      >
+                        <MicIcon sx={{ fontSize: 18, color: '#fff' }} />
+                      </Box>
+                    )}
+                  </ListItemAvatar>
+
+                  <ListItemText
+                    primary={voice.label}
+                    secondary={voice.description}
+                    primaryTypographyProps={{
+                      sx: { color: '#fff', fontWeight: 500, fontSize: '0.9rem' }
+                    }}
+                    secondaryTypographyProps={{
+                      sx: {
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: '0.75rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }
+                    }}
+                  />
+
+                  {/* Play/Pause Preview Button */}
+                  {voice.audioPreview && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isPlaying) {
+                          voiceAudioRef.current?.pause();
+                          voiceAudioRef.current = null;
+                          setPreviewingVoiceId(null);
+                        } else {
+                          // Stop any currently playing audio
+                          if (voiceAudioRef.current) {
+                            voiceAudioRef.current.pause();
+                          }
+                          const audio = new Audio(voice.audioPreview);
+                          audio.onended = () => setPreviewingVoiceId(null);
+                          audio.play();
+                          voiceAudioRef.current = audio;
+                          setPreviewingVoiceId(voice.id);
+                        }
+                      }}
+                      sx={{
+                        ml: 1,
+                        width: 32,
+                        height: 32,
+                        background: isPlaying ? 'rgba(0,122,255,0.3)' : 'rgba(255,255,255,0.08)',
+                        '&:hover': { background: isPlaying ? 'rgba(0,122,255,0.4)' : 'rgba(255,255,255,0.15)' },
+                      }}
+                    >
+                      {isPlaying ? (
+                        <PauseIcon sx={{ fontSize: 18, color: '#007AFF' }} />
+                      ) : (
+                        <PlayArrowIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)' }} />
+                      )}
+                    </IconButton>
+                  )}
+
+                  {isSelected && (
+                    <CheckIcon sx={{ color: '#007AFF', fontSize: 20, ml: 1 }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </Popover>
 
