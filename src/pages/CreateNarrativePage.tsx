@@ -984,7 +984,7 @@ const CreateNarrativePage: React.FC = () => {
                 {isLoading ? (
                   <CircularProgress size={24} sx={{ color: '#fff' }} />
                 ) : (
-                  narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Content'
+                  narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Audio'
                 )}
               </Button>
             </Box>
@@ -1116,7 +1116,7 @@ const CreateNarrativePage: React.FC = () => {
                 {isLoading ? (
                   <CircularProgress size={24} sx={{ color: '#fff' }} />
                 ) : (
-                  narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Content'
+                  narrativeType === 'story' ? 'Generate Story' : 'Generate UGC Audio'
                 )}
               </Button>
 
