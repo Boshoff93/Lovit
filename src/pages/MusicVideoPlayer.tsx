@@ -88,6 +88,8 @@ interface VideoData {
   status: string;
   aspectRatio?: 'portrait' | 'landscape';
   videoType?: string;
+  contentType?: 'music' | 'narrative'; // Content type: music video or narrative/UGC
+  narrativeType?: 'story' | 'ugc'; // Narrative subtype
   style?: string;
   characterIds?: string[];
   seedreamReferenceUrls?: Record<string, string>; // characterId -> seedream URL
@@ -122,7 +124,23 @@ const MusicVideoPlayer: React.FC = () => {
   const tokens = getTokensFromAllowances(allowances);
   const remainingTokens = ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
   const isPremiumTier = subscription?.tier === 'premium' || subscription?.tier === 'pro';
-  
+
+  // Helper function to get appropriate video title based on content type
+  const getVideoTitle = (video: VideoData | null): string => {
+    if (!video) return 'Video';
+
+    // If songTitle exists, use it
+    if (video.songTitle) return video.songTitle;
+
+    // Otherwise, use appropriate fallback based on content type
+    if (video.contentType === 'narrative') {
+      return video.narrativeType === 'ugc' ? 'UGC Video' : 'Story Video';
+    }
+
+    // Default to 'Music Video' for music content or when contentType is undefined
+    return 'Music Video';
+  };
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   
@@ -385,7 +403,7 @@ const MusicVideoPlayer: React.FC = () => {
     if (videoData && videoId) {
       setCurrentViewingItem({
         type: 'video',
-        title: videoData.songTitle || 'Video',
+        title: getVideoTitle(videoData),
         path: `/video/${videoId}`,
       });
     }
@@ -1317,7 +1335,7 @@ const MusicVideoPlayer: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
-            {videoData.songTitle || 'Music Video'}
+            {getVideoTitle(videoData)}
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
             Watch, edit, and share your video
@@ -1528,7 +1546,7 @@ const MusicVideoPlayer: React.FC = () => {
                 whiteSpace: 'nowrap',
               }}
             >
-              {videoData.songTitle || 'Music Video'}
+              {getVideoTitle(videoData)}
             </Typography>
 
             {/* Metadata line: Duration • Aspect • Date */}
@@ -1917,15 +1935,29 @@ const MusicVideoPlayer: React.FC = () => {
                               component="img"
                               src={account.avatarUrl}
                               alt={displayName}
+                              onError={(e) => {
+                                // Fallback to platform icon if avatar fails to load
+                                (e.target as HTMLImageElement).style.display = 'none';
+                                const iconBox = (e.target as HTMLElement).nextElementSibling;
+                                if (iconBox) (iconBox as HTMLElement).style.display = 'flex';
+                              }}
                               sx={{
                                 width: '100%',
                                 height: '100%',
                                 objectFit: 'cover',
                               }}
                             />
-                          ) : (
-                            <Box sx={{ transform: 'scale(1.5)' }}>{config.icon}</Box>
-                          )}
+                          ) : null}
+                          <Box sx={{
+                            transform: 'scale(1.5)',
+                            display: account.avatarUrl ? 'none' : 'flex',
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                            {config.icon}
+                          </Box>
                         </Box>
                         {isSelected && (
                           <Box
