@@ -62,6 +62,18 @@ import MotionCapturePage from './pages/MotionCapturePage';
 import CreateNarrativePage from './pages/CreateNarrativePage';
 import MyNarrativesPage from './pages/MyNarrativesPage';
 
+// Docs pages
+import DocsPage from './pages/docs/DocsPage';
+import DocsGettingStartedPage from './pages/docs/GettingStartedPage';
+import DocsAgentIntegrationPage from './pages/docs/AgentIntegrationPage';
+import DocsMusicPage from './pages/docs/MusicPage';
+import DocsVoiceoverPage from './pages/docs/VoiceoverPage';
+import DocsVideoPage from './pages/docs/VideoPage';
+import DocsUGCPage from './pages/docs/UGCPage';
+import DocsCharacterSwapPage from './pages/docs/CharacterSwapPage';
+import DocsAssetsPage from './pages/docs/AssetsPage';
+import DocsSocialPage from './pages/docs/SocialPage';
+
 // Route config
 import { getAllRoutePaths } from './config/routeConfig';
 
@@ -258,6 +270,18 @@ function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/motion-control-viral-content" element={<MotionControlViralContent />} />
         <Route path="/blog/how-to-create-promo-music-video" element={<HowToCreatePromoMusicVideo />} />
+
+        {/* Documentation pages */}
+        <Route path="/docs" element={<DocsPage />} />
+        <Route path="/docs/getting-started" element={<DocsGettingStartedPage />} />
+        <Route path="/docs/agent-integration" element={<DocsAgentIntegrationPage />} />
+        <Route path="/docs/music" element={<DocsMusicPage />} />
+        <Route path="/docs/voiceover" element={<DocsVoiceoverPage />} />
+        <Route path="/docs/video" element={<DocsVideoPage />} />
+        <Route path="/docs/ugc" element={<DocsUGCPage />} />
+        <Route path="/docs/character-swap" element={<DocsCharacterSwapPage />} />
+        <Route path="/docs/assets" element={<DocsAssetsPage />} />
+        <Route path="/docs/social" element={<DocsSocialPage />} />
 
         {/* Social platform detail pages - must be before SEO routes */}
         <Route path="/platforms/:platformId" element={<SocialDetailPage />} />

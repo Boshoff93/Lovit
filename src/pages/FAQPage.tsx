@@ -576,13 +576,13 @@ const FAQPage: React.FC = () => {
 
         <Button
           startIcon={<ArrowBackIcon />}
+          color="inherit"
           onClick={() => navigate('/')}
           sx={{
             mb: 4,
-            color: 'rgba(255,255,255,0.7)',
+            color: '#fff',
             '&:hover': {
-              background: 'rgba(255,255,255,0.05)',
-              color: '#FFFFFF',
+              background: 'rgba(255,255,255,0.08)',
             }
           }}
         >
@@ -615,6 +615,7 @@ const FAQPage: React.FC = () => {
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Button
               variant="text"
+              color="inherit"
               onClick={() => setActiveCategory(null)}
               sx={{
                 borderRadius: '100px',
@@ -622,20 +623,15 @@ const FAQPage: React.FC = () => {
                 px: 3,
                 py: 1,
                 fontWeight: 500,
+                color: '#fff !important',
                 transition: 'all 0.2s ease',
                 ...(activeCategory === null ? {
                   backgroundColor: '#007AFF',
-                  color: '#fff',
-                  boxShadow: 'none',
-                  border: 'none',
                   '&:hover': {
                     backgroundColor: '#007AFF',
-                    boxShadow: 'none',
                   }
                 } : {
                   backgroundColor: 'rgba(255,255,255,0.08)',
-                  color: '#fff',
-                  border: 'none',
                   '&:hover': {
                     backgroundColor: 'rgba(255,255,255,0.12)',
                   }
@@ -648,6 +644,7 @@ const FAQPage: React.FC = () => {
               <Button
                 key={category}
                 variant="text"
+                color="inherit"
                 onClick={() => setActiveCategory(category)}
                 sx={{
                   borderRadius: '100px',
@@ -655,20 +652,15 @@ const FAQPage: React.FC = () => {
                   px: 3,
                   py: 1,
                   fontWeight: 500,
+                  color: '#fff !important',
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
                     backgroundColor: '#007AFF',
-                    color: '#fff',
-                    boxShadow: 'none',
-                    border: 'none',
                     '&:hover': {
                       backgroundColor: '#007AFF',
-                      boxShadow: 'none',
                     }
                   } : {
                     backgroundColor: 'rgba(255,255,255,0.08)',
-                    color: '#fff',
-                    border: 'none',
                     '&:hover': {
                       backgroundColor: 'rgba(255,255,255,0.12)',
                     }
@@ -685,6 +677,7 @@ const FAQPage: React.FC = () => {
               <Button
                 key={category}
                 variant="text"
+                color="inherit"
                 onClick={() => setActiveCategory(category)}
                 sx={{
                   borderRadius: '100px',
@@ -692,20 +685,15 @@ const FAQPage: React.FC = () => {
                   px: 3,
                   py: 1,
                   fontWeight: 500,
+                  color: '#fff !important',
                   transition: 'all 0.2s ease',
                   ...(activeCategory === category ? {
                     backgroundColor: '#007AFF',
-                    color: '#fff',
-                    boxShadow: 'none',
-                    border: 'none',
                     '&:hover': {
                       backgroundColor: '#007AFF',
-                      boxShadow: 'none',
                     }
                   } : {
                     backgroundColor: 'rgba(255,255,255,0.08)',
-                    color: '#fff',
-                    border: 'none',
                     '&:hover': {
                       backgroundColor: 'rgba(255,255,255,0.12)',
                     }

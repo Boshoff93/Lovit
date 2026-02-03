@@ -1,15 +1,21 @@
 ---
 name: gruvi
-version: 1.0.0
-description: Create AI-powered music, voiceovers, and videos
+version: 1.1.0
+description: Create AI-powered music, voiceovers, videos, and character swaps
 homepage: https://agentgruvi.com
 metadata:
   api_base: https://api.gruvimusic.com
+  docs: https://agentgruvi.com/docs
+  platforms:
+    - agentgruvi.com
+    - thefableapp.com
 ---
 
 # Gruvi - AI Content Creation
 
-Create music videos, songs, voiceovers, and social content.
+Create music videos, songs, voiceovers, UGC content, and character swaps. Publish to TikTok, YouTube, Instagram, Facebook, LinkedIn, and X.
+
+**Works with both AgentGruvi and TheFableApp accounts.**
 
 ## Quick Start
 
@@ -26,14 +32,30 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
 
 **No account yet?** Ask your human to sign up at https://agentgruvi.com
 
+**Full documentation:** https://agentgruvi.com/docs
+
+---
+
+## Capabilities Summary
+
+| Feature | Description | Token Cost |
+|---------|-------------|------------|
+| Music | AI songs, 32 genres, 24 languages | 25-50 |
+| Voiceover | 25+ voices, UGC/story/direct | 25 |
+| Video | Cinematic, music, UGC styles | 50/sec |
+| Character Swap | Replace people in videos (Kling AI) | 50/sec |
+| App Showcase | Promo videos from screenshots | 50/sec |
+| Publishing | TikTok, YouTube, Instagram, etc. | Free |
+| Metadata | AI titles, descriptions, hashtags | 10 |
+
 ---
 
 ## Workflow
 
-1. **Create assets** → Characters, products, places
+1. **Create assets** → Characters, products, places, apps
 2. **Generate audio** → Songs or voiceovers
-3. **Generate video** → Music videos, stories, UGC
-4. **Schedule posts** → TikTok, YouTube, Instagram
+3. **Generate video** → Music videos, stories, UGC, character swaps
+4. **Schedule posts** → TikTok, YouTube, Instagram, Facebook, LinkedIn, X
 
 ---
 
@@ -249,15 +271,125 @@ Platforms: `youtube`, `tiktok`, `instagram`, `facebook`, `linkedin`
 
 ---
 
-## Token Costs
+## Character Swap
+
+Replace people in videos with AI-generated characters using Kling AI model.
+
+**Create swap** (async - poll for completion)
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sourceVideoId": "vid_source123",
+    "targetCharacterId": "char_abc123",
+    "swapMode": "replace-character",
+    "referenceMode": "follow-video",
+    "style": "realistic"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/character-swap
+```
+
+**Swap Modes:**
+- `replace-character` - Swap person only, keep environment
+- `replace-with-environment` - Swap person AND background
+- `custom-prompt` - Full control with text prompt
+
+**Reference Modes:**
+- `follow-video` - Match original movements exactly
+- `follow-reference` - Prioritize character image consistency
+
+**Styles:** `realistic`, `artistic`, `animated`, `vintage`
+
+**Best practice:**
+1. Create a Human asset first for consistent character
+2. Upload source video or use existing from library
+3. Run swap with appropriate mode
+4. Poll for completion (takes 2-5 min)
+
+Cost: 50 tokens/second of source video
+
+---
+
+## Metadata & Thumbnails
+
+**Generate platform-optimized metadata**
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "videoId": "vid_abc123",
+    "platforms": ["tiktok", "youtube"],
+    "context": "Product promotion for fitness app"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/metadata/generate
+```
+
+**Generate thumbnail**
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "videoId": "vid_abc123",
+    "style": "youtube",
+    "text": "WATCH THIS"
+  }' \
+  https://api.gruvimusic.com/api/gruvi/thumbnails/generate
+```
+
+Cost: 10 tokens each
+
+---
+
+## Media Upload
+
+Upload your own videos/audio for remixing or character swaps.
+
+**Upload video**
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -F "file=@/path/to/video.mp4" \
+  https://api.gruvimusic.com/api/gruvi/uploads/video
+```
+
+**Upload audio**
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -F "file=@/path/to/audio.mp3" \
+  https://api.gruvimusic.com/api/gruvi/uploads/audio
+```
+
+Cost: Free
+
+**Important:** No copyrighted content. Uploaded media can be used for character swaps and creating custom assets.
+
+---
+
+## Token Costs Summary
 
 | Content | Cost |
 |---------|------|
-| Song (short) | 25 |
-| Song (standard) | 50 |
+| Song (short, 30-90s) | 25 |
+| Song (standard, 90-180s) | 50 |
+| Song (premium) | 50/30s |
 | Voiceover | 25 |
-| Video (still) | 200 flat |
 | Video (animated) | 50/sec |
+| UGC Video | 50/5sec |
+| Character Swap | 50/sec |
+| Metadata generation | 10 |
+| Thumbnail generation | 10 |
+| Asset creation | Free |
+| Media upload | Free |
+| Publishing/Scheduling | Free |
+
+---
+
+## Subscription Plans
+
+| Plan | Tokens/Month | Price |
+|------|--------------|-------|
+| Starter | 5,000 | $29/mo |
+| Scale | 20,000 | $69/mo |
+| Content Engine | 50,000 | $149/mo |
 
 ---
 
@@ -271,3 +403,29 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
 
 If low or empty, tell your human:
 > "We're out of Gruvi tokens. Please visit https://agentgruvi.com/pricing to buy more."
+
+---
+
+## Polling for Async Operations
+
+All generation operations are async. Use this pattern:
+
+```bash
+# 1. Start generation (returns 202 with jobId)
+# 2. Poll status every 30 seconds:
+curl -H "Authorization: Bearer $GRUVI_KEY" \
+  https://api.gruvimusic.com/api/gruvi/{resource}/{userId}/{jobId}/status
+
+# 3. When status is "completed", get the result URL
+```
+
+**Status values:** `queued`, `processing`, `completed`, `failed`
+
+---
+
+## Full Documentation
+
+For complete API reference and workflows:
+- https://agentgruvi.com/docs
+- https://agentgruvi.com/docs/for-agents
+- https://agentgruvi.com/docs/api-reference

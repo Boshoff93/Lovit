@@ -38,6 +38,7 @@ const navItems = [
   { label: 'AI Video Shorts', href: '/ai-video-shorts', activeColor: '#F5A623' }, // orange
   { label: 'Social Media', href: '/social-media', activeColor: '#22C55E' }, // green
   { label: 'Blog', href: '/blog', activeColor: '#EC4899' }, // pink
+  { label: 'Docs', href: '/docs', activeColor: '#60A5FA' }, // light blue
   { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' }, // purple
 ];
 
