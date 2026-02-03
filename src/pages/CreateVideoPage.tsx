@@ -31,6 +31,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import MovieIcon from '@mui/icons-material/Movie';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import PaletteIcon from '@mui/icons-material/Palette';
 import ImageIcon from '@mui/icons-material/Image';
 import AnimationIcon from '@mui/icons-material/Animation';
@@ -227,14 +228,19 @@ const getAvatarTokenCost = (duration: number) => duration * 50;
 // Video type options (DropdownOption format)
 // Token costs: Still image video = 200 tokens flat, Cinematic video = 50 tokens per second
 const STILL_VIDEO_COST = 200;
-const CINEMATIC_TOKENS_PER_SECOND = 50;
+const VOICEOVER_TOKENS_PER_10S = 50; // Voiceover mode: 50 credits per 10 seconds
+const AVATAR_TOKENS_PER_SECOND = 50; // Avatar mode: 50 credits per second
 const BACKGROUND_MUSIC_TOKENS_PER_30S = 50; // 50 tokens per 30 seconds of background music
 
-// Calculate cinematic video cost based on audio duration (50 tokens per second, rounded down to benefit user)
-// Backend will truncate audio slightly over thresholds (e.g., 60.05s -> 60s)
-const getCinematicCost = (audioDurationSeconds: number | undefined) => {
-  if (!audioDurationSeconds) return CINEMATIC_TOKENS_PER_SECOND * 10; // Default 10s = 500 tokens
-  return Math.floor(audioDurationSeconds) * CINEMATIC_TOKENS_PER_SECOND;
+// Calculate cinematic video cost based on mode and audio duration
+const getCinematicCost = (audioDurationSeconds: number | undefined, isAvatar: boolean = false) => {
+  if (isAvatar) {
+    if (!audioDurationSeconds) return AVATAR_TOKENS_PER_SECOND * 10; // Default 10s = 500 tokens
+    return Math.floor(audioDurationSeconds) * AVATAR_TOKENS_PER_SECOND;
+  }
+  // Voiceover: 50 tokens per 10 seconds
+  if (!audioDurationSeconds) return VOICEOVER_TOKENS_PER_10S; // Default 10s = 50 tokens
+  return Math.ceil(audioDurationSeconds / 10) * VOICEOVER_TOKENS_PER_10S;
 };
 
 // Calculate background music cost (50 tokens per 30 seconds, rounded up)
@@ -245,7 +251,7 @@ const getBackgroundMusicCost = (audioDurationSeconds: number | undefined) => {
 
 const videoTypes: (DropdownOption & { baseCredits: number; IconComponent: React.ElementType; tooltip: string })[] = [
   { id: 'still', label: 'Still Image', description: '200 credits', baseCredits: STILL_VIDEO_COST, IconComponent: ImageIcon, tooltip: 'Video with still images. Perfect for storytelling and storybook-style videos where movement isn\'t needed.' },
-  { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. Price based on audio length (50 credits per second).' },
+  { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. Voiceover: 50 credits/10s. Avatar: 50 credits/sec.' },
 ];
 
 // Voice options for avatar prompt-driven mode
@@ -877,16 +883,19 @@ const CreateVideoPage: React.FC = () => {
     let baseCost = 0;
     if (videoType === 'still') {
       baseCost = STILL_VIDEO_COST;
+    } else if (isAvatarVideo) {
+      // Avatar: 50 credits/sec based on slider duration
+      baseCost = getAvatarTokenCost(avatarVideoDuration);
     } else {
-      // Cinematic: 50 tokens per second based on audio duration
+      // Voiceover: 50 credits/10s based on audio duration
       const audioDuration = getAudioDuration();
-      baseCost = getCinematicCost(audioDuration);
+      baseCost = getCinematicCost(audioDuration, false);
     }
 
-    // Add background music cost if enabled (only for voiceover videos)
-    if (needsVoiceover && includeBackgroundMusic) {
-      const audioDuration = getAudioDuration();
-      baseCost += getBackgroundMusicCost(audioDuration);
+    // Add background music cost if enabled (for voiceover or avatar videos)
+    if ((needsVoiceover || isAvatarVideo) && includeBackgroundMusic) {
+      const duration = isAvatarVideo ? avatarVideoDuration : getAudioDuration();
+      baseCost += getBackgroundMusicCost(duration);
     }
 
     return baseCost;
@@ -1259,6 +1268,25 @@ const CreateVideoPage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
                     <FaceIcon sx={{ fontSize: '1rem', color: '#fff' }} />
                     <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Avatar - Prompt Driven</Typography>
+                    <Tooltip title="Premium UGC" arrow placement="top">
+                      <Box
+                        sx={{
+                          ml: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: '20px',
+                          background: 'rgba(255, 184, 0, 0.15)',
+                          border: '1px solid rgba(255, 184, 0, 0.3)',
+                          cursor: 'default',
+                        }}
+                      >
+                        <WorkspacePremiumIcon sx={{ fontSize: 14, color: '#FFB800' }} />
+                        <Typography sx={{ fontSize: '0.65rem', color: '#fff', fontWeight: 500 }}>Premium</Typography>
+                      </Box>
+                    </Tooltip>
                   </Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Prompt what you want</Typography>
                 </Box>
@@ -2279,11 +2307,11 @@ const CreateVideoPage: React.FC = () => {
                     const isSelected = videoType === type.id;
                     // Disable "Still" for all UGC (uses OmniHuman) and App Showcase (uses Remotion)
                     const isDisabled = type.id === 'still' && (isUgc || isAppShowcase);
-                    // Calculate credits: Still is flat 200, Cinematic is based on audio duration
-                    const typeCredits = type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
+                    // Calculate credits: Still is flat 200, Cinematic depends on mode
+                    const typeCredits = type.id === 'still' ? STILL_VIDEO_COST : isAvatarVideo ? getAvatarTokenCost(avatarVideoDuration) : getCinematicCost(getAudioDuration(), false);
                     const creditsText = type.id === 'still'
                       ? `${STILL_VIDEO_COST} credits`
-                      : getAudioDuration()
+                      : isAvatarVideo ? '50 credits/sec' : getAudioDuration()
                         ? `${typeCredits} credits`
                         : '50 credits/10s';
                     return (
