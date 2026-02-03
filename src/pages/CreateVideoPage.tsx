@@ -1466,7 +1466,7 @@ const CreateVideoPage: React.FC = () => {
                         Add instrumental background music
                       </Typography>
                       <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                        Soft music that plays behind the voiceover
+                        Give your UGC video some fitting background music to tie it all together
                       </Typography>
                     </Box>
                   </Box>
