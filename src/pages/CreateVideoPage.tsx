@@ -211,9 +211,15 @@ const videoContentTypes: DropdownOption[] = [
 // Video type options (DropdownOption format)
 // Token costs: Still image video = 200 tokens flat, Cinematic video = 50 tokens per second
 const STILL_VIDEO_COST = 200;
-const UGC_VIDEO_COST = 100; // Flat 100 tokens per UGC video
+const UGC_TOKENS_PER_5S = 100; // UGC mode: 100 credits per 5 seconds
 const VOICEOVER_TOKENS_PER_10S = 50; // Voiceover mode: 50 credits per 10 seconds
 const BACKGROUND_MUSIC_TOKENS_PER_30S = 50; // 50 tokens per 30 seconds of background music
+
+// Calculate UGC video cost based on audio duration (100 tokens per 5 seconds)
+const getUgcCost = (audioDurationSeconds: number | undefined) => {
+  if (!audioDurationSeconds) return UGC_TOKENS_PER_5S; // Default 5s = 100 tokens
+  return Math.ceil(audioDurationSeconds / 5) * UGC_TOKENS_PER_5S;
+};
 
 // Calculate cinematic video cost based on audio duration
 const getCinematicCost = (audioDurationSeconds: number | undefined) => {
@@ -752,7 +758,8 @@ const CreateVideoPage: React.FC = () => {
   const getCredits = () => {
     let baseCost = 0;
     if (isUgc) {
-      baseCost = UGC_VIDEO_COST; // Flat 100 tokens for UGC videos
+      const audioDuration = getAudioDuration();
+      baseCost = getUgcCost(audioDuration); // 100 tokens per 5 seconds for UGC videos
     } else if (videoType === 'still') {
       baseCost = STILL_VIDEO_COST;
     } else {
@@ -1878,10 +1885,12 @@ const CreateVideoPage: React.FC = () => {
                     const isSelected = videoType === type.id;
                     // Disable "Still" for all UGC (uses OmniHuman) and App Showcase (uses Remotion)
                     const isDisabled = type.id === 'still' && (isUgc || isAppShowcase);
-                    // Calculate credits: UGC is flat 100, Still is flat 200, Cinematic depends on audio duration
-                    const typeCredits = isUgc ? UGC_VIDEO_COST : type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
+                    // Calculate credits: UGC is 100/5s, Still is flat 200, Cinematic depends on audio duration
+                    const typeCredits = isUgc ? getUgcCost(getAudioDuration()) : type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
                     const creditsText = isUgc
-                      ? `${UGC_VIDEO_COST} credits`
+                      ? getAudioDuration()
+                        ? `${typeCredits} credits`
+                        : '100 credits/5s'
                       : type.id === 'still'
                         ? `${STILL_VIDEO_COST} credits`
                         : getAudioDuration()
