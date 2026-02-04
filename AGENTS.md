@@ -2,9 +2,11 @@
 
 ## What is Gruvi?
 
-Gruvi is an AI-powered creative studio for generating original music, music videos, voiceovers, and short-form video content from text prompts. It's built for content creators, marketers, social media managers, and brands who need high-quality audio and video content at scale — without a production team.
+Gruvi is an AI-powered creative studio for generating original music, music videos, voiceovers, and short-form video content from text prompts.
 
-Gruvi generates royalty-free, commercially licensed content ready for publishing to TikTok, Instagram Reels, YouTube Shorts, and other platforms.
+Gruvi is built for **founders and creators who want to automate their marketing and content creation** — but it's also a new creative medium for anyone who wants to start creating and upgrading their content with AI. Whether you're a startup founder producing product demos, a brand automating social content, or a creator exploring AI as a new way to make music and video — Gruvi gives you a full production studio in your browser.
+
+All content is royalty-free, commercially licensed, and ready for publishing to TikTok, Instagram Reels, YouTube Shorts, and other platforms.
 
 **Website:** [gruvimusic.com](https://gruvimusic.com)
 
@@ -62,13 +64,23 @@ Gruvi uses a **token-based system**. Every generation action costs tokens.
 
 ### Subscription Plans
 
-| Plan | Monthly | Yearly (per month) | Tokens/month |
-|------|---------|---------------------|--------------|
-| Starter | $39/mo | $29/mo | 5,000 |
-| Scale (Most Popular) | $99/mo | $69/mo | 20,000 |
-| Content Engine | $199/mo | $149/mo | 50,000 |
+| Plan | Monthly | Yearly | Yearly (per month) | Tokens/month |
+|------|---------|--------|---------------------|--------------|
+| Starter | $39/mo | $348/yr | $29/mo | 5,000 |
+| Scale (Most Popular) | $99/mo | $828/yr | $69/mo | 20,000 |
+| Content Engine | $199/mo | $1,788/yr | $149/mo | 50,000 |
+
+Yearly plans save 25–30% compared to monthly billing.
 
 All plans include: AI Music, AI Videos, AI Avatar Videos, AI Voiceovers, UGC Creator, Character Swap, Scheduled Posting, and Commercial License. Scale adds Priority Generation. Content Engine adds Dedicated Support.
+
+### Token Top-Up Packages (One-time purchase, never expire)
+
+| Package | Tokens | Price |
+|---------|--------|-------|
+| Small | 2,500 | $19 |
+| Medium (Most Popular) | 10,000 | $69 |
+| Large (Best Value) | 25,000 | $149 |
 
 ## Why Gruvi?
 
@@ -92,12 +104,13 @@ Upload reference images and maintain consistent characters across multiple video
 
 ## Use Cases
 
+- **Founders and startups**: Automate marketing content — product demos, social ads, explainer videos — without hiring a production team
+- **Content creators**: Use AI as a new creative medium to produce music, videos, and UGC-style content without filming or editing
 - **Social media managers**: Generate a week's worth of short-form video content in an afternoon
 - **Music artists**: Visualize tracks with AI-generated music videos across multiple art styles
 - **E-commerce brands**: Create product demo videos with AI avatars and voiceover
 - **Marketing agencies**: Produce client content at scale with consistent branding
 - **Real estate**: Generate property tour videos with music and narration
-- **Content creators**: Produce UGC-style content without filming
 - **Educators**: Create illustrated explainer videos with narration
 
 ## Tech Stack
