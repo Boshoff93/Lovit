@@ -267,7 +267,7 @@ export GRUVI_KEY="gruvi_agent_xxxx"`}
                   <TableRow>
                     <TableCell sx={{ color: '#4ECDC4', borderColor: 'rgba(255,255,255,0.1)', fontFamily: 'monospace' }}>create-ugc</TableCell>
                     <TableCell sx={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.1)' }}>Generate UGC-style avatar video</TableCell>
-                    <TableCell sx={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.1)' }}>50-150</TableCell>
+                    <TableCell sx={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.1)' }}>100</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell sx={{ color: '#4ECDC4', borderColor: 'rgba(255,255,255,0.1)', fontFamily: 'monospace' }}>character-swap</TableCell>

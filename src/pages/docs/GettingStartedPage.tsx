@@ -217,7 +217,7 @@ const GettingStartedPage: React.FC = () => {
               <FeatureItem><strong>AI Music</strong> - Original songs in 32 genres, 24 languages. Standard and premium quality.</FeatureItem>
               <FeatureItem><strong>AI Voiceovers</strong> - Professional narration with 25+ voices and different personalities.</FeatureItem>
               <FeatureItem><strong>AI Videos</strong> - Cinematic videos, music videos, and story-driven content.</FeatureItem>
-              <FeatureItem><strong>UGC Creator</strong> - Authentic user-generated content with AI avatars and voice change.</FeatureItem>
+              <FeatureItem><strong>UGC Creator</strong> - Authentic user-generated content with AI avatars and voiceovers.</FeatureItem>
               <FeatureItem><strong>Character Swap</strong> - Replace characters in videos using AI. Swap faces, environments, or use custom prompts.</FeatureItem>
               <FeatureItem><strong>AI Assets</strong> - Create reusable characters, products, places, and more for your content.</FeatureItem>
               <FeatureItem><strong>Social Publishing</strong> - Schedule and publish to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X.</FeatureItem>
@@ -243,7 +243,7 @@ const GettingStartedPage: React.FC = () => {
                 { name: 'Premium Song', cost: '50 tokens / 30s' },
                 { name: 'Voiceover', cost: '25 tokens' },
                 { name: 'Video', cost: '50 tokens / second' },
-                { name: 'UGC Video', cost: '50-150 tokens' },
+                { name: 'UGC Video', cost: '100 tokens' },
                 { name: 'Character Swap', cost: '50 tokens / second' },
               ].map((item, i) => (
                 <Box key={item.name} sx={{

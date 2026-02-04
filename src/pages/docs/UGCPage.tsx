@@ -45,7 +45,7 @@ const UGCPage: React.FC = () => {
     }}>
       <SEO
         title="UGC Creator | Gruvi Documentation"
-        description="Create authentic user-generated content style videos with AI avatars, voice change, and prompt-driven scenes."
+        description="Create authentic user-generated content style videos with AI avatars and voiceovers."
         keywords="UGC creator, AI avatar video, user generated content, AI video creation, voice change"
         ogTitle="UGC Creator | Gruvi"
         ogDescription="Create authentic UGC-style videos with AI avatars and voice change"
@@ -115,10 +115,9 @@ const UGCPage: React.FC = () => {
             <Typography component="h2">Creation Modes</Typography>
 
             <Box sx={{ mb: 4 }}>
-              <FeatureItem><strong>Avatar - Prompt Driven</strong> - Describe a scene and let AI generate the video with an avatar speaking your script.</FeatureItem>
-              <FeatureItem><strong>Avatar - Image Driven</strong> - Upload a reference image and the AI creates a video based on it with your avatar.</FeatureItem>
-              <FeatureItem><strong>Voiceover - Prompt Driven</strong> - AI-generated visuals with a professional voiceover narration.</FeatureItem>
-              <FeatureItem><strong>Voiceover - Image Driven</strong> - Upload images as the visual base, combined with AI voiceover.</FeatureItem>
+              <FeatureItem><strong>AI Avatar</strong> - Select a voiceover and an AI avatar generates a realistic talking-head video, enhanced with AI for natural expressions and lip sync.</FeatureItem>
+              <FeatureItem><strong>Custom Characters</strong> - Use your own AI assets as the avatar, or let Gruvi generate one automatically.</FeatureItem>
+              <FeatureItem><strong>Background Music</strong> - Optionally add soft instrumental background music behind the voiceover.</FeatureItem>
             </Box>
 
             <SectionDivider />
@@ -153,9 +152,8 @@ const UGCPage: React.FC = () => {
               overflow: 'hidden',
             }}>
               {[
-                { name: 'UGC Video (Avatar)', cost: '50-150 tokens' },
-                { name: 'UGC Video (Voiceover)', cost: '50-100 tokens' },
-                { name: 'Voice Change (optional)', cost: 'Included' },
+                { name: 'UGC Video', cost: '100 tokens' },
+                { name: 'Background Music (optional)', cost: '50 tokens / 30s' },
               ].map((item, i) => (
                 <Box key={item.name} sx={{
                   display: 'flex',
@@ -163,7 +161,7 @@ const UGCPage: React.FC = () => {
                   alignItems: 'center',
                   px: 3,
                   py: 1,
-                  borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                  borderBottom: i < 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                 }}>
                   <Typography component="span" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>{item.name}</Typography>
                   <Typography component="span" sx={{ color: '#4ECDC4', fontWeight: 600, fontSize: '0.95rem' }}>{item.cost}</Typography>

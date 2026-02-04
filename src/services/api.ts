@@ -213,9 +213,7 @@ export const videosApi = {
     placeDescription?: string; // Optional: User's description of their property/location for web search
     creativity?: number; // 0-10: 0 = exact prompt adherence, 10 = creative interpretation
     rouletteMode?: boolean; // Let AI pick the video concept based on the track
-    videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'ugc-avatar' | 'app-promo-music' | 'app-promo-voiceover'; // Specific video content type
-    avatarVideoDuration?: 5 | 10 | 15; // Duration for avatar videos in seconds
-    avatarVoiceId?: string; // Optional ElevenLabs voice ID for voice swap (undefined = use native Vidu audio)
+    videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'app-promo-music' | 'app-promo-voiceover'; // Specific video content type
     includeBackgroundMusic?: boolean; // Add instrumental background music to narration (50 tokens/30s)
     backgroundMusicPrompt?: string; // Optional music style hint (e.g., "upbeat electronic", "calm piano")
   }) => api.post('/api/gruvi/videos/generate', data),
