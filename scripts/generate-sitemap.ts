@@ -163,7 +163,7 @@ const moods = [
   'tropical', 'coastal', 'urban', 'rural', 'nature', 'industrial'
 ];
 
-const DOMAIN = 'https://gruvimusic.com';
+const DOMAIN = 'https://agentgruvi.com';
 const today = new Date().toISOString().split('T')[0];
 
 function generateSitemap(): string {
@@ -197,6 +197,8 @@ function generateSitemap(): string {
     { path: '/terms', priority: '0.3', changefreq: 'yearly' },
     { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
     { path: '/payment', priority: '0.7', changefreq: 'monthly' },
+    { path: '/AGENTS.md', priority: '0.8', changefreq: 'monthly' },
+    { path: '/skill.md', priority: '0.8', changefreq: 'monthly' },
   ];
   
   staticRoutes.forEach(route => {

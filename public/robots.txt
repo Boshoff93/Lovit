@@ -9,7 +9,10 @@ Allow: /googleadservices/
 Allow: /doubleclick.net/
 
 # Sitemap location
-Sitemap: https://gruvimusic.com/sitemap.xml
+Sitemap: https://agentgruvi.com/sitemap.xml
+
+# AI Agent discovery
+Agents: https://agentgruvi.com/AGENTS.md
 
 # Disallow admin and API routes
 Disallow: /admin/

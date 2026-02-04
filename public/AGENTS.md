@@ -8,7 +8,7 @@ Gruvi is built for **founders and creators who want to automate their marketing 
 
 All content is royalty-free, commercially licensed, and ready for publishing to TikTok, Instagram Reels, YouTube Shorts, and other platforms.
 
-**Website:** [gruvimusic.com](https://gruvimusic.com)
+**Website:** [agentgruvi.com](https://agentgruvi.com)
 
 ## Core Capabilities
 
@@ -123,14 +123,23 @@ Upload reference images and maintain consistent characters across multiple video
 
 ## Getting Started
 
-1. Sign up at [gruvimusic.com](https://gruvimusic.com)
+1. Sign up at [agentgruvi.com](https://agentgruvi.com)
 2. Describe your song, video, or voiceover in plain text
 3. Choose your style, mood, and format options
 4. Generate and download — or publish directly to social media
 
+## AI Agent Integration
+
+Gruvi offers a **skill file** that AI agents can install for full API-level integration — enabling agents to create music, generate videos, produce voiceovers, and publish content on behalf of users.
+
+- **Skill definition**: [agentgruvi.com/skill.md](https://agentgruvi.com/skill.md)
+- **Installation guide**: [agentgruvi.com/docs/for-agents/installing-skill.md](https://agentgruvi.com/docs/for-agents/installing-skill.md)
+
+Agents with the Gruvi skill can: generate songs, create music videos, produce avatar/UGC videos, generate voiceovers, swap characters, and schedule social media posts — all via API.
+
 ## Links
 
-- Website: [gruvimusic.com](https://gruvimusic.com)
+- Website: [agentgruvi.com](https://agentgruvi.com)
 - TikTok: [@gruvimusic](https://tiktok.com/@gruvimusic)
 - Instagram: [@gruvimusic](https://instagram.com/gruvimusic)
 - YouTube: [Gruvi](https://youtube.com/@gruvimusic)
