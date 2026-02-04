@@ -8,9 +8,9 @@ UGC (User Generated Content) Creator produces authentic-looking product demo vid
 
 ## Token Cost
 
-**50 tokens per 5 seconds** of video
-- 15-second video = 150 tokens
-- 30-second video = 300 tokens
+**100 tokens per 5 seconds** of video
+- 15-second video = 300 tokens
+- 30-second video = 600 tokens
 
 ## Why UGC Style?
 

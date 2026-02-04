@@ -57,7 +57,7 @@ Gruvi uses a **token-based system**. Every generation action costs tokens.
 | Premium song (custom duration) | 50 tokens per 30 seconds |
 | Still image video | 200 tokens |
 | Cinematic video | 50 tokens per second |
-| Avatar / UGC video | 50 tokens per second |
+| Avatar / UGC video | 100 tokens per 5 seconds |
 | Voiceover | 50 tokens per 10 seconds |
 | Character swap | 50 tokens per second |
 | Background music add-on | 50 tokens per 30 seconds |

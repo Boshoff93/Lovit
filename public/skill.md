@@ -42,7 +42,8 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
 |---------|-------------|------------|
 | Music | AI songs, 32 genres, 24 languages | 25-50 |
 | Voiceover | 25+ voices, UGC/story/direct | 25 |
-| Video | Cinematic, music, UGC styles | 50/sec |
+| Video | Cinematic, music styles | 50/sec |
+| UGC Video | Talking head, product demos | 100/5sec |
 | Character Swap | Replace people in videos (Kling AI) | 50/sec |
 | App Showcase | Promo videos from screenshots | 50/sec |
 | Publishing | TikTok, YouTube, Instagram, etc. | Free |
@@ -196,7 +197,7 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
   https://api.gruvimusic.com/api/gruvi/videos/{userId}/{videoId}/status
 ```
 
-Cost: 50 tokens/second
+Cost: 100 tokens/5 seconds
 
 ---
 
@@ -373,7 +374,7 @@ Cost: Free
 | Song (premium) | 50/30s |
 | Voiceover | 25 |
 | Video (animated) | 50/sec |
-| UGC Video | 50/5sec |
+| UGC Video | 100/5sec |
 | Character Swap | 50/sec |
 | Metadata generation | 10 |
 | Thumbnail generation | 10 |

@@ -249,7 +249,7 @@ POST /videos/generate
 - Include the product interaction
 - Specify camera angles or movements
 
-**Token Cost:** 50 tokens per 5 seconds
+**Token Cost:** 100 tokens per 5 seconds
 
 ---
 
