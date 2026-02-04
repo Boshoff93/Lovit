@@ -1249,7 +1249,7 @@ const CreateVideoPage: React.FC = () => {
                 UGC Style
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
-                Choose voiceover or avatar mode
+                Choose how you want to generate your UGC video
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Box
@@ -1262,31 +1262,28 @@ const CreateVideoPage: React.FC = () => {
                     background: ugcMode === 'avatar' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
+                    position: 'relative',
                     '&:hover': { borderColor: ugcMode === 'avatar' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
                   }}
                 >
+                  <Tooltip title="Premium UGC" arrow placement="top">
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'default',
+                      }}
+                    >
+                      <WorkspacePremiumIcon sx={{ fontSize: 18, color: '#FFB800' }} />
+                    </Box>
+                  </Tooltip>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
                     <FaceIcon sx={{ fontSize: '1rem', color: '#fff' }} />
-                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Avatar - Prompt Driven</Typography>
-                    <Tooltip title="Premium UGC" arrow placement="top">
-                      <Box
-                        sx={{
-                          ml: 'auto',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5,
-                          px: 1,
-                          py: 0.25,
-                          borderRadius: '20px',
-                          background: 'rgba(255, 184, 0, 0.15)',
-                          border: '1px solid rgba(255, 184, 0, 0.3)',
-                          cursor: 'default',
-                        }}
-                      >
-                        <WorkspacePremiumIcon sx={{ fontSize: 14, color: '#FFB800' }} />
-                        <Typography sx={{ fontSize: '0.65rem', color: '#fff', fontWeight: 500 }}>Premium</Typography>
-                      </Box>
-                    </Tooltip>
+                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Prompt</Typography>
                   </Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Prompt what you want</Typography>
                 </Box>
@@ -1305,7 +1302,7 @@ const CreateVideoPage: React.FC = () => {
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
                     <RecordVoiceOverIcon sx={{ fontSize: '1rem', color: '#fff' }} />
-                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Avatar - Voiceover</Typography>
+                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem' }}>Voiceover</Typography>
                   </Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Narrate with voiceover</Typography>
                 </Box>
@@ -1409,7 +1406,7 @@ const CreateVideoPage: React.FC = () => {
             {isUgc && ugcMode === 'avatar' && (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <MusicNoteIcon sx={{ fontSize: 20, color: '#AF52DE' }} />
+                  <MusicNoteIcon sx={{ fontSize: 20, color: '#007AFF' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                     Background Music
                   </Typography>
@@ -1418,8 +1415,8 @@ const CreateVideoPage: React.FC = () => {
                     size="small"
                     sx={{
                       ml: 'auto',
-                      background: 'rgba(175,82,222,0.1)',
-                      color: '#AF52DE',
+                      background: 'rgba(0,122,255,0.15)',
+                      color: '#007AFF',
                       fontWeight: 600,
                       fontSize: '0.7rem'
                     }}
@@ -1436,23 +1433,24 @@ const CreateVideoPage: React.FC = () => {
                     py: 1.5,
                     px: 2,
                     borderRadius: '12px',
-                    border: includeBackgroundMusic ? '2px solid #AF52DE' : '1px solid rgba(255,255,255,0.1)',
-                    background: includeBackgroundMusic ? 'rgba(175,82,222,0.1)' : 'rgba(255,255,255,0.05)',
+                    border: includeBackgroundMusic ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                    background: includeBackgroundMusic ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      background: includeBackgroundMusic ? 'rgba(175,82,222,0.15)' : 'rgba(255,255,255,0.08)',
+                      background: includeBackgroundMusic ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)',
                     },
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <Box
                       sx={{
+                        minWidth: 20,
                         width: 20,
                         height: 20,
                         borderRadius: '4px',
-                        border: includeBackgroundMusic ? '2px solid #AF52DE' : '2px solid rgba(255,255,255,0.3)',
-                        background: includeBackgroundMusic ? '#AF52DE' : 'transparent',
+                        border: includeBackgroundMusic ? '2px solid #007AFF' : '2px solid rgba(255,255,255,0.3)',
+                        background: includeBackgroundMusic ? '#007AFF' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1472,7 +1470,7 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <GruviCoin size={14} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#AF52DE', fontWeight: 600 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#007AFF', fontWeight: 600 }}>
                       +{getBackgroundMusicCost(avatarVideoDuration)}
                     </Typography>
                   </Box>
@@ -1712,7 +1710,7 @@ const CreateVideoPage: React.FC = () => {
             {needsVoiceover && selectedNarrativeId && (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <MusicNoteIcon sx={{ fontSize: 20, color: '#AF52DE' }} />
+                  <MusicNoteIcon sx={{ fontSize: 20, color: '#007AFF' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                     Background Music
                   </Typography>
@@ -1721,8 +1719,8 @@ const CreateVideoPage: React.FC = () => {
                     size="small"
                     sx={{
                       ml: 'auto',
-                      background: 'rgba(175,82,222,0.1)',
-                      color: '#AF52DE',
+                      background: 'rgba(0,122,255,0.15)',
+                      color: '#007AFF',
                       fontWeight: 600,
                       fontSize: '0.7rem'
                     }}
@@ -1739,23 +1737,24 @@ const CreateVideoPage: React.FC = () => {
                     py: 1.5,
                     px: 2,
                     borderRadius: '12px',
-                    border: includeBackgroundMusic ? '2px solid #AF52DE' : '1px solid rgba(255,255,255,0.1)',
-                    background: includeBackgroundMusic ? 'rgba(175,82,222,0.1)' : 'rgba(255,255,255,0.05)',
+                    border: includeBackgroundMusic ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                    background: includeBackgroundMusic ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      background: includeBackgroundMusic ? 'rgba(175,82,222,0.15)' : 'rgba(255,255,255,0.08)',
+                      background: includeBackgroundMusic ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)',
                     },
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <Box
                       sx={{
+                        minWidth: 20,
                         width: 20,
                         height: 20,
                         borderRadius: '4px',
-                        border: includeBackgroundMusic ? '2px solid #AF52DE' : '2px solid rgba(255,255,255,0.3)',
-                        background: includeBackgroundMusic ? '#AF52DE' : 'transparent',
+                        border: includeBackgroundMusic ? '2px solid #007AFF' : '2px solid rgba(255,255,255,0.3)',
+                        background: includeBackgroundMusic ? '#007AFF' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1775,7 +1774,7 @@ const CreateVideoPage: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <GruviCoin size={14} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#AF52DE', fontWeight: 600 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#007AFF', fontWeight: 600 }}>
                       +{(() => {
                         const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
                         const durationSecs = narrative?.durationMs ? narrative.durationMs / 1000 : 60;
