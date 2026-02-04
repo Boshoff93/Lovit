@@ -197,7 +197,7 @@ function generateSitemap(): string {
     { path: '/terms', priority: '0.3', changefreq: 'yearly' },
     { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
     { path: '/payment', priority: '0.7', changefreq: 'monthly' },
-    { path: '/AGENTS.md', priority: '0.8', changefreq: 'monthly' },
+    { path: '/agents.md', priority: '0.8', changefreq: 'monthly' },
     { path: '/skill.md', priority: '0.8', changefreq: 'monthly' },
   ];
   
