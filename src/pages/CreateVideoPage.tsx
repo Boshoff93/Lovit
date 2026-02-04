@@ -446,6 +446,16 @@ const CreateVideoPage: React.FC = () => {
   // Song selection state
   const [selectedSongId, setSelectedSongId] = useState<string | null>(urlSongId || null);
 
+  // Sync URL song param when navigating between routes (component may not remount)
+  useEffect(() => {
+    if (urlSongId && urlSongId !== selectedSongId) {
+      setSelectedSongId(urlSongId);
+      // Ensure we're in music mode when a song is pre-selected
+      setVideoContentType('ai-video');
+      setAiVideoAudioSource('music');
+    }
+  }, [urlSongId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Character selection state
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
 
