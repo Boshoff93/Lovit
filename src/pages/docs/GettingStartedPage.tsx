@@ -243,7 +243,7 @@ const GettingStartedPage: React.FC = () => {
                 { name: 'Premium Song', cost: '50 tokens / 30s' },
                 { name: 'Voiceover', cost: '25 tokens' },
                 { name: 'Video', cost: '50 tokens / second' },
-                { name: 'UGC Video', cost: '100 tokens' },
+                { name: 'UGC Video', cost: '50 tokens / second' },
                 { name: 'Character Swap', cost: '50 tokens / second' },
               ].map((item, i) => (
                 <Box key={item.name} sx={{

@@ -50,6 +50,7 @@ import {
   Casino,
   CheckBoxOutlineBlank,
   CheckBox as CheckBoxIcon,
+  CalendarMonth as CalendarMonthIcon,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
@@ -301,6 +302,7 @@ const MusicVideoPlayer: React.FC = () => {
 
   // Upgrade popup state
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [scheduleLimitInfo, setScheduleLimitInfo] = useState<{ show: boolean; used: number; limit: number; tier: string } | null>(null);
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
   
   // Lyrics dropdown state
@@ -3864,6 +3866,12 @@ const MusicVideoPlayer: React.FC = () => {
                       } catch (err: any) {
                         console.error('Scheduling failed:', err);
                         setIsScheduling(false);
+                        if (err.response?.status === 429) {
+                          // Monthly scheduling limit reached - show upgrade modal
+                          const data = err.response.data;
+                          setScheduleLimitInfo({ show: true, used: data.used || 0, limit: data.limit || 0, tier: data.tier || '' });
+                          return;
+                        }
                         const errorMessage = err.response?.status === 401
                           ? 'Session expired. Please refresh the page and try again.'
                           : err.response?.data?.error || 'Failed to schedule post. Please try again.';
@@ -3957,6 +3965,12 @@ const MusicVideoPlayer: React.FC = () => {
                     } catch (err: any) {
                       console.error('Upload scheduling failed:', err);
                       setIsScheduling(false);
+                      if (err.response?.status === 429) {
+                        // Monthly scheduling limit reached - show upgrade modal
+                        const data = err.response.data;
+                        setScheduleLimitInfo({ show: true, used: data.used || 0, limit: data.limit || 0, tier: data.tier || '' });
+                        return;
+                      }
                       const errorMessage = err.response?.status === 401
                         ? 'Session expired. Please refresh the page and try again.'
                         : err.response?.data?.error || 'Failed to schedule post. Please try again.';
@@ -3999,6 +4013,76 @@ const MusicVideoPlayer: React.FC = () => {
         onUpgrade={handleUpgrade}
         isTopUpLoading={isTopUpLoading}
       />
+
+      {/* Scheduling Limit Reached Modal */}
+      <Dialog
+        open={!!scheduleLimitInfo?.show}
+        onClose={() => setScheduleLimitInfo(null)}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            borderRadius: 3,
+            maxWidth: 400,
+            px: 1,
+            bgcolor: '#141418 !important',
+            backgroundImage: 'none !important',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }
+        }}
+      >
+        <DialogTitle sx={{ pt: 3, textAlign: 'center' }}>
+          <Typography variant="h5" fontWeight={600} color="#fff">
+            Monthly Limit Reached
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 2, py: 1 }}>
+            <Box sx={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(234,179,8,0.2) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CalendarMonthIcon sx={{ fontSize: 32, color: '#F87171' }} />
+            </Box>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+              You've used all <strong style={{ color: '#fff' }}>{scheduleLimitInfo?.limit}</strong> scheduled posts for this month.
+              Upgrade your plan to get more monthly posts.
+            </Typography>
+            <Box sx={{
+              display: 'flex', justifyContent: 'center', gap: 3, py: 1,
+              borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', width: '100%', px: 2,
+            }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#F87171' }}>{scheduleLimitInfo?.used}</Typography>
+                <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>Used</Typography>
+              </Box>
+              <Box sx={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#60A5FA' }}>{scheduleLimitInfo?.limit}</Typography>
+                <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>Limit</Typography>
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3, flexDirection: 'column', gap: 1 }}>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => { setScheduleLimitInfo(null); navigate('/payment'); }}
+            sx={{
+              borderRadius: '12px', py: 1.25, fontWeight: 600, textTransform: 'none',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', color: '#fff',
+              boxShadow: '0 4px 12px rgba(59,130,246,0.3)',
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
+            }}
+          >
+            Upgrade Plan
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => setScheduleLimitInfo(null)}
+            sx={{ color: '#fff !important', fontWeight: 500, mt: 0.5 }}
+          >
+            Maybe Later
+          </Button>
+        </DialogActions>
+      </Dialog>
       
       {/* Delete Confirmation Dialog */}
       <Dialog

@@ -209,23 +209,21 @@ const videoContentTypes: DropdownOption[] = [
 ];
 
 // Video type options (DropdownOption format)
-// Token costs: Still image video = 200 tokens flat, Cinematic video = 50 tokens per second
+// Token costs: Still image video = 200 tokens flat, All other videos = 50 tokens per second
 const STILL_VIDEO_COST = 200;
-const UGC_TOKENS_PER_5S = 100; // UGC mode: 100 credits per 5 seconds
-const VOICEOVER_TOKENS_PER_10S = 50; // Voiceover mode: 50 credits per 10 seconds
+const TOKENS_PER_SEC = 50; // 50 credits per second (cinematic, UGC, app showcase)
 const BACKGROUND_MUSIC_TOKENS_PER_30S = 50; // 50 tokens per 30 seconds of background music
 
-// Calculate UGC video cost based on audio duration (100 tokens per 5 seconds)
+// Calculate UGC video cost based on audio duration (50 tokens per second)
 const getUgcCost = (audioDurationSeconds: number | undefined) => {
-  if (!audioDurationSeconds) return UGC_TOKENS_PER_5S; // Default 5s = 100 tokens
-  return Math.ceil(audioDurationSeconds / 5) * UGC_TOKENS_PER_5S;
+  if (!audioDurationSeconds) return TOKENS_PER_SEC; // Default 1s = 50 tokens
+  return Math.ceil(audioDurationSeconds) * TOKENS_PER_SEC;
 };
 
-// Calculate cinematic video cost based on audio duration
+// Calculate cinematic video cost based on audio duration (50 tokens per second)
 const getCinematicCost = (audioDurationSeconds: number | undefined) => {
-  // Voiceover: 50 tokens per 10 seconds
-  if (!audioDurationSeconds) return VOICEOVER_TOKENS_PER_10S; // Default 10s = 50 tokens
-  return Math.ceil(audioDurationSeconds / 10) * VOICEOVER_TOKENS_PER_10S;
+  if (!audioDurationSeconds) return TOKENS_PER_SEC; // Default 1s = 50 tokens
+  return Math.ceil(audioDurationSeconds) * TOKENS_PER_SEC;
 };
 
 // Calculate background music cost (50 tokens per 30 seconds, rounded up)
@@ -236,7 +234,7 @@ const getBackgroundMusicCost = (audioDurationSeconds: number | undefined) => {
 
 const videoTypes: (DropdownOption & { baseCredits: number; IconComponent: React.ElementType; tooltip: string })[] = [
   { id: 'still', label: 'Still Image', description: '200 credits', baseCredits: STILL_VIDEO_COST, IconComponent: ImageIcon, tooltip: 'Video with still images. Perfect for storytelling and storybook-style videos where movement isn\'t needed.' },
-  { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. Voiceover: 50 credits/10s.' },
+  { id: 'standard', label: 'Cinematic', description: 'Dynamic pricing', baseCredits: 0, IconComponent: AnimationIcon, tooltip: 'Actual video footage with dynamic camera angles, lip sync, and motion. 50 credits/second.' },
 ];
 
 // Aspect ratio options (DropdownOption format)
@@ -784,6 +782,33 @@ const CreateVideoPage: React.FC = () => {
     }
 
     return baseCost;
+  };
+
+  // Get a human-readable cost breakdown string for transparency
+  const getCostBreakdown = (): string => {
+    const audioDuration = getAudioDuration();
+    const parts: string[] = [];
+
+    if (videoType === 'still') {
+      parts.push('200 flat');
+    } else {
+      if (audioDuration) {
+        const cost = isUgc ? getUgcCost(audioDuration) : getCinematicCost(audioDuration);
+        parts.push(`${cost} video (${Math.round(audioDuration)}s × 50/s)`);
+      } else {
+        parts.push('50 tokens/s');
+      }
+    }
+
+    if (needsVoiceover && includeBackgroundMusic) {
+      if (audioDuration) {
+        parts.push(`${getBackgroundMusicCost(audioDuration)} music`);
+      } else {
+        parts.push('music 50/30s');
+      }
+    }
+
+    return parts.join(' + ');
   };
 
   const handleGenerate = async () => {
@@ -1895,17 +1920,10 @@ const CreateVideoPage: React.FC = () => {
                     const isSelected = videoType === type.id;
                     // Disable "Still" for all UGC (uses OmniHuman) and App Showcase (uses Remotion)
                     const isDisabled = type.id === 'still' && (isUgc || isAppShowcase);
-                    // Calculate credits: UGC is 100/5s, Still is flat 200, Cinematic depends on audio duration
-                    const typeCredits = isUgc ? getUgcCost(getAudioDuration()) : type.id === 'still' ? STILL_VIDEO_COST : getCinematicCost(getAudioDuration());
-                    const creditsText = isUgc
-                      ? getAudioDuration()
-                        ? `${typeCredits} credits`
-                        : '100 credits/5s'
-                      : type.id === 'still'
-                        ? `${STILL_VIDEO_COST} credits`
-                        : getAudioDuration()
-                          ? `${typeCredits} credits`
-                          : '50 credits/10s';
+                    // Show rate on the button, not total
+                    const creditsText = type.id === 'still'
+                      ? `${STILL_VIDEO_COST} credits`
+                      : '50 tokens/s';
                     return (
                       <Tooltip
                         key={type.id}
@@ -2106,6 +2124,9 @@ const CreateVideoPage: React.FC = () => {
                     {getCredits()}
                   </Typography>
                   <GruviCoin size={16} />
+                  <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', ml: 0.25 }}>
+                    {getCostBreakdown()}
+                  </Typography>
                 </Box>
               </Box>
 
@@ -2168,7 +2189,7 @@ const CreateVideoPage: React.FC = () => {
             }}
           >
             {/* Header row */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Summary
               </Typography>
@@ -2181,7 +2202,14 @@ const CreateVideoPage: React.FC = () => {
             </Box>
 
             {/* Summary bullets */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3, mt: 3 }}>
+              {/* Pricing line item */}
+              <Box sx={{ display: 'flex', mb: 1.5 }}>
+                <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Pricing</Typography>
+                <Typography sx={{ fontWeight: 500, fontSize: '0.9rem', flex: 1, color: 'rgba(255,255,255,0.6)' }}>
+                  {getCostBreakdown()}
+                </Typography>
+              </Box>
               <Box sx={{ display: 'flex', mb: 1.5 }}>
                 <Typography sx={{ fontSize: '0.9rem', flex: 1, color: '#fff' }}>Style</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>

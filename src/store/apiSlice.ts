@@ -271,7 +271,7 @@ export const apiSlice = createApi({
 
     // Scheduled Posts
     getScheduledPosts: builder.query<
-      { scheduledPosts: ScheduledPost[] },
+      { scheduledPosts: ScheduledPost[]; schedulingLimits?: { used: number; limit: number; remaining: number; tier: string } },
       void
     >({
       query: () => `/api/gruvi/scheduled-posts`,

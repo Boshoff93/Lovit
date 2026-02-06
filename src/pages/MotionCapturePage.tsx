@@ -1567,6 +1567,10 @@ const MotionCapturePage: React.FC = () => {
                       {calculateTotalCost()}
                     </Typography>
                     <GruviCoin size={16} />
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', ml: 0.25 }}>
+                      {selectedVideo?.duration ? `${Math.round(selectedVideo.duration)}s × 50/s` : '50 tokens/s'}
+                      {enableVoiceChange && selectedVideo?.duration ? ` + ${calculateVoiceChangeCost(selectedVideo.duration)} voice` : ''}
+                    </Typography>
                   </Box>
                 </Box>
 
@@ -1754,6 +1758,14 @@ const MotionCapturePage: React.FC = () => {
                         </Typography>
                       )}
                     </Box>
+                  </Box>
+                  {/* Pricing */}
+                  <Box sx={{ display: 'flex', mb: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', width: 100, flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>Pricing</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                      {selectedVideo?.duration ? `${Math.round(selectedVideo.duration)}s × 50 tokens/s = ${calculateSwapCost(selectedVideo.duration)}` : '50 tokens/s'}
+                      {enableVoiceChange && selectedVideo?.duration ? ` + ${calculateVoiceChangeCost(selectedVideo.duration)} voice` : ''}
+                    </Typography>
                   </Box>
                 </Box>
 

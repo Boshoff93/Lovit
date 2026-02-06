@@ -352,7 +352,7 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \\
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
                 <Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Token Cost</Typography>
-                  <Typography sx={{ color: '#4ECDC4', fontWeight: 600 }}>50 tokens/second</Typography>
+                  <Typography sx={{ color: '#4ECDC4', fontWeight: 600 }}>50 tokens / second</Typography>
                 </Box>
                 <Box>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Generation Time</Typography>

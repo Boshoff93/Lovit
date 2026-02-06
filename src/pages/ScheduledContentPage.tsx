@@ -36,6 +36,7 @@ import {
   ScheduledPost,
 } from '../services/api';
 import { useGetScheduledPostsQuery } from '../store/apiSlice';
+import { useAuth } from '../hooks/useAuth';
 
 // TikTok icon component
 const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
@@ -57,10 +58,23 @@ const ScheduledContentPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const { subscription } = useAuth();
+
   // RTK Query for scheduled posts
   const scheduledPostsQuery = useGetScheduledPostsQuery();
   const scheduledPosts = scheduledPostsQuery.data?.scheduledPosts || [];
+  const schedulingLimitsRaw = scheduledPostsQuery.data?.schedulingLimits;
   const loading = scheduledPostsQuery.isLoading;
+
+  // Scheduling limits with tier-based fallback
+  const effectiveLimits = useMemo(() => {
+    const TIER_LIMITS: Record<string, number> = { starter: 60, pro: 120, scale: 120, premium: 240, beast: 240, hardcore: 240 };
+    const tierLimit = TIER_LIMITS[(subscription?.tier || 'starter').toLowerCase()] || 60;
+    const used = schedulingLimitsRaw?.used ?? 0;
+    const limit = schedulingLimitsRaw?.limit ?? tierLimit;
+    const remaining = Math.max(0, limit - used);
+    return { used, limit, remaining };
+  }, [schedulingLimitsRaw, subscription?.tier]);
 
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'partial' | 'failed'>('all');
@@ -328,9 +342,36 @@ const ScheduledContentPage: React.FC = () => {
               <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
                 Content Calendar
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-                Schedule and manage your video posts
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
+                  Schedule and manage your video posts
+                </Typography>
+                <Chip
+                  label={`${effectiveLimits.remaining}/${effectiveLimits.limit} posts left`}
+                  size="small"
+                  sx={{
+                    background: effectiveLimits.remaining <= 5
+                      ? 'rgba(239,68,68,0.15)'
+                      : effectiveLimits.remaining <= 15
+                        ? 'rgba(234,179,8,0.15)'
+                        : 'rgba(59,130,246,0.15)',
+                    color: effectiveLimits.remaining <= 5
+                      ? '#F87171'
+                      : effectiveLimits.remaining <= 15
+                        ? '#FACC15'
+                        : '#60A5FA',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    height: 24,
+                    border: '1px solid',
+                    borderColor: effectiveLimits.remaining <= 5
+                      ? 'rgba(239,68,68,0.3)'
+                      : effectiveLimits.remaining <= 15
+                        ? 'rgba(234,179,8,0.3)'
+                        : 'rgba(59,130,246,0.3)',
+                  }}
+                />
+              </Box>
             </Box>
           </Box>
 

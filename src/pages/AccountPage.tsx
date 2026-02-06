@@ -46,8 +46,10 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { stripeConfig, topUpBundles } from '../config/stripe';
 import { userApi, AgentKey } from '../services/api';
+import { useGetScheduledPostsQuery } from '../store/apiSlice';
 
 const AccountPage: React.FC = () => {
   const { user, subscription, createStripePortal, allowances } = useAuth();
@@ -57,6 +59,8 @@ const AccountPage: React.FC = () => {
   
   const isFreeTier = !subscription?.tier || subscription.tier === 'free';
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
+  const scheduledPostsQuery = useGetScheduledPostsQuery();
+  const schedulingLimits = scheduledPostsQuery.data?.schedulingLimits;
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
@@ -367,6 +371,83 @@ const AccountPage: React.FC = () => {
           </Box>
         </Box>
 
+        {/* Subscription Details */}
+        <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
+            Subscription Details
+          </Typography>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            gap: 2,
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                component="img"
+                src={subscription?.tier === 'premium' ? '/gruvi/gruvi-beast.png' : subscription?.tier === 'pro' ? '/gruvi/gruvi-scale.png' : '/gruvi/gruvi-started.png'}
+                alt={subscription?.tier || 'free'}
+                sx={{ height: 72, width: 'auto', flexShrink: 0 }}
+              />
+              <Box>
+                <Typography sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                  {formatTier(subscription?.tier || 'free')} Plan
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                  <Box sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
+                  }} />
+                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                    Status: {subscription?.status || 'Active'}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                  {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
+                    ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                    : 'No renewal date'}
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
+              disabled={isLoading || portalLoading}
+              sx={{
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                fontWeight: 600,
+                textTransform: 'none',
+                width: { xs: '100%', sm: 'auto' },
+                minWidth: { sm: 180 },
+                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+                '&.Mui-disabled': {
+                  background: portalLoading
+                    ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                    : 'rgba(255,255,255,0.12)',
+                  color: portalLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                },
+              }}
+            >
+              {portalLoading ? (
+                <CircularProgress size={20} sx={{ color: '#fff' }} />
+              ) : (
+                isFreeTier ? 'Upgrade Plan' : 'Manage Subscription'
+              )}
+            </Button>
+          </Box>
+        </Box>
+
         {/* Tokens Section */}
         {allowances && (
           <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -447,82 +528,77 @@ const AccountPage: React.FC = () => {
           </Box>
         )}
 
-        {/* Subscription Details */}
-        <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
-            Subscription Details
-          </Typography>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', sm: 'center' },
-            gap: 2,
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box
-                component="img"
-                src={subscription?.tier === 'premium' ? '/gruvi/gruvi-beast.png' : subscription?.tier === 'pro' ? '/gruvi/gruvi-scale.png' : '/gruvi/gruvi-started.png'}
-                alt={subscription?.tier || 'free'}
-                sx={{ height: 72, width: 'auto', flexShrink: 0 }}
-              />
-              <Box>
-                <Typography sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                  {formatTier(subscription?.tier || 'free')} Plan
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                  <Box sx={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
-                  }} />
+        {/* Scheduling Limits */}
+        {!isFreeTier && (() => {
+          const TIER_LIMITS: Record<string, number> = { starter: 60, pro: 120, scale: 120, premium: 240, beast: 240, hardcore: 240 };
+          const tierLimit = TIER_LIMITS[(subscription?.tier || 'starter').toLowerCase()] || 60;
+          const used = schedulingLimits?.used ?? 0;
+          const limit = schedulingLimits?.limit ?? tierLimit;
+          const remaining = Math.max(0, limit - used);
+
+          return (
+          <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{
+                  width: 40, height: 40, borderRadius: '10px',
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(6,182,212,0.2) 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5,
+                }}>
+                  <CalendarMonthIcon sx={{ fontSize: 22, color: '#3B82F6' }} />
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>
+                    Scheduled Posts
+                  </Typography>
                   <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-                    Status: {subscription?.status || 'Active'}
+                    Monthly limit resets each billing cycle
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-                  {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
-                    ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                    : 'No renewal date'}
-                </Typography>
               </Box>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => navigate('/settings/scheduled-content')}
+                sx={{
+                  borderRadius: '10px', px: 2.5, py: 1, fontWeight: 600, textTransform: 'none',
+                  width: { xs: '100%', sm: 'auto' },
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+                  boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
+                  '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #0891B2 100%)' },
+                }}
+              >
+                View Calendar
+              </Button>
             </Box>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
-              disabled={isLoading || portalLoading}
+            <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                {remaining.toLocaleString()}
+                <Typography component="span" sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', ml: 1 }}>
+                  posts remaining
+                </Typography>
+              </Typography>
+              <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                {used.toLocaleString()} / {limit.toLocaleString()} used
+              </Typography>
+            </Box>
+            <LinearProgress
+              variant="determinate"
+              value={calculateAllowancePercentage(used, limit)}
               sx={{
-                borderRadius: '10px',
-                px: 2.5,
-                py: 1,
-                fontWeight: 600,
-                textTransform: 'none',
-                width: { xs: '100%', sm: 'auto' },
-                minWidth: { sm: 180 },
-                background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                },
-                '&.Mui-disabled': {
-                  background: portalLoading
-                    ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
-                    : 'rgba(255,255,255,0.12)',
-                  color: portalLoading ? '#fff' : 'rgba(255,255,255,0.3)',
+                height: 8, borderRadius: 4, my: 1,
+                backgroundColor: 'rgba(59,130,246,0.1)',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 4,
+                  background: remaining <= 5
+                    ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
+                    : 'linear-gradient(135deg, #3B82F6, #06B6D4)',
                 },
               }}
-            >
-              {portalLoading ? (
-                <CircularProgress size={20} sx={{ color: '#fff' }} />
-              ) : (
-                isFreeTier ? 'Upgrade Plan' : 'Manage Subscription'
-              )}
-            </Button>
+            />
           </Box>
-        </Box>
+          );
+        })()}
 
         {/* Personal Information */}
         <Box>

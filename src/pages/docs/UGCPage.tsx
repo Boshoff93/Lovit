@@ -152,7 +152,7 @@ const UGCPage: React.FC = () => {
               overflow: 'hidden',
             }}>
               {[
-                { name: 'UGC Video', cost: '100 tokens' },
+                { name: 'UGC Video', cost: '50 tokens / second' },
                 { name: 'Background Music (optional)', cost: '50 tokens / 30s' },
               ].map((item, i) => (
                 <Box key={item.name} sx={{
