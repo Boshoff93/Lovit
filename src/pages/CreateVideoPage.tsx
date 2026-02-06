@@ -1390,14 +1390,19 @@ const CreateVideoPage: React.FC = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <GruviCoin size={14} />
-                    <Typography sx={{ fontSize: '0.75rem', color: '#007AFF', fontWeight: 600 }}>
-                      +{(() => {
-                        const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
-                        const durationSecs = narrative?.durationMs ? narrative.durationMs / 1000 : 60;
-                        return Math.ceil(durationSecs / 30) * 50;
-                      })()}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.25 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <GruviCoin size={14} />
+                      <Typography sx={{ fontSize: '0.75rem', color: '#007AFF', fontWeight: 600 }}>
+                        +{(() => {
+                          const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
+                          const durationSecs = narrative?.durationMs ? narrative.durationMs / 1000 : 60;
+                          return Math.ceil(durationSecs / 30) * 50;
+                        })()}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)' }}>
+                      50 tokens/30s
                     </Typography>
                   </Box>
                 </Box>
