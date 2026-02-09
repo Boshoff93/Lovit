@@ -17,7 +17,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { youtubeApi, tiktokApi, instagramApi, linkedinApi, socialAccountsApi } from '../services/api';
+import { youtubeApi, tiktokApi, instagramApi, linkedinApi, twitterApi, socialAccountsApi } from '../services/api';
 import { useGetSocialAccountsQuery } from '../store/apiSlice';
 
 // Social platform configurations
@@ -111,8 +111,7 @@ const socialPlatforms = [
     ),
     color: '#000000',
     gradient: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
-    available: false,
-    comingSoon: true,
+    available: true,
   },
 ];
 
@@ -201,6 +200,18 @@ const ConnectedAccountsPage: React.FC = () => {
       setTimeout(() => setError(null), 5000);
       setSearchParams({});
     }
+
+    const xResult = searchParams.get('x');
+    if (xResult === 'success') {
+      setSuccess(`X connected${username ? ` as @${username}` : ''}!`);
+      setTimeout(() => setSuccess(null), 5000);
+      setSearchParams({});
+      socialAccountsQuery.refetch();
+    } else if (xResult === 'error') {
+      setError(message || 'Failed to connect X');
+      setTimeout(() => setError(null), 5000);
+      setSearchParams({});
+    }
   }, [searchParams, setSearchParams]);
 
   const handleConnect = async (platformId: string) => {
@@ -225,6 +236,9 @@ const ConnectedAccountsPage: React.FC = () => {
           break;
         case 'linkedin':
           authUrl = (await linkedinApi.getAuthUrl(userId)).data.authUrl;
+          break;
+        case 'x':
+          authUrl = (await twitterApi.getAuthUrl(userId)).data.authUrl;
           break;
         default:
           throw new Error('Unknown platform');
@@ -494,29 +508,15 @@ const ConnectedAccountsPage: React.FC = () => {
                     />
                   ))}
 
-                  {!hasAccounts && !platform.comingSoon && (
+                  {!hasAccounts && (
                     <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', fontStyle: 'italic' }}>
                       Not connected
                     </Typography>
                   )}
-
-                  {platform.comingSoon && (
-                    <Chip
-                      label="Coming Soon"
-                      size="small"
-                      sx={{
-                        bgcolor: 'rgba(255,255,255,0.08)',
-                        color: 'rgba(255,255,255,0.4)',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        height: 28,
-                      }}
-                    />
-                  )}
                 </Box>
 
                 {/* Add / Connect Button */}
-                {platform.available && !platform.comingSoon && (
+                {platform.available && (
                   <Box sx={{ flexShrink: 0 }}>
                     {isConnecting ? (
                       <CircularProgress size={20} sx={{ color: '#007AFF' }} />

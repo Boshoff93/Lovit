@@ -55,7 +55,7 @@ import {
 import { RootState, AppDispatch } from '../store/store';
 import { getTokensFromAllowances, createCheckoutSession, setTokensRemaining } from '../store/authSlice';
 import { useGetSocialAccountsQuery, apiSlice } from '../store/apiSlice';
-import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
+import { videosApi, songsApi, youtubeApi, tiktokApi, instagramApi, facebookApi, linkedinApi, twitterApi, charactersApi, scheduledPostsApi, Character } from '../services/api';
 import { useDispatch } from 'react-redux';
 import UpgradePopup from '../components/UpgradePopup';
 import GruviCoin from '../components/GruviCoin';
@@ -860,6 +860,27 @@ const MusicVideoPlayer: React.FC = () => {
       
     } catch (err: any) {
       showSocialError(err.response?.data?.error || 'Failed to start LinkedIn authorization');
+    }
+  };
+
+  const handleConnectTwitter = async () => {
+    if (!user?.userId) return;
+
+    // Check subscription before allowing social sharing
+    if (!hasSubscription) {
+      navigate('/payment');
+      return;
+    }
+
+    try {
+      const response = await twitterApi.getAuthUrl(user.userId);
+      const { authUrl } = response.data;
+
+      // Redirect to OAuth - the callback page will handle the response
+      window.location.href = authUrl;
+
+    } catch (err: any) {
+      showSocialError(err.response?.data?.error || 'Failed to start X authorization');
     }
   };
 
@@ -1876,10 +1897,18 @@ const MusicVideoPlayer: React.FC = () => {
                       </Box>
                     ),
                   },
+                  twitter: {
+                    color: '#000000',
+                    icon: (
+                      <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </Box>
+                    ),
+                  },
                 };
 
                 // Sort accounts by platform order
-                const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin'];
+                const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin', 'twitter'];
                 const sortedAccounts = [...socialAccounts].sort((a, b) => {
                   return platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform);
                 });
@@ -3364,10 +3393,18 @@ const MusicVideoPlayer: React.FC = () => {
                     </Box>
                   ),
                 },
+                twitter: {
+                  color: '#000000',
+                  icon: (
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 22, height: 22, fill: '#fff' }}>
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </Box>
+                  ),
+                },
               };
 
               // Group accounts by platform
-              const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin'];
+              const platformOrder = ['youtube', 'tiktok', 'instagram', 'facebook', 'linkedin', 'twitter'];
               const groupedAccounts = platformOrder
                 .map(platform => ({
                   platform,

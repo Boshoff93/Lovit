@@ -213,9 +213,11 @@ export const videosApi = {
     placeDescription?: string; // Optional: User's description of their property/location for web search
     creativity?: number; // 0-10: 0 = exact prompt adherence, 10 = creative interpretation
     rouletteMode?: boolean; // Let AI pick the video concept based on the track
-    videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'app-promo-music' | 'app-promo-voiceover'; // Specific video content type
+    videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'ugc-premium' | 'app-promo-music' | 'app-promo-voiceover'; // Specific video content type
     includeBackgroundMusic?: boolean; // Add instrumental background music to narration (50 tokens/30s)
     backgroundMusicPrompt?: string; // Optional music style hint (e.g., "upbeat electronic", "calm piano")
+    ugcDuration?: number; // UGC Premium: video duration in seconds (5-15)
+    ugcAudioMode?: 'native' | 'voiceover'; // UGC Premium: audio mode
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {
@@ -423,6 +425,24 @@ export const linkedinApi = {
   
   upload: (userId: string, videoId: string) =>
     api.post(`/api/gruvi/videos/${userId}/${videoId}/linkedin-upload`),
+};
+
+// Twitter/X API
+export const twitterApi = {
+  getAuthUrl: (userId: string) =>
+    api.get(`/api/gruvi/twitter/auth-url?userId=${userId}`),
+
+  handleCallback: (code: string, state: string) =>
+    api.post('/api/gruvi/twitter/callback', { code, state }),
+
+  getStatus: (userId: string) =>
+    api.get(`/api/gruvi/twitter/status?userId=${userId}`),
+
+  disconnect: (userId: string) =>
+    api.delete(`/api/gruvi/twitter/disconnect?userId=${userId}`),
+
+  upload: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/twitter-upload`),
 };
 
 // Social Accounts API (multi-account support)

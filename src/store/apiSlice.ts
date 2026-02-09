@@ -269,6 +269,14 @@ export const apiSlice = createApi({
       providesTags: [{ type: 'SocialConnections', id: 'linkedin' }],
     }),
 
+    getTwitterStatus: builder.query<
+      { connected: boolean; username?: string; name?: string; profileImageUrl?: string; accounts?: Array<{ accountId: string; username?: string; name?: string; profileImageUrl?: string }> },
+      { userId: string }
+    >({
+      query: ({ userId }) => `/api/gruvi/twitter/status?userId=${userId}`,
+      providesTags: [{ type: 'SocialConnections', id: 'twitter' }],
+    }),
+
     // Scheduled Posts
     getScheduledPosts: builder.query<
       { scheduledPosts: ScheduledPost[]; schedulingLimits?: { used: number; limit: number; remaining: number; tier: string } },
@@ -297,6 +305,7 @@ export const {
   useGetInstagramStatusQuery,
   useGetFacebookStatusQuery,
   useGetLinkedInStatusQuery,
+  useGetTwitterStatusQuery,
   // Scheduled Posts
   useGetScheduledPostsQuery,
 } = apiSlice;

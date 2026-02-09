@@ -47,6 +47,7 @@ import YouTubeCallbackPage from './pages/YouTubeCallbackPage';
 import TikTokCallbackPage from './pages/TikTokCallbackPage';
 import InstagramCallbackPage from './pages/InstagramCallbackPage';
 import LinkedInCallbackPage from './pages/LinkedInCallbackPage';
+import TwitterCallbackPage from './pages/TwitterCallbackPage';
 import UploadPage from './pages/UploadPage';
 import TrackDetailPage from './pages/TrackDetailPage';
 import ScheduledContentPage from './pages/ScheduledContentPage';
@@ -305,7 +306,10 @@ function App() {
         
         {/* LinkedIn OAuth callback */}
         <Route path="/linkedin/callback" element={<LinkedInCallbackPage />} />
-        
+
+        {/* Twitter/X OAuth callback */}
+        <Route path="/twitter/callback" element={<TwitterCallbackPage />} />
+
         {/* Admin email management - protected admin route */}
         <Route path="/admin/email" element={
           <RequireAdmin>
