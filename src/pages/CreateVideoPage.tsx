@@ -24,6 +24,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Slider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -56,6 +57,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import CasinoIcon from '@mui/icons-material/Casino';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import GruviCoin from '../components/GruviCoin';
 import { useAudioPlayer, Song as AudioPlayerSong } from '../contexts/AudioPlayerContext';
 
@@ -211,7 +213,8 @@ const videoContentTypes: DropdownOption[] = [
 // Video type options (DropdownOption format)
 // Token costs: Still image video = 200 tokens flat, All other videos = 50 tokens per second
 const STILL_VIDEO_COST = 200;
-const TOKENS_PER_SEC = 50; // 50 credits per second (cinematic, UGC, app showcase)
+const TOKENS_PER_SEC = 50; // 50 credits per second (cinematic, UGC voiceover, app showcase)
+const UGC_PREMIUM_TOKENS_PER_SEC = 100; // 100 credits per second for UGC Premium (O3 Pro)
 const BACKGROUND_MUSIC_TOKENS_PER_30S = 50; // 50 tokens per 30 seconds of background music
 
 // Calculate UGC video cost based on audio duration (50 tokens per second)
@@ -391,6 +394,12 @@ const CreateVideoPage: React.FC = () => {
   // AI Video audio source toggle: 'music' (song) or 'voiceover' (narrative)
   const [aiVideoAudioSource, setAiVideoAudioSource] = useState<'music' | 'voiceover'>('music');
 
+  // UGC audio mode toggle: 'native' (O3 Pro built-in audio) or 'voiceover' (TTS overlay)
+  const [ugcAudioSource, setUgcAudioSource] = useState<'native' | 'voiceover'>('native');
+
+  // UGC Premium duration slider (5-15 seconds)
+  const [ugcDuration, setUgcDuration] = useState<number>(10);
+
   // Audio source toggle for App Showcase mode: 'music' or 'voiceover'
   const [appShowcaseAudioSource, setAppShowcaseAudioSource] = useState<'music' | 'voiceover'>('music');
 
@@ -502,8 +511,12 @@ const CreateVideoPage: React.FC = () => {
   const appShowcaseNeedsMusic = isAppShowcase && appShowcaseAudioSource === 'music';
   const appShowcaseNeedsVoiceover = isAppShowcase && appShowcaseAudioSource === 'voiceover';
 
+  // UGC sub-types (derived from toggle)
+  const isUgcPremium = isUgc && ugcAudioSource === 'native';
+  const isUgcVoiceover = isUgc && ugcAudioSource === 'voiceover';
+
   // What audio sources are needed for the current configuration
-  const needsVoiceover = isStory || isUgc || appShowcaseNeedsVoiceover;
+  const needsVoiceover = isStory || isUgcVoiceover || appShowcaseNeedsVoiceover;
   const needsSong = isMusic || appShowcaseNeedsMusic;
 
   // Filter narratives based on video content type - memoize for performance
@@ -750,6 +763,9 @@ const CreateVideoPage: React.FC = () => {
 
   // Get audio duration from selected song or narrative
   const getAudioDuration = (): number | undefined => {
+    if (isUgcPremium) {
+      return ugcDuration; // UGC Premium: user-selected duration
+    }
     if (needsSong && selectedSongId) {
       const song = songs.find(s => s.songId === selectedSongId);
       return song?.actualDuration;
@@ -765,9 +781,11 @@ const CreateVideoPage: React.FC = () => {
   // Get credits for selected video type (includes background music if enabled)
   const getCredits = () => {
     let baseCost = 0;
-    if (isUgc) {
+    if (isUgcPremium) {
+      baseCost = ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC; // 100 tokens/s for UGC Premium
+    } else if (isUgcVoiceover) {
       const audioDuration = getAudioDuration();
-      baseCost = getUgcCost(audioDuration); // 100 tokens per 5 seconds for UGC videos
+      baseCost = getUgcCost(audioDuration); // 50 tokens/s for UGC voiceover
     } else if (videoType === 'still') {
       baseCost = STILL_VIDEO_COST;
     } else {
@@ -776,8 +794,8 @@ const CreateVideoPage: React.FC = () => {
       baseCost = getCinematicCost(audioDuration);
     }
 
-    // Add background music cost if enabled (for voiceover videos)
-    if (needsVoiceover && includeBackgroundMusic) {
+    // Add background music cost if enabled (for voiceover videos and UGC Premium)
+    if ((needsVoiceover || isUgcPremium) && includeBackgroundMusic) {
       baseCost += getBackgroundMusicCost(getAudioDuration());
     }
 
@@ -789,18 +807,21 @@ const CreateVideoPage: React.FC = () => {
     const audioDuration = getAudioDuration();
     const parts: string[] = [];
 
-    if (videoType === 'still') {
+    if (isUgcPremium) {
+      const cost = ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC;
+      parts.push(`${cost} video (${ugcDuration}s × 100/s)`);
+    } else if (videoType === 'still') {
       parts.push('200 flat');
     } else {
       if (audioDuration) {
-        const cost = isUgc ? getUgcCost(audioDuration) : getCinematicCost(audioDuration);
+        const cost = isUgcVoiceover ? getUgcCost(audioDuration) : getCinematicCost(audioDuration);
         parts.push(`${cost} video (${Math.round(audioDuration)}s × 50/s)`);
       } else {
         parts.push('50 tokens/s');
       }
     }
 
-    if (needsVoiceover && includeBackgroundMusic) {
+    if ((needsVoiceover || isUgcPremium) && includeBackgroundMusic) {
       if (audioDuration) {
         parts.push(`${getBackgroundMusicCost(audioDuration)} music`);
       } else {
@@ -872,13 +893,13 @@ const CreateVideoPage: React.FC = () => {
     try {
       // Map frontend consolidated types to backend types
       // AI Video: 'music' or 'story' based on aiVideoAudioSource
-      // UGC: always 'ugc-voiceover'
+      // UGC: 'ugc-premium' (native audio) or 'ugc-voiceover' (TTS) based on ugcAudioSource
       // App Showcase: 'app-promo-music' or 'app-promo-voiceover' based on appShowcaseAudioSource
-      let backendVideoContentType: 'music' | 'story' | 'ugc-voiceover' | 'app-promo-music' | 'app-promo-voiceover';
+      let backendVideoContentType: 'music' | 'story' | 'ugc-voiceover' | 'ugc-premium' | 'app-promo-music' | 'app-promo-voiceover';
       if (isAiVideo) {
         backendVideoContentType = aiVideoAudioSource === 'music' ? 'music' : 'story';
       } else if (isUgc) {
-        backendVideoContentType = 'ugc-voiceover';
+        backendVideoContentType = ugcAudioSource === 'native' ? 'ugc-premium' : 'ugc-voiceover';
       } else if (isAppShowcase) {
         backendVideoContentType = appShowcaseAudioSource === 'music' ? 'app-promo-music' : 'app-promo-voiceover';
       } else {
@@ -896,7 +917,9 @@ const CreateVideoPage: React.FC = () => {
         characterIds: selectedCharacterIds,
         rouletteMode: isAppShowcase ? false : rouletteMode,
         videoContentType: backendVideoContentType,
-        includeBackgroundMusic: needsVoiceover && !isAppShowcase ? includeBackgroundMusic : undefined,
+        includeBackgroundMusic: (needsVoiceover || isUgcPremium) && !isAppShowcase ? includeBackgroundMusic : undefined,
+        ugcDuration: isUgcPremium ? ugcDuration : undefined,
+        ugcAudioMode: isUgcPremium ? 'native' : isUgc ? 'voiceover' : undefined,
       });
 
       // Update tokens in UI with actual value from backend
@@ -1209,7 +1232,104 @@ const CreateVideoPage: React.FC = () => {
             </Box>
             )}
 
-            {/* Voiceover Selection - only for story and ugc modes */}
+            {/* UGC Audio Source Toggle */}
+            {isUgc && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Audio Mode
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                Choose how audio is generated
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  onClick={() => { setUgcAudioSource('native'); setSelectedNarrativeId(null); }}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${ugcAudioSource === 'native' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: ugcAudioSource === 'native' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    position: 'relative',
+                    '&:hover': { borderColor: ugcAudioSource === 'native' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  {/* Premium icon */}
+                  <Tooltip title="Premium" arrow>
+                    <WorkspacePremiumIcon sx={{ position: 'absolute', top: 8, right: 8, fontSize: 18, color: '#FFB800' }} />
+                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <AutoAwesomeIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Native Audio</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>AI-generated sound</Typography>
+                </Box>
+                <Box
+                  onClick={() => setUgcAudioSource('voiceover')}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: '12px',
+                    border: `2px solid ${ugcAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.1)'}`,
+                    background: ugcAudioSource === 'voiceover' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: ugcAudioSource === 'voiceover' ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                    <RecordVoiceOverIcon sx={{ fontSize: '1rem', color: '#fff' }} />
+                    <Typography sx={{ color: '#fff', fontWeight: 600 }}>Voiceover</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>TTS narration</Typography>
+                </Box>
+              </Box>
+            </Box>
+            )}
+
+            {/* UGC Premium Duration Slider - only for native audio mode */}
+            {isUgcPremium && (
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Video Duration
+                </Typography>
+                <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.9rem' }}>
+                  {ugcDuration}s
+                </Typography>
+              </Box>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                {ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC} credits
+              </Typography>
+              <Slider
+                value={ugcDuration}
+                onChange={(_e, value) => setUgcDuration(value as number)}
+                min={5}
+                max={15}
+                step={1}
+                marks={[
+                  { value: 5, label: '5s' },
+                  { value: 10, label: '10s' },
+                  { value: 15, label: '15s' },
+                ]}
+                sx={{
+                  color: '#007AFF',
+                  '& .MuiSlider-markLabel': {
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: '0.75rem',
+                  },
+                  '& .MuiSlider-thumb': {
+                    width: 20,
+                    height: 20,
+                  },
+                }}
+              />
+            </Box>
+            )}
+
+            {/* Voiceover Selection - only for story and ugc voiceover modes */}
             {needsVoiceover && (
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
@@ -1324,8 +1444,8 @@ const CreateVideoPage: React.FC = () => {
             </Box>
             )}
 
-            {/* Background Music Option - only for narrative videos */}
-            {needsVoiceover && selectedNarrativeId && (
+            {/* Background Music Option - for narrative videos and UGC Premium */}
+            {((needsVoiceover && selectedNarrativeId) || isUgcPremium) && (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   <MusicNoteIcon sx={{ fontSize: 20, color: '#007AFF' }} />
@@ -1386,7 +1506,7 @@ const CreateVideoPage: React.FC = () => {
                         Add instrumental background music
                       </Typography>
                       <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                        Soft music that plays behind your narration
+                        {isUgcPremium ? 'Instrumental music layered with AI audio' : 'Soft music that plays behind your narration'}
                       </Typography>
                     </Box>
                   </Box>
@@ -1395,6 +1515,7 @@ const CreateVideoPage: React.FC = () => {
                       <GruviCoin size={14} />
                       <Typography sx={{ fontSize: '0.75rem', color: '#007AFF', fontWeight: 600 }}>
                         +{(() => {
+                          if (isUgcPremium) return 50; // Fixed 50 tokens (max 15s < 30s)
                           const narrative = narratives.find(n => n.narrativeId === selectedNarrativeId);
                           const durationSecs = narrative?.durationMs ? narrative.durationMs / 1000 : 60;
                           return Math.ceil(durationSecs / 30) * 50;
@@ -1928,7 +2049,7 @@ const CreateVideoPage: React.FC = () => {
                     // Show rate on the button, not total
                     const creditsText = type.id === 'still'
                       ? `${STILL_VIDEO_COST} credits`
-                      : '50 tokens/s';
+                      : isUgcPremium ? '100 tokens/s' : '50 tokens/s';
                     return (
                       <Tooltip
                         key={type.id}
