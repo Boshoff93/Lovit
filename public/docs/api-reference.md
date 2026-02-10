@@ -184,15 +184,15 @@ POST /api/gruvi/narratives/{userId}
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | text | string | Yes | Script or prompt |
-| narrativeType | string | Yes | `direct`, `story`, or `ugc` |
+| narrativeType | string | No | `story` or `ugc`. Omit for direct TTS. |
 | narratorId | string | Yes | Voice ID |
 | characterIds | array | No | Characters to mention |
 | voiceChange | boolean | No | Apply voice transformation |
 
 **Narrative Types:**
-- `direct` - Exact text-to-speech
-- `story` - AI expands into narrative
-- `ugc` - Hook-driven content format
+- (omitted) - Exact text-to-speech (default)
+- `story` - AI expands into cinematic narrative
+- `ugc` - Hook-driven UGC content format
 
 **Response (202 Accepted):**
 ```json
@@ -240,7 +240,7 @@ POST /api/gruvi/videos/generate
   "videoContentType": "music",
   "songId": "song_xyz789",
   "characterIds": ["char_abc123"],
-  "style": "Cinematic",
+  "style": "3d-cartoon",
   "aspectRatio": "portrait"
 }
 ```
@@ -252,6 +252,34 @@ POST /api/gruvi/videos/generate
   "narrativeId": "narr_abc123",
   "characterIds": ["char_abc123"],
   "aspectRatio": "portrait"
+}
+```
+
+**Request (UGC Premium — Native Audio):**
+```json
+{
+  "videoContentType": "ugc-premium",
+  "videoPrompt": "Young woman showing a new product to camera, bright natural lighting",
+  "ugcDuration": 10,
+  "ugcAudioMode": "native",
+  "characterIds": ["char_abc123"],
+  "aspectRatio": "portrait",
+  "includeBackgroundMusic": false
+}
+```
+
+**Request (UGC Premium — With Voiceover):**
+```json
+{
+  "videoContentType": "ugc-premium",
+  "videoPrompt": "Young woman showing a new product to camera, bright natural lighting",
+  "ugcDuration": 10,
+  "ugcAudioMode": "voiceover",
+  "narrativeId": "narr_abc123",
+  "characterIds": ["char_abc123"],
+  "aspectRatio": "portrait",
+  "includeBackgroundMusic": true,
+  "backgroundMusicPrompt": "upbeat pop"
 }
 ```
 
@@ -271,15 +299,21 @@ POST /api/gruvi/videos/generate
 |-------|------|----------|-------------|
 | videoContentType | string | Yes | Video type (see below) |
 | songId | string | Conditional | Required for music types |
-| narrativeId | string | Conditional | Required for voiceover types |
+| narrativeId | string | Conditional | Required for voiceover types, and ugc-premium with voiceover audio mode |
+| videoPrompt | string | Conditional | Required for ugc-premium |
+| ugcDuration | number | No | UGC Premium only: 5-15 seconds (default: 10) |
+| ugcAudioMode | string | No | UGC Premium only: `native` or `voiceover` (default: native) |
+| includeBackgroundMusic | boolean | No | UGC Premium only: add AI background music (default: false) |
+| backgroundMusicPrompt | string | No | UGC Premium only: music style hint |
 | characterIds | array | No | Characters to appear |
-| style | string | No | Visual style |
-| aspectRatio | string | No | `portrait`, `landscape`, `square` |
+| style | string | No | Visual style: `3d-cartoon`, `photo-realism`, `anime`, `claymation`, `comic-book`, `watercolor`, `pixel`, `sketch`, `childrens-storybook`, `origami`, `wool-knit`, `sugarpop`, `classic-blocks`, `spray-paint`, `playground-crayon`, `minecraft` |
+| aspectRatio | string | No | `portrait`, `landscape` |
 
 **Video Content Types:**
 - `music` - Music video
 - `story` - Cinematic story
 - `ugc-voiceover` - UGC with voiceover
+- `ugc-premium` - UGC Premium with native audio (Kling O3 Pro)
 - `app-promo-music` - App showcase with music
 - `app-promo-voiceover` - App showcase with voiceover
 

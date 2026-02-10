@@ -192,7 +192,7 @@ POST /videos/generate
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `userId` | string | Yes | User ID |
-| `videoType` | string | Yes | `"music"`, `"voiceover"`, `"ugc"`, `"cinematic"` |
+| `videoType` | string | Yes | `"music"`, `"voiceover"`, `"ugc"`, `"ugc-premium"`, `"cinematic"` |
 | `songId` | string | Conditional | Required for music videos |
 | `narrativeId` | string | Conditional | Required for voiceover videos |
 | `prompt` | string | Conditional | Required for UGC videos |
@@ -222,9 +222,9 @@ POST /videos/generate
 
 ---
 
-### Create UGC Video (Dedicated Endpoint)
+### Create UGC Video (Voiceover)
 
-Best for prompt-based UGC content with optional voice change.
+UGC with voiceover — create a voiceover first, then generate the video.
 
 ```http
 POST /videos/generate
@@ -234,14 +234,73 @@ POST /videos/generate
 ```json
 {
   "userId": "user_123",
-  "videoType": "ugc",
-  "prompt": "Young woman excitedly trying on new sneakers, showing them to camera, bright bedroom, natural lighting",
-  "voiceChange": true,
-  "voiceId": "gracie",
-  "duration": 15,
-  "aspectRatio": "9:16"
+  "videoContentType": "ugc-voiceover",
+  "narrativeId": "narr_xyz789",
+  "characterIds": ["char_abc123"],
+  "aspectRatio": "portrait"
 }
 ```
+
+**Token Cost:** 50 tokens per second
+
+---
+
+### Create UGC Premium Video (Native Audio)
+
+High-quality short-form UGC videos (5-15 seconds) using Kling O3 Pro with native audio or voiceover.
+
+```http
+POST /videos/generate
+```
+
+**Request Body (Native Audio):**
+```json
+{
+  "userId": "user_123",
+  "videoContentType": "ugc-premium",
+  "videoPrompt": "Young woman excitedly trying on new sneakers, showing them to camera, bright bedroom, natural lighting",
+  "ugcDuration": 10,
+  "ugcAudioMode": "native",
+  "characterIds": ["char_abc123"],
+  "aspectRatio": "portrait",
+  "includeBackgroundMusic": false
+}
+```
+
+**Request Body (With Voiceover):**
+```json
+{
+  "userId": "user_123",
+  "videoContentType": "ugc-premium",
+  "videoPrompt": "Young woman excitedly trying on new sneakers, showing them to camera, bright bedroom, natural lighting",
+  "ugcDuration": 10,
+  "ugcAudioMode": "voiceover",
+  "narrativeId": "narr_xyz789",
+  "characterIds": ["char_abc123"],
+  "aspectRatio": "portrait",
+  "includeBackgroundMusic": true,
+  "backgroundMusicPrompt": "upbeat pop"
+}
+```
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `userId` | string | Yes | User ID |
+| `videoContentType` | string | Yes | Must be `"ugc-premium"` |
+| `videoPrompt` | string | Yes | Description of the video scene |
+| `ugcDuration` | number | No | Duration in seconds, 5-15 (default: 10) |
+| `ugcAudioMode` | string | No | `"native"` (default) or `"voiceover"` |
+| `narrativeId` | string | Conditional | Required when `ugcAudioMode` is `"voiceover"` |
+| `characterIds` | array | No | Character/product asset IDs to appear |
+| `aspectRatio` | string | No | `"portrait"` or `"landscape"` (default: portrait) |
+| `includeBackgroundMusic` | boolean | No | Add AI background music (default: false) |
+| `backgroundMusicPrompt` | string | No | Style hint for background music |
+
+**Audio Modes:**
+- `native` — Kling O3 Pro generates audio alongside video. No voiceover needed. Best for ambient/scene audio.
+- `voiceover` — Your voiceover audio is merged with the generated video. Create a voiceover first, then pass the `narrativeId`.
 
 **UGC Prompt Tips:**
 - Be specific about the creator's appearance and emotion
@@ -249,7 +308,8 @@ POST /videos/generate
 - Include the product interaction
 - Specify camera angles or movements
 
-**Token Cost:** 100 tokens per 5 seconds
+**Token Cost:** 100 tokens per second (e.g., 10s = 1,000 tokens)
+Background music adds 50 tokens per 30 seconds.
 
 ---
 

@@ -49,12 +49,15 @@ Voice change option: +10 tokens
 |------|--------|
 | Still image video | 200 flat |
 | Animated video | 50 per second |
-| UGC Creator | 100 per 5 seconds |
+| UGC Creator (voiceover) | 50 per second |
+| UGC Premium (native audio) | 100 per second |
 | App Showcase | 50 per second |
 
 **Example costs:**
 - 30-second music video: 1,500 tokens
-- 15-second UGC video: 300 tokens
+- 15-second UGC voiceover video: 750 tokens
+- 10-second UGC Premium video: 1,000 tokens
+- 10-second UGC Premium + background music: 1,050 tokens
 - 60-second cinematic: 3,000 tokens
 
 ### Character Swap
@@ -91,12 +94,18 @@ These don't use tokens:
 - Metadata: 10 tokens
 - **Total: 1,535 tokens**
 
-### UGC Product Video
+### UGC Product Video (Voiceover)
 - Voiceover: 25 tokens
 - UGC video (15s): 300 tokens
 - Metadata: 10 tokens
 - Thumbnail: 10 tokens
 - **Total: 345 tokens**
+
+### UGC Premium Product Video (Native Audio)
+- UGC Premium video (10s): 1,000 tokens
+- Metadata: 10 tokens
+- Thumbnail: 10 tokens
+- **Total: 1,020 tokens**
 
 ### Full Campaign (3 videos)
 - 3 songs: 75-150 tokens
@@ -128,7 +137,7 @@ View detailed usage in **Account** → **Token History**
 
 ## Cost Optimization Tips
 
-1. **Use UGC videos** - 100 tokens per 5 seconds vs 50 per second for cinematic
+1. **Use UGC videos** - 50 tokens per second vs 50 per second for cinematic (same rate, but shorter UGC clips save tokens)
 2. **Batch metadata** - Generate once, reuse across platforms
 3. **Short songs first** - Test with short (25 tokens) before long (50 tokens)
 4. **Reuse assets** - Create characters once, use everywhere

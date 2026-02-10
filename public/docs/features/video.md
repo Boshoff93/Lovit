@@ -12,6 +12,7 @@ Gruvi offers several video generation modes, each optimized for different conten
 | Music Video | Song visualization | Audio track |
 | Voiceover Video | Narrated content | Voiceover |
 | UGC Creator | Product demos | Prompt + Voice |
+| UGC Premium | Short-form with native audio | Prompt (5-15s) |
 
 ## Token Cost
 
@@ -75,6 +76,27 @@ Combine narration with supporting visuals.
 ### UGC Creator
 
 See [UGC Creator Guide](./ugc-creator.md) for detailed documentation.
+
+### UGC Premium
+
+High-quality short-form videos (5-15 seconds) with native audio powered by Kling O3 Pro.
+
+**Best for:**
+- Short product demos
+- Social media clips
+- Quick promotional content
+- Content with ambient audio
+
+**How to use:**
+1. Select "UGC Premium" video type
+2. Write a prompt describing the scene
+3. Choose duration (5-15 seconds)
+4. Select audio mode: native (AI audio) or voiceover
+5. Generate
+
+**Cost:** 100 tokens per second
+
+See [UGC Creator Guide](./ugc-creator.md) for full details.
 
 ## Visual Styles
 

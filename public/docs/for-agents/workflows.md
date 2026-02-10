@@ -15,11 +15,20 @@ Create a music video and post it:
 4. Schedule for [platform] at [time]
 ```
 
-### Create UGC Product Content
+### Create UGC Product Content (Voiceover)
 ```
 Create a UGC-style product video:
 1. Create a voiceover with a hook about [product]
 2. Generate a UGC creator video
+3. Add engaging thumbnail
+4. Post to TikTok and Instagram Reels
+```
+
+### Create UGC Premium Content (Native Audio)
+```
+Create a UGC Premium video with native audio:
+1. Generate a ugc-premium video with a scene prompt about [product]
+2. Set ugcDuration to 10 seconds, ugcAudioMode to native
 3. Add engaging thumbnail
 4. Post to TikTok and Instagram Reels
 ```
@@ -93,7 +102,32 @@ Target audience: [describe audience]
 
 ---
 
-### 3. Influencer-Style UGC Series
+### 3. UGC Premium Quick Content
+
+**Prompt:**
+```
+Create 3 quick UGC Premium videos (10 seconds each) for [product].
+
+Use native audio mode so they have natural sound.
+Each video should show a different angle:
+1. Unboxing / first look
+2. Using the product in action
+3. Reaction / recommendation
+
+Add a Human character for consistency across all three.
+Post to TikTok over 3 days.
+```
+
+**Agent workflow:**
+1. Creates 3 UGC Premium videos with `ugcAudioMode: "native"`, `ugcDuration: 10`
+2. Generates metadata for TikTok
+3. Schedules across 3 days
+
+**Token cost estimate:** ~3,000 tokens (1,000 per video)
+
+---
+
+### 4. Influencer-Style UGC Series
 
 **Prompt:**
 ```
@@ -125,7 +159,7 @@ Schedule one per day starting tomorrow, alternating TikTok and Instagram.
 
 ---
 
-### 4. Music-First Brand Content
+### 5. Music-First Brand Content
 
 **Prompt:**
 ```
@@ -154,7 +188,7 @@ Then:
 
 ---
 
-### 5. Character Swap for Brand Consistency
+### 6. Character Swap for Brand Consistency
 
 **Prompt:**
 ```
@@ -179,7 +213,7 @@ Take this uploaded video and:
 
 ---
 
-### 6. Content Repurposing
+### 7. Content Repurposing
 
 **Prompt:**
 ```

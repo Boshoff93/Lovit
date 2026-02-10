@@ -8,9 +8,15 @@ UGC (User Generated Content) Creator produces authentic-looking product demo vid
 
 ## Token Cost
 
-**100 tokens per 5 seconds** of video
-- 15-second video = 300 tokens
-- 30-second video = 600 tokens
+**UGC (Voiceover):** 50 tokens per second
+- 15-second video = 750 tokens
+- 30-second video = 1,500 tokens
+
+**UGC Premium (Native Audio):** 100 tokens per second
+- 5-second video = 500 tokens
+- 10-second video = 1,000 tokens
+- 15-second video = 1,500 tokens
+- Background music adds 50 tokens per 30 seconds
 
 ## Why UGC Style?
 
@@ -123,6 +129,53 @@ mixing it, showing the smooth texture,
 tasting it post-workout, thumbs up.
 Gym or home workout space.
 ```
+
+## UGC Premium (Native Audio)
+
+UGC Premium uses Kling O3 Pro to generate high-quality short-form videos (5-15 seconds) with built-in native audio.
+
+### Why UGC Premium?
+
+- **Native audio** - Kling generates ambient sound and speech directly, no separate voiceover needed
+- **Higher quality** - O3 Pro model produces more realistic, detailed video
+- **Simpler workflow** - One step: write a prompt, get video with audio
+- **Character support** - Reference your existing Human or Product assets
+
+### Audio Modes
+
+**Native (default):** Kling O3 Pro generates audio alongside the video. Best for ambient scenes, product demos with natural sound, and short-form content where you want AI-generated speech and effects.
+
+**Voiceover:** Your pre-created voiceover is merged with the generated video. Create a voiceover first, then reference it. Best when you need precise script control.
+
+### Optional Background Music
+
+Add AI-generated background music to either audio mode. Specify a style hint like "upbeat pop" or "chill lo-fi" and Gruvi generates a matching track mixed at low volume behind your main audio.
+
+### How to Use
+
+1. Choose "UGC Premium" video type
+2. Write a detailed prompt describing the scene
+3. Select duration (5-15 seconds)
+4. Choose audio mode (native or voiceover)
+5. Optionally select characters/products
+6. Optionally enable background music
+7. Generate
+
+### Premium Prompt Examples
+
+```
+Woman in her 20s holding up a new skincare serum,
+examining the bottle, applying a drop to her hand,
+reacting positively. Clean bathroom, soft natural lighting.
+```
+
+```
+Person unboxing a sleek pair of wireless earbuds,
+testing the fit, nodding along to music with a satisfied expression.
+Modern desk setup with warm ambient lighting.
+```
+
+---
 
 ## Output Formats
 

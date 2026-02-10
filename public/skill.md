@@ -43,7 +43,8 @@ curl -H "Authorization: Bearer $GRUVI_KEY" \
 | Music | AI songs, 32 genres, 24 languages | 25-50 |
 | Voiceover | 25+ voices, UGC/story/direct | 25 |
 | Video | Cinematic, music styles | 50/sec |
-| UGC Video | Talking head, product demos | 100/5sec |
+| UGC Video | Talking head, product demos | 50/sec |
+| UGC Premium | Native audio, Kling O3 Pro | 100/sec |
 | Character Swap | Replace people in videos (Kling AI) | 50/sec |
 | App Showcase | Promo videos from screenshots | 50/sec |
 | Publishing | TikTok, YouTube, Instagram, etc. | Free |
@@ -135,7 +136,7 @@ curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
 ```
 
 Options:
-- `narrativeType`: `direct` (exact TTS), `story` (AI narrative), `ugc` (hook-driven content)
+- `narrativeType`: `story` (AI narrative), `ugc` (hook-driven content). Omit for direct TTS.
 - `narratorId`: Voice ID (get from voices endpoint)
 - `characterIds`: (optional) Array of character IDs to mention in the voiceover
 
@@ -155,19 +156,19 @@ curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
     "videoContentType": "music",
     "songId": "your-song-id",
     "characterIds": ["char-id-1", "char-id-2"],
-    "style": "3D Cartoon",
+    "style": "3d-cartoon",
     "aspectRatio": "portrait"
   }' \
   https://api.gruvimusic.com/api/gruvi/videos/generate
 ```
 
 Options:
-- `videoContentType`: `music`, `story`, `ugc-voiceover`, `app-promo-music`, `app-promo-voiceover`
+- `videoContentType`: `music`, `story`, `ugc-voiceover`, `ugc-premium`, `app-promo-music`, `app-promo-voiceover`
 - `songId`: Required for music/app-promo-music types
-- `narrativeId`: Required for story/ugc-voiceover/app-promo-voiceover types
+- `narrativeId`: Required for story/ugc-voiceover/app-promo-voiceover types, and for ugc-premium with `ugcAudioMode: "voiceover"`
 - `characterIds`: Array of character IDs to appear in the video
-- `style`: `3D Cartoon`, `Anime`, `Cinematic`, `Photo-Realism` (not used for app-promo/ugc)
-- `aspectRatio`: `portrait` (9:16), `landscape` (16:9), `square` (1:1)
+- `style`: `3d-cartoon` (default), `photo-realism`, `anime`, `claymation`, `comic-book`, `watercolor`, `pixel`, `sketch`, `childrens-storybook`, `origami`, `wool-knit`, `sugarpop`, `classic-blocks`, `spray-paint`, `playground-crayon`, `minecraft` (not used for app-promo/ugc)
+- `aspectRatio`: `portrait` (9:16), `landscape` (16:9)
 
 ### UGC Videos (Talking Head)
 
@@ -191,13 +192,51 @@ Example UGC prompt:
 Mention the key benefit, show enthusiasm, end with 'Link in bio!'"
 ```
 
+Cost: 50 tokens/second
+
+### UGC Premium (Native Audio, Kling O3 Pro)
+
+UGC Premium creates high-quality short-form videos (5-15 seconds) using Kling O3 Pro with built-in native audio or voiceover.
+
+**Generate UGC Premium video:**
+```bash
+curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "videoContentType": "ugc-premium",
+    "videoPrompt": "Young woman excitedly showing a new product to camera, bright natural lighting",
+    "ugcDuration": 10,
+    "ugcAudioMode": "native",
+    "characterIds": ["char-id-1"],
+    "aspectRatio": "portrait",
+    "includeBackgroundMusic": false
+  }' \
+  https://api.gruvimusic.com/api/gruvi/videos/generate
+```
+
+**Parameters:**
+- `videoContentType`: Must be `"ugc-premium"`
+- `videoPrompt`: Description of the video scene (required)
+- `ugcDuration`: Duration in seconds, 5-15 (default: 10)
+- `ugcAudioMode`: `"native"` (Kling built-in audio) or `"voiceover"` (uses narrativeId)
+- `narrativeId`: Required when `ugcAudioMode` is `"voiceover"`
+- `characterIds`: Optional character/product asset IDs
+- `includeBackgroundMusic`: Add AI-generated background music (default: false)
+- `backgroundMusicPrompt`: Style hint for background music (e.g., "upbeat pop")
+- `aspectRatio`: `"portrait"` or `"landscape"`
+
+**Audio modes:**
+- `native` — Kling O3 Pro generates audio alongside video. No voiceover needed. Best for ambient/scene audio.
+- `voiceover` — Your voiceover audio is merged with the generated video. Create a voiceover first, then pass `narrativeId`.
+
+**Cost:** 100 tokens per second (e.g., 10s = 1,000 tokens)
+Background music adds 50 tokens per 30 seconds.
+
 **Check status** (poll every 30s)
 ```bash
 curl -H "Authorization: Bearer $GRUVI_KEY" \
   https://api.gruvimusic.com/api/gruvi/videos/{userId}/{videoId}/status
 ```
-
-Cost: 100 tokens/5 seconds
 
 ---
 
@@ -374,7 +413,8 @@ Cost: Free
 | Song (premium) | 50/30s |
 | Voiceover | 25 |
 | Video (animated) | 50/sec |
-| UGC Video | 100/5sec |
+| UGC Video (voiceover) | 50/sec |
+| UGC Premium (native audio) | 100/sec |
 | Character Swap | 50/sec |
 | Metadata generation | 10 |
 | Thumbnail generation | 10 |
