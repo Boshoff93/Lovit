@@ -98,7 +98,7 @@ const socialPlatforms = [
     available: true,
   },
   {
-    id: 'x',
+    id: 'twitter',
     name: 'X (Twitter)',
     icon: () => (
       <Box
@@ -237,7 +237,7 @@ const ConnectedAccountsPage: React.FC = () => {
         case 'linkedin':
           authUrl = (await linkedinApi.getAuthUrl(userId)).data.authUrl;
           break;
-        case 'x':
+        case 'twitter':
           authUrl = (await twitterApi.getAuthUrl(userId)).data.authUrl;
           break;
         default:
