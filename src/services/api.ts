@@ -218,6 +218,8 @@ export const videosApi = {
     backgroundMusicPrompt?: string; // Optional music style hint (e.g., "upbeat electronic", "calm piano")
     ugcDuration?: number; // UGC Premium: video duration in seconds (5-15)
     ugcAudioMode?: 'native' | 'voiceover'; // UGC Premium: audio mode
+    enrichVideo?: boolean; // Add AI-decided overlays (CTAs, popups, emojis) via Remotion post-processing
+    enableCaptions?: boolean; // Add TikTok-style animated captions (requires voiceover segments)
   }) => api.post('/api/gruvi/videos/generate', data),
   
   getUserVideos: (userId: string, options?: { page?: number; limit?: number; all?: boolean }) => {

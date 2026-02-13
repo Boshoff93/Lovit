@@ -406,6 +406,10 @@ const CreateVideoPage: React.FC = () => {
   // Background music option (for narrative videos) - style is AI-generated based on story
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(false);
 
+  // Enrichment options: AI post-processing with Remotion overlays
+  const [enrichVideo, setEnrichVideo] = useState(false);
+  const [enableCaptions, setEnableCaptions] = useState(false);
+
   // RTK Query for characters - cached and shared across app
   const { data: charactersData, isLoading: isLoadingCharacters } = useGetUserCharactersQuery(
     { userId: user?.userId || '' },
@@ -920,6 +924,8 @@ const CreateVideoPage: React.FC = () => {
         includeBackgroundMusic: (needsVoiceover || isUgcPremium) && !isAppShowcase ? includeBackgroundMusic : undefined,
         ugcDuration: isUgcPremium ? ugcDuration : undefined,
         ugcAudioMode: isUgcPremium ? 'native' : isUgc ? 'voiceover' : undefined,
+        enrichVideo: enrichVideo || undefined,
+        enableCaptions: enableCaptions || undefined,
       });
 
       // Update tokens in UI with actual value from backend
@@ -1529,6 +1535,132 @@ const CreateVideoPage: React.FC = () => {
                 </Box>
 
                 {/* Music style is now AI-generated based on the story content */}
+              </Box>
+            )}
+
+            {/* Enrichment Options - available for all non-app-showcase video types */}
+            {!isAppShowcase && (
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                    Post-Processing
+                  </Typography>
+                  <Chip
+                    label="Optional"
+                    size="small"
+                    sx={{
+                      ml: 'auto',
+                      background: 'rgba(0,122,255,0.15)',
+                      color: '#007AFF',
+                      fontWeight: 600,
+                      fontSize: '0.7rem'
+                    }}
+                  />
+                </Box>
+
+                {/* Captions toggle - only when voiceover is available */}
+                {needsVoiceover && (
+                  <Box
+                    onClick={() => setEnableCaptions(!enableCaptions)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      py: 1.5,
+                      px: 2,
+                      mb: 1,
+                      borderRadius: '12px',
+                      border: enableCaptions ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                      background: enableCaptions ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        background: enableCaptions ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)',
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        sx={{
+                          minWidth: 20,
+                          width: 20,
+                          height: 20,
+                          borderRadius: '4px',
+                          border: enableCaptions ? '2px solid #007AFF' : '2px solid rgba(255,255,255,0.3)',
+                          background: enableCaptions ? '#007AFF' : 'transparent',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {enableCaptions && <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />}
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>
+                          Add captions
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                          TikTok-style word-by-word animated subtitles
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+
+                {/* Enrich video toggle */}
+                <Tooltip
+                  title="AI analyzes your video concept and adds text popups, CTAs, emojis, and other overlays using Remotion post-processing"
+                  arrow
+                  placement="top"
+                >
+                  <Box
+                    onClick={() => setEnrichVideo(!enrichVideo)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      py: 1.5,
+                      px: 2,
+                      borderRadius: '12px',
+                      border: enrichVideo ? '2px solid #8B5CF6' : '1px solid rgba(255,255,255,0.1)',
+                      background: enrichVideo ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        background: enrichVideo ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)',
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        sx={{
+                          minWidth: 20,
+                          width: 20,
+                          height: 20,
+                          borderRadius: '4px',
+                          border: enrichVideo ? '2px solid #8B5CF6' : '2px solid rgba(255,255,255,0.3)',
+                          background: enrichVideo ? '#8B5CF6' : 'transparent',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {enrichVideo && <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />}
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>
+                          Enrich video
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                          Add captions, CTAs, popups, emojis, and other overlays
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <AutoAwesomeIcon sx={{ fontSize: 18, color: enrichVideo ? '#8B5CF6' : 'rgba(255,255,255,0.3)' }} />
+                  </Box>
+                </Tooltip>
               </Box>
             )}
 
