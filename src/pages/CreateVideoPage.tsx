@@ -1734,7 +1734,7 @@ const CreateVideoPage: React.FC = () => {
                     justifyContent: 'space-between',
                     py: 1.5,
                     px: 2,
-                    mt: 1,
+                    mt: 2,
                     borderRadius: '12px',
                     border: enableCaptions ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
                     background: enableCaptions ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
