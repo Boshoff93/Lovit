@@ -260,7 +260,7 @@ POST /api/gruvi/videos/generate
 {
   "videoContentType": "ugc-premium",
   "videoPrompt": "Young woman showing a new product to camera, bright natural lighting",
-  "ugcDuration": 10,
+  "ugcDurationSeconds": 10,
   "ugcAudioMode": "native",
   "characterIds": ["char_abc123"],
   "aspectRatio": "portrait",
@@ -273,7 +273,7 @@ POST /api/gruvi/videos/generate
 {
   "videoContentType": "ugc-premium",
   "videoPrompt": "Young woman showing a new product to camera, bright natural lighting",
-  "ugcDuration": 10,
+  "ugcDurationSeconds": 10,
   "ugcAudioMode": "voiceover",
   "narrativeId": "narr_abc123",
   "characterIds": ["char_abc123"],
@@ -301,7 +301,7 @@ POST /api/gruvi/videos/generate
 | songId | string | Conditional | Required for music types |
 | narrativeId | string | Conditional | Required for voiceover types, and ugc-premium with voiceover audio mode |
 | videoPrompt | string | Conditional | Required for ugc-premium |
-| ugcDuration | number | No | UGC Premium only: 5-15 seconds (default: 10) |
+| ugcDurationSeconds | number | No | UGC Premium only: exact duration in seconds, 5-15 (default: 10) |
 | ugcAudioMode | string | No | UGC Premium only: `native` or `voiceover` (default: native) |
 | includeBackgroundMusic | boolean | No | UGC Premium only: add AI background music (default: false) |
 | backgroundMusicPrompt | string | No | UGC Premium only: music style hint |

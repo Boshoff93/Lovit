@@ -259,7 +259,7 @@ POST /videos/generate
   "userId": "user_123",
   "videoContentType": "ugc-premium",
   "videoPrompt": "Young woman excitedly trying on new sneakers, showing them to camera, bright bedroom, natural lighting",
-  "ugcDuration": 10,
+  "ugcDurationSeconds": 10,
   "ugcAudioMode": "native",
   "characterIds": ["char_abc123"],
   "aspectRatio": "portrait",
@@ -273,7 +273,7 @@ POST /videos/generate
   "userId": "user_123",
   "videoContentType": "ugc-premium",
   "videoPrompt": "Young woman excitedly trying on new sneakers, showing them to camera, bright bedroom, natural lighting",
-  "ugcDuration": 10,
+  "ugcDurationSeconds": 10,
   "ugcAudioMode": "voiceover",
   "narrativeId": "narr_xyz789",
   "characterIds": ["char_abc123"],
@@ -290,7 +290,7 @@ POST /videos/generate
 | `userId` | string | Yes | User ID |
 | `videoContentType` | string | Yes | Must be `"ugc-premium"` |
 | `videoPrompt` | string | Yes | Description of the video scene |
-| `ugcDuration` | number | No | Duration in seconds, 5-15 (default: 10) |
+| `ugcDurationSeconds` | number | No | Exact duration in seconds, 5-15 (default: 10) |
 | `ugcAudioMode` | string | No | `"native"` (default) or `"voiceover"` |
 | `narrativeId` | string | Conditional | Required when `ugcAudioMode` is `"voiceover"` |
 | `characterIds` | array | No | Character/product asset IDs to appear |

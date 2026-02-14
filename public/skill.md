@@ -463,7 +463,7 @@ curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
   -d '{
     "videoContentType": "ugc-premium",
     "videoPrompt": "Young woman excitedly showing a new product to camera, bright natural lighting",
-    "ugcDuration": 10,
+    "ugcDurationSeconds": 10,
     "ugcAudioMode": "native",
     "characterIds": ["char-id-1"],
     "aspectRatio": "portrait",
@@ -475,7 +475,7 @@ curl -X POST -H "Authorization: Bearer $GRUVI_KEY" \
 **Parameters:**
 - `videoContentType`: Must be `"ugc-premium"`
 - `videoPrompt`: Description of the video scene (required)
-- `ugcDuration`: Duration in seconds, 5-15 (default: 10)
+- `ugcDurationSeconds`: Exact duration in seconds, 5-15 (default: 10). Backend maps to internal Veo duration tiers automatically.
 - `ugcAudioMode`: `"native"` (Kling built-in audio) or `"voiceover"` (uses narrativeId)
 - `narrativeId`: Required when `ugcAudioMode` is `"voiceover"`
 - `characterIds`: Optional character/product asset IDs
@@ -712,7 +712,7 @@ Applies to `music`, `story`, and `character-swap` content types. Not used for `u
 | Audio | Separate voiceover (`narrativeId`) | Native audio **or** voiceover |
 | Audio modes | N/A | `native` (built-in) or `voiceover` (narrativeId) |
 | Max duration | ~60s | **5-15 seconds** |
-| Duration control | Determined by voiceover length | `ugcDuration` (5-15) |
+| Duration control | Determined by voiceover length | `ugcDurationSeconds` (5-15) |
 | Talking head | Auto-generated or from Human character | Auto-generated or from Human character |
 | Cost per second | 50 tokens | **100 tokens** |
 | Best for | Longer influencer-style content, product demos | Punchy TikTok/Reels, high-quality short-form |

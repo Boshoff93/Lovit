@@ -28,7 +28,7 @@ Create a UGC-style product video:
 ```
 Create a UGC Premium video with native audio:
 1. Generate a ugc-premium video with a scene prompt about [product]
-2. Set ugcDuration to 10 seconds, ugcAudioMode to native
+2. Set ugcDurationSeconds to 10, ugcAudioMode to native
 3. Add engaging thumbnail
 4. Post to TikTok and Instagram Reels
 ```
@@ -119,7 +119,7 @@ Post to TikTok over 3 days.
 ```
 
 **Agent workflow:**
-1. Creates 3 UGC Premium videos with `ugcAudioMode: "native"`, `ugcDuration: 10`
+1. Creates 3 UGC Premium videos with `ugcAudioMode: "native"`, `ugcDurationSeconds: 10`
 2. Generates metadata for TikTok
 3. Schedules across 3 days
 

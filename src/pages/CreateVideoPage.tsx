@@ -929,6 +929,7 @@ const CreateVideoPage: React.FC = () => {
         ugcDuration: isUgcPremium ? { short: 8, medium: 13, long: 15 }[ugcDurationSetting] : undefined,
         ugcAudioMode: isUgcPremium ? 'native' : isUgc ? 'voiceover' : undefined,
         ugcDurationSetting: isUgcPremium ? ugcDurationSetting : undefined,
+        ugcDurationSeconds: isUgcPremium ? { short: 8, medium: 13, long: 15 }[ugcDurationSetting] : undefined,
         enrichVideo: enrichVideo || undefined,
         enableCaptions: enableCaptions || undefined,
       });
