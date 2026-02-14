@@ -656,7 +656,7 @@ const ScheduledContentPage: React.FC = () => {
             </Box>
           )}
             {/* Empty state overlay - centered, doesn't affect layout */}
-            {scheduledPosts.filter(p => p.status === 'scheduled').length === 0 && !loading && (
+            {scheduledPosts.filter(p => p.status !== 'cancelled').length === 0 && !loading && (
               <Box
                 sx={{
                   position: 'absolute',
