@@ -24,7 +24,6 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  Slider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -1297,43 +1296,56 @@ const CreateVideoPage: React.FC = () => {
             </Box>
             )}
 
-            {/* UGC Premium Duration Slider - Short / Medium / Long */}
+            {/* UGC Premium Duration Picker - Short / Medium / Long */}
             {isUgcPremium && (
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Video Duration
                 </Typography>
-                <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.9rem' }}>
-                  ~{ugcDuration}s
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+                  {ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC} credits
                 </Typography>
               </Box>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
-                {ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC} credits
-              </Typography>
-              <Slider
-                value={ugcDuration}
-                onChange={(_e, value) => setUgcDuration(value as number)}
-                min={8}
-                max={15}
-                step={null}
-                marks={[
-                  { value: 8, label: 'Short ~8s' },
-                  { value: 13, label: 'Medium ~13s' },
-                  { value: 15, label: 'Long ~15s' },
-                ]}
-                sx={{
-                  color: '#007AFF',
-                  '& .MuiSlider-markLabel': {
-                    color: 'rgba(255,255,255,0.5)',
-                    fontSize: '0.75rem',
-                  },
-                  '& .MuiSlider-thumb': {
-                    width: 20,
-                    height: 20,
-                  },
-                }}
-              />
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {[
+                  { label: 'Short', duration: 8, time: '~8s' },
+                  { label: 'Medium', duration: 13, time: '~13s' },
+                  { label: 'Long', duration: 15, time: '~15s' },
+                ].map((opt) => (
+                  <Box
+                    key={opt.duration}
+                    onClick={() => setUgcDuration(opt.duration)}
+                    sx={{
+                      flex: 1,
+                      py: 1.5,
+                      borderRadius: '12px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      border: ugcDuration === opt.duration
+                        ? '1.5px solid #007AFF'
+                        : '1.5px solid rgba(255,255,255,0.1)',
+                      backgroundColor: ugcDuration === opt.duration
+                        ? 'rgba(0,122,255,0.12)'
+                        : 'rgba(255,255,255,0.04)',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        borderColor: ugcDuration === opt.duration ? '#007AFF' : 'rgba(255,255,255,0.25)',
+                        backgroundColor: ugcDuration === opt.duration
+                          ? 'rgba(0,122,255,0.12)'
+                          : 'rgba(255,255,255,0.08)',
+                      },
+                    }}
+                  >
+                    <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.85rem' }}>
+                      {opt.label}
+                    </Typography>
+                    <Typography sx={{ color: ugcDuration === opt.duration ? '#007AFF' : 'rgba(255,255,255,0.45)', fontSize: '0.75rem', mt: 0.25 }}>
+                      {opt.time}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
             )}
 
