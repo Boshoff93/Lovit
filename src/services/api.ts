@@ -216,10 +216,8 @@ export const videosApi = {
     videoContentType?: 'music' | 'story' | 'ugc-voiceover' | 'ugc-premium' | 'app-promo-music' | 'app-promo-voiceover'; // Specific video content type
     includeBackgroundMusic?: boolean; // Add instrumental background music to narration (50 tokens/30s)
     backgroundMusicPrompt?: string; // Optional music style hint (e.g., "upbeat electronic", "calm piano")
-    ugcDuration?: number; // UGC Premium: estimated video duration in seconds (legacy)
+    ugcDuration?: number; // UGC Premium: video duration in seconds (8, 13, or 15)
     ugcAudioMode?: 'native' | 'voiceover'; // UGC Premium: audio mode
-    ugcDurationSetting?: 'short' | 'medium' | 'long'; // UGC Premium: duration tier (legacy)
-    ugcDurationSeconds?: number; // UGC Premium: exact duration in seconds (5-15). Takes priority over ugcDurationSetting.
     enrichVideo?: boolean; // Add AI-decided overlays (CTAs, popups, emojis) via Remotion post-processing
     enableCaptions?: boolean; // Add TikTok-style animated captions (requires voiceover segments)
   }) => api.post('/api/gruvi/videos/generate', data),

@@ -24,6 +24,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Slider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -398,8 +399,8 @@ const CreateVideoPage: React.FC = () => {
   // UGC audio mode toggle: 'native' (O3 Pro built-in audio) or 'voiceover' (TTS overlay)
   const [ugcAudioSource, setUgcAudioSource] = useState<'native' | 'voiceover'>('native');
 
-  // UGC Premium duration setting: 'short' (~8s), 'medium' (~13s), 'long' (~15s)
-  const [ugcDurationSetting, setUgcDurationSetting] = useState<'short' | 'medium' | 'long'>('short');
+  // UGC Premium duration: 8 (short), 13 (medium), 15 (long) seconds
+  const [ugcDuration, setUgcDuration] = useState<number>(8);
 
   // Audio source toggle for App Showcase mode: 'music' or 'voiceover'
   const [appShowcaseAudioSource, setAppShowcaseAudioSource] = useState<'music' | 'voiceover'>('music');
@@ -769,8 +770,7 @@ const CreateVideoPage: React.FC = () => {
   // Get audio duration from selected song or narrative
   const getAudioDuration = (): number | undefined => {
     if (isUgcPremium) {
-      const durationMap = { short: 8, medium: 13, long: 15 };
-      return durationMap[ugcDurationSetting];
+      return ugcDuration;
     }
     if (needsSong && selectedSongId) {
       const song = songs.find(s => s.songId === selectedSongId);
@@ -788,8 +788,7 @@ const CreateVideoPage: React.FC = () => {
   const getCredits = () => {
     let baseCost = 0;
     if (isUgcPremium) {
-      const ugcSeconds = { short: 8, medium: 13, long: 15 }[ugcDurationSetting];
-      baseCost = ugcSeconds * UGC_PREMIUM_TOKENS_PER_SEC; // 100 tokens/s for UGC Premium
+      baseCost = ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC; // 100 tokens/s for UGC Premium
     } else if (isUgcVoiceover) {
       const audioDuration = getAudioDuration();
       baseCost = getUgcCost(audioDuration); // 50 tokens/s for UGC voiceover
@@ -815,9 +814,8 @@ const CreateVideoPage: React.FC = () => {
     const parts: string[] = [];
 
     if (isUgcPremium) {
-      const ugcSecs = { short: 8, medium: 13, long: 15 }[ugcDurationSetting];
-      const cost = ugcSecs * UGC_PREMIUM_TOKENS_PER_SEC;
-      parts.push(`${cost} video (~${ugcSecs}s × 100/s)`);
+      const cost = ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC;
+      parts.push(`${cost} video (~${ugcDuration}s × 100/s)`);
     } else if (videoType === 'still') {
       parts.push('200 flat');
     } else {
@@ -926,10 +924,8 @@ const CreateVideoPage: React.FC = () => {
         rouletteMode: isAppShowcase ? false : rouletteMode,
         videoContentType: backendVideoContentType,
         includeBackgroundMusic: (needsVoiceover || isUgcPremium) && !isAppShowcase ? includeBackgroundMusic : undefined,
-        ugcDuration: isUgcPremium ? { short: 8, medium: 13, long: 15 }[ugcDurationSetting] : undefined,
+        ugcDuration: isUgcPremium ? ugcDuration : undefined,
         ugcAudioMode: isUgcPremium ? 'native' : isUgc ? 'voiceover' : undefined,
-        ugcDurationSetting: isUgcPremium ? ugcDurationSetting : undefined,
-        ugcDurationSeconds: isUgcPremium ? { short: 8, medium: 13, long: 15 }[ugcDurationSetting] : undefined,
         enrichVideo: enrichVideo || undefined,
         enableCaptions: enableCaptions || undefined,
       });
@@ -1301,59 +1297,43 @@ const CreateVideoPage: React.FC = () => {
             </Box>
             )}
 
-            {/* UGC Premium Duration Toggle - Short / Medium / Long */}
+            {/* UGC Premium Duration Slider - Short / Medium / Long */}
             {isUgcPremium && (
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1.5 }}>
-                Video Duration
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Video Duration
+                </Typography>
+                <Typography sx={{ color: '#007AFF', fontWeight: 600, fontSize: '0.9rem' }}>
+                  ~{ugcDuration}s
+                </Typography>
+              </Box>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 2 }}>
+                {ugcDuration * UGC_PREMIUM_TOKENS_PER_SEC} credits
               </Typography>
-              <ToggleButtonGroup
-                value={ugcDurationSetting}
-                exclusive
-                onChange={(_, value) => value && setUgcDurationSetting(value)}
-                fullWidth
+              <Slider
+                value={ugcDuration}
+                onChange={(_e, value) => setUgcDuration(value as number)}
+                min={8}
+                max={15}
+                step={null}
+                marks={[
+                  { value: 8, label: 'Short ~8s' },
+                  { value: 13, label: 'Medium ~13s' },
+                  { value: 15, label: 'Long ~15s' },
+                ]}
                 sx={{
-                  gap: 1,
-                  '& .MuiToggleButtonGroup-grouped': {
-                    border: 'none !important',
-                    borderRadius: '12px !important',
-                    m: 0,
+                  color: '#007AFF',
+                  '& .MuiSlider-markLabel': {
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: '0.75rem',
                   },
-                  '& .MuiToggleButton-root': {
-                    flex: 1,
-                    py: 1.5,
-                    borderRadius: '12px !important',
-                    border: '2px solid rgba(255,255,255,0.1) !important',
-                    background: 'rgba(255,255,255,0.05)',
-                    textTransform: 'none',
-                    flexDirection: 'column',
-                    gap: 0.25,
-                    '&:hover': {
-                      background: 'rgba(255,255,255,0.08)',
-                    },
-                    '&.Mui-selected': {
-                      background: 'rgba(0,122,255,0.15)',
-                      border: '2px solid #007AFF !important',
-                      '&:hover': { background: 'rgba(0,122,255,0.2)' },
-                    },
+                  '& .MuiSlider-thumb': {
+                    width: 20,
+                    height: 20,
                   },
                 }}
-              >
-                {[
-                  { value: 'short', label: 'Short', duration: '~8s', credits: 800 },
-                  { value: 'medium', label: 'Medium', duration: '~13s', credits: 1300 },
-                  { value: 'long', label: 'Long', duration: '~15s', credits: 1500 },
-                ].map((opt) => (
-                  <ToggleButton key={opt.value} value={opt.value}>
-                    <Typography sx={{ fontWeight: 600, color: ugcDurationSetting === opt.value ? '#007AFF' : '#fff', fontSize: '0.95rem' }}>
-                      {opt.label}
-                    </Typography>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
-                      {opt.duration} · {opt.credits} credits
-                    </Typography>
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
+              />
             </Box>
             )}
 
