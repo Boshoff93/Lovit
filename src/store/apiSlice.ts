@@ -1,6 +1,32 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Character, Narrative, ScheduledPost } from '../services/api';
 
+// Slideshow type
+export interface Slideshow {
+  slideshowId: string;
+  userId: string;
+  title: string;
+  description: string;
+  style: string;
+  slideCount: number;
+  aspectRatio: '9:16' | '4:5';
+  brand: string;
+  hook?: string;
+  ctaText?: string;
+  tokenCost: number;
+  imageKeys: string[];
+  imageUrls: string[];
+  captions: string[];
+  hashtags: string[];
+  characterIds?: string[];
+  existingAssetKeys?: string[];
+  status: 'generating' | 'ready' | 'failed';
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+  [key: string]: any;
+}
+
 // Types - keep them flexible to allow any server-returned properties
 export interface Song {
   songId: string;
@@ -89,7 +115,7 @@ export const apiSlice = createApi({
     },
   }),
   // Tag types for cache invalidation
-  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts'],
+  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows'],
   endpoints: (builder) => ({
     // Videos
     getUserVideos: builder.query<
@@ -277,6 +303,34 @@ export const apiSlice = createApi({
       providesTags: [{ type: 'SocialConnections', id: 'twitter' }],
     }),
 
+    // Slideshows
+    getSlideshows: builder.query<{ slideshows: Slideshow[] }, void>({
+      query: () => `/api/gruvi/slideshows`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.slideshows.map(({ slideshowId }) => ({ type: 'Slideshows' as const, id: slideshowId })),
+              { type: 'Slideshows', id: 'LIST' },
+            ]
+          : [{ type: 'Slideshows', id: 'LIST' }],
+    }),
+
+    getSlideshow: builder.query<{ slideshow: Slideshow }, string>({
+      query: (slideshowId) => `/api/gruvi/slideshows/${slideshowId}`,
+      providesTags: (_result, _error, slideshowId) => [{ type: 'Slideshows', id: slideshowId }],
+    }),
+
+    deleteSlideshow: builder.mutation<void, string>({
+      query: (slideshowId) => ({
+        url: `/api/gruvi/slideshows/${slideshowId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, slideshowId) => [
+        { type: 'Slideshows', id: slideshowId },
+        { type: 'Slideshows', id: 'LIST' },
+      ],
+    }),
+
     // Scheduled Posts
     getScheduledPosts: builder.query<
       { scheduledPosts: ScheduledPost[]; schedulingLimits?: { used: number; limit: number; remaining: number; tier: string } },
@@ -298,6 +352,10 @@ export const {
   useDeleteNarrativeMutation,
   useDeleteVideoMutation,
   useDeleteSongMutation,
+  // Slideshows
+  useGetSlideshowsQuery,
+  useGetSlideshowQuery,
+  useDeleteSlideshowMutation,
   // Social Media
   useGetSocialAccountsQuery,
   useGetYouTubeStatusQuery,

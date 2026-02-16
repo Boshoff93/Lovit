@@ -555,6 +555,58 @@ export const scheduledPostsApi = {
     api.delete(`/api/gruvi/scheduled-posts/${scheduleId}`),
 };
 
+// Slideshows API
+export const slideshowsApi = {
+  createSlideshow: (data: {
+    description: string;
+    slideCount?: 4 | 8 | 12 | 16 | 20;
+    style?: string;
+    aspectRatio?: '9:16' | '4:5';
+    brand?: 'gruvi' | 'fable';
+    characterIds?: string[];
+    existingAssetKeys?: string[];
+    hook?: string;
+    ctaText?: string;
+    title?: string;
+  }) => api.post('/api/gruvi/slideshows', data),
+
+  getSlideshows: () =>
+    api.get('/api/gruvi/slideshows'),
+
+  getSlideshow: (slideshowId: string) =>
+    api.get(`/api/gruvi/slideshows/${slideshowId}`),
+
+  deleteSlideshow: (slideshowId: string) =>
+    api.delete(`/api/gruvi/slideshows/${slideshowId}`),
+
+  uploadSlideshow: (slideshowId: string, data: {
+    accountId: string;
+    title?: string;
+    description?: string;
+    tiktokSettings?: {
+      privacyLevel?: string;
+      postMode?: 'direct' | 'draft';
+      disableComment?: boolean;
+      disableDuet?: boolean;
+      disableStitch?: boolean;
+    };
+  }) => api.post(`/api/gruvi/slideshows/${slideshowId}/upload`, data),
+
+  scheduleSlideshow: (slideshowId: string, data: {
+    scheduledTime: string;
+    accountId: string;
+    title?: string;
+    description?: string;
+    tiktokSettings?: {
+      privacyLevel?: string;
+      postMode?: 'direct' | 'draft';
+      disableComment?: boolean;
+      disableDuet?: boolean;
+      disableStitch?: boolean;
+    };
+  }) => api.post(`/api/gruvi/slideshows/${slideshowId}/schedule`, data),
+};
+
 // Swap Studio API - Character/Motion Swap
 export const swapStudioApi = {
   // Create a motion capture swap using S3 key + character reference

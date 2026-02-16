@@ -29,6 +29,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import { useLocation } from 'react-router-dom';
 
 // Gradient colors for each navigation group
@@ -46,6 +47,7 @@ const createItems = [
   { path: '/create/narrative', label: 'Create Voiceover', icon: HeadsetMicIcon, gradient: gradients.create },
   { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
   { path: '/motion-capture', label: 'AI Character Swap', icon: SwapHorizIcon, gradient: gradients.create },
+  { path: '/create/slideshow', label: 'Create Slideshow', icon: ViewCarouselIcon, gradient: gradients.create },
   { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
 ];
 
@@ -58,6 +60,7 @@ const contentItems = [
   { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon, gradient: gradients.content },
   { path: '/my-narratives', label: 'My Voiceovers', icon: HeadsetMicIcon, gradient: gradients.content },
   { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon, gradient: gradients.content },
+  { path: '/my-slideshows', label: 'My Slideshows', icon: ViewCarouselIcon, gradient: gradients.content },
   { path: '/ai-assets', label: 'My AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
 ];
 
@@ -432,9 +435,11 @@ const SidebarContent = memo<SidebarContentProps>(({
             const isViewingVideo = item.path === '/my-videos' && location.pathname.startsWith('/video/');
             // Show "My Music" as active when viewing a music item
             const isViewingMusic = item.path === '/my-music' && location.pathname.startsWith('/music/');
+            // Show "My Slideshows" as active when viewing a slideshow
+            const isViewingSlideshow = item.path === '/my-slideshows' && location.pathname.startsWith('/slideshow/');
             // Show "AI Assets" as active when editing an AI asset
             const isEditingCast = item.path === '/ai-assets' && location.pathname.startsWith('/ai-assets/edit/');
-            const isHighlighted = active || isViewingVideo || isViewingMusic || isEditingCast;
+            const isHighlighted = active || isViewingVideo || isViewingMusic || isViewingSlideshow || isEditingCast;
 
             // Check if this item should show a sub-item
             const showSubItem = currentViewingItem && (

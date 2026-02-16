@@ -62,6 +62,9 @@ import HowToCreatePromoMusicVideo from './pages/blog/how-to-create-promo-music-v
 import MotionCapturePage from './pages/MotionCapturePage';
 import CreateNarrativePage from './pages/CreateNarrativePage';
 import MyNarrativesPage from './pages/MyNarrativesPage';
+import CreateSlideshowPage from './pages/CreateSlideshowPage';
+import MySlideshowsPage from './pages/MySlideshowsPage';
+import SlideshowDetailPage from './pages/SlideshowDetailPage';
 
 // Docs pages
 import DocsPage from './pages/docs/DocsPage';
@@ -516,6 +519,38 @@ function App() {
           <RequireAuth>
             <Layout>
               <MyNarrativesPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Create Slideshow - protected route */}
+        <Route path="/create/slideshow" element={
+          <RequireAuth>
+            <Layout>
+              <RequireSubscription
+                featureName="Create Slideshow"
+                description="Create AI-generated slideshow carousels for TikTok and Instagram."
+              >
+                <CreateSlideshowPage />
+              </RequireSubscription>
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* My Slideshows - protected route */}
+        <Route path="/my-slideshows" element={
+          <RequireAuth>
+            <Layout>
+              <MySlideshowsPage />
+            </Layout>
+          </RequireAuth>
+        } />
+
+        {/* Slideshow Detail - protected route */}
+        <Route path="/slideshow/:slideshowId" element={
+          <RequireAuth>
+            <Layout>
+              <SlideshowDetailPage />
             </Layout>
           </RequireAuth>
         } />
