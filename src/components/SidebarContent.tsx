@@ -85,7 +85,7 @@ const footerItems = [
 
 // Current viewing item info for sub-navigation
 interface CurrentViewingItem {
-  type: 'video' | 'music' | 'asset';
+  type: 'video' | 'music' | 'asset' | 'slideshow';
   title: string;
   path: string;
 }
@@ -445,7 +445,8 @@ const SidebarContent = memo<SidebarContentProps>(({
             const showSubItem = currentViewingItem && (
               (item.path === '/my-videos' && currentViewingItem.type === 'video') ||
               (item.path === '/my-music' && currentViewingItem.type === 'music') ||
-              (item.path === '/ai-assets' && currentViewingItem.type === 'asset')
+              (item.path === '/ai-assets' && currentViewingItem.type === 'asset') ||
+              (item.path === '/my-slideshows' && currentViewingItem.type === 'slideshow')
             );
 
             return (
@@ -576,6 +577,8 @@ const SidebarContent = memo<SidebarContentProps>(({
                             <PersonIcon sx={{ fontSize: 14, color: '#fff' }} />
                           ) : currentViewingItem.type === 'music' ? (
                             <MusicNoteIcon sx={{ fontSize: 14, color: '#fff' }} />
+                          ) : currentViewingItem.type === 'slideshow' ? (
+                            <ViewCarouselIcon sx={{ fontSize: 14, color: '#fff' }} />
                           ) : (
                             <PlayCircleOutlineIcon sx={{ fontSize: 14, color: '#fff' }} />
                           )}
