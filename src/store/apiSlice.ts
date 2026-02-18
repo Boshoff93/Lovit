@@ -1,6 +1,49 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Character, Narrative, ScheduledPost } from '../services/api';
 
+// TikTok Analytics types
+export interface TikTokVideo {
+  id: string;
+  title: string;
+  create_time: number;
+  cover_image_url: string;
+  share_url: string;
+  duration: number;
+  like_count: number;
+  comment_count: number;
+  share_count: number;
+  view_count: number;
+}
+
+export interface TikTokSummary {
+  totalPosts: number;
+  totals: { views: number; likes: number; comments: number; shares: number };
+  averages: { views: number; likes: number; comments: number; shares: number };
+  lastWeek: { views: number; likes: number; comments: number; shares: number; posts: number };
+  lastMonth: { views: number; likes: number; comments: number; shares: number; posts: number };
+  allTime: { views: number; likes: number; comments: number; shares: number; posts: number };
+  topByViews: Array<{ id: string; title: string; views: number; likes: number; shares: number; url: string }>;
+  topByEngagement: Array<{ id: string; title: string; views: number; likes: number; comments: number; shares: number; url: string }>;
+}
+
+export interface TikTokTrendBucket {
+  date: string;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  posts: number;
+}
+
+export interface TikTokAccountStats {
+  displayName: string;
+  avatarUrl: string;
+  followerCount: number;
+  followingCount: number;
+  likesCount: number;
+  videoCount: number;
+}
+
 // Slideshow type
 export interface Slideshow {
   slideshowId: string;
@@ -115,7 +158,7 @@ export const apiSlice = createApi({
     },
   }),
   // Tag types for cache invalidation
-  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows'],
+  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows', 'TikTokVideos', 'TikTokSummary', 'TikTokTrends', 'TikTokAccountStats'],
   endpoints: (builder) => ({
     // Videos
     getUserVideos: builder.query<
@@ -339,6 +382,55 @@ export const apiSlice = createApi({
       query: () => `/api/gruvi/scheduled-posts`,
       providesTags: ['ScheduledPosts'],
     }),
+
+    // TikTok Analytics
+    getTikTokVideos: builder.query<
+      { videos: TikTokVideo[]; totalCount: number },
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/tiktok/videos?${params.toString()}`;
+      },
+      providesTags: ['TikTokVideos'],
+    }),
+
+    getTikTokSummary: builder.query<
+      TikTokSummary,
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/tiktok/analytics/summary?${params.toString()}`;
+      },
+      providesTags: ['TikTokSummary'],
+    }),
+
+    getTikTokTrends: builder.query<
+      { period: string; trends: TikTokTrendBucket[]; totalBuckets: number },
+      { userId: string; accountId?: string; period?: 'daily' | 'weekly' | 'monthly' }
+    >({
+      query: ({ userId, accountId, period = 'daily' }) => {
+        const params = new URLSearchParams({ userId, period });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/tiktok/analytics/trends?${params.toString()}`;
+      },
+      providesTags: ['TikTokTrends'],
+    }),
+
+    getTikTokAccountStats: builder.query<
+      TikTokAccountStats,
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/tiktok/account/stats?${params.toString()}`;
+      },
+      providesTags: ['TikTokAccountStats'],
+    }),
   }),
 });
 
@@ -366,4 +458,9 @@ export const {
   useGetTwitterStatusQuery,
   // Scheduled Posts
   useGetScheduledPostsQuery,
+  // TikTok Analytics
+  useGetTikTokVideosQuery,
+  useGetTikTokSummaryQuery,
+  useGetTikTokTrendsQuery,
+  useGetTikTokAccountStatsQuery,
 } = apiSlice;

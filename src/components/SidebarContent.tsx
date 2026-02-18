@@ -30,6 +30,7 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { useLocation } from 'react-router-dom';
 
 // Gradient colors for each navigation group
@@ -65,6 +66,7 @@ const contentItems = [
 ];
 
 const publishItems = [
+  { path: '/analytics', label: 'Analytics', icon: BarChartIcon, gradient: gradients.publish },
   { path: '/settings/connected-accounts', label: 'Integrations', icon: LinkIcon, gradient: gradients.publish },
   { path: '/settings/scheduled-content', label: 'Scheduled Posts', icon: CalendarMonthIcon, gradient: gradients.publish },
 ];
