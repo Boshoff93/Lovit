@@ -315,21 +315,50 @@ const CreateSlideshowPage: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            {/* Title */}
+            {/* TikTok Caption */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Title
+                TikTok Caption
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
-                Give your slideshow a name (optional)
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+                  The caption that appears on your TikTok post (optional)
+                </Typography>
+                <Typography sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: (title.trim().split(/\s+/).filter(Boolean).length) > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)',
+                }}>
+                  {title.trim() ? title.trim().split(/\s+/).filter(Boolean).length : 0}/90 words
+                </Typography>
+              </Box>
               <TextField
                 fullWidth
-                placeholder="Internal reference name for this slideshow"
+                multiline
+                rows={3}
+                placeholder="Hook + story + hashtags (e.g., 'My daughter's teacher asked why she knows so many big words now...')"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                sx={textFieldSx}
-                inputProps={{ maxLength: 100 }}
+                onChange={(e) => {
+                  const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                  if (words.length <= 90 || e.target.value.length < title.length) {
+                    setTitle(e.target.value);
+                  }
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    lineHeight: 1.6,
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)', borderWidth: '1px' },
+                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                  },
+                  '& .MuiInputBase-input': {
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                  },
+                }}
               />
             </Box>
 

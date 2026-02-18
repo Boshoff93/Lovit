@@ -363,26 +363,40 @@ const SlideshowDetailPage: React.FC = () => {
         <>
           {/* Metadata Editing */}
           <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>
-              Post Details
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                Post Details
+              </Typography>
+              <Typography sx={{
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: (editTitle.trim().split(/\s+/).filter(Boolean).length) > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)',
+              }}>
+                {editTitle.trim() ? editTitle.trim().split(/\s+/).filter(Boolean).length : 0}/90 words
+              </Typography>
+            </Box>
             <TextField
               fullWidth
-              placeholder="Title"
+              multiline
+              rows={3}
+              placeholder="TikTok Caption (hook + story + hashtags)"
               value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
+              onChange={(e) => {
+                const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                if (words.length <= 90 || e.target.value.length < editTitle.length) {
+                  setEditTitle(e.target.value);
+                }
+              }}
               sx={{
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem',
-                  '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
+                  borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', lineHeight: 1.6,
                   '& fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editTitle ? '2px' : '1px' },
                   '&:hover fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.2)' },
                   '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
                 },
                 '& .MuiInputBase-input': { '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 } },
               }}
-              inputProps={{ maxLength: 100 }}
             />
             <TextField
               fullWidth multiline rows={5} placeholder="Description"
