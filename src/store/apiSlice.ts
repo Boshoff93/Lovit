@@ -56,6 +56,7 @@ export interface Slideshow {
   brand: string;
   hook?: string;
   ctaText?: string;
+  tiktokDescription?: string;
   tokenCost: number;
   imageKeys: string[];
   imageUrls: string[];

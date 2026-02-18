@@ -1167,7 +1167,7 @@ const ScheduledContentPage: React.FC = () => {
         <DialogTitle sx={{ fontWeight: 600, color: '#fff' }}>Cancel Scheduled Post?</DialogTitle>
         <DialogContent>
           <Typography sx={{ color: 'rgba(255,255,255,0.6)' }}>
-            This will cancel the scheduled upload. The video will remain in your library.
+            This will cancel the scheduled upload. The content will remain in your library.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
@@ -1486,11 +1486,15 @@ const ScheduledContentPage: React.FC = () => {
                 </Button>
               )}
               <Box sx={{ flex: 1 }} />
-              {/* View Video button */}
+              {/* View Video/Slideshow button */}
               <Button
                 onClick={() => {
                   setDetailsDialogOpen(false);
-                  navigate(`/video/${selectedPost.videoId}`);
+                  if (selectedPost.contentType === 'slideshow' && selectedPost.slideshowId) {
+                    navigate(`/slideshow/${selectedPost.slideshowId}`);
+                  } else {
+                    navigate(`/video/${selectedPost.videoId}`);
+                  }
                 }}
                 variant="contained"
                 sx={{
@@ -1501,7 +1505,7 @@ const ScheduledContentPage: React.FC = () => {
                   '&:hover': { bgcolor: '#0066DD' },
                 }}
               >
-                View Video
+                {selectedPost.contentType === 'slideshow' ? 'View Slideshow' : 'View Video'}
               </Button>
               {/* Close button - only for completed or failed posts */}
               {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (

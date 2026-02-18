@@ -489,7 +489,9 @@ export const charactersApi = {
 export interface ScheduledPost {
   userId: string;
   scheduleId: string;
-  videoId: string;
+  videoId?: string;
+  slideshowId?: string;
+  contentType?: 'video' | 'slideshow';
   platforms: Array<{
     platform: string;
     accountId?: string;
@@ -498,7 +500,7 @@ export interface ScheduledPost {
   scheduledTime: string;
   title: string;
   description: string;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   hook?: string;
   tags?: string[];
   videoFooter?: string;
@@ -568,6 +570,7 @@ export const slideshowsApi = {
     hook?: string;
     ctaText?: string;
     title?: string;
+    tiktokDescription?: string;
   }) => api.post('/api/gruvi/slideshows', data),
 
   getSlideshows: () =>
@@ -581,6 +584,8 @@ export const slideshowsApi = {
 
   uploadSlideshow: (slideshowId: string, data: {
     accountId: string;
+    title?: string;
+    description?: string;
     caption?: string;
     hashtags?: string[];
     tiktokSettings?: {
@@ -595,6 +600,8 @@ export const slideshowsApi = {
   scheduleSlideshow: (slideshowId: string, data: {
     scheduledTime: string;
     accountId: string;
+    title?: string;
+    description?: string;
     caption?: string;
     hashtags?: string[];
     tiktokSettings?: {

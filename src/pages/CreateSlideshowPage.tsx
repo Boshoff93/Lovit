@@ -121,6 +121,7 @@ const CreateSlideshowPage: React.FC = () => {
 
   // Form state
   const [title, setTitle] = useState('');
+  const [tiktokDescription, setTiktokDescription] = useState('');
   const [description, setDescription] = useState('');
   const [hookText, setHookText] = useState('');
   const [ctaText, setCtaText] = useState('');
@@ -180,6 +181,7 @@ const CreateSlideshowPage: React.FC = () => {
         hook: hookText.trim() || undefined,
         ctaText: ctaText.trim() || undefined,
         title: title.trim() || undefined,
+        tiktokDescription: tiktokDescription.trim() || undefined,
       });
 
       const { slideshowId, tokenCost: cost } = response.data;
@@ -344,6 +346,39 @@ const CreateSlideshowPage: React.FC = () => {
                     setTitle(e.target.value);
                   }
                 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    lineHeight: 1.6,
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)', borderWidth: '1px' },
+                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
+                  },
+                  '& .MuiInputBase-input': {
+                    '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
+                  },
+                }}
+              />
+            </Box>
+
+            {/* TikTok Description */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Description
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                The description that appears on your TikTok post (optional)
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                placeholder="Tell the story behind the post, add context, or expand on your hook..."
+                value={tiktokDescription}
+                onChange={(e) => setTiktokDescription(e.target.value)}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
