@@ -35,6 +35,7 @@ import {
   Share,
   Add,
   Check,
+  InfoOutlined,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { useGetSlideshowQuery, useGetSocialAccountsQuery, useDeleteSlideshowMutation, apiSlice } from '../store/apiSlice';
@@ -99,8 +100,7 @@ const SlideshowDetailPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Metadata editing
-  const [editTitle, setEditTitle] = useState('');
-  const [editDescription, setEditDescription] = useState('');
+  const [editCaption, setEditCaption] = useState('');
   const [editTags, setEditTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
 
@@ -130,12 +130,11 @@ const SlideshowDetailPage: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Pre-populate metadata from slideshow data
+  // Pre-populate post caption from slide captions (NOT the generation prompt)
   useEffect(() => {
     if (currentSlideshow) {
-      setEditTitle(currentSlideshow.title || '');
       const captionText = (currentSlideshow.captions || []).filter(Boolean).join('\n');
-      setEditDescription(currentSlideshow.description || captionText || '');
+      setEditCaption(captionText);
       setEditTags(currentSlideshow.hashtags || []);
     }
   }, [currentSlideshow?.slideshowId, currentSlideshow?.status]);
@@ -205,7 +204,7 @@ const SlideshowDetailPage: React.FC = () => {
     }
 
     const hashtagString = editTags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-    const fullDescription = `${editDescription}\n\n${hashtagString}`.trim();
+    const fullCaption = `${editCaption}\n\n${hashtagString}`.trim();
 
     const tiktokSettings = {
       privacyLevel: tiktokPrivacyLevel || 'SELF_ONLY',
@@ -225,8 +224,8 @@ const SlideshowDetailPage: React.FC = () => {
         await slideshowsApi.scheduleSlideshow(currentSlideshow.slideshowId, {
           scheduledTime: scheduledDateTime.toISOString(),
           accountId: tiktokAccount.accountId,
-          title: editTitle,
-          description: fullDescription,
+          title: fullCaption,
+          description: '',
           tiktokSettings,
         });
         setSocialSuccess('Slideshow scheduled successfully');
@@ -243,8 +242,8 @@ const SlideshowDetailPage: React.FC = () => {
       try {
         await slideshowsApi.uploadSlideshow(currentSlideshow.slideshowId, {
           accountId: tiktokAccount.accountId,
-          title: editTitle,
-          description: fullDescription,
+          title: fullCaption,
+          description: '',
           tiktokSettings,
         });
         setUploadProgress({ [tiktokAccount.accountId]: 'success' });
@@ -478,6 +477,10 @@ const SlideshowDetailPage: React.FC = () => {
               fontSize: { xs: '1.1rem', sm: '1.5rem' },
               lineHeight: 1.2,
               mb: 0.25,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
             }}>
               {currentSlideshow.title || 'Slideshow'}
             </Typography>
@@ -806,40 +809,25 @@ const SlideshowDetailPage: React.FC = () => {
             {/* Divider between social accounts and post details */}
             <Box sx={{ my: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }} />
 
-            {/* Post Details Section */}
+            {/* Caption Section */}
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, color: '#fff', fontSize: '1rem' }}>
-              Post Details
+              Title / Caption
             </Typography>
             <TextField
-              fullWidth placeholder="Title" value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              size="small"
-              sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem',
-                  '& fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editTitle ? '2px' : '1px' },
-                  '&:hover fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.2)' },
-                  '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
-                },
-                '& .MuiInputBase-input': { '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 } },
-              }}
-              inputProps={{ maxLength: 100 }}
-            />
-            <TextField
-              fullWidth multiline rows={4} placeholder="Description" value={editDescription}
-              onChange={(e) => setEditDescription(e.target.value)}
+              fullWidth multiline rows={4} placeholder="Write your caption..." value={editCaption}
+              onChange={(e) => setEditCaption(e.target.value)}
               size="small"
               sx={{
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', lineHeight: 1.6,
-                  '& fieldset': { borderColor: editDescription ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editDescription ? '2px' : '1px' },
-                  '&:hover fieldset': { borderColor: editDescription ? '#007AFF' : 'rgba(255,255,255,0.2)' },
+                  '& fieldset': { borderColor: editCaption ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editCaption ? '2px' : '1px' },
+                  '&:hover fieldset': { borderColor: editCaption ? '#007AFF' : 'rgba(255,255,255,0.2)' },
                   '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
                 },
                 '& .MuiInputBase-input': { '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 } },
               }}
+              inputProps={{ maxLength: 2200 }}
             />
             <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>Hashtags</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
@@ -875,45 +863,374 @@ const SlideshowDetailPage: React.FC = () => {
             {hasTikTok && (
               <>
                 <Box sx={{ my: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#fff', fontSize: '1rem' }}>TikTok Settings</Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Post Mode</Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {(['direct', 'draft'] as const).map(mode => (
-                      <Chip key={mode} label={mode === 'direct' ? 'Publish' : 'Save as Draft'} onClick={() => setTiktokPostMode(mode)}
-                        sx={{ borderRadius: '10px', fontWeight: 600, backgroundColor: tiktokPostMode === mode ? '#007AFF' : 'rgba(255,255,255,0.05)', color: '#fff', border: tiktokPostMode === mode ? '1px solid #007AFF' : '1px solid rgba(255,255,255,0.1)', '&:hover': { opacity: 0.8 } }}
-                      />
-                    ))}
+
+                {/* TikTok Header with icon */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      border: '2.5px solid #34C759',
+                      background: '#000',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 0 12px rgba(52,199,89,0.4)',
+                    }}
+                  >
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 20, height: 20, fill: '#fff' }}>
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </Box>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                      TikTok Settings
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>
+                      {(() => {
+                        const tiktokAccount = selectedAccounts.find(a => a.platform === 'tiktok');
+                        const username = tiktokAccount?.username;
+                        return tiktokCreatorInfo?.creatorNickname && tiktokCreatorInfo.creatorNickname !== username
+                          ? `@${username} (${tiktokCreatorInfo.creatorNickname})`
+                          : username ? `@${username}` : 'Your TikTok account';
+                      })()}
+                    </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Privacy Level</Typography>
-                  <Select value={tiktokPrivacyLevel} onChange={(e) => setTiktokPrivacyLevel(e.target.value)} displayEmpty size="small" fullWidth
-                    sx={{ borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
+
+                {/* Post Mode Selection */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                  Post Mode
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+                  <Box
+                    onClick={() => setTiktokPostMode('draft')}
+                    sx={{
+                      flex: 1,
+                      p: 1.5,
+                      borderRadius: '10px',
+                      border: tiktokPostMode === 'draft' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                      bgcolor: tiktokPostMode === 'draft' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': { borderColor: tiktokPostMode === 'draft' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
+                    }}
                   >
-                    <MenuItem value="" disabled>Select privacy level</MenuItem>
-                    {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((level: string) => (
-                      <MenuItem key={level} value={level}>{level.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}</MenuItem>
-                    ))}
-                  </Select>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
+                      Save as Draft
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>
+                      Video appears in your TikTok inbox to review and post
+                    </Typography>
+                  </Box>
+                  <Box
+                    onClick={() => setTiktokPostMode('direct')}
+                    sx={{
+                      flex: 1,
+                      p: 1.5,
+                      borderRadius: '10px',
+                      border: tiktokPostMode === 'direct' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
+                      bgcolor: tiktokPostMode === 'direct' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': { borderColor: tiktokPostMode === 'direct' ? '#007AFF' : 'rgba(255,255,255,0.3)' },
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
+                      Direct Post
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>
+                      Post directly to your TikTok profile
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                  <FormControlLabel control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow comments</Typography>} />
-                  <FormControlLabel control={<Checkbox checked={tiktokAllowDuet} onChange={(e) => setTiktokAllowDuet(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow duet</Typography>} />
-                  <FormControlLabel control={<Checkbox checked={tiktokAllowStitch} onChange={(e) => setTiktokAllowStitch(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow stitch</Typography>} />
-                </Box>
-                <Box sx={{ mt: 2 }}>
+
+                {/* Privacy Level */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                  Who can view this video <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>
+                </Typography>
+                <Select
+                  fullWidth
+                  value={tiktokPrivacyLevel}
+                  onChange={(e) => {
+                    setTiktokPrivacyLevel(e.target.value);
+                    if (e.target.value === 'SELF_ONLY' && tiktokBrandedContent) {
+                      setTiktokBrandedContent(false);
+                    }
+                  }}
+                  displayEmpty
+                  sx={{
+                    borderRadius: '12px',
+                    mb: tiktokPrivacyLevel !== '' ? 2 : 1,
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    '& .MuiSelect-select': { py: 1.5, px: 2, display: 'flex', alignItems: 'center' },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: tiktokPrivacyLevel ? '#007AFF' : 'rgba(255,255,255,0.1)',
+                      borderWidth: tiktokPrivacyLevel ? '2px' : '1px',
+                    },
+                    '&:hover': { background: 'rgba(255,255,255,0.08)' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: tiktokPrivacyLevel ? '#007AFF' : 'rgba(255,255,255,0.1) !important',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF', borderWidth: '2px' },
+                    '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.6)' },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    <Typography sx={{ color: '#86868B' }}>Select privacy level</Typography>
+                  </MenuItem>
+                  {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((option: string) => (
+                    <MenuItem
+                      key={option}
+                      value={option}
+                      disabled={option === 'SELF_ONLY' && tiktokBrandedContent}
+                    >
+                      {option === 'PUBLIC_TO_EVERYONE' && 'Everyone'}
+                      {option === 'MUTUAL_FOLLOW_FRIENDS' && 'Friends'}
+                      {option === 'SELF_ONLY' && (tiktokBrandedContent ? 'Only me (unavailable for branded content)' : 'Only me')}
+                      {option === 'FOLLOWER_OF_CREATOR' && 'Followers'}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {tiktokPrivacyLevel === '' && (
+                  <Typography sx={{ fontSize: '0.7rem', color: '#FF3B30', mb: 2 }}>
+                    Please select a privacy level to continue
+                  </Typography>
+                )}
+
+                {/* Interaction Settings */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                  Allow viewers to:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   <FormControlLabel
-                    control={<Switch checked={tiktokDiscloseContent} onChange={(e) => setTiktokDiscloseContent(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#007AFF' } }} />}
-                    label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>}
+                    control={
+                      <Checkbox
+                        checked={tiktokAllowComment && !tiktokCreatorInfo?.commentDisabled}
+                        onChange={(e) => setTiktokAllowComment(e.target.checked)}
+                        disabled={tiktokCreatorInfo?.commentDisabled}
+                        size="small"
+                        icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                        checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                        sx={{ '&.Mui-disabled': { opacity: 0.3 } }}
+                      />
+                    }
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.commentDisabled ? '#C7C7CC' : 'inherit' }}>Comment</Typography>
+                        <Tooltip title={tiktokCreatorInfo?.commentDisabled ? 'Comments are disabled in your TikTok settings' : 'Allow viewers to leave comments on your video'} arrow>
+                          <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.commentDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                        </Tooltip>
+                      </Box>
+                    }
+                    sx={{ mr: 2 }}
                   />
-                  {tiktokDiscloseContent && (
-                    <Box sx={{ ml: 4, mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                      <FormControlLabel control={<Checkbox checked={tiktokBrandOrganic} onChange={(e) => setTiktokBrandOrganic(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Your brand</Typography>} />
-                      <FormControlLabel control={<Checkbox checked={tiktokBrandedContent} onChange={(e) => setTiktokBrandedContent(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Branded content</Typography>} />
-                    </Box>
-                  )}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tiktokAllowDuet && !tiktokCreatorInfo?.duetDisabled}
+                        onChange={(e) => setTiktokAllowDuet(e.target.checked)}
+                        disabled={tiktokCreatorInfo?.duetDisabled}
+                        size="small"
+                        icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                        checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                        sx={{ '&.Mui-disabled': { opacity: 0.3 } }}
+                      />
+                    }
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.duetDisabled ? '#C7C7CC' : 'inherit' }}>Duet</Typography>
+                        <Tooltip title={tiktokCreatorInfo?.duetDisabled ? 'Duet is disabled in your TikTok settings' : 'Allow others to create a video side-by-side with yours'} arrow>
+                          <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.duetDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                        </Tooltip>
+                      </Box>
+                    }
+                    sx={{ mr: 2 }}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tiktokAllowStitch && !tiktokCreatorInfo?.stitchDisabled}
+                        onChange={(e) => setTiktokAllowStitch(e.target.checked)}
+                        disabled={tiktokCreatorInfo?.stitchDisabled}
+                        size="small"
+                        icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                        checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                        sx={{ '&.Mui-disabled': { opacity: 0.3 } }}
+                      />
+                    }
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokCreatorInfo?.stitchDisabled ? '#C7C7CC' : 'inherit' }}>Stitch</Typography>
+                        <Tooltip title={tiktokCreatorInfo?.stitchDisabled ? 'Stitch is disabled in your TikTok settings' : 'Allow others to clip up to 5 seconds of your video into theirs'} arrow>
+                          <InfoOutlined sx={{ fontSize: '1rem', color: tiktokCreatorInfo?.stitchDisabled ? '#E0E0E0' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                        </Tooltip>
+                      </Box>
+                    }
+                  />
                 </Box>
+
+                {/* Commercial Content Disclosure */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: tiktokDiscloseContent ? 1.5 : 0, ml: -1 }}>
+                  <Switch
+                    checked={tiktokDiscloseContent}
+                    onChange={(e) => {
+                      setTiktokDiscloseContent(e.target.checked);
+                      if (!e.target.checked) {
+                        setTiktokBrandOrganic(false);
+                        setTiktokBrandedContent(false);
+                      }
+                    }}
+                    size="small"
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' },
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>
+                    <Typography variant="caption" sx={{ color: '#86868B', display: 'block' }}>Indicate if this promotes a brand, product, or service</Typography>
+                  </Box>
+                </Box>
+
+                {tiktokDiscloseContent && (
+                  <>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={tiktokBrandOrganic}
+                            onChange={(e) => setTiktokBrandOrganic(e.target.checked)}
+                            size="small"
+                            icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                            checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                          />
+                        }
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography sx={{ fontSize: '0.95rem', lineHeight: 1 }}>Your brand</Typography>
+                            <Tooltip title="You're promoting yourself or your own business" arrow>
+                              <InfoOutlined sx={{ fontSize: '1rem', color: '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </Box>
+                        }
+                        sx={{ mr: 2 }}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={tiktokBrandedContent}
+                            onChange={(e) => {
+                              setTiktokBrandedContent(e.target.checked);
+                              if (e.target.checked && tiktokPrivacyLevel === 'SELF_ONLY') {
+                                setTiktokPrivacyLevel('PUBLIC_TO_EVERYONE');
+                              }
+                            }}
+                            size="small"
+                            disabled={tiktokPrivacyLevel === 'SELF_ONLY'}
+                            icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                            checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                          />
+                        }
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography sx={{ fontSize: '0.95rem', lineHeight: 1, color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : 'inherit' }}>Branded content</Typography>
+                            <Tooltip title={tiktokPrivacyLevel === 'SELF_ONLY' ? 'Branded content cannot be private' : "You're promoting another brand or third party"} arrow>
+                              <InfoOutlined sx={{ fontSize: '1rem', color: tiktokPrivacyLevel === 'SELF_ONLY' ? '#C7C7CC' : '#6B6B6B', verticalAlign: 'middle', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </Box>
+                        }
+                      />
+                    </Box>
+                    {(tiktokBrandOrganic || tiktokBrandedContent) && (
+                      <Alert
+                        severity="info"
+                        icon={<InfoOutlined />}
+                        sx={{
+                          mt: 1.5,
+                          borderRadius: '10px',
+                          bgcolor: 'rgba(0,122,255,0.08)',
+                          border: '1px solid rgba(0,122,255,0.2)',
+                          '& .MuiAlert-icon': { color: '#007AFF' },
+                          '& .MuiAlert-message': { color: '#fff' }
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                          Your video will be labeled as "{tiktokBrandedContent ? 'Paid partnership' : 'Promotional content'}"
+                        </Typography>
+                      </Alert>
+                    )}
+                    {!tiktokBrandOrganic && !tiktokBrandedContent && (
+                      <Alert
+                        severity="warning"
+                        icon={<InfoOutlined />}
+                        sx={{
+                          mt: 1.5,
+                          borderRadius: '10px',
+                          bgcolor: 'rgba(245,158,11,0.08)',
+                          border: '1px solid rgba(245,158,11,0.2)',
+                          '& .MuiAlert-icon': { color: '#F59E0B' },
+                          '& .MuiAlert-message': { color: '#fff' }
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                          Select at least one option to indicate what you're promoting
+                        </Typography>
+                      </Alert>
+                    )}
+                  </>
+                )}
+
+                {/* Processing Time Notice */}
+                <Alert
+                  severity="info"
+                  icon={<InfoOutlined />}
+                  sx={{
+                    mt: 2,
+                    borderRadius: '10px',
+                    bgcolor: 'rgba(0,122,255,0.08)',
+                    border: '1px solid rgba(0,122,255,0.2)',
+                    '& .MuiAlert-icon': { color: '#007AFF' },
+                    '& .MuiAlert-message': { color: '#fff' }
+                  }}
+                >
+                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                    {tiktokPostMode === 'direct'
+                      ? 'After posting, it may take a few minutes for your video to appear on your TikTok profile.'
+                      : 'After posting, it may take a few minutes for your video to appear in your TikTok inbox.'
+                    }
+                  </Typography>
+                </Alert>
+
+                {/* Consent Declaration */}
+                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  By posting, you agree to TikTok's{' '}
+                  {tiktokBrandedContent && (
+                    <>
+                      <Typography
+                        component="a"
+                        href="https://www.tiktok.com/legal/bc-policy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ fontSize: '0.75rem', color: '#fff', textDecoration: 'underline', '&:hover': { opacity: 0.8 } }}
+                      >
+                        Branded Content Policy
+                      </Typography>
+                      {' and '}
+                    </>
+                  )}
+                  <Typography
+                    component="a"
+                    href="https://www.tiktok.com/legal/music-usage-confirmation"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{ fontSize: '0.75rem', color: '#fff', textDecoration: 'underline', '&:hover': { opacity: 0.8 } }}
+                  >
+                    Music Usage Confirmation
+                  </Typography>
+                </Typography>
               </>
             )}
           </Paper>
@@ -1064,14 +1381,10 @@ const SlideshowDetailPage: React.FC = () => {
                 />
               )}
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Slideshow Details</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Post Preview</Typography>
                 <Typography variant="body2" sx={{ mb: 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Title:</Box>
-                  <Box component="span" sx={{ color: '#86868B' }}> {editTitle || 'Untitled'}</Box>
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Description:</Box>
-                  <Box component="span" sx={{ color: '#86868B' }}> {editDescription || 'No description'}</Box>
+                  <Box component="span" sx={{ color: '#fff', fontWeight: 600 }}>Caption:</Box>
+                  <Box component="span" sx={{ color: '#86868B' }}> {editCaption || 'No caption'}</Box>
                 </Typography>
                 {editTags.length > 0 && (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>

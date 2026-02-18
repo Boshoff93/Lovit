@@ -333,6 +333,32 @@ const CreateSlideshowPage: React.FC = () => {
               />
             </Box>
 
+            {/* Hook & CTA */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
+                Hook & CTA
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
+                Add hook text for first slide and CTA for last slide (optional)
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder="Hook text for first slide (e.g., 'I asked AI to put my kid in a fairy tale')"
+                value={hookText}
+                onChange={(e) => setHookText(e.target.value)}
+                sx={{ ...textFieldSx, mb: 1.5 }}
+                inputProps={{ maxLength: 100 }}
+              />
+              <TextField
+                fullWidth
+                placeholder="CTA text for last slide (e.g., 'Download our app')"
+                value={ctaText}
+                onChange={(e) => setCtaText(e.target.value)}
+                sx={textFieldSx}
+                inputProps={{ maxLength: 100 }}
+              />
+            </Box>
+
             {/* Slideshow Prompt */}
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
@@ -474,32 +500,6 @@ const CreateSlideshowPage: React.FC = () => {
                     '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 },
                   },
                 }}
-              />
-            </Box>
-
-            {/* Hook & CTA */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                Hook & CTA
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 1.5 }}>
-                Add hook text for first slide and CTA for last slide (optional)
-              </Typography>
-              <TextField
-                fullWidth
-                placeholder="Hook text for first slide (e.g., 'I asked AI to put my kid in a fairy tale')"
-                value={hookText}
-                onChange={(e) => setHookText(e.target.value)}
-                sx={{ ...textFieldSx, mb: 1.5 }}
-                inputProps={{ maxLength: 100 }}
-              />
-              <TextField
-                fullWidth
-                placeholder="CTA text for last slide (e.g., 'Download our app')"
-                value={ctaText}
-                onChange={(e) => setCtaText(e.target.value)}
-                sx={textFieldSx}
-                inputProps={{ maxLength: 100 }}
               />
             </Box>
 
