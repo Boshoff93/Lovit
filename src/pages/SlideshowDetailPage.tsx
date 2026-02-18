@@ -130,11 +130,11 @@ const SlideshowDetailPage: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Pre-populate post caption from slide captions (NOT the generation prompt)
+  // Pre-populate from AI-generated caption and hashtags
   useEffect(() => {
     if (currentSlideshow) {
-      const captionText = (currentSlideshow.captions || []).filter(Boolean).join('\n');
-      setEditCaption(captionText);
+      // title field contains the AI-generated social caption (hook + story body)
+      setEditCaption(currentSlideshow.title || '');
       setEditTags(currentSlideshow.hashtags || []);
     }
   }, [currentSlideshow?.slideshowId, currentSlideshow?.status]);
@@ -203,15 +203,20 @@ const SlideshowDetailPage: React.FC = () => {
       return;
     }
 
-    const hashtagString = editTags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-    const fullCaption = `${editCaption}\n\n${hashtagString}`.trim();
-
     const tiktokSettings = {
       privacyLevel: tiktokPrivacyLevel || 'SELF_ONLY',
       postMode: tiktokPostMode,
       disableComment: !tiktokAllowComment,
       disableDuet: !tiktokAllowDuet,
       disableStitch: !tiktokAllowStitch,
+    };
+
+    // Send caption and hashtags separately — backend handles combining them
+    const postData = {
+      accountId: tiktokAccount.accountId,
+      caption: editCaption,
+      hashtags: editTags,
+      tiktokSettings,
     };
 
     if (uploadMode === 'schedule') {
@@ -222,11 +227,8 @@ const SlideshowDetailPage: React.FC = () => {
       setIsScheduling(true);
       try {
         await slideshowsApi.scheduleSlideshow(currentSlideshow.slideshowId, {
+          ...postData,
           scheduledTime: scheduledDateTime.toISOString(),
-          accountId: tiktokAccount.accountId,
-          title: fullCaption,
-          description: '',
-          tiktokSettings,
         });
         setSocialSuccess('Slideshow scheduled successfully');
         setShowUploadConfirm(false);
@@ -240,12 +242,7 @@ const SlideshowDetailPage: React.FC = () => {
       setIsUploading(true);
       setUploadProgress({ [tiktokAccount.accountId]: 'uploading' });
       try {
-        await slideshowsApi.uploadSlideshow(currentSlideshow.slideshowId, {
-          accountId: tiktokAccount.accountId,
-          title: fullCaption,
-          description: '',
-          tiktokSettings,
-        });
+        await slideshowsApi.uploadSlideshow(currentSlideshow.slideshowId, postData);
         setUploadProgress({ [tiktokAccount.accountId]: 'success' });
         setSocialSuccess('Slideshow uploaded to TikTok');
         setShowUploadConfirm(false);

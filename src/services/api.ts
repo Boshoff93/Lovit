@@ -581,8 +581,8 @@ export const slideshowsApi = {
 
   uploadSlideshow: (slideshowId: string, data: {
     accountId: string;
-    title?: string;
-    description?: string;
+    caption?: string;
+    hashtags?: string[];
     tiktokSettings?: {
       privacyLevel?: string;
       postMode?: 'direct' | 'draft';
@@ -595,8 +595,8 @@ export const slideshowsApi = {
   scheduleSlideshow: (slideshowId: string, data: {
     scheduledTime: string;
     accountId: string;
-    title?: string;
-    description?: string;
+    caption?: string;
+    hashtags?: string[];
     tiktokSettings?: {
       privacyLevel?: string;
       postMode?: 'direct' | 'draft';
