@@ -319,7 +319,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               <XAxis
                 dataKey="date"
                 tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-                tickFormatter={(d) => {
+                tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
                   return `${date.getMonth() + 1}/${date.getDate()}`;
@@ -334,7 +334,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               />
               <Tooltip
                 {...chartTooltipStyle}
-                formatter={(value: any) => [formatNumber(value ?? 0), 'Views']}
+                formatter={(value: number) => [formatNumber(value ?? 0), 'Views']}
               />
               <Area
                 type="monotone"
@@ -366,7 +366,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               <XAxis
                 dataKey="date"
                 tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-                tickFormatter={(d) => {
+                tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
                   return `${date.getMonth() + 1}/${date.getDate()}`;
@@ -381,7 +381,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               />
               <Tooltip
                 {...chartTooltipStyle}
-                formatter={(value: any, name: any) => [formatNumber(value ?? 0), String(name).charAt(0).toUpperCase() + String(name).slice(1)]}
+                formatter={(value: number, name: string) => [formatNumber(value ?? 0), String(name).charAt(0).toUpperCase() + String(name).slice(1)]}
               />
               <Legend
                 wrapperStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}
@@ -412,7 +412,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               <XAxis
                 dataKey="date"
                 tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-                tickFormatter={(d) => {
+                tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
                   return `${date.getMonth() + 1}/${date.getDate()}`;
