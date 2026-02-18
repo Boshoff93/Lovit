@@ -183,11 +183,16 @@ const SlideshowDetailPage: React.FC = () => {
       return;
     }
 
+    if (!tiktokPrivacyLevel) {
+      setSocialError('Please select a TikTok privacy level');
+      return;
+    }
+
     const hashtagString = editTags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
     const fullDescription = `${editDescription}\n\n${hashtagString}`.trim();
 
     const tiktokSettings = {
-      privacyLevel: tiktokPrivacyLevel || 'SELF_ONLY',
+      privacyLevel: tiktokPrivacyLevel,
       postMode: tiktokPostMode,
       disableComment: !tiktokAllowComment,
       disableDuet: !tiktokAllowDuet,
@@ -539,13 +544,14 @@ const SlideshowDetailPage: React.FC = () => {
           {/* Publish Button */}
           {selectedAccountIds.size > 0 && (
             <Button fullWidth variant="contained" onClick={() => setShowUploadConfirm(true)}
+              disabled={hasTikTok && !tiktokPrivacyLevel}
               sx={{
                 borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, fontSize: '1rem',
                 bgcolor: '#007AFF', boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
                 '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none' },
+                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none', color: 'rgba(255,255,255,0.3)' },
               }}
-            >Publish Slideshow</Button>
+            >{hasTikTok && !tiktokPrivacyLevel ? 'Select Privacy Level to Publish' : 'Publish Slideshow'}</Button>
           )}
 
           {/* Download all */}
