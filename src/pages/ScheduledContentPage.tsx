@@ -1490,7 +1490,8 @@ const ScheduledContentPage: React.FC = () => {
               <Button
                 onClick={() => {
                   setDetailsDialogOpen(false);
-                  if (selectedPost.contentType === 'slideshow' && selectedPost.slideshowId) {
+                  const isSlideshow = selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId);
+                  if (isSlideshow && selectedPost.slideshowId) {
                     navigate(`/slideshow/${selectedPost.slideshowId}`);
                   } else {
                     navigate(`/video/${selectedPost.videoId}`);
@@ -1505,7 +1506,7 @@ const ScheduledContentPage: React.FC = () => {
                   '&:hover': { bgcolor: '#0066DD' },
                 }}
               >
-                {selectedPost.contentType === 'slideshow' ? 'View Slideshow' : 'View Video'}
+                {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'View Slideshow' : 'View Video'}
               </Button>
               {/* Close button - only for completed or failed posts */}
               {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (
