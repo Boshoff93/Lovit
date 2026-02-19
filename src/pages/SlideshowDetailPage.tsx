@@ -32,6 +32,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  CloudUpload,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { useGetSlideshowQuery, useGetSocialAccountsQuery, useDeleteSlideshowMutation, apiSlice } from '../store/apiSlice';
@@ -207,26 +208,19 @@ const SlideshowDetailPage: React.FC = () => {
       setIsScheduling(true);
       setSocialError(null);
       try {
-<<<<<<< Updated upstream
-        await slideshowsApi.scheduleSlideshow(currentSlideshow.slideshowId, {
-          scheduledTime: scheduledDateTime.toISOString(),
-          accountId: tiktokAccount.accountId,
-          title: editTitle,
-          description: fullDescription,
-          tiktokSettings,
-        });
-=======
         const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('timeout')), 30000)
         );
         await Promise.race([
           slideshowsApi.scheduleSlideshow(currentSlideshow.slideshowId, {
-            ...postData,
             scheduledTime: scheduledDateTime.toISOString(),
+            accountId: tiktokAccount.accountId,
+            title: editTitle,
+            description: fullDescription,
+            tiktokSettings,
           }),
           timeoutPromise,
         ]);
->>>>>>> Stashed changes
         setSocialSuccess('Slideshow scheduled successfully');
         setShowUploadConfirm(false);
         dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
@@ -514,7 +508,6 @@ const SlideshowDetailPage: React.FC = () => {
             )}
           </Paper>
 
-<<<<<<< Updated upstream
           {/* TikTok Settings */}
           {hasTikTok && (
             <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
@@ -527,33 +520,61 @@ const SlideshowDetailPage: React.FC = () => {
                       sx={{ borderRadius: '10px', fontWeight: 600, backgroundColor: tiktokPostMode === mode ? '#007AFF' : 'rgba(255,255,255,0.05)', color: '#fff', border: tiktokPostMode === mode ? '1px solid #007AFF' : '1px solid rgba(255,255,255,0.1)', '&:hover': { opacity: 0.8 } }}
                     />
                   ))}
-=======
-          {/* Publish Button - matching video player "Select an Account" / "Publish" */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={isUploading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <CloudUpload />}
-              onClick={() => setShowUploadConfirm(true)}
-              disabled={isUploading || selectedAccountIds.size === 0}
+                </Box>
+              </Box>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Privacy Level</Typography>
+                <Select value={tiktokPrivacyLevel} onChange={(e) => setTiktokPrivacyLevel(e.target.value)} displayEmpty size="small" fullWidth
+                  sx={{ borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
+                >
+                  <MenuItem value="" disabled>Select privacy level</MenuItem>
+                  {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((level: string) => (
+                    <MenuItem key={level} value={level}>{level.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}</MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <FormControlLabel control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow comments</Typography>} />
+                <FormControlLabel control={<Checkbox checked={tiktokAllowDuet} onChange={(e) => setTiktokAllowDuet(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow duet</Typography>} />
+                <FormControlLabel control={<Checkbox checked={tiktokAllowStitch} onChange={(e) => setTiktokAllowStitch(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow stitch</Typography>} />
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <FormControlLabel
+                  control={<Switch checked={tiktokDiscloseContent} onChange={(e) => setTiktokDiscloseContent(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#007AFF' } }} />}
+                  label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>}
+                />
+                {tiktokDiscloseContent && (
+                  <Box sx={{ ml: 4, mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <FormControlLabel control={<Checkbox checked={tiktokBrandOrganic} onChange={(e) => setTiktokBrandOrganic(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Your brand</Typography>} />
+                    <FormControlLabel control={<Checkbox checked={tiktokBrandedContent} onChange={(e) => setTiktokBrandedContent(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Branded content</Typography>} />
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+          )}
+
+          {/* Publish Button */}
+          {selectedAccountIds.size > 0 && (
+            <Button fullWidth variant="contained" onClick={() => setShowUploadConfirm(true)}
+              disabled={hasTikTok && !tiktokPrivacyLevel}
               sx={{
-                bgcolor: '#007AFF',
-                px: 5, py: 1.5,
-                borderRadius: '12px',
-                fontWeight: 600, fontSize: '1rem',
-                textTransform: 'none',
-                boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
+                borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, fontSize: '1rem',
+                bgcolor: '#007AFF', boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
                 '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none' },
+                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none', color: 'rgba(255,255,255,0.3)' },
               }}
-            >
-              {isUploading ? 'Publishing...' : selectedAccountIds.size === 0 ? 'Select an Account' : 'Publish Slideshow'}
-            </Button>
-          </Box>
-        </Box>
+            >{hasTikTok && !tiktokPrivacyLevel ? 'Select Privacy Level to Publish' : 'Publish Slideshow'}</Button>
+          )}
+
+          {/* Download all */}
+          <Button fullWidth variant="outlined" startIcon={<Download />}
+            onClick={() => { imageUrls.forEach((url: string, i: number) => { const a = document.createElement('a'); a.href = url; a.download = `slide-${i + 1}.jpg`; a.target = '_blank'; a.click(); }); }}
+            sx={{ borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
+          >Download All Slides</Button>
+        </>
       )}
 
-      {/* Upload Confirmation Dialog - matching video player */}
+      {/* Upload Confirmation Dialog */}
       <Dialog
         open={showUploadConfirm}
         onClose={() => { if (!isUploading && !isScheduling) { setShowUploadConfirm(false); } }}
@@ -655,72 +676,12 @@ const SlideshowDetailPage: React.FC = () => {
                       </Box>
                     );
                   })}
->>>>>>> Stashed changes
                 </Box>
               </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Privacy Level</Typography>
-                <Select value={tiktokPrivacyLevel} onChange={(e) => setTiktokPrivacyLevel(e.target.value)} displayEmpty size="small" fullWidth
-                  sx={{ borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
-                >
-                  <MenuItem value="" disabled>Select privacy level</MenuItem>
-                  {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((level: string) => (
-                    <MenuItem key={level} value={level}>{level.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}</MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                <FormControlLabel control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow comments</Typography>} />
-                <FormControlLabel control={<Checkbox checked={tiktokAllowDuet} onChange={(e) => setTiktokAllowDuet(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow duet</Typography>} />
-                <FormControlLabel control={<Checkbox checked={tiktokAllowStitch} onChange={(e) => setTiktokAllowStitch(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow stitch</Typography>} />
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <FormControlLabel
-                  control={<Switch checked={tiktokDiscloseContent} onChange={(e) => setTiktokDiscloseContent(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#007AFF' } }} />}
-                  label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>}
-                />
-                {tiktokDiscloseContent && (
-                  <Box sx={{ ml: 4, mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    <FormControlLabel control={<Checkbox checked={tiktokBrandOrganic} onChange={(e) => setTiktokBrandOrganic(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Your brand</Typography>} />
-                    <FormControlLabel control={<Checkbox checked={tiktokBrandedContent} onChange={(e) => setTiktokBrandedContent(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Branded content</Typography>} />
-                  </Box>
-                )}
-              </Box>
-            </Paper>
-          )}
+            );
+          })()}
 
-          {/* Publish Button */}
-          {selectedAccountIds.size > 0 && (
-            <Button fullWidth variant="contained" onClick={() => setShowUploadConfirm(true)}
-              disabled={hasTikTok && !tiktokPrivacyLevel}
-              sx={{
-                borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, fontSize: '1rem',
-                bgcolor: '#007AFF', boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
-                '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none', color: 'rgba(255,255,255,0.3)' },
-              }}
-            >{hasTikTok && !tiktokPrivacyLevel ? 'Select Privacy Level to Publish' : 'Publish Slideshow'}</Button>
-          )}
-<<<<<<< Updated upstream
-
-          {/* Download all */}
-          <Button fullWidth variant="outlined" startIcon={<Download />}
-            onClick={() => { imageUrls.forEach((url: string, i: number) => { const a = document.createElement('a'); a.href = url; a.download = `slide-${i + 1}.jpg`; a.target = '_blank'; a.click(); }); }}
-            sx={{ borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
-          >Download All Slides</Button>
-        </>
-      )}
-
-      {/* Upload Confirmation Dialog */}
-      <Dialog open={showUploadConfirm} onClose={() => setShowUploadConfirm(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '16px', p: 1, bgcolor: '#1D1D1F' } }}>
-        <DialogTitle sx={{ fontWeight: 700, color: '#fff' }}>Publish Slideshow</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mb: 2 }}>
-            {selectedAccounts.map(a => (
-              <Chip key={a.accountId} label={`${a.platform} — ${a.username || a.accountName || 'Connected'}`}
-                sx={{ mr: 1, mb: 1, borderRadius: '100px', textTransform: 'capitalize', bgcolor: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }} />
-            ))}
-          </Box>
+          {/* Mode Selection */}
           <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
             <Chip label="Publish Now" onClick={() => setUploadMode('now')}
               sx={{ borderRadius: '10px', fontWeight: 600, backgroundColor: uploadMode === 'now' ? '#007AFF' : 'rgba(255,255,255,0.05)', color: '#fff', border: uploadMode === 'now' ? '1px solid #007AFF' : '1px solid rgba(255,255,255,0.1)' }} />
@@ -734,21 +695,7 @@ const SlideshowDetailPage: React.FC = () => {
               />
             </LocalizationProvider>
           )}
-          {Object.entries(uploadProgress).map(([accountId, status]) => (
-            <Box key={accountId} sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-              {status === 'uploading' && <CircularProgress size={16} />}
-              {status === 'success' && <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} />}
-              {status === 'error' && <ErrorIcon sx={{ fontSize: 18, color: '#FF3B30' }} />}
-              <Typography variant="body2" sx={{ color: '#fff' }}>{status === 'uploading' ? 'Uploading...' : status === 'success' ? 'Published' : status === 'error' ? 'Failed' : 'Pending'}</Typography>
-            </Box>
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowUploadConfirm(false)} sx={{ textTransform: 'none', color: 'rgba(255,255,255,0.7)' }}>Cancel</Button>
-          <Button variant="contained" onClick={handlePublish} disabled={isUploading || isScheduling}
-            sx={{ textTransform: 'none', borderRadius: '10px', fontWeight: 600, bgcolor: '#007AFF', '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)' } }}
-          >{isUploading || isScheduling ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : uploadMode === 'schedule' ? 'Schedule' : 'Publish'}</Button>
-=======
+
           {/* Error/Success inside dialog so user can see it */}
           {socialError && (
             <Alert severity="error" onClose={() => setSocialError(null)} sx={{ mt: 2, borderRadius: '12px' }}>
@@ -800,7 +747,6 @@ const SlideshowDetailPage: React.FC = () => {
               </Button>
             </>
           )}
->>>>>>> Stashed changes
         </DialogActions>
       </Dialog>
 

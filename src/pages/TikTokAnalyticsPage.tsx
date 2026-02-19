@@ -15,11 +15,8 @@ import {
   Avatar,
   Chip,
   Tooltip as MuiTooltip,
-<<<<<<< Updated upstream
-=======
   Menu,
   MenuItem,
->>>>>>> Stashed changes
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -32,21 +29,14 @@ import ShareIcon from '@mui/icons-material/Share';
 import PeopleIcon from '@mui/icons-material/People';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-<<<<<<< Updated upstream
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-=======
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
->>>>>>> Stashed changes
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import {
   useGetTikTokSummaryQuery,
   useGetTikTokTrendsQuery,
   useGetTikTokAccountStatsQuery,
-<<<<<<< Updated upstream
-=======
   useGetSocialAccountsQuery,
->>>>>>> Stashed changes
   useGetTikTokVideosQuery,
   TikTokVideo,
 } from '../store/apiSlice';
@@ -406,10 +396,6 @@ const TikTokAnalyticsPage: React.FC = () => {
     { userId, accountId: activeAccountId },
     { skip: !userId }
   );
-  const { data: videosData } = useGetTikTokVideosQuery(
-    { userId },
-    { skip: !userId }
-  );
 
   const isLoading = summaryLoading || trendsLoading || statsLoading;
 
@@ -629,166 +615,8 @@ const TikTokAnalyticsPage: React.FC = () => {
         />
       </Box>
 
-<<<<<<< Updated upstream
-      {/* 7-Day Post Calendar */}
-      {videosData?.videos && videosData.videos.length > 0 && (() => {
-        const now = new Date();
-        const days: Array<{ date: Date; label: string; dayName: string; videos: TikTokVideo[] }> = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(now);
-          d.setDate(d.getDate() - i);
-          d.setHours(0, 0, 0, 0);
-          const dayStart = d.getTime() / 1000;
-          const dayEnd = dayStart + 86400;
-          const dayVideos = videosData.videos.filter(
-            (v) => v.create_time >= dayStart && v.create_time < dayEnd
-          );
-          days.push({
-            date: d,
-            label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            dayName: i === 0 ? 'Today' : i === 1 ? 'Yesterday' : d.toLocaleDateString('en-US', { weekday: 'short' }),
-            videos: dayVideos,
-          });
-        }
-        return (
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <CalendarTodayIcon sx={{ fontSize: 20, color: 'rgba(255,255,255,0.5)' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-                Last 7 Days
-              </Typography>
-            </Box>
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              overflow: 'hidden',
-            }}>
-              {days.map((day, idx) => (
-                <Box
-                  key={day.label}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 2,
-                    px: 2.5,
-                    py: 1.5,
-                    borderBottom: idx < days.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                    '&:hover': { background: 'rgba(255,255,255,0.02)' },
-                  }}
-                >
-                  {/* Day label */}
-                  <Box sx={{ minWidth: 80, pt: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: day.dayName === 'Today' ? '#007AFF' : '#fff' }}>
-                      {day.dayName}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>
-                      {day.label}
-                    </Typography>
-                  </Box>
-
-                  {/* Posts for that day */}
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, flex: 1, minHeight: 36 }}>
-                    {day.videos.length === 0 ? (
-                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)', alignSelf: 'center' }}>
-                        No posts
-                      </Typography>
-                    ) : (
-                      day.videos.map((video) => {
-                        const eng = video.like_count + video.comment_count + video.share_count;
-                        const rate = video.view_count > 0 ? (eng / video.view_count * 100).toFixed(1) : '0';
-                        const tooltipContent = [
-                          video.title ? `"${video.title.slice(0, 60)}${video.title.length > 60 ? '...' : ''}"` : 'Untitled',
-                          `Views: ${formatNumber(video.view_count)}`,
-                          `Likes: ${formatNumber(video.like_count)}`,
-                          `Comments: ${formatNumber(video.comment_count)}`,
-                          `Shares: ${formatNumber(video.share_count)}`,
-                          `Engagement: ${rate}%`,
-                        ].join('\n');
-                        return (
-                          <MuiTooltip
-                            key={video.id}
-                            title={
-                              <Box sx={{ whiteSpace: 'pre-line', fontSize: '0.75rem', lineHeight: 1.6 }}>
-                                {tooltipContent}
-                              </Box>
-                            }
-                            arrow
-                            placement="top"
-                            slotProps={{
-                              tooltip: {
-                                sx: {
-                                  background: '#1E1E22',
-                                  border: '1px solid rgba(255,255,255,0.15)',
-                                  borderRadius: '10px',
-                                  p: 1.5,
-                                  maxWidth: 280,
-                                },
-                              },
-                              arrow: { sx: { color: '#1E1E22' } },
-                            }}
-                          >
-                            <Box
-                              component="a"
-                              href={video.share_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                px: 1.5,
-                                py: 0.75,
-                                borderRadius: '10px',
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                textDecoration: 'none',
-                                cursor: 'pointer',
-                                transition: 'all 0.15s',
-                                '&:hover': {
-                                  background: 'rgba(0,122,255,0.1)',
-                                  borderColor: 'rgba(0,122,255,0.3)',
-                                },
-                              }}
-                            >
-                              <VisibilityIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
-                              <Typography sx={{ fontSize: '0.75rem', color: '#fff', fontWeight: 500 }}>
-                                {formatNumber(video.view_count)}
-                              </Typography>
-                              <FavoriteIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
-                              <Typography sx={{ fontSize: '0.75rem', color: '#fff', fontWeight: 500 }}>
-                                {formatNumber(video.like_count)}
-                              </Typography>
-                            </Box>
-                          </MuiTooltip>
-                        );
-                      })
-                    )}
-                  </Box>
-
-                  {/* Day totals */}
-                  {day.videos.length > 0 && (
-                    <Box sx={{ textAlign: 'right', minWidth: 60, pt: 0.5 }}>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff' }}>
-                        {day.videos.length} post{day.videos.length !== 1 ? 's' : ''}
-                      </Typography>
-                      <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)' }}>
-                        {formatNumber(day.videos.reduce((s, v) => s + v.view_count, 0))} views
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        );
-      })()}
-=======
       {/* Last 7 Days Calendar */}
       <WeekCalendar videos={videosData?.videos || []} />
->>>>>>> Stashed changes
 
       {/* Views Over Time */}
       <Box sx={{ mb: 4 }}>
