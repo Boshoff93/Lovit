@@ -498,7 +498,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               />
               <Tooltip
                 {...chartTooltipStyle}
-                formatter={(value: number) => [formatNumber(value ?? 0), 'Views']}
+                formatter={(value: number | undefined) => [formatNumber(value ?? 0), 'Views']}
               />
               <Area
                 type="monotone"
@@ -545,7 +545,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               />
               <Tooltip
                 {...chartTooltipStyle}
-                formatter={(value: number, name: string) => [formatNumber(value ?? 0), String(name).charAt(0).toUpperCase() + String(name).slice(1)]}
+                formatter={(value: number | undefined, name: string | undefined) => [formatNumber(value ?? 0), String(name ?? '').charAt(0).toUpperCase() + String(name ?? '').slice(1)]}
               />
               <Legend
                 wrapperStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}
