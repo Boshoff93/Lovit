@@ -187,8 +187,8 @@ const SlideshowDetailPage: React.FC = () => {
       return;
     }
 
-    const hashtagString = editTags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-    const fullDescription = `${editDescription}\n\n${hashtagString}`.trim();
+    // Don't append hashtags to description — backend adds them from slideshow.hashtags
+    const fullDescription = editDescription.trim();
 
     // Photo/carousel posts only support disableComment — duet/stitch are video-only fields
     const tiktokSettings = {
