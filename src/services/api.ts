@@ -515,6 +515,7 @@ export interface ScheduledPost {
     postId?: string;
     postUrl?: string;
     error?: string;
+    publishStatus?: string;
   }>;
 }
 
@@ -592,8 +593,6 @@ export const slideshowsApi = {
       privacyLevel?: string;
       postMode?: 'direct' | 'draft';
       disableComment?: boolean;
-      disableDuet?: boolean;
-      disableStitch?: boolean;
     };
   }) => api.post(`/api/gruvi/slideshows/${slideshowId}/upload`, data),
 
@@ -608,8 +607,6 @@ export const slideshowsApi = {
       privacyLevel?: string;
       postMode?: 'direct' | 'draft';
       disableComment?: boolean;
-      disableDuet?: boolean;
-      disableStitch?: boolean;
     };
   }) => api.post(`/api/gruvi/slideshows/${slideshowId}/schedule`, data),
 };

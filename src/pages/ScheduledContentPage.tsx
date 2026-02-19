@@ -1449,9 +1449,14 @@ const ScheduledContentPage: React.FC = () => {
                         <Typography sx={{ fontWeight: 500, textTransform: 'capitalize', flex: 1, color: '#fff' }}>
                           {result.platform}
                         </Typography>
+                        {result.success && result.publishStatus === 'SEND_TO_USER_INBOX' && (
+                          <Typography sx={{ fontSize: '0.75rem', color: '#22C55E' }}>
+                            Sent to drafts
+                          </Typography>
+                        )}
                         {!result.success && (
                           <Typography sx={{ fontSize: '0.75rem', color: '#EF4444' }}>
-                            Oops, something went wrong
+                            {result.error || 'Upload failed'}
                           </Typography>
                         )}
                       </Box>

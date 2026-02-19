@@ -114,8 +114,6 @@ const SlideshowDetailPage: React.FC = () => {
   const [tiktokPrivacyLevel, setTiktokPrivacyLevel] = useState('');
   const [tiktokPostMode, setTiktokPostMode] = useState<'draft' | 'direct'>('direct');
   const [tiktokAllowComment, setTiktokAllowComment] = useState(false);
-  const [tiktokAllowDuet, setTiktokAllowDuet] = useState(false);
-  const [tiktokAllowStitch, setTiktokAllowStitch] = useState(false);
   const [tiktokDiscloseContent, setTiktokDiscloseContent] = useState(false);
   const [tiktokBrandOrganic, setTiktokBrandOrganic] = useState(false);
   const [tiktokBrandedContent, setTiktokBrandedContent] = useState(false);
@@ -192,12 +190,11 @@ const SlideshowDetailPage: React.FC = () => {
     const hashtagString = editTags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
     const fullDescription = `${editDescription}\n\n${hashtagString}`.trim();
 
+    // Photo/carousel posts only support disableComment — duet/stitch are video-only fields
     const tiktokSettings = {
       privacyLevel: tiktokPrivacyLevel,
       postMode: tiktokPostMode,
       disableComment: !tiktokAllowComment,
-      disableDuet: !tiktokAllowDuet,
-      disableStitch: !tiktokAllowStitch,
     };
 
     if (uploadMode === 'schedule') {
@@ -244,7 +241,7 @@ const SlideshowDetailPage: React.FC = () => {
           tiktokSettings,
         });
         setUploadProgress({ [tiktokAccount.accountId]: 'success' });
-        setSocialSuccess('Slideshow uploaded to TikTok');
+        setSocialSuccess(tiktokPostMode === 'draft' ? 'Slideshow sent to TikTok drafts' : 'Slideshow published to TikTok');
         setShowUploadConfirm(false);
       } catch (err: any) {
         setUploadProgress({ [tiktokAccount.accountId]: 'error' });
@@ -535,8 +532,6 @@ const SlideshowDetailPage: React.FC = () => {
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                 <FormControlLabel control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow comments</Typography>} />
-                <FormControlLabel control={<Checkbox checked={tiktokAllowDuet} onChange={(e) => setTiktokAllowDuet(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow duet</Typography>} />
-                <FormControlLabel control={<Checkbox checked={tiktokAllowStitch} onChange={(e) => setTiktokAllowStitch(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow stitch</Typography>} />
               </Box>
               <Box sx={{ mt: 2 }}>
                 <FormControlLabel
