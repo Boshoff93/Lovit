@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
+  Button,
   Typography,
   CircularProgress,
   ToggleButtonGroup,
@@ -14,7 +15,13 @@ import {
   Avatar,
   Chip,
   Tooltip as MuiTooltip,
+<<<<<<< Updated upstream
+=======
+  Menu,
+  MenuItem,
+>>>>>>> Stashed changes
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -25,13 +32,21 @@ import ShareIcon from '@mui/icons-material/Share';
 import PeopleIcon from '@mui/icons-material/People';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+<<<<<<< Updated upstream
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+=======
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+>>>>>>> Stashed changes
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import {
   useGetTikTokSummaryQuery,
   useGetTikTokTrendsQuery,
   useGetTikTokAccountStatsQuery,
+<<<<<<< Updated upstream
+=======
+  useGetSocialAccountsQuery,
+>>>>>>> Stashed changes
   useGetTikTokVideosQuery,
   TikTokVideo,
 } from '../store/apiSlice';
@@ -62,6 +77,49 @@ const formatPercent = (n: number): string => {
 const pctChange = (current: number, previous: number): number => {
   if (previous === 0) return current > 0 ? 100 : 0;
   return ((current - previous) / previous) * 100;
+};
+
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+interface DayVideos {
+  date: Date;
+  label: string;
+  isToday: boolean;
+  videos: TikTokVideo[];
+}
+
+const groupVideosByDay = (videos: TikTokVideo[]): DayVideos[] => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6);
+
+  // Group videos by local date key
+  const byDate = new Map<string, TikTokVideo[]>();
+  videos.forEach(v => {
+    const d = new Date(v.create_time * 1000);
+    if (d < sevenDaysAgo) return;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    if (!byDate.has(key)) byDate.set(key, []);
+    byDate.get(key)!.push(v);
+  });
+
+  // Build 7 day entries (oldest first)
+  const days: DayVideos[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const isToday = i === 0;
+    days.push({
+      date,
+      label: `${DAY_NAMES[date.getDay()]} ${date.getDate()} ${MONTH_NAMES[date.getMonth()]}`,
+      isToday,
+      videos: (byDate.get(key) || []).sort((a, b) => b.create_time - a.create_time),
+    });
+  }
+  return days;
 };
 
 interface KpiCardProps {
@@ -136,21 +194,216 @@ const chartTooltipStyle = {
   labelStyle: { color: 'rgba(255,255,255,0.6)' },
 };
 
+const tooltipSx = {
+  background: '#1E1E22',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: '12px',
+  px: 2,
+  py: 1.5,
+  minWidth: 160,
+  '& .MuiTooltip-arrow': { color: '#1E1E22' },
+};
+
+const PostCard: React.FC<{ video: TikTokVideo }> = ({ video }) => (
+  <MuiTooltip
+    arrow
+    placement="top"
+    componentsProps={{ tooltip: { sx: tooltipSx } }}
+    title={
+      <Box sx={{ p: 0.5 }}>
+        <Typography sx={{
+          fontWeight: 600, fontSize: '0.8rem', color: '#fff', mb: 1, maxWidth: 200,
+          overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+        }}>
+          {video.title || 'Untitled'}
+        </Typography>
+        {[
+          { label: 'Views', value: video.view_count },
+          { label: 'Likes', value: video.like_count },
+          { label: 'Comments', value: video.comment_count },
+          { label: 'Shares', value: video.share_count },
+        ].map(m => (
+          <Box key={m.label} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)', py: 0.25 }}>
+            <span>{m.label}</span>
+            <span style={{ fontWeight: 600 }}>{formatNumber(m.value)}</span>
+          </Box>
+        ))}
+      </Box>
+    }
+  >
+    <Box
+      component="a"
+      href={video.share_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: 64,
+        flexShrink: 0,
+        cursor: 'pointer',
+        textDecoration: 'none',
+        borderRadius: '8px',
+        p: 0.5,
+        transition: 'background 0.2s',
+        '&:hover': { background: 'rgba(255,255,255,0.06)' },
+      }}
+    >
+      <Box sx={{
+        width: '100%',
+        aspectRatio: '3/4',
+        borderRadius: '6px',
+        overflow: 'hidden',
+        background: 'rgba(255,255,255,0.05)',
+        mb: 0.5,
+      }}>
+        {video.cover_image_url ? (
+          <Box
+            component="img"
+            src={video.cover_image_url}
+            alt={video.title}
+            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <VideoLibraryIcon sx={{ fontSize: 24, color: 'rgba(255,255,255,0.2)' }} />
+          </Box>
+        )}
+      </Box>
+      <Typography sx={{
+        fontSize: '0.6rem',
+        color: 'rgba(255,255,255,0.6)',
+        lineHeight: 1.2,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: '-webkit-box',
+        WebkitLineClamp: 1,
+        WebkitBoxOrient: 'vertical',
+      }}>
+        {video.title || 'Untitled'}
+      </Typography>
+    </Box>
+  </MuiTooltip>
+);
+
+interface WeekCalendarProps {
+  videos: TikTokVideo[];
+}
+
+const WeekCalendar: React.FC<WeekCalendarProps> = ({ videos }) => {
+  const days = useMemo(() => groupVideosByDay(videos), [videos]);
+
+  return (
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
+        Last 7 Days
+      </Typography>
+      <Box sx={{
+        borderRadius: '20px',
+        p: { xs: 1.5, sm: 2.5 },
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+      }}>
+        {days.map((day) => (
+          <Box
+            key={day.date.toISOString()}
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: { xs: 1.5, sm: 2 },
+              py: 1.5,
+              borderBottom: '1px solid rgba(255,255,255,0.04)',
+              '&:last-child': { borderBottom: 'none', pb: 0 },
+              '&:first-of-type': { pt: 0 },
+            }}
+          >
+            {/* Day label */}
+            <Box sx={{
+              width: { xs: 60, sm: 80 },
+              flexShrink: 0,
+              pt: 0.5,
+            }}>
+              <Typography sx={{
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                color: day.isToday ? '#007AFF' : '#fff',
+                lineHeight: 1.2,
+              }}>
+                {day.isToday ? 'Today' : DAY_NAMES[day.date.getDay()]}
+              </Typography>
+              <Typography sx={{
+                fontSize: '0.7rem',
+                color: day.isToday ? 'rgba(0,122,255,0.7)' : 'rgba(255,255,255,0.35)',
+              }}>
+                {MONTH_NAMES[day.date.getMonth()]} {day.date.getDate()}
+              </Typography>
+            </Box>
+
+            {/* Posts carousel */}
+            {day.videos.length > 0 ? (
+              <Box sx={{
+                display: 'flex',
+                gap: 1,
+                overflowX: 'auto',
+                flex: 1,
+                pb: 0.5,
+                '&::-webkit-scrollbar': { height: 4 },
+                '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.1)', borderRadius: 2 },
+              }}>
+                {day.videos.map(video => (
+                  <PostCard key={video.id} video={video} />
+                ))}
+              </Box>
+            ) : (
+              <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)', pt: 0.5 }}>
+                No posts
+              </Typography>
+            )}
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
 const TikTokAnalyticsPage: React.FC = () => {
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?.userId || '';
   const [trendPeriod, setTrendPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
+  const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
+
+  // Fetch connected TikTok accounts
+  const { data: socialAccountsData } = useGetSocialAccountsQuery(
+    { userId },
+    { skip: !userId }
+  );
+  const tiktokAccounts = useMemo(
+    () => (socialAccountsData?.accounts || []).filter(a => a.platform === 'tiktok'),
+    [socialAccountsData]
+  );
+  const activeAccountId = selectedAccountId || tiktokAccounts[0]?.accountId || undefined;
+  const activeAccount = tiktokAccounts.find(a => a.accountId === activeAccountId);
 
   const { data: summary, isLoading: summaryLoading, error: summaryError } = useGetTikTokSummaryQuery(
-    { userId },
+    { userId, accountId: activeAccountId },
     { skip: !userId }
   );
   const { data: trendsData, isLoading: trendsLoading } = useGetTikTokTrendsQuery(
-    { userId, period: trendPeriod },
+    { userId, accountId: activeAccountId, period: trendPeriod },
     { skip: !userId }
   );
   const { data: accountStats, isLoading: statsLoading } = useGetTikTokAccountStatsQuery(
-    { userId },
+    { userId, accountId: activeAccountId },
+    { skip: !userId }
+  );
+  const { data: videosData } = useGetTikTokVideosQuery(
+    { userId, accountId: activeAccountId },
     { skip: !userId }
   );
   const { data: videosData } = useGetTikTokVideosQuery(
@@ -171,7 +424,7 @@ const TikTokAnalyticsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 12 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
         <CircularProgress sx={{ color: '#007AFF' }} />
       </Box>
     );
@@ -180,13 +433,31 @@ const TikTokAnalyticsPage: React.FC = () => {
   if (summaryError) {
     const errMsg = (summaryError as any)?.data?.error || 'Failed to load analytics';
     return (
-      <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 }, textAlign: 'center', py: 8 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', textAlign: 'center', px: 3 }}>
         <BarChartIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
         <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mb: 1 }}>TikTok Not Connected</Typography>
         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }}>{errMsg}</Typography>
-        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mt: 1 }}>
+        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mt: 1, mb: 3 }}>
           Connect your TikTok account in Settings &gt; Integrations to view analytics.
         </Typography>
+        <Button
+          variant="contained"
+          onClick={() => navigate('/settings/connected-accounts')}
+          sx={{
+            background: 'linear-gradient(135deg, #EE1D52 0%, #69C9D0 100%)',
+            color: '#fff',
+            fontWeight: 600,
+            borderRadius: '12px',
+            px: 3,
+            py: 1,
+            textTransform: 'none',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #d4184a 0%, #5ab8c0 100%)',
+            },
+          }}
+        >
+          Connect TikTok Account
+        </Button>
       </Box>
     );
   }
@@ -209,11 +480,8 @@ const TikTokAnalyticsPage: React.FC = () => {
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        {accountStats?.avatarUrl && (
-          <Avatar src={accountStats.avatarUrl} sx={{ width: 56, height: 56 }} />
-        )}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
           <Box sx={{
             width: 56, height: 56, borderRadius: '16px',
             background: 'linear-gradient(135deg, #EE1D52 0%, #69C9D0 100%)',
@@ -223,7 +491,7 @@ const TikTokAnalyticsPage: React.FC = () => {
           }}>
             <BarChartIcon sx={{ fontSize: 28, color: '#fff' }} />
           </Box>
-          <Box>
+          <Box sx={{ minWidth: 0 }}>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               TikTok Analytics
             </Typography>
@@ -233,12 +501,97 @@ const TikTokAnalyticsPage: React.FC = () => {
             </Typography>
           </Box>
         </Box>
+
+        {/* Account selector dropdown */}
+        {tiktokAccounts.length > 0 && (
+          <>
+            <Button
+              onClick={(e) => setAccountMenuAnchor(e.currentTarget)}
+              sx={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '12px',
+                px: 2,
+                py: 1,
+                textTransform: 'none',
+                color: '#fff',
+                gap: 1,
+                flexShrink: 0,
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                },
+              }}
+            >
+              <Avatar
+                src={activeAccount?.avatarUrl || accountStats?.avatarUrl}
+                sx={{ width: 28, height: 28 }}
+              >
+                {(activeAccount?.accountName || activeAccount?.username || '?')[0].toUpperCase()}
+              </Avatar>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {activeAccount?.username || activeAccount?.accountName || 'Account'}
+              </Typography>
+              <KeyboardArrowDownIcon sx={{ fontSize: 20, color: 'rgba(255,255,255,0.5)' }} />
+            </Button>
+            <Menu
+              anchorEl={accountMenuAnchor}
+              open={Boolean(accountMenuAnchor)}
+              onClose={() => setAccountMenuAnchor(null)}
+              PaperProps={{
+                sx: {
+                  background: '#1E1E22',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '12px',
+                  mt: 1,
+                  minWidth: 200,
+                },
+              }}
+            >
+              {tiktokAccounts.map((account) => (
+                <MenuItem
+                  key={account.accountId}
+                  selected={account.accountId === activeAccountId}
+                  onClick={() => {
+                    setSelectedAccountId(account.accountId);
+                    setAccountMenuAnchor(null);
+                  }}
+                  sx={{
+                    gap: 1.5,
+                    py: 1,
+                    color: '#fff',
+                    '&.Mui-selected': {
+                      background: 'rgba(0,122,255,0.15)',
+                    },
+                    '&:hover': {
+                      background: 'rgba(255,255,255,0.06)',
+                    },
+                  }}
+                >
+                  <Avatar src={account.avatarUrl} sx={{ width: 32, height: 32 }}>
+                    {(account.accountName || account.username || '?')[0].toUpperCase()}
+                  </Avatar>
+                  <Box>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                      {account.accountName || account.username}
+                    </Typography>
+                    {account.username && account.accountName && (
+                      <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>
+                        @{account.username}
+                      </Typography>
+                    )}
+                  </Box>
+                </MenuItem>
+              ))}
+            </Menu>
+          </>
+        )}
       </Box>
 
       {/* KPI Cards */}
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(5, 1fr)' },
+        gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)' },
         gap: 2,
         mb: 4,
       }}>
@@ -276,6 +629,7 @@ const TikTokAnalyticsPage: React.FC = () => {
         />
       </Box>
 
+<<<<<<< Updated upstream
       {/* 7-Day Post Calendar */}
       {videosData?.videos && videosData.videos.length > 0 && (() => {
         const now = new Date();
@@ -431,6 +785,10 @@ const TikTokAnalyticsPage: React.FC = () => {
           </Box>
         );
       })()}
+=======
+      {/* Last 7 Days Calendar */}
+      <WeekCalendar videos={videosData?.videos || []} />
+>>>>>>> Stashed changes
 
       {/* Views Over Time */}
       <Box sx={{ mb: 4 }}>
@@ -591,7 +949,7 @@ const TikTokAnalyticsPage: React.FC = () => {
               />
               <Tooltip
                 {...chartTooltipStyle}
-                formatter={(value: any) => [value ?? 0, 'Posts']}
+                formatter={(value: number | undefined) => [value ?? 0, 'Posts']}
               />
               <Bar dataKey="posts" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
             </BarChart>
