@@ -30,12 +30,14 @@ import {
   PlayArrow as PlayArrowIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   scheduledPostsApi,
   ScheduledPost,
 } from '../services/api';
-import { useGetScheduledPostsQuery } from '../store/apiSlice';
+import { useGetScheduledPostsQuery, useGetSocialAccountsQuery } from '../store/apiSlice';
 import { useAuth } from '../hooks/useAuth';
 
 // TikTok icon component
@@ -52,6 +54,20 @@ const TikTokIcon: React.FC<{ sx?: any }> = ({ sx }) => (
   </Box>
 );
 
+// X (Twitter) icon component
+const XIcon: React.FC<{ sx?: any }> = ({ sx }) => (
+  <Box
+    component="svg"
+    viewBox="0 0 24 24"
+    sx={{ width: 24, height: 24, ...sx }}
+  >
+    <path
+      fill="currentColor"
+      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+    />
+  </Box>
+);
+
 type ViewMode = 'day' | 'week' | 'month';
 
 const ScheduledContentPage: React.FC = () => {
@@ -59,6 +75,20 @@ const ScheduledContentPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { subscription } = useAuth();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  // Fetch social accounts to resolve account names from accountIds
+  const { data: socialAccountsData } = useGetSocialAccountsQuery(
+    { userId: user?.userId || '' },
+    { skip: !user?.userId }
+  );
+  const accountNameMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const acct of (socialAccountsData?.accounts || [])) {
+      map[acct.accountId] = acct.accountName || acct.username || '';
+    }
+    return map;
+  }, [socialAccountsData]);
 
   // RTK Query for scheduled posts
   const scheduledPostsQuery = useGetScheduledPostsQuery();
@@ -893,6 +923,7 @@ const ScheduledContentPage: React.FC = () => {
                                       {p.platform.toLowerCase() === 'tiktok' && <TikTokIcon sx={{ width: 11, height: 11, color: '#000' }} />}
                                       {p.platform.toLowerCase() === 'facebook' && <FacebookIcon sx={{ fontSize: 11, color: '#1877F2' }} />}
                                       {p.platform.toLowerCase() === 'linkedin' && <LinkedInIcon sx={{ fontSize: 11, color: '#0A66C2' }} />}
+                                      {(p.platform.toLowerCase() === 'twitter' || p.platform.toLowerCase() === 'x') && <XIcon sx={{ width: 11, height: 11, color: '#000' }} />}
                                     </Box>
                                   ))}
                                   {post.platforms.length > 4 && (
@@ -1325,9 +1356,10 @@ const ScheduledContentPage: React.FC = () => {
                           p.platform.toLowerCase() === 'tiktok' ? <TikTokIcon sx={{ width: 16, height: 16 }} /> :
                           p.platform.toLowerCase() === 'facebook' ? <FacebookIcon sx={{ fontSize: 16 }} /> :
                           p.platform.toLowerCase() === 'linkedin' ? <LinkedInIcon sx={{ fontSize: 16 }} /> :
+                          (p.platform.toLowerCase() === 'twitter' || p.platform.toLowerCase() === 'x') ? <XIcon sx={{ width: 16, height: 16 }} /> :
                           undefined
                         }
-                        label={p.accountName || p.platform}
+                        label={(p.accountId && accountNameMap[p.accountId]) || p.accountName || (p.platform.toLowerCase() === 'twitter' ? 'X' : p.platform)}
                         size="small"
                         sx={{
                           bgcolor: 'rgba(255,255,255,0.08)',
@@ -1339,6 +1371,7 @@ const ScheduledContentPage: React.FC = () => {
                               p.platform.toLowerCase() === 'instagram' ? '#E4405F' :
                               p.platform.toLowerCase() === 'facebook' ? '#1877F2' :
                               p.platform.toLowerCase() === 'linkedin' ? '#0A66C2' :
+                              (p.platform.toLowerCase() === 'twitter' || p.platform.toLowerCase() === 'x') ? '#fff' :
                               '#fff',
                           },
                         }}
