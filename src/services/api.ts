@@ -503,6 +503,7 @@ export interface ScheduledPost {
   thumbnailUrl?: string;
   hook?: string;
   tags?: string[];
+  hashtags?: string[]; // slideshow scheduled posts use 'hashtags' instead of 'tags'
   videoFooter?: string;
   aspectRatio?: 'portrait' | 'landscape';
   status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled';

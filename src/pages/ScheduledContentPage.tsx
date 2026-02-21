@@ -1412,29 +1412,32 @@ const ScheduledContentPage: React.FC = () => {
                 </Box>
               )}
 
-              {/* Tags */}
-              {selectedPost.tags && selectedPost.tags.length > 0 && (
-                <Box sx={{ mb: 3 }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
-                    Tags
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selectedPost.tags.map((tag, i) => (
-                      <Chip
-                        key={i}
-                        label={`#${tag}`}
-                        size="small"
-                        sx={{
-                          bgcolor: 'rgba(255,255,255,0.08)',
-                          color: '#fff',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                        }}
-                      />
-                    ))}
+              {/* Tags — video posts use 'tags', slideshow posts use 'hashtags' */}
+              {(() => {
+                const allTags = selectedPost.tags?.length ? selectedPost.tags : (selectedPost.hashtags || []);
+                return allTags.length > 0 ? (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, mb: 1, textTransform: 'uppercase' }}>
+                      Tags
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {allTags.map((tag, i) => (
+                        <Chip
+                          key={i}
+                          label={tag.startsWith('#') ? tag : `#${tag}`}
+                          size="small"
+                          sx={{
+                            bgcolor: 'rgba(255,255,255,0.08)',
+                            color: '#fff',
+                            fontWeight: 500,
+                            fontSize: '0.75rem',
+                          }}
+                        />
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
+                ) : null;
+              })()}
 
               {/* Video Footer */}
               {selectedPost.videoFooter && (
