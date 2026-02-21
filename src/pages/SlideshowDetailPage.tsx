@@ -381,27 +381,26 @@ const SlideshowDetailPage: React.FC = () => {
               Post Details
             </Typography>
 
-            {/* TikTok Caption */}
+            {/* Title / Hook */}
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>TikTok Caption</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Title</Typography>
                 <Typography sx={{
                   fontSize: '0.75rem',
                   fontWeight: 600,
-                  color: (editTitle.trim().split(/\s+/).filter(Boolean).length) > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)',
+                  color: editTitle.length > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)',
                 }}>
-                  {editTitle.trim() ? editTitle.trim().split(/\s+/).filter(Boolean).length : 0}/90 words
+                  {editTitle.length}/90 chars
                 </Typography>
               </Box>
               <TextField
                 fullWidth
                 multiline
                 rows={3}
-                placeholder="Hook + story + hashtags"
+                placeholder="Scroll-stop hook text"
                 value={editTitle}
                 onChange={(e) => {
-                  const words = e.target.value.trim().split(/\s+/).filter(Boolean);
-                  if (words.length <= 90 || e.target.value.length < editTitle.length) {
+                  if (e.target.value.length <= 90 || e.target.value.length < editTitle.length) {
                     setEditTitle(e.target.value);
                   }
                 }}
@@ -417,9 +416,9 @@ const SlideshowDetailPage: React.FC = () => {
               />
             </Box>
 
-            {/* Description */}
+            {/* Caption / Body */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>Description</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>Caption</Typography>
               <TextField
                 fullWidth multiline rows={5} placeholder="Tell the story behind the post, add context, or expand on your hook..."
                 value={editDescription}
