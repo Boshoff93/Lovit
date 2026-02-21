@@ -431,6 +431,11 @@ export const linkedinApi = {
 
 // Twitter/X API
 export const twitterApi = {
+  // OAuth 1.0a connect — gets authorizeUrl to redirect user to Twitter auth
+  getOAuth1ConnectUrl: (userId: string) =>
+    api.get(`/api/gruvi/twitter/oauth1/connect?userId=${userId}`),
+
+  // OAuth 2.0 (legacy — kept for reference but not used for connect)
   getAuthUrl: (userId: string) =>
     api.get(`/api/gruvi/twitter/auth-url?userId=${userId}`),
 

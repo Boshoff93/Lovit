@@ -238,7 +238,8 @@ const ConnectedAccountsPage: React.FC = () => {
           authUrl = (await linkedinApi.getAuthUrl(userId)).data.authUrl;
           break;
         case 'twitter':
-          authUrl = (await twitterApi.getAuthUrl(userId)).data.authUrl;
+          // OAuth 1.0a: gets request_token from backend, returns authorizeUrl
+          authUrl = (await twitterApi.getOAuth1ConnectUrl(userId)).data.authorizeUrl;
           break;
         default:
           throw new Error('Unknown platform');
