@@ -125,7 +125,7 @@ const SlideshowDetailPage: React.FC = () => {
   // Pre-populate metadata from slideshow data
   useEffect(() => {
     if (currentSlideshow) {
-      setEditTitle(currentSlideshow.title || '');
+      setEditTitle(currentSlideshow.hook || currentSlideshow.title || '');
       const captionText = (currentSlideshow.captions || []).filter(Boolean).join('\n');
       setEditDescription(currentSlideshow.tiktokDescription || currentSlideshow.title || captionText || '');
       setEditTags(currentSlideshow.hashtags || []);
@@ -298,8 +298,8 @@ const SlideshowDetailPage: React.FC = () => {
           <IconButton onClick={() => navigate('/my-slideshows')} sx={{ color: '#fff' }}>
             <ArrowBack />
           </IconButton>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff' }}>
-            {currentSlideshow.title || 'Slideshow'}
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#fff' }}>
+            {currentSlideshow.hook || (currentSlideshow.title ? currentSlideshow.title.substring(0, 80) + (currentSlideshow.title.length > 80 ? '…' : '') : 'Slideshow')}
           </Typography>
           <Chip
             label={currentSlideshow.status}
