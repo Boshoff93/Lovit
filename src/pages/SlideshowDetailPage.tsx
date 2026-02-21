@@ -127,7 +127,7 @@ const SlideshowDetailPage: React.FC = () => {
     if (currentSlideshow) {
       setEditTitle(currentSlideshow.hook || currentSlideshow.title || '');
       const captionText = (currentSlideshow.captions || []).filter(Boolean).join('\n');
-      setEditDescription(currentSlideshow.tiktokDescription || currentSlideshow.title || captionText || '');
+      setEditDescription(currentSlideshow.tiktokDescription || '');
       setEditTags(currentSlideshow.hashtags || []);
     }
   }, [currentSlideshow?.slideshowId, currentSlideshow?.status]);
