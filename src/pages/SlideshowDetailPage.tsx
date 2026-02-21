@@ -35,6 +35,9 @@ import {
   CloudUpload,
   PhotoLibrary,
   Share,
+  Check,
+  Add,
+  InfoOutlined,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { useGetSlideshowQuery, useGetSocialAccountsQuery, useDeleteSlideshowMutation, apiSlice } from '../store/apiSlice';
@@ -481,32 +484,27 @@ const SlideshowDetailPage: React.FC = () => {
                 </Typography>
               </Box>
 
-            {/* Title / Hook */}
+            {/* Title (Hook) */}
             <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Title</Typography>
-                <Typography sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: editTitle.length > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)',
-                }}>
-                  {editTitle.length}/90 chars
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>Title (Hook)</Typography>
+                <Tooltip title="The hook is the attention-grabbing first line viewers see on TikTok. Keep it under 90 characters." arrow placement="top">
+                  <InfoOutlined sx={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', cursor: 'help' }} />
+                </Tooltip>
+                <Typography sx={{ ml: 'auto', fontSize: '0.75rem', fontWeight: 600, color: editTitle.length > 90 ? '#FF3B30' : 'rgba(255,255,255,0.4)' }}>
+                  {editTitle.length}/90
                 </Typography>
               </Box>
               <TextField
                 fullWidth
-                multiline
-                rows={3}
-                placeholder="Scroll-stop hook text"
                 value={editTitle}
-                onChange={(e) => {
-                  if (e.target.value.length <= 90 || e.target.value.length < editTitle.length) {
-                    setEditTitle(e.target.value);
-                  }
-                }}
+                onChange={(e) => { if (e.target.value.length <= 90 || e.target.value.length < editTitle.length) setEditTitle(e.target.value); }}
+                inputProps={{ maxLength: 90 }}
+                placeholder="Enter a catchy hook"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', lineHeight: 1.6,
+                    borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem',
+                    '& .MuiOutlinedInput-input': { py: 1.5, px: 2 },
                     '& fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: editTitle ? '2px' : '1px' },
                     '&:hover fieldset': { borderColor: editTitle ? '#007AFF' : 'rgba(255,255,255,0.2)' },
                     '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' },
@@ -516,11 +514,12 @@ const SlideshowDetailPage: React.FC = () => {
               />
             </Box>
 
-            {/* Caption / Body */}
+            {/* Description */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>Caption</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>Description</Typography>
               <TextField
-                fullWidth multiline rows={5} placeholder="Tell the story behind the post, add context, or expand on your hook..."
+                fullWidth multiline rows={4}
+                placeholder="Tell the story behind the post, add context, or expand on your hook..."
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 sx={{
@@ -535,132 +534,186 @@ const SlideshowDetailPage: React.FC = () => {
               />
             </Box>
 
-            {/* Hashtags */}
-            <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>Hashtags</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
-              {editTags.map((tag, i) => (
-                <Chip key={i} label={tag.startsWith('#') ? tag : `#${tag}`} size="small"
-                  onDelete={() => setEditTags(prev => prev.filter((_, idx) => idx !== i))}
-                  sx={{ borderRadius: '100px', bgcolor: 'transparent', border: '1.5px solid #007AFF', color: '#fff', fontWeight: 500, '& .MuiChip-deleteIcon': { color: '#007AFF' } }}
+            {/* Tags */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>Tags</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 1.5 }}>
+                {editTags.map((tag, i) => (
+                  <Chip key={i} label={tag.startsWith('#') ? tag : `#${tag}`} size="small"
+                    onDelete={() => setEditTags(prev => prev.filter((_, idx) => idx !== i))}
+                    sx={{ borderRadius: '100px', bgcolor: 'transparent', border: '1.5px solid #007AFF', color: '#fff', fontWeight: 500, '& .MuiChip-deleteIcon': { color: '#007AFF' } }}
+                  />
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <TextField size="small" placeholder="Add tag" value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && newTag.trim()) { setEditTags(prev => [...prev, newTag.trim().replace(/^#/, '')]); setNewTag(''); } }}
+                  sx={{
+                    flex: 1,
+                    '& .MuiOutlinedInput-root': { borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', '& .MuiOutlinedInput-input': { py: 1, px: 1.5 }, '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' } },
+                    '& .MuiInputBase-input': { '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 } },
+                  }}
                 />
-              ))}
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <TextField size="small" placeholder="Add hashtag" value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && newTag.trim()) { setEditTags(prev => [...prev, newTag.trim().replace(/^#/, '')]); setNewTag(''); } }}
-                sx={{
-                  flex: 1,
-                  '& .MuiOutlinedInput-root': { borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused fieldset': { borderColor: '#007AFF', borderWidth: '2px' } },
-                  '& .MuiInputBase-input': { '&::placeholder': { color: 'rgba(255,255,255,0.4)', opacity: 1 } },
-                }}
-              />
-              <Button size="small" variant="outlined"
-                onClick={() => { if (newTag.trim()) { setEditTags(prev => [...prev, newTag.trim().replace(/^#/, '')]); setNewTag(''); } }}
-                sx={{ borderRadius: '10px', textTransform: 'none', borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
-              >Add</Button>
+                <Button size="small" variant="outlined"
+                  onClick={() => { if (newTag.trim()) { setEditTags(prev => [...prev, newTag.trim().replace(/^#/, '')]); setNewTag(''); } }}
+                  sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
+                >Add</Button>
+              </Box>
             </Box>
           </Paper>
 
-          {/* Social Accounts */}
-          <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>Publish To</Typography>
-            {slideshowAccounts.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 2 }}>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mb: 1 }}>No TikTok or Instagram accounts connected</Typography>
-                <Button variant="outlined" size="small" onClick={() => navigate('/settings/connected-accounts')}
-                  sx={{ borderRadius: '10px', textTransform: 'none', borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
-                >Connect Accounts</Button>
+          {/* Schedule Post — platform selection */}
+          <Paper elevation={0} sx={{ borderRadius: '16px', p: { xs: 2, sm: 2.5 }, mb: 2, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Share sx={{ fontSize: 20, color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>Schedule Post</Typography>
               </Box>
-            ) : (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-                {slideshowAccounts.map((account) => {
-                  const isSelected = selectedAccountIds.has(account.accountId);
-                  const isDisabled = account.platform === 'instagram' && instagramDisabled;
-                  return (
-                    <Tooltip key={account.accountId} title={isDisabled ? `Instagram limits carousels to 10 images (this slideshow has ${totalSlides})` : ''}>
-                      <Box onClick={() => handleAccountToggle(account.accountId, account.platform)}
-                        sx={{
-                          display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 1.5, borderRadius: '12px',
-                          cursor: isDisabled ? 'not-allowed' : 'pointer',
-                          border: isSelected ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)',
-                          background: isDisabled ? 'rgba(255,255,255,0.02)' : isSelected ? 'rgba(0,122,255,0.15)' : 'rgba(255,255,255,0.05)',
-                          opacity: isDisabled ? 0.5 : 1, transition: 'all 0.2s ease',
-                          '&:hover': isDisabled ? {} : { borderColor: isSelected ? '#007AFF' : 'rgba(255,255,255,0.2)', background: isSelected ? 'rgba(0,122,255,0.2)' : 'rgba(255,255,255,0.08)' },
-                        }}
-                      >
-                        <Box component="img" src={account.platform === 'tiktok' ? '/social/tiktok.png' : '/social/instagram.png'} alt={account.platform}
-                          sx={{ width: 28, height: 28, borderRadius: '6px' }} onError={(e: any) => { e.target.style.display = 'none'; }} />
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff', textTransform: 'capitalize' }}>{account.platform}</Typography>
-                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>{account.username || account.accountName || 'Connected'}</Typography>
+              <Chip
+                label={selectedAccountIds.size > 0 ? 'Deselect All' : 'Select All'}
+                onClick={() => {
+                  if (selectedAccountIds.size > 0) setSelectedAccountIds(new Set());
+                  else setSelectedAccountIds(new Set(slideshowAccounts.filter(a => !(a.platform === 'instagram' && instagramDisabled)).map(a => a.accountId)));
+                }}
+                size="small"
+                sx={{ bgcolor: selectedAccountIds.size > 0 ? '#007AFF' : 'transparent', border: '1px solid #007AFF', color: '#fff', fontWeight: 500, '&:hover': { bgcolor: selectedAccountIds.size > 0 ? '#0066DD' : 'rgba(0,122,255,0.1)' } }}
+              />
+            </Box>
+
+            {/* Circular avatar account grid */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              {slideshowAccounts.map((account) => {
+                const isSelected = selectedAccountIds.has(account.accountId);
+                const isDisabled = account.platform === 'instagram' && instagramDisabled;
+                const platformConfig: Record<string, { color: string; gradient?: string; icon: React.ReactNode }> = {
+                  tiktok: { color: '#000', icon: <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></Box> },
+                  instagram: { color: '#E4405F', gradient: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)', icon: <Box component="svg" viewBox="0 0 24 24" sx={{ width: 12, height: 12, fill: '#fff' }}><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></Box> },
+                };
+                const config = platformConfig[account.platform] || { color: '#666', icon: null };
+                const displayName = account.username ? `@${account.username}` : account.accountName || account.platform;
+                return (
+                  <Tooltip key={account.accountId} title={isDisabled ? `Instagram limits carousels to 10 slides (this has ${totalSlides})` : ''} arrow>
+                    <Box onClick={() => !isDisabled && handleAccountToggle(account.accountId, account.platform)}
+                      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, cursor: isDisabled ? 'not-allowed' : 'pointer', opacity: isDisabled ? 0.4 : 1, transition: 'all 0.2s ease', '&:hover': isDisabled ? {} : { transform: 'scale(1.02)' } }}>
+                      <Box sx={{ position: 'relative' }}>
+                        <Box sx={{ width: 48, height: 48, borderRadius: '50%', border: isSelected ? '2.5px solid #34C759' : 'none', background: account.avatarUrl ? 'transparent' : (config.gradient || config.color), display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isSelected ? '0 0 12px rgba(52,199,89,0.4)' : 'none', overflow: 'hidden' }}>
+                          {account.avatarUrl
+                            ? <Box component="img" src={account.avatarUrl} alt={displayName} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            : <Box sx={{ transform: 'scale(1.5)', display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>{config.icon}</Box>
+                          }
                         </Box>
-                        {isSelected && <CheckCircle sx={{ fontSize: 20, color: '#007AFF' }} />}
+                        {isSelected && (
+                          <Box sx={{ position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%', bgcolor: '#34C759', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Check sx={{ fontSize: 12, color: '#fff' }} />
+                          </Box>
+                        )}
+                        {/* Platform badge */}
+                        <Box sx={{ position: 'absolute', bottom: -6, right: -6, width: 22, height: 22, borderRadius: '50%', background: config.gradient || config.color, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #1a1a2e', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                          <Box sx={{ transform: 'scale(1.2)' }}>{config.icon}</Box>
+                        </Box>
                       </Box>
-                    </Tooltip>
-                  );
-                })}
+                      <Typography sx={{ fontSize: '0.7rem', color: '#fff', textAlign: 'center', maxWidth: 70, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {displayName}
+                      </Typography>
+                    </Box>
+                  </Tooltip>
+                );
+              })}
+              {/* Add account button */}
+              <Box onClick={() => navigate('/settings/connected-accounts')} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75, cursor: 'pointer', transition: 'all 0.2s ease', '&:hover': { transform: 'scale(1.02)' } }}>
+                <Box sx={{ width: 48, height: 48, borderRadius: '50%', border: '2px dashed rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.06)' } }}>
+                  <Add sx={{ fontSize: 24, color: 'rgba(255,255,255,0.5)' }} />
+                </Box>
+                <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>Add</Typography>
+              </Box>
+            </Box>
+
+            {/* Divider */}
+            <Box sx={{ my: 3, borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+
+            {/* TikTok Settings — inline, only when TikTok account selected */}
+            {hasTikTok && (
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #34C759', boxShadow: '0 0 12px rgba(52,199,89,0.4)' }}>
+                    <Box component="svg" viewBox="0 0 24 24" sx={{ width: 20, height: 20, fill: '#fff' }}><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></Box>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>TikTok Settings</Typography>
+                    <Typography sx={{ fontSize: '0.8rem', color: '#86868B' }}>
+                      {slideshowAccounts.find(a => a.platform === 'tiktok')?.username ? `@${slideshowAccounts.find(a => a.platform === 'tiktok')?.username}` : 'Your TikTok account'}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Post Mode */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>Post Mode</Typography>
+                <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+                  <Box onClick={() => setTiktokPostMode('draft')} sx={{ flex: 1, p: 1.5, borderRadius: '10px', border: tiktokPostMode === 'draft' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)', bgcolor: tiktokPostMode === 'draft' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { borderColor: tiktokPostMode === 'draft' ? '#007AFF' : 'rgba(255,255,255,0.3)' } }}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>Save as Draft</Typography>
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>Appears in your TikTok inbox to review before posting</Typography>
+                  </Box>
+                  <Box onClick={() => setTiktokPostMode('direct')} sx={{ flex: 1, p: 1.5, borderRadius: '10px', border: tiktokPostMode === 'direct' ? '2px solid #007AFF' : '1px solid rgba(255,255,255,0.1)', bgcolor: tiktokPostMode === 'direct' ? 'rgba(0,122,255,0.08)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { borderColor: tiktokPostMode === 'direct' ? '#007AFF' : 'rgba(255,255,255,0.3)' } }}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>Direct Post</Typography>
+                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>Post directly to your TikTok profile</Typography>
+                  </Box>
+                </Box>
+
+                {/* Privacy */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>
+                  Who can view this <Typography component="span" sx={{ color: '#FF3B30', fontWeight: 400 }}>*</Typography>
+                </Typography>
+                <Select fullWidth value={tiktokPrivacyLevel} onChange={(e) => setTiktokPrivacyLevel(e.target.value)} displayEmpty
+                  sx={{ borderRadius: '12px', mb: tiktokPrivacyLevel ? 2 : 1, background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', '& .MuiSelect-select': { py: 1.5, px: 2 }, '& .MuiOutlinedInput-notchedOutline': { borderColor: tiktokPrivacyLevel ? '#007AFF' : 'rgba(255,255,255,0.1)', borderWidth: tiktokPrivacyLevel ? '2px' : '1px' }, '&:hover': { background: 'rgba(255,255,255,0.08)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF', borderWidth: '2px' }, '& .MuiSelect-icon': { color: 'rgba(255,255,255,0.6)' } }}
+                >
+                  <MenuItem value="" disabled><Typography sx={{ color: '#86868B' }}>Select privacy level</Typography></MenuItem>
+                  {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((opt: string) => (
+                    <MenuItem key={opt} value={opt}>
+                      {opt === 'PUBLIC_TO_EVERYONE' && 'Everyone'}
+                      {opt === 'MUTUAL_FOLLOW_FRIENDS' && 'Friends'}
+                      {opt === 'FOLLOWER_OF_CREATOR' && 'Followers'}
+                      {opt === 'SELF_ONLY' && 'Only me'}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {!tiktokPrivacyLevel && <Typography sx={{ fontSize: '0.7rem', color: '#FF3B30', mb: 2 }}>Please select a privacy level to continue</Typography>}
+
+                {/* Allow viewers */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 1 }}>Allow viewers to:</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                  <FormControlLabel
+                    control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small"
+                      icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)', bgcolor: 'transparent' }} />}
+                      checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>}
+                    />}
+                    label={<Typography sx={{ fontSize: '0.95rem', color: '#fff' }}>Comment</Typography>}
+                    sx={{ mr: 2 }}
+                  />
+                </Box>
+
+                {/* Content disclosure */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: tiktokDiscloseContent ? 1.5 : 0, ml: -1 }}>
+                  <Switch checked={tiktokDiscloseContent} onChange={(e) => setTiktokDiscloseContent(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#007AFF' } }} />
+                  <Typography sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>
+                </Box>
+                {tiktokDiscloseContent && (
+                  <Box sx={{ ml: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <FormControlLabel control={<Checkbox checked={tiktokBrandOrganic} onChange={(e) => setTiktokBrandOrganic(e.target.checked)} size="small" icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)' }} />} checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>} />} label={<Typography sx={{ fontSize: '0.95rem', color: '#fff' }}>Your brand</Typography>} />
+                    <FormControlLabel control={<Checkbox checked={tiktokBrandedContent} onChange={(e) => setTiktokBrandedContent(e.target.checked)} size="small" icon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', border: '2px solid rgba(255,255,255,0.3)' }} />} checkedIcon={<Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: '#007AFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check sx={{ fontSize: 14, color: '#fff' }} /></Box>} />} label={<Typography sx={{ fontSize: '0.95rem', color: '#fff' }}>Branded content</Typography>} />
+                  </Box>
+                )}
               </Box>
             )}
           </Paper>
 
-          {/* TikTok Settings */}
-          {hasTikTok && (
-            <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#fff' }}>TikTok Settings</Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Post Mode</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  {(['direct', 'draft'] as const).map(mode => (
-                    <Chip key={mode} label={mode === 'direct' ? 'Publish' : 'Save as Draft'} onClick={() => setTiktokPostMode(mode)}
-                      sx={{ borderRadius: '10px', fontWeight: 600, backgroundColor: tiktokPostMode === mode ? '#007AFF' : 'rgba(255,255,255,0.05)', color: '#fff', border: tiktokPostMode === mode ? '1px solid #007AFF' : '1px solid rgba(255,255,255,0.1)', '&:hover': { opacity: 0.8 } }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#fff' }}>Privacy Level</Typography>
-                <Select value={tiktokPrivacyLevel} onChange={(e) => setTiktokPrivacyLevel(e.target.value)} displayEmpty size="small" fullWidth
-                  sx={{ borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#007AFF' }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
-                >
-                  <MenuItem value="" disabled>Select privacy level</MenuItem>
-                  {(tiktokCreatorInfo?.privacyLevelOptions || ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY']).map((level: string) => (
-                    <MenuItem key={level} value={level}>{level.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}</MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                <FormControlLabel control={<Checkbox checked={tiktokAllowComment} onChange={(e) => setTiktokAllowComment(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Allow comments</Typography>} />
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <FormControlLabel
-                  control={<Switch checked={tiktokDiscloseContent} onChange={(e) => setTiktokDiscloseContent(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#007AFF' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#007AFF' } }} />}
-                  label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>Content disclosure</Typography>}
-                />
-                {tiktokDiscloseContent && (
-                  <Box sx={{ ml: 4, mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    <FormControlLabel control={<Checkbox checked={tiktokBrandOrganic} onChange={(e) => setTiktokBrandOrganic(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Your brand</Typography>} />
-                    <FormControlLabel control={<Checkbox checked={tiktokBrandedContent} onChange={(e) => setTiktokBrandedContent(e.target.checked)} size="small" sx={{ color: 'rgba(255,255,255,0.3)', '&.Mui-checked': { color: '#007AFF' } }} />} label={<Typography variant="body2" sx={{ color: '#fff' }}>Branded content</Typography>} />
-                  </Box>
-                )}
-              </Box>
-            </Paper>
-          )}
-
-          {/* Publish Button */}
+          {/* Publish / Download */}
           {selectedAccountIds.size > 0 && (
             <Button fullWidth variant="contained" onClick={() => setShowUploadConfirm(true)}
               disabled={hasTikTok && !tiktokPrivacyLevel}
-              sx={{
-                borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, fontSize: '1rem',
-                bgcolor: '#007AFF', boxShadow: '0 4px 16px rgba(0,122,255,0.3)',
-                '&:hover': { bgcolor: '#0066DD', boxShadow: '0 6px 20px rgba(0,122,255,0.4)' },
-                '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none', color: 'rgba(255,255,255,0.3)' },
-              }}
-            >{hasTikTok && !tiktokPrivacyLevel ? 'Select Privacy Level to Publish' : 'Publish Slideshow'}</Button>
+              sx={{ borderRadius: '12px', py: 1.5, mb: 2, textTransform: 'none', fontWeight: 600, fontSize: '1rem', bgcolor: '#007AFF', boxShadow: '0 4px 16px rgba(0,122,255,0.3)', '&:hover': { bgcolor: '#0066DD' }, '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', boxShadow: 'none', color: 'rgba(255,255,255,0.3)' } }}
+            >{hasTikTok && !tiktokPrivacyLevel ? 'Select Privacy Level to Continue' : 'Publish Slideshow'}</Button>
           )}
-
-          {/* Download all */}
           <Button fullWidth variant="outlined" startIcon={<Download />}
             onClick={() => { imageUrls.forEach((url: string, i: number) => { const a = document.createElement('a'); a.href = url; a.download = `slide-${i + 1}.jpg`; a.target = '_blank'; a.click(); }); }}
             sx={{ borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
