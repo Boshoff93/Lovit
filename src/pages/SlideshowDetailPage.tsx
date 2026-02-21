@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -33,6 +33,8 @@ import {
   ChevronRight,
   Download,
   CloudUpload,
+  PhotoLibrary,
+  Share,
 } from '@mui/icons-material';
 import { RootState, AppDispatch } from '../store/store';
 import { useGetSlideshowQuery, useGetSocialAccountsQuery, useDeleteSlideshowMutation, apiSlice } from '../store/apiSlice';
@@ -290,96 +292,194 @@ const SlideshowDetailPage: React.FC = () => {
     );
   }
 
+  const socialSectionRef = useRef<HTMLDivElement>(null);
+
+  const scrollToPostSection = useCallback(() => {
+    const el = socialSectionRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }, []);
+
+  const statusColor = currentSlideshow.status === 'ready' ? '#22C55E' : currentSlideshow.status === 'failed' ? '#FF3B30' : '#007AFF';
+  const statusBg = currentSlideshow.status === 'ready' ? 'rgba(34,197,94,0.15)' : currentSlideshow.status === 'failed' ? 'rgba(255,59,48,0.15)' : 'rgba(0,122,255,0.15)';
+
   return (
-    <Box sx={{ maxWidth: 1000, mx: 'auto', p: { xs: 2, md: 3 } }}>
-      {/* Back + Title Bar */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton onClick={() => navigate('/my-slideshows')} sx={{ color: '#fff' }}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#fff' }}>
-            {currentSlideshow.hook || (currentSlideshow.title ? currentSlideshow.title.substring(0, 80) + (currentSlideshow.title.length > 80 ? '…' : '') : 'Slideshow')}
-          </Typography>
-          <Chip
-            label={currentSlideshow.status}
-            size="small"
-            sx={{
-              backgroundColor: currentSlideshow.status === 'ready' ? 'rgba(34,197,94,0.15)' : currentSlideshow.status === 'failed' ? 'rgba(255,59,48,0.15)' : 'rgba(0,122,255,0.15)',
-              color: currentSlideshow.status === 'ready' ? '#22C55E' : currentSlideshow.status === 'failed' ? '#FF3B30' : '#007AFF',
-              fontWeight: 600,
-              border: `1px solid ${currentSlideshow.status === 'ready' ? 'rgba(34,197,94,0.3)' : currentSlideshow.status === 'failed' ? 'rgba(255,59,48,0.3)' : 'rgba(0,122,255,0.3)'}`,
-            }}
-          />
-        </Box>
-        <IconButton onClick={() => setShowDeleteDialog(true)} sx={{ color: '#FF3B30' }}>
-          <Delete />
-        </IconButton>
-      </Box>
+    <Box sx={{ width: '100%', maxWidth: '100%' }}>
+      <Box sx={{ pt: { xs: 0, md: 2 }, px: { xs: 2, sm: 3, md: 4 }, pb: 16 }}>
 
-      {/* Generating State */}
-      {currentSlideshow.status === 'generating' && (
-        <Paper sx={{ p: 4, borderRadius: '20px', textAlign: 'center', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-          <CircularProgress size={48} sx={{ color: '#007AFF', mb: 2 }} />
-          <Typography variant="h6" sx={{ color: '#fff', mb: 1 }}>Generating your slideshow...</Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-            This usually takes 1-3 minutes. The page will update automatically.
-          </Typography>
-        </Paper>
-      )}
-
-      {/* Failed State */}
-      {currentSlideshow.status === 'failed' && (
-        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
-          Generation failed: {currentSlideshow.errorMessage || 'Unknown error'}
-        </Alert>
-      )}
-
-      {/* Image Carousel */}
-      {totalSlides > 0 && (
-        <Paper sx={{ borderRadius: '20px', overflow: 'hidden', mb: 3, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-          <Box sx={{ position: 'relative', backgroundColor: '#000' }}>
-            <Box
-              component="img"
-              src={imageUrls[currentSlide]}
-              alt={`Slide ${currentSlide + 1}`}
-              onClick={() => setLightboxOpen(true)}
-              sx={{ width: '100%', maxHeight: 600, objectFit: 'contain', display: 'block', mx: 'auto', cursor: 'pointer' }}
-            />
-            {currentSlide > 0 && (
-              <IconButton onClick={prevSlide} sx={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff', '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' } }}>
-                <ChevronLeft />
-              </IconButton>
-            )}
-            {currentSlide < totalSlides - 1 && (
-              <IconButton onClick={nextSlide} sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff', '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' } }}>
-                <ChevronRight />
-              </IconButton>
-            )}
-            <Chip label={`${currentSlide + 1} / ${totalSlides}`} size="small" sx={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', color: '#fff', fontWeight: 600, border: '1px solid rgba(255,255,255,0.2)' }} />
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, py: 1.5, backgroundColor: 'rgba(255,255,255,0.03)' }}>
-            {imageUrls.map((_: string, i: number) => (
-              <Box key={i} onClick={() => setCurrentSlide(i)} sx={{ width: i === currentSlide ? 24 : 8, height: 8, borderRadius: 4, backgroundColor: i === currentSlide ? '#007AFF' : 'rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.2s ease' }} />
-            ))}
-          </Box>
-          {currentSlideshow.captions?.[currentSlide] && (
-            <Box sx={{ px: 3, py: 1.5, backgroundColor: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}>
-                "{currentSlideshow.captions[currentSlide]}"
-              </Typography>
+        {/* Header — matches video player style */}
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <IconButton onClick={() => navigate('/my-slideshows')} sx={{ color: 'rgba(255,255,255,0.7)', mr: 0.5 }}>
+              <ArrowBack />
+            </IconButton>
+            <Box sx={{
+              width: 56, height: 56, borderRadius: '16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(102,126,234,0.3)', flexShrink: 0,
+              animation: 'iconEntrance 0.5s ease-out',
+              '@keyframes iconEntrance': {
+                '0%': { opacity: 0, transform: 'scale(0.5) rotate(-10deg)' },
+                '50%': { transform: 'scale(1.1) rotate(5deg)' },
+                '100%': { opacity: 1, transform: 'scale(1) rotate(0deg)' },
+              },
+            }}>
+              <PhotoLibrary sx={{ fontSize: 28, color: '#fff' }} />
             </Box>
-          )}
-        </Paper>
-      )}
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+                {currentSlideshow.hook || currentSlideshow.title?.substring(0, 60) || 'Slideshow'}
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>View and share your slideshow</Typography>
+            </Box>
+          </Box>
+          <IconButton onClick={() => setShowDeleteDialog(true)} sx={{ color: '#FF3B30' }}>
+            <Delete />
+          </IconButton>
+        </Box>
 
-      {currentSlideshow.status === 'ready' && (
-        <>
-          {/* Metadata Editing */}
-          <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
-              Post Details
-            </Typography>
+        {/* Generating State */}
+        {currentSlideshow.status === 'generating' && (
+          <Paper sx={{ p: 4, borderRadius: '20px', textAlign: 'center', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
+            <CircularProgress size={48} sx={{ color: '#007AFF', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#fff', mb: 1 }}>Generating your slideshow...</Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>This usually takes 1-3 minutes. The page will update automatically.</Typography>
+          </Paper>
+        )}
+
+        {/* Failed State */}
+        {currentSlideshow.status === 'failed' && (
+          <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+            Generation failed: {currentSlideshow.errorMessage || 'Unknown error'}
+          </Alert>
+        )}
+
+        {/* Slideshow + Details — side by side like video player */}
+        {totalSlides > 0 && (
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: 'auto 1fr',
+            alignItems: 'stretch',
+            gap: { xs: 2, sm: 3 },
+            mb: 3,
+          }}>
+            {/* Left: Image Carousel */}
+            <Paper elevation={0} sx={{
+              borderRadius: '12px', overflow: 'hidden', background: '#000',
+              position: 'relative',
+              aspectRatio: '9/16',
+              maxHeight: { xs: 400, sm: 480, md: 540 },
+              width: 'auto', flexShrink: 0,
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}>
+              <Box
+                component="img"
+                src={imageUrls[currentSlide]}
+                alt={`Slide ${currentSlide + 1}`}
+                onClick={() => setLightboxOpen(true)}
+                sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'pointer' }}
+              />
+              {currentSlide > 0 && (
+                <IconButton onClick={prevSlide} sx={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff', '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' } }}>
+                  <ChevronLeft />
+                </IconButton>
+              )}
+              {currentSlide < totalSlides - 1 && (
+                <IconButton onClick={nextSlide} sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff', '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' } }}>
+                  <ChevronRight />
+                </IconButton>
+              )}
+              <Chip label={`${currentSlide + 1} / ${totalSlides}`} size="small" sx={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', color: '#fff', fontWeight: 600, border: '1px solid rgba(255,255,255,0.2)' }} />
+            </Paper>
+
+            {/* Right: Details — aligned to bottom like video player */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minWidth: 0 }}>
+              {/* Dot navigation */}
+              <Box sx={{ display: 'flex', gap: 0.5, mb: 1.5 }}>
+                {imageUrls.map((_: string, i: number) => (
+                  <Box key={i} onClick={() => setCurrentSlide(i)} sx={{ width: i === currentSlide ? 24 : 8, height: 8, borderRadius: 4, backgroundColor: i === currentSlide ? '#007AFF' : 'rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.2s ease' }} />
+                ))}
+              </Box>
+
+              {/* Status + Style chips */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 0.5 }}>
+                <Chip label={currentSlideshow.status} size="small" sx={{ backgroundColor: statusBg, color: statusColor, fontWeight: 600, border: `1px solid ${statusColor}40` }} />
+                {currentSlideshow.style && (
+                  <Chip label={currentSlideshow.style} size="small" sx={{ background: 'rgba(102,126,234,0.15)', color: '#fff', border: '1px solid rgba(102,126,234,0.3)', fontSize: '0.75rem' }} />
+                )}
+              </Box>
+
+              {/* Title */}
+              <Typography sx={{
+                fontWeight: 800, color: '#fff',
+                fontSize: { xs: '1.1rem', sm: '1.4rem' },
+                lineHeight: 1.2, mb: 0.25,
+                overflow: 'hidden', display: '-webkit-box',
+                WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+              }}>
+                {currentSlideshow.hook || currentSlideshow.title?.substring(0, 80) || 'Slideshow'}
+              </Typography>
+
+              {/* Metadata line */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, flexWrap: 'wrap', mb: 1.5 }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>{totalSlides} slides</Typography>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>9:16</Typography>
+                {currentSlideshow.createdAt && <>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>•</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
+                    {new Date(currentSlideshow.createdAt).toLocaleDateString()}
+                  </Typography>
+                </>}
+              </Box>
+
+              {/* Current slide caption */}
+              {currentSlideshow.captions?.[currentSlide] && (
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', mb: 1.5, fontSize: '0.8rem' }}>
+                  "{currentSlideshow.captions[currentSlide]}"
+                </Typography>
+              )}
+
+              {/* Action Buttons */}
+              {currentSlideshow.status === 'ready' && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <Button
+                    onClick={scrollToPostSection}
+                    startIcon={<Share sx={{ fontSize: 18 }} />}
+                    variant="contained"
+                    sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 0.75, sm: 1 }, px: { xs: 1.5, sm: 2 }, bgcolor: '#007AFF', boxShadow: '0 2px 8px rgba(0,122,255,0.3)', '&:hover': { bgcolor: '#0066CC' } }}
+                  >
+                    Post
+                  </Button>
+                  <Button
+                    onClick={() => { imageUrls.forEach((url: string, i: number) => { const a = document.createElement('a'); a.href = url; a.download = `slide-${i + 1}.jpg`; a.target = '_blank'; a.click(); }); }}
+                    startIcon={<Download sx={{ fontSize: 18 }} />}
+                    variant="outlined"
+                    sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 0.75, sm: 1 }, px: { xs: 1.5, sm: 2 }, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
+                  >
+                    Download
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        )}
+
+        {/* Social / Post section */}
+        {currentSlideshow.status === 'ready' && (
+          <Box ref={socialSectionRef} id="social-sharing-section">
+
+            {/* Post Details */}
+            <Paper sx={{ p: 3, borderRadius: '20px', mb: 3, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }} elevation={0}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Share sx={{ fontSize: 20, color: '#007AFF' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
+                  Post Details
+                </Typography>
+              </Box>
 
             {/* Title / Hook */}
             <Box sx={{ mb: 2 }}>
@@ -565,8 +665,10 @@ const SlideshowDetailPage: React.FC = () => {
             onClick={() => { imageUrls.forEach((url: string, i: number) => { const a = document.createElement('a'); a.href = url; a.download = `slide-${i + 1}.jpg`; a.target = '_blank'; a.click(); }); }}
             sx={{ borderRadius: '12px', py: 1.5, mb: 3, textTransform: 'none', fontWeight: 600, borderColor: 'rgba(255,255,255,0.2)', color: '#fff', '&:hover': { borderColor: '#007AFF' } }}
           >Download All Slides</Button>
-        </>
-      )}
+          </Box>
+        )}
+
+      </Box>{/* end inner content box */}
 
       {/* Upload Confirmation Dialog */}
       <Dialog
