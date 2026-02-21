@@ -264,7 +264,7 @@ export const createOrganizationStructuredData = () => {
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Customer Support",
-      "email": "support@gruvimusic.com"
+      "email": "admin@wbtechventures.com"
     }
   };
 };

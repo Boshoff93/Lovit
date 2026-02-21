@@ -415,8 +415,8 @@ export const faqItems = [
   {
     category: "Support",
     question: "How do I contact customer support?",
-    answer: "Email us at support@gruvi.ai for any questions or issues. Premium subscribers get priority support with faster response times.",
-    detailedAnswer: "Getting help when you need it:\n\n**Contact Methods:**\n- **Email:** support@gruvi.ai\n- Response within 24 hours\n- Premium: Priority queue\n\n**Self-Service:**\n- This FAQ section\n- In-app help guides\n- Video tutorials\n- Community forums (coming soon)\n\n**What to Include:**\n- Your account email\n- Description of issue\n- Screenshots if relevant\n- Browser/device info\n\n**Support Covers:**\n- Technical issues\n- Billing questions\n- Feature requests\n- Creative guidance"
+    answer: "Email us at admin@wbtechventures.com for any questions or issues. Premium subscribers get priority support with faster response times.",
+    detailedAnswer: "Getting help when you need it:\n\n**Contact Methods:**\n- **Email:** admin@wbtechventures.com\n- Response within 24 hours\n- Premium: Priority queue\n\n**Self-Service:**\n- This FAQ section\n- In-app help guides\n- Video tutorials\n- Community forums (coming soon)\n\n**What to Include:**\n- Your account email\n- Description of issue\n- Screenshots if relevant\n- Browser/device info\n\n**Support Covers:**\n- Technical issues\n- Billing questions\n- Feature requests\n- Creative guidance"
   },
   {
     category: "Support",
@@ -428,7 +428,7 @@ export const faqItems = [
     category: "Support",
     question: "Can I get a refund?",
     answer: "We offer refunds within 7 days of purchase if you haven't used your tokens. Contact support to request a refund. After 7 days or token usage, we cannot offer refunds.",
-    detailedAnswer: "Refund policy details:\n\n**Eligible for Refund:**\n- Request within 7 days of purchase\n- Haven't used tokens\n- First-time request\n\n**Not Eligible:**\n- After 7 days\n- Tokens have been used\n- Multiple refund requests\n- Abuse of refund policy\n\n**How to Request:**\n1. Email support@gruvi.ai\n2. Include your account email\n3. State reason for refund\n4. Wait for confirmation\n\n**Processing Time:**\n- 3-5 business days\n- Original payment method"
+    detailedAnswer: "Refund policy details:\n\n**Eligible for Refund:**\n- Request within 7 days of purchase\n- Haven't used tokens\n- First-time request\n\n**Not Eligible:**\n- After 7 days\n- Tokens have been used\n- Multiple refund requests\n- Abuse of refund policy\n\n**How to Request:**\n1. Email admin@wbtechventures.com\n2. Include your account email\n3. State reason for refund\n4. Wait for confirmation\n\n**Processing Time:**\n- 3-5 business days\n- Original payment method"
   },
 
   // ============================================
@@ -843,7 +843,7 @@ const FAQPage: React.FC = () => {
           <Button
             variant="contained"
               size="large"
-              onClick={() => window.location.href = 'mailto:support@gruvi.ai'}
+              onClick={() => window.location.href = 'mailto:admin@wbtechventures.com'}
               sx={{
                 py: 1.5,
                 px: 4,

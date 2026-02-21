@@ -286,7 +286,7 @@ const DashboardFAQPage: React.FC = () => {
           </Box>
           <Button
             variant="contained"
-            onClick={() => window.location.href = 'mailto:support@gruvi.ai'}
+            onClick={() => window.location.href = 'mailto:admin@wbtechventures.com'}
             sx={{
               borderRadius: '10px',
               px: 3,
