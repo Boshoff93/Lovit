@@ -276,6 +276,16 @@ const SlideshowDetailPage: React.FC = () => {
   const prevSlide = useCallback(() => setCurrentSlide(s => Math.max(0, s - 1)), []);
   const nextSlide = useCallback(() => setCurrentSlide(s => Math.min(totalSlides - 1, s + 1)), [totalSlides]);
 
+  const socialSectionRef = useRef<HTMLDivElement>(null);
+
+  const scrollToPostSection = useCallback(() => {
+    const el = socialSectionRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -294,16 +304,6 @@ const SlideshowDetailPage: React.FC = () => {
       </Box>
     );
   }
-
-  const socialSectionRef = useRef<HTMLDivElement>(null);
-
-  const scrollToPostSection = useCallback(() => {
-    const el = socialSectionRef.current;
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: 'smooth' });
-    }
-  }, []);
 
   const statusColor = currentSlideshow.status === 'ready' ? '#22C55E' : currentSlideshow.status === 'failed' ? '#FF3B30' : '#007AFF';
   const statusBg = currentSlideshow.status === 'ready' ? 'rgba(34,197,94,0.15)' : currentSlideshow.status === 'failed' ? 'rgba(255,59,48,0.15)' : 'rgba(0,122,255,0.15)';
