@@ -78,7 +78,7 @@ const HowToCreatePromoMusicVideo: React.FC = () => {
         ogTitle="How to Create a Promo Music Video with AI in Minutes"
         ogDescription="Create stunning promotional videos with AI-generated music and visuals. No experience required."
         ogType="article"
-        ogUrl="https://gruvimusic.com/blog/how-to-create-promo-music-video"
+        ogUrl="https://agentgruvi.com/blog/how-to-create-promo-music-video"
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

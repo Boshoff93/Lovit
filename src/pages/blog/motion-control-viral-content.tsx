@@ -93,7 +93,7 @@ const MotionControlViralContent: React.FC = () => {
         ogTitle="AI Character Swap: How to Go Viral with Motion Control Videos"
         ogDescription="The new wave of AI content that's taking over social media. Learn how to create viral character swaps."
         ogType="article"
-        ogUrl="https://gruvimusic.com/blog/motion-control-viral-content"
+        ogUrl="https://agentgruvi.com/blog/motion-control-viral-content"
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

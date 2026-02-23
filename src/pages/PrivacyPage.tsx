@@ -15,7 +15,7 @@ const PrivacyPage: React.FC = () => {
     "publisher": {
       "@type": "Organization",
       "name": "Gruvi",
-      "url": "https://gruvimusic.com"
+      "url": "https://agentgruvi.com"
     },
     "datePublished": "2024-01-01",
     "dateModified": "2026-01-06"
@@ -48,7 +48,7 @@ const PrivacyPage: React.FC = () => {
           </Typography>
 
           <Typography variant="body1" paragraph>
-            This Privacy Policy describes how <strong>Gruvi</strong> ("we", "us", or "our"), operated by WB Tech Ventures, collects, uses, and protects your personal information when you use the Gruvi application and website (gruvimusic.com). By using Gruvi, you agree to the collection and use of information in accordance with this policy.
+            This Privacy Policy describes how <strong>Gruvi</strong> ("we", "us", or "our"), operated by WB Tech Ventures, collects, uses, and protects your personal information when you use the Gruvi application and website (agentgruvi.com). By using Gruvi, you agree to the collection and use of information in accordance with this policy.
           </Typography>
 
           <Typography variant="body1" paragraph>

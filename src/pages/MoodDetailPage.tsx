@@ -430,9 +430,9 @@ const MoodDetailPage: React.FC = () => {
 
   // Create breadcrumb data
   const breadcrumbData = [
-    { name: 'Gruvi', url: 'https://gruvimusic.com/' },
-    { name: 'Moods', url: 'https://gruvimusic.com/moods' },
-    { name: currentMood.name, url: `https://gruvimusic.com/moods/${currentMood.id}` }
+    { name: 'Gruvi', url: 'https://agentgruvi.com/' },
+    { name: 'Moods', url: 'https://agentgruvi.com/moods' },
+    { name: currentMood.name, url: `https://agentgruvi.com/moods/${currentMood.id}` }
   ];
 
   return (

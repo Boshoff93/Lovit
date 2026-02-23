@@ -15,7 +15,7 @@ const TermsPage: React.FC = () => {
     "publisher": {
       "@type": "Organization",
       "name": "Gruvi",
-      "url": "https://gruvimusic.com"
+      "url": "https://agentgruvi.com"
     },
     "datePublished": "2024-01-01",
     "dateModified": "2026-01-02"
@@ -48,7 +48,7 @@ const TermsPage: React.FC = () => {
           </Typography>
 
           <Typography variant="body1" paragraph sx={{ fontWeight: 'bold', bgcolor: 'rgba(0,122,255,0.05)', p: 2, borderRadius: 1, mb: 3 }}>
-            These Terms of Service ("Terms") govern your use of <strong>Gruvi</strong>, an AI-powered music and video creation platform operated by WB Tech Ventures. Gruvi is accessible via the website gruvimusic.com and associated services. By accessing or using Gruvi, you agree to be bound by these Terms.
+            These Terms of Service ("Terms") govern your use of <strong>Gruvi</strong>, an AI-powered music and video creation platform operated by WB Tech Ventures. Gruvi is accessible via the website agentgruvi.com and associated services. By accessing or using Gruvi, you agree to be bound by these Terms.
           </Typography>
 
           <Typography variant="h6" gutterBottom>

@@ -47,7 +47,7 @@ const musicVideos: VideoItem[] = [
     style: '3D Cartoon',
     thumbnail: '/thumbnails/duck.jpeg',
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
+    videoUrl: 'https://agentgruvi.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
     tag: '3D Cartoon',
   },
   {
@@ -56,7 +56,7 @@ const musicVideos: VideoItem[] = [
     style: 'Anime',
     thumbnail: '/thumbnails/goku.jpeg',
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
+    videoUrl: 'https://agentgruvi.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
     tag: 'Dragon Ball',
   },
   {
@@ -65,7 +65,7 @@ const musicVideos: VideoItem[] = [
     style: 'Anime',
     thumbnail: '/thumbnails/one-piece.jpeg',
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
+    videoUrl: 'https://agentgruvi.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
     tag: 'One Piece',
   },
 ];
@@ -417,10 +417,10 @@ const AIMusicVideosPage: React.FC = () => {
         ogTitle="AI Music Video Generator | Gruvi"
         ogDescription="Create stunning AI-generated music videos with custom characters and art styles."
         ogType="website"
-        ogUrl="https://gruvimusic.com/ai-music-videos"
+        ogUrl="https://agentgruvi.com/ai-music-videos"
         structuredData={[createBreadcrumbStructuredData([
-          { name: 'Home', url: 'https://gruvimusic.com' },
-          { name: 'AI Music Videos', url: 'https://gruvimusic.com/ai-music-videos' }
+          { name: 'Home', url: 'https://agentgruvi.com' },
+          { name: 'AI Music Videos', url: 'https://agentgruvi.com/ai-music-videos' }
         ])]}
       />
 

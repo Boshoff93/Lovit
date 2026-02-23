@@ -42,9 +42,9 @@ const FAQQuestionPage: React.FC = () => {
 
   // Create breadcrumb data for structured data
   const breadcrumbData = [
-    { name: 'Gruvi', url: 'https://gruvimusic.com/' },
-    { name: 'FAQ', url: 'https://gruvimusic.com/faq' },
-    { name: faqItem.question, url: `https://gruvimusic.com/faq/${question}` }
+    { name: 'Gruvi', url: 'https://agentgruvi.com/' },
+    { name: 'FAQ', url: 'https://agentgruvi.com/faq' },
+    { name: faqItem.question, url: `https://agentgruvi.com/faq/${question}` }
   ];
 
   return (
@@ -61,8 +61,8 @@ const FAQQuestionPage: React.FC = () => {
         ogTitle={`${faqItem.question} - Gruvi FAQ`}
         ogDescription={faqItem.answer}
         ogType="article"
-        ogUrl={`https://gruvimusic.com/faq/${question}`}
-        canonicalUrl={`https://gruvimusic.com/faq/${question}`}
+        ogUrl={`https://agentgruvi.com/faq/${question}`}
+        canonicalUrl={`https://agentgruvi.com/faq/${question}`}
         twitterTitle={`${faqItem.question} - Gruvi FAQ`}
         twitterDescription={faqItem.answer}
         structuredData={[

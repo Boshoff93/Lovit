@@ -486,7 +486,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.8K",
     thumbnail: "/thumbnails/skiis.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/564c0a00-5064-4713-a6d5-b191f2ab751f',
+    videoUrl: 'https://agentgruvi.com/video/564c0a00-5064-4713-a6d5-b191f2ab751f',
     tag: "Rossignol Skis",
   },
   {
@@ -496,7 +496,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "892",
     thumbnail: "/thumbnails/chanel.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
+    videoUrl: 'https://agentgruvi.com/video/b19d1ce4-6650-40dc-afdb-c3d12800ffac',
     tag: "Coco Chanel",
   },
   {
@@ -506,7 +506,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.0K",
     thumbnail: "/thumbnails/rolex.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/ef807231-faab-4a97-a51b-08f574fbae52',
+    videoUrl: 'https://agentgruvi.com/video/ef807231-faab-4a97-a51b-08f574fbae52',
     tag: "Rolex",
   },
   {
@@ -516,7 +516,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.2K",
     thumbnail: "/thumbnails/pokeball.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/134e4aed-1b25-4d0b-a41a-73a683f76225',
+    videoUrl: 'https://agentgruvi.com/video/134e4aed-1b25-4d0b-a41a-73a683f76225',
     tag: "Pokeball",
   },
   {
@@ -526,7 +526,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.0K",
     thumbnail: "/thumbnails/labubu.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5',
+    videoUrl: 'https://agentgruvi.com/video/9a3a7f9d-3f03-44a7-8ea5-ae306c4172e5',
     tag: "Labubu",
   },
   {
@@ -536,7 +536,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.1K",
     thumbnail: "/thumbnails/kiss.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/18061fda-525d-4aba-a6b9-cbd41b1748c5',
+    videoUrl: 'https://agentgruvi.com/video/18061fda-525d-4aba-a6b9-cbd41b1748c5',
     tag: "MAC Lipstick",
   },
   {
@@ -546,7 +546,7 @@ const promoVideosPortrait: VideoItem[] = [
     views: "1.3K",
     thumbnail: "/thumbnails/tent.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/5405e955-ec86-453e-ae75-ae666a0f693c',
+    videoUrl: 'https://agentgruvi.com/video/5405e955-ec86-453e-ae75-ae666a0f693c',
     tag: "North Face",
   },
 ];
@@ -559,7 +559,7 @@ const promoVideosLandscape: VideoItem[] = [
     views: "1.5K",
     thumbnail: "/thumbnails/tesla.jpeg",
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/dc6c22f4-22e5-433d-aa38-5792bc653185',
+    videoUrl: 'https://agentgruvi.com/video/dc6c22f4-22e5-433d-aa38-5792bc653185',
     tag: "Tesla",
   },
   {
@@ -569,7 +569,7 @@ const promoVideosLandscape: VideoItem[] = [
     views: "892",
     thumbnail: "/thumbnails/frinton.jpeg",
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4d42bf20-328b-4d80-b319-8ff8d9867036',
+    videoUrl: 'https://agentgruvi.com/video/4d42bf20-328b-4d80-b319-8ff8d9867036',
     tag: "Airbnb",
   },
   {
@@ -579,7 +579,7 @@ const promoVideosLandscape: VideoItem[] = [
     views: "2.1K",
     thumbnail: "/thumbnails/goku.jpeg",
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
+    videoUrl: 'https://agentgruvi.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
     tag: "Dragon Ball",
   },
 ];
@@ -593,7 +593,7 @@ const musicVideosPortrait: VideoItem[] = [
     views: "1.2K",
     thumbnail: "/thumbnails/duck.jpeg",
     aspectRatio: 'portrait',
-    videoUrl: 'https://gruvimusic.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
+    videoUrl: 'https://agentgruvi.com/video/da4d792d-a24b-45d8-87ba-5b41778496e8',
   },
   // Add more portrait music videos here
 ];
@@ -606,7 +606,7 @@ const musicVideosLandscape: VideoItem[] = [
     views: "3.5K",
     thumbnail: "/thumbnails/goku.jpeg",
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
+    videoUrl: 'https://agentgruvi.com/video/4a7ec232-aca9-4538-bc79-45149d705812',
     tag: "Dragon Ball",
   },
   {
@@ -616,7 +616,7 @@ const musicVideosLandscape: VideoItem[] = [
     views: "2.1K",
     thumbnail: "/thumbnails/one-piece.jpeg",
     aspectRatio: 'landscape',
-    videoUrl: 'https://gruvimusic.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
+    videoUrl: 'https://agentgruvi.com/video/4221ddeb-136c-4968-a46f-7585635827f1',
     tag: "One Piece",
   },
 ];
@@ -2189,7 +2189,7 @@ const HomePage: React.FC = () => {
         ogTitle="Gruvi: AI Music & Video Generator | 32 Genres, 24 Languages"
         ogDescription="Create AI-generated songs and stunning promo videos. Make cinematic music videos with custom characters. Create brand videos for products, Airbnb, and e-commerce."
         ogType="website"
-        ogUrl="https://gruvimusic.com/"
+        ogUrl="https://agentgruvi.com/"
         twitterTitle="Gruvi: AI Music & Video Generator | Songs & Promo Videos"
         twitterDescription="Create AI-generated songs and stunning promo videos. Make cinematic music videos with custom characters. Perfect for artists, brands, and content creators."
         structuredData={[

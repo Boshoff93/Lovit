@@ -212,7 +212,7 @@ const BlogPage: React.FC = () => {
         ogTitle="Gruvi Blog | AI Music & Content Creation"
         ogDescription="Tips, tutorials, and news about AI music generation and content creation."
         ogType="website"
-        ogUrl="https://gruvimusic.com/blog"
+        ogUrl="https://agentgruvi.com/blog"
       />
 
       <MarketingHeader onOpenAuth={handleOpenAuth} transparent alwaysBlurred />

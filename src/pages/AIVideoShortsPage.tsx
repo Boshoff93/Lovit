@@ -796,10 +796,10 @@ const AIVideoShortsPage: React.FC = () => {
         ogTitle="AI Video Shorts | UGC Product Videos | Gruvi"
         ogDescription="Create AI-powered product videos and UGC content for social media."
         ogType="website"
-        ogUrl="https://gruvimusic.com/ai-video-shorts"
+        ogUrl="https://agentgruvi.com/ai-video-shorts"
         structuredData={[createBreadcrumbStructuredData([
-          { name: 'Home', url: 'https://gruvimusic.com' },
-          { name: 'AI Video Shorts', url: 'https://gruvimusic.com/ai-video-shorts' }
+          { name: 'Home', url: 'https://agentgruvi.com' },
+          { name: 'AI Video Shorts', url: 'https://agentgruvi.com/ai-video-shorts' }
         ])]}
       />
 

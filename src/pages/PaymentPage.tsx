@@ -720,8 +720,8 @@ const PaymentPage: React.FC = () => {
         ogTitle="Gruvi AI: The AI Music Promo Generator | Pricing & Plans"
         ogDescription="Create viral music promos with AI. Publish to YouTube, TikTok, Instagram & more. Plans from $29/mo with yearly savings."
         ogType="website"
-        ogUrl="https://gruvimusic.com/payment"
-        canonicalUrl="https://gruvimusic.com/payment"
+        ogUrl="https://agentgruvi.com/payment"
+        canonicalUrl="https://agentgruvi.com/payment"
       />
 
       {/* Hero Section with gradient */}

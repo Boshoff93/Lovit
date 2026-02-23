@@ -506,8 +506,8 @@ const FAQPage: React.FC = () => {
 
   // Create breadcrumb data for structured data
   const breadcrumbData = [
-    { name: 'Gruvi', url: 'https://gruvimusic.com/' },
-    { name: 'FAQ', url: 'https://gruvimusic.com/faq' }
+    { name: 'Gruvi', url: 'https://agentgruvi.com/' },
+    { name: 'FAQ', url: 'https://agentgruvi.com/faq' }
   ];
 
   // Filter FAQs by category
@@ -545,8 +545,8 @@ const FAQPage: React.FC = () => {
         ogTitle="Frequently Asked Questions - Gruvi AI Music & Video Generator"
         ogDescription="Everything you need to know about creating AI-generated music, music videos, and promotional videos with Gruvi. Products, Airbnbs, brands, pricing, licensing, and more."
         ogType="website"
-        ogUrl="https://gruvimusic.com/faq"
-        canonicalUrl="https://gruvimusic.com/faq"
+        ogUrl="https://agentgruvi.com/faq"
+        canonicalUrl="https://agentgruvi.com/faq"
         twitterTitle="FAQ - Gruvi AI Music & Video Generator"
         twitterDescription="Get answers about Gruvi's AI music generator, video creator, and promo video maker for products, Airbnbs, and brands."
         structuredData={[

@@ -144,20 +144,20 @@ export const createHomePageStructuredData = (featureItems: Array<{ title: string
     "author": {
       "@type": "Organization",
       "name": "Gruvi",
-      "url": "https://gruvimusic.com"
+      "url": "https://agentgruvi.com"
     },
     "publisher": {
       "@type": "Organization",
       "name": "Gruvi",
-      "url": "https://gruvimusic.com",
+      "url": "https://agentgruvi.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://gruvimusic.com/gruvi.png"
+        "url": "https://agentgruvi.com/gruvi.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://gruvimusic.com"
+      "@id": "https://agentgruvi.com"
     }
   };
 };
@@ -198,7 +198,7 @@ export const createVideoStructuredData = (videoData: {
       "name": "Gruvi",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://gruvimusic.com/gruvi.png"
+        "url": "https://agentgruvi.com/gruvi.png"
       }
     }
   };
@@ -237,7 +237,7 @@ export const createArticleStructuredData = ({
     publisher: {
       '@type': 'Organization',
       name: 'Gruvi',
-      url: 'https://gruvimusic.com'
+      url: 'https://agentgruvi.com'
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -252,8 +252,8 @@ export const createOrganizationStructuredData = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Gruvi",
-    "url": "https://gruvimusic.com",
-    "logo": "https://gruvimusic.com/gruvi.png",
+    "url": "https://agentgruvi.com",
+    "logo": "https://agentgruvi.com/gruvi.png",
     "description": "AI music generator creating original songs and stunning music videos with advanced AI technology",
     "sameAs": [
       "https://www.tiktok.com/@gruvimusic",
@@ -297,7 +297,7 @@ export const createMusicRecordingStructuredData = (song?: {
     "creator": {
       "@type": "Organization",
       "name": "Gruvi",
-      "url": "https://gruvimusic.com"
+      "url": "https://agentgruvi.com"
     },
     "isPartOf": {
       "@type": "CreativeWork",
@@ -330,7 +330,7 @@ export const createSoftwareAppStructuredData = () => {
       "bestRating": "5",
       "worstRating": "1"
     },
-    "url": "https://gruvimusic.com"
+    "url": "https://agentgruvi.com"
   };
 };
 
@@ -341,7 +341,7 @@ export const createHowToStructuredData = () => {
     "@type": "HowTo",
     "name": "How to Create AI Music with Gruvi",
     "description": "Learn how to create original AI-generated music and music videos with Gruvi in 3 simple steps",
-    "image": "https://gruvimusic.com/gruvi.png",
+    "image": "https://agentgruvi.com/gruvi.png",
     "totalTime": "PT2M",
     "estimatedCost": {
       "@type": "MonetaryAmount",
@@ -354,21 +354,21 @@ export const createHowToStructuredData = () => {
         "position": 1,
         "name": "Describe your song",
         "text": "Type a description of the song you want to create - genre, mood, lyrics, or any musical idea.",
-        "image": "https://gruvimusic.com/gruvi.png"
+        "image": "https://agentgruvi.com/gruvi.png"
       },
       {
         "@type": "HowToStep",
         "position": 2,
         "name": "Generate with AI",
         "text": "Our advanced AI generates a complete original song with vocals, instrumentals, and lyrics in seconds.",
-        "image": "https://gruvimusic.com/gruvi.png"
+        "image": "https://agentgruvi.com/gruvi.png"
       },
       {
         "@type": "HowToStep",
         "position": 3,
         "name": "Create music videos",
         "text": "Turn your songs into stunning animated music videos in 16 different art styles.",
-        "image": "https://gruvimusic.com/gruvi.png"
+        "image": "https://agentgruvi.com/gruvi.png"
       }
     ]
   };
@@ -379,7 +379,7 @@ export const createPageSectionsStructuredData = (sections: Array<{ name: string;
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "url": "https://gruvimusic.com",
+    "url": "https://agentgruvi.com",
     "name": "Gruvi AI Music Generator",
     "description": "Create original AI-generated music and music videos",
     "mainEntity": {
@@ -391,7 +391,7 @@ export const createPageSectionsStructuredData = (sections: Array<{ name: string;
     "hasPart": sections.map(section => ({
       "@type": "WebPageElement",
       "name": section.name,
-      "url": `https://gruvimusic.com#${section.hash}`,
+      "url": `https://agentgruvi.com#${section.hash}`,
       "description": section.description
     }))
   };

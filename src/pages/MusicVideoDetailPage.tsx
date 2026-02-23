@@ -666,10 +666,10 @@ const MusicVideoDetailPage: React.FC = () => {
     description: currentVideo.fullDescription,
     thumbnailUrl: currentVideo.thumbnail.startsWith('http') 
       ? currentVideo.thumbnail 
-      : `https://gruvimusic.com${currentVideo.thumbnail}`,
+      : `https://agentgruvi.com${currentVideo.thumbnail}`,
     uploadDate: '2024-12-01', // Approximate upload date for demo videos
     duration: `PT${currentVideo.duration.replace(':', 'M')}S`, // ISO 8601 duration format
-    url: `https://gruvimusic.com/videos/${currentVideo.id}`,
+    url: `https://agentgruvi.com/videos/${currentVideo.id}`,
   }) : null;
 
   return (
@@ -699,7 +699,7 @@ const MusicVideoDetailPage: React.FC = () => {
           ? `${currentVideo.description} Create AI-powered promo videos for your brand.`
           : currentVideo.description}
         ogType="video.other"
-        ogUrl={`https://gruvimusic.com/videos/${currentVideo.id}`}
+        ogUrl={`https://agentgruvi.com/videos/${currentVideo.id}`}
         twitterTitle={`${currentVideo.title} | ${currentVideo.tag || currentVideo.style} | Gruvi`}
         twitterDescription={currentVideo.tag
           ? `${currentVideo.description} AI-powered brand videos.`

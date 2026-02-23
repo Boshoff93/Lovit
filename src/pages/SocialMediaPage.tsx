@@ -290,10 +290,10 @@ const SocialMediaPage: React.FC = () => {
         ogTitle="Social Media Publishing | Gruvi"
         ogDescription="Publish AI music and videos to all social platforms with one click."
         ogType="website"
-        ogUrl="https://gruvimusic.com/social-media"
+        ogUrl="https://agentgruvi.com/social-media"
         structuredData={[createBreadcrumbStructuredData([
-          { name: 'Home', url: 'https://gruvimusic.com' },
-          { name: 'Social Media Publishing', url: 'https://gruvimusic.com/social-media' }
+          { name: 'Home', url: 'https://agentgruvi.com' },
+          { name: 'Social Media Publishing', url: 'https://agentgruvi.com/social-media' }
         ])]}
       />
 

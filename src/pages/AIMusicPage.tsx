@@ -998,10 +998,10 @@ const AIMusicPage: React.FC = () => {
         ogTitle="AI Music Generator | 32 Genres | Gruvi"
         ogDescription="Create AI-generated songs in any genre. 100% original music with commercial license."
         ogType="website"
-        ogUrl="https://gruvimusic.com/ai-music"
+        ogUrl="https://agentgruvi.com/ai-music"
         structuredData={[createBreadcrumbStructuredData([
-          { name: 'Home', url: 'https://gruvimusic.com' },
-          { name: 'AI Music Generator', url: 'https://gruvimusic.com/ai-music' }
+          { name: 'Home', url: 'https://agentgruvi.com' },
+          { name: 'AI Music Generator', url: 'https://agentgruvi.com/ai-music' }
         ])]}
       />
 
