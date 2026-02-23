@@ -66,6 +66,8 @@ import CreateSlideshowPage from './pages/CreateSlideshowPage';
 import MySlideshowsPage from './pages/MySlideshowsPage';
 import SlideshowDetailPage from './pages/SlideshowDetailPage';
 import TikTokAnalyticsPage from './pages/TikTokAnalyticsPage';
+import YouTubeAnalyticsPage from './pages/YouTubeAnalyticsPage';
+import AnalyticsOverviewPage from './pages/AnalyticsOverviewPage';
 
 // Docs pages
 import DocsPage from './pages/docs/DocsPage';
@@ -556,11 +558,25 @@ function App() {
           </RequireAuth>
         } />
 
-        {/* TikTok Analytics - protected route */}
+        {/* Analytics Overview */}
         <Route path="/analytics" element={
           <RequireAuth>
             <Layout>
+              <AnalyticsOverviewPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        <Route path="/analytics/tiktok" element={
+          <RequireAuth>
+            <Layout>
               <TikTokAnalyticsPage />
+            </Layout>
+          </RequireAuth>
+        } />
+        <Route path="/analytics/youtube" element={
+          <RequireAuth>
+            <Layout>
+              <YouTubeAnalyticsPage />
             </Layout>
           </RequireAuth>
         } />

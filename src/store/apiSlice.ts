@@ -44,6 +44,47 @@ export interface TikTokAccountStats {
   videoCount: number;
 }
 
+// YouTube Analytics types
+export interface YouTubeVideo {
+  id: string;
+  title: string;
+  publishedAt: string;
+  thumbnailUrl: string;
+  url: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  duration: string;
+}
+
+export interface YouTubeSummary {
+  totalPosts: number;
+  totals: { views: number; likes: number; comments: number };
+  averages: { views: number; likes: number; comments: number };
+  lastWeek: { views: number; likes: number; comments: number; posts: number };
+  lastMonth: { views: number; likes: number; comments: number; posts: number };
+  allTime: { views: number; likes: number; comments: number; posts: number };
+  topByViews: Array<{ id: string; title: string; views: number; likes: number; comments: number; url: string }>;
+  topByEngagement: Array<{ id: string; title: string; views: number; likes: number; comments: number; url: string }>;
+}
+
+export interface YouTubeTrendBucket {
+  date: string;
+  views: number;
+  likes: number;
+  comments: number;
+  posts: number;
+}
+
+export interface YouTubeAccountStats {
+  channelTitle: string;
+  channelThumbnailUrl: string;
+  subscriberCount: number;
+  viewCount: number;
+  videoCount: number;
+  hiddenSubscriberCount: boolean;
+}
+
 // Slideshow type
 export interface Slideshow {
   slideshowId: string;
@@ -159,7 +200,7 @@ export const apiSlice = createApi({
     },
   }),
   // Tag types for cache invalidation
-  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows', 'TikTokVideos', 'TikTokSummary', 'TikTokTrends', 'TikTokAccountStats'],
+  tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows', 'TikTokVideos', 'TikTokSummary', 'TikTokTrends', 'TikTokAccountStats', 'YouTubeVideos', 'YouTubeSummary', 'YouTubeTrends', 'YouTubeAccountStats'],
   endpoints: (builder) => ({
     // Videos
     getUserVideos: builder.query<
@@ -432,6 +473,55 @@ export const apiSlice = createApi({
       },
       providesTags: ['TikTokAccountStats'],
     }),
+
+    // YouTube Analytics
+    getYouTubeVideos: builder.query<
+      { videos: YouTubeVideo[]; totalCount: number },
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/youtube/videos?${params.toString()}`;
+      },
+      providesTags: ['YouTubeVideos'],
+    }),
+
+    getYouTubeSummary: builder.query<
+      YouTubeSummary,
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/youtube/analytics/summary?${params.toString()}`;
+      },
+      providesTags: ['YouTubeSummary'],
+    }),
+
+    getYouTubeTrends: builder.query<
+      { period: string; trends: YouTubeTrendBucket[]; totalBuckets: number },
+      { userId: string; accountId?: string; period?: 'daily' | 'weekly' | 'monthly' }
+    >({
+      query: ({ userId, accountId, period = 'daily' }) => {
+        const params = new URLSearchParams({ userId, period });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/youtube/analytics/trends?${params.toString()}`;
+      },
+      providesTags: ['YouTubeTrends'],
+    }),
+
+    getYouTubeAccountStats: builder.query<
+      YouTubeAccountStats,
+      { userId: string; accountId?: string }
+    >({
+      query: ({ userId, accountId }) => {
+        const params = new URLSearchParams({ userId });
+        if (accountId) params.append('accountId', accountId);
+        return `/api/gruvi/youtube/account/stats?${params.toString()}`;
+      },
+      providesTags: ['YouTubeAccountStats'],
+    }),
   }),
 });
 
@@ -464,4 +554,9 @@ export const {
   useGetTikTokSummaryQuery,
   useGetTikTokTrendsQuery,
   useGetTikTokAccountStatsQuery,
+  // YouTube Analytics
+  useGetYouTubeVideosQuery,
+  useGetYouTubeSummaryQuery,
+  useGetYouTubeTrendsQuery,
+  useGetYouTubeAccountStatsQuery,
 } = apiSlice;
