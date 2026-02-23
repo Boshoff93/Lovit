@@ -129,8 +129,8 @@ const DocsPage: React.FC = () => {
     },
     {
       icon: <ShareIcon />,
-      title: 'Social Publishing',
-      description: 'Schedule and publish to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X.',
+      title: 'Social Publishing & Analytics',
+      description: 'Publish to TikTok, YouTube, Instagram, Facebook, LinkedIn, and X — then track views, engagement, and growth with real-time analytics.',
       path: '/docs/social',
     },
   ];

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Container, Typography, Button, Chip } from '@mui/material';
+import { Box, Container, Typography, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -20,6 +20,9 @@ const FeatureItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </Typography>
   </Box>
 );
+
+const tableCellSx = { color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.08)', fontSize: '0.95rem' };
+const tableHeadSx = { color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)', fontWeight: 600, fontSize: '0.85rem' };
 
 const SocialPage: React.FC = () => {
   const navigate = useNavigate();
@@ -44,11 +47,11 @@ const SocialPage: React.FC = () => {
       },
     }}>
       <SEO
-        title="Social Publishing | Gruvi Documentation"
-        description="Schedule and publish content to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X from Gruvi."
-        keywords="social media publishing, schedule posts, YouTube upload, TikTok posting, Instagram publishing"
-        ogTitle="Social Publishing | Gruvi"
-        ogDescription="Publish your AI content to all major social platforms"
+        title="Social Publishing & Analytics | Gruvi Documentation"
+        description="Publish AI content to YouTube, TikTok, Instagram, Facebook, LinkedIn — and track performance with real-time analytics dashboards."
+        keywords="social media publishing, schedule posts, YouTube analytics, TikTok analytics, social media analytics, content performance tracking"
+        ogTitle="Social Publishing & Analytics | Gruvi"
+        ogDescription="Publish to every platform and track what's working with real-time analytics"
         ogType="article"
         ogUrl="https://agentgruvi.com/docs/social"
       />
@@ -82,18 +85,18 @@ const SocialPage: React.FC = () => {
               lineHeight: 1.2,
             }}
           >
-            Social{' '}
+            Social Publishing{' '}
             <Box component="span" sx={{
               background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              Publishing
+              & Analytics
             </Box>
           </Typography>
 
           <Typography sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
-            Publish your content to all major social platforms
+            Publish your content everywhere and track what's working — all from one place.
           </Typography>
         </Container>
       </Box>
@@ -107,28 +110,66 @@ const SocialPage: React.FC = () => {
           }}>
 
             <Typography component="p">
-              Gruvi's Social Publishing lets you schedule and publish your AI-generated content directly to social media platforms. Connect your accounts once and publish from Gruvi with a single click.
+              Gruvi handles the entire publish-and-measure loop. Connect your social accounts, publish AI-generated content with a single click (or let your agent do it via API), then track views, engagement, and growth with real-time analytics dashboards.
             </Typography>
 
             <SectionDivider />
 
+            {/* ==================== PUBLISHING ==================== */}
+
             <Typography component="h2">Supported Platforms</Typography>
 
-            <Box sx={{ mb: 4 }}>
-              <FeatureItem><strong>YouTube</strong> - Upload videos with titles, descriptions, and tags. Supports Shorts and regular videos.</FeatureItem>
-              <FeatureItem><strong>TikTok</strong> - Post videos directly to your TikTok account.</FeatureItem>
-              <FeatureItem><strong>Instagram</strong> - Share Reels and video posts to your Instagram profile.</FeatureItem>
-              <FeatureItem><strong>Facebook</strong> - Publish videos to your Facebook page or profile.</FeatureItem>
-              <FeatureItem><strong>LinkedIn</strong> - Share professional content to your LinkedIn profile.</FeatureItem>
-              <FeatureItem><strong>X (Twitter)</strong> - Post videos and content to your X account.</FeatureItem>
-            </Box>
+            <TableContainer sx={{
+              borderRadius: '16px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              mb: 4,
+            }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={tableHeadSx}>Platform</TableCell>
+                    <TableCell sx={tableHeadSx}>Publishing</TableCell>
+                    <TableCell sx={tableHeadSx}>Analytics</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[
+                    { name: 'TikTok', pub: 'Videos, captions, hashtags', analytics: 'Live' },
+                    { name: 'YouTube', pub: 'Videos, Shorts, titles, descriptions, tags', analytics: 'Live' },
+                    { name: 'Instagram', pub: 'Reels, video posts', analytics: 'Coming soon' },
+                    { name: 'Facebook', pub: 'Videos to pages or profiles', analytics: 'Coming soon' },
+                    { name: 'LinkedIn', pub: 'Professional video content', analytics: 'Planned' },
+                    { name: 'X (Twitter)', pub: 'Video posts', analytics: 'Planned' },
+                  ].map(row => (
+                    <TableRow key={row.name}>
+                      <TableCell sx={{ ...tableCellSx, fontWeight: 600 }}>{row.name}</TableCell>
+                      <TableCell sx={tableCellSx}>{row.pub}</TableCell>
+                      <TableCell sx={tableCellSx}>
+                        <Chip
+                          label={row.analytics}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            background: row.analytics === 'Live' ? 'rgba(52,199,89,0.15)' : 'rgba(255,255,255,0.06)',
+                            color: row.analytics === 'Live' ? '#34C759' : 'rgba(255,255,255,0.5)',
+                            border: row.analytics === 'Live' ? '1px solid rgba(52,199,89,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
             <SectionDivider />
 
             <Typography component="h2">Connecting Accounts</Typography>
 
             <Typography component="p">
-              Go to the <strong>Social</strong> page and click <strong>Connect</strong> next to the platform you want to link. You'll be redirected to authorize Gruvi to post on your behalf. Your credentials are stored securely and you can disconnect at any time.
+              Go to <strong>Settings &gt; Integrations</strong> and click <strong>Connect</strong> next to each platform. You'll authorize Gruvi via OAuth — your credentials are stored securely and you can disconnect at any time. You can connect up to 3 accounts per platform for multi-brand management.
             </Typography>
 
             <SectionDivider />
@@ -136,56 +177,137 @@ const SocialPage: React.FC = () => {
             <Typography component="h2">Publishing Content</Typography>
 
             <Typography component="p">
-              After creating any content (music, video, UGC), you can publish it directly from the creation page. Select your connected platforms, add a caption or description, and publish immediately or schedule for later.
+              After creating content (music, video, UGC), publish directly from the creation page or your content library. Select platforms, add a caption, and publish immediately or schedule for later.
             </Typography>
-
-            <Typography component="p">
-              You can also publish from your content library - browse your previously created content and share it to any connected platform.
-            </Typography>
-
-            <SectionDivider />
-
-            <Typography component="h2">Scheduling</Typography>
-
-            <Typography component="p">
-              Schedule posts for specific dates and times. Gruvi will automatically publish your content at the scheduled time. This is great for maintaining a consistent posting schedule across platforms.
-            </Typography>
-
-            <SectionDivider />
-
-            <Typography component="h2">Tips</Typography>
 
             <Box sx={{ mb: 4 }}>
-              <FeatureItem>Connect all your platforms once and publish everywhere with one click.</FeatureItem>
-              <FeatureItem>Use scheduling to post at optimal times for each platform.</FeatureItem>
-              <FeatureItem>AI agents can automate the entire workflow: create content and publish, all in one command.</FeatureItem>
+              <FeatureItem><strong>One-click multi-platform</strong> — select TikTok, YouTube, and Instagram at once and publish to all three simultaneously.</FeatureItem>
+              <FeatureItem><strong>Scheduling</strong> — pick a date and time, and Gruvi publishes automatically. Great for maintaining a consistent cadence.</FeatureItem>
+              <FeatureItem><strong>Calendar view</strong> — see all your upcoming posts in a day/week/month calendar at <strong>/settings/scheduled-content</strong>.</FeatureItem>
+              <FeatureItem><strong>Agent-powered</strong> — AI agents can publish via the scheduling API, automating the entire content pipeline end to end.</FeatureItem>
+            </Box>
+
+            <SectionDivider />
+
+            {/* ==================== ANALYTICS ==================== */}
+
+            <Typography component="h2">Analytics Overview</Typography>
+
+            <Typography component="p">
+              The analytics hub at <strong>/analytics</strong> shows all your connected platforms at a glance. Click into any platform for a full analytics dashboard with KPI cards, trend charts, and performance tables.
+            </Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <FeatureItem><strong>Analytics hub</strong> — overview of all platforms with quick-glance metrics and navigation to detailed dashboards.</FeatureItem>
+              <FeatureItem><strong>Per-platform dashboards</strong> — deep-dive into TikTok at <strong>/analytics/tiktok</strong> and YouTube at <strong>/analytics/youtube</strong>.</FeatureItem>
+              <FeatureItem><strong>Multi-account selector</strong> — if you manage multiple accounts on one platform, switch between them from the dropdown.</FeatureItem>
+              <FeatureItem><strong>API access</strong> — every metric visible in the dashboard is also available via API for your AI agent to query programmatically.</FeatureItem>
+            </Box>
+
+            <SectionDivider />
+
+            <Typography component="h2">TikTok Analytics</Typography>
+
+            <Typography component="p">
+              Full analytics for your TikTok account — updated in real time from the TikTok API.
+            </Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <FeatureItem><strong>KPI cards</strong> — followers, total videos, total views (with week-over-week change), total likes, and engagement rate.</FeatureItem>
+              <FeatureItem><strong>Last 7 days</strong> — see which videos you posted each day with thumbnail previews and hover-to-see metrics (views, likes, comments, shares).</FeatureItem>
+              <FeatureItem><strong>Views over time</strong> — area chart with daily, weekly, or monthly toggle.</FeatureItem>
+              <FeatureItem><strong>Engagement over time</strong> — stacked bar chart showing likes, comments, and shares per period.</FeatureItem>
+              <FeatureItem><strong>Post frequency</strong> — bar chart showing how often you're posting.</FeatureItem>
+              <FeatureItem><strong>Week-over-week comparison</strong> — table comparing this week's metrics to the monthly average.</FeatureItem>
+              <FeatureItem><strong>Top performers</strong> — tables of your best videos ranked by views and by engagement rate.</FeatureItem>
+            </Box>
+
+            <SectionDivider />
+
+            <Typography component="h2">YouTube Analytics</Typography>
+
+            <Typography component="p">
+              Channel and video performance powered by the YouTube Data API v3.
+            </Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <FeatureItem><strong>KPI cards</strong> — subscribers, total videos, total views (with week-over-week change), total likes, and engagement rate.</FeatureItem>
+              <FeatureItem><strong>Last 7 days</strong> — recent uploads with 16:9 thumbnail previews and hover metrics (views, likes, comments).</FeatureItem>
+              <FeatureItem><strong>Views over time</strong> — area chart with daily, weekly, or monthly toggle.</FeatureItem>
+              <FeatureItem><strong>Engagement over time</strong> — stacked bar chart for likes and comments per period.</FeatureItem>
+              <FeatureItem><strong>Upload frequency</strong> — bar chart tracking your posting cadence.</FeatureItem>
+              <FeatureItem><strong>Week-over-week comparison</strong> — views, likes, comments, and uploads vs monthly average.</FeatureItem>
+              <FeatureItem><strong>Top performers</strong> — best videos by views and by engagement rate, with direct links to YouTube.</FeatureItem>
+            </Box>
+
+            <Typography component="p">
+              <strong>Note:</strong> YouTube does not publicly expose share counts, so engagement is calculated as (likes + comments) / views.
+            </Typography>
+
+            <SectionDivider />
+
+            <Typography component="h2">Instagram & Facebook Analytics</Typography>
+
+            <Typography component="p">
+              Analytics for Instagram and Facebook are coming soon. They'll follow the same dashboard pattern — KPI cards, trend charts, top performers — so the experience will be familiar.
+            </Typography>
+
+            <SectionDivider />
+
+            <Typography component="h2">Tips for Growing Your Channels</Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <FeatureItem><strong>Publish everywhere.</strong> The same video can perform very differently across platforms. Post to all and let the analytics show you where to double down.</FeatureItem>
+              <FeatureItem><strong>Be consistent.</strong> Schedule 1-3 posts per day. Consistent cadence beats sporadic bursts for algorithm performance.</FeatureItem>
+              <FeatureItem><strong>Use your data.</strong> Check top performers weekly. Notice which topics, styles, and hooks drive the most engagement — then create more of that.</FeatureItem>
+              <FeatureItem><strong>Let agents handle the loop.</strong> AI agents can create content, publish on schedule, pull analytics, and adjust strategy automatically — giving your channels an unfair advantage.</FeatureItem>
             </Box>
 
             {/* CTA */}
             <Box sx={{ mt: 6, textAlign: 'center' }}>
               <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', mb: 2 }}>
-                Connect Your Accounts
+                Ready to Grow?
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, maxWidth: 400, mx: 'auto' }}>
-                Link your social platforms and start publishing.
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, maxWidth: 500, mx: 'auto' }}>
+                Connect your social accounts to start publishing and tracking performance.
               </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate('/settings/connected-accounts')}
-                sx={{
-                  background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  '&:hover': { background: 'linear-gradient(135deg, #5DE0D7 0%, #4FB89F 100%)' },
-                }}
-              >
-                Manage Social Accounts
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate('/settings/connected-accounts')}
+                  sx={{
+                    background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    '&:hover': { background: 'linear-gradient(135deg, #5DE0D7 0%, #4FB89F 100%)' },
+                  }}
+                >
+                  Connect Accounts
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => navigate('/analytics')}
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    color: '#fff',
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    '&:hover': { borderColor: '#4ECDC4', background: 'rgba(78,205,196,0.1)' },
+                  }}
+                >
+                  View Analytics
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Container>
