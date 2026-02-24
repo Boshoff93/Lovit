@@ -159,6 +159,10 @@ const CreateSlideshowPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (!title.trim()) {
+      setError('Title is required');
+      return;
+    }
     if (!description.trim()) {
       setError('Description is required');
       return;
@@ -317,14 +321,14 @@ const CreateSlideshowPage: React.FC = () => {
               boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            {/* TikTok Caption */}
+            {/* Post Title */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
-                TikTok Caption
+                Title <span style={{ color: '#FF3B30' }}>*</span>
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
-                  The caption that appears on your TikTok post (optional)
+                  The title of your post across all platforms
                 </Typography>
                 <Typography sx={{
                   fontSize: '0.75rem',
@@ -338,7 +342,7 @@ const CreateSlideshowPage: React.FC = () => {
                 fullWidth
                 multiline
                 rows={3}
-                placeholder="Hook + story + hashtags (e.g., 'My daughter's teacher asked why she knows so many big words now...')"
+                placeholder="Enter your post title (e.g., '5 things I wish I knew before starting my business')"
                 value={title}
                 onChange={(e) => {
                   const words = e.target.value.trim().split(/\s+/).filter(Boolean);

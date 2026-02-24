@@ -511,7 +511,8 @@ export interface ScheduledPost {
   hashtags?: string[]; // slideshow scheduled posts use 'hashtags' instead of 'tags'
   videoFooter?: string;
   aspectRatio?: 'portrait' | 'landscape';
-  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled';
+  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled' | 'rejected';
+  rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;

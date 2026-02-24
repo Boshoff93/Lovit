@@ -26,6 +26,7 @@ import {
   Error as ErrorIcon,
   Warning as WarningIcon,
   HourglassTop as HourglassIcon,
+  Block as BlockIcon,
   Close as CloseIcon,
   PlayArrow as PlayArrowIcon,
   ArrowForward as ArrowForwardIcon,
@@ -107,7 +108,7 @@ const ScheduledContentPage: React.FC = () => {
   }, [schedulingLimitsRaw, subscription?.tier]);
 
   const [viewMode, setViewMode] = useState<ViewMode>('week');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'partial' | 'failed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'partial' | 'failed' | 'rejected'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [postToCancel, setPostToCancel] = useState<ScheduledPost | null>(null);
@@ -256,6 +257,8 @@ const ScheduledContentPage: React.FC = () => {
         return { bg: 'rgba(249, 115, 22, 0.15)', border: '#F97316', text: '#FB923C' };
       case 'cancelled':
         return { bg: 'rgba(156, 163, 175, 0.15)', border: '#9CA3AF', text: '#9CA3AF' };
+      case 'rejected':
+        return { bg: 'rgba(168, 85, 247, 0.15)', border: '#A855F7', text: '#C084FC' };
       default: // scheduled
         return { bg: 'rgba(0, 122, 255, 0.15)', border: '#007AFF', text: '#60A5FA' };
     }
@@ -657,6 +660,24 @@ const ScheduledContentPage: React.FC = () => {
           <ErrorIcon sx={{ fontSize: 14, color: '#EF4444' }} />
           <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'failed' ? '#fff' : 'rgba(255,255,255,0.7)' }}>Failed</Typography>
         </Box>
+        <Box
+          onClick={() => setStatusFilter('rejected')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            cursor: 'pointer',
+            px: 1,
+            py: 0.25,
+            borderRadius: '8px',
+            bgcolor: statusFilter === 'rejected' ? 'rgba(168,85,247,0.15)' : 'transparent',
+            border: statusFilter === 'rejected' ? '1px solid rgba(168,85,247,0.3)' : '1px solid transparent',
+            '&:hover': { bgcolor: 'rgba(168,85,247,0.1)' },
+          }}
+        >
+          <BlockIcon sx={{ fontSize: 14, color: '#A855F7' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: statusFilter === 'rejected' ? '#C084FC' : 'rgba(255,255,255,0.7)' }}>Rejected</Typography>
+        </Box>
       </Box>
 
       {/* Main Content - Calendar fills remaining space */}
@@ -889,6 +910,7 @@ const ScheduledContentPage: React.FC = () => {
                                   {post.status === 'failed' && <ErrorIcon sx={{ fontSize: 10, color: '#EF4444' }} />}
                                   {post.status === 'publishing' && <HourglassIcon sx={{ fontSize: 10, color: '#F97316' }} />}
                                   {post.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 10, color: '#007AFF' }} />}
+                                  {post.status === 'rejected' && <BlockIcon sx={{ fontSize: 10, color: '#A855F7' }} />}
                                   <Typography
                                     sx={{
                                       fontSize: '0.65rem',
@@ -1271,12 +1293,14 @@ const ScheduledContentPage: React.FC = () => {
                         : selectedPost.status === 'partial' ? 'rgba(234,179,8,0.1)'
                         : selectedPost.status === 'failed' ? 'rgba(239,68,68,0.1)'
                         : selectedPost.status === 'publishing' ? 'rgba(249,115,22,0.1)'
+                        : selectedPost.status === 'rejected' ? 'rgba(168,85,247,0.1)'
                         : 'rgba(156,163,175,0.1)',
                       color: selectedPost.status === 'scheduled' ? '#007AFF'
                         : selectedPost.status === 'published' ? '#22C55E'
                         : selectedPost.status === 'partial' ? '#EAB308'
                         : selectedPost.status === 'failed' ? '#EF4444'
                         : selectedPost.status === 'publishing' ? '#F97316'
+                        : selectedPost.status === 'rejected' ? '#C084FC'
                         : '#9CA3AF',
                     }}
                   >
@@ -1285,6 +1309,7 @@ const ScheduledContentPage: React.FC = () => {
                     {selectedPost.status === 'partial' && <WarningIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'failed' && <ErrorIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'publishing' && <HourglassIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'rejected' && <BlockIcon sx={{ fontSize: 16 }} />}
                     <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' }}>
                       {selectedPost.status}
                     </Typography>
@@ -1454,6 +1479,24 @@ const ScheduledContentPage: React.FC = () => {
                     }}
                   >
                     {selectedPost.videoFooter}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Rejection Notice */}
+              {selectedPost.status === 'rejected' && (
+                <Box sx={{ mb: 3, p: 2, borderRadius: '12px', bgcolor: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                    <BlockIcon sx={{ fontSize: 16, color: '#A855F7' }} />
+                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: '#C084FC', textTransform: 'uppercase' }}>
+                      Post Not Published
+                    </Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    This post was not published because your subscription was inactive at the scheduled time.
+                    {selectedPost.rejectionReason === 'subscription_inactive' && (
+                      <> Resubscribe to ensure your future posts go out on schedule.</>
+                    )}
                   </Typography>
                 </Box>
               )}
