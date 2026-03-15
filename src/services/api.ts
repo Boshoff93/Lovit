@@ -431,11 +431,11 @@ export const linkedinApi = {
 
 // Twitter/X API
 export const twitterApi = {
-  // OAuth 1.0a connect — gets authorizeUrl to redirect user to Twitter auth
+  // OAuth 1.0a connect — legacy, kept for reference
   getOAuth1ConnectUrl: (userId: string) =>
     api.get(`/api/gruvi/twitter/oauth1/connect?userId=${userId}`),
 
-  // OAuth 2.0 (legacy — kept for reference but not used for connect)
+  // OAuth 2.0 with PKCE — primary connect flow (supports v2 pay-as-you-go API)
   getAuthUrl: (userId: string) =>
     api.get(`/api/gruvi/twitter/auth-url?userId=${userId}`),
 
