@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 interface SEOProps {
   title: string;
   description: string;
@@ -26,6 +26,9 @@ interface SEOProps {
   structuredData?: any;
 }
 
+// The build renderer supplies a request-local collector for static metadata.
+export const StaticSeoContext = createContext<{ current?: SEOProps } | null>(null);
+
 export const SEO: React.FC<SEOProps> = ({
   title,
   description,
@@ -52,6 +55,9 @@ export const SEO: React.FC<SEOProps> = ({
   language = "en",
   structuredData,
 }) => {
+  const staticSeo = useContext(StaticSeoContext);
+  if (staticSeo) staticSeo.current = { title, description, keywords, ogTitle, ogDescription, ogType, ogUrl, ogImage, ogImageWidth, ogImageHeight, ogImageAlt, ogSiteName, ogLocale, twitterCard, twitterTitle, twitterDescription, twitterImage, twitterSite, twitterCreator, canonicalUrl, robots, author, language, structuredData };
+
   // Use default image if not provided
   const defaultImage = "/gruvi-social.png";
   const imageUrl = new URL(ogImage || defaultImage, "https://agentgruvi.com")

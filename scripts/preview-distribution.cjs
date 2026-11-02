@@ -16,6 +16,7 @@ const types = {
   ".webp": "image/webp",
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
+  ".tgz": "application/gzip",
 };
 function proxyApi(req, res, requestPath) {
   // Keep localhost requests on one origin. The upstream is fixed, never supplied by the caller.
@@ -78,7 +79,12 @@ http
       proxyApi(req, res, url.pathname + url.search);
       return;
     }
-    let file = path.resolve(root, "." + pathname);
+    let publicFile;
+    try {
+      const manifest = JSON.parse(fs.readFileSync(path.join(root, "_public/manifest.json"), "utf8"));
+      if (Object.prototype.hasOwnProperty.call(manifest, pathname)) publicFile = manifest[pathname];
+    } catch {}
+    let file = path.resolve(root, "." + (publicFile || pathname));
     if (!file.startsWith(root + path.sep) && file !== root) {
       res.writeHead(403);
       res.end();
@@ -113,4 +119,4 @@ http
       stream.pipe(res);
     });
   })
-  .listen(3031, "127.0.0.1", () => console.log("Local: http://127.0.0.1:3031"));
+  .listen(Number(process.env.GRUVI_PREVIEW_PORT || 3031), "127.0.0.1", () => console.log(`Local: http://127.0.0.1:${process.env.GRUVI_PREVIEW_PORT || 3031}`));
