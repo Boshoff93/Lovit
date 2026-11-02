@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Alert, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LinkIcon from '@mui/icons-material/Link';
 import { useSelector } from 'react-redux';
@@ -79,183 +81,84 @@ const AnalyticsOverviewPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?.userId || '';
 
-  const { data: socialAccountsData } = useGetSocialAccountsQuery(
+  const accountsQuery = useGetSocialAccountsQuery(
     { userId },
     { skip: !userId }
   );
 
   const connectedPlatforms = useMemo(() => {
-    const accounts = socialAccountsData?.accounts || [];
+    const accounts = accountsQuery.data?.accounts || [];
     const connected = new Set<string>();
     accounts.forEach(a => connected.add(a.platform));
     return connected;
-  }, [socialAccountsData]);
+  }, [accountsQuery.data]);
 
   if (!userId) {
-    return (
-      <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 }, textAlign: 'center', py: 8 }}>
-        <BarChartIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
-        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)' }}>Sign in to view analytics</Typography>
-      </Box>
-    );
+    return <Alert severity="info">Sign in to view analytics.</Alert>;
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
-        <Box sx={{
-          width: 56, height: 56, borderRadius: '16px',
-          background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-          flexShrink: 0,
-        }}>
-          <BarChartIcon sx={{ fontSize: 28, color: '#fff' }} />
-        </Box>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-            Analytics
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-            Track performance across your social channels
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Platform Cards Grid */}
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-        gap: 2.5,
-      }}>
-        {platforms.map((platform) => {
-          const isConnected = connectedPlatforms.has(platform.id);
-          const isAvailable = !platform.comingSoon;
-
-          return (
-            <Box
-              key={platform.id}
-              onClick={() => {
-                if (isAvailable && isConnected) {
-                  navigate(platform.route);
-                }
-              }}
-              sx={{
-                borderRadius: '24px',
-                overflow: 'hidden',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                cursor: isAvailable && isConnected ? 'pointer' : 'default',
-                transition: 'all 0.3s ease',
-                position: 'relative',
-                '&:hover': isAvailable && isConnected ? {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                } : {},
-              }}
-            >
-              {/* Gradient header */}
-              <Box sx={{
-                background: platform.gradient,
-                p: 3,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                opacity: platform.comingSoon ? 0.6 : 1,
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  {platform.icon}
-                  <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff' }}>
-                    {platform.name}
-                  </Typography>
-                </Box>
-                {platform.comingSoon && (
-                  <Box sx={{
-                    px: 1.5, py: 0.5,
-                    borderRadius: '8px',
-                    background: 'rgba(0,0,0,0.3)',
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.9)',
-                  }}>
-                    Coming Soon
-                  </Box>
-                )}
-              </Box>
-
-              {/* Card body */}
-              <Box sx={{ p: 2.5 }}>
-                {platform.comingSoon ? (
-                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', mb: 1 }}>
-                    Analytics for {platform.name} will be available soon.
-                  </Typography>
-                ) : isConnected ? (
-                  <>
-                    <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', mb: 2 }}>
-                      View detailed analytics for your {platform.name} channel.
-                    </Typography>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(platform.route);
-                      }}
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '12px',
-                        px: 2,
-                        py: 0.75,
-                        textTransform: 'none',
-                        color: '#fff',
-                        fontWeight: 600,
-                        fontSize: '0.85rem',
-                        '&:hover': {
-                          background: 'rgba(255,255,255,0.1)',
-                        },
-                      }}
-                    >
-                      View Analytics
-                    </Button>
-                  </>
+    <div className="gd">
+      <header className="gd-workspace-header">
+        <div>
+          <p className="gd-eyebrow">Measure your content</p>
+          <h1>Analytics</h1>
+          <p>See how your published content performs on each channel.</p>
+        </div>
+        <Button className="gd-text-link" onClick={() => navigate('/settings/connected-accounts')} endIcon={<ArrowForwardIcon />} sx={{ textTransform: 'none' }}>
+          Connected accounts
+        </Button>
+      </header>
+      {accountsQuery.isError && (
+        <Alert severity="error" sx={{ mb: 3 }} action={<Button color="inherit" onClick={() => accountsQuery.refetch()}>Retry</Button>}>
+          Your connected accounts could not be loaded.
+        </Alert>
+      )}
+      {accountsQuery.isLoading ? (
+        <CircularProgress aria-label="Loading analytics channels" />
+      ) : (
+        <div className="gd-channel-grid gd-analytics-grid">
+          {platforms.map((platform) => {
+            const isConnected = connectedPlatforms.has(platform.id);
+            const isAvailable = !platform.comingSoon;
+            return (
+              <article className="gd-channel-card" key={platform.id}>
+                <div className="gd-channel-heading">
+                  <div className="gd-channel-icon" style={{ background: platform.gradient }} aria-hidden="true">{platform.icon}</div>
+                  <span className={`gd-channel-status${platform.comingSoon ? ' is-soon' : isConnected ? ' is-connected' : ''}`}>
+                    {platform.comingSoon ? <ScheduleIcon /> : isConnected ? <CheckCircleIcon /> : <LinkIcon />}
+                    {platform.comingSoon ? 'Coming soon' : isConnected ? 'Connected' : 'Connect to view'}
+                  </span>
+                </div>
+                <div>
+                  <h2>{platform.name}</h2>
+                  <p>{platform.comingSoon
+                    ? `${platform.name} analytics is coming to Gruvi.`
+                    : isConnected ? `View performance and engagement for your ${platform.name} content.`
+                    : `Connect your ${platform.name} account to view its performance.`}</p>
+                </div>
+                {isAvailable ? (
+                  <Button
+                    className="gd-channel-action"
+                    disabled={accountsQuery.isError}
+                    onClick={() => navigate(isConnected ? platform.route : '/settings/connected-accounts')}
+                    endIcon={<ArrowForwardIcon />}
+                  >
+                    {isConnected ? 'View analytics' : `Connect ${platform.name}`}
+                  </Button>
                 ) : (
-                  <>
-                    <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', mb: 2 }}>
-                      Connect your {platform.name} account to see analytics.
-                    </Typography>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/settings/connected-accounts');
-                      }}
-                      startIcon={<LinkIcon />}
-                      sx={{
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '12px',
-                        px: 2,
-                        py: 0.75,
-                        textTransform: 'none',
-                        color: 'rgba(255,255,255,0.6)',
-                        fontWeight: 600,
-                        fontSize: '0.85rem',
-                        '&:hover': {
-                          background: 'rgba(255,255,255,0.1)',
-                        },
-                      }}
-                    >
-                      Connect in Settings
-                    </Button>
-                  </>
+                  <p className="gd-analytics-note">Publishing is available now. Analytics is coming next.</p>
                 )}
-              </Box>
-            </Box>
-          );
-        })}
-      </Box>
-    </Box>
+              </article>
+            );
+          })}
+        </div>
+      )}
+      <div className="gd-connection-note">
+        <BarChartIcon sx={{ color: '#71e4dc', mt: 0.25, flexShrink: 0 }} />
+        <p>Analytics availability varies by platform. Your posts and delivery status are always in <button className="gd-text-link" onClick={() => navigate('/settings/scheduled-content')}>Posts & Calendar</button>.</p>
+      </div>
+    </div>
   );
 };
 

@@ -44,6 +44,7 @@ import InstagramCallbackPage from "./pages/InstagramCallbackPage";
 import LinkedInCallbackPage from "./pages/LinkedInCallbackPage";
 import TwitterCallbackPage from "./pages/TwitterCallbackPage";
 import "./distribution.css";
+import "./components/Workspace.css";
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { token, user, isLoading } = useSelector((s: RootState) => s.auth);

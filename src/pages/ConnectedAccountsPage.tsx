@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
-  Typography,
+  Button,
   Alert,
   Chip,
   CircularProgress,
-  IconButton,
 } from '@mui/material';
 import {
   Link as LinkIcon,
+  ArrowForward,
+  Schedule,
   CheckCircle,
   YouTube,
   Add,
   Close,
 } from '@mui/icons-material';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { youtubeApi, tiktokApi, instagramApi, linkedinApi, twitterApi, socialAccountsApi } from '../services/api';
@@ -45,7 +46,7 @@ const socialPlatforms = [
       </Box>
     ),
     color: '#000000',
-    gradient: '#000000',
+    gradient: 'linear-gradient(135deg, #243c47, #15303b)',
     available: true,
   },
   {
@@ -99,7 +100,7 @@ const socialPlatforms = [
   },
   {
     id: 'twitter',
-    name: 'X (Twitter)',
+    name: 'X',
     icon: () => (
       <Box
         component="svg"
@@ -110,7 +111,7 @@ const socialPlatforms = [
       </Box>
     ),
     color: '#000000',
-    gradient: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+    gradient: 'linear-gradient(135deg, #3b475c, #253144)',
     available: true,
   },
 ];
@@ -131,7 +132,8 @@ const ConnectedAccountsPage: React.FC = () => {
 
   // Fetch all social accounts from the unified endpoint
   const socialAccountsQuery = useGetSocialAccountsQuery({ userId }, { skip: !userId });
-  const accounts: SocialAccount[] = socialAccountsQuery.data?.accounts || [];
+  const { refetch: refetchAccounts } = socialAccountsQuery;
+  const accounts = useMemo<SocialAccount[]>(() => socialAccountsQuery.data?.accounts || [], [socialAccountsQuery.data?.accounts]);
 
   // Group accounts by platform
   const accountsByPlatform = useMemo(() => {
@@ -154,9 +156,7 @@ const ConnectedAccountsPage: React.FC = () => {
     const connectedCount = accounts.length;
     const platformsConnected = availablePlatforms.filter(p => accountsByPlatform[p.id]?.length > 0).length;
     const totalAvailable = availablePlatforms.length;
-    const progress = totalAvailable > 0 ? Math.round((platformsConnected / totalAvailable) * 100) : 0;
-
-    return { connectedCount, platformsConnected, totalAvailable, progress };
+    return { connectedCount, platformsConnected, totalAvailable };
   }, [accounts, accountsByPlatform]);
 
   // Handle OAuth redirect result from URL params
@@ -172,7 +172,7 @@ const ConnectedAccountsPage: React.FC = () => {
       setSuccess(`YouTube connected${channel ? ` to ${channel}` : ''}!`);
       setTimeout(() => setSuccess(null), 5000);
       setSearchParams({});
-      socialAccountsQuery.refetch();
+      refetchAccounts();
     } else if (youtubeResult === 'error') {
       setError(message || 'Failed to connect YouTube');
       setTimeout(() => setError(null), 5000);
@@ -183,7 +183,7 @@ const ConnectedAccountsPage: React.FC = () => {
       setSuccess(`TikTok connected${username ? ` as @${username}` : ''}!`);
       setTimeout(() => setSuccess(null), 5000);
       setSearchParams({});
-      socialAccountsQuery.refetch();
+      refetchAccounts();
     } else if (tiktokResult === 'error') {
       setError(message || 'Failed to connect TikTok');
       setTimeout(() => setError(null), 5000);
@@ -194,7 +194,7 @@ const ConnectedAccountsPage: React.FC = () => {
       setSuccess(`Instagram connected${username ? ` as @${username}` : ''}!`);
       setTimeout(() => setSuccess(null), 5000);
       setSearchParams({});
-      socialAccountsQuery.refetch();
+      refetchAccounts();
     } else if (instagramResult === 'error') {
       setError(message || 'Failed to connect Instagram');
       setTimeout(() => setError(null), 5000);
@@ -206,13 +206,13 @@ const ConnectedAccountsPage: React.FC = () => {
       setSuccess(`X connected${username ? ` as @${username}` : ''}!`);
       setTimeout(() => setSuccess(null), 5000);
       setSearchParams({});
-      socialAccountsQuery.refetch();
+      refetchAccounts();
     } else if (xResult === 'error') {
       setError(message || 'Failed to connect X');
       setTimeout(() => setError(null), 5000);
       setSearchParams({});
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, refetchAccounts]);
 
   const handleConnect = async (platformId: string) => {
     if (!userId) return;
@@ -258,7 +258,7 @@ const ConnectedAccountsPage: React.FC = () => {
 
     try {
       await socialAccountsApi.disconnect(userId, accountId);
-      socialAccountsQuery.refetch();
+      refetchAccounts();
       setSuccess(`${platformName} account disconnected`);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
@@ -275,143 +275,33 @@ const ConnectedAccountsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', minWidth: 0, display: 'flex', flexDirection: 'column', mx: 'auto' }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-          <Box
-            sx={{
-              width: 56,
-              height: 56,
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(59,130,246,0.3)',
-              flexShrink: 0,
-            }}
-          >
-            <LinkIcon sx={{ fontSize: 28, color: '#fff' }} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-              Social Media Integrations
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-              Connect your social accounts to share content directly
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+    <div className="gd">
+      <header className="gd-workspace-header">
+        <div>
+          <p className="gd-eyebrow">Your publishing channels</p>
+          <h1>Connected accounts</h1>
+          <p>Connect your channels to publish from Gruvi or through your agent.</p>
+        </div>
+        <div className="gd-connection-summary">
+          <span><strong>{stats.connectedCount}</strong> accounts</span>
+          <span><strong>{stats.platformsConnected}/{stats.totalAvailable}</strong> channels connected</span>
+        </div>
+      </header>
 
-      {/* Stats Cards */}
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(2, 1fr)' },
-        gap: 2,
-        mb: 4,
-      }}>
-        <Box sx={{
-          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-          borderRadius: '16px',
-          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.25)',
-          p: 2.5,
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <CheckCircle sx={{ color: 'rgba(255,255,255,0.9)', fontSize: 20 }} />
-            <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', fontWeight: 500 }}>
-              Active
-            </Typography>
-          </Box>
-          <Typography sx={{ color: '#fff', fontSize: '2.5rem', fontWeight: 700, lineHeight: 1 }}>
-            {stats.connectedCount}
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.8rem', mt: 0.5 }}>
-            Connected accounts
-          </Typography>
-        </Box>
-
-        <Box sx={{
-          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-          borderRadius: '16px',
-          boxShadow: '0 4px 20px rgba(0, 122, 255, 0.25)',
-          p: 2.5,
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Box sx={{
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              border: '2px solid rgba(255,255,255,0.9)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Box sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.9)'
-              }} />
-            </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', fontWeight: 500 }}>
-              Platforms
-            </Typography>
-          </Box>
-          <Typography sx={{ color: '#fff', fontSize: '2.5rem', fontWeight: 700, lineHeight: 1 }}>
-            {stats.platformsConnected}/{stats.totalAvailable}
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.8rem', mt: 0.5 }}>
-            Platforms connected
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Alerts */}
-      {error && (
-        <Alert
-          severity="error"
-          onClose={() => setError(null)}
-          sx={{
-            mb: 3,
-            borderRadius: '12px',
-            bgcolor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#fff',
-            '& .MuiAlert-icon': { color: '#EF4444' },
-          }}
-        >
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert
-          severity="success"
-          onClose={() => setSuccess(null)}
-          sx={{
-            mb: 3,
-            borderRadius: '12px',
-            bgcolor: 'rgba(52, 199, 89, 0.1)',
-            border: '1px solid rgba(52, 199, 89, 0.3)',
-            color: '#fff',
-            '& .MuiAlert-icon': { color: '#34C759' },
-          }}
-        >
-          {success}
+      {error && <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 3 }}>{error}</Alert>}
+      {success && <Alert severity="success" onClose={() => setSuccess(null)} sx={{ mb: 3 }}>{success}</Alert>}
+      {socialAccountsQuery.isError && (
+        <Alert severity="error" sx={{ mb: 3 }} action={<Button color="inherit" onClick={() => socialAccountsQuery.refetch()}>Retry</Button>}>
+          Your connected accounts could not be loaded. Try again before making changes.
         </Alert>
       )}
 
-      {/* Loading State */}
-      {socialAccountsQuery.isLoading && (
+      {socialAccountsQuery.isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <CircularProgress size={32} sx={{ color: '#007AFF' }} />
+          <CircularProgress size={32} aria-label="Loading connected accounts" />
         </Box>
-      )}
-
-      {/* Platform Rows */}
-      {!socialAccountsQuery.isLoading && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+      ) : (
+        <div className="gd-channel-grid">
           {socialPlatforms.map((platform) => {
             const platformAccounts = accountsByPlatform[platform.id] || [];
             const IconComponent = platform.icon;
@@ -419,133 +309,60 @@ const ConnectedAccountsPage: React.FC = () => {
             const hasAccounts = platformAccounts.length > 0;
 
             return (
-              <Box
-                key={platform.id}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: { xs: 1.5, sm: 2 },
-                  p: { xs: 1.5, sm: 2 },
-                  borderRadius: '16px',
-                  bgcolor: '#1E1E22',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  opacity: platform.available ? 1 : 0.5,
-                  transition: 'all 0.2s',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {/* Platform Icon + Name */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: { xs: '100%', sm: 140 }, flexShrink: 0 }}>
-                  <Box sx={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    background: platform.gradient,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    border: hasAccounts ? '2px solid #34C759' : 'none',
-                    boxSizing: 'border-box',
-                  }}>
+              <article key={platform.id} className={`gd-channel-card${hasAccounts ? ' is-connected' : ''}`}>
+                <div className="gd-channel-heading">
+                  <div className="gd-channel-icon" style={{ background: platform.gradient }} aria-hidden="true">
                     <IconComponent />
-                  </Box>
-                  <Typography sx={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>
-                    {platform.name}
-                  </Typography>
-                </Box>
-
-                {/* Account Chips */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', flex: 1 }}>
-                  {platformAccounts.map((account) => (
-                    <Chip
-                      key={account.accountId}
-                      avatar={
-                        account.avatarUrl ? (
-                          <Box
-                            component="img"
-                            src={account.avatarUrl}
-                            alt=""
-                            sx={{
-                              width: 24,
-                              height: 24,
-                              borderRadius: '50%',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        ) : undefined
-                      }
-                      label={getAccountDisplayName(account)}
-                      onDelete={() => handleDisconnect(account.accountId, platform.name)}
-                      deleteIcon={
-                        disconnectingAccountId === account.accountId
-                          ? <CircularProgress size={14} sx={{ color: 'rgba(255,255,255,0.5)' }} />
-                          : <Close sx={{ fontSize: 16 }} />
-                      }
-                      sx={{
-                        bgcolor: 'rgba(255,255,255,0.08)',
-                        color: '#fff',
-                        fontWeight: 500,
-                        fontSize: '0.8rem',
-                        height: 38,
-                        borderRadius: '19px',
-                        px: 0.5,
-                        py: 0.5,
-                        border: '2px solid #007AFF',
-                        '&:hover': {
-                          bgcolor: 'rgba(255,255,255,0.12)',
-                          borderColor: '#3399FF',
-                        },
-                        '& .MuiChip-avatar': {
-                          width: 24,
-                          height: 24,
-                          ml: 0.5,
-                        },
-                        '& .MuiChip-deleteIcon': {
-                          color: 'rgba(255,255,255,0.5)',
-                          '&:hover': { color: '#FF3B30' },
-                        },
-                      }}
-                    />
-                  ))}
-
-                  {!hasAccounts && (
-                    <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', fontStyle: 'italic' }}>
-                      Not connected
-                    </Typography>
-                  )}
-                </Box>
-
-                {/* Add / Connect Button */}
-                {platform.available && (
-                  <Box sx={{ flexShrink: 0 }}>
-                    {isConnecting ? (
-                      <CircularProgress size={20} sx={{ color: '#007AFF' }} />
-                    ) : (
-                      <IconButton
-                        onClick={() => handleConnect(platform.id)}
-                        size="small"
-                        sx={{
-                          bgcolor: hasAccounts ? 'rgba(255,255,255,0.08)' : '#007AFF',
-                          color: '#fff',
-                          width: 32,
-                          height: 32,
-                          '&:hover': {
-                            bgcolor: hasAccounts ? 'rgba(255,255,255,0.15)' : '#0066DD',
-                          },
-                        }}
-                      >
-                        <Add sx={{ fontSize: 18 }} />
-                      </IconButton>
-                    )}
-                  </Box>
+                  </div>
+                  <span className={`gd-channel-status${hasAccounts ? ' is-connected' : !platform.available ? ' is-soon' : ''}`}>
+                    {hasAccounts ? <CheckCircle /> : !platform.available ? <Schedule /> : <LinkIcon />}
+                    {hasAccounts ? 'Connected' : platform.available ? 'Ready to connect' : 'Coming soon'}
+                  </span>
+                </div>
+                <div>
+                  <h2>{platform.name}</h2>
+                  <p>{hasAccounts
+                    ? `${platformAccounts.length} ${platformAccounts.length === 1 ? 'account' : 'accounts'} connected for publishing.`
+                    : platform.available ? `Connect ${platform.name} to add it to your publishing channels.`
+                    : `${platform.name} publishing is on the way.`}</p>
+                </div>
+                {hasAccounts && (
+                  <div className="gd-connected-chips">
+                    {platformAccounts.map((account) => (
+                      <Chip
+                        key={account.accountId}
+                        avatar={account.avatarUrl ? <Box component="img" src={account.avatarUrl} alt="" sx={{ objectFit: 'cover' }} /> : undefined}
+                        label={getAccountDisplayName(account)}
+                        onDelete={disconnectingAccountId ? undefined : () => handleDisconnect(account.accountId, platform.name)}
+                        deleteIcon={disconnectingAccountId === account.accountId
+                          ? <CircularProgress size={14} aria-label="Disconnecting account" />
+                          : <Close aria-label={`Disconnect ${getAccountDisplayName(account)}`} />}
+                      />
+                    ))}
+                  </div>
                 )}
-              </Box>
+                {platform.available && (
+                  <Button
+                    className="gd-channel-action"
+                    onClick={() => handleConnect(platform.id)}
+                    disabled={!!connectingPlatform || socialAccountsQuery.isError}
+                    aria-label={hasAccounts ? `Add another ${platform.name} account` : `Connect ${platform.name}`}
+                    startIcon={isConnecting ? <CircularProgress size={16} color="inherit" /> : <Add />}
+                    endIcon={!isConnecting ? <ArrowForward /> : undefined}
+                  >
+                    {isConnecting ? 'Connecting...' : hasAccounts ? 'Add account' : `Connect ${platform.name}`}
+                  </Button>
+                )}
+              </article>
             );
           })}
-        </Box>
+        </div>
       )}
-    </Box>
+      <div className="gd-connection-note">
+        <LinkIcon sx={{ color: '#71e4dc', mt: 0.25, flexShrink: 0 }} />
+        <p>Connect once, then choose the accounts for each post. Use the same channels in your <Link to="/posts/new">post composer</Link> or through <Link to="/agents">agent access</Link>.</p>
+      </div>
+    </div>
   );
 };
 

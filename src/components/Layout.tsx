@@ -36,7 +36,7 @@ const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
       sidebarCollapsed,
       setCurrentViewingItem
     }}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', background: '#14171f' }}>
+      <Box className="gd-workspace" sx={{ display: 'flex', minHeight: '100vh' }}>
         {/* Desktop Permanent Sidebar */}
         {!isMobile && (
           <Drawer
@@ -85,6 +85,7 @@ const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
             }}
           >
             <IconButton
+              aria-label="Open navigation"
               onClick={handleMobileDrawerToggle}
               sx={{
                 color: '#007AFF',
