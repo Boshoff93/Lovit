@@ -6,7 +6,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import WorkspaceSkeleton from "./components/WorkspaceSkeleton";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import api from "./utils/axiosConfig";
@@ -50,7 +50,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { token, user, isLoading } = useSelector((s: RootState) => s.auth);
   const location = useLocation();
   if (isLoading && !user)
-    return <CircularProgress aria-label="Loading account" />;
+    return <div className="gd-workspace gd-auth-loading"><WorkspaceSkeleton label="Loading account" /></div>;
   if (!token)
     return <Navigate to="/?signin=1" state={{ from: location }} replace />;
   if (user && !user.isVerified)
@@ -74,7 +74,7 @@ function RequireAdmin({ children }: { children: React.ReactNode }) {
     };
   }, []);
   return allowed === null ? (
-    <CircularProgress />
+    <WorkspaceSkeleton label="Checking access" />
   ) : allowed ? (
     <>{children}</>
   ) : (

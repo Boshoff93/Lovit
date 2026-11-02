@@ -1,3 +1,4 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useCallback, useState, useEffect } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
@@ -48,7 +49,7 @@ const AccountPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  
+
   const isFreeTier = !subscription?.tier || subscription.tier === 'free';
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
   const scheduledPostsQuery = useGetScheduledPostsQuery();
@@ -61,16 +62,16 @@ const AccountPage: React.FC = () => {
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
-  
+
   // Profile editing state - single field for Profile Name
   const [artistName, setArtistName] = useState(user?.artistName || user?.name || '');
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
   const [nameSuccess, setNameSuccess] = useState<string | null>(null);
-  
+
   // Agent Keys state
   const [agentKeys, setAgentKeys] = useState<AgentKey[]>([]);
-  const [agentKeysLoading, setAgentKeysLoading] = useState(false);
+  const [agentKeysLoading, setAgentKeysLoading] = useState(true);
   const [createKeyDialogOpen, setCreateKeyDialogOpen] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
   const [creatingKey, setCreatingKey] = useState(false);
@@ -106,10 +107,10 @@ const AccountPage: React.FC = () => {
     try {
       setError(null);
       setPortalLoading(true);
-      
+
       // Use the Redux action to create a portal session
       const resultAction = await createStripePortal()
-      
+
       if (createPortalSession.fulfilled.match(resultAction)) {
         // Redirect to Stripe customer portal
         if (resultAction.payload.url) {
@@ -140,9 +141,9 @@ const AccountPage: React.FC = () => {
     try {
       setError(null);
       setEmailPreferencesLoading(true);
-      
+
       const resultAction = await dispatch(updateEmailPreferences({ notifications: enabled }));
-      
+
       if (updateEmailPreferences.fulfilled.match(resultAction)) {
         // Successfully updated
       } else if (updateEmailPreferences.rejected.match(resultAction)) {
@@ -158,17 +159,17 @@ const AccountPage: React.FC = () => {
   const handleSaveName = useCallback(async () => {
     setIsSavingName(true);
     setError(null);
-    
+
     try {
       await userApi.updateProfile({
         name: artistName,
         artistName: artistName,
         directorName: artistName,
       });
-      
+
       // Refresh user data to update the store
       await dispatch(refreshUserData());
-      
+
       setNameSuccess('Saved!');
       setIsEditingName(false);
       setTimeout(() => setNameSuccess(null), 2000);
@@ -236,7 +237,7 @@ const AccountPage: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+    <Box className="gd gd-account-page" sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 0, sm: 0, md: 0 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
@@ -269,10 +270,10 @@ const AccountPage: React.FC = () => {
           <AccountCircleIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
             Account
           </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.6)' }}>
+          <Typography sx={{ color: '#aab4c2' }}>
             Manage your profile and subscription
           </Typography>
         </Box>
@@ -298,14 +299,14 @@ const AccountPage: React.FC = () => {
       {/* Main Content Paper */}
       <Paper sx={{
         borderRadius: '16px',
-        bgcolor: '#1E1E22',
+        bgcolor: '#171e28',
         border: '1px solid rgba(255,255,255,0.06)',
         p: 3,
       }}>
         {/* User Info Section */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Box sx={{ flex: 1, minWidth: 200 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'stretch', sm: 'center' }, gap: 2, mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1, flexWrap: 'wrap' }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 {user?.email || 'Loading...'}
               </Typography>
@@ -319,20 +320,20 @@ const AccountPage: React.FC = () => {
                 }}
               />
             </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>
+            <Typography sx={{ color: '#aab4c2', fontSize: '0.9rem' }}>
               {user?.artistName || user?.name || 'No profile name set'}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 3 }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
+            <Box sx={{ textAlign: 'left' }}>
+              <Typography sx={{ color: '#aab4c2', fontSize: '0.8rem', mb: 0.5 }}>Member Since</Typography>
               <Typography sx={{ fontWeight: 600, color: '#fff' }}>
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
               </Typography>
             </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', mb: 0.5 }}>Plan</Typography>
-              <Typography sx={{ fontWeight: 600, color: '#007AFF' }}>
+            <Box sx={{ textAlign: 'left' }}>
+              <Typography sx={{ color: '#aab4c2', fontSize: '0.8rem', mb: 0.5 }}>Plan</Typography>
+              <Typography sx={{ fontWeight: 600, color: '#f4f7fb' }}>
                 {formatTier(subscription?.tier || 'free')}
               </Typography>
             </Box>
@@ -369,18 +370,22 @@ const AccountPage: React.FC = () => {
                     borderRadius: '50%',
                     bgcolor: subscription?.status === 'active' ? '#34C759' : '#FF9500',
                   }} />
-                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                  <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
                     Status: {subscription?.status || 'Active'}
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
                   {subscription?.currentPeriodEnd && subscription.currentPeriodEnd > 0
                     ? `Renews: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
                     : 'No renewal date'}
                 </Typography>
               </Box>
             </Box>
+
+          </Box>
+          <div className="gd-card-actions">
             <Button
+              className="gd-primary-action gd-card-action"
               variant="contained"
               size="small"
               onClick={isFreeTier ? () => navigate('/payment') : handleManageSubscription}
@@ -413,7 +418,7 @@ const AccountPage: React.FC = () => {
                 isFreeTier ? 'Upgrade Plan' : 'Manage Subscription'
               )}
             </Button>
-          </Box>
+          </div>
         </Box>
 
         {/* Scheduling Limits */}
@@ -439,34 +444,21 @@ const AccountPage: React.FC = () => {
                   <Typography sx={{ fontWeight: 600, color: '#fff' }}>
                     Scheduled Posts
                   </Typography>
-                  <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                  <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
                     Monthly limit resets each billing cycle
                   </Typography>
                 </Box>
               </Box>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigate('/settings/scheduled-content')}
-                sx={{
-                  borderRadius: '10px', px: 2.5, py: 1, fontWeight: 600, textTransform: 'none',
-                  width: { xs: '100%', sm: 'auto' },
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
-                  boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
-                  '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #0891B2 100%)' },
-                }}
-              >
-                View Calendar
-              </Button>
+
             </Box>
             <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
                 {remaining.toLocaleString()}
-                <Typography component="span" sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', ml: 1 }}>
+                <Typography component="span" sx={{ fontSize: '0.9rem', color: '#aab4c2', ml: 1 }}>
                   posts remaining
                 </Typography>
               </Typography>
-              <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+              <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
                 {used.toLocaleString()} / {limit.toLocaleString()} used
               </Typography>
             </Box>
@@ -484,6 +476,16 @@ const AccountPage: React.FC = () => {
                 },
               }}
             />
+            <div className="gd-card-actions">
+              <Button
+                className="gd-primary-action gd-card-action"
+                variant="contained"
+                size="small"
+                onClick={() => navigate('/settings/scheduled-content')}
+              >
+                View Calendar
+              </Button>
+            </div>
           </Box>
           );
         })()}
@@ -511,7 +513,7 @@ const AccountPage: React.FC = () => {
                     bgcolor: 'rgba(255,255,255,0.05)',
                     color: '#fff',
                     '& input': { color: '#fff', py: 1.5, fontSize: '1rem' },
-                    '& input::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                    '& input::placeholder': { color: '#91aaa9' },
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' },
                     '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.03)' },
                     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
@@ -573,13 +575,13 @@ const AccountPage: React.FC = () => {
                   sx: {
                     borderRadius: '12px',
                     bgcolor: 'rgba(255,255,255,0.03)',
-                    color: 'rgba(255,255,255,0.5)',
-                    '& input': { color: 'rgba(255,255,255,0.5)', py: 1.5, fontSize: '1rem' },
+                    color: '#aab4c2',
+                    '& input': { color: '#aab4c2', py: 1.5, fontSize: '1rem' },
                     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
                   }
                 }}
               />
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.5, fontSize: '0.8rem' }}>
+              <Typography sx={{ color: '#aab4c2', mt: 0.5, fontSize: '0.8rem' }}>
                 Email cannot be changed
               </Typography>
             </Box>
@@ -595,37 +597,17 @@ const AccountPage: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                   Agent Keys
                 </Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                <Typography sx={{ color: '#aab4c2', fontSize: '0.85rem' }}>
                   API keys for AI agents to access Gruvi
                 </Typography>
               </Box>
             </Box>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<AddIcon />}
-              onClick={() => setCreateKeyDialogOpen(true)}
-              sx={{
-                borderRadius: '10px',
-                px: 2,
-                py: 1,
-                fontWeight: 600,
-                textTransform: 'none',
-                background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
-                boxShadow: '0 2px 8px rgba(139,92,246,0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
-                  boxShadow: '0 4px 12px rgba(139,92,246,0.4)',
-                }
-              }}
-            >
-              Create Key
-            </Button>
+
           </Box>
 
           {agentKeysLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress size={24} sx={{ color: '#8B5CF6' }} />
+              <WorkspaceSkeleton label="Loading agent keys" kind="list" rows={2} />
             </Box>
           ) : agentKeys.length === 0 ? (
             <Box sx={{
@@ -640,7 +622,7 @@ const AccountPage: React.FC = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>
                 No agent keys yet
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+              <Typography sx={{ color: '#aab4c2', fontSize: '0.85rem' }}>
                 Create an agent key to let Claude, OpenClaw, or other AI assistants use Gruvi on your behalf
               </Typography>
             </Box>
@@ -676,11 +658,11 @@ const AccountPage: React.FC = () => {
                     }
                     secondary={
                       <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+                        <Typography sx={{ color: '#aab4c2', fontSize: '0.8rem' }}>
                           Created: {new Date(key.createdAt).toLocaleDateString()}
                         </Typography>
                         {key.lastUsedAt && (
-                          <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+                          <Typography sx={{ color: '#aab4c2', fontSize: '0.8rem' }}>
                             Last used: {new Date(key.lastUsedAt).toLocaleDateString()}
                           </Typography>
                         )}
@@ -692,7 +674,7 @@ const AccountPage: React.FC = () => {
                       <IconButton
                         edge="end"
                         onClick={() => setDeleteKeyId(key.keyId)}
-                        sx={{ color: 'rgba(255,255,255,0.5)', '&:hover': { color: '#FF3B30' } }}
+                        sx={{ color: '#aab4c2', '&:hover': { color: '#FF3B30' } }}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
@@ -703,51 +685,40 @@ const AccountPage: React.FC = () => {
             </List>
           )}
 
-          <Box sx={{
-            mt: 2,
-            p: 2,
-            bgcolor: 'rgba(139,92,246,0.08)',
-            borderRadius: '10px',
-            border: '1px solid rgba(139,92,246,0.2)',
-          }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', mb: 1.5, fontWeight: 600 }}>
-              Tell your AI assistant:
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', mb: 1 }}>
-              1. First, get the Gruvi skill:
-            </Typography>
-            <Box sx={{
-              p: 1.5,
-              bgcolor: 'rgba(0,0,0,0.3)',
-              borderRadius: '8px',
-              fontFamily: 'monospace',
-              fontSize: '0.75rem',
-              color: '#fff',
-              mb: 2,
-              overflowX: 'auto',
-            }}>
-              curl -s https://agentgruvi.com/skill.md -o ~/.claude/skills/gruvi/SKILL.md
-            </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', mb: 1 }}>
-              2. Then set your agent key:
-            </Typography>
-            <Box sx={{
-              p: 1.5,
-              bgcolor: 'rgba(0,0,0,0.3)',
-              borderRadius: '8px',
-              fontFamily: 'monospace',
-              fontSize: '0.75rem',
-              color: '#fff',
-            }}>
-              export GRUVI_KEY="gruvi_agent_xxxx"
-            </Box>
+          <Box sx={{ mt: 2, p: 2, border: '1px solid #007AFF25', borderRadius: 2, bgcolor: '#111822' }}>
+            <Typography sx={{ color: '#aab4c2', fontSize: '0.85rem' }}>Configure an MCP client, manage your keys and follow the publishing workflow in Agent Access.</Typography>
+            <Button sx={{ px: 0 }} onClick={() => navigate('/agents')}>Set up agent access →</Button>
           </Box>
+          <div className="gd-card-actions">
+            <Button
+              className="gd-primary-action gd-card-action"
+              variant="contained"
+              size="small"
+              startIcon={<AddIcon />}
+              onClick={() => setCreateKeyDialogOpen(true)}
+              sx={{
+                borderRadius: '10px',
+                px: 2,
+                py: 1,
+                fontWeight: 600,
+                textTransform: 'none',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
+                boxShadow: '0 2px 8px rgba(139,92,246,0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                  boxShadow: '0 4px 12px rgba(139,92,246,0.4)',
+                }
+              }}
+            >
+              Create Key
+            </Button>
+          </div>
         </Box>
 
         {/* Email Notifications */}
         <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
+            <Typography sx={{ fontSize: '0.9rem', color: '#aab4c2' }}>
               Email Notifications:
             </Typography>
             <FormControlLabel
@@ -797,7 +768,7 @@ const AccountPage: React.FC = () => {
           sx: {
             borderRadius: '20px',
             p: 1,
-            bgcolor: '#1E1E22',
+            bgcolor: '#171e28',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}
@@ -844,7 +815,7 @@ const AccountPage: React.FC = () => {
                 }}>
                   {newlyCreatedKey}
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                   <Button
                     variant="contained"
                     startIcon={<ContentCopyIcon />}
@@ -855,13 +826,9 @@ const AccountPage: React.FC = () => {
                       py: 1,
                       fontWeight: 600,
                       textTransform: 'none',
-                      background: copySuccess
-                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%) !important'
-                        : 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%) !important',
+                      background: '#007AFF',
                       '&:hover': {
-                        background: copySuccess
-                          ? 'linear-gradient(135deg, #2DB84D 0%, #28C04E 100%) !important'
-                          : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%) !important',
+                        background: '#0056CC',
                       }
                     }}
                   >
@@ -887,7 +854,7 @@ const AccountPage: React.FC = () => {
                     bgcolor: 'rgba(255,255,255,0.05)',
                     color: '#fff',
                     '& input': { color: '#fff', py: 1.5 },
-                    '& input::placeholder': { color: 'rgba(255,255,255,0.4)' },
+                    '& input::placeholder': { color: '#91aaa9' },
                     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
                     '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2) !important' },
                     '&.Mui-focused fieldset': { borderColor: '#8B5CF6 !important' },
@@ -938,7 +905,7 @@ const AccountPage: React.FC = () => {
           sx: {
             borderRadius: '16px',
             p: 1,
-            bgcolor: '#1E1E22',
+            bgcolor: '#171e28',
             border: '1px solid rgba(255,255,255,0.1)',
           }
         }}

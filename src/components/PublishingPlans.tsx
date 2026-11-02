@@ -98,7 +98,8 @@ export default function PublishingPlans() {
               <li>TikTok & YouTube analytics</li>
             </ul>
             <Button
-              variant={plan.id === "scale" ? "contained" : "outlined"}
+              className="gd-plan-action gd-primary-action gd-card-action"
+              variant="contained"
               onClick={() => choose(plan)}
               disabled={!!busy}
             >

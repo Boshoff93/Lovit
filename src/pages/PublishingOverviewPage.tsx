@@ -1,7 +1,8 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert } from "@mui/material";
 import { RootState } from "../store/store";
 import {
   useGetScheduledPostsQuery,
@@ -29,10 +30,12 @@ export default function PublishingOverviewPage() {
             See what's scheduled, check delivery and keep your accounts
             connected.
           </p>
+          <div className="gd-card-actions">
+            <Link className="gd-button gd-primary-action gd-card-action" to="/posts/new">
+              New post <span aria-hidden="true">+</span>
+            </Link>
+          </div>
         </div>
-        <Link className="gd-button" to="/posts/new">
-          New post <span aria-hidden="true">+</span>
-        </Link>
       </header>
       {(posts.isError || accounts.isError) && (
         <Alert
@@ -52,8 +55,8 @@ export default function PublishingOverviewPage() {
           Some workspace data could not be loaded.
         </Alert>
       )}
-      {posts.isLoading ? (
-        <CircularProgress aria-label="Loading workspace" />
+      {(posts.isLoading || accounts.isLoading) ? (
+        <WorkspaceSkeleton label="Loading workspace" />
       ) : (
         <div className="gd-stat-grid">
           {[
@@ -102,7 +105,6 @@ export default function PublishingOverviewPage() {
       <section className="gd-upcoming">
         <div className="gd-inline-heading">
           <h2>Coming up</h2>
-          <Link to="/settings/scheduled-content">View schedule ↗</Link>
         </div>
         {scheduled.length ? (
           scheduled
@@ -134,6 +136,9 @@ export default function PublishingOverviewPage() {
             here.
           </p>
         )}
+        <div className="gd-card-actions">
+          <Link className="gd-text-link" to="/settings/scheduled-content">View schedule ↗</Link>
+        </div>
       </section>
     </div>
   );

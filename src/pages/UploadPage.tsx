@@ -74,102 +74,107 @@ export default function UploadPage() {
           <p className="gd-eyebrow">Bring your own content</p>
           <h1>Upload a video</h1>
           <p>Add finished content to your library, then prepare a post.</p>
+          <Link className="gd-text-link gd-related-link" to="/media">
+            Media library ↗
+          </Link>
         </div>
-        <Link className="gd-text-link" to="/media">
-          Media library ↗
-        </Link>
       </header>
-      <form className="gd-form gd-upload-form" onSubmit={submit}>
-        {error && <Alert severity="error">{error}</Alert>}
-        <label className="gd-file-input">
-          Video file
-          <input
-            type="file"
-            accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm"
+      <form className="gd-post-form" onSubmit={submit}>
+        <div className="gd-form gd-upload-form">
+          {error && <Alert severity="error">{error}</Alert>}
+          <label className="gd-file-input">
+            Video file
+            <input
+              type="file"
+              accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm"
+              disabled={busy || !!uploadedId}
+              required={!uploadedId}
+              onChange={(e) => {
+                const selected = e.target.files?.[0] || null;
+                setFile(selected);
+                if (selected && !title)
+                  setTitle(selected.name.replace(/\.[^.]+$/, ""));
+              }}
+            />
+            <small>MP4, MOV or WebM, up to 512 MB.</small>
+          </label>
+          <TextField
+            label="Title"
+            required
+            value={title}
             disabled={busy || !!uploadedId}
-            required={!uploadedId}
-            onChange={(e) => {
-              const selected = e.target.files?.[0] || null;
-              setFile(selected);
-              if (selected && !title)
-                setTitle(selected.name.replace(/\.[^.]+$/, ""));
-            }}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <small>MP4, MOV or WebM, up to 512 MB.</small>
-        </label>
-        <TextField
-          label="Title"
-          required
-          value={title}
-          disabled={busy || !!uploadedId}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          label="Description"
-          value={description}
-          disabled={busy || !!uploadedId}
-          multiline
-          rows={3}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <TextField
-          select
-          label="Video format"
-          value={ratio}
-          disabled={busy || !!uploadedId}
-          onChange={(e) => setRatio(e.target.value)}
-        >
-          <MenuItem value="portrait">Portrait</MenuItem>
-          <MenuItem value="landscape">Landscape</MenuItem>
-        </TextField>
-        <label className="gd-file-input">
-          Custom thumbnail (optional)
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            disabled={busy}
-            onChange={async (e) => {
-              const selected = e.target.files?.[0];
-              if (!selected) return;
-              try {
-                setThumbnail(await thumbnailDataUrl(selected));
-                setError("");
-              } catch (err) {
-                setError(
-                  err instanceof Error
-                    ? err.message
-                    : "Unable to read thumbnail.",
-                );
-              }
-            }}
+          <TextField
+            label="Description"
+            value={description}
+            disabled={busy || !!uploadedId}
+            multiline
+            rows={3}
+            onChange={(e) => setDescription(e.target.value)}
           />
-          <small>JPEG, PNG or WebP, up to 5 MB.</small>
-        </label>
-        {thumbnail && (
-          <img
-            className="gd-thumbnail-preview"
-            src={thumbnail}
-            alt="Selected custom thumbnail"
-          />
-        )}
-        {busy && (
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            aria-label="Video upload progress"
-          />
-        )}
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={busy || uncertain || (!file && !uploadedId)}
-        >
-          {busy
-            ? `Uploading ${progress}%`
-            : uploadedId
-              ? "Retry thumbnail & continue"
-              : "Upload & prepare post"}
-        </Button>
+          <TextField
+            select
+            label="Video format"
+            value={ratio}
+            disabled={busy || !!uploadedId}
+            onChange={(e) => setRatio(e.target.value)}
+          >
+            <MenuItem value="portrait">Portrait</MenuItem>
+            <MenuItem value="landscape">Landscape</MenuItem>
+          </TextField>
+          <label className="gd-file-input">
+            Custom thumbnail (optional)
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={busy}
+              onChange={async (e) => {
+                const selected = e.target.files?.[0];
+                if (!selected) return;
+                try {
+                  setThumbnail(await thumbnailDataUrl(selected));
+                  setError("");
+                } catch (err) {
+                  setError(
+                    err instanceof Error
+                      ? err.message
+                      : "Unable to read thumbnail.",
+                  );
+                }
+              }}
+            />
+            <small>JPEG, PNG or WebP, up to 5 MB.</small>
+          </label>
+          {thumbnail && (
+            <img
+              className="gd-thumbnail-preview"
+              src={thumbnail}
+              alt="Selected custom thumbnail"
+            />
+          )}
+          {busy && (
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              aria-label="Video upload progress"
+            />
+          )}
+        </div>
+        <footer className="gd-page-actions">
+          <Button
+            className="gd-primary-action"
+            type="submit"
+            variant="contained"
+            disabled={busy || uncertain || (!file && !uploadedId)}
+          >
+            {busy
+              ? `Uploading ${progress}%`
+              : uploadedId
+                ? "Retry thumbnail & continue"
+                : "Upload & prepare post"}
+          </Button>
+        </footer>
       </form>
     </div>
   );

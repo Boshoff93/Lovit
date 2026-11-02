@@ -11,6 +11,7 @@ export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'premium';
 
 // Define subscription interface
 export interface Subscription {
+  accessHold?: string;
   tier: SubscriptionTier;
   status: string;
   subscriptionId?: string;

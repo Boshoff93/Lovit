@@ -1,3 +1,4 @@
+import WorkspaceSkeleton from './WorkspaceSkeleton';
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getToken, clearAuthData } from '../utils/storage';
@@ -60,7 +61,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   }, [dispatch, reduxToken, user]);
 
   if (!isInitialized) {
-    return null;
+    return <div className="gd-workspace gd-auth-loading"><WorkspaceSkeleton label="Loading account" /></div>;
   }
 
   return <>{children}</>;

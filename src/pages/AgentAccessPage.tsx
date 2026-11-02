@@ -1,3 +1,4 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -12,6 +13,7 @@ import { Link } from "react-router-dom";
 import { AgentKey, userApi } from "../services/api";
 import { mcpConfiguration } from "../config/agentDocs";
 export default function AgentAccessPage() {
+  const [loading, setLoading] = useState(true);
   const [keys, setKeys] = useState<AgentKey[]>([]);
   const [name, setName] = useState("");
   const [created, setCreated] = useState("");
@@ -23,6 +25,8 @@ export default function AgentAccessPage() {
       setKeys((await userApi.listAgentKeys()).data.keys || []);
     } catch {
       setError("Agent keys could not be loaded.");
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -85,6 +89,7 @@ export default function AgentAccessPage() {
               required
             />
             <Button
+              className="gd-primary-action"
               type="submit"
               variant="contained"
               disabled={busy || !name.trim()}
@@ -112,6 +117,7 @@ export default function AgentAccessPage() {
               <Button onClick={() => setCreated("")}>Hide key</Button>
             </Alert>
           )}
+          {loading && <WorkspaceSkeleton label="Loading agent keys" kind="list" rows={2} />}
           <div className="gd-key-list">
             {keys.map((key) => (
               <div key={key.keyId}>

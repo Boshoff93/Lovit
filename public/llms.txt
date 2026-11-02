@@ -9,7 +9,7 @@
 - [OpenAPI schema](https://agentgruvi.com/openapi.json): Machine-readable API contract.
 - [MCP discovery manifest](https://agentgruvi.com/.well-known/mcp.json): Stdio setup, tools and resource URIs.
 - [Full agent guide](https://agentgruvi.com/llms-full.txt): Setup, tools, billing and operational rules.
-- [MCP package](https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz): Versioned installable bundle, Node.js 20+.
+- [MCP package](https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz): Versioned installable bundle, Node.js 20+.
 - [Plans](https://agentgruvi.com/pricing): $10, $25 or $50 monthly. Free exploration; paid publishing/scheduling.
 
 ## Important

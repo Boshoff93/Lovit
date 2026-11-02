@@ -1,9 +1,11 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Button,
   Alert,
   Chip,
+  Avatar,
   CircularProgress,
 } from '@mui/material';
 import {
@@ -281,10 +283,10 @@ const ConnectedAccountsPage: React.FC = () => {
           <p className="gd-eyebrow">Your publishing channels</p>
           <h1>Connected accounts</h1>
           <p>Connect your channels to publish from Gruvi or through your agent.</p>
-        </div>
-        <div className="gd-connection-summary">
-          <span><strong>{stats.connectedCount}</strong> accounts</span>
-          <span><strong>{stats.platformsConnected}/{stats.totalAvailable}</strong> channels connected</span>
+          <div className="gd-connection-summary">
+            <span><strong>{stats.connectedCount}</strong> accounts</span>
+            <span><strong>{stats.platformsConnected}/{stats.totalAvailable}</strong> channels connected</span>
+          </div>
         </div>
       </header>
 
@@ -297,8 +299,8 @@ const ConnectedAccountsPage: React.FC = () => {
       )}
 
       {socialAccountsQuery.isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <CircularProgress size={32} aria-label="Loading connected accounts" />
+        <Box sx={{ width: "100%" }}>
+          <WorkspaceSkeleton label="Loading connected accounts" rows={6} />
         </Box>
       ) : (
         <div className="gd-channel-grid">
@@ -331,7 +333,7 @@ const ConnectedAccountsPage: React.FC = () => {
                     {platformAccounts.map((account) => (
                       <Chip
                         key={account.accountId}
-                        avatar={account.avatarUrl ? <Box component="img" src={account.avatarUrl} alt="" sx={{ objectFit: 'cover' }} /> : undefined}
+                        avatar={account.avatarUrl ? <Avatar src={account.avatarUrl} alt="">{getAccountDisplayName(account).replace(/^@/, "").charAt(0).toUpperCase()}</Avatar> : undefined}
                         label={getAccountDisplayName(account)}
                         onDelete={disconnectingAccountId ? undefined : () => handleDisconnect(account.accountId, platform.name)}
                         deleteIcon={disconnectingAccountId === account.accountId
@@ -343,7 +345,8 @@ const ConnectedAccountsPage: React.FC = () => {
                 )}
                 {platform.available && (
                   <Button
-                    className="gd-channel-action"
+                    className="gd-channel-action gd-primary-action gd-card-action"
+                    variant="contained"
                     onClick={() => handleConnect(platform.id)}
                     disabled={!!connectingPlatform || socialAccountsQuery.isError}
                     aria-label={hasAccounts ? `Add another ${platform.name} account` : `Connect ${platform.name}`}

@@ -1,5 +1,6 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useState } from "react";
-import { Alert, CircularProgress, Pagination, TextField } from "@mui/material";
+import { Alert, Pagination, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -23,10 +24,12 @@ export default function MediaLibraryPage() {
           <p className="gd-eyebrow">Your content</p>
           <h1>Media library</h1>
           <p>Finished videos, ready to post again when you need them.</p>
+          <div className="gd-card-actions">
+            <Link className="gd-button gd-primary-action gd-card-action" to="/upload">
+              Upload a video +
+            </Link>
+          </div>
         </div>
-        <Link className="gd-button" to="/upload">
-          Upload a video +
-        </Link>
       </header>
       <TextField
         label="Filter this page"
@@ -43,7 +46,7 @@ export default function MediaLibraryPage() {
           Your media could not be loaded.
         </Alert>
       ) : query.isLoading ? (
-        <CircularProgress aria-label="Loading media" />
+        <WorkspaceSkeleton label="Loading media" rows={6} />
       ) : videos.length ? (
         <div className="gd-media-grid">
           {videos.map((video) => (
@@ -92,7 +95,7 @@ export default function MediaLibraryPage() {
               : "Your content starts here."}
           </h2>
           <p>Upload a finished video to add it to your media library.</p>
-          <Link className="gd-button" to="/upload">
+          <Link className="gd-button gd-primary-action gd-card-action" to="/upload">
             Upload a video +
           </Link>
         </div>

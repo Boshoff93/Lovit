@@ -5,7 +5,7 @@ export const mcpConfiguration = JSON.stringify(
         command: "npx",
         args: [
           "--yes",
-          "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz",
+          "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz",
           "gruvi-mcp",
         ],
         env: {
@@ -19,7 +19,7 @@ export const mcpConfiguration = JSON.stringify(
   2,
 );
 export const agentQuickstart =
-  "npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz";
+  "npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz";
 export const scheduleExample = JSON.stringify(
   {
     videoId: "<uploaded-video-id>",

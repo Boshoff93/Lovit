@@ -1,9 +1,9 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useState, useMemo } from 'react';
 import {
   Box,
   Button,
   Typography,
-  CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
   Table,
@@ -158,7 +158,7 @@ const KpiCard: React.FC<KpiCardProps> = ({ label, value, icon, gradient, change,
       <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>
         {typeof value === 'number' ? formatNumber(value) : value}
       </Typography>
-      <Typography sx={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', mt: 0.25 }}>
+      <Typography sx={{ fontSize: '0.8rem', color: '#aab4c2', mt: 0.25 }}>
         {label}
       </Typography>
       {subtitle && (
@@ -172,23 +172,23 @@ const KpiCard: React.FC<KpiCardProps> = ({ label, value, icon, gradient, change,
 
 const chartTooltipStyle = {
   contentStyle: {
-    background: '#1E1E22',
+    background: '#171e28',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '12px',
     color: '#fff',
     fontSize: '0.8rem',
   },
-  labelStyle: { color: 'rgba(255,255,255,0.6)' },
+  labelStyle: { color: '#aab4c2' },
 };
 
 const tooltipSx = {
-  background: '#1E1E22',
+  background: '#171e28',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '12px',
   px: 2,
   py: 1.5,
   minWidth: 160,
-  '& .MuiTooltip-arrow': { color: '#1E1E22' },
+  '& .MuiTooltip-arrow': { color: '#171e28' },
 };
 
 const PostCard: React.FC<{ video: YouTubeVideo }> = ({ video }) => (
@@ -259,7 +259,7 @@ const PostCard: React.FC<{ video: YouTubeVideo }> = ({ video }) => (
       </Box>
       <Typography sx={{
         fontSize: '0.6rem',
-        color: 'rgba(255,255,255,0.6)',
+        color: '#aab4c2',
         lineHeight: 1.2,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -396,7 +396,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
     return (
       <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 }, textAlign: 'center', py: 8 }}>
         <BarChartIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
-        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)' }}>Sign in to view analytics</Typography>
+        <Typography variant="h6" sx={{ color: '#aab4c2' }}>Sign in to view analytics</Typography>
       </Box>
     );
   }
@@ -404,7 +404,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-        <CircularProgress sx={{ color: '#FF0000' }} />
+        <WorkspaceSkeleton label="Loading YouTube analytics" rows={4} />
       </Box>
     );
   }
@@ -412,14 +412,15 @@ const YouTubeAnalyticsPage: React.FC = () => {
   if (summaryError) {
     const errMsg = (summaryError as any)?.data?.error || 'Failed to load analytics';
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', textAlign: 'center', px: 3 }}>
+      <Box className="gd-empty" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', p: 3 }}>
         <BarChartIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
-        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mb: 1 }}>YouTube Not Connected</Typography>
-        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }}>{errMsg}</Typography>
-        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mt: 1, mb: 3 }}>
-          Connect your YouTube account in Settings &gt; Integrations to view analytics.
+        <Typography variant="h6" sx={{ color: '#aab4c2', mb: 1 }}>YouTube Not Connected</Typography>
+        <Typography variant="body2" sx={{ color: '#91aaa9' }}>{errMsg}</Typography>
+        <Typography variant="body2" sx={{ color: '#91aaa9', mt: 1, mb: 3 }}>
+          Connect your YouTube account in Connected Accounts to view analytics.
         </Typography>
         <Button
+          className="gd-primary-action gd-card-action"
           variant="contained"
           onClick={() => navigate('/settings/connected-accounts')}
           sx={{
@@ -471,7 +472,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
               YouTube Analytics
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+            <Typography variant="body2" sx={{ color: '#aab4c2' }}>
               {accountStats?.channelTitle || 'Performance overview'}
               {summary?.totalPosts ? ` \u00B7 ${summary.totalPosts} videos` : ''}
             </Typography>
@@ -508,7 +509,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
               <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {activeAccount?.accountName || 'Account'}
               </Typography>
-              <KeyboardArrowDownIcon sx={{ fontSize: 20, color: 'rgba(255,255,255,0.5)' }} />
+              <KeyboardArrowDownIcon sx={{ fontSize: 20, color: '#aab4c2' }} />
             </Button>
             <Menu
               anchorEl={accountMenuAnchor}
@@ -516,7 +517,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
               onClose={() => setAccountMenuAnchor(null)}
               PaperProps={{
                 sx: {
-                  background: '#1E1E22',
+                  background: '#171e28',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '12px',
                   mt: 1,
@@ -616,7 +617,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
             size="small"
             sx={{
               '& .MuiToggleButton-root': {
-                color: 'rgba(255,255,255,0.5)',
+                color: '#aab4c2',
                 borderColor: 'rgba(255,255,255,0.1)',
                 textTransform: 'none',
                 fontSize: '0.75rem',
@@ -653,7 +654,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
               <XAxis
                 dataKey="date"
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
@@ -662,7 +663,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                 stroke="rgba(255,255,255,0.1)"
               />
               <YAxis
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 tickFormatter={formatNumber}
                 stroke="rgba(255,255,255,0.1)"
                 width={50}
@@ -700,7 +701,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
               <XAxis
                 dataKey="date"
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
@@ -709,7 +710,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                 stroke="rgba(255,255,255,0.1)"
               />
               <YAxis
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 tickFormatter={formatNumber}
                 stroke="rgba(255,255,255,0.1)"
                 width={50}
@@ -719,7 +720,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                 formatter={(value: number | undefined, name: string | undefined) => [formatNumber(value ?? 0), String(name ?? '').charAt(0).toUpperCase() + String(name ?? '').slice(1)]}
               />
               <Legend
-                wrapperStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}
+                wrapperStyle={{ color: '#aab4c2', fontSize: '0.75rem' }}
               />
               <Bar dataKey="likes" stackId="engagement" fill="#EF4444" radius={[0, 0, 0, 0]} />
               <Bar dataKey="comments" stackId="engagement" fill="#F59E0B" radius={[4, 4, 0, 0]} />
@@ -745,7 +746,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
               <XAxis
                 dataKey="date"
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 tickFormatter={(d: string) => {
                   if (trendPeriod === 'monthly') return d;
                   const date = new Date(d);
@@ -754,7 +755,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                 stroke="rgba(255,255,255,0.1)"
               />
               <YAxis
-                tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+                tick={{ fill: '#91aaa9', fontSize: 11 }}
                 stroke="rgba(255,255,255,0.1)"
                 width={30}
                 allowDecimals={false}
@@ -783,10 +784,10 @@ const YouTubeAnalyticsPage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Metric</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>This Week</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Monthly Avg/Week</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Change</TableCell>
+                  <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Metric</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>This Week</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Monthly Avg/Week</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Change</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -801,7 +802,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                     <TableRow key={row.label}>
                       <TableCell sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.08)', fontWeight: 500 }}>{row.label}</TableCell>
                       <TableCell align="right" sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.08)' }}>{formatNumber(row.current)}</TableCell>
-                      <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>{formatNumber(Math.round(row.prev))}</TableCell>
+                      <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>{formatNumber(Math.round(row.prev))}</TableCell>
                       <TableCell align="right" sx={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                         <Chip
                           size="small"
@@ -839,18 +840,18 @@ const YouTubeAnalyticsPage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>#</TableCell>
-                  <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Title</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Views</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Likes</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Comments</TableCell>
-                  <TableCell align="center" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Link</TableCell>
+                  <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>#</TableCell>
+                  <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Title</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Views</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Likes</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Comments</TableCell>
+                  <TableCell align="center" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Link</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {summary.topByViews.map((video, i) => (
                   <TableRow key={video.id}>
-                    <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>{i + 1}</TableCell>
+                    <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>{i + 1}</TableCell>
                     <TableCell sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.08)', maxWidth: 300 }}>
                       <Typography noWrap sx={{ fontSize: '0.875rem' }}>{video.title || 'Untitled'}</Typography>
                     </TableCell>
@@ -892,12 +893,12 @@ const YouTubeAnalyticsPage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>#</TableCell>
-                  <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Title</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Views</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Engagement</TableCell>
-                  <TableCell align="right" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Rate</TableCell>
-                  <TableCell align="center" sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>Link</TableCell>
+                  <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>#</TableCell>
+                  <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Title</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Views</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Engagement</TableCell>
+                  <TableCell align="right" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Rate</TableCell>
+                  <TableCell align="center" sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>Link</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -906,7 +907,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
                   const rate = video.views > 0 ? (totalEng / video.views * 100) : 0;
                   return (
                     <TableRow key={video.id}>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.08)' }}>{i + 1}</TableCell>
+                      <TableCell sx={{ color: '#aab4c2', borderColor: 'rgba(255,255,255,0.08)' }}>{i + 1}</TableCell>
                       <TableCell sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.08)', maxWidth: 300 }}>
                         <Typography noWrap sx={{ fontSize: '0.875rem' }}>{video.title || 'Untitled'}</Typography>
                       </TableCell>

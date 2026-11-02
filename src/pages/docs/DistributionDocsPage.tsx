@@ -203,6 +203,9 @@ export default function DistributionDocsPage() {
                 The local server uses stdio. There is no hosted Streamable HTTP
                 endpoint advertised by this setup.
               </p>
+              <h2>Publishing access and retries</h2>
+              <p>Setup, channel connections and media preparation do not require a paid plan. Publishing returns PUBLISHING_PLAN_REQUIRED when a plan is needed. Use gruvi_get_plans and gruvi_create_checkout to request a hosted checkout link, then ask the account owner to complete payment.</p>
+              <p>Respect Retry-After on a 429 response. After a timeout or uncertain send, check delivery status before trying again.</p>
               <h2>4. Verify the connection</h2>
               <p>
                 Restart or reload the MCP client, list its tools, then call{" "}

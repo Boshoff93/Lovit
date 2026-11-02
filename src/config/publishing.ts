@@ -55,3 +55,7 @@ export const platformNames: Record<string, string> = {
   facebook: "Facebook",
   linkedin: "LinkedIn",
 };
+
+export function hasPublishingAccess(subscription?: { tier?: string; status?: string; currentPeriodEnd?: number; accessHold?: string } | null, now = Date.now()): boolean {
+  return Boolean(subscription && ['starter', 'pro', 'scale', 'premium', 'beast', 'hardcore'].includes(subscription.tier || '') && ['active', 'trialing'].includes(subscription.status || '') && !subscription.accessHold && (subscription.currentPeriodEnd === undefined || (Number.isFinite(subscription.currentPeriodEnd) && subscription.currentPeriodEnd > 0 && subscription.currentPeriodEnd * 1000 > now)));
+}

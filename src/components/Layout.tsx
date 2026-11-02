@@ -1,5 +1,5 @@
-import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import React, { useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
+import { styled, useTheme, ThemeProvider } from '@mui/material/styles';
 import { Box, Drawer, Typography, IconButton, useMediaQuery, Alert, Snackbar, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,13 +9,14 @@ import { logoutAllState } from '../store/actions';
 import { useAccountData } from '../hooks/useAccountData';
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext';
 import { SidebarContent, CollapsedSidebarContent, CurrentViewingItem } from './SidebarContent';
+import { createWorkspaceTheme } from './workspaceTheme';
 interface LayoutContextType {openCharacter:()=>void;isDrawerOpen:boolean;drawerWidth:number;sidebarCollapsed:boolean;setCurrentViewingItem:(item:CurrentViewingItem|null)=>void;}
 export const LayoutContext=createContext<LayoutContextType|null>(null);
 export const useLayout=()=>{const context=useContext(LayoutContext);if(!context)throw new Error('useLayout must be used within a LayoutProvider');return context;};
 const sidebarWidth=SIDEBAR_WIDTH;const sidebarCollapsedWidth=SIDEBAR_COLLAPSED_WIDTH;const mobileTopBarHeight=56;
 const Main=styled('main',{shouldForwardProp:prop=>!['sidebarOpen','isMobile','sidebarCollapsed'].includes(prop as string)})<{sidebarOpen?:boolean;isMobile?:boolean;sidebarCollapsed?:boolean}>(({theme,isMobile})=>({flexGrow:1,width:'100%',minWidth:0,padding:theme.spacing(2),marginTop:isMobile?mobileTopBarHeight:0,transition:theme.transitions.create(['margin','width'],{easing:theme.transitions.easing.sharp,duration:theme.transitions.duration.leavingScreen})}));
 const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
- const theme=useTheme();const navigate=useNavigate();const location=useLocation();const isMobile=useMediaQuery(theme.breakpoints.down('md'));const dispatch=useDispatch<AppDispatch>();
+ const theme=useTheme();const workspaceTheme=useMemo(()=>createWorkspaceTheme(theme),[theme]);const navigate=useNavigate();const location=useLocation();const isMobile=useMediaQuery(theme.breakpoints.down('md'));const dispatch=useDispatch<AppDispatch>();
  const {token,subscription}=useSelector((s:RootState)=>s.auth);const [mobileOpen,setMobileOpen]=useState(false);const{sidebarCollapsed,setSidebarCollapsed}=useSidebar();const[logoutDialogOpen,setLogoutDialogOpen]=useState(false);const[currentViewingItem,setCurrentViewingItem]=useState<CurrentViewingItem|null>(null);const[notification,setNotification]=useState<{open:boolean;message:string;severity:'success'|'error'|'info'|'warning'}>({open:false,message:'',severity:'info'});
  const {fetchAccountData}=useAccountData();const hasActivePlayer=false;const hasSubscription=!!subscription?.tier&&subscription.tier!=='free';
  useEffect(()=>{fetchAccountData();setMobileOpen(false);setCurrentViewingItem(null);},[location.pathname,fetchAccountData]);
@@ -29,6 +30,7 @@ const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
  const sidebarProps={hasToken:!!token,remainingTokens:0,isMobile,hasSubscription,currentViewingItem,onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onTokensClick:()=>navigate('/payment'),onLogoutClick:handleLogoutClick,isTrialActive:false};
  const collapsedSidebarProps={onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onLogoutClick:handleLogoutClick};
   return (
+    <ThemeProvider theme={workspaceTheme}>
     <LayoutContext.Provider value={{
       openCharacter,
       isDrawerOpen: mobileOpen,
@@ -230,6 +232,7 @@ const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
         </Dialog>
       </Box>
     </LayoutContext.Provider>
+    </ThemeProvider>
   );
 };
 

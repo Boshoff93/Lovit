@@ -1,5 +1,6 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Chip, CircularProgress } from "@mui/material";
+import { Alert, Button, Chip } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -49,12 +50,14 @@ export default function PostStatusPage() {
           <p className="gd-eyebrow">Delivery</p>
           <h1>Post status</h1>
           <p>Follow each destination as it processes your content.</p>
+          <div className="gd-card-actions">
+            <Button className="gd-card-action" variant="outlined" onClick={refresh}>Refresh status</Button>
+          </div>
         </div>
-        <Button onClick={refresh}>Refresh status</Button>
       </header>
       {error && <Alert severity="error">{error}</Alert>}
       {!data && !error && (
-        <CircularProgress aria-label="Loading delivery status" />
+        <WorkspaceSkeleton label="Loading delivery status" kind="list" />
       )}
       {data && (
         <>

@@ -11,13 +11,15 @@ import {
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PublishingPaywall from "../components/PublishingPaywall";
+import DestinationPicker from "../components/DestinationPicker";
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import { RootState } from "../store/store";
 import {
   useGetSocialAccountsQuery,
   useGetUserVideosQuery,
 } from "../store/apiSlice";
 import { videosApi, scheduledPostsApi } from "../services/api";
-import { platformNames } from "../config/publishing";
+import { hasPublishingAccess } from "../config/publishing";
 import {
   thumbnailDataUrl,
   uploadDistributionVideo,
@@ -81,11 +83,7 @@ export default function PostComposerPage() {
     e.preventDefault();
     if (acceptedId || uncertain) return;
     setError("");
-    if (
-      !subscription?.tier ||
-      subscription.tier === "free" ||
-      !["active", "trialing"].includes(subscription.status || "")
-    ) {
+    if (!hasPublishingAccess(subscription)) {
       setPaywall(true);
       return;
     }
@@ -171,7 +169,9 @@ export default function PostComposerPage() {
         navigate("/posts/status/" + id);
       }
     } catch (err: any) {
-      if (err.videoId) {
+      if (err.response?.data?.code === "PUBLISHING_PLAN_REQUIRED") {
+        setPaywall(true);
+      } else if (err.videoId) {
         setVideoId(err.videoId);
         setUncertain(true);
         setError(err.message);
@@ -198,276 +198,288 @@ export default function PostComposerPage() {
           <p className="gd-eyebrow">Content distribution</p>
           <h1>Prepare a post</h1>
           <p>Your video, caption and thumbnail. Your choice of channels.</p>
+          <Link className="gd-text-link gd-related-link" to="/media">
+            Media library ↗
+          </Link>
         </div>
-        <Link className="gd-text-link" to="/media">
-          Media library ↗
-        </Link>
       </header>
-      <form onSubmit={submit} className="gd-composer">
-        <div className="gd-form">
-          {error && (
-            <Alert severity="error">
-              {error}
-              {uncertain && (
+      <form onSubmit={submit} className="gd-post-form">
+        <div className="gd-composer">
+          <div className="gd-form">
+            {error && (
+              <Alert severity="error">
+                {error}
+                {uncertain && (
+                  <>
+                    <br />
+                    <Link to={"/posts/status/" + videoId}>
+                      Check delivery status →
+                    </Link>
+                  </>
+                )}
+              </Alert>
+            )}
+            {library.isError && (
+              <Alert severity="warning">
+                The media library could not be loaded. You can upload a new video.
+              </Alert>
+            )}
+            <section className="gd-form-section">
+              <h2>1. Content</h2>
+              <TextField
+                select
+                label="Choose a video"
+                value={videoId}
+                onChange={(e) => {
+                  setVideoId(e.target.value);
+                  setFile(null);
+                }}
+                disabled={busy}
+              >
+                <MenuItem value="">Upload a new video</MenuItem>
+                {videoId &&
+                  !library.data?.videos.some((v) => v.videoId === videoId) && (
+                    <MenuItem value={videoId}>Selected video</MenuItem>
+                  )}
+                {(library.data?.videos || [])
+                  .filter((v) => v.status === "completed")
+                  .map((v) => (
+                    <MenuItem key={v.videoId} value={v.videoId}>
+                      {v.title || v.songTitle || v.videoId}
+                    </MenuItem>
+                  ))}
+              </TextField>
+              {!videoId && (
+                <label className="gd-file-input">
+                  Video
+                  <input
+                    type="file"
+                    accept=".mp4,.mov,.webm"
+                    disabled={busy}
+                    onChange={(e) => {
+                      const v = e.target.files?.[0] || null;
+                      setFile(v);
+                      if (v && !title) setTitle(v.name.replace(/\.[^.]+$/, ""));
+                    }}
+                  />
+                  <small>
+                    Up to 512 MB. A portrait video is the default for new uploads.
+                  </small>
+                </label>
+              )}
+              <TextField
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                disabled={busy}
+              />
+              <TextField
+                label="Caption / description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                multiline
+                minRows={4}
+                disabled={busy}
+              />
+              <TextField
+                label="Tags, separated by commas"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                disabled={busy}
+              />
+              <label className="gd-file-input">
+                Custom thumbnail (optional)
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  disabled={busy}
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (f)
+                      try {
+                        setThumbnail(await thumbnailDataUrl(f));
+                      } catch (err) {
+                        setError(
+                          err instanceof Error
+                            ? err.message
+                            : "Thumbnail could not be read.",
+                        );
+                      }
+                  }}
+                />
+              </label>
+              {thumbnail && (
+                <img
+                  className="gd-thumbnail-preview"
+                  src={thumbnail}
+                  alt="Custom post thumbnail"
+                />
+              )}
+            </section>
+            <section className="gd-form-section">
+              <div className="gd-destinations-heading">
+                <div>
+                  <h2>2. Destinations</h2>
+                  <p>Choose the accounts for this post.</p>
+                </div>
+                <span className={`gd-destination-count${selected.length ? ' has-selection' : ''}`}>
+                  {selected.length} selected
+                </span>
+              </div>
+              {accounts.isError ? (
+                <Alert
+                  severity="error"
+                  action={
+                    <Button onClick={() => accounts.refetch()}>Retry</Button>
+                  }
+                >
+                  Connected accounts could not be loaded.
+                </Alert>
+              ) : accounts.isLoading ? (
+                <WorkspaceSkeleton label="Loading destinations" kind="list" rows={3} />
+              ) : !accounts.data?.accounts.length ? (
+                <div className="gd-destination-empty">
+                  <p>Connect a social account to choose where your post goes.</p>
+                  <Link className="gd-button" to="/settings/connected-accounts">
+                    Connect an account
+                  </Link>
+                </div>
+              ) : (
                 <>
-                  <br />
-                  <Link to={"/posts/status/" + videoId}>
-                    Check delivery status →
+                  <DestinationPicker
+                    accounts={accounts.data?.accounts || []}
+                    selectedIds={targets}
+                    disabled={busy}
+                    onToggle={(accountId, checked) =>
+                      setTargets(old => checked
+                        ? [...old, accountId]
+                        : old.filter(value => value !== accountId))
+                    }
+                  />
+                  <Link className="gd-text-link gd-manage-destinations" to="/settings/connected-accounts">
+                    Manage connected accounts ↗
                   </Link>
                 </>
               )}
-            </Alert>
-          )}
-          {library.isError && (
-            <Alert severity="warning">
-              The media library could not be loaded. You can upload a new video.
-            </Alert>
-          )}
-          <section className="gd-form-section">
-            <h2>1. Content</h2>
-            <TextField
-              select
-              label="Choose a video"
-              value={videoId}
-              onChange={(e) => {
-                setVideoId(e.target.value);
-                setFile(null);
-              }}
-              disabled={busy}
-            >
-              <MenuItem value="">Upload a new video</MenuItem>
-              {videoId &&
-                !library.data?.videos.some((v) => v.videoId === videoId) && (
-                  <MenuItem value={videoId}>Selected video</MenuItem>
-                )}
-              {(library.data?.videos || [])
-                .filter((v) => v.status === "completed")
-                .map((v) => (
-                  <MenuItem key={v.videoId} value={v.videoId}>
-                    {v.title || v.songTitle || v.videoId}
-                  </MenuItem>
-                ))}
-            </TextField>
-            {!videoId && (
-              <label className="gd-file-input">
-                Video
-                <input
-                  type="file"
-                  accept=".mp4,.mov,.webm"
-                  disabled={busy}
-                  onChange={(e) => {
-                    const v = e.target.files?.[0] || null;
-                    setFile(v);
-                    if (v && !title) setTitle(v.name.replace(/\.[^.]+$/, ""));
-                  }}
-                />
-                <small>
-                  Up to 512 MB. A portrait video is the default for new uploads.
-                </small>
-              </label>
-            )}
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              disabled={busy}
-            />
-            <TextField
-              label="Caption / description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              multiline
-              minRows={4}
-              disabled={busy}
-            />
-            <TextField
-              label="Tags, separated by commas"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              disabled={busy}
-            />
-            <label className="gd-file-input">
-              Custom thumbnail (optional)
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                disabled={busy}
-                onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (f)
-                    try {
-                      setThumbnail(await thumbnailDataUrl(f));
-                    } catch (err) {
-                      setError(
-                        err instanceof Error
-                          ? err.message
-                          : "Thumbnail could not be read.",
-                      );
-                    }
-                }}
-              />
-            </label>
-            {thumbnail && (
-              <img
-                className="gd-thumbnail-preview"
-                src={thumbnail}
-                alt="Custom post thumbnail"
-              />
-            )}
-          </section>
-          <section className="gd-form-section">
-            <h2>2. Destinations</h2>
-            {accounts.isError ? (
-              <Alert
-                severity="error"
-                action={
-                  <Button onClick={() => accounts.refetch()}>Retry</Button>
-                }
-              >
-                Connected accounts could not be loaded.
-              </Alert>
-            ) : !accounts.isLoading && !accounts.data?.accounts.length ? (
-              <p>
-                No accounts are connected.{" "}
-                <Link to="/settings/connected-accounts">
-                  Connect an account →
-                </Link>
-              </p>
-            ) : (
-              <div className="gd-account-choices">
-                {accounts.data?.accounts.map((a) => (
-                  <FormControlLabel
-                    key={a.accountId}
-                    control={
-                      <Checkbox
-                        disabled={busy}
-                        checked={targets.includes(a.accountId)}
-                        onChange={(_, checked) =>
-                          setTargets((old) =>
-                            checked
-                              ? [...old, a.accountId]
-                              : old.filter((v) => v !== a.accountId),
-                          )
-                        }
-                      />
-                    }
-                    label={`${platformNames[a.platform] || a.platform} · ${a.accountName || a.username || a.accountId}`}
-                  />
-                ))}
-              </div>
-            )}
-            {hasTikTok && (
-              <div className="gd-form">
-                <TextField
-                  select
-                  label="TikTok delivery"
-                  value={tiktokMode}
-                  onChange={(e) =>
-                    setTiktokMode(e.target.value as "draft" | "direct")
-                  }
-                >
-                  <MenuItem value="draft">
-                    Send to TikTok inbox for review
-                  </MenuItem>
-                  <MenuItem value="direct">Direct post</MenuItem>
-                </TextField>
-                {tiktokMode === "direct" && (
+              {hasTikTok && (
+                <div className="gd-form">
                   <TextField
                     select
-                    label="TikTok privacy"
-                    value={privacy}
-                    onChange={(e) => setPrivacy(e.target.value)}
+                    label="TikTok delivery"
+                    value={tiktokMode}
+                    onChange={(e) =>
+                      setTiktokMode(e.target.value as "draft" | "direct")
+                    }
                   >
-                    <MenuItem value="SELF_ONLY">Only me</MenuItem>
-                    <MenuItem value="PUBLIC_TO_EVERYONE">Public</MenuItem>
-                    <MenuItem value="MUTUAL_FOLLOW_FRIENDS">Friends</MenuItem>
+                    <MenuItem value="draft">
+                      Send to TikTok inbox for review
+                    </MenuItem>
+                    <MenuItem value="direct">Direct post</MenuItem>
                   </TextField>
-                )}
-                <p className="gd-quiet">
-                  Available privacy and interaction settings depend on the
-                  connected TikTok account and app permissions.
-                </p>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={allowComment}
-                      onChange={(_, v) => setAllowComment(v)}
-                    />
-                  }
-                  label="Allow TikTok comments"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={disclose}
-                      onChange={(_, v) => setDisclose(v)}
-                    />
-                  }
-                  label="Disclose AI-generated content"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={ownBrand}
-                      onChange={(_, v) => setOwnBrand(v)}
-                    />
-                  }
-                  label="This promotes my own brand"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={paidBrand}
-                      onChange={(_, v) => setPaidBrand(v)}
-                    />
-                  }
-                  label="This is paid branded content"
-                />
-              </div>
-            )}
-          </section>
-        </div>
-        <aside className="gd-form gd-post-review">
-          <p className="gd-eyebrow">Review & send</p>
-          <h2>{title || "Your next post"}</h2>
-          <p>
-            {selected.length} connected{" "}
-            {selected.length === 1 ? "account" : "accounts"} selected
-          </p>
-          <TextField
-            select
-            label="When"
-            value={mode}
-            disabled={busy}
-            onChange={(e) => setMode(e.target.value)}
-          >
-            <MenuItem value="schedule">Schedule for later</MenuItem>
-            <MenuItem value="now">Publish now</MenuItem>
-          </TextField>
-          {mode === "schedule" && (
+                  {tiktokMode === "direct" && (
+                    <TextField
+                      select
+                      label="TikTok privacy"
+                      value={privacy}
+                      onChange={(e) => setPrivacy(e.target.value)}
+                    >
+                      <MenuItem value="SELF_ONLY">Only me</MenuItem>
+                      <MenuItem value="PUBLIC_TO_EVERYONE">Public</MenuItem>
+                      <MenuItem value="MUTUAL_FOLLOW_FRIENDS">Friends</MenuItem>
+                    </TextField>
+                  )}
+                  <p className="gd-quiet">
+                    Available privacy and interaction settings depend on the
+                    connected TikTok account and app permissions.
+                  </p>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={allowComment}
+                        onChange={(_, v) => setAllowComment(v)}
+                      />
+                    }
+                    label="Allow TikTok comments"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={disclose}
+                        onChange={(_, v) => setDisclose(v)}
+                      />
+                    }
+                    label="Disclose AI-generated content"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={ownBrand}
+                        onChange={(_, v) => setOwnBrand(v)}
+                      />
+                    }
+                    label="This promotes my own brand"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={paidBrand}
+                        onChange={(_, v) => setPaidBrand(v)}
+                      />
+                    }
+                    label="This is paid branded content"
+                  />
+                </div>
+              )}
+            </section>
+          </div>
+          <aside className="gd-form gd-post-review">
+            <p className="gd-eyebrow">Publishing details</p>
+            <h2>{title || "Your next post"}</h2>
+            <p>
+              {selected.length} connected{" "}
+              {selected.length === 1 ? "account" : "accounts"} selected
+            </p>
             <TextField
-              label="Date & time (your timezone)"
-              type="datetime-local"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              required
-              InputLabelProps={{ shrink: true }}
+              select
+              label="When"
+              value={mode}
               disabled={busy}
-            />
-          )}
-          <p className="gd-quiet">
-            Submitting sends the content to the selected accounts. Delivery is
-            checked separately for each destination.
-          </p>
-          {busy && progress > 0 && (
-            <LinearProgress
-              value={progress}
-              variant="determinate"
-              aria-label="Upload progress"
-            />
-          )}
+              onChange={(e) => setMode(e.target.value)}
+            >
+              <MenuItem value="schedule">Schedule for later</MenuItem>
+              <MenuItem value="now">Publish now</MenuItem>
+            </TextField>
+            {mode === "schedule" && (
+              <TextField
+                label="Date & time (your timezone)"
+                type="datetime-local"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                required
+                InputLabelProps={{ shrink: true }}
+                disabled={busy}
+              />
+            )}
+            <p className="gd-quiet">
+              Submitting sends the content to the selected accounts. Delivery is
+              checked separately for each destination.
+            </p>
+            {busy && progress > 0 && (
+              <LinearProgress
+                value={progress}
+                variant="determinate"
+                aria-label="Upload progress"
+              />
+            )}
+            <Link className="gd-text-link" to="/docs/social">
+              Platform settings & limits ↗
+            </Link>
+          </aside>
+        </div>
+        <footer className="gd-page-actions">
           <Button
+            className="gd-primary-action"
             type="submit"
             variant="contained"
             disabled={busy || uncertain || !!acceptedId}
@@ -478,10 +490,7 @@ export default function PostComposerPage() {
                 ? "Schedule post"
                 : "Publish to selected accounts"}
           </Button>
-          <Link className="gd-text-link" to="/docs/social">
-            Platform settings & limits ↗
-          </Link>
-        </aside>
+        </footer>
       </form>
       <PublishingPaywall open={paywall} onClose={() => setPaywall(false)} />
     </div>

@@ -11,7 +11,7 @@ import {
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmailIcon from '@mui/icons-material/Email';
-import { faqItems } from './FAQPage';
+import { distributionFaq as faqItems } from '../config/distributionFaq';
 
 const SupportPage: React.FC = () => {
   const [expandedPanel, setExpandedPanel] = useState<string | false>(false);
@@ -35,7 +35,7 @@ const SupportPage: React.FC = () => {
     : faqItems;
 
   return (
-    <Box sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: '100%' }}>
+    <Box className="gd gd-support-page" sx={{ pt: { xs: 0, md: 2 }, pb: 4, px: { xs: 0, sm: 0, md: 0 }, width: '100%', maxWidth: '100%' }}>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
@@ -68,10 +68,10 @@ const SupportPage: React.FC = () => {
           <HeadsetMicIcon sx={{ fontSize: 28, color: '#fff' }} />
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
             Support & FAQ
           </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.6)' }}>
+          <Typography sx={{ color: '#aab4c2' }}>
             Get help and find answers to your questions
           </Typography>
         </Box>
@@ -80,22 +80,23 @@ const SupportPage: React.FC = () => {
       {/* Main Content Paper */}
       <Paper sx={{
         borderRadius: '16px',
-        bgcolor: '#1E1E22',
+        bgcolor: '#171e28',
         border: '1px solid rgba(255,255,255,0.06)',
         p: 3,
       }}>
         {/* Contact Support Section */}
         <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
                 Contact Support
               </Typography>
-              <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
-                We typically respond within 24 hours
+              <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
+                Questions about your account or publishing?
               </Typography>
             </Box>
             <Button
+              className="gd-primary-action gd-card-action"
               variant="contained"
               onClick={handleEmailClick}
               startIcon={<EmailIcon />}
@@ -125,7 +126,7 @@ const SupportPage: React.FC = () => {
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 0.5 }}>
               Frequently Asked Questions
             </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+            <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
               Everything you need to know about Gruvi
             </Typography>
           </Box>
@@ -198,7 +199,7 @@ const SupportPage: React.FC = () => {
           </Box>
 
           {/* FAQ Count */}
-          <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, fontSize: '0.85rem' }}>
+          <Typography sx={{ color: '#aab4c2', mb: 2, fontSize: '0.85rem' }}>
             Showing {filteredFAQs.length} of {faqItems.length} questions
           </Typography>
 
@@ -245,7 +246,7 @@ const SupportPage: React.FC = () => {
                     <Typography
                       sx={{
                         fontSize: '0.7rem',
-                        color: '#007AFF',
+                        color: '#aab4c2',
                         fontWeight: 500,
                         textTransform: 'uppercase',
                         letterSpacing: '0.05em'

@@ -1,5 +1,6 @@
+import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useMemo } from 'react';
-import { Alert, Button, CircularProgress } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -104,10 +105,10 @@ const AnalyticsOverviewPage: React.FC = () => {
           <p className="gd-eyebrow">Measure your content</p>
           <h1>Analytics</h1>
           <p>See how your published content performs on each channel.</p>
+          <Button className="gd-text-link gd-related-link" onClick={() => navigate('/settings/connected-accounts')} endIcon={<ArrowForwardIcon />} sx={{ textTransform: 'none', p: 0 }}>
+            Connected accounts
+          </Button>
         </div>
-        <Button className="gd-text-link" onClick={() => navigate('/settings/connected-accounts')} endIcon={<ArrowForwardIcon />} sx={{ textTransform: 'none' }}>
-          Connected accounts
-        </Button>
       </header>
       {accountsQuery.isError && (
         <Alert severity="error" sx={{ mb: 3 }} action={<Button color="inherit" onClick={() => accountsQuery.refetch()}>Retry</Button>}>
@@ -115,7 +116,7 @@ const AnalyticsOverviewPage: React.FC = () => {
         </Alert>
       )}
       {accountsQuery.isLoading ? (
-        <CircularProgress aria-label="Loading analytics channels" />
+        <WorkspaceSkeleton label="Loading analytics channels" rows={4} />
       ) : (
         <div className="gd-channel-grid gd-analytics-grid">
           {platforms.map((platform) => {
@@ -139,7 +140,8 @@ const AnalyticsOverviewPage: React.FC = () => {
                 </div>
                 {isAvailable ? (
                   <Button
-                    className="gd-channel-action"
+                    className="gd-channel-action gd-primary-action gd-card-action"
+                    variant="contained"
                     disabled={accountsQuery.isError}
                     onClick={() => navigate(isConnected ? platform.route : '/settings/connected-accounts')}
                     endIcon={<ArrowForwardIcon />}

@@ -22,13 +22,13 @@ export default function PublishingPaywall({
         },
       }}
     >
-      <DialogTitle>
+      <DialogTitle sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
         Choose a plan to send your post
-        <Button onClick={onClose} sx={{ float: "right" }}>
+        <Button onClick={onClose} sx={{ flexShrink: 0 }}>
           Keep exploring
         </Button>
       </DialogTitle>
-      <DialogContent className="gd">
+      <DialogContent className="gd gd-publishing-upsell">
         <p className="gd-lead" style={{ marginBottom: 28 }}>
           Account setup and the calendar are free to explore. Publishing and
           scheduling start at $10 per month.

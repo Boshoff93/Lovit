@@ -7,9 +7,9 @@ Gruvi distributes finished video content to connected X, Instagram, TikTok, YouT
 2. Connect destination accounts in https://agentgruvi.com/settings/connected-accounts.
 3. Create an agent key at https://agentgruvi.com/agents. Store it as GRUVI_API_KEY in the MCP client environment.
 4. Requires Node.js 20+. Install the versioned bundle:
-   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz
+   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz
 5. Configure your MCP client:
-   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
+   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
 6. Reload the MCP client and call gruvi_get_user_info and gruvi_get_social_accounts.
 
 The server uses stdio. A hosted HTTP MCP endpoint is not part of this release. The downloadable bundle is served with the website; it does not require access to the source repository or claim publication on npm.
@@ -90,6 +90,8 @@ This workflow supports video content and video thumbnails; it does not advertise
 - Do not submit a real social post or purchase as a setup test.
 
 ## Errors
+Setup and read tools remain available without a paid plan. A publishing refusal uses `code: PUBLISHING_PLAN_REQUIRED` and includes checkout and documentation details. Respect `Retry-After` on a 429 response. User IDs must match the authenticated account.
+
 401: invalid or missing authentication. 403: access or paid-plan requirement. 409: existing subscription needs management. 410: retired generation route. 429: scheduling allowance or provider limit. For timeouts and 5xx during side effects, inspect status before repeating.
 
 Docs: https://agentgruvi.com/docs/agent-integration

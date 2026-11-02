@@ -1,7 +1,7 @@
 {
   "name": "gruvi",
   "title": "Gruvi: Content distribution for agents",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Upload finished videos and custom thumbnails, publish or schedule across connected accounts, verify delivery and inspect supported analytics.",
   "documentation_url": "https://agentgruvi.com/docs/agent-integration",
   "transport": "stdio",
@@ -10,7 +10,7 @@
     "command": "npx",
     "args": [
       "--yes",
-      "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz",
+      "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz",
       "gruvi-mcp"
     ],
     "environment_variables": [

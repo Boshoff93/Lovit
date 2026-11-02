@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Gruvi Content Distribution API",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Content distribution for agents. Setup and read access are available without subscription; immediate publishing and scheduling require a paid plan. Queue acceptance does not confirm publication."
   },
   "servers": [
@@ -240,6 +240,35 @@
           },
           "next": {
             "type": "string"
+          }
+        }
+      },
+      "AccessError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "PUBLISHING_PLAN_REQUIRED",
+              "EMAIL_VERIFICATION_REQUIRED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "plans": {
+            "type": "string",
+            "format": "uri"
+          },
+          "checkoutEndpoint": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string",
+            "format": "uri"
           }
         }
       }
@@ -974,7 +1003,14 @@
             }
           },
           "403": {
-            "description": "Subscription required"
+            "description": "Verified account and active publishing plan required. Free setup remains available.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessError"
+                }
+              }
+            }
           }
         }
       }
@@ -1106,7 +1142,14 @@
             }
           },
           "403": {
-            "description": "Subscription required"
+            "description": "Verified account and active publishing plan required. Free setup remains available.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessError"
+                }
+              }
+            }
           },
           "429": {
             "description": "Monthly scheduling allowance reached"

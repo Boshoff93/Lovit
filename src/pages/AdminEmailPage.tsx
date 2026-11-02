@@ -30,7 +30,7 @@ const AdminEmailPage: React.FC = () => {
     setLoading(true);
     try {
       const userIdList = userIds.split(',').map(id => id.trim());
-      
+
       const response = await api.post('/api/send-retargeting-email', {
         userIds: userIdList,
         productId,
@@ -101,18 +101,19 @@ const AdminEmailPage: React.FC = () => {
             </Box>
           </Box>
 
-          <Box>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setConfirmDialogOpen(true)}
-              disabled={!userIds || !productId || !priceId || loading}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Send Emails'}
-            </Button>
-          </Box>
         </Box>
       </Paper>
+      <footer className="gd-page-actions">
+        <Button
+          className="gd-primary-action"
+          variant="contained"
+          color="primary"
+          onClick={() => setConfirmDialogOpen(true)}
+          disabled={!userIds || !productId || !priceId || loading}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Send Emails'}
+        </Button>
+      </footer>
 
       {/* Confirmation Dialog */}
       <Dialog
@@ -154,4 +155,4 @@ const AdminEmailPage: React.FC = () => {
   );
 };
 
-export default AdminEmailPage; 
+export default AdminEmailPage;
