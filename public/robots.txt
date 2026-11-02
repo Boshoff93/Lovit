@@ -1,20 +1,11 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-
-# Allow Google tracking domains
-Allow: /pagead/
-Allow: /pagead2/
-Allow: /googleadservices/
-Allow: /doubleclick.net/
-
-# Sitemap location
+Disallow: /dashboard
+Disallow: /account
+Disallow: /agents
+Disallow: /posts/
+Disallow: /media
+Disallow: /settings/
+Disallow: /analytics
+Disallow: /payment
 Sitemap: https://agentgruvi.com/sitemap.xml
-
-# AI Agent discovery
-Agents: https://agentgruvi.com/agents.md
-
-# Disallow admin and API routes
-Disallow: /admin/
-Disallow: /api/
-Disallow: /private/

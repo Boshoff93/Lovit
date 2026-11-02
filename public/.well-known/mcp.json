@@ -1,0 +1,61 @@
+{
+  "name": "gruvi",
+  "title": "Gruvi: Content distribution for agents",
+  "version": "2.0.0",
+  "description": "Upload finished videos and custom thumbnails, publish or schedule across connected accounts, verify delivery and inspect supported analytics.",
+  "documentation_url": "https://agentgruvi.com/docs/agent-integration",
+  "transport": "stdio",
+  "installation": {
+    "runtime": "node >=20",
+    "command": "npx",
+    "args": [
+      "--yes",
+      "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz",
+      "gruvi-mcp"
+    ],
+    "environment_variables": [
+      {
+        "name": "GRUVI_API_KEY",
+        "required": true,
+        "secret": true,
+        "description": "Create your key at https://agentgruvi.com/agents"
+      },
+      {
+        "name": "GRUVI_API_URL",
+        "default": "https://api.agentgruvi.com"
+      }
+    ]
+  },
+  "tools": [
+    "gruvi_login",
+    "gruvi_get_plans",
+    "gruvi_create_checkout",
+    "gruvi_get_billing_status",
+    "gruvi_get_user_info",
+    "gruvi_get_social_accounts",
+    "gruvi_upload_video",
+    "gruvi_get_video_upload_url",
+    "gruvi_finalize_video_upload",
+    "gruvi_list_videos",
+    "gruvi_get_video",
+    "gruvi_upload_thumbnail",
+    "gruvi_update_post_metadata",
+    "gruvi_publish_post",
+    "gruvi_get_post_status",
+    "gruvi_schedule_post",
+    "gruvi_list_scheduled_posts",
+    "gruvi_get_scheduled_post",
+    "gruvi_delete_scheduled_post",
+    "gruvi_get_analytics"
+  ],
+  "resources": [
+    "gruvi://docs/quickstart",
+    "gruvi://docs/api"
+  ],
+  "http_api": "https://agentgruvi.com/openapi.json",
+  "authentication": {
+    "type": "api_key",
+    "account_setup": "https://agentgruvi.com/agents"
+  },
+  "note": "Website discovery manifest for the stdio server. This is not a claim of registration in the official MCP Registry or a hosted HTTP MCP endpoint."
+}

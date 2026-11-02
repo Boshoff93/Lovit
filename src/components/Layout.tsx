@@ -1,304 +1,33 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import {
-  Box,
-  Drawer,
-  Typography,
-  IconButton,
-  useMediaQuery,
-  Alert,
-  Snackbar,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Box, Drawer, Typography, IconButton, useMediaQuery, Alert, Snackbar, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { AppDispatch } from '../store/store';
-import { Allowances, getTokensFromAllowances } from '../store/authSlice';
+import { RootState, AppDispatch } from '../store/store';
 import { logoutAllState } from '../store/actions';
-import { createCheckoutSession, createPortalSession } from '../store/authSlice';
-import UpgradePopup from './UpgradePopup';
-import TrialPaywallModal from './TrialPaywallModal';
-import { stripeConfig, topUpBundles, TopUpBundle } from '../config/stripe';
-import { reportPurchaseConversion } from '../utils/googleAds';
 import { useAccountData } from '../hooks/useAccountData';
-import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext';
 import { SidebarContent, CollapsedSidebarContent, CurrentViewingItem } from './SidebarContent';
-
-// Create a context for the Layout functions
-interface LayoutContextType {
-  openCharacter: () => void;
-  isDrawerOpen: boolean;
-  drawerWidth: number;
-  sidebarCollapsed: boolean;
-  setCurrentViewingItem: (item: CurrentViewingItem | null) => void;
-}
-
-export const LayoutContext = createContext<LayoutContextType | null>(null);
-
-// Hook to use the Layout context
-export const useLayout = () => {
-  const context = useContext(LayoutContext);
-  if (!context) {
-    throw new Error('useLayout must be used within a LayoutProvider');
-  }
-  return context;
-};
-
-// Sidebar dimensions - use constants from context
-const sidebarWidth = SIDEBAR_WIDTH;
-const sidebarCollapsedWidth = SIDEBAR_COLLAPSED_WIDTH;
-const mobileTopBarHeight = 56;
-
-const Main = styled('main', { shouldForwardProp: (prop) => !['sidebarOpen', 'isMobile', 'sidebarCollapsed'].includes(prop as string) })<{
-  sidebarOpen?: boolean;
-  isMobile?: boolean;
-  sidebarCollapsed?: boolean;
-}>(({ theme, isMobile }) => ({
-  flexGrow: 1,
-  width: '100%',
-  minWidth: 0,
-  padding: theme.spacing(2),
-  marginTop: isMobile ? mobileTopBarHeight : 0,
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-}));
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  // Check if audio player is active to add bottom padding
-  const { currentSong } = useAudioPlayer();
-  const hasActivePlayer = !!currentSong;
-
-  const dispatch = useDispatch<AppDispatch>();
-  const { token, user } = useSelector((state: RootState) => state.auth);
-  const { subscription } = useSelector((state: RootState) => state.auth);
-
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { sidebarCollapsed, setSidebarCollapsed } = useSidebar();
-
-  const [notification, setNotification] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error' | 'info' | 'warning';
-  }>({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
-
-  const [upgradePopup, setUpgradePopup] = useState<{
-    open: boolean;
-    type: 'credits' | null;
-    message: string;
-    title: string;
-  }>({
-    open: false,
-    type: null,
-    message: '',
-    title: ''
-  });
-
-  const [isTopUpLoading, setIsTopUpLoading] = useState(false);
-  const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
-  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-  const [currentViewingItem, setCurrentViewingItem] = useState<CurrentViewingItem | null>(null);
-
-  const { isLoading: authLoading } = useSelector((state: RootState) => state.auth);
-  const isPremiumTier = (subscription?.tier || '').toLowerCase() === 'premium';
-  const hasSubscription = subscription?.tier && subscription.tier !== 'free';
-  const isTrialing = subscription?.status === 'trialing';
-
-  // Calculate trial days remaining
-  const trialDaysRemaining = isTrialing && subscription?.currentPeriodEnd
-    ? Math.max(0, Math.ceil((subscription.currentPeriodEnd * 1000 - Date.now()) / (1000 * 60 * 60 * 24)))
-    : undefined;
-  // Show paywall for all free users (no active subscription/trial)
-  // - hasUsedTrial === true means trial expired → show "Trial Expired" messaging
-  // - hasUsedTrial === false or undefined means new user → show "Start Trial" messaging
-  // - Don't show paywall while auth/subscription data is still loading
-  const showPaywall = !!user && !hasSubscription && !isTrialing && !authLoading;
-  const trialExpired = user?.hasUsedTrial === true;
-
-  // Scroll to top on route change and clear current viewing item
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setCurrentViewingItem(null);
-  }, [location.pathname]);
-
-  const handleLogout = useCallback(() => {
-    dispatch(logoutAllState());
-    navigate('/');
-  }, [dispatch, navigate]);
-
-  // Auto-close mobile drawer when screen becomes large
-  useEffect(() => {
-    if (!isMobile && mobileOpen) {
-      setMobileOpen(false);
-    }
-  }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleMobileDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleSidebarCollapse = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
-  const openCharacter = useCallback(() => {
-    navigate('/ai-assets/create');
-    if (isMobile) {
-      setMobileOpen(false);
-    }
-  }, [navigate, isMobile]);
-
-  const handleNavigate = useCallback((path: string) => {
-    navigate(path);
-    if (isMobile) {
-      setMobileOpen(false);
-    }
-  }, [navigate, isMobile]);
-
-  const handleCloseNotification = useCallback(() => {
-    setNotification(prev => ({
-      ...prev,
-      open: false
-    }));
-  }, []);
-
-  const handleUpgradePopupClose = () => {
-    setUpgradePopup(prev => ({
-      ...prev,
-      open: false,
-    }));
-  };
-
-  const allowances = useSelector((state: RootState) => state.auth.allowances);
-
-  // Fetch account data on route changes (with 60s cache built into useAccountData)
-  const { fetchAccountData } = useAccountData();
-
-  // Fetch on route change - the hook's internal cache prevents excessive API calls
-  useEffect(() => {
-    if (!token) return;
-    fetchAccountData(); // Will be skipped if fetched within last 5 minutes (cache in useAccountData)
-  }, [token, location.pathname, fetchAccountData]);
-
-  const handleTopUp = useCallback(async (bundle?: TopUpBundle) => {
-    try {
-      setIsTopUpLoading(true);
-      await reportPurchaseConversion();
-
-      // Use selected bundle or default to first bundle
-      const selectedBundle = bundle || topUpBundles[0];
-
-      const resultAction = await dispatch(createCheckoutSession({
-        priceId: selectedBundle.priceId,
-        productId: selectedBundle.productId
-      }));
-      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-        window.location.href = resultAction.payload.url;
-      }
-    } catch (error) {
-      console.error('Failed to create checkout session:', error);
-      setNotification({
-        open: true,
-        message: 'Failed to create checkout session. Please try again.',
-        severity: 'error'
-      });
-    } finally {
-      setIsTopUpLoading(false);
-    }
-  }, [dispatch]);
-
-  const handleUpgrade = useCallback(async () => {
-    // For free tier users, navigate to payment page instead of Stripe portal
-    if (isPremiumTier === false) {
-      setIsUpgradeLoading(true);
-      navigate('/payment');
-      return;
-    }
-
-    try {
-      setIsUpgradeLoading(true);
-      const resultAction = await dispatch(createPortalSession());
-      if (createPortalSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-        window.location.href = resultAction.payload.url;
-      }
-    } catch (error) {
-      console.error('Failed to access subscription management:', error);
-      setNotification({
-        open: true,
-        message: 'Failed to access subscription management. Please try again.',
-        severity: 'error'
-      });
-    } finally {
-      setIsUpgradeLoading(false);
-    }
-  }, [dispatch, isPremiumTier, navigate]);
-
-  // Calculate remaining tokens
-  const getRemainingTokens = () => {
-    if (!allowances) return 0;
-    const tokens = getTokensFromAllowances(allowances);
-    return ((tokens?.max || 0) + (tokens?.topup || 0)) - (tokens?.used || 0);
-  };
-
-  // Props for sidebar components
-  const handleTokensClick = useCallback(() => {
-    if (isMobile) setMobileOpen(false);
-    setUpgradePopup({
-      open: true,
-      type: 'credits',
-      message: 'Upgrade your subscription or top up to get more tokens!',
-      title: 'Tokens'
-    });
-  }, [isMobile]);
-
-  const handleLogoutClick = useCallback(() => {
-    if (isMobile) setMobileOpen(false);
-    setLogoutDialogOpen(true);
-  }, [isMobile]);
-
-  // Sidebar props
-  const sidebarProps = {
-    hasToken: !!token && !!allowances,
-    remainingTokens: getRemainingTokens(),
-    isMobile,
-    hasSubscription: !!hasSubscription,
-    currentViewingItem,
-    onNavigate: handleNavigate,
-    onSidebarCollapse: handleSidebarCollapse,
-    onTokensClick: handleTokensClick,
-    onLogoutClick: handleLogoutClick,
-    trialDaysRemaining,
-    isTrialActive: isTrialing,
-  };
-
-  const collapsedSidebarProps = {
-    onNavigate: handleNavigate,
-    onSidebarCollapse: handleSidebarCollapse,
-    onLogoutClick: handleLogoutClick,
-  };
-
+interface LayoutContextType {openCharacter:()=>void;isDrawerOpen:boolean;drawerWidth:number;sidebarCollapsed:boolean;setCurrentViewingItem:(item:CurrentViewingItem|null)=>void;}
+export const LayoutContext=createContext<LayoutContextType|null>(null);
+export const useLayout=()=>{const context=useContext(LayoutContext);if(!context)throw new Error('useLayout must be used within a LayoutProvider');return context;};
+const sidebarWidth=SIDEBAR_WIDTH;const sidebarCollapsedWidth=SIDEBAR_COLLAPSED_WIDTH;const mobileTopBarHeight=56;
+const Main=styled('main',{shouldForwardProp:prop=>!['sidebarOpen','isMobile','sidebarCollapsed'].includes(prop as string)})<{sidebarOpen?:boolean;isMobile?:boolean;sidebarCollapsed?:boolean}>(({theme,isMobile})=>({flexGrow:1,width:'100%',minWidth:0,padding:theme.spacing(2),marginTop:isMobile?mobileTopBarHeight:0,transition:theme.transitions.create(['margin','width'],{easing:theme.transitions.easing.sharp,duration:theme.transitions.duration.leavingScreen})}));
+const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
+ const theme=useTheme();const navigate=useNavigate();const location=useLocation();const isMobile=useMediaQuery(theme.breakpoints.down('md'));const dispatch=useDispatch<AppDispatch>();
+ const {token,subscription}=useSelector((s:RootState)=>s.auth);const [mobileOpen,setMobileOpen]=useState(false);const{sidebarCollapsed,setSidebarCollapsed}=useSidebar();const[logoutDialogOpen,setLogoutDialogOpen]=useState(false);const[currentViewingItem,setCurrentViewingItem]=useState<CurrentViewingItem|null>(null);const[notification,setNotification]=useState<{open:boolean;message:string;severity:'success'|'error'|'info'|'warning'}>({open:false,message:'',severity:'info'});
+ const {fetchAccountData}=useAccountData();const hasActivePlayer=false;const hasSubscription=!!subscription?.tier&&subscription.tier!=='free';
+ useEffect(()=>{fetchAccountData();setMobileOpen(false);setCurrentViewingItem(null);},[location.pathname,fetchAccountData]);
+ useEffect(()=>{if(!isMobile)setMobileOpen(false);},[isMobile]);
+ const handleLogout=useCallback(()=>{dispatch(logoutAllState());navigate('/');},[dispatch,navigate]);
+ const handleMobileDrawerToggle=()=>setMobileOpen(!mobileOpen);const handleSidebarCollapse=()=>setSidebarCollapsed(!sidebarCollapsed);
+ const openCharacter=useCallback(()=>{navigate('/posts/new');setMobileOpen(false);},[navigate]);
+ const handleNavigate=useCallback((path:string)=>{navigate(path);setMobileOpen(false);},[navigate]);
+ const handleLogoutClick=()=>{setMobileOpen(false);setLogoutDialogOpen(true);};
+ const handleCloseNotification=()=>setNotification(old=>({...old,open:false}));
+ const sidebarProps={hasToken:!!token,remainingTokens:0,isMobile,hasSubscription,currentViewingItem,onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onTokensClick:()=>navigate('/payment'),onLogoutClick:handleLogoutClick,isTrialActive:false};
+ const collapsedSidebarProps={onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onLogoutClick:handleLogoutClick};
   return (
     <LayoutContext.Provider value={{
       openCharacter,
@@ -465,23 +194,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {notification.message}
           </Alert>
         </Snackbar>
-
-        {/* Subscription Upgrade Popup */}
-        <UpgradePopup
-          open={upgradePopup.open}
-          type={upgradePopup.type === 'credits' ? 'photo' : null}
-          message={upgradePopup.message}
-          title={upgradePopup.title}
-          isPremiumTier={isPremiumTier}
-          onClose={handleUpgradePopupClose}
-          onTopUp={handleTopUp}
-          onUpgrade={handleUpgrade}
-          isTopUpLoading={isTopUpLoading}
-          isUpgradeLoading={isUpgradeLoading}
-        />
-
-        {/* Trial Paywall Modal - shown for free users (new or trial expired) */}
-        <TrialPaywallModal open={showPaywall} trialExpired={trialExpired} />
 
         {/* Logout Confirmation Dialog */}
         <Dialog

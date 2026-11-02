@@ -8,17 +8,12 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Button,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import MovieIcon from '@mui/icons-material/Movie';
-import GruviCoin from './GruviCoin';
-import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinkIcon from '@mui/icons-material/Link';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -28,7 +23,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LockIcon from '@mui/icons-material/Lock';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PersonIcon from '@mui/icons-material/Person';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { useLocation } from 'react-router-dom';
@@ -44,37 +38,25 @@ const gradients = {
 
 // Navigation items configuration
 const createItems = [
-  { path: '/create/music', label: 'Create Music', icon: MusicNoteIcon, gradient: gradients.create },
-  { path: '/create/narrative', label: 'Create Voiceover', icon: HeadsetMicIcon, gradient: gradients.create },
-  { path: '/create/video', label: 'Create Video', icon: MovieIcon, gradient: gradients.create },
-  { path: '/motion-capture', label: 'AI Character Swap', icon: SwapHorizIcon, gradient: gradients.create },
-  { path: '/create/slideshow', label: 'Create Slideshow', icon: ViewCarouselIcon, gradient: gradients.create },
-  { path: '/ai-assets/create', label: 'Create AI Asset', icon: PersonAddIcon, gradient: gradients.create },
+  { path: '/dashboard', label: 'Overview', icon: BarChartIcon, gradient: gradients.publish },
+  { path: '/posts/new', label: 'New Post', icon: MovieIcon, gradient: gradients.create },
 ];
-
 const uploadItems = [
-  { path: '/upload', label: 'Upload Audio', icon: MusicNoteIcon, params: '?type=song', gradient: gradients.upload },
-  { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '?type=video', gradient: gradients.upload },
+  { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '', gradient: gradients.upload },
 ];
-
 const contentItems = [
-  { path: '/my-music', label: 'My Music', icon: LibraryMusicIcon, gradient: gradients.content },
-  { path: '/my-narratives', label: 'My Voiceovers', icon: HeadsetMicIcon, gradient: gradients.content },
-  { path: '/my-videos', label: 'My Videos', icon: VideoLibraryIcon, gradient: gradients.content },
-  { path: '/my-slideshows', label: 'My Slideshows', icon: ViewCarouselIcon, gradient: gradients.content },
-  { path: '/ai-assets', label: 'My AI Assets', icon: FolderSpecialIcon, gradient: gradients.content },
+  { path: '/media', label: 'Media Library', icon: VideoLibraryIcon, gradient: gradients.content },
 ];
-
 const publishItems = [
+  { path: '/settings/scheduled-content', label: 'Posts & Calendar', icon: CalendarMonthIcon, gradient: gradients.publish },
   { path: '/analytics', label: 'Analytics', icon: BarChartIcon, gradient: gradients.publish },
-  { path: '/settings/connected-accounts', label: 'Integrations', icon: LinkIcon, gradient: gradients.publish },
-  { path: '/settings/scheduled-content', label: 'Scheduled Posts', icon: CalendarMonthIcon, gradient: gradients.publish },
+  { path: '/settings/connected-accounts', label: 'Connected Accounts', icon: LinkIcon, gradient: gradients.publish },
+  { path: '/agents', label: 'Agent Access', icon: PersonIcon, gradient: gradients.account },
 ];
-
 const accountItems = [
   { path: '/account', label: 'Account', icon: AccountCircleIcon, gradient: gradients.account },
-  { path: '/payment', label: 'Subscription', icon: CreditCardIcon, gradient: gradients.account },
-  { path: '/support', label: 'Support & FAQ', icon: HeadsetMicIcon, gradient: gradients.account },
+  { path: '/payment', label: 'Plan & Billing', icon: CreditCardIcon, gradient: gradients.account },
+  { path: '/support', label: 'Support', icon: HeadsetMicIcon, gradient: gradients.account },
 ];
 
 // Sign Out is separate - moved to bottom of sidebar
@@ -208,76 +190,6 @@ const SidebarContent = memo<SidebarContentProps>(({
         )}
       </Box>
 
-      {/* Trial Status Banner */}
-      {isTrialActive && trialDaysRemaining !== undefined && (
-        <Box sx={{ px: 2, mb: 2 }}>
-          <Box
-            onClick={() => onNavigate('/payment')}
-            sx={{
-              borderRadius: '12px',
-              p: 2,
-              background: 'linear-gradient(135deg, #FF9500 0%, #FF2D55 100%)',
-              cursor: 'pointer',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              '&:hover': {
-                transform: 'translateY(-1px)',
-                boxShadow: '0 4px 16px rgba(255,149,0,0.4)',
-              },
-            }}
-          >
-            <Typography
-              sx={{
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                mb: 0.5,
-              }}
-            >
-              {trialDaysRemaining} days left in trial
-            </Typography>
-            <Typography
-              sx={{
-                color: 'rgba(255,255,255,0.9)',
-                fontSize: '0.75rem',
-              }}
-            >
-              Upgrade now to keep creating
-            </Typography>
-          </Box>
-        </Box>
-      )}
-
-      {/* Tokens Display */}
-      {hasToken && (
-        <Box sx={{ px: 2, mb: 2 }}>
-          <Button
-            fullWidth
-            onClick={onTokensClick}
-            sx={{
-              borderRadius: '12px',
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600,
-              color: '#fff',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 1,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              }
-            }}
-          >
-            <span style={{ color: '#fff' }}>{remainingTokens.toLocaleString()}</span>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>|</span>
-            <GruviCoin size={20} />
-          </Button>
-        </Box>
-      )}
-
       {/* Scrollable content area */}
       <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {/* CREATE Section */}
@@ -294,13 +206,13 @@ const SidebarContent = memo<SidebarContentProps>(({
             textTransform: 'uppercase',
           }}
         >
-          Create
+          Workspace
         </Typography>
         <List sx={{ px: 1, pb: 1 }}>
           {createItems.map((item, index) => {
             const Icon = item.icon;
             const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-            const isLocked = !hasSubscription && item.path === '/create/video';
+            const isLocked = false;
             return (
               <ListItem key={`${item.path}-${index}`} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
@@ -427,7 +339,7 @@ const SidebarContent = memo<SidebarContentProps>(({
             textTransform: 'uppercase',
           }}
         >
-          Content
+          Library
         </Typography>
         <List sx={{ px: 1, pb: 1 }}>
           {contentItems.map((item, index) => {
@@ -626,7 +538,7 @@ const SidebarContent = memo<SidebarContentProps>(({
           {publishItems.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-            const isLocked = !hasSubscription;
+            const isLocked = false;
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton

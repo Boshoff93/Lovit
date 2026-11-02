@@ -10,9 +10,9 @@
 //   25000: productId: 'prod_Thqgf4M9iCHzxj', priceId: 'price_1SnUm9B6HvdZJCd5qPqqRlQ8'
 //
 // Subscriptions:
-//   starter:  productId: 'prod_SApdzvErjotcRN', monthly: 'price_1SndETB6HvdZJCd560ysur06', yearly: 'price_1SndFBB6HvdZJCd5R49zzb2A'
-//   scale:    productId: 'prod_SApgUFg3gLoB70', monthly: 'price_1SndGRB6HvdZJCd56Vj0oeXq', yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
-//   hardcore: productId: 'prod_SAphmL67DhziEI', monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9', yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
+//   starter:  productId: 'prod_SApdzvErjotcRN', monthly: 'price_1UXBpVB6HvdZJCd5ptfudrcw', yearly: 'price_1SndFBB6HvdZJCd5R49zzb2A'
+//   scale:    productId: 'prod_SApgUFg3gLoB70', monthly: 'price_1UXBpWB6HvdZJCd5WDP2SbSB', yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
+//   hardcore: productId: 'prod_SAphmL67DhziEI', monthly: 'price_1UXBpWB6HvdZJCd5M1Ao8eki', yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
 //
 // Legacy top-up: priceId: 'price_1SkQupB6HvdZJCd5q3km6imx', productId: 'prod_SDuZQfG5jCbfwZ'
 // ===================================================================================
@@ -70,36 +70,36 @@ export const stripeConfig = {
   // Starter: $39/mo monthly, $29/mo yearly ($348/yr) - 5,000 tokens
   starter: {
     productId: 'prod_SApdzvErjotcRN',
-    monthly: 'price_1SndETB6HvdZJCd560ysur06',
+    monthly: 'price_1UXBpVB6HvdZJCd5ptfudrcw',
     yearly: 'price_1SndFBB6HvdZJCd5R49zzb2A'
   },
   // Scale (formerly Pro): $99/mo monthly, $74/mo yearly ($888/yr) - 20,000 tokens
   scale: {
     productId: 'prod_SApgUFg3gLoB70',
-    monthly: 'price_1SndGRB6HvdZJCd56Vj0oeXq',
+    monthly: 'price_1UXBpWB6HvdZJCd5WDP2SbSB',
     yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
   },
   // Beast (formerly Hardcore/Premium): $199/mo monthly, $149/mo yearly ($1,788/yr) - 50,000 tokens
   hardcore: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    monthly: 'price_1UXBpWB6HvdZJCd5M1Ao8eki',
     yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   },
   // Beast alias (same as hardcore)
   beast: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    monthly: 'price_1UXBpWB6HvdZJCd5M1Ao8eki',
     yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   },
   // Legacy aliases for backwards compatibility
   pro: {
     productId: 'prod_SApgUFg3gLoB70',
-    monthly: 'price_1SndGRB6HvdZJCd56Vj0oeXq',
+    monthly: 'price_1UXBpWB6HvdZJCd5WDP2SbSB',
     yearly: 'price_1SndG9B6HvdZJCd5OCA3MxsS'
   },
   premium: {
     productId: 'prod_SAphmL67DhziEI',
-    monthly: 'price_1SndHlB6HvdZJCd5QrZvPZh9',
+    monthly: 'price_1UXBpWB6HvdZJCd5M1Ao8eki',
     yearly: 'price_1SndI5B6HvdZJCd56Ctrk6d3'
   }
 };

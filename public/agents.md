@@ -1,145 +1,98 @@
-# AGENTS.md — Gruvi
+# Gruvi: content distribution for agents
 
-## What is Gruvi?
+Gruvi distributes finished video content to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It provides a dashboard, calendar, HTTP API and a standard stdio MCP server. It does not generate content.
 
-Gruvi is an AI-powered creative studio for generating original music, music videos, voiceovers, and short-form video content from text prompts.
+## Setup
+1. Sign in at https://agentgruvi.com and verify your email.
+2. Connect destination accounts in https://agentgruvi.com/settings/connected-accounts.
+3. Create an agent key at https://agentgruvi.com/agents. Store it as GRUVI_API_KEY in the MCP client environment.
+4. Requires Node.js 20+. Install the versioned bundle:
+   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz
+5. Configure your MCP client:
+   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
+6. Reload the MCP client and call gruvi_get_user_info and gruvi_get_social_accounts.
 
-Gruvi is built for **founders and creators who want to automate their marketing and content creation** — but it's also a new creative medium for anyone who wants to start creating and upgrading their content with AI. Whether you're a startup founder producing product demos, a brand automating social content, or a creator exploring AI as a new way to make music and video — Gruvi gives you a full production studio in your browser.
+The server uses stdio. A hosted HTTP MCP endpoint is not part of this release. The downloadable bundle is served with the website; it does not require access to the source repository or claim publication on npm.
 
-All content is royalty-free, commercially licensed, and ready for publishing to TikTok, Instagram Reels, YouTube Shorts, and other platforms.
+## Workflow
+Inspect the media library before uploading again. Call gruvi_upload_video with a local MP4/MOV/WebM path, title and optional JPEG thumbnailFilePath. Video limit: 512 MB. Thumbnail limit: 5 MB.
+Choose exact account IDs from gruvi_get_social_accounts.
+Set title, caption and tags through gruvi_update_post_metadata, and a custom JPEG through gruvi_upload_thumbnail.
+For immediate delivery use gruvi_publish_post. For later delivery use gruvi_schedule_post with an ISO 8601 timestamp including a timezone.
+Check gruvi_get_post_status for an immediate post or gruvi_get_scheduled_post for a schedule. A queue acknowledgement is not confirmed publication.
 
-**Website:** [agentgruvi.com](https://agentgruvi.com)
+## Billing
+Free users can explore the workspace, connect accounts, upload media, create agent keys and inspect the calendar.
+Submitting an immediate or scheduled post requires an active paid plan.
+Monthly plans (USD): Starter $10, 60 scheduled posts; Scale $25, 120; Pro $50, 240.
+A schedule can target multiple connected accounts. Cancelled schedules are excluded from the calendar-month allowance.
+Immediate publishing is included; the monthly allowance applies to scheduled posts.
+Agents can call gruvi_get_plans and gruvi_create_checkout with planId and a stable requestId. Return the Stripe-hosted checkoutUrl for secure completion. Reuse the requestId after an uncertain response; do not collect card details or silently charge a saved card.
+Call gruvi_get_billing_status and wait for active subscription status after payment. Checkout creation and browser redirects do not activate membership.
+Taxes follow the merchant's existing Stripe configuration and are shown by checkout when applicable.
 
-## Core Capabilities
+## Available MCP tools
+- gruvi_get_plans
+- gruvi_create_checkout
+- gruvi_get_billing_status
+- gruvi_get_user_info
+- gruvi_get_social_accounts
+- gruvi_upload_video
+- gruvi_get_video_upload_url
+- gruvi_finalize_video_upload
+- gruvi_list_videos
+- gruvi_get_video
+- gruvi_upload_thumbnail
+- gruvi_update_post_metadata
+- gruvi_publish_post
+- gruvi_get_post_status
+- gruvi_schedule_post
+- gruvi_list_scheduled_posts
+- gruvi_get_scheduled_post
+- gruvi_delete_scheduled_post
+- gruvi_get_analytics
 
-### AI Music Generation
-Generate original songs from text descriptions. Specify genre, mood, lyrics, and language — Gruvi composes, arranges, and produces a complete track.
+## API
+Base URL: https://api.agentgruvi.com
+Authentication: Authorization: Bearer <agent-key>
+Schema: https://agentgruvi.com/openapi.json
+Account: GET /api/user/account -> user.userId.
+Accounts: GET /api/gruvi/social-accounts -> accounts[].
+Uploads: POST /api/gruvi/videos/{userId}/get-upload-url with fileName,fileType,fileSize. PUT bytes to the returned uploadUrl with matching Content-Type and no Gruvi Authorization header. POST /api/gruvi/videos/{userId}/finalize-upload with videoId,videoKey,title,description,aspectRatio.
+Thumbnail: POST /api/gruvi/videos/{userId}/{videoId}/upload-thumbnail with thumbnailBase64 as a JPEG data URL.
+Metadata: PUT /api/gruvi/videos/{userId}/{videoId}/social-metadata with title,description,tags.
+Publish: POST /api/gruvi/videos/{userId}/{videoId}/batch-social-upload with platforms:[{platform,accountId}], optional title,description,tags and platform settings. HTTP 202 is queued, not published.
+Immediate status: GET /api/gruvi/videos/{userId}/{videoId}/social-upload-status.
+Schedule: POST /api/gruvi/scheduled-posts with videoId,platforms,scheduledTime,title,description,tags and optional thumbnailUrl/thumbnailKey. Response: {success,scheduledPost}.
+Calendar: GET /api/gruvi/scheduled-posts -> {scheduledPosts,schedulingLimits}.
+One post: GET /api/gruvi/scheduled-posts/{scheduleId}.
+Cancel: DELETE /api/gruvi/scheduled-posts/{scheduleId}.
+Plans: GET /api/publishing/plans.
+Checkout: POST /api/publishing/checkout with planId:starter|scale|pro and requestId (8-100 letters, digits, underscores or hyphens).
+Billing status: GET /api/user/subscription -> {subscription}.
+Analytics: GET /api/gruvi/{youtube|tiktok}/analytics/{summary|trends}, optional accountId.
 
-- **32+ genres**: Pop, Rock, Hip-Hop, Jazz, EDM, Lo-Fi, Classical, K-Pop, Latin, Reggaeton, and more
-- **16+ moods**: Happy, Energetic, Chill, Epic, Dark, Romantic, Nostalgic, and more
-- **24+ languages**: English, Spanish, French, German, Japanese, Korean, Chinese, Arabic, Hindi, and more
-- **Generation speed**: Songs ready in 15–30 seconds
-- **Output formats**: Short songs (~30–90s) and standard songs (~1.5–3 min)
+## Platform settings and limitations
+Platform identifiers: twitter, instagram, tiktok, youtube, facebook, linkedin.
+Use a connected account ID to identify the exact destination.
+TikTok defaults to postMode:draft (creator inbox), privacyLevel:SELF_ONLY and interactions off. For direct posting select allowed privacy, comments, duet, stitch and content disclosures intentionally.
+Custom thumbnail support depends on the destination and account permissions. Upload the custom thumbnail before sending.
+TikTok and YouTube have analytics dashboards. The other networks currently provide publishing and delivery status.
+This workflow supports video content and video thumbnails; it does not advertise text-only posts or image carousels.
 
-### AI Music Videos
-Turn any generated song into a fully illustrated music video. Choose from 15 art styles and two aspect ratios.
+## Agent rules
+- Require the user's instruction to cover public content and destination accounts.
+- Reuse existing media where appropriate.
+- Never infer publication from scheduling or upload acceptance.
+- Inspect status after an uncertain send before retrying. The publishing endpoints do not promise exactly-once delivery or general idempotency.
+- Keep agent keys and signed storage URLs out of logs and chat.
+- Report partial platform delivery explicitly.
+- Do not submit a real social post or purchase as a setup test.
 
-- **Art styles**: 3D Cartoon (Pixar-style), Anime, Realistic, Claymation, Comic Book, Watercolor, Pixel Art, B&W Sketch, Children's Book, Origami, Woolknit, Sugarpop, Classic Blocks, Spray Paint, Crayon
-- **Formats**: Portrait (9:16) for TikTok/Reels/Shorts, Landscape (16:9) for YouTube/web
-- **Modes**: Still image video (static visuals) or Cinematic video (animated scenes)
+## Errors
+401: invalid or missing authentication. 403: access or paid-plan requirement. 409: existing subscription needs management. 410: retired generation route. 429: scheduling allowance or provider limit. For timeouts and 5xx during side effects, inspect status before repeating.
 
-### AI Avatar / UGC Videos
-Create talking-head style videos with AI-generated avatars. Upload a reference image or use a stock avatar. Add voiceover, background music, and prompts.
-
-- Duration options: 5s, 10s, 15s
-- Background music add-on available
-- Ideal for product demos, testimonials, social ads, and UGC-style content
-
-### AI Voiceovers
-Generate natural-sounding voiceovers from text. Use for narration, explainers, or standalone audio content.
-
-### AI Character Swap
-Swap characters in existing videos using reference images. Maintain character consistency across content.
-
-### Social Publishing
-Schedule and publish directly to YouTube, TikTok, Instagram, Facebook, LinkedIn, and X (Twitter).
-
-## Pricing
-
-Gruvi uses a **token-based system**. Every generation action costs tokens.
-
-### Token Costs
-
-| Feature | Cost |
-|---------|------|
-| Short song (~30–90s) | 25 tokens |
-| Standard song (~1.5–3 min) | 50 tokens |
-| Premium song (custom duration) | 50 tokens per 30 seconds |
-| Still image video | 200 tokens |
-| Cinematic video | 50 tokens per second |
-| Avatar / UGC video | 50 tokens per second |
-| Voiceover | 50 tokens per 10 seconds |
-| Character swap | 50 tokens per second |
-| Background music add-on | 50 tokens per 30 seconds |
-
-### Subscription Plans
-
-| Plan | Monthly | Yearly | Yearly (per month) | Tokens/month |
-|------|---------|--------|---------------------|--------------|
-| Starter | $39/mo | $348/yr | $29/mo | 5,000 |
-| Scale (Most Popular) | $99/mo | $828/yr | $69/mo | 20,000 |
-| Content Engine | $199/mo | $1,788/yr | $149/mo | 50,000 |
-
-Yearly plans save 25–30% compared to monthly billing.
-
-All plans include: AI Music, AI Videos, AI Avatar Videos, AI Voiceovers, UGC Creator, Character Swap, Scheduled Posting, and Commercial License. Scale adds Priority Generation. Content Engine adds Dedicated Support.
-
-### Token Top-Up Packages (One-time purchase, never expire)
-
-| Package | Tokens | Price |
-|---------|--------|-------|
-| Small | 2,500 | $19 |
-| Medium (Most Popular) | 10,000 | $69 |
-| Large (Best Value) | 25,000 | $149 |
-
-## Why Gruvi?
-
-### All-in-one platform
-Most competitors focus on one capability — video OR music OR voiceover. Gruvi combines music generation, video production, voiceover synthesis, avatar creation, and social publishing into a single workflow. No need to stitch together Sora + ElevenLabs + CapCut + a scheduler.
-
-### Speed and cost efficiency
-A song generates in under 30 seconds. A full music video in 2–5 minutes. Compare that to hiring a producer, videographer, and editor — or even using manual tools that require hours of editing.
-
-### Commercial-ready output
-All content is royalty-free with commercial licensing included on every plan. No separate licensing fees or attribution requirements.
-
-### Built for short-form content
-Gruvi is optimized for the formats that drive engagement: TikTok, Instagram Reels, YouTube Shorts. Portrait-first video generation, viral-optimized music lengths, and direct social publishing.
-
-### Multilingual by default
-Generate music with lyrics in 24+ languages. Create voiceovers and content for global audiences without translation services.
-
-### Character consistency
-Upload reference images and maintain consistent characters across multiple videos and content pieces — critical for brand storytelling and series content.
-
-## Use Cases
-
-- **Founders and startups**: Automate marketing content — product demos, social ads, explainer videos — without hiring a production team
-- **Content creators**: Use AI as a new creative medium to produce music, videos, and UGC-style content without filming or editing
-- **Social media managers**: Generate a week's worth of short-form video content in an afternoon
-- **Music artists**: Visualize tracks with AI-generated music videos across multiple art styles
-- **E-commerce brands**: Create product demo videos with AI avatars and voiceover
-- **Marketing agencies**: Produce client content at scale with consistent branding
-- **Real estate**: Generate property tour videos with music and narration
-- **Educators**: Create illustrated explainer videos with narration
-
-## Tech Stack
-
-- **Frontend**: React, TypeScript, Material-UI
-- **Backend**: Node.js on AWS Lambda + ECS
-- **Infrastructure**: AWS (Lambda, API Gateway, RDS, S3, CloudFront, CDK)
-- **Payments**: Stripe
-- **Auth**: AWS Cognito
-
-## Getting Started
-
-1. Sign up at [agentgruvi.com](https://agentgruvi.com)
-2. Describe your song, video, or voiceover in plain text
-3. Choose your style, mood, and format options
-4. Generate and download — or publish directly to social media
-
-## AI Agent Integration
-
-Gruvi offers a **skill file** that AI agents can install for full API-level integration — enabling agents to create music, generate videos, produce voiceovers, and publish content on behalf of users.
-
-- **Skill definition**: [agentgruvi.com/skill.md](https://agentgruvi.com/skill.md)
-- **Installation guide**: [agentgruvi.com/docs/for-agents/installing-skill.md](https://agentgruvi.com/docs/for-agents/installing-skill.md)
-
-Agents with the Gruvi skill can: generate songs, create music videos, produce avatar/UGC videos, generate voiceovers, swap characters, and schedule social media posts — all via API.
-
-## Links
-
-- Website: [agentgruvi.com](https://agentgruvi.com)
-- TikTok: [@gruvimusic](https://tiktok.com/@gruvimusic)
-- Instagram: [@gruvimusic](https://instagram.com/gruvimusic)
-- YouTube: [Gruvi](https://youtube.com/@gruvimusic)
+Docs: https://agentgruvi.com/docs/agent-integration
+HTTP reference: https://agentgruvi.com/docs/api-reference
+Platform guide: https://agentgruvi.com/docs/social
+Discovery manifest: https://agentgruvi.com/.well-known/mcp.json

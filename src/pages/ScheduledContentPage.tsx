@@ -377,10 +377,10 @@ const ScheduledContentPage: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' } }}>
-                  Schedule and manage your video posts
+                  Your calendar, scheduled posts and delivery history
                 </Typography>
                 <Chip
-                  label={`${effectiveLimits.remaining}/${effectiveLimits.limit} posts left`}
+                  label={!subscription?.tier || subscription.tier === 'free' ? 'Free setup' : `${effectiveLimits.remaining}/${effectiveLimits.limit} posts left`}
                   size="small"
                   sx={{
                     background: effectiveLimits.remaining <= 5
@@ -411,7 +411,7 @@ const ScheduledContentPage: React.FC = () => {
           {/* Create a Post button - Full on large, icon on small */}
           <Button
             variant="contained"
-            onClick={() => navigate('/my-videos')}
+            onClick={() => navigate('/posts/new')}
             endIcon={<ArrowForwardIcon />}
             sx={{
               display: { xs: 'none', sm: 'flex' },
@@ -435,7 +435,7 @@ const ScheduledContentPage: React.FC = () => {
           </Button>
           {/* Circle icon button for small screens */}
           <IconButton
-            onClick={() => navigate('/my-videos')}
+            onClick={() => navigate('/posts/new')}
             sx={{
               display: { xs: 'flex', sm: 'none' },
               width: 44,
@@ -754,12 +754,12 @@ const ScheduledContentPage: React.FC = () => {
                     No Scheduled Posts
                   </Typography>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 3, maxWidth: 280, fontSize: '0.9rem' }}>
-                    Create content with AI to get started
+                    Bring a finished video and choose when it should go out.
                   </Typography>
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
-                    onClick={() => navigate('/create')}
+                    onClick={() => navigate('/posts/new')}
                     sx={{
                       background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
                       borderRadius: '12px',
@@ -773,7 +773,7 @@ const ScheduledContentPage: React.FC = () => {
                       },
                     }}
                   >
-                    Create Content
+                    Prepare a Post
                   </Button>
                 </Box>
               </Box>
@@ -1570,7 +1570,7 @@ const ScheduledContentPage: React.FC = () => {
                 </Button>
               )}
               <Box sx={{ flex: 1 }} />
-              {/* View Video/Slideshow button */}
+              {/* Prepare another post/Slideshow button */}
               <Button
                 onClick={() => {
                   setDetailsDialogOpen(false);
@@ -1578,7 +1578,7 @@ const ScheduledContentPage: React.FC = () => {
                   if (isSlideshow && selectedPost.slideshowId) {
                     navigate(`/slideshow/${selectedPost.slideshowId}`);
                   } else {
-                    navigate(`/video/${selectedPost.videoId}`);
+                    navigate(`/posts/new?videoId=${selectedPost.videoId}`);
                   }
                 }}
                 variant="contained"
@@ -1590,7 +1590,7 @@ const ScheduledContentPage: React.FC = () => {
                   '&:hover': { bgcolor: '#0066DD' },
                 }}
               >
-                {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'View Slideshow' : 'View Video'}
+                {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'View Slideshow' : 'Prepare another post'}
               </Button>
               {/* Close button - only for completed or failed posts */}
               {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (

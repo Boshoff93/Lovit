@@ -277,7 +277,7 @@ export const videosApi = {
   
   // Batch Social Upload (background processing with email notification)
   batchSocialUpload: (userId: string, videoId: string, data: {
-    platforms: string[];
+    platforms: Array<string | { platform: string; accountId?: string }>;
     addThumbnailIntro?: boolean;
     tiktokSettings?: {
       postMode: 'draft' | 'direct';

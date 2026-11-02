@@ -1,3 +1,5 @@
+import { getCookieConsent } from './privacyConsent';
+
 interface ConversionEvent {
   sendTo: string;
   url?: string;
@@ -32,6 +34,7 @@ export const reportConversion = (event: ConversionEvent): Promise<void> => {
       resolve();
     };
 
+    if (!getCookieConsent().marketing) { callback(); return; }
     // Check if gtag is available
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'conversion', {
@@ -158,6 +161,7 @@ export const reportPurchaseConversion = (url?: string): Promise<void> => {
       resolve();
     };
 
+    if (!getCookieConsent().marketing) { callback(); return; }
     // Check if gtag is available
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'conversion_event_purchase', {
@@ -176,6 +180,7 @@ export const reportPurchaseConversion = (url?: string): Promise<void> => {
  * @returns Promise that resolves when the conversion is reported
  */
 export const reportPageViewConversion = async (): Promise<void> => {
+  if (!getCookieConsent().marketing) return;
   if (typeof window === 'undefined' || !window.gtag) {
     console.warn('gtag not available');
     return;
@@ -205,4 +210,4 @@ declare global {
       }
     ) => void;
   }
-} 
+}

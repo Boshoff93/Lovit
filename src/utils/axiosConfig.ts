@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { refreshToken, logout } from '../store/authSlice';
+import { API_BASE_URL } from './apiBaseUrl';
 
 // Always use production API
-const API_BASE_URL = 'https://api.gruvimusic.com';
 
 // Create a base axios instance
 const api = axios.create({
@@ -166,4 +166,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

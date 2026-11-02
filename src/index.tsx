@@ -7,7 +7,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
-import { WebSocketProvider } from './contexts/WebSocketContext';
 import { setStoreGetter } from './utils/axiosConfig';
 import './utils/firebase';
 
@@ -630,9 +629,7 @@ root.render(
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <WebSocketProvider>
-            <App />
-          </WebSocketProvider>
+          <App />
         </ThemeProvider>
       </PersistGate>
     </Provider>

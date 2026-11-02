@@ -41,7 +41,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preview": "node scripts/preview-distribution.cjs"
   },
   "eslintConfig": {
     "extends": [
@@ -63,5 +64,10 @@
   },
   "devDependencies": {
     "@types/react-lottie": "^1.2.10"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router/dist/development/index.js"
+    }
   }
 }

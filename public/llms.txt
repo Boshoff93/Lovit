@@ -1,0 +1,18 @@
+# Gruvi
+
+> Content distribution for agents. Bring finished content and thumbnails, publish or schedule across connected social accounts, and verify delivery.
+
+## Start
+- [Agent setup and MCP](https://agentgruvi.com/docs/agent-integration): API keys, versioned MCP installation and publishing workflow.
+- [Getting started](https://agentgruvi.com/docs/getting-started): Free account setup and the first post.
+- [API reference](https://agentgruvi.com/docs/api-reference): Upload, publish, schedule and billing endpoints.
+- [OpenAPI schema](https://agentgruvi.com/openapi.json): Machine-readable API contract.
+- [MCP discovery manifest](https://agentgruvi.com/.well-known/mcp.json): Stdio setup, tools and resource URIs.
+- [Full agent guide](https://agentgruvi.com/llms-full.txt): Setup, tools, billing and operational rules.
+- [MCP package](https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz): Versioned installable bundle, Node.js 20+.
+- [Plans](https://agentgruvi.com/pricing): $10, $25 or $50 monthly. Free exploration; paid publishing/scheduling.
+
+## Important
+Publishing supports video and custom thumbnails. Analytics currently covers TikTok and YouTube.
+Agents can initiate secure Stripe-hosted checkout with gruvi_create_checkout; payment and activation require separate confirmation.
+Never automatically repeat an uncertain publish request. Inspect per-platform status.

@@ -2,9 +2,9 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { User, storeAuthData, getToken, clearAuthData, storeToken } from '../utils/storage';
 import api from '../utils/axiosConfig';
+import { API_BASE_URL } from '../utils/apiBaseUrl';
 
 // Always use production API
-const API_BASE_URL = 'https://api.gruvimusic.com';
 
 // Define subscription tier type
 export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'premium';
@@ -615,4 +615,4 @@ export const {
   addTopupToAllowance
 } = authSlice.actions;
 
-export default authSlice.reducer; 
+export default authSlice.reducer;

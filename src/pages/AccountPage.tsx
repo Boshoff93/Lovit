@@ -2,16 +2,12 @@ import React, { useCallback, useState, useEffect } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
   Box,
-  Container,
   Typography,
   TextField,
   Button,
-  Divider,
   Chip,
   Alert,
   CircularProgress,
-  Card,
-  CardContent,
   LinearProgress,
   Paper,
   Switch,
@@ -30,14 +26,11 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { createPortalSession, createCheckoutSession, refreshUserData } from '../store/authSlice';
+import { createPortalSession, refreshUserData } from '../store/authSlice';
 import { useAccountData } from '../hooks/useAccountData';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
-import { reportPurchaseConversion } from '../utils/googleAds';
-import { updateEmailPreferences, getTokensFromAllowances } from '../store/authSlice';
-import GruviCoin from '../components/GruviCoin';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { updateEmailPreferences } from '../store/authSlice';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
@@ -47,12 +40,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { stripeConfig, topUpBundles } from '../config/stripe';
 import { userApi, AgentKey } from '../services/api';
 import { useGetScheduledPostsQuery } from '../store/apiSlice';
 
 const AccountPage: React.FC = () => {
-  const { user, subscription, createStripePortal, allowances } = useAuth();
+  const { user, subscription, createStripePortal } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +53,6 @@ const AccountPage: React.FC = () => {
   const { fetchAccountData, isLoading, error: fetchError } = useAccountData(false);
   const scheduledPostsQuery = useGetScheduledPostsQuery();
   const schedulingLimits = scheduledPostsQuery.data?.schedulingLimits;
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAccountData(true);
@@ -70,7 +61,6 @@ const AccountPage: React.FC = () => {
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
-  const [topUpModalOpen, setTopUpModalOpen] = useState(false);
   
   // Profile editing state - single field for Profile Name
   const [artistName, setArtistName] = useState(user?.artistName || user?.name || '');
@@ -135,31 +125,9 @@ const AccountPage: React.FC = () => {
     }
   },[createStripePortal, setError, setPortalLoading]);
 
-  const handleTopUp = useCallback(async (type: 'photos' | 'models') => {
-    try {
-      setError(null);
-      setCheckoutLoading(type);
-      // Track purchase conversion
-      await reportPurchaseConversion();
-      
-      const resultAction = await dispatch(createCheckoutSession({ 
-        priceId: stripeConfig.topUp.priceId,
-        productId: stripeConfig.topUp.productId
-      }));
-      
-      if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-        window.location.href = resultAction.payload.url;
-      }
-    } catch (error: any) {
-      setError(error.message || 'Failed to create checkout session');
-    } finally {
-      setCheckoutLoading(null);
-    }
-  }, [dispatch]);
-
   // Format subscription tier for display
   const formatTier = useCallback((tier: string) => {
-    return tier.charAt(0).toUpperCase() + tier.slice(1);
+    return ({ free: 'Free setup', starter: 'Starter', pro: 'Scale', scale: 'Scale', premium: 'Pro', beast: 'Pro', hardcore: 'Pro' } as Record<string, string>)[tier] || tier;
   },[]);
 
   // Calculate remaining percentage for progress bar
@@ -447,86 +415,6 @@ const AccountPage: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
-        {/* Tokens Section */}
-        {allowances && (
-          <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff', mb: 2 }}>
-            Your Tokens
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <GruviCoin size={40} sx={{ mr: 1.5 }} />
-              <Box>
-                <Typography sx={{ fontWeight: 600, color: '#fff' }}>
-                  Tokens
-                </Typography>
-                <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-                  Use tokens across all Gruvi features
-                </Typography>
-              </Box>
-            </Box>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => setTopUpModalOpen(true)}
-                sx={{
-                  borderRadius: '10px',
-                  px: 2.5,
-                  py: 1,
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  width: { xs: '100%', sm: 'auto' },
-                  background: 'linear-gradient(135deg, #007AFF, #5AC8FA)',
-                  boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #0066DD, #4AB8F0)',
-                    boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-                  }
-                }}
-              >
-                Top Up Tokens
-              </Button>
-            </Box>
-            {(() => {
-              const tokens = getTokensFromAllowances(allowances);
-              const total = (tokens?.max || 0) + (tokens?.topup || 0);
-              const used = tokens?.used || 0;
-              const remaining = total - used;
-              return (
-                <>
-                  <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
-                      {remaining.toLocaleString()}
-                      <Typography component="span" sx={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', ml: 1 }}>
-                        tokens remaining
-                      </Typography>
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-                      {used.toLocaleString()} / {total.toLocaleString()} used
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={calculateAllowancePercentage(used, total)}
-                    sx={{
-                      height: 8,
-                      borderRadius: 4,
-                      my: 1,
-                      backgroundColor: 'rgba(0,122,255,0.1)',
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 4,
-                        background: used >= total
-                          ? 'linear-gradient(135deg, #FF3B30, #FF6B6B)'
-                          : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
-                      }
-                    }}
-                  />
-                </>
-              );
-            })()}
-          </Box>
-        )}
 
         {/* Scheduling Limits */}
         {!isFreeTier && (() => {
@@ -899,139 +787,6 @@ const AccountPage: React.FC = () => {
         </Box>
       </Paper>
 
-      {/* Top Up Modal */}
-      <Dialog
-        open={topUpModalOpen}
-        onClose={() => setTopUpModalOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: '20px',
-            p: 1,
-            bgcolor: '#1E1E22',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }
-        }}
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#fff' }}>
-              Need More Tokens?
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
-              Top-up tokens never expire!
-            </Typography>
-          </Box>
-          <IconButton onClick={() => setTopUpModalOpen(false)} size="small" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ overflow: 'visible', pt: 2 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            {topUpBundles.map((bundle, index) => {
-              const isThisBundleLoading = checkoutLoading === bundle.id;
-              const isAnyLoading = checkoutLoading !== null;
-              return (
-              <Card
-                key={bundle.id}
-                sx={{
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  bgcolor: '#141418',
-                  transition: 'all 0.2s ease',
-                  position: 'relative',
-                  overflow: 'visible',
-                  opacity: isAnyLoading && !isThisBundleLoading ? 0.5 : 1,
-                }}
-              >
-                {bundle.badge && (
-                  <Chip
-                    label={bundle.badge}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      top: -10,
-                      right: 16,
-                      background: bundle.badge === 'BEST VALUE'
-                        ? 'linear-gradient(135deg, #34C759 0%, #30D158 100%)'
-                        : 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                      color: '#fff',
-                      fontWeight: 600,
-                      fontSize: '0.65rem',
-                      zIndex: 1,
-                    }}
-                  />
-                )}
-                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                    <Box>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        +{bundle.tokens.toLocaleString()} x <GruviCoin size={22} />
-                      </Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                        Never expires
-                      </Typography>
-                    </Box>
-                    <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff' }}>
-                      ${bundle.price}
-                    </Typography>
-                  </Box>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    disabled={isAnyLoading}
-                    onClick={async () => {
-                      if (isAnyLoading) return;
-                      try {
-                        setCheckoutLoading(bundle.id);
-                        const resultAction = await dispatch(createCheckoutSession({
-                          priceId: bundle.priceId,
-                          productId: bundle.productId
-                        }));
-                        if (createCheckoutSession.fulfilled.match(resultAction) && resultAction.payload.url) {
-                          window.location.href = resultAction.payload.url;
-                        }
-                      } catch (err: any) {
-                        setError(err.message || 'Failed to create checkout session');
-                      } finally {
-                        setCheckoutLoading(null);
-                      }
-                    }}
-                    sx={{
-                      py: 1,
-                      borderRadius: '10px',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #0066DD 0%, #4AB8F0 100%)',
-                      },
-                      '&.Mui-disabled': {
-                        background: isThisBundleLoading
-                          ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
-                          : 'rgba(255,255,255,0.12)',
-                        color: isThisBundleLoading ? '#fff' : 'rgba(255,255,255,0.3)',
-                      },
-                    }}
-                  >
-                    {isThisBundleLoading ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CircularProgress size={18} sx={{ color: '#fff' }} />
-                        <span>Loading...</span>
-                      </Box>
-                    ) : (
-                      'Buy Now'
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-            })}
-          </Box>
-        </DialogContent>
-      </Dialog>
-
       {/* Create Agent Key Dialog */}
       <Dialog
         open={createKeyDialogOpen}
@@ -1218,4 +973,4 @@ const AccountPage: React.FC = () => {
   );
 };
 
-export default AccountPage; 
+export default AccountPage;

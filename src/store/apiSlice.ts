@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Character, Narrative, ScheduledPost } from '../services/api';
+import { API_BASE_URL } from '../utils/apiBaseUrl';
 
 // TikTok Analytics types
 export interface TikTokVideo {
@@ -181,9 +182,6 @@ interface CharactersResponse {
 interface NarrativesResponse {
   narratives: Narrative[];
 }
-
-// Base URL
-const API_BASE_URL = 'https://api.gruvimusic.com';
 
 // RTK Query API slice
 export const apiSlice = createApi({

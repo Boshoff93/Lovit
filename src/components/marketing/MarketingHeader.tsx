@@ -14,13 +14,13 @@ import {
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Tooltip from '@mui/material/Tooltip';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
+import DistributionAuthDialog from '../DistributionAuthDialog';
 import { getTabForRoute } from '../../config/tabRouting';
 
 interface MarketingHeaderProps {
@@ -33,13 +33,9 @@ interface MarketingHeaderProps {
 }
 
 const navItems = [
-  { label: 'Home', href: '/', activeColor: '#5DD3B3' }, // teal
-  { label: 'AI Music', href: '/ai-music', activeColor: '#5AC8FA' }, // blue
-  { label: 'AI Video Shorts', href: '/ai-video-shorts', activeColor: '#F5A623' }, // orange
-  { label: 'Social Media', href: '/social-media', activeColor: '#22C55E' }, // green
-  { label: 'Blog', href: '/blog', activeColor: '#EC4899' }, // pink
-  { label: 'Docs', href: '/docs', activeColor: '#60A5FA' }, // light blue
-  { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' }, // purple
+  { label: 'Home', href: '/', activeColor: '#5DD3B3' },
+  { label: 'For Agents', href: '/docs', activeColor: '#60A5FA' },
+  { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' },
 ];
 
 // Brighter teal/cyan for inactive nav items (high contrast)
@@ -65,6 +61,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
   const { user, logout } = useAuth();
   const isLoggedIn = !!token;
 
+  const [internalAuth, setInternalAuth] = useState(false);
+  const openAuth = useCallback(() => { if (onOpenAuth) onOpenAuth(); else setInternalAuth(true); }, [onOpenAuth]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -163,11 +161,11 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
 
   const handleClickOpen = useCallback(() => {
     if (user) {
-      navigate('/my-music');
+      navigate('/dashboard');
       return;
     }
-    onOpenAuth?.();
-  }, [user, navigate, onOpenAuth]);
+    openAuth();
+  }, [user, navigate, openAuth]);
 
   // Dynamic styles based on scroll (or always if alwaysBlurred)
   const effectiveProgress = alwaysBlurred ? 1 : scrollProgress;
@@ -376,7 +374,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                   <>
                     <Button
                       component={RouterLink}
-                      to="/my-music"
+                      to="/dashboard"
                       variant="contained"
                       sx={{
                         // Let's Get Gruvi button - gradient with squarish radius
@@ -465,7 +463,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                         },
                       }}
                     >
-                      Unlock Gruvi
+                      Get Started
                     </Button>
                   </>
                 )}
@@ -538,7 +536,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               fullWidth
               variant="contained"
               component={RouterLink}
-              to="/my-music"
+              to="/dashboard"
               onClick={handleDrawerToggle}
               sx={{
                 // Let's Get Gruvi button - blue to cyan gradient with squarish radius
@@ -570,7 +568,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                 variant="contained"
                 onClick={() => {
                   handleDrawerToggle();
-                  onOpenAuth?.();
+                  openAuth();
                 }}
                 sx={{
                   // Blue to teal gradient - same as "Start Your Free Trial"
@@ -592,14 +590,14 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                   }
                 }}
               >
-                Unlock Gruvi
+                Get Started
               </Button>
               <Button
                 fullWidth
                 variant="outlined"
                 onClick={() => {
                   handleDrawerToggle();
-                  onOpenAuth?.();
+                  openAuth();
                 }}
                 sx={{
                   // Teal color like nav items
@@ -703,7 +701,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                   lineHeight: 1.4,
                 }}
               >
-                Try Fable - The #1 AI Storytelling App
+                Explore Fable Stories & Books
               </Typography>
             </Box>
           </Box>
@@ -740,6 +738,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           )}
         </Box>
       </Drawer>
+      <DistributionAuthDialog open={internalAuth} onClose={() => setInternalAuth(false)} />
     </>
   );
 };

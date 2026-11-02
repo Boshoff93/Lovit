@@ -1,161 +1,98 @@
-# Installing the Gruvi Skill
+# Gruvi: content distribution for agents
 
-Step-by-step guide to enable your AI agent to use Gruvi.
+Gruvi distributes finished video content to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It provides a dashboard, calendar, HTTP API and a standard stdio MCP server. It does not generate content.
 
-## For Claude Code (CLI)
+## Setup
+1. Sign in at https://agentgruvi.com and verify your email.
+2. Connect destination accounts in https://agentgruvi.com/settings/connected-accounts.
+3. Create an agent key at https://agentgruvi.com/agents. Store it as GRUVI_API_KEY in the MCP client environment.
+4. Requires Node.js 20+. Install the versioned bundle:
+   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz
+5. Configure your MCP client:
+   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.0.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
+6. Reload the MCP client and call gruvi_get_user_info and gruvi_get_social_accounts.
 
-Claude Code supports skills - specialized knowledge that extends Claude's capabilities.
+The server uses stdio. A hosted HTTP MCP endpoint is not part of this release. The downloadable bundle is served with the website; it does not require access to the source repository or claim publication on npm.
 
-### Automatic Install
+## Workflow
+Inspect the media library before uploading again. Call gruvi_upload_video with a local MP4/MOV/WebM path, title and optional JPEG thumbnailFilePath. Video limit: 512 MB. Thumbnail limit: 5 MB.
+Choose exact account IDs from gruvi_get_social_accounts.
+Set title, caption and tags through gruvi_update_post_metadata, and a custom JPEG through gruvi_upload_thumbnail.
+For immediate delivery use gruvi_publish_post. For later delivery use gruvi_schedule_post with an ISO 8601 timestamp including a timezone.
+Check gruvi_get_post_status for an immediate post or gruvi_get_scheduled_post for a schedule. A queue acknowledgement is not confirmed publication.
 
-Tell Claude:
-```
-Install the gruvi skill from https://agentgruvi.com/skill.md
-```
+## Billing
+Free users can explore the workspace, connect accounts, upload media, create agent keys and inspect the calendar.
+Submitting an immediate or scheduled post requires an active paid plan.
+Monthly plans (USD): Starter $10, 60 scheduled posts; Scale $25, 120; Pro $50, 240.
+A schedule can target multiple connected accounts. Cancelled schedules are excluded from the calendar-month allowance.
+Immediate publishing is included; the monthly allowance applies to scheduled posts.
+Agents can call gruvi_get_plans and gruvi_create_checkout with planId and a stable requestId. Return the Stripe-hosted checkoutUrl for secure completion. Reuse the requestId after an uncertain response; do not collect card details or silently charge a saved card.
+Call gruvi_get_billing_status and wait for active subscription status after payment. Checkout creation and browser redirects do not activate membership.
+Taxes follow the merchant's existing Stripe configuration and are shown by checkout when applicable.
 
-Claude will download and configure the skill automatically.
+## Available MCP tools
+- gruvi_get_plans
+- gruvi_create_checkout
+- gruvi_get_billing_status
+- gruvi_get_user_info
+- gruvi_get_social_accounts
+- gruvi_upload_video
+- gruvi_get_video_upload_url
+- gruvi_finalize_video_upload
+- gruvi_list_videos
+- gruvi_get_video
+- gruvi_upload_thumbnail
+- gruvi_update_post_metadata
+- gruvi_publish_post
+- gruvi_get_post_status
+- gruvi_schedule_post
+- gruvi_list_scheduled_posts
+- gruvi_get_scheduled_post
+- gruvi_delete_scheduled_post
+- gruvi_get_analytics
 
-### Manual Install
+## API
+Base URL: https://api.agentgruvi.com
+Authentication: Authorization: Bearer <agent-key>
+Schema: https://agentgruvi.com/openapi.json
+Account: GET /api/user/account -> user.userId.
+Accounts: GET /api/gruvi/social-accounts -> accounts[].
+Uploads: POST /api/gruvi/videos/{userId}/get-upload-url with fileName,fileType,fileSize. PUT bytes to the returned uploadUrl with matching Content-Type and no Gruvi Authorization header. POST /api/gruvi/videos/{userId}/finalize-upload with videoId,videoKey,title,description,aspectRatio.
+Thumbnail: POST /api/gruvi/videos/{userId}/{videoId}/upload-thumbnail with thumbnailBase64 as a JPEG data URL.
+Metadata: PUT /api/gruvi/videos/{userId}/{videoId}/social-metadata with title,description,tags.
+Publish: POST /api/gruvi/videos/{userId}/{videoId}/batch-social-upload with platforms:[{platform,accountId}], optional title,description,tags and platform settings. HTTP 202 is queued, not published.
+Immediate status: GET /api/gruvi/videos/{userId}/{videoId}/social-upload-status.
+Schedule: POST /api/gruvi/scheduled-posts with videoId,platforms,scheduledTime,title,description,tags and optional thumbnailUrl/thumbnailKey. Response: {success,scheduledPost}.
+Calendar: GET /api/gruvi/scheduled-posts -> {scheduledPosts,schedulingLimits}.
+One post: GET /api/gruvi/scheduled-posts/{scheduleId}.
+Cancel: DELETE /api/gruvi/scheduled-posts/{scheduleId}.
+Plans: GET /api/publishing/plans.
+Checkout: POST /api/publishing/checkout with planId:starter|scale|pro and requestId (8-100 letters, digits, underscores or hyphens).
+Billing status: GET /api/user/subscription -> {subscription}.
+Analytics: GET /api/gruvi/{youtube|tiktok}/analytics/{summary|trends}, optional accountId.
 
-1. **Create the skill directory:**
-```bash
-mkdir -p ~/.claude/skills/gruvi
-```
+## Platform settings and limitations
+Platform identifiers: twitter, instagram, tiktok, youtube, facebook, linkedin.
+Use a connected account ID to identify the exact destination.
+TikTok defaults to postMode:draft (creator inbox), privacyLevel:SELF_ONLY and interactions off. For direct posting select allowed privacy, comments, duet, stitch and content disclosures intentionally.
+Custom thumbnail support depends on the destination and account permissions. Upload the custom thumbnail before sending.
+TikTok and YouTube have analytics dashboards. The other networks currently provide publishing and delivery status.
+This workflow supports video content and video thumbnails; it does not advertise text-only posts or image carousels.
 
-2. **Download the skill file:**
-```bash
-curl -o ~/.claude/skills/gruvi/SKILL.md https://agentgruvi.com/skill.md
-```
+## Agent rules
+- Require the user's instruction to cover public content and destination accounts.
+- Reuse existing media where appropriate.
+- Never infer publication from scheduling or upload acceptance.
+- Inspect status after an uncertain send before retrying. The publishing endpoints do not promise exactly-once delivery or general idempotency.
+- Keep agent keys and signed storage URLs out of logs and chat.
+- Report partial platform delivery explicitly.
+- Do not submit a real social post or purchase as a setup test.
 
-3. **Verify installation:**
-```bash
-cat ~/.claude/skills/gruvi/SKILL.md | head -20
-```
+## Errors
+401: invalid or missing authentication. 403: access or paid-plan requirement. 409: existing subscription needs management. 410: retired generation route. 429: scheduling allowance or provider limit. For timeouts and 5xx during side effects, inspect status before repeating.
 
-4. **Tell Claude about your API key:**
-```
-Use the gruvi skill. My API key is gruvi_agent_xxxx
-```
-
-### Updating the Skill
-
-To get the latest version:
-```bash
-curl -o ~/.claude/skills/gruvi/SKILL.md https://agentgruvi.com/skill.md
-```
-
-## For Claude.ai (Web)
-
-Claude.ai doesn't support persistent skills, but you can:
-
-1. **Start a new Project** with the API docs as context
-2. **Copy the skill documentation** into your conversation
-3. **Use Projects** to save the configuration
-
-### Using Projects
-
-1. Create a new Project in Claude.ai
-2. Add the API reference as a document
-3. Add instructions: "You have access to the Gruvi API for content creation"
-4. Include your API key in project instructions (private projects only)
-
-## For ChatGPT
-
-### Using Custom GPTs
-
-1. Create a new GPT at chat.openai.com
-2. Add the Gruvi API schema (OpenAPI spec)
-3. Configure authentication with your API key
-4. Enable web browsing for status checking
-
-### Using ChatGPT Directly
-
-Share the API reference in your conversation:
-```
-I want you to use the Gruvi API to create content.
-API Base: https://api.gruvimusic.com
-API Key: gruvi_agent_xxxx (use as Bearer token)
-
-[Paste API reference here]
-```
-
-## For Other Agents
-
-Any AI agent that can make HTTP requests can use Gruvi:
-
-### Required Information
-
-Provide your agent with:
-
-1. **API Base URL:** `https://api.gruvimusic.com`
-2. **Authentication:** Bearer token (your Agent Key)
-3. **API Documentation:** Link to https://agentgruvi.com/docs/api-reference
-
-### Example Setup Prompt
-
-```
-You are a content creation assistant with access to the Gruvi API.
-
-API Configuration:
-- Base URL: https://api.gruvimusic.com
-- Authentication: Bearer token in Authorization header
-- API Key: gruvi_agent_xxxx
-
-Key endpoints:
-- POST /api/gruvi/songs/generate - Create music
-- POST /api/gruvi/narratives - Create voiceovers
-- POST /api/gruvi/videos/generate - Create videos
-- POST /api/gruvi/scheduled-posts - Schedule social posts
-- GET /api/gruvi/user/me - Check token balance
-
-All generation requests return a job ID. Poll for status until completed.
-```
-
-## Verifying Setup
-
-Test that your agent is configured correctly:
-
-```
-Check my Gruvi token balance
-```
-
-Your agent should call:
-```bash
-GET /api/gruvi/user/me
-Authorization: Bearer gruvi_agent_xxxx
-```
-
-And return something like:
-```
-You have 4,500 tokens remaining on the Scale plan.
-```
-
-## Troubleshooting
-
-### "Unauthorized" errors
-- Check your API key is correct
-- Ensure the key starts with `gruvi_agent_`
-- Verify the key hasn't been revoked
-
-### "Rate limited" errors
-- You're making too many requests
-- Wait 60 seconds and retry
-- Consider upgrading your plan
-
-### Agent can't find the skill
-- Verify the skill file exists at `~/.claude/skills/gruvi/SKILL.md`
-- Check file permissions
-- Restart your Claude session
-
-### Generation stuck at "processing"
-- Some generations take 2-5 minutes
-- Poll status every 30 seconds
-- Check for error messages in the response
-
-## Security Best Practices
-
-1. **Create dedicated agent keys** - Don't share your main account credentials
-2. **Rotate keys regularly** - Create new keys monthly
-3. **Monitor usage** - Check Account for unusual activity
-4. **Revoke compromised keys** - If a key is exposed, revoke immediately
-5. **Use project-level keys** - Create separate keys for different agents/projects
+Docs: https://agentgruvi.com/docs/agent-integration
+HTTP reference: https://agentgruvi.com/docs/api-reference
+Platform guide: https://agentgruvi.com/docs/social
+Discovery manifest: https://agentgruvi.com/.well-known/mcp.json

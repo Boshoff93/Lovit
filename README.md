@@ -1,89 +1,52 @@
-# Lovit - AI-Generated Fashion Photo App
+# Gruvi
 
-Lovit is a React application that allows users to upload their photos, train a LoRA model using FAL.ai, and generate images of themselves wearing different outfits and styles.
-
-## Features
-
-- Photo uploading and management
-- Integration with FAL.ai for model training
-- Image generation with custom prompts
-- Gallery to view and manage generated images
-- Responsive design
-
-## Prerequisites
-
-- Node.js 14+ and npm
-- FAL.ai API key
-
-## Installation
-
-1. Clone the repository:
-   ```
-   git clone <your-repo-url>
-   cd lovit
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Set up environment variables:
-   Create a `.env` file in the root directory with the following:
-   ```
-   REACT_APP_API_URL=http://your-backend-api-url
-   REACT_APP_FAL_API_KEY=your-fal-api-key
-   ```
+Content distribution for agents. Gruvi keeps its existing React and Material UI design while focusing on finished media, social publishing, scheduling, delivery status and analytics.
 
 ## Development
 
-To start the development server:
-
-```
+```sh
+npm ci
 npm start
 ```
 
-This will run the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The app uses the Gruvi API at `https://api.agentgruvi.com`. Authentication and social connections use the existing backend. Never put provider or Stripe secret keys in the frontend.
 
-## Building for Production
-
-To build the app for production:
-
-```
+```sh
+CI=true npm test -- --watchAll=false --runInBand
 npm run build
+npm run preview
 ```
 
-This builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
+The preview serves the production build at `http://127.0.0.1:3031`.
+It proxies `/api` and `/auth` to the Gruvi API so browser authentication works on port 3031. The preview uses your real Gruvi account data.
 
-## Backend Requirements
+## Product scope
 
-This frontend application requires a backend API with the following endpoints:
+- Free account setup, connected accounts, media uploads, agent keys, calendar and available analytics.
+- A paid plan is required when publishing immediately or submitting a scheduled post. The composer opens a dismissible plan chooser at that point.
+- Monthly plans: Starter $10 with 60 scheduled posts, Scale $25 with 120, and Pro $50 with 240. Immediate publishing is included. A scheduled post can target several accounts.
+- The existing day, week and month calendar remains in place.
+- AI generation routes redirect to publishing or the media library. The matching backend retires generation writes while keeping existing media readable.
 
-- `/api/photos/upload` - POST - Upload photos
-- `/api/photos` - GET - Get all uploaded photos
-- `/api/models/train` - POST - Train a new model
-- `/api/models` - GET - Get all models
-- `/api/models/:id/status` - GET - Get model training status
-- `/api/images/generate` - POST - Generate a new image
-- `/api/images` - GET - Get all generated images
+The internal subscription tiers remain `starter`, `pro` and `premium` for compatibility. Display names map to Starter, Scale and Pro. Existing subscriptions keep their existing Stripe prices.
 
-## FAL.ai Integration
+## Agent discovery
 
-This application uses FAL.ai's API for LoRA model training and image generation. You need to obtain an API key from FAL.ai to use these features.
+The public docs live at `/docs`, with setup at `/docs/agent-integration` and API contracts at `/docs/api-reference`. Machine-readable entry points are `public/llms.txt`, `public/llms-full.txt`, `public/agents.md`, `public/openapi.json` and `public/.well-known/mcp.json`.
 
-## Technologies Used
+The MCP server is a local stdio server distributed as a versioned public download. It is not a hosted HTTP MCP endpoint or a published npm package. Its source is in the sibling backend repository at `packages/gruvi-mcp-server`.
 
-- React
-- TypeScript
-- Material-UI
-- Axios
-- React Router
-- FAL.ai API
+To rebuild the public bundle from that package:
 
-## Note on Grid Issues
+```sh
+npm test
+npm pack --pack-destination ../../../Gruvi/public/downloads
+```
 
-There are currently some TypeScript issues with the Material UI Grid component that may cause linting errors. These do not affect the functionality of the application but should be resolved in future updates.
+When changing its version, update the download URL in the docs, discovery files and `src/config/agentDocs.ts` together.
 
-## License
+## Billing and release
 
-MIT
+The frontend calls the authenticated backend `/api/publishing/checkout` with a plan ID and stable request ID. The server chooses the Stripe price. Agents can request the same hosted checkout link through MCP; creating a checkout link does not activate a subscription. Access follows verified Stripe webhook state.
+
+Deploy the matching Gruvi backend before the frontend. The backend changes supply free social-account setup, publishing access checks, generation retirement, checkout and subscription reconciliation. See `../Gruvi-Backend/DISTRIBUTION_RELEASE.md` for the release checks. Deploy the complete `build` directory, including the MCP download and hidden `.well-known` directory.

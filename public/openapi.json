@@ -1,0 +1,1388 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gruvi Content Distribution API",
+    "version": "2.0.0",
+    "description": "Content distribution for agents. Setup and read access are available without subscription; immediate publishing and scheduling require a paid plan. Queue acceptance does not confirm publication."
+  },
+  "servers": [
+    {
+      "url": "https://api.agentgruvi.com"
+    }
+  ],
+  "security": [
+    {
+      "agentKey": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "agentKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Create an agent key at https://agentgruvi.com/agents. Never put a key in a URL."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "subscription": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "Target": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "twitter",
+              "instagram",
+              "tiktok",
+              "youtube",
+              "facebook",
+              "linkedin"
+            ]
+          },
+          "accountId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform"
+        ]
+      },
+      "TikTokSettings": {
+        "type": "object",
+        "properties": {
+          "postMode": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "direct"
+            ],
+            "default": "draft"
+          },
+          "privacyLevel": {
+            "type": "string"
+          },
+          "allowComment": {
+            "type": "boolean"
+          },
+          "allowDuet": {
+            "type": "boolean"
+          },
+          "allowStitch": {
+            "type": "boolean"
+          },
+          "discloseContent": {
+            "type": "boolean"
+          },
+          "brandOrganic": {
+            "type": "boolean"
+          },
+          "brandedContent": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Video": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Schedule": {
+        "type": "object",
+        "properties": {
+          "scheduleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Target"
+            }
+          },
+          "scheduledTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "publishing",
+              "published",
+              "partial",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "uploadResults": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "platform": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                },
+                "postUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Checkout": {
+        "type": "object",
+        "properties": {
+          "checkoutUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "integer"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "interval": {
+                "type": "string"
+              }
+            }
+          },
+          "paymentStatus": {
+            "type": "string"
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/user/account": {
+      "get": {
+        "operationId": "getAccount",
+        "summary": "Read the authenticated account",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/Account"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/user/subscription": {
+      "get": {
+        "operationId": "getBillingStatus",
+        "summary": "Read subscription status",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscription": {
+                      "type": "object",
+                      "properties": {
+                        "tier": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/publishing/plans": {
+      "get": {
+        "operationId": "getPlans",
+        "summary": "List monthly distribution plans",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "currency": {
+                      "type": "string"
+                    },
+                    "interval": {
+                      "type": "string"
+                    },
+                    "plans": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "monthlyPrice": {
+                            "type": "number"
+                          },
+                          "scheduledPosts": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/publishing/checkout": {
+      "post": {
+        "operationId": "createCheckout",
+        "summary": "Create hosted Stripe checkout without charging a card",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "enum": [
+                      "starter",
+                      "scale",
+                      "pro"
+                    ]
+                  },
+                  "requestId": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]{8,100}$"
+                  }
+                },
+                "required": [
+                  "planId",
+                  "requestId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Checkout"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/social-accounts": {
+      "get": {
+        "operationId": "getSocialAccounts",
+        "summary": "List connected destination accounts",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "accountId": {
+                            "type": "string"
+                          },
+                          "platform": {
+                            "type": "string"
+                          },
+                          "accountName": {
+                            "type": "string"
+                          },
+                          "username": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}": {
+      "get": {
+        "operationId": "listVideos",
+        "summary": "List media",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "videos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Video"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}": {
+      "get": {
+        "operationId": "getVideo",
+        "summary": "Inspect a video",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/get-upload-url": {
+      "post": {
+        "operationId": "getVideoUploadUrl",
+        "summary": "Get a signed upload URL for a video up to 512 MB",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "fileType": {
+                    "type": "string",
+                    "enum": [
+                      "video/mp4",
+                      "video/quicktime",
+                      "video/webm"
+                    ]
+                  },
+                  "fileSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 536870912
+                  }
+                },
+                "required": [
+                  "fileName",
+                  "fileType",
+                  "fileSize"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "videoId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "videoKey": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "uploadUrl",
+                    "videoId",
+                    "videoKey"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/finalize-upload": {
+      "post": {
+        "operationId": "finalizeVideoUpload",
+        "summary": "Save a completed direct upload",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "videoId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "videoKey": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "aspectRatio": {
+                    "type": "string",
+                    "enum": [
+                      "portrait",
+                      "landscape"
+                    ]
+                  }
+                },
+                "required": [
+                  "videoId",
+                  "videoKey",
+                  "title"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "video": {
+                      "$ref": "#/components/schemas/Video"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/upload-thumbnail": {
+      "post": {
+        "operationId": "uploadThumbnail",
+        "summary": "Upload a custom JPEG thumbnail",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "thumbnailBase64": {
+                    "type": "string",
+                    "description": "JPEG data URL, at most 5 MB decoded."
+                  }
+                },
+                "required": [
+                  "thumbnailBase64"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "thumbnailUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/social-metadata": {
+      "put": {
+        "operationId": "updatePostMetadata",
+        "summary": "Set title, description and tags",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/batch-social-upload": {
+      "post": {
+        "operationId": "publishPost",
+        "summary": "Queue a video for immediate publishing; requires paid membership",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platforms": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Target"
+                    },
+                    "minItems": 1
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "addThumbnailIntro": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "platforms"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Queued; inspect per-platform status before treating delivery as published.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Subscription required"
+          }
+        }
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/social-upload-status": {
+      "get": {
+        "operationId": "getPostStatus",
+        "summary": "Inspect per-platform immediate delivery",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/scheduled-posts": {
+      "post": {
+        "operationId": "schedulePost",
+        "summary": "Schedule a future video post; requires paid membership",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platforms": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Target"
+                    },
+                    "minItems": 1
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "addThumbnailIntro": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "videoId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "scheduledTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "thumbnailUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "thumbnailKey": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "videoId",
+                  "platforms",
+                  "scheduledTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Schedule created; not yet published.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "scheduledPost": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Subscription required"
+          },
+          "429": {
+            "description": "Monthly scheduling allowance reached"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listScheduledPosts",
+        "summary": "Read calendar, delivery history and allowance",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scheduledPosts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Schedule"
+                      }
+                    },
+                    "schedulingLimits": {
+                      "type": "object",
+                      "properties": {
+                        "used": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/scheduled-posts/{scheduleId}": {
+      "get": {
+        "operationId": "getScheduledPost",
+        "summary": "Inspect one scheduled post",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scheduledPost": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "cancelScheduledPost",
+        "summary": "Cancel a scheduled post",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        }
+      }
+    },
+    "/api/gruvi/youtube/analytics/summary": {
+      "get": {
+        "operationId": "youtubesummary",
+        "summary": "Read youtube summary analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/youtube/analytics/trends": {
+      "get": {
+        "operationId": "youtubetrends",
+        "summary": "Read youtube trends analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/tiktok/analytics/summary": {
+      "get": {
+        "operationId": "tiktoksummary",
+        "summary": "Read tiktok summary analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/tiktok/analytics/trends": {
+      "get": {
+        "operationId": "tiktoktrends",
+        "summary": "Read tiktok trends analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
