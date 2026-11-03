@@ -1,0 +1,1 @@
+Social platform marks for transactional publishing emails. The YouTube, TikTok, Instagram and Facebook PNGs use the same MIT licensed assets as Fable. X and LinkedIn use MUI Material icons (MIT) rendered to PNG for email compatibility. All brand marks belong to their respective owners.
