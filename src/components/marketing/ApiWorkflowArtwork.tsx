@@ -1,7 +1,4 @@
 import React from "react";
-import TerminalRoundedIcon from "@mui/icons-material/TerminalRounded";
-import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
-import FlareRoundedIcon from "@mui/icons-material/FlareRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CodeExample from "../CodeExample";
@@ -34,20 +31,35 @@ export default function ApiWorkflowArtwork() {
       <div className="gr-api-agent-stack">
         <div className="gr-api-agent-layer gr-api-agent-claude">
           <span className="gr-api-agent-mark">
-            <FlareRoundedIcon />
+            <img
+              src="/marketing/brands/claude.svg"
+              alt=""
+              width="24"
+              height="24"
+            />
           </span>
           <span>Claude</span>
         </div>
         <div className="gr-api-agent-layer gr-api-agent-gemini">
           <span className="gr-api-agent-mark">
-            <AutoAwesomeRoundedIcon />
+            <img
+              src="/marketing/brands/gemini.png"
+              alt=""
+              width="24"
+              height="24"
+            />
           </span>
           <span>Gemini</span>
         </div>
         <div className="gr-api-request">
           <div className="gr-api-request-origin">
-            <span className="gr-api-terminal-icon">
-              <TerminalRoundedIcon />
+            <span className="gr-api-provider-icon">
+              <img
+                src="/marketing/brands/openai.svg"
+                alt="OpenAI"
+                width="24"
+                height="24"
+              />
             </span>
             <span>
               Codex <small>Your agent. One authenticated request.</small>

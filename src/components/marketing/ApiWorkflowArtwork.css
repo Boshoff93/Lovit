@@ -48,15 +48,10 @@
   height: 24px;
   flex-shrink: 0;
 }
-.gr-api-agent-mark svg {
-  width: 19px;
-  height: 19px;
-}
-.gr-api-agent-claude .gr-api-agent-mark {
-  color: #d9a58f;
-}
-.gr-api-agent-gemini .gr-api-agent-mark {
-  color: #b4bcff;
+.gr-api-agent-mark img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 .gr-api-request {
   position: relative;
@@ -76,20 +71,20 @@
   font-size: 13px;
   font-weight: 500;
 }
-.gr-api-terminal-icon {
+.gr-api-provider-icon {
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
   flex-shrink: 0;
-  border: 1px solid #538bca55;
-  background: #1a2c42;
+  border: 1px solid #ffffff20;
+  background: #1b2330;
   border-radius: 10px;
-  color: #8bbfff;
 }
-.gr-api-terminal-icon svg {
-  width: 20px;
-  height: 20px;
+.gr-api-provider-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 .gr-api-request-origin small {
   display: block;
