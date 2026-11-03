@@ -1,5 +1,6 @@
 [
   { "source": "/<*>", "target": "/index.html", "status": "404-200" },
+  { "source": "</^[^.]+$/>", "target": "/index.html", "status": "200" },
   { "source": "/sitemap.xml", "target": "/sitemap.xml", "status": "200" },
   { "source": "/robots.txt", "target": "/robots.txt", "status": "200" },
   { "source": "https://trylovit.com/<*>", "target": "https://gruvimusic.com/<*>", "status": "301" },
