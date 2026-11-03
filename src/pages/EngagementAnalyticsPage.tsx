@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, MenuItem, Skeleton, TextField } from '@mui/material';
+import { Avatar, Button, MenuItem, Skeleton, TextField } from '@mui/material';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
+import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
 import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -9,6 +12,7 @@ import { RootState } from '../store/store';
 import { useGetSocialAccountsQuery } from '../store/apiSlice';
 import { platformNames } from '../config/publishing';
 import WorkspaceNotice from '../components/WorkspaceNotice';
+import AnalyticsPosts from '../components/AnalyticsPosts';
 import api from '../utils/axiosConfig';
 
 type Metric = { value: number | null; availability: string; coverageDays?: number; series?: { date: string; value: number | null }[] };
@@ -23,6 +27,9 @@ type Summary = {
 const shown = (n: number | null | undefined) => typeof n === 'number' ? n.toLocaleString() : 'Unavailable';
 const dateLabel = (value: string) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
 const safeUrl = (value?: string) => { try { return value && new URL(value).protocol === 'https:' ? value : undefined; } catch { return undefined; } };
+type Account = { accountId: string; accountName?: string; username?: string; avatarUrl?: string };
+const accountLabel = (account?: Account) => account?.accountName || account?.username || 'Connected account';
+const accountAvatar = (account?: Account, large = false) => <Avatar src={safeUrl(account?.avatarUrl)} alt="" aria-hidden="true" className={large ? 'gd-analytics-profile-avatar' : 'gd-analytics-select-avatar'}>{accountLabel(account).slice(0, 1).toUpperCase()}</Avatar>;
 
 export default function EngagementAnalyticsPage() {
   const { platform = 'instagram' } = useParams();
@@ -78,9 +85,10 @@ export default function EngagementAnalyticsPage() {
     {accounts.isError && <WorkspaceNotice onRetry={() => accounts.refetch()}>Your connected accounts could not be loaded.</WorkspaceNotice>}
     <section className="gd-form-section gd-analytics-controls" aria-label="Analytics filters">
       <div className="gd-analytics-filters">
-        <TextField select label="Connected account" value={accountId} onChange={e => setSelected({ platform, accountId: e.target.value })} disabled={accounts.isLoading || !available.length}>
+        <TextField select label="Connected account" value={accountId} onChange={e => setSelected({ platform, accountId: e.target.value })} disabled={accounts.isLoading || !available.length}
+          SelectProps={{ renderValue: value => { const selectedAccount = available.find(a => a.accountId === value); return <span className="gd-analytics-account-option">{accountAvatar(selectedAccount)}<span>{accountLabel(selectedAccount)}</span></span>; } }}>
           <MenuItem value="">{accounts.isLoading ? 'Loading accounts...' : 'Choose an account'}</MenuItem>
-          {available.map(a => <MenuItem key={a.accountId} value={a.accountId}>{a.accountName || a.username || a.accountId}</MenuItem>)}
+          {available.map(a => <MenuItem key={a.accountId} value={a.accountId}><span className="gd-analytics-account-option">{accountAvatar(a)}<span>{accountLabel(a)}</span></span></MenuItem>)}
         </TextField>
         {isMeta && <TextField select label="Account insights" value={days} onChange={e => setDays(Number(e.target.value))}>
           <MenuItem value={7}>Last 7 complete days</MenuItem><MenuItem value={28}>Last 28 complete days</MenuItem>
@@ -90,7 +98,7 @@ export default function EngagementAnalyticsPage() {
       {isMeta && accountId && !needsPermission && <Button variant="outlined" className="gd-card-action" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Manage insights access'}</Button>}
       {!accounts.isLoading && !accounts.isError && !available.length
         ? <p>No {platformNames[platform]} account is connected. <Link className="gd-text-link" to="/settings/connected-accounts">Connect an account ↗</Link></p>
-        : <p className="gd-quiet">{isMeta ? 'Account insights exclude today. Recent-post counts are lifetime counts on up to 25 posts. ' : ''}Results can be cached for up to five minutes.</p>}
+        : <p className="gd-quiet">{isMeta ? 'Account insights exclude today. Post engagement uses lifetime counts, loaded 10 posts at a time. ' : ''}Results can be cached for up to five minutes.</p>}
     </section>
     {error && <WorkspaceNotice onRetry={() => setRefresh(n => n + 1)}>{error.message}</WorkspaceNotice>}
     {connectError && <WorkspaceNotice severity="warning">{connectError}</WorkspaceNotice>}
@@ -105,7 +113,10 @@ export default function EngagementAnalyticsPage() {
       <div className="gd-form-section"><Skeleton width="35%" height={28}/><Skeleton variant="rounded" width="100%" height={180}/></div>
     </div>}
     {data && <>
-      <div className="gd-analytics-account"><span>{account?.accountName || account?.username || 'Connected account'}</span><span>{shown(data.followers)} followers · Current snapshot</span><span>Updated {new Date(data.updatedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span></div>
+      <section className="gd-analytics-account" aria-label="Selected account snapshot">
+        <div className="gd-analytics-identity">{accountAvatar(account, true)}<div><strong>{accountLabel(account)}</strong><span>{platformNames[platform] || platform}{account?.username && account.username !== accountLabel(account) ? ' · ' + account.username : ''}</span></div></div>
+        <div className="gd-analytics-snapshot-badges"><span><PeopleOutlineRoundedIcon aria-hidden="true"/>{data.followers == null ? 'Followers unavailable' : shown(data.followers) + ' followers'}</span><span><CameraAltOutlinedIcon aria-hidden="true"/>Current snapshot</span><span><ScheduleRoundedIcon aria-hidden="true"/><time dateTime={data.updatedAt} title={new Date(data.updatedAt).toLocaleString()}>Updated {new Date(data.updatedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</time></span></div>
+      </section>
       {data.warnings?.map(w => <WorkspaceNotice severity="warning" key={w}>{w}</WorkspaceNotice>)}
       {data.insights && <>
         <div className="gd-analytics-section-heading"><h2>Account insights</h2><p>{dateLabel(data.insights.window.since)} to {dateLabel(new Date(Date.parse(data.insights.window.until) - 1).toISOString())} · UTC</p></div>
@@ -124,13 +135,7 @@ export default function EngagementAnalyticsPage() {
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </section>
       </>}
-      <section className="gd-form-section gd-analytics-recent"><div><h2>Recent posts</h2><p className="gd-quiet">Up to 25 recent posts. These lifetime counts are separate from the date range above. Totals include only counts Meta made available.</p></div>
-        <div className="gd-recent-totals"><span>{data.postsAvailable === false ? 'Unavailable' : data.postCount} posts returned</span><span>{shown(data.totals.likes)} likes & reactions</span><span>{shown(data.totals.comments)} comments</span><span>{shown(data.totals.shares)} shares</span></div>
-        {data.posts.map(post => <article className="gd-analytics-post" key={post.id}><div><p className="gd-quiet">{post.createdAt ? dateLabel(post.createdAt) : 'Date unavailable'}</p><h3>{post.title || 'Post ' + post.id}</h3><p>Likes: {shown(post.likes)} · Comments: {shown(post.comments)} · Shares: {shown(post.shares)}</p></div>
-          {safeUrl(post.url) && <a className="gd-text-link" href={safeUrl(post.url)} target="_blank" rel="noopener noreferrer">Open post ↗</a>}
-        </article>)}
-        {!data.posts.length && <p>{data.postsAvailable === false ? 'Recent posts could not be retrieved. Check the connection and try again.' : 'No recent posts were returned by this platform.'}</p>}
-      </section>
+      <AnalyticsPosts key={`${userId}:${platform}:${accountId}:${refresh}`} platform={platform} accountId={accountId}/>
     </>}
   </div>;
 }

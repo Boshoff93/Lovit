@@ -2569,6 +2569,462 @@
         "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
         "x-displayName": "X engagement"
       }
+    },
+    "/api/gruvi/instagram/analytics/posts": {
+      "get": {
+        "summary": "Page through Instagram post engagement",
+        "operationId": "getInstagramAnalyticsPosts",
+        "x-displayName": "Instagram post pages",
+        "tags": [
+          "Analytics"
+        ],
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "description": "Read one bounded page of posts and their lifetime engagement. Default 10 posts; minimum 5, maximum 25. For the next page, pass paging.nextCursor unchanged with the same accountId and limit. Stop when paging.hasMore is false. Cursors expire after one hour and are tied to the authenticated owner, connection credentials and page size. On ANALYTICS_CURSOR_INVALID, restart without a cursor. Pages are cached for up to five minutes. No automatic full-history fetch. Platform visibility and API access can limit history. Missing counts are null, never zero. Page totals are separate from account-insights date ranges. Analytics does not require a publishing subscription.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 25,
+              "default": 10
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque nextCursor returned by the previous page. Omit for the latest posts.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One post page, with page-only lifetime totals and continuation metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "posts": {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "likes": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "comments": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "shares": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "description": "Sums of the known lifetime counts on this page only. Unknown totals remain null."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "paging": {
+                      "type": "object",
+                      "required": [
+                        "limit",
+                        "hasMore",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "nextCursor": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or ANALYTICS_CURSOR_INVALID. Restart from the first page if the cursor expired or the connection changed."
+          },
+          "401": {
+            "description": "Bearer authentication required."
+          },
+          "403": {
+            "description": "Reconnect the account or check provider read permissions."
+          },
+          "404": {
+            "description": "Connected account not found for this owner and platform."
+          },
+          "429": {
+            "description": "Rate limited. Honor Retry-After."
+          },
+          "503": {
+            "description": "Provider or pagination temporarily unavailable."
+          }
+        }
+      }
+    },
+    "/api/gruvi/facebook/analytics/posts": {
+      "get": {
+        "summary": "Page through Facebook post engagement",
+        "operationId": "getFacebookAnalyticsPosts",
+        "x-displayName": "Facebook post pages",
+        "tags": [
+          "Analytics"
+        ],
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "description": "Read one bounded page of posts and their lifetime engagement. Default 10 posts; minimum 5, maximum 25. For the next page, pass paging.nextCursor unchanged with the same accountId and limit. Stop when paging.hasMore is false. Cursors expire after one hour and are tied to the authenticated owner, connection credentials and page size. On ANALYTICS_CURSOR_INVALID, restart without a cursor. Pages are cached for up to five minutes. No automatic full-history fetch. Platform visibility and API access can limit history. Missing counts are null, never zero. Page totals are separate from account-insights date ranges. Analytics does not require a publishing subscription.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 25,
+              "default": 10
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque nextCursor returned by the previous page. Omit for the latest posts.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One post page, with page-only lifetime totals and continuation metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "posts": {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "likes": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "comments": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "shares": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "description": "Sums of the known lifetime counts on this page only. Unknown totals remain null."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "paging": {
+                      "type": "object",
+                      "required": [
+                        "limit",
+                        "hasMore",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "nextCursor": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or ANALYTICS_CURSOR_INVALID. Restart from the first page if the cursor expired or the connection changed."
+          },
+          "401": {
+            "description": "Bearer authentication required."
+          },
+          "403": {
+            "description": "Reconnect the account or check provider read permissions."
+          },
+          "404": {
+            "description": "Connected account not found for this owner and platform."
+          },
+          "429": {
+            "description": "Rate limited. Honor Retry-After."
+          },
+          "503": {
+            "description": "Provider or pagination temporarily unavailable."
+          }
+        }
+      }
+    },
+    "/api/gruvi/twitter/analytics/posts": {
+      "get": {
+        "summary": "Page through X post engagement",
+        "operationId": "getTwitterAnalyticsPosts",
+        "x-displayName": "X post pages",
+        "tags": [
+          "Analytics"
+        ],
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "description": "Read one bounded page of posts and their lifetime engagement. Default 10 posts; minimum 5, maximum 25. For the next page, pass paging.nextCursor unchanged with the same accountId and limit. Stop when paging.hasMore is false. Cursors expire after one hour and are tied to the authenticated owner, connection credentials and page size. On ANALYTICS_CURSOR_INVALID, restart without a cursor. Pages are cached for up to five minutes. No automatic full-history fetch. Platform visibility and API access can limit history. Missing counts are null, never zero. Page totals are separate from account-insights date ranges. Analytics does not require a publishing subscription.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 25,
+              "default": 10
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque nextCursor returned by the previous page. Omit for the latest posts.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One post page, with page-only lifetime totals and continuation metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "posts": {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "likes": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "comments": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "shares": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "description": "Sums of the known lifetime counts on this page only. Unknown totals remain null."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "paging": {
+                      "type": "object",
+                      "required": [
+                        "limit",
+                        "hasMore",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "nextCursor": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or ANALYTICS_CURSOR_INVALID. Restart from the first page if the cursor expired or the connection changed."
+          },
+          "401": {
+            "description": "Bearer authentication required."
+          },
+          "403": {
+            "description": "Reconnect the account or check provider read permissions."
+          },
+          "404": {
+            "description": "Connected account not found for this owner and platform."
+          },
+          "429": {
+            "description": "Rate limited. Honor Retry-After."
+          },
+          "503": {
+            "description": "Provider or pagination temporarily unavailable."
+          }
+        }
+      }
     }
   },
   "tags": [

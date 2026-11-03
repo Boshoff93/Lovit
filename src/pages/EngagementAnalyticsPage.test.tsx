@@ -5,9 +5,9 @@ import api from '../utils/axiosConfig';
 jest.mock('../utils/axiosConfig', () => ({ __esModule: true, default: { get: jest.fn() } }));
 jest.mock('react-redux', () => ({ useSelector: (select: any) => select({ auth: { user: { userId: 'alice' } } }) }));
 jest.mock('react-router-dom', () => ({ useParams: () => ({ platform: 'instagram' }), Link: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a> }));
-jest.mock('../store/apiSlice', () => ({ useGetSocialAccountsQuery: () => ({ data: { accounts: [{ accountId: 'one', platform: 'instagram', accountName: 'Account one' }, { accountId: 'two', platform: 'instagram', accountName: 'Account two' }] } }) }));
+jest.mock('../store/apiSlice', () => ({ useGetSocialAccountsQuery: () => ({ data: { accounts: [{ accountId: 'one', platform: 'instagram', accountName: 'Account one', avatarUrl: 'https://images.example.com/one.jpg' }, { accountId: 'two', platform: 'instagram', accountName: 'Account two' }] } }) }));
 jest.mock('recharts', () => ({ ResponsiveContainer: () => null, CartesianGrid: () => null, Line: () => null, LineChart: () => null, Tooltip: () => null, XAxis: () => null, YAxis: () => null }));
-const response = (accountId: string, title: string, status = 'permission_required') => ({ data: { accountId, followers: 42, postCount: 1, postsAvailable: true, totals: { likes: 1, comments: null, shares: null }, posts: [{ id: accountId, title, likes: 1, comments: null, shares: null }], updatedAt: '2026-11-03T12:00:00Z', insights: { status, window: { since: '2026-10-06T00:00:00Z', until: '2026-11-03T00:00:00Z' }, metrics: { views: { value: null }, reach: { value: null }, interactions: { value: null } }, daily: { label: 'Accounts reached each day', points: [] } } } });
+const response = (accountId: string, title: string, status = 'permission_required') => ({ data: { accountId, followers: 42, postCount: 1, postsAvailable: true, paging: { hasMore: false, nextCursor: null }, totals: { likes: 1, comments: null, shares: null }, posts: [{ id: accountId, title, likes: 1, comments: null, shares: null }], updatedAt: '2026-11-03T12:00:00Z', insights: { status, window: { since: '2026-10-06T00:00:00Z', until: '2026-11-03T00:00:00Z' }, metrics: { views: { value: null }, reach: { value: null }, interactions: { value: null } }, daily: { label: 'Accounts reached each day', points: [] } } } });
 async function choose(name: string) { await act(async () => { fireEvent.mouseDown(screen.getByRole('combobox', { name: /Connected account/ })); }); const option = await screen.findByRole('option', { name }); await act(async () => { fireEvent.click(option); }); }
 beforeEach(() => jest.clearAllMocks());
 test('a late account response cannot overwrite the currently selected account', async () => {
@@ -33,4 +33,16 @@ test('failed analytics never displays false zero posts or followers', async () =
   await waitFor(() => expect(screen.getByText('Meta rejected this connection.')).toBeInTheDocument());
   expect(screen.queryByText(/0 posts returned/)).not.toBeInTheDocument();
   expect(screen.getByRole('button',{name:'Continue with Meta'})).toBeInTheDocument();
+});
+
+test('account avatars appear in the selected value, dropdown and snapshot', async () => {
+  (api.get as jest.Mock).mockResolvedValue(response('one','Available post'));
+  const { container } = render(<EngagementAnalyticsPage/>); await choose('Account one');
+  await screen.findByRole('region', {name:'Selected account snapshot'});
+  expect(container.querySelectorAll('img[src="https://images.example.com/one.jpg"]').length).toBe(2);
+  expect(screen.getByText('42 followers')).toBeInTheDocument();
+  expect(screen.getByText('Current snapshot')).toBeInTheDocument();
+  await act(async () => { fireEvent.mouseDown(screen.getByRole('combobox', {name:/Connected account/})); });
+  const option = await screen.findByRole('option', {name:'Account one'});
+  expect(option.querySelector('img')?.getAttribute('src')).toBe('https://images.example.com/one.jpg');
 });
