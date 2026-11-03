@@ -33,3 +33,22 @@ test('expired cursors offer recovery to the latest posts', async () => {
   fireEvent.click(screen.getByRole('button',{name:'Try again'})); await screen.findByText('Latest post');
   await waitFor(()=>expect(screen.getByRole('button',{name:'Previous'})).toBeDisabled());
 });
+
+test('renders real artwork beside a separate headline and caption with graceful image failure', async () => {
+  const result=page('Legacy truncated title');
+  Object.assign(result.data.posts[0],{caption:'A clear headline\n\nA separate caption with more detail.',thumbnailUrl:'https://cdn.example/post.jpg'});
+  (api.get as jest.Mock).mockResolvedValue(result);
+  const {container}=render(<AnalyticsPosts platform="facebook" accountId="one"/>);
+  expect(await screen.findByRole('heading',{name:'A clear headline'})).toBeInTheDocument();
+  expect(screen.getByText('A separate caption with more detail.')).toBeInTheDocument();
+  const image=container.querySelector('.gd-post-artwork img')!;
+  expect(image.getAttribute('src')).toBe('https://cdn.example/post.jpg');expect(image.getAttribute('loading')).toBe('lazy');
+  fireEvent.error(image);expect(screen.getByRole('img',{name:'Thumbnail unavailable'})).toBeInTheDocument();
+  expect(container.querySelector('.gd-post-artwork img')).toBeNull();expect(screen.getByRole('heading',{name:'A clear headline'})).toBeInTheDocument();
+});
+test('missing artwork and unsafe image URLs use a neutral placeholder', async () => {
+  const result=page('Text-only post');Object.assign(result.data.posts[0],{thumbnailUrl:'javascript:alert(1)'});
+  (api.get as jest.Mock).mockResolvedValue(result);
+  const {container}=render(<AnalyticsPosts platform="instagram" accountId="one"/>);
+  await screen.findByText('Text-only post');expect(screen.getByRole('img',{name:'Thumbnail unavailable'})).toBeInTheDocument();expect(container.querySelector('.gd-post-artwork img')).toBeNull();
+});

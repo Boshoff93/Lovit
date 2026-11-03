@@ -2662,6 +2662,19 @@
                               "number",
                               "null"
                             ]
+                          },
+                          "thumbnailUrl": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "HTTPS image cover from the platform when available. May expire. Missing artwork is null; video file URLs are never used as image covers."
+                          },
+                          "caption": {
+                            "type": "string",
+                            "maxLength": 2000,
+                            "description": "Post caption or text, capped at 2000 characters. title retains the short 200-character preview."
                           }
                         }
                       }
@@ -2814,6 +2827,19 @@
                               "number",
                               "null"
                             ]
+                          },
+                          "thumbnailUrl": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "HTTPS image cover from the platform when available. May expire. Missing artwork is null; video file URLs are never used as image covers."
+                          },
+                          "caption": {
+                            "type": "string",
+                            "maxLength": 2000,
+                            "description": "Post caption or text, capped at 2000 characters. title retains the short 200-character preview."
                           }
                         }
                       }
@@ -2966,6 +2992,19 @@
                               "number",
                               "null"
                             ]
+                          },
+                          "thumbnailUrl": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "HTTPS image cover from the platform when available. May expire. Missing artwork is null; video file URLs are never used as image covers."
+                          },
+                          "caption": {
+                            "type": "string",
+                            "maxLength": 2000,
+                            "description": "Post caption or text, capped at 2000 characters. title retains the short 200-character preview."
                           }
                         }
                       }
