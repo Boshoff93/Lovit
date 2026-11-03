@@ -519,7 +519,8 @@
 }
 .gd-plan .MuiButton-root {
   margin-top: auto;
-  width: 100%;
+  align-self: flex-start;
+  width: auto;
   text-transform: none;
   font-size: 12px;
 }
@@ -1569,4 +1570,8 @@
 }
 .gd-delivery-list p {
   font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .gd-plan .gd-plan-action { align-self: stretch; width: 100%; }
 }

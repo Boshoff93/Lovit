@@ -35,6 +35,7 @@ interface MarketingHeaderProps {
 const navItems = [
   { label: 'Home', href: '/', activeColor: '#5DD3B3' },
   { label: 'For Agents', href: '/docs', activeColor: '#60A5FA' },
+  { label: 'API', href: '/docs/api-reference', activeColor: '#60A5FA' },
   { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' },
 ];
 
@@ -68,6 +69,8 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
 
   // Check if current path matches nav item using tab routing logic
   const isActive = useCallback((href: string) => {
+    if (href === '/docs/api-reference') return location.pathname === href;
+    if (href === '/docs' && location.pathname === '/docs/api-reference') return false;
     const currentTab = getTabForRoute(location.pathname);
     const itemTab = getTabForRoute(href);
     return currentTab === itemTab;

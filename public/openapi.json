@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Gruvi Content Distribution API",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "description": "Content distribution for agents. Setup and read access are available without subscription; immediate publishing and scheduling require a paid plan. Queue acceptance does not confirm publication."
   },
   "servers": [
@@ -269,6 +269,124 @@
           "documentation": {
             "type": "string",
             "format": "uri"
+          }
+        }
+      },
+      "BulkSchedule": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "posts"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "posts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "required": [
+                "videoId",
+                "platforms",
+                "scheduledTime"
+              ],
+              "properties": {
+                "videoId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "platforms": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 24,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "platform",
+                      "accountId"
+                    ],
+                    "properties": {
+                      "platform": {
+                        "type": "string",
+                        "enum": [
+                          "youtube",
+                          "tiktok",
+                          "instagram",
+                          "facebook",
+                          "linkedin",
+                          "twitter"
+                        ]
+                      },
+                      "accountId": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                },
+                "scheduledTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 10000
+                },
+                "tags": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
+                "tiktokSettings": {
+                  "$ref": "#/components/schemas/TikTokSettings"
+                },
+                "addThumbnailIntro": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateCarousel": {
+        "type": "object",
+        "required": [
+          "title",
+          "imageKeys"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "imageKeys": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "description": "Key returned by this account's carousel image upload allocation."
+            }
           }
         }
       }
@@ -1420,6 +1538,535 @@
           {
             "name": "accountId",
             "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/scheduled-posts/bulk": {
+      "post": {
+        "summary": "Schedule 1 to 20 videos with one stable requestId and per-item results",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          },
+          "201": {
+            "description": "All posts scheduled"
+          },
+          "207": {
+            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkSchedule"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gruvi/carousels/get-upload-url": {
+      "post": {
+        "summary": "Allocate a ten-minute signed upload URL for one carousel image",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fileType",
+                  "fileSize"
+                ],
+                "properties": {
+                  "fileType": {
+                    "enum": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/webp"
+                    ]
+                  },
+                  "fileSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5242880
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gruvi/carousels": {
+      "post": {
+        "summary": "Save 2 to 10 uploaded images as a carousel without publishing",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCarousel"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List this account's saved carousels",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        }
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/publish": {
+      "post": {
+        "summary": "Publish one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "platform",
+                  "accountId"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 10000
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "platform": {
+                    "enum": [
+                      "instagram",
+                      "tiktok"
+                    ]
+                  },
+                  "accountId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/schedule": {
+      "post": {
+        "summary": "Schedule one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "platforms",
+                  "scheduledTime"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 10000
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "platforms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "platform",
+                        "accountId"
+                      ],
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "youtube",
+                            "tiktok",
+                            "instagram",
+                            "facebook",
+                            "linkedin",
+                            "twitter"
+                          ]
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  },
+                  "scheduledTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/publications/{requestId}": {
+      "get": {
+        "summary": "Check an uncertain carousel publication before retrying",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/instagram/analytics/summary": {
+      "get": {
+        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/facebook/analytics/summary": {
+      "get": {
+        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/gruvi/twitter/analytics/summary": {
+      "get": {
+        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
             "schema": {
               "type": "string"
             }

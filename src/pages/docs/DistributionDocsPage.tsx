@@ -179,6 +179,7 @@ export default function DistributionDocsPage() {
                 The MCP server exposes a focused publishing toolset over stdio.
                 Use it with a client that supports local MCP servers.
               </p>
+              <p>Works with Claude Code, Claude Desktop, Codex and other clients that can launch a local stdio MCP server. OpenClaw workflows can also call the documented HTTP API. ChatGPT web connectors require a remote MCP transport, which this local setup does not provide.</p>
               <h2>1. Create an agent key</h2>
               <p>
                 Open <Link to="/agents">Agent access</Link> in the dashboard.
@@ -188,13 +189,13 @@ export default function DistributionDocsPage() {
               </p>
               <h2>2. Install the MCP server</h2>
               <p>
-                Requires Node.js 20 or newer. Install the versioned bundle or
+                Requires Node.js 20 or newer. Install the versioned npm package or
                 let npx install it using the client configuration below.
               </p>
               <pre className="gd-code">{agentQuickstart}</pre>
               <h2>3. Configure your MCP client</h2>
               <p>
-                The configuration downloads the versioned Gruvi MCP bundle.
+                The configuration installs the pinned official Gruvi npm package.
                 Supply your key through the environment rather than chat or a
                 checked-in configuration.
               </p>
@@ -203,6 +204,10 @@ export default function DistributionDocsPage() {
                 The local server uses stdio. There is no hosted Streamable HTTP
                 endpoint advertised by this setup.
               </p>
+              <h2>Codex setup</h2>
+              <p>Add this to your private Codex config.toml. Supply GRUVI_API_KEY through the environment used to launch Codex. Keep the value out of the configuration file.</p>
+              <pre className="gd-code">{"[mcp_servers.gruvi]\ncommand = \"npx\"\nargs = [\"--yes\", \"--package=@agent-gruvi/gruvi-mcp-server@2.1.0\", \"gruvi-mcp\"]\nenv_vars = [\"GRUVI_API_KEY\"]\ntool_timeout_sec = 180"}</pre>
+              <p><a href="https://learn.chatgpt.com/docs/extend/mcp?surface=cli">Official Codex MCP configuration</a></p>
               <h2>Publishing access and retries</h2>
               <p>Setup, channel connections and media preparation do not require a paid plan. Publishing returns PUBLISHING_PLAN_REQUIRED when a plan is needed. Use gruvi_get_plans and gruvi_create_checkout to request a hosted checkout link, then ask the account owner to complete payment.</p>
               <p>Respect Retry-After on a 429 response. After a timeout or uncertain send, check delivery status before trying again.</p>
@@ -227,6 +232,10 @@ export default function DistributionDocsPage() {
                 <code>gruvi_publish_post</code> and follow with{" "}
                 <code>gruvi_get_post_status</code>.
               </p>
+              <h2>Three-day trial</h2>
+              <p>Eligible verified accounts can start one three-day trial through Stripe-hosted checkout. A payment method is required. The chosen monthly plan renews after the trial unless canceled beforehand. Trial eligibility is checked on the server and cannot be reset by creating another agent key.</p>
+              <h2>Bulk schedules and carousels</h2>
+              <p>Use gruvi_bulk_schedule_videos to schedule up to 20 videos. Use gruvi_upload_carousel for 2 to 10 local images, then gruvi_publish_carousel or gruvi_schedule_carousel. Provide stable request IDs and inspect per-item results before retrying. TikTok defaults to creator-inbox review.</p>
               <h2>Subscriptions through your agent</h2>
               <p>
                 Call <code>gruvi_get_plans</code>, let the user choose Starter
@@ -283,7 +292,7 @@ export default function DistributionDocsPage() {
           {section === "api" && (
             <>
               <p className="gd-eyebrow">HTTP API</p>
-              <h1>From upload to delivery.</h1>
+              <h1>Gruvi API reference</h1>
               <p>
                 Base URL: <code>https://api.agentgruvi.com</code>. Send{" "}
                 <code>Authorization: Bearer &lt;agent-key&gt;</code>. JSON
@@ -380,6 +389,16 @@ export default function DistributionDocsPage() {
                   </div>
                 ))}
               </div>
+              <h2>Authentication example</h2>
+              <pre className="gd-code">{'curl --fail-with-body -H "Authorization: Bearer $GRUVI_API_KEY" https://api.agentgruvi.com/api/gruvi/social-accounts'}</pre>
+              <p>Set GRUVI_API_KEY in your environment or secret manager. Keep the key out of source control and never send it to a storage upload URL.</p>
+              <h2>Bulk video scheduling</h2>
+              <p>Send POST /api/gruvi/scheduled-posts/bulk with a stable requestId and 1 to 20 posts. Each post has its own videoId, scheduledTime, caption and exact account targets. A 207 response lists item results. Reuse the same requestId and unchanged batch after uncertainty; accepted items are not duplicated.</p>
+              <h2>Photo carousels</h2>
+              <p>Request image upload URLs with POST /api/gruvi/carousels/get-upload-url, upload the files, then save their imageKeys through POST /api/gruvi/carousels. Use 2 to 10 JPEG, PNG or WebP images up to 5 MB each. Images fit a 4:5 canvas without cropping. Uploading saves media without publishing.</p>
+              <p>POST /api/gruvi/carousels/{'{carouselId}'}/publish sends a saved carousel to one exact Instagram or TikTok account using platform, accountId and requestId. The /schedule endpoint takes platforms, scheduledTime and requestId. Inspect /publications/{'{requestId}'} before retrying an uncertain immediate send.</p>
+              <h2>Account limits</h2>
+              <p>Keys for an account share 180 requests per minute and 40 writes per minute. Publishing requests have a tighter limit of 12 per minute; key and checkout actions allow 10 per five minutes. Authentication and recovery have separate IP and account limits. Media preparation allows five video and 50 image upload allocations daily during free setup, or 60 video and 400 image allocations with an active plan or trial. Honor Retry-After on 429 responses. A temporary protection failure returns 503 instead of allowing an unchecked write.</p>
               <h2>Schedule a video</h2>
               <pre className="gd-code">
                 {"POST /api/gruvi/scheduled-posts\nAuthorization: Bearer <agent-key>\nContent-Type: application/json\n\n" +
@@ -450,6 +469,8 @@ export default function DistributionDocsPage() {
                   </div>
                 ))}
               </div>
+              <h2>Carousel posts</h2>
+              <p>Instagram and TikTok support photo sequences. Upload 2 to 10 of your own images in display order, then publish or schedule to an exact account. TikTok inbox delivery requires the creator to finish posting in TikTok. A draft or processing result is not a confirmed live post.</p>
               <h2>Custom thumbnails</h2>
               <p>
                 Upload your thumbnail before sending the post. A platform may
@@ -467,9 +488,7 @@ export default function DistributionDocsPage() {
               </p>
               <h2 id="analytics">Analytics coverage</h2>
               <p>
-                Account and video analytics are available for connected TikTok
-                and YouTube accounts. The other networks currently support
-                publishing, rather than a full analytics dashboard.
+                TikTok and YouTube offer account and video analytics. Instagram, Facebook and X offer recent-post engagement summaries in beta, subject to platform read permissions and API access. These summaries cover up to 25 recent posts and are cached for five minutes. Missing metrics are unavailable, not zero.
               </p>
               <h2>Delivery states</h2>
               <p>

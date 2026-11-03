@@ -7,9 +7,9 @@ Gruvi distributes finished video content to connected X, Instagram, TikTok, YouT
 2. Connect destination accounts in https://agentgruvi.com/settings/connected-accounts.
 3. Create an agent key at https://agentgruvi.com/agents. Store it as GRUVI_API_KEY in the MCP client environment.
 4. Requires Node.js 20+. Install the versioned bundle:
-   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz
+   npm install --global @agent-gruvi/gruvi-mcp-server@2.1.0
 5. Configure your MCP client:
-   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
+   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=@agent-gruvi/gruvi-mcp-server@2.1.0","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
 6. Reload the MCP client and call gruvi_get_user_info and gruvi_get_social_accounts.
 
 The server uses stdio. A hosted HTTP MCP endpoint is not part of this release. The downloadable bundle is served with the website; it does not require access to the source repository or claim publication on npm.
@@ -98,3 +98,11 @@ Docs: https://agentgruvi.com/docs/agent-integration
 HTTP reference: https://agentgruvi.com/docs/api-reference
 Platform guide: https://agentgruvi.com/docs/social
 Discovery manifest: https://agentgruvi.com/.well-known/mcp.json
+
+
+## Bulk scheduling, carousels and analytics
+Use gruvi_bulk_schedule_videos for 1 to 20 existing videos with exact account IDs and a future time per post. Keep the same requestId and unchanged content when retrying. A 207 response lists per-item results; do not create a new request ID merely because only some items succeeded.
+Use gruvi_upload_carousel to upload 2 to 10 JPEG, PNG or WebP images in order, up to 5 MB each. Images are fitted to a 4:5 canvas without cropping. Uploads do not publish. Publish or schedule to one Instagram or TikTok account using gruvi_publish_carousel or gruvi_schedule_carousel. After uncertainty, check gruvi_get_carousel_publication with the same request ID. TikTok inbox drafts require the creator to finish posting.
+Analytics supports TikTok and YouTube, plus Instagram, Facebook and X recent-post summaries where platform permissions/API access allow. Supply an accountId for the latter and use kind=summary. Missing metrics are unavailable, not zero.
+Eligible verified accounts can start one three-day trial through hosted Stripe checkout. A payment method is required; the selected monthly subscription renews unless canceled before trial end. Setup remains free. Creating a checkout URL does not activate access.
+Rate limits are shared across all keys for an account: 180 requests/minute and 40 writes/minute, with tighter limits on publishing, credentials and checkout. Honor Retry-After. Store agent keys in client secrets, never in chat or source control. Agent keys cannot manage account credentials or invoke internal worker routes.

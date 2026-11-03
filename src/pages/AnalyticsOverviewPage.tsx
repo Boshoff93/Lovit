@@ -45,6 +45,7 @@ const FacebookIcon = () => (
 );
 
 const platforms: PlatformConfig[] = [
+  { id: 'twitter', name: 'X', gradient: '#202936', route: '/analytics/twitter', icon: <span aria-hidden="true">𝕏</span> },
   {
     id: 'tiktok',
     name: 'TikTok',
@@ -65,7 +66,7 @@ const platforms: PlatformConfig[] = [
     gradient: 'linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)',
     route: '/analytics/instagram',
     icon: <InstagramIcon />,
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     id: 'facebook',
@@ -73,7 +74,7 @@ const platforms: PlatformConfig[] = [
     gradient: 'linear-gradient(135deg, #1877F2 0%, #0C5DC7 100%)',
     route: '/analytics/facebook',
     icon: <FacebookIcon />,
-    comingSoon: true,
+    comingSoon: false,
   },
 ];
 
@@ -135,7 +136,7 @@ const AnalyticsOverviewPage: React.FC = () => {
                   <h2>{platform.name}</h2>
                   <p>{platform.comingSoon
                     ? `${platform.name} analytics is coming to Gruvi.`
-                    : isConnected ? `View performance and engagement for your ${platform.name} content.`
+                    : isConnected ? `View ${['instagram','facebook','twitter'].includes(platform.id) ? 'recent post engagement (beta)' : 'performance and engagement'} for your ${platform.name} content.`
                     : `Connect your ${platform.name} account to view its performance.`}</p>
                 </div>
                 {isAvailable ? (

@@ -5,7 +5,7 @@ export const mcpConfiguration = JSON.stringify(
         command: "npx",
         args: [
           "--yes",
-          "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz",
+          "--package=@agent-gruvi/gruvi-mcp-server@2.1.0",
           "gruvi-mcp",
         ],
         env: {
@@ -19,7 +19,7 @@ export const mcpConfiguration = JSON.stringify(
   2,
 );
 export const agentQuickstart =
-  "npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz";
+  "npm install --global @agent-gruvi/gruvi-mcp-server@2.1.0";
 export const scheduleExample = JSON.stringify(
   {
     videoId: "<uploaded-video-id>",
@@ -68,6 +68,12 @@ export const distributionTools = [
   ["gruvi_delete_scheduled_post", "Cancel a scheduled post."],
   [
     "gruvi_get_analytics",
-    "Read supported TikTok or YouTube account analytics.",
+    "Read TikTok and YouTube analytics, or Instagram, Facebook and X engagement summaries.",
   ],
+  ["gruvi_bulk_schedule_videos", "Schedule up to 20 videos with retry-safe per-item results."],
+  ["gruvi_list_carousels", "Inspect saved photo carousels."],
+  ["gruvi_upload_carousel", "Upload 2 to 10 local images in display order."],
+  ["gruvi_publish_carousel", "Send a carousel to one Instagram or TikTok account."],
+  ["gruvi_schedule_carousel", "Schedule a carousel with an exact account target."],
+  ["gruvi_get_carousel_publication", "Check a carousel send before retrying."],
 ];

@@ -7,9 +7,9 @@ Gruvi distributes finished video content to connected X, Instagram, TikTok, YouT
 2. Connect destination accounts in https://agentgruvi.com/settings/connected-accounts.
 3. Create an agent key at https://agentgruvi.com/agents. Store it as GRUVI_API_KEY in the MCP client environment.
 4. Requires Node.js 20+. Install the versioned bundle:
-   npm install --global https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz
+   npm install --global @agent-gruvi/gruvi-mcp-server@2.1.0
 5. Configure your MCP client:
-   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
+   {"mcpServers":{"gruvi":{"command":"npx","args":["--yes","--package=@agent-gruvi/gruvi-mcp-server@2.1.0","gruvi-mcp"],"env":{"GRUVI_API_KEY":"<your-agent-key>","GRUVI_API_URL":"https://api.agentgruvi.com"}}}}
 6. Reload the MCP client and call gruvi_get_user_info and gruvi_get_social_accounts.
 
 The server uses stdio. A hosted HTTP MCP endpoint is not part of this release. The downloadable bundle is served with the website; it does not require access to the source repository or claim publication on npm.

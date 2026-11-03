@@ -18,6 +18,9 @@ import PaymentPage from "./pages/PaymentPage";
 import DashboardSubscriptionPage from "./pages/DashboardSubscriptionPage";
 import PublishingOverviewPage from "./pages/PublishingOverviewPage";
 import MediaLibraryPage from "./pages/MediaLibraryPage";
+import EngagementAnalyticsPage from "./pages/EngagementAnalyticsPage";
+import BulkSchedulePage from "./pages/BulkSchedulePage";
+import CarouselPage from "./pages/CarouselPage";
 import PostComposerPage from "./pages/PostComposerPage";
 import PostStatusPage from "./pages/PostStatusPage";
 import AgentAccessPage from "./pages/AgentAccessPage";
@@ -144,6 +147,8 @@ export default function App() {
               element={workspace(<PostStatusPage />)}
             />
             <Route path="/media" element={workspace(<MediaLibraryPage />)} />
+            <Route path="/posts/bulk" element={workspace(<BulkSchedulePage />)} />
+            <Route path="/posts/carousel" element={workspace(<CarouselPage />)} />
             <Route path="/upload" element={workspace(<UploadPage />)} />
             <Route
               path="/settings/scheduled-content"
@@ -165,6 +170,7 @@ export default function App() {
               path="/analytics/youtube"
               element={workspace(<YouTubeAnalyticsPage />)}
             />
+            <Route path="/analytics/:platform" element={workspace(<EngagementAnalyticsPage />)} />
             <Route path="/agents" element={workspace(<AgentAccessPage />)} />
             <Route path="/account" element={workspace(<AccountPage />)} />
             <Route

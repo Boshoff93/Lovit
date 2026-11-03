@@ -1,8 +1,8 @@
 {
   "name": "gruvi",
   "title": "Gruvi: Content distribution for agents",
-  "version": "2.0.1",
-  "description": "Upload finished videos and custom thumbnails, publish or schedule across connected accounts, verify delivery and inspect supported analytics.",
+  "version": "2.1.0",
+  "description": "Publish finished videos and photo carousels, bulk schedule posts, read engagement analytics and verify per-platform delivery.",
   "documentation_url": "https://agentgruvi.com/docs/agent-integration",
   "transport": "stdio",
   "installation": {
@@ -10,7 +10,7 @@
     "command": "npx",
     "args": [
       "--yes",
-      "--package=https://agentgruvi.com/downloads/gruvi-mcp-server-2.0.1.tgz",
+      "--package=@agent-gruvi/gruvi-mcp-server@2.1.0",
       "gruvi-mcp"
     ],
     "environment_variables": [
@@ -46,7 +46,13 @@
     "gruvi_list_scheduled_posts",
     "gruvi_get_scheduled_post",
     "gruvi_delete_scheduled_post",
-    "gruvi_get_analytics"
+    "gruvi_get_analytics",
+    "gruvi_bulk_schedule_videos",
+    "gruvi_list_carousels",
+    "gruvi_upload_carousel",
+    "gruvi_publish_carousel",
+    "gruvi_schedule_carousel",
+    "gruvi_get_carousel_publication"
   ],
   "resources": [
     "gruvi://docs/quickstart",
@@ -57,5 +63,8 @@
     "type": "api_key",
     "account_setup": "https://agentgruvi.com/agents"
   },
-  "note": "Website discovery manifest for the stdio server. This is not a claim of registration in the official MCP Registry or a hosted HTTP MCP endpoint."
+  "note": "Official npm package and MCP Registry listing for the local stdio server. This setup does not expose a hosted HTTP MCP endpoint.",
+  "registry_name": "com.agentgruvi/gruvi",
+  "npm_package": "@agent-gruvi/gruvi-mcp-server",
+  "registry_url": "https://registry.modelcontextprotocol.io/v0.1/servers/com.agentgruvi%2Fgruvi/versions/2.1.0"
 }

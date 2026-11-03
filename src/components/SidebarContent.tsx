@@ -40,6 +40,8 @@ const gradients = {
 const createItems = [
   { path: '/dashboard', label: 'Overview', icon: BarChartIcon, gradient: gradients.publish },
   { path: '/posts/new', label: 'New Post', icon: MovieIcon, gradient: gradients.create },
+  { path: '/posts/carousel', label: 'Carousel Posts', icon: VideoLibraryIcon, gradient: gradients.content },
+  { path: '/posts/bulk', label: 'Bulk Scheduling', icon: CalendarMonthIcon, gradient: gradients.publish },
 ];
 const uploadItems = [
   { path: '/upload', label: 'Upload Video', icon: MovieIcon, params: '', gradient: gradients.upload },

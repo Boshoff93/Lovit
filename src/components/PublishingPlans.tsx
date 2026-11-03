@@ -15,6 +15,7 @@ export default function PublishingPlans() {
   const [auth, setAuth] = useState(false);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const usedTrial = useSelector((s: RootState) => Boolean((s.auth.user as any)?.hasUsedTrial));
   const paid = !!subscription?.tier && subscription.tier !== "free";
   const choose = async (plan: (typeof publishingPlans)[number]) => {
     if (!token) {
@@ -46,6 +47,7 @@ export default function PublishingPlans() {
         const result = await api.post("/api/publishing/checkout", {
           planId: plan.id,
           requestId,
+          trial: !usedTrial,
         });
         window.location.assign(result.data.checkoutUrl);
       }
@@ -91,11 +93,16 @@ export default function PublishingPlans() {
             <p>{plan.description}</p>
             <strong>{plan.posts} scheduled posts / month</strong>
             <ul>
-              <li>Connected social accounts</li>
+              <li>Multiple accounts per platform</li>
               <li>Video uploads & custom thumbnails</li>
-              <li>Immediate publishing & scheduling</li>
-              <li>HTTP API & MCP server access</li>
+              <li>Publish now or schedule ahead</li>
+              <li>API included</li>
+              {plan.id !== 'starter' && <li><Link to="/docs/agent-integration">MCP connector for agents</Link><small className="gd-perk-detail">Connect Claude Code, Codex or another local MCP client.</small></li>}
+              <li>Instagram & TikTok photo carousels</li>
+              <li>Bulk video scheduling</li>
               <li>TikTok & YouTube analytics</li>
+              <li>Instagram, Facebook & X engagement (beta)</li>
+              <li><a href="mailto:admin@wbtechventures.com">Founder support</a></li>
             </ul>
             <Button
               className="gd-plan-action gd-primary-action gd-card-action"
@@ -107,13 +114,13 @@ export default function PublishingPlans() {
                 ? "Opening billing..."
                 : paid
                   ? "Manage subscription"
-                  : "Choose " + plan.name}
+                  : !usedTrial ? "Start 3-day trial" : "Choose " + plan.name}
             </Button>
           </article>
         ))}
       </div>
       <p className="gd-quiet gd-pricing-note">
-        USD, billed monthly. One scheduled post can target several connected
+        USD, billed monthly after the trial. New eligible accounts get one three-day trial. A payment method is required. Cancel before it ends to avoid the monthly charge. One scheduled post can target several connected
         accounts. Existing subscribers can manage their current subscription in
         billing. Applicable taxes are shown at checkout.
       </p>

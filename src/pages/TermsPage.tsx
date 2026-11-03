@@ -116,11 +116,11 @@ const sections: LegalSection[] = [
     title: "Subscriptions and billing",
     content: (
       <>
+        <p>Eligible verified accounts can start one three-day publishing trial. A payment method is required. The selected monthly subscription renews automatically when the trial ends unless you cancel before that time. Trial eligibility is checked per account and billing customer.</p>
         <p>
           You can set up an account, connect channels, upload media, configure
           an agent and explore the calendar without subscribing. Submitting a
-          post for immediate publishing or scheduling requires active paid
-          access.
+          post for immediate publishing or scheduling requires an active publishing plan or trial.
         </p>
         <p>
           Plan prices, billing intervals, included allowances and applicable
@@ -138,7 +138,7 @@ const sections: LegalSection[] = [
         </p>
         <p>
           The monthly scheduled-post allowance counts schedules created during
-          the calendar month, excluding cancelled schedules. One schedule can
+          the UTC calendar month, excluding schedules cancelled before delivery begins. One schedule can
           target multiple connected accounts. Immediate publishing, API use and
           platform activity remain subject to reasonable service limits, abuse
           protections and destination-platform limits.

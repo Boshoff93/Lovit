@@ -33,6 +33,8 @@ export const publishingPlans = [
 export const distributionNav = [
   { label: "Overview", path: "/dashboard", icon: "overview" },
   { label: "New post", path: "/posts/new", icon: "post" },
+  { label: "Carousel posts", path: "/posts/carousel", icon: "post" },
+  { label: "Bulk scheduling", path: "/posts/bulk", icon: "calendar" },
   { label: "Media library", path: "/media", icon: "media" },
   {
     label: "Posts & schedule",
