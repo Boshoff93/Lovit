@@ -583,8 +583,8 @@
 .gd-workspace .MuiAlert-icon { align-items: center; padding: 0; margin: 0; }
 .gd-workspace .MuiAlert-message { flex: 1; min-width: 0; padding: 0; color: #eef2f8; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
 .gd-workspace .MuiAlert-action { display: flex; align-items: center; align-self: center; margin: 0; padding: 0; }
-.gd-workspace .gd-notice .MuiButton-root { min-height: 36px; padding: 6px 12px; white-space: nowrap; border-radius: 8px; border-color: #007aff55; background: #007aff10; color: #8dbfff; line-height: 22px; font-size: 12px; text-transform: none; }
-.gd-workspace .gd-notice .MuiButton-root:hover { border-color: #80baff; background: #007aff20; }
+.gd-workspace .gd-notice .MuiButton-root { min-height: 36px; padding: 6px 12px; white-space: nowrap; border-radius: 8px; border-color: #ffffff30; background: transparent; color: #f4f7fb; line-height: 22px; font-size: 12px; text-transform: none; }
+.gd-workspace .gd-notice .MuiButton-root:hover { border-color: #ffffff60; background: #ffffff0a; }
 .gd-workspace .gd-notice .MuiButton-root.Mui-disabled { color: #aab4c2; border-color: #ffffff18; }
 .gd-workspace .gd-notice .MuiButton-startIcon { margin-left: 0; margin-right: 6px; }
 .gd-workspace .gd-notice .MuiButton-startIcon svg { font-size: 17px; }

@@ -26,8 +26,16 @@ export function createWorkspaceTheme(base: Theme): Theme {
             '&:active': { background: '#004da8' },
           },
         },
-        '&.MuiButton-text': { color: '#80baff', '&:hover': { background: '#007aff12' } },
-        '&.MuiButton-outlinedPrimary': { color: '#80baff', borderColor: '#007aff70' },
+        '&.MuiButton-text:not(.MuiButton-colorError):not(.Mui-disabled)': {
+          color: '#f4f7fb',
+          '&:hover': { background: '#ffffff0a' },
+          '&:active': { background: '#ffffff14' },
+        },
+        '&.MuiButton-outlined:not(.MuiButton-colorError):not(.Mui-disabled)': {
+          color: '#f4f7fb', borderColor: '#ffffff30', backgroundColor: 'transparent',
+          '&:hover': { background: '#ffffff0a', borderColor: '#ffffff60' },
+          '&:active': { background: '#ffffff14' },
+        },
       } } },
     },
   });

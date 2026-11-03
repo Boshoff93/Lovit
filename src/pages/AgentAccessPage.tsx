@@ -91,14 +91,16 @@ export default function AgentAccessPage() {
               onChange={(e) => setName(e.target.value)}
               required
             />
-            <Button
-              className="gd-primary-action"
-              type="submit"
-              variant="contained"
-              disabled={busy || !name.trim()}
-            >
-              Create key
-            </Button>
+            <div className="gd-local-form-actions">
+              <Button
+                className="gd-primary-action"
+                type="submit"
+                variant="contained"
+                disabled={busy || !name.trim()}
+              >
+                Create key
+              </Button>
+            </div>
           </form>
           {created && (
             <Alert severity="success">
