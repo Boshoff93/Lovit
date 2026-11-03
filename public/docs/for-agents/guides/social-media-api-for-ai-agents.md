@@ -2,9 +2,11 @@
 
 How to connect an agent to Gruvi, upload finished media, choose exact account targets and check whether a post actually published.
 
+![Gruvi guiding a film strip, photograph and paper airplane along three publishing routes.](https://agentgruvi.com/marketing/blog/gruvi-agents-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/social-media-api-for-ai-agents
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

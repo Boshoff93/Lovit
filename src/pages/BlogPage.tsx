@@ -26,6 +26,8 @@ export default function BlogPage() {
             headline: post.title,
             url: "https://agentgruvi.com/blog/" + post.slug,
             datePublished: post.publishedAt,
+            dateModified: post.updatedAt,
+            image: "https://agentgruvi.com" + post.artwork.social,
             author: {
               "@type": "Organization",
               name: "Gruvi",
@@ -69,7 +71,7 @@ export default function BlogPage() {
           {posts.map((post) => (
             <article className="gr-guide-card" key={post.slug}>
               <Link to={`/blog/${post.slug}`} tabIndex={-1} aria-hidden="true">
-                <GuideArtwork variant={post.art} />
+                <GuideArtwork guide={post} />
               </Link>
               <div className="gr-guide-card-body">
                 <p className="gr-guide-meta">

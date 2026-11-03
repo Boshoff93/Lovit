@@ -2,9 +2,11 @@
 
 Understand Gruvi analytics for TikTok and YouTube, engagement summaries for Instagram, Facebook and X, and how to handle missing metrics.
 
+![Gruvi examining a heart and rising engagement chart through a magnifying glass.](https://agentgruvi.com/marketing/blog/gruvi-analytics-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/social-media-analytics-api
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

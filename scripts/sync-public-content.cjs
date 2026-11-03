@@ -25,6 +25,7 @@ const routes = [
   ...posts.map((post) => ({
     path: "/blog/" + post.slug,
     modified: post.updatedAt,
+    image: post.artwork.src,
   })),
 ];
 write(
@@ -33,11 +34,11 @@ write(
 );
 write(
   "public/sitemap.xml",
-  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
     routes
       .map(
         (route) =>
-          `  <url><loc>https://agentgruvi.com${xml(route.path)}</loc><lastmod>${xml(route.modified)}</lastmod></url>`,
+          `  <url><loc>https://agentgruvi.com${xml(route.path)}</loc><lastmod>${xml(route.modified)}</lastmod>${route.image ? `<image:image><image:loc>https://agentgruvi.com${xml(route.image)}</image:loc></image:image>` : ""}</url>`,
       )
       .join("\n") +
     "\n</urlset>\n",
@@ -48,13 +49,17 @@ write(
     posts
       .map(
         (post) =>
-          `<item><title>${xml(post.title)}</title><link>https://agentgruvi.com/blog/${post.slug}</link><guid isPermaLink="true">https://agentgruvi.com/blog/${post.slug}</guid><description>${xml(post.description)}</description><pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate></item>`,
+          `<item><title>${xml(post.title)}</title><link>https://agentgruvi.com/blog/${post.slug}</link><guid isPermaLink="true">https://agentgruvi.com/blog/${post.slug}</guid><description>${xml(post.description)}</description><pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate><enclosure url="https://agentgruvi.com${xml(post.artwork.social)}" length="${fs.statSync(path.join(root, "public", post.artwork.social)).size}" type="image/jpeg"/></item>`,
       )
       .join("") +
     "</channel></rss>\n",
 );
 for (const post of posts) {
   let text = `# ${post.title}\n\n${post.description}\n\nCanonical: https://agentgruvi.com/blog/${post.slug}\nPublished: ${post.publishedAt}\nUpdated: ${post.updatedAt}\nAuthor: ${post.author}\n\n## What you need to know\n${post.takeaways.map((item) => "- " + item).join("\n")}\n`;
+  text = text.replace(
+    "\n\nCanonical:",
+    `\n\n![${post.artwork.alt}](https://agentgruvi.com${post.artwork.src})\n\nCanonical:`,
+  );
   for (const section of post.sections) {
     text +=
       "\n## " + section.title + "\n\n" + section.paragraphs.join("\n\n") + "\n";

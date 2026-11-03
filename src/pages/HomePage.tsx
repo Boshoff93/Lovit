@@ -360,7 +360,7 @@ export default function HomePage() {
         <section className="gr-home-developers">
           <div className="gm-container">
             <div className="gr-home-dev-intro"><div><p className="gm-eyebrow">From the Gruvi blog</p><h2>Guides for your next integration.</h2><p>Practical examples for agents, APIs and the details that make publishing reliable.</p></div><Link className="gr-text-link" to="/blog">Browse all guides →</Link></div>
-            <div className="gr-blog-grid">{[blogPosts[0], blogPosts[4], blogPosts[5]].map(post => <article className="gr-guide-card" key={post.slug}><GuideArtwork variant={post.art} /><div className="gr-guide-card-body"><p className="gr-guide-meta">{post.category} · {guideMinutes(post)} min read</p><h3><Link to={`/blog/${post.slug}`}>{post.title}</Link></h3><p>{post.description}</p><Link className="gr-card-link" to={`/blog/${post.slug}`}>Read guide →</Link></div></article>)}</div>
+            <div className="gr-blog-grid">{[blogPosts[0], blogPosts[4], blogPosts[5]].map(post => <article className="gr-guide-card" key={post.slug}><GuideArtwork guide={post} /><div className="gr-guide-card-body"><p className="gr-guide-meta">{post.category} · {guideMinutes(post)} min read</p><h3><Link to={`/blog/${post.slug}`}>{post.title}</Link></h3><p>{post.description}</p><Link className="gr-card-link" to={`/blog/${post.slug}`}>Read guide →</Link></div></article>)}</div>
           </div>
         </section>
         <section className="gm-section gm-faq-section" id="faq">

@@ -6,7 +6,7 @@
     "category": "API & agents",
     "art": "agents",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "Separate media preparation, scheduling and published delivery.",
@@ -96,7 +96,15 @@
       "connect-claude-code-codex-mcp",
       "retry-social-media-posts-safely",
       "bulk-video-scheduling"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-agents-editorial.webp",
+      "card": "/marketing/blog/gruvi-agents-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-agents-editorial-share.jpg",
+      "alt": "Gruvi guiding a film strip, photograph and paper airplane along three publishing routes.",
+      "width": 1600,
+      "height": 900
+    }
   },
   {
     "slug": "bulk-video-scheduling",
@@ -105,7 +113,7 @@
     "category": "Publishing",
     "art": "bulk",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "A batch contains 1 to 20 existing videos, each with its own time and caption.",
@@ -191,7 +199,15 @@
       "social-media-api-for-ai-agents",
       "instagram-tiktok-carousel-posts",
       "retry-social-media-posts-safely"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-bulk-editorial.webp",
+      "card": "/marketing/blog/gruvi-bulk-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-bulk-editorial-share.jpg",
+      "alt": "Gruvi arranging video tickets across calendar sheets with several tentacles, viewed from above.",
+      "width": 1600,
+      "height": 900
+    }
   },
   {
     "slug": "instagram-tiktok-carousel-posts",
@@ -200,7 +216,7 @@
     "category": "Publishing",
     "art": "carousel",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "A carousel is an ordered image post, not a batch of separate video posts.",
@@ -286,7 +302,15 @@
       "bulk-video-scheduling",
       "retry-social-media-posts-safely",
       "connect-claude-code-codex-mcp"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-carousel-editorial.webp",
+      "card": "/marketing/blog/gruvi-carousel-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-carousel-editorial-share.jpg",
+      "alt": "Gruvi unfolding a five-frame picture sequence from sunrise to night.",
+      "width": 1600,
+      "height": 900
+    }
   },
   {
     "slug": "social-media-analytics-api",
@@ -295,7 +319,7 @@
     "category": "Analytics",
     "art": "analytics",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "Compare metrics only when their definitions and coverage match.",
@@ -376,7 +400,15 @@
       "social-media-api-for-ai-agents",
       "bulk-video-scheduling",
       "retry-social-media-posts-safely"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-analytics-editorial.webp",
+      "card": "/marketing/blog/gruvi-analytics-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-analytics-editorial-share.jpg",
+      "alt": "Gruvi examining a heart and rising engagement chart through a magnifying glass.",
+      "width": 1600,
+      "height": 900
+    }
   },
   {
     "slug": "connect-claude-code-codex-mcp",
@@ -385,7 +417,7 @@
     "category": "API & agents",
     "art": "mcp",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "Install the official @agent-gruvi/gruvi-mcp-server package.",
@@ -475,7 +507,15 @@
       "social-media-api-for-ai-agents",
       "bulk-video-scheduling",
       "instagram-tiktok-carousel-posts"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-mcp-editorial.webp",
+      "card": "/marketing/blog/gruvi-mcp-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-mcp-editorial-share.jpg",
+      "alt": "Gruvi connecting a cable between code brackets and a video play symbol.",
+      "width": 1600,
+      "height": 900
+    }
   },
   {
     "slug": "retry-social-media-posts-safely",
@@ -484,7 +524,7 @@
     "category": "API & agents",
     "art": "retries",
     "publishedAt": "2026-11-03T03:22:42+00:00",
-    "updatedAt": "2026-11-03T03:22:42+00:00",
+    "updatedAt": "2026-11-03T04:52:48.380Z",
     "author": "Gruvi",
     "takeaways": [
       "A timeout means the response is uncertain, not that nothing happened.",
@@ -564,6 +604,14 @@
       "bulk-video-scheduling",
       "social-media-analytics-api",
       "connect-claude-code-codex-mcp"
-    ]
+    ],
+    "artwork": {
+      "src": "/marketing/blog/gruvi-retries-editorial.webp",
+      "card": "/marketing/blog/gruvi-retries-editorial-card.webp",
+      "social": "/marketing/blog/gruvi-retries-editorial-share.jpg",
+      "alt": "Gruvi holding duplicate posts in a retry loop while guiding one post toward a check mark.",
+      "width": 1600,
+      "height": 900
+    }
   }
 ]

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url><loc>https://agentgruvi.com/</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/api</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/pricing</loc><lastmod>2026-11-02</lastmod></url>
@@ -11,10 +11,10 @@
   <url><loc>https://agentgruvi.com/docs/social</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/terms</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/privacy</loc><lastmod>2026-11-02</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/social-media-api-for-ai-agents</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/bulk-video-scheduling</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/instagram-tiktok-carousel-posts</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/social-media-analytics-api</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/connect-claude-code-codex-mcp</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
-  <url><loc>https://agentgruvi.com/blog/retry-social-media-posts-safely</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/social-media-api-for-ai-agents</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-agents-editorial.webp</image:loc></image:image></url>
+  <url><loc>https://agentgruvi.com/blog/bulk-video-scheduling</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-bulk-editorial.webp</image:loc></image:image></url>
+  <url><loc>https://agentgruvi.com/blog/instagram-tiktok-carousel-posts</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-carousel-editorial.webp</image:loc></image:image></url>
+  <url><loc>https://agentgruvi.com/blog/social-media-analytics-api</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-analytics-editorial.webp</image:loc></image:image></url>
+  <url><loc>https://agentgruvi.com/blog/connect-claude-code-codex-mcp</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-mcp-editorial.webp</image:loc></image:image></url>
+  <url><loc>https://agentgruvi.com/blog/retry-social-media-posts-safely</loc><lastmod>2026-11-03T04:52:48.380Z</lastmod><image:image><image:loc>https://agentgruvi.com/marketing/blog/gruvi-retries-editorial.webp</image:loc></image:image></url>
 </urlset>

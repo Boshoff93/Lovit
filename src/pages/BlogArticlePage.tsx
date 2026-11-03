@@ -31,6 +31,8 @@ export default function BlogArticlePage() {
         title={`${guide.title} | Gruvi`}
         description={guide.description}
         ogType="article"
+        ogImage={guide.artwork.social}
+        ogImageAlt={guide.artwork.alt}
         canonicalUrl={canonical}
         author="Gruvi"
         structuredData={{
@@ -46,7 +48,7 @@ export default function BlogArticlePage() {
               datePublished: guide.publishedAt,
               dateModified: guide.updatedAt,
               inLanguage: "en",
-              image: ["https://agentgruvi.com/gruvi-social.png"],
+              image: ["https://agentgruvi.com" + guide.artwork.social],
               author: {
                 "@type": "Organization",
                 name: "Gruvi",
@@ -114,7 +116,7 @@ export default function BlogArticlePage() {
           </p>
         </header>
         <div className="gr-article-art">
-          <GuideArtwork variant={guide.art} />
+          <GuideArtwork guide={guide} priority />
         </div>
         <div className="gr-article-layout">
           <aside className="gr-article-toc">

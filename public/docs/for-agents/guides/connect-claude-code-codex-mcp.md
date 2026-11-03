@@ -2,9 +2,11 @@
 
 Install Gruvi's local MCP server, store your key safely and verify account access before asking an agent to upload or schedule content.
 
+![Gruvi connecting a cable between code brackets and a video play symbol.](https://agentgruvi.com/marketing/blog/gruvi-mcp-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/connect-claude-code-codex-mcp
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

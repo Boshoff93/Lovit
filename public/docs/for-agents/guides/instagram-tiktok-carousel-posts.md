@@ -2,9 +2,11 @@
 
 Prepare 2 to 10 images as a Gruvi carousel, choose Instagram or TikTok and understand the difference between a saved set, a draft and a published post.
 
+![Gruvi unfolding a five-frame picture sequence from sunrise to night.](https://agentgruvi.com/marketing/blog/gruvi-carousel-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/instagram-tiktok-carousel-posts
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

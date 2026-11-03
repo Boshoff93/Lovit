@@ -12,6 +12,14 @@ export interface Guide {
   description: string;
   category: string;
   art: string;
+  artwork: {
+    src: string;
+    card: string;
+    social: string;
+    alt: string;
+    width: number;
+    height: number;
+  };
   publishedAt: string;
   updatedAt: string;
   author: string;

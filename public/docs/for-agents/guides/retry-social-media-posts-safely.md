@@ -2,9 +2,11 @@
 
 Use stable request IDs, inspect delivery after uncertainty and distinguish a scheduled post, a TikTok draft and a confirmed publication.
 
+![Gruvi holding duplicate posts in a retry loop while guiding one post toward a check mark.](https://agentgruvi.com/marketing/blog/gruvi-retries-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/retry-social-media-posts-safely
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

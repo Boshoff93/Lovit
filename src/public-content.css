@@ -724,88 +724,15 @@
 }
 .gr-guide-art {
   position: relative;
-  height: 200px;
-  background: #152939;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 22px;
+  aspect-ratio: 16 / 9;
+  background: #0d1118;
   overflow: hidden;
 }
-.gr-art-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(#a5cff209 1px, transparent 1px),
-    linear-gradient(90deg, #a5cff209 1px, transparent 1px);
-  background-size: 24px 24px;
-  transform: rotate(-10deg) scale(1.3);
-}
-.gr-art-icon {
-  display: grid;
-  place-items: center;
-  width: 66px;
-  height: 66px;
-  border-radius: 20px;
-  background: #223d54;
-  border: 1px solid #659dca55;
-  box-shadow: 0 12px 25px #05091050;
-  transform: rotate(-7deg);
-  z-index: 1;
-}
-.gr-art-icon svg {
-  width: 34px;
-  height: 34px;
-  fill: #9ccaff;
-}
-.gr-art-labels {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  z-index: 1;
-}
-.gr-art-labels span {
-  border: 1px solid #6d9cbc44;
-  border-radius: 8px;
-  padding: 5px 9px;
-  background: #142638;
-  font-size: 10px;
-  color: #b0d2f1;
-}
-.gr-guide-art.is-carousel {
-  background: #24243b;
-}
-.is-carousel .gr-art-icon {
-  background: #373052;
-  border-color: #9b80cd66;
-}
-.is-carousel .gr-art-icon svg {
-  fill: #c9b4f4;
-}
-.gr-guide-art.is-analytics {
-  background: #173130;
-}
-.is-analytics .gr-art-icon {
-  background: #234d48;
-  border-color: #6eb1a066;
-}
-.is-analytics .gr-art-icon svg {
-  fill: #93d4ba;
-}
-.gr-guide-art.is-retries {
-  background: #302b23;
-}
-.is-retries .gr-art-icon {
-  background: #4a3f2e;
-  border-color: #b2935a66;
-}
-.is-retries .gr-art-icon svg {
-  fill: #d9c295;
-}
-.gr-guide-art.is-mcp {
-  background: #212b43;
+.gr-guide-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .gr-article-intro {
   padding-block: 140px 38px;
@@ -834,20 +761,7 @@
   overflow: hidden;
 }
 .gr-article-art .gr-guide-art {
-  height: 260px;
-}
-.gr-article-art .gr-art-icon {
-  width: 90px;
-  height: 90px;
-  border-radius: 25px;
-}
-.gr-article-art .gr-art-icon svg {
-  width: 48px;
-  height: 48px;
-}
-.gr-article-art .gr-art-labels span {
-  font-size: 12px;
-  padding: 8px 14px;
+  height: auto;
 }
 .gr-article-layout {
   display: grid;
@@ -1188,9 +1102,6 @@
   }
   .gr-article-intro h1 {
     font-size: 36px;
-  }
-  .gr-article-art .gr-guide-art {
-    height: 220px;
   }
   .gr-breadcrumbs {
     margin-bottom: 25px;

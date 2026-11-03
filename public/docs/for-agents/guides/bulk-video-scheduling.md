@@ -2,9 +2,11 @@
 
 Schedule up to 20 finished videos through the Gruvi dashboard, API or MCP connector, with individual times and retry-safe results.
 
+![Gruvi arranging video tickets across calendar sheets with several tentacles, viewed from above.](https://agentgruvi.com/marketing/blog/gruvi-bulk-editorial.webp)
+
 Canonical: https://agentgruvi.com/blog/bulk-video-scheduling
 Published: 2026-11-03T03:22:42+00:00
-Updated: 2026-11-03T03:22:42+00:00
+Updated: 2026-11-03T04:52:48.380Z
 Author: Gruvi
 
 ## What you need to know

@@ -80,9 +80,37 @@ for (const id of ids)
     apiHtml.includes('id="' + id + '"'),
     "Endpoint missing from server HTML: " + id,
   );
+const artworkPaths = new Set();
 for (const post of posts) {
   const html = htmlPages.get("/blog/" + post.slug);
   assert(html, "Article not rendered: " + post.slug);
+  assert(
+    post.artwork?.alt && !artworkPaths.has(post.artwork.src),
+    "Each guide needs distinct described artwork: " + post.slug,
+  );
+  artworkPaths.add(post.artwork.src);
+  for (const file of [
+    post.artwork.src,
+    post.artwork.card,
+    post.artwork.social,
+  ]) {
+    assert(
+      fs.statSync(path.join(root, "public", file)).size > 0,
+      "Artwork file missing: " + file,
+    );
+  }
+  assert(
+    html.includes('src="' + post.artwork.src + '"'),
+    "Article hero missing: " + post.slug,
+  );
+  assert(
+    html.includes(
+      'property="og:image" content="https://agentgruvi.com' +
+        post.artwork.social +
+        '"',
+    ),
+    "Article share artwork missing: " + post.slug,
+  );
   const structured = JSON.parse(
     html.match(
       /<script id="gruvi-page-schema" type="application\/ld\+json">(.*?)<\/script>/s,
