@@ -73,7 +73,10 @@ export default function UploadPage() {
         <div>
           <p className="gd-eyebrow">Bring your own content</p>
           <h1>Upload a video</h1>
-          <p>Add finished content to your library, then prepare a post.</p>
+          <p>
+            Add finished content to your library, then prepare a post. Saving
+            media does not use your monthly post allowance.
+          </p>
           <Link className="gd-text-link gd-related-link" to="/media">
             Media library ↗
           </Link>

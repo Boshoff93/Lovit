@@ -70,7 +70,7 @@ export default function HomePage() {
               featureList: [
                 "Social media publishing API",
                 "Local MCP server for agents",
-                "Video uploads and custom thumbnails",
+                "Video posts and custom thumbnails",
                 "Social media scheduling calendar",
                 "Per-platform delivery status",
                 "TikTok and YouTube analytics",

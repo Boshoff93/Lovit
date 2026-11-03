@@ -445,7 +445,7 @@ const AccountPage: React.FC = () => {
                     Scheduled Posts
                   </Typography>
                   <Typography sx={{ fontSize: '0.85rem', color: '#aab4c2' }}>
-                    Monthly limit resets each billing cycle
+                    Allowance resets each UTC calendar month
                   </Typography>
                 </Box>
               </Box>

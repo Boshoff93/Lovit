@@ -19,8 +19,8 @@ import DistributionAuthDialog from "./DistributionAuthDialog";
 
 const sharedBenefits = [
   {
-    title: "Video uploads & thumbnails",
-    description: "Bring your finished videos, captions and custom thumbnails.",
+    title: "Video posts & custom thumbnails",
+    description: "Publish finished videos with your own captions and thumbnails.",
     icon: UploadFileOutlined,
     href: "/docs/getting-started",
   },
@@ -164,13 +164,13 @@ export default function PublishingPlans() {
         ))}
       </div>
       <p className="gd-quiet gd-pricing-note">
-        USD, billed monthly after the trial. New eligible accounts get one three-day trial. A payment method is required. Cancel before it ends to avoid the monthly charge. One scheduled post can target several connected
-        accounts. Existing subscribers can manage their current subscription in
+        USD, billed monthly after the trial. New eligible accounts get one three-day trial. A payment method is required. Cancel before it ends to avoid the monthly charge. Existing subscribers can manage their current subscription in
         billing. Applicable taxes are shown at checkout.
       </p>
       <p className="gd-quiet">
-        Immediate publishing is included. The monthly allowance applies to
-        scheduled posts.{" "}
+        One scheduled post uses one slot, even when sent to several accounts.
+        Each video in a scheduled batch counts as one post. Preparing media
+        does not use your monthly post allowance. Immediate publishing is included.{" "}
         <Link to="/docs/social">Platform rules and limits still apply.</Link>
       </p>
       {!token && (

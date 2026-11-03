@@ -8,7 +8,7 @@ export default function PaymentPage() {
     <div className="gd gd-pricing-page">
       <SEO
         title="Gruvi Pricing | Content Distribution from $10/month"
-        description="Content distribution for agents from $10 per month. Choose 60, 120 or 240 scheduled posts, with dashboard, API, MCP, uploads and analytics."
+        description="Content distribution for agents from $10 per month. Choose 60, 120 or 240 scheduled posts, with video posts, custom thumbnails, API, MCP and analytics."
         canonicalUrl="https://agentgruvi.com/pricing"
       />
       <MarketingHeader />
@@ -39,9 +39,13 @@ export default function PaymentPage() {
           <details>
             <summary>What counts as a scheduled post?</summary>
             <p>
-              One schedule can target multiple connected accounts. The monthly
-              allowance counts schedules created during the calendar month,
-              excluding cancelled schedules.
+              One scheduled video or carousel counts as one post. A video post
+              sent to several connected accounts still counts once. Each video
+              in a bulk schedule counts separately. Adding media to your library
+              does not use this allowance. It resets each UTC calendar month;
+              cancelling a future post before delivery starts returns its slot
+              to the month it was created in. Immediate publishing is included
+              separately and remains subject to service and platform limits.
             </p>
           </details>
           <details>

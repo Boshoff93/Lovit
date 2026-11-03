@@ -141,7 +141,8 @@ export default function BulkSchedulePage() {
           <h1>Bulk video scheduling</h1>
           <p>
             Choose up to 20 videos, set their times and schedule them in one
-            batch.
+            batch. Each scheduled video uses one post from your monthly allowance,
+            even when sent to several accounts.
           </p>
           <Link
             className="gd-text-link gd-related-link"
@@ -156,11 +157,11 @@ export default function BulkSchedulePage() {
         <section className="gd-form-section">
           <h2>1. Choose your videos</h2>
           <p>
-            Upload finished videos or select them from your library. Uploads
-            remain available before subscribing.
+            Add videos to your library or choose saved videos below. Preparing
+            media does not use your monthly post allowance.
           </p>
           <label className="gd-file-picker">
-            Upload videos
+            Add videos to library
             <input
               type="file"
               multiple

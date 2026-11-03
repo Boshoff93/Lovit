@@ -1,167 +1,45 @@
-# Pricing & Token Costs
+# Gruvi pricing and post allowances
 
-Understanding Gruvi's token-based pricing system.
+Gruvi distributes finished content through the dashboard, hosted API and MCP connector.
 
-## Subscription Plans
+Canonical pricing: https://agentgruvi.com/pricing
 
-| Plan | Monthly Tokens | Price | Best For |
-|------|----------------|-------|----------|
-| **Starter** | 5,000 | $29/mo | Hobbyists, testing |
-| **Scale** | 20,000 | $69/mo | Regular creators |
-| **Content Engine** | 50,000 | $149/mo | Power users, agencies |
+## Monthly plans
 
-All plans include:
-- Unlimited asset creation
-- All video styles and features
-- Multi-platform publishing
-- Scheduling and analytics
-- API access and Agent Keys
+| Plan | Price (USD) | Scheduled posts per month |
+|------|-------------|---------------------------|
+| Starter | $10 | 60 |
+| Scale | $25 | 120 |
+| Pro | $50 | 240 |
 
-## Token Costs by Feature
+Eligible accounts can start one three-day trial with a payment method. The selected plan renews monthly unless cancelled before the trial ends. Applicable taxes are shown at checkout.
 
-### Music Generation
+## What counts as one post?
 
-| Type | Length | Tokens |
-|------|--------|--------|
-| Standard | Short (30-90s) | 25 |
-| Standard | Long (90-180s) | 50 |
-| Premium | 30 seconds | 50 |
-| Premium | Per additional 30s | +50 |
+- One scheduled video or carousel uses one post from the monthly allowance.
+- A video post sent to several connected accounts still counts once.
+- Each video in a bulk schedule counts separately. A batch of five videos uses five posts.
+- Adding videos, images or thumbnails to the media library does not use the monthly post allowance. Separate daily upload safety limits apply.
+- The allowance resets each UTC calendar month, based on when a schedule is created.
+- Cancelling a future post before delivery starts returns its slot once to the month it was created in.
+- Immediate publishing is included separately. The monthly allowance currently applies to scheduled posts. Service and platform limits still apply.
 
-**Premium features:**
-- Exact duration control
-- Lyrics on/off toggle
-- Higher quality output
+## Included publishing tools
 
-### Voiceover Creation
+- Video posts with your own captions and custom thumbnails
+- Multiple connected accounts per platform
+- Publishing now or scheduling ahead
+- Calendar and per-destination delivery status
+- Hosted API access
+- Instagram carousels and TikTok photo posts
+- Bulk video scheduling
+- TikTok and YouTube analytics; Instagram, Facebook and X engagement summaries in beta, subject to platform permissions
+- Founder support
 
-| Type | Tokens |
-|------|--------|
-| Direct (TTS) | 25 |
-| Story (AI narrative) | 25 |
-| UGC (hook-driven) | 25 |
+Scale and Pro highlight the MCP connector for agents. See the [MCP setup guide](https://agentgruvi.com/docs/agent-integration) and [API reference](https://agentgruvi.com/docs/api-reference) for supported clients and endpoints.
 
-Voice change option: +10 tokens
+## Explore before subscribing
 
-### Video Generation
+Create an account, connect channels, prepare media and configure agent access without a subscription. Submitting a post for publishing or scheduling requires verified active publishing access through a paid plan, trial or complimentary grant.
 
-| Type | Tokens |
-|------|--------|
-| Still image video | 200 flat |
-| Animated video | 50 per second |
-| UGC Creator (voiceover) | 50 per second |
-| UGC Premium (native audio) | 100 per second |
-| App Showcase | 50 per second |
-
-**Example costs:**
-- 30-second music video: 1,500 tokens
-- 15-second UGC voiceover video: 750 tokens
-- 10-second UGC Premium video: 1,000 tokens
-- 10-second UGC Premium + background music: 1,050 tokens
-- 60-second cinematic: 3,000 tokens
-
-### Character Swap
-
-| Mode | Tokens |
-|------|--------|
-| Replace character | 50 per second |
-| Replace character + environment | 50 per second |
-| Custom prompt | 50 per second |
-
-### Social Publishing
-
-| Action | Tokens |
-|--------|--------|
-| Generate metadata (title, description, hashtags) | 10 |
-| Generate thumbnail | 10 |
-| Generate hook | 10 |
-| Publish/Schedule | Free |
-
-### Free Operations
-
-These don't use tokens:
-- Creating AI Assets (characters, products, places)
-- Uploading media (videos, audio)
-- Viewing library
-- Managing scheduled posts
-- Account management
-
-## Token Usage Examples
-
-### Simple TikTok Post
-- Song (short): 25 tokens
-- Video (30s): 1,500 tokens
-- Metadata: 10 tokens
-- **Total: 1,535 tokens**
-
-### UGC Product Video (Voiceover)
-- Voiceover: 25 tokens
-- UGC video (15s): 300 tokens
-- Metadata: 10 tokens
-- Thumbnail: 10 tokens
-- **Total: 345 tokens**
-
-### UGC Premium Product Video (Native Audio)
-- UGC Premium video (10s): 1,000 tokens
-- Metadata: 10 tokens
-- Thumbnail: 10 tokens
-- **Total: 1,020 tokens**
-
-### Full Campaign (3 videos)
-- 3 songs: 75-150 tokens
-- 3 videos (30s each): 4,500 tokens
-- 3 metadata sets: 30 tokens
-- 3 thumbnails: 30 tokens
-- **Total: 4,635-4,710 tokens**
-
-### Weekly Content Calendar
-- 14 posts (2/day x 7 days)
-- Mix of UGC (cheaper) and music videos
-- Estimated: 8,000-15,000 tokens
-
-## Token Management
-
-### Check Balance
-```bash
-curl -H "Authorization: Bearer $GRUVI_KEY" \
-  https://api.gruvimusic.com/api/gruvi/user/me
-```
-
-### Track Usage
-View detailed usage in **Account** → **Token History**
-
-### Running Low?
-- Upgrade your plan for more tokens
-- Purchase token packs (coming soon)
-- Optimize: Use shorter videos, UGC style (cheaper)
-
-## Cost Optimization Tips
-
-1. **Use UGC videos** - 50 tokens per second vs 50 per second for cinematic (same rate, but shorter UGC clips save tokens)
-2. **Batch metadata** - Generate once, reuse across platforms
-3. **Short songs first** - Test with short (25 tokens) before long (50 tokens)
-4. **Reuse assets** - Create characters once, use everywhere
-5. **Smart scheduling** - Don't regenerate for each platform
-
-## Enterprise & Custom Plans
-
-Need more? Contact sales@agentgruvi.com for:
-- Custom token volumes
-- Dedicated support
-- SLA guarantees
-- White-label options
-- API rate limit increases
-
-## FAQ
-
-**Do unused tokens roll over?**
-No, tokens reset each billing cycle.
-
-**What happens when I run out?**
-Generation requests will fail. Upgrade or wait for renewal.
-
-**Can I share tokens across accounts?**
-Not currently. Each account has its own token balance.
-
-**Are there refunds for failed generations?**
-Yes, if a generation fails due to our error, tokens are refunded automatically.
+Review current usage in Account or Posts & Calendar. Manage your subscription through Plan & Billing.
