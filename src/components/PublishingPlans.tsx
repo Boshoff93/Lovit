@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import { Alert, Button } from "@mui/material";
+import {
+  CalendarMonthOutlined,
+  CheckRounded,
+  InsightsOutlined,
+  PlaylistAddOutlined,
+  SupportAgentOutlined,
+  UploadFileOutlined,
+  ViewCarouselOutlined,
+} from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
@@ -7,6 +16,45 @@ import api from "../utils/axiosConfig";
 import { createPortalSession } from "../store/authSlice";
 import { publishingPlans } from "../config/publishing";
 import DistributionAuthDialog from "./DistributionAuthDialog";
+
+const sharedBenefits = [
+  {
+    title: "Video uploads & thumbnails",
+    description: "Bring your finished videos, captions and custom thumbnails.",
+    icon: UploadFileOutlined,
+    href: "/docs/getting-started",
+  },
+  {
+    title: "Your publishing calendar",
+    description: "Plan ahead and track scheduled posts and delivery in one place.",
+    icon: CalendarMonthOutlined,
+    href: "/docs/social",
+  },
+  {
+    title: "Image carousels",
+    description: "Prepare image sequences for Instagram and TikTok photo posts.",
+    icon: ViewCarouselOutlined,
+    href: "/blog/instagram-tiktok-carousel-posts",
+  },
+  {
+    title: "Bulk video scheduling",
+    description: "Queue a batch of videos, then set the timing and caption for each.",
+    icon: PlaylistAddOutlined,
+    href: "/blog/bulk-video-scheduling",
+  },
+  {
+    title: "Social analytics",
+    description: "TikTok and YouTube analytics, plus Instagram, Facebook and X engagement in beta. Platform permissions apply.",
+    icon: InsightsOutlined,
+    href: "/blog/social-media-analytics-api",
+  },
+  {
+    title: "Founder support",
+    description: "Get help directly from the person building Gruvi.",
+    icon: SupportAgentOutlined,
+    href: "mailto:admin@wbtechventures.com",
+  },
+];
 
 export default function PublishingPlans() {
   const { token, subscription } = useSelector((s: RootState) => s.auth);
@@ -90,19 +138,15 @@ export default function PublishingPlans() {
               ${plan.price}
               <span> / month</span>
             </h2>
-            <p>{plan.description}</p>
+            <p className="gd-plan-description">{plan.description}</p>
             <strong>{plan.posts} scheduled posts / month</strong>
-            <ul>
-              <li>Multiple accounts per platform</li>
-              <li>Video uploads & custom thumbnails</li>
-              <li>Publish now or schedule ahead</li>
-              <li><Link to="/api">API included</Link></li>
-              {plan.id !== 'starter' && <li><Link to="/docs/agent-integration">MCP connector for agents</Link><small className="gd-perk-detail">Connect Claude Code, Codex or another local MCP client.</small></li>}
-              <li><Link to="/blog/instagram-tiktok-carousel-posts">Instagram & TikTok photo carousels</Link></li>
-              <li><Link to="/blog/bulk-video-scheduling">Bulk video scheduling</Link></li>
-              <li><Link to="/blog/social-media-analytics-api">TikTok & YouTube analytics</Link></li>
-              <li><Link to="/blog/social-media-analytics-api">Instagram, Facebook & X engagement (beta)</Link></li>
-              <li><a href="mailto:admin@wbtechventures.com">Founder support</a></li>
+            <ul className="gd-plan-highlights" aria-label={`${plan.name} highlights`}>
+              <li><CheckRounded aria-hidden="true" /><span>Publish now or schedule ahead</span></li>
+              <li><CheckRounded aria-hidden="true" /><span>Multiple accounts per platform</span></li>
+              <li><CheckRounded aria-hidden="true" /><Link to="/api">API included</Link></li>
+              {plan.id !== "starter" && (
+                <li><CheckRounded aria-hidden="true" /><Link to="/docs/agent-integration">MCP connector for agents</Link></li>
+              )}
             </ul>
             <Button
               className="gd-plan-action gd-primary-action gd-card-action"
@@ -135,6 +179,23 @@ export default function PublishingPlans() {
           when you're ready to send.
         </p>
       )}
+      <section className="gd-plan-benefits" aria-labelledby="gd-plan-benefits-title">
+        <header>
+          <h2 id="gd-plan-benefits-title">Included in every plan</h2>
+          <p>All the publishing tools below, whichever post allowance you choose.</p>
+        </header>
+        <ul className="gd-plan-benefits-grid">
+          {sharedBenefits.map(({ title, description, icon: Icon, href }) => (
+            <li key={title}>
+              <span className="gd-plan-benefit-icon" aria-hidden="true"><Icon /></span>
+              <div>
+                <h3>{href.startsWith("/") ? <Link to={href}>{title}</Link> : <a href={href}>{title}</a>}</h3>
+                <p>{description}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
       <DistributionAuthDialog
         open={auth}
         onClose={() => {

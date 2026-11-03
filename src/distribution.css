@@ -517,6 +517,89 @@
 .gd-plan li {
   margin-bottom: 10px;
 }
+.gd-plan .gd-plan-description {
+  min-height: 3.3em;
+}
+.gd-plan .gd-plan-highlights {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  gap: 12px;
+}
+.gd-plan .gd-plan-highlights li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+}
+.gd-plan-highlights .MuiSvgIcon-root {
+  color: var(--gd-accent);
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin-top: 2px;
+}
+.gd-plan-benefits {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--gd-line);
+}
+.gd-plan-benefits > header {
+  margin-bottom: 24px;
+}
+.gd-plan-benefits > header h2 {
+  font-size: clamp(26px, 3vw, 34px);
+  margin-bottom: 10px;
+}
+.gd-plan-benefits > header p,
+.gd-plan-benefits-grid p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.gd-plan-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.gd-plan-benefits-grid > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px 0;
+  border-top: 1px solid var(--gd-line);
+  min-width: 0;
+}
+.gd-plan-benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #007aff12;
+  color: #80baff;
+}
+.gd-plan-benefit-icon svg { width: 22px; height: 22px; }
+.gd .gd-plan-benefits-grid h3 {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  margin-bottom: 7px;
+}
+.gd-plan-benefits-grid a:hover { text-decoration: underline; }
+@media (max-width: 1000px) {
+  .gd-plan-benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .gd-plan .gd-plan-description { min-height: 0; }
+  .gd-plan-benefits-grid { grid-template-columns: 1fr; }
+  .gd-plan-benefits { margin-top: 32px; padding-top: 24px; }
+  .gd-plan-benefits-grid > li { padding-block: 20px; }
+}
 .gd-plan .MuiButton-root {
   margin-top: auto;
   align-self: flex-start;
