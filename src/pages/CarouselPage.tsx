@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Button, MenuItem, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useGetSocialAccountsQuery } from "../store/apiSlice";
 import DestinationPicker from "../components/DestinationPicker";
@@ -11,6 +11,10 @@ import PublishingPaywall from "../components/PublishingPaywall";
 import { hasPublishingAccess } from "../config/publishing";
 import api from "../utils/axiosConfig";
 export default function CarouselPage() {
+  const [searchParams] = useSearchParams();
+  const linkedCarousel = searchParams.get("carouselId") || "";
+  const linkedPublication = searchParams.get("publication") || "";
+  const linkedResult = /^[A-Za-z0-9_-]{8,100}$/.test(linkedCarousel) && /^[A-Za-z0-9_-]{8,100}$/.test(linkedPublication);
   const { user, subscription } = useSelector((s: RootState) => s.auth);
   const userId = user?.userId || "";
   const accounts = useGetSocialAccountsQuery({ userId }, { skip: !userId });
@@ -18,17 +22,17 @@ export default function CarouselPage() {
     [previews, setPreviews] = useState<string[]>([]),
     [title, setTitle] = useState(""),
     [caption, setCaption] = useState(""),
-    [carouselId, setCarouselId] = useState(""),
+    [carouselId, setCarouselId] = useState(linkedResult ? linkedCarousel : ""),
     [saved, setSaved] = useState<any[]>([]),
     [target, setTarget] = useState<string[]>([]),
-    [mode, setMode] = useState("schedule"),
+    [mode, setMode] = useState(linkedResult ? "now" : "schedule"),
     [time, setTime] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [paywall, setPaywall] = useState(false),
-    [requestId, setRequestId] = useState(() => crypto.randomUUID()),
-    [submitted, setSubmitted] = useState(false);
+    [requestId, setRequestId] = useState(() => linkedResult ? linkedPublication : crypto.randomUUID()),
+    [submitted, setSubmitted] = useState(linkedResult);
   const [savedLoadError, setSavedLoadError] = useState(false);
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
@@ -37,9 +41,16 @@ export default function CarouselPage() {
   }, [files]);
   const loadSaved = useCallback(async () => {
     setSavedLoadError(false);
-    try { setSaved((await api.get('/api/gruvi/carousels')).data.carousels || []); }
+    try {
+      const carousels = (await api.get('/api/gruvi/carousels')).data.carousels || [];
+      setSaved(carousels);
+      if (linkedResult) {
+        const selected = carousels.find((item: any) => (item.carouselId || item.slideshowId) === linkedCarousel);
+        if (selected) { setTitle(selected.title || ""); setCaption(selected.description || ""); }
+      }
+    }
     catch { setSavedLoadError(true); }
-  }, []);
+  }, [linkedResult, linkedCarousel]);
   useEffect(() => { loadSaved(); }, [loadSaved]);
   const prepare = async () => {
     setBusy(true);
@@ -80,22 +91,29 @@ export default function CarouselPage() {
       setBusy(false);
     }
   };
-  const status = async () => {
+  const readPublication = useCallback(async (selectedCarousel: string, selectedRequest: string) => {
+    setError("");
     try {
       const { data } = await api.get(
-        `/api/gruvi/carousels/${carouselId}/publications/${requestId}`,
+        `/api/gruvi/carousels/${encodeURIComponent(selectedCarousel)}/publications/${encodeURIComponent(selectedRequest)}`,
       );
       setMessage(
         data.status === "published"
-          ? "Published on Instagram."
+          ? "Published."
           : data.status === "failed"
             ? "Publication failed. Review the error before a new attempt."
+            : data.status === "draft"
+              ? "Ready in TikTok drafts. Open TikTok to review and finish publishing."
             : "TikTok or Gruvi is still processing this publication. Review your TikTok inbox for draft posts.",
       );
     } catch (e: any) {
       setError(e.response?.data?.error || "Status could not be checked.");
     }
-  };
+  }, []);
+  const status = () => readPublication(carouselId, requestId);
+  useEffect(() => {
+    if (userId && linkedResult) readPublication(linkedCarousel, linkedPublication);
+  }, [userId, linkedResult, linkedCarousel, linkedPublication, readPublication]);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasPublishingAccess(subscription)) {
