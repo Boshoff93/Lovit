@@ -1,4 +1,5 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
@@ -293,9 +294,9 @@ const ConnectedAccountsPage: React.FC = () => {
       {error && <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 3 }}>{error}</Alert>}
       {success && <Alert severity="success" onClose={() => setSuccess(null)} sx={{ mb: 3 }}>{success}</Alert>}
       {socialAccountsQuery.isError && (
-        <Alert severity="error" sx={{ mb: 3 }} action={<Button color="inherit" onClick={() => socialAccountsQuery.refetch()}>Retry</Button>}>
+        <WorkspaceNotice onRetry={() => socialAccountsQuery.refetch()}>
           Your connected accounts could not be loaded. Try again before making changes.
-        </Alert>
+        </WorkspaceNotice>
       )}
 
       {socialAccountsQuery.isLoading ? (

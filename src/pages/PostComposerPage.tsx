@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import PublishingPaywall from "../components/PublishingPaywall";
 import DestinationPicker from "../components/DestinationPicker";
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import { RootState } from "../store/store";
 import {
   useGetSocialAccountsQuery,
@@ -328,14 +329,9 @@ export default function PostComposerPage() {
                 </span>
               </div>
               {accounts.isError ? (
-                <Alert
-                  severity="error"
-                  action={
-                    <Button onClick={() => accounts.refetch()}>Retry</Button>
-                  }
-                >
+                <WorkspaceNotice onRetry={() => accounts.refetch()}>
                   Connected accounts could not be loaded.
-                </Alert>
+                </WorkspaceNotice>
               ) : accounts.isLoading ? (
                 <WorkspaceSkeleton label="Loading destinations" kind="list" rows={3} />
               ) : !accounts.data?.accounts.length ? (

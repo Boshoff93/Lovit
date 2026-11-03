@@ -2,7 +2,7 @@ import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Alert } from "@mui/material";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import { RootState } from "../store/store";
 import {
   useGetScheduledPostsQuery,
@@ -31,40 +31,41 @@ export default function PublishingOverviewPage() {
             connected.
           </p>
           <div className="gd-card-actions">
-            <Link className="gd-button gd-primary-action gd-card-action" to="/posts/new">
+            <Link
+              className="gd-button gd-primary-action gd-card-action"
+              to="/posts/new"
+            >
               New post <span aria-hidden="true">+</span>
             </Link>
           </div>
         </div>
       </header>
       {(posts.isError || accounts.isError) && (
-        <Alert
-          severity="error"
-          action={
-            <button
-              className="gd-text-link"
-              onClick={() => {
-                posts.refetch();
-                accounts.refetch();
-              }}
-            >
-              Retry
-            </button>
-          }
+        <WorkspaceNotice
+          onRetry={() => Promise.all([posts.refetch(), accounts.refetch()])}
         >
-          Some workspace data could not be loaded.
-        </Alert>
+          Some workspace data could not be loaded. Try again to refresh this
+          overview.
+        </WorkspaceNotice>
       )}
-      {(posts.isLoading || accounts.isLoading) ? (
+      {posts.isLoading || accounts.isLoading ? (
         <WorkspaceSkeleton label="Loading workspace" />
       ) : (
         <div className="gd-stat-grid">
           {[
-            ["Scheduled", scheduled.length, "/settings/scheduled-content"],
-            ["Need attention", failed.length, "/settings/scheduled-content"],
+            [
+              "Scheduled",
+              posts.isError ? "—" : scheduled.length,
+              "/settings/scheduled-content",
+            ],
+            [
+              "Need attention",
+              posts.isError ? "—" : failed.length,
+              "/settings/scheduled-content",
+            ],
             [
               "Connected accounts",
-              accounts.data?.accounts.length ?? 0,
+              accounts.isError ? "—" : (accounts.data?.accounts.length ?? 0),
               "/settings/connected-accounts",
             ],
           ].map(([label, value, to]) => (
@@ -106,7 +107,15 @@ export default function PublishingOverviewPage() {
         <div className="gd-inline-heading">
           <h2>Coming up</h2>
         </div>
-        {scheduled.length ? (
+        {posts.isError ? (
+          <p>Your schedule is unavailable until the workspace reconnects.</p>
+        ) : posts.isLoading ? (
+          <WorkspaceSkeleton
+            label="Loading upcoming posts"
+            kind="list"
+            rows={2}
+          />
+        ) : scheduled.length ? (
           scheduled
             .slice()
             .sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime))
@@ -137,7 +146,9 @@ export default function PublishingOverviewPage() {
           </p>
         )}
         <div className="gd-card-actions">
-          <Link className="gd-text-link" to="/settings/scheduled-content">View schedule ↗</Link>
+          <Link className="gd-text-link" to="/settings/scheduled-content">
+            View schedule ↗
+          </Link>
         </div>
       </section>
     </div>

@@ -1,9 +1,14 @@
-import WorkspaceSkeleton from './WorkspaceSkeleton';
-import { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getToken, clearAuthData } from '../utils/storage';
-import { setToken, refreshUserData, fetchSubscription, logout } from '../store/authSlice';
-import { AppDispatch, RootState } from '../store/store';
+import WorkspaceSkeleton from "./WorkspaceSkeleton";
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getToken } from "../utils/storage";
+import {
+  setToken,
+  refreshUserData,
+  fetchSubscription,
+  logout,
+} from "../store/authSlice";
+import { AppDispatch, RootState } from "../store/store";
 
 interface AuthInitializerProps {
   children: React.ReactNode;
@@ -15,7 +20,9 @@ interface AuthInitializerProps {
  */
 const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { token: reduxToken, user } = useSelector((state: RootState) => state.auth);
+  const { token: reduxToken, user } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const [isInitialized, setIsInitialized] = useState(false);
   const initStarted = useRef(false);
 
@@ -37,15 +44,12 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
 
       // If we have a token, ensure we have user data
       if (token) {
-        if (!user) {
-          try {
-            await dispatch(refreshUserData()).unwrap();
-            await dispatch(fetchSubscription());
-          } catch {
-            // Token is invalid - clear everything
-            clearAuthData();
-            dispatch(logout());
-          }
+        try {
+          await dispatch(refreshUserData()).unwrap();
+          await dispatch(fetchSubscription());
+        } catch {
+          // The API clients clear rejected sessions. A temporary service error
+          // should remain retryable without discarding a valid account.
         }
       } else {
         // No token anywhere - ensure clean logged out state
@@ -61,7 +65,11 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   }, [dispatch, reduxToken, user]);
 
   if (!isInitialized) {
-    return <div className="gd-workspace gd-auth-loading"><WorkspaceSkeleton label="Loading account" /></div>;
+    return (
+      <div className="gd-workspace gd-auth-loading">
+        <WorkspaceSkeleton label="Loading account" />
+      </div>
+    );
   }
 
   return <>{children}</>;

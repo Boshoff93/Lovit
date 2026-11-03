@@ -685,7 +685,7 @@ const AccountPage: React.FC = () => {
             </List>
           )}
 
-          <Box sx={{ mt: 2, p: 2, border: '1px solid #007AFF25', borderRadius: 2, bgcolor: '#111822' }}>
+          <Box sx={{ mt: 2, p: 2, border: '1px solid #007AFF25', borderRadius: '12px', bgcolor: '#111822' }}>
             <Typography sx={{ color: '#aab4c2', fontSize: '0.85rem' }}>Configure an MCP client, manage your keys and follow the publishing workflow in Agent Access.</Typography>
             <Button sx={{ px: 0 }} onClick={() => navigate('/agents')}>Set up agent access →</Button>
           </Box>

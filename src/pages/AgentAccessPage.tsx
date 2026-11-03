@@ -1,4 +1,5 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -21,6 +22,8 @@ export default function AgentAccessPage() {
   const [busy, setBusy] = useState(false);
   const [revoke, setRevoke] = useState<string | null>(null);
   const load = async () => {
+    setLoading(true);
+    setError("");
     try {
       setKeys((await userApi.listAgentKeys()).data.keys || []);
     } catch {
@@ -72,7 +75,7 @@ export default function AgentAccessPage() {
           </p>
         </div>
       </header>
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && <WorkspaceNotice onRetry={load}>{error}</WorkspaceNotice>}
       <div className="gd-agent-setup">
         <section className="gd-form-section">
           <h2>1. Create an agent key</h2>
@@ -117,7 +120,13 @@ export default function AgentAccessPage() {
               <Button onClick={() => setCreated("")}>Hide key</Button>
             </Alert>
           )}
-          {loading && <WorkspaceSkeleton label="Loading agent keys" kind="list" rows={2} />}
+          {loading && (
+            <WorkspaceSkeleton
+              label="Loading agent keys"
+              kind="list"
+              rows={2}
+            />
+          )}
           <div className="gd-key-list">
             {keys.map((key) => (
               <div key={key.keyId}>

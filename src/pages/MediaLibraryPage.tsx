@@ -1,6 +1,7 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import React, { useState } from "react";
-import { Alert, Pagination, TextField } from "@mui/material";
+import { Pagination, TextField } from "@mui/material";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -25,7 +26,10 @@ export default function MediaLibraryPage() {
           <h1>Media library</h1>
           <p>Finished videos, ready to post again when you need them.</p>
           <div className="gd-card-actions">
-            <Link className="gd-button gd-primary-action gd-card-action" to="/upload">
+            <Link
+              className="gd-button gd-primary-action gd-card-action"
+              to="/upload"
+            >
               Upload a video +
             </Link>
           </div>
@@ -39,12 +43,9 @@ export default function MediaLibraryPage() {
         sx={{ mb: 3, width: { xs: "100%", sm: 320 } }}
       />
       {query.isError ? (
-        <Alert
-          severity="error"
-          action={<button onClick={() => query.refetch()}>Retry</button>}
-        >
+        <WorkspaceNotice onRetry={() => query.refetch()}>
           Your media could not be loaded.
-        </Alert>
+        </WorkspaceNotice>
       ) : query.isLoading ? (
         <WorkspaceSkeleton label="Loading media" rows={6} />
       ) : videos.length ? (
@@ -95,7 +96,10 @@ export default function MediaLibraryPage() {
               : "Your content starts here."}
           </h2>
           <p>Upload a finished video to add it to your media library.</p>
-          <Link className="gd-button gd-primary-action gd-card-action" to="/upload">
+          <Link
+            className="gd-button gd-primary-action gd-card-action"
+            to="/upload"
+          >
             Upload a video +
           </Link>
         </div>

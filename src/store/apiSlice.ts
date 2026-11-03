@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Character, Narrative, ScheduledPost } from '../services/api';
 import { API_BASE_URL } from '../utils/apiBaseUrl';
+import { logout } from './authSlice';
+import { shouldClearSession } from '../utils/sessionErrors';
 
 // TikTok Analytics types
 export interface TikTokVideo {
@@ -183,10 +185,7 @@ interface NarrativesResponse {
   narratives: Narrative[];
 }
 
-// RTK Query API slice
-export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
+const authenticatedQuery = fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -196,7 +195,20 @@ export const apiSlice = createApi({
       }
       return headers;
     },
-  }),
+});
+
+// RTK Query API slice
+export const apiSlice = createApi({
+  reducerPath: 'api',
+  baseQuery: async (args, queryApi, extraOptions) => {
+    const token = (queryApi.getState() as { auth: { token: string | null } }).auth.token;
+    const result = await authenticatedQuery(args, queryApi, extraOptions);
+    const current = (queryApi.getState() as { auth: { token: string | null } }).auth.token;
+    if (result.error && shouldClearSession(result.error.status, result.error.data, token, current)) {
+      queryApi.dispatch(logout());
+    }
+    return result;
+  },
   // Tag types for cache invalidation
   tagTypes: ['Videos', 'Songs', 'Characters', 'Narratives', 'SocialConnections', 'ScheduledPosts', 'Slideshows', 'TikTokVideos', 'TikTokSummary', 'TikTokTrends', 'TikTokAccountStats', 'YouTubeVideos', 'YouTubeSummary', 'YouTubeTrends', 'YouTubeAccountStats'],
   endpoints: (builder) => ({

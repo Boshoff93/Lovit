@@ -1,4 +1,5 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useMemo } from 'react';
 import { Alert, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -112,9 +113,9 @@ const AnalyticsOverviewPage: React.FC = () => {
         </div>
       </header>
       {accountsQuery.isError && (
-        <Alert severity="error" sx={{ mb: 3 }} action={<Button color="inherit" onClick={() => accountsQuery.refetch()}>Retry</Button>}>
+        <WorkspaceNotice onRetry={() => accountsQuery.refetch()}>
           Your connected accounts could not be loaded.
-        </Alert>
+        </WorkspaceNotice>
       )}
       {accountsQuery.isLoading ? (
         <WorkspaceSkeleton label="Loading analytics channels" rows={4} />

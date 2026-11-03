@@ -1,11 +1,24 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import authReducer from './authSlice';
-import modelsReducer from './modelsSlice';
-import galleryReducer from './gallerySlice';
-import dataReducer from './dataSlice';
-import { apiSlice } from './apiSlice';
+import {
+  configureStore,
+  combineReducers,
+  createListenerMiddleware,
+} from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import authReducer, { logout } from "./authSlice";
+import modelsReducer from "./modelsSlice";
+import galleryReducer from "./gallerySlice";
+import dataReducer from "./dataSlice";
+import { apiSlice } from "./apiSlice";
 
 // Root reducer
 const rootReducer = combineReducers({
@@ -19,12 +32,20 @@ const rootReducer = combineReducers({
 // Redux persist configuration
 // Note: 'data' is intentionally NOT in whitelist - we want fresh data on hard refresh
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['auth', 'models', 'gallery'], // Persist auth, models, and gallery state (NOT data - fetch fresh on hard refresh)
+  whitelist: ["auth", "models", "gallery"], // Persist auth, models, and gallery state (NOT data - fetch fresh on hard refresh)
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const sessionListener = createListenerMiddleware();
+sessionListener.startListening({
+  actionCreator: logout,
+  effect: (_, listener) => {
+    listener.dispatch(apiSlice.util.resetApiState());
+  },
+});
 
 // Create store
 export const store = configureStore({
@@ -34,7 +55,9 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(apiSlice.middleware),
+    })
+      .prepend(sessionListener.middleware)
+      .concat(apiSlice.middleware),
 });
 
 // Create persistor
@@ -42,4 +65,4 @@ export const persistor = persistStore(store);
 
 // Export types
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch; 
+export type AppDispatch = typeof store.dispatch;

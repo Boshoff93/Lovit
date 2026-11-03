@@ -1,4 +1,5 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
   Box,
@@ -334,6 +335,7 @@ const ScheduledContentPage: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+      {scheduledPostsQuery.isError && <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pt: 2 }}><WorkspaceNotice onRetry={() => scheduledPostsQuery.refetch()}>Your schedule could not be loaded.</WorkspaceNotice></Box>}
       {/* Page actions stay separate from calendar controls. */}
       <Box sx={{ pt: { xs: 0, md: 2 }, pb: 3, px: { xs: 2, sm: 3, md: 4 }, background: 'transparent' }}>
         <Box className="gd-page-heading">
@@ -682,11 +684,11 @@ const ScheduledContentPage: React.FC = () => {
                 borderRadius: '0 0 16px 16px',
               }}
             >
-              <WorkspaceSkeleton label="Loading calendar" kind="calendar" rows={7} />
+              <WorkspaceSkeleton label="Loading calendar" kind="calendar" calendarView={viewMode} />
             </Box>
           )}
             {/* Empty state overlay - centered, doesn't affect layout */}
-            {scheduledPosts.filter(p => p.status !== 'cancelled').length === 0 && !loading && (
+            {scheduledPosts.filter(p => p.status !== 'cancelled').length === 0 && !loading && !scheduledPostsQuery.isError && (
               <Box
                 sx={{
                   position: 'absolute',
