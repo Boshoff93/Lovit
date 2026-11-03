@@ -228,19 +228,40 @@
   width: 13px;
   height: 13px;
 }
+.gd-connected-accounts {
+  border-top: 1px solid #ffffff20;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gd-workspace .gd-connected-accounts h3 {
+  margin: 0;
+  color: #b9c4d1;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
 .gd-connected-chips {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
 .gd-connected-chips .MuiChip-root {
+  width: 100%;
   max-width: 100%;
-  background: #ffffff05;
+  justify-content: flex-start;
+  padding: 4px 6px;
+  background: #111822;
   border: 1px solid #ffffff20;
-  color: #e1e7ef;
+  color: #f4f7fb;
+  font-size: 14px;
+  font-weight: 500;
 }
 .gd-connected-chips .MuiChip-deleteIcon {
-  color: #9fb8c3;
+  color: #b9c4d1;
+  margin: 0;
 }
 .gd-channel-card .gd-channel-action.MuiButton-root {
   margin-top: auto;
@@ -355,9 +376,9 @@
 .gd-workspace .gd-channel-grid { grid-auto-rows: auto; }
 .gd-workspace .gd-channel-status { min-height: 30px; padding: 5px 10px; }
 .gd-workspace .MuiChip-root { border-radius: 8px; }
-.gd-workspace .gd-connected-chips .MuiChip-root { height: 32px; }
-.gd-workspace .gd-connected-chips .MuiChip-avatar { border-radius: 6px; width: 22px; height: 22px; }
-.gd-workspace .gd-connected-chips .MuiChip-label { overflow: hidden; text-overflow: ellipsis; }
+.gd-workspace .gd-connected-chips .MuiChip-root { height: 44px; }
+.gd-workspace .gd-connected-chips .MuiChip-avatar { border-radius: 6px; width: 28px; height: 28px; margin-inline: 2px 0; }
+.gd-workspace .gd-connected-chips .MuiChip-label { flex: 1; min-width: 0; padding-inline: 10px; overflow: hidden; text-overflow: ellipsis; }
 .gd-workspace .gd-form .MuiFormControl-root,
 .gd-workspace .gd-file-input,
 .gd-workspace .gd-account-page .MuiFormControl-root { width: 100%; max-width: 560px; }

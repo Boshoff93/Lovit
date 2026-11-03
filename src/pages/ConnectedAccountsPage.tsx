@@ -330,19 +330,22 @@ const ConnectedAccountsPage: React.FC = () => {
                     : `${platform.name} publishing is on the way.`}</p>
                 </div>
                 {hasAccounts && (
-                  <div className="gd-connected-chips">
-                    {platformAccounts.map((account) => (
-                      <Chip
-                        key={account.accountId}
-                        avatar={account.avatarUrl ? <Avatar src={account.avatarUrl} alt="">{getAccountDisplayName(account).replace(/^@/, "").charAt(0).toUpperCase()}</Avatar> : undefined}
-                        label={getAccountDisplayName(account)}
-                        onDelete={disconnectingAccountId ? undefined : () => handleDisconnect(account.accountId, platform.name)}
-                        deleteIcon={disconnectingAccountId === account.accountId
-                          ? <CircularProgress size={14} aria-label="Disconnecting account" />
-                          : <Close aria-label={`Disconnect ${getAccountDisplayName(account)}`} />}
-                      />
-                    ))}
-                  </div>
+                  <section className="gd-connected-accounts" aria-label={`${platform.name} connected accounts`}>
+                    <h3>{platformAccounts.length === 1 ? 'Connected account' : 'Connected accounts'}</h3>
+                    <div className="gd-connected-chips">
+                      {platformAccounts.map((account) => (
+                        <Chip
+                          key={account.accountId}
+                          avatar={account.avatarUrl ? <Avatar src={account.avatarUrl} alt="">{getAccountDisplayName(account).replace(/^@/, "").charAt(0).toUpperCase()}</Avatar> : undefined}
+                          label={getAccountDisplayName(account)}
+                          onDelete={disconnectingAccountId ? undefined : () => handleDisconnect(account.accountId, platform.name)}
+                          deleteIcon={disconnectingAccountId === account.accountId
+                            ? <CircularProgress size={14} aria-label="Disconnecting account" />
+                            : <Close aria-label={`Disconnect ${getAccountDisplayName(account)}`} />}
+                        />
+                      ))}
+                    </div>
+                  </section>
                 )}
                 {platform.available && (
                   <Button
