@@ -5,7 +5,7 @@ import PublishingPlans from "../components/PublishingPlans";
 import { SEO } from "../utils/seoHelper";
 export default function PaymentPage() {
   return (
-    <div className="gd">
+    <div className="gd gd-pricing-page">
       <SEO
         title="Gruvi Pricing | Content Distribution from $10/month"
         description="Content distribution for agents from $10 per month. Choose 60, 120 or 240 scheduled posts, with dashboard, API, MCP, uploads and analytics."

@@ -1398,6 +1398,10 @@
   --gd-accent: #4ecdc4;
   background: #0d0d0f;
 }
+.gd.gd-pricing-page {
+  --gd-bg: #0d1118;
+  background: var(--gd-bg);
+}
 .gd h1,
 .gd h2,
 .gd h3 {
