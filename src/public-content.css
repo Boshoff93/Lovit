@@ -165,7 +165,10 @@
   grid-template-columns: 1.05fr 1fr;
   gap: 55px;
   align-items: center;
-  padding-block: 175px 85px;
+  padding-block: 150px 65px;
+}
+.gr-api-page .gr-section {
+  border-top: 1px solid #ffffff16;
 }
 .gr-api-hero h1 {
   font-size: clamp(40px, 4.2vw, 58px);
@@ -184,59 +187,6 @@
   content: "✓";
   color: #73dcd2;
   margin-right: 7px;
-}
-.gr-api-visual {
-  min-width: 0;
-  position: relative;
-  padding-top: 15px;
-}
-.gr-api-sources {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-.gr-api-sources span {
-  border: 1px solid #ffffff1c;
-  background: #19232f;
-  border-radius: 10px;
-  font-size: 12px;
-  padding: 9px 14px;
-}
-.gr-api-hub {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  width: fit-content;
-  margin: 36px auto;
-  padding: 18px 35px;
-  border: 1px solid #6bbaa94a;
-  border-radius: 24px;
-  background: #18252d;
-  box-shadow: 0 0 50px #4dc5c010;
-}
-.gr-api-hub::before,
-.gr-api-hub::after {
-  content: "";
-  position: absolute;
-  height: 36px;
-  width: 1px;
-  left: 50%;
-  background: linear-gradient(#73dcd280, #007aff80);
-}
-.gr-api-hub::before {
-  bottom: 100%;
-}
-.gr-api-hub::after {
-  top: 100%;
-}
-.gr-api-hub span {
-  font-family: Fredoka, Inter, sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-}
-.gr-api-hub small {
-  color: #aab4c2;
-  font-size: 11px;
 }
 .gr-code {
   width: 100%;
@@ -999,6 +949,23 @@
 }
 .gm .gr-home-developers {
   padding-block: 95px;
+  position: relative;
+}
+.gm .gr-home-developers::before,
+.gm .gr-home-developers::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1200px, calc(100% - 80px));
+  height: 1px;
+  background: #ffffff16;
+}
+.gm .gr-home-developers::before {
+  top: 0;
+}
+.gm .gr-home-developers::after {
+  bottom: 0;
 }
 .gm .gr-home-dev-intro {
   display: flex;
@@ -1049,11 +1016,6 @@
   .gr-api-hero {
     grid-template-columns: 1fr;
     padding-top: 140px;
-  }
-  .gr-api-visual {
-    max-width: 600px;
-    width: 100%;
-    margin-inline: auto;
   }
   .gr-reference-layout {
     grid-template-columns: 1fr;
@@ -1155,12 +1117,12 @@
     gap: 20px;
     padding-bottom: 45px;
   }
-  .gr-api-sources span {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
   .gr-api-hero {
     padding-block: 130px 40px;
+  }
+  .gm .gr-home-developers::before,
+  .gm .gr-home-developers::after {
+    width: calc(100% - 40px);
   }
   .gr-api-hero h1 {
     font-size: 40px;

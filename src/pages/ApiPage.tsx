@@ -5,7 +5,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CollectionsRoundedIcon from "@mui/icons-material/CollectionsRounded";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import PublicPage from "../components/PublicPage";
-import CodeExample from "../components/CodeExample";
+import ApiWorkflowArtwork from "../components/marketing/ApiWorkflowArtwork";
 import { SEO } from "../utils/seoHelper";
 import { analyticsCoverage } from "../content/apiReference";
 const workflows = [
@@ -40,7 +40,7 @@ const workflows = [
 ];
 export default function ApiPage() {
   return (
-    <PublicPage>
+    <PublicPage className="gr-api-page">
       <SEO
         title="Social Media API for Agents & Developers | Gruvi"
         description="A hosted social media publishing API for finished content. Upload videos, schedule batches, publish image carousels and read analytics through HTTPS or MCP."
@@ -86,24 +86,7 @@ export default function ApiPage() {
               <li>Prepare content before subscribing</li>
             </ul>
           </div>
-          <div className="gr-api-visual">
-            <div className="gr-api-sources">
-              <span>Your agent</span>
-              <span>Your app</span>
-              <span>Your script</span>
-            </div>
-            <div className="gr-api-hub">
-              <img src="/gruvi.png" alt="" width="64" height="64" />
-              <span>Gruvi</span>
-              <small>Content distribution</small>
-            </div>
-            <CodeExample
-              label="Start with a read-only request"
-              code={
-                'curl --fail-with-body https://api.agentgruvi.com/api/gruvi/social-accounts \\\n  -H "Authorization: Bearer $GRUVI_API_KEY"'
-              }
-            />
-          </div>
+          <ApiWorkflowArtwork />
         </section>
         <section className="gr-container gr-section">
           <div className="gr-section-heading">
