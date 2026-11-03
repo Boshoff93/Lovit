@@ -407,6 +407,14 @@
 .gd-workspace .gd-text-link { color: #80baff !important; }
 .gd-workspace .gd-inline-heading a { color: #80baff; }
 .gd-workspace .gd-related-link { display: inline-flex; margin-top: 20px; }
+/* Keep text aligned with the card content while giving its hover surface an inset. */
+.gd-workspace .gd-text-link.MuiButton-text {
+  padding: 8px 12px;
+  margin-inline-start: -12px;
+  gap: 8px;
+}
+.gd-workspace .gd-text-link.MuiButton-text .MuiButton-startIcon,
+.gd-workspace .gd-text-link.MuiButton-text .MuiButton-endIcon { margin-inline: 0; }
 .gd-workspace .gd-stat > span:last-child { color: #80baff; }
 .gd-workspace .gd-media-placeholder { background: #202936; }
 

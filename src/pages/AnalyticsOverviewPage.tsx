@@ -107,7 +107,7 @@ const AnalyticsOverviewPage: React.FC = () => {
           <p className="gd-eyebrow">Measure your content</p>
           <h1>Analytics</h1>
           <p>See how your published content performs on each channel.</p>
-          <Button className="gd-text-link gd-related-link" onClick={() => navigate('/settings/connected-accounts')} endIcon={<ArrowForwardIcon />} sx={{ textTransform: 'none', p: 0 }}>
+          <Button className="gd-text-link gd-related-link" onClick={() => navigate('/settings/connected-accounts')} endIcon={<ArrowForwardIcon />}>
             Connected accounts
           </Button>
         </div>
