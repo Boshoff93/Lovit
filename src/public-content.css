@@ -392,7 +392,7 @@
 }
 .gr-reference-group > a:not(.gr-reference-group-label) {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 9px;
   font-size: 11px;
   color: #aebbcf;
@@ -407,6 +407,7 @@
 }
 .gr-method {
   display: inline-flex;
+  align-items: center;
   justify-content: center;
   flex-shrink: 0;
   min-width: 43px;
