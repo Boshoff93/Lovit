@@ -1,5 +1,7 @@
 import React from "react";
 import TerminalRoundedIcon from "@mui/icons-material/TerminalRounded";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import FlareRoundedIcon from "@mui/icons-material/FlareRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CodeExample from "../CodeExample";
@@ -16,38 +18,59 @@ const request = `{
   "scheduledTime": "2026-12-01T09:00:00Z"
 }`;
 
+function channelRoute(index: number) {
+  const x = 50 + index * 100;
+  return x < 300
+    ? `M300 0 V20 Q300 32 288 32 H${x + 12} Q${x} 32 ${x} 44 V72`
+    : `M300 0 V20 Q300 32 312 32 H${x - 12} Q${x} 32 ${x} 44 V72`;
+}
+
 export default function ApiWorkflowArtwork() {
   return (
     <figure
       className="gr-api-workflow"
-      aria-label="Example of an agent scheduling a video through Gruvi for connected social channels"
+      aria-label="Example of Codex, Gemini or Claude scheduling a video through Gruvi for connected social channels"
     >
-      <div className="gr-api-request">
-        <div className="gr-api-request-origin">
-          <span className="gr-api-terminal-icon">
-            <TerminalRoundedIcon />
+      <div className="gr-api-agent-stack">
+        <div className="gr-api-agent-layer gr-api-agent-claude">
+          <span className="gr-api-agent-mark">
+            <FlareRoundedIcon />
           </span>
-          <span>
-            Your agent <small>One authenticated request</small>
-          </span>
-          <span className="gr-api-example-label">Example</span>
+          <span>Claude</span>
         </div>
-        <div className="gr-api-media">
-          <img
-            src="/marketing/slow-mornings-thumbnail.webp"
-            alt=""
-            width="42"
-            height="48"
-          />
-          <div>
-            <strong>Slow mornings.</strong>
-            <span>Finished video + thumbnail</span>
+        <div className="gr-api-agent-layer gr-api-agent-gemini">
+          <span className="gr-api-agent-mark">
+            <AutoAwesomeRoundedIcon />
+          </span>
+          <span>Gemini</span>
+        </div>
+        <div className="gr-api-request">
+          <div className="gr-api-request-origin">
+            <span className="gr-api-terminal-icon">
+              <TerminalRoundedIcon />
+            </span>
+            <span>
+              Codex <small>Your agent. One authenticated request.</small>
+            </span>
+            <span className="gr-api-example-label">Example</span>
           </div>
-          <span className="gr-api-ready">
-            <CheckRoundedIcon /> Ready
-          </span>
+          <div className="gr-api-media">
+            <img
+              src="/marketing/slow-mornings-thumbnail.webp"
+              alt=""
+              width="42"
+              height="48"
+            />
+            <div>
+              <strong>Slow mornings.</strong>
+              <span>Finished video + thumbnail</span>
+            </div>
+            <span className="gr-api-ready">
+              <CheckRoundedIcon /> Ready
+            </span>
+          </div>
+          <CodeExample label="POST /api/gruvi/scheduled-posts" code={request} />
         </div>
-        <CodeExample label="POST /api/gruvi/scheduled-posts" code={request} />
       </div>
       <div className="gr-api-connector" aria-hidden="true">
         <span />
@@ -71,13 +94,11 @@ export default function ApiWorkflowArtwork() {
                 { "--route-delay": `${index * -0.8}s` } as React.CSSProperties
               }
             >
-              <path
-                className="gr-api-route"
-                d={`M300 0 V16 Q300 34 ${50 + index * 100} 34 V72`}
-              />
+              <path className="gr-api-route" d={channelRoute(index)} />
               <path
                 className="gr-api-packet"
-                d={`M300 0 V16 Q300 34 ${50 + index * 100} 34 V72`}
+                pathLength="1"
+                d={channelRoute(index)}
               />
             </g>
           ))}

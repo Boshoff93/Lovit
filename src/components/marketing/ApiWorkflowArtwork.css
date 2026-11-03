@@ -12,7 +12,54 @@
   background: radial-gradient(ellipse, #007aff14, transparent 68%);
   pointer-events: none;
 }
+.gr-api-agent-stack {
+  position: relative;
+  padding-top: 88px;
+}
+.gr-api-agent-layer {
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  padding: 10px 18px;
+  height: 140px;
+  align-items: flex-start;
+  border: 1px solid #ffffff20;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #dce4ef;
+}
+.gr-api-agent-claude {
+  top: 0;
+  inset-inline: 28px;
+  background: #1d202b;
+}
+.gr-api-agent-gemini {
+  top: 44px;
+  inset-inline: 14px;
+  background: #1b2332;
+}
+.gr-api-agent-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.gr-api-agent-mark svg {
+  width: 19px;
+  height: 19px;
+}
+.gr-api-agent-claude .gr-api-agent-mark {
+  color: #d9a58f;
+}
+.gr-api-agent-gemini .gr-api-agent-mark {
+  color: #b4bcff;
+}
 .gr-api-request {
+  position: relative;
   overflow: hidden;
   background: #141c27;
   border: 1px solid #ffffff20;
@@ -117,15 +164,15 @@
 }
 .gr-api-connector {
   position: relative;
-  height: 24px;
-  width: 1px;
+  height: 28px;
+  width: 2px;
   margin: 0 auto;
   background: #4277ac66;
   overflow: hidden;
 }
 .gr-api-connector span {
   display: block;
-  width: 1px;
+  width: 2px;
   height: 12px;
   background: #80bbff;
   animation: gr-request-flow 2.6s linear infinite;
@@ -136,7 +183,7 @@
   align-items: center;
   gap: 14px;
   padding: 15px 20px;
-  margin-inline: 24px;
+  margin-inline: 0;
   background: #192330;
   border: 1px solid #71a4db55;
   border-radius: 16px;
@@ -181,22 +228,25 @@
   height: 46px;
 }
 .gr-api-route {
-  stroke: #3e5b78;
-  stroke-width: 1;
+  stroke: #496b8c;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
 .gr-api-packet {
   stroke: #8fbcf5;
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
-  stroke-dasharray: 8 380;
-  stroke-dashoffset: 380;
+  stroke-linecap: round;
+  stroke-dasharray: 0.045 0.955;
+  stroke-dashoffset: 1;
   animation: gr-channel-flow 5.2s var(--route-delay) linear infinite;
 }
 .gr-api-channel-list {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 10px;
+  gap: 0;
   text-align: center;
 }
 .gr-api-channel-list > div {
@@ -243,7 +293,7 @@
 }
 @keyframes gr-channel-flow {
   to {
-    stroke-dashoffset: -380;
+    stroke-dashoffset: -1;
   }
 }
 @media (max-width: 900px) {
@@ -270,16 +320,12 @@
     font-size: 10px;
   }
   .gr-api-dispatch {
-    margin-inline: 8px;
     padding: 14px;
     gap: 10px;
   }
   .gr-api-response {
     font-size: 9px;
     padding: 6px;
-  }
-  .gr-api-channel-list {
-    gap: 3px;
   }
   .gr-api-channel-list > div > span {
     width: 36px;
