@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Skeleton } from '@mui/material';
+import { Button } from '@mui/material';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
@@ -8,6 +8,7 @@ import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineR
 import IosShareRoundedIcon from '@mui/icons-material/IosShareRounded';
 import api from '../utils/axiosConfig';
 import WorkspaceNotice from './WorkspaceNotice';
+import { AnalyticsPostRowsSkeleton } from './AnalyticsSkeleton';
 
 type Post = { id: string; title: string; caption?: string; thumbnailUrl?: string | null; createdAt?: string; url?: string; likes: number | null; comments: number | null; shares: number | null };
 type Page = { posts: Post[]; totals: Record<string, number | null>; paging: { nextCursor: string | null; hasMore: boolean } };
@@ -64,7 +65,7 @@ export default function AnalyticsPosts({ platform, accountId }: { platform: stri
     <div className="gd-analytics-posts-heading"><h2 id="analytics-posts-title" ref={heading} tabIndex={-1}>Recent posts</h2><span className="gd-analytics-page-size">10 per page</span></div>
     <p className="gd-quiet">Lifetime engagement for the posts on this page. These counts are separate from the account insights period. Unavailable counts stay unavailable.</p>
     {error && <WorkspaceNotice onRetry={() => error.expired ? reset() : setRetry(n => n + 1)}>{error.message}</WorkspaceNotice>}
-    {busy && <div role="status" aria-label="Loading posts" className="gd-posts-loading">{[0, 1, 2].map(i => <div className="gd-post-loading-row" key={i}><Skeleton variant="rounded" className="gd-post-loading-artwork"/><div><Skeleton width="25%"/><Skeleton width="90%" height={32}/><Skeleton width="70%"/><Skeleton width="50%"/></div></div>)}</div>}
+    {busy && <div role="status" aria-label="Loading posts" aria-busy="true"><AnalyticsPostRowsSkeleton/></div>}
     {data && <>
       <div className="gd-recent-totals"><span>{data.posts.length} posts on this page</span><span>{shown(data.totals.likes)} likes & reactions</span><span>{shown(data.totals.comments)} comments</span><span>{shown(data.totals.shares)} shares</span></div>
       <div className="gd-analytics-post-list">{data.posts.map(post => <PostRow post={post} key={post.id}/>)}</div>

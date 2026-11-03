@@ -1,4 +1,5 @@
-import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import { VideoActivitySkeleton, VideoAnalyticsSkeleton } from "../components/AnalyticsSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useState, useMemo } from 'react';
 import {
   Box,
@@ -392,7 +393,7 @@ const TikTokAnalyticsPage: React.FC = () => {
     { userId, accountId: activeAccountId },
     { skip: !userId }
   );
-  const { data: videosData } = useGetTikTokVideosQuery(
+  const { data: videosData, isLoading: videosLoading, error: videosError, refetch: refetchVideos } = useGetTikTokVideosQuery(
     { userId, accountId: activeAccountId },
     { skip: !userId }
   );
@@ -409,11 +410,7 @@ const TikTokAnalyticsPage: React.FC = () => {
   }
 
   if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-        <WorkspaceSkeleton label="Loading TikTok analytics" rows={4} />
-      </Box>
-    );
+    return <VideoAnalyticsSkeleton platform="TikTok" />;
   }
 
   if (summaryError) {
@@ -617,7 +614,7 @@ const TikTokAnalyticsPage: React.FC = () => {
       </Box>
 
       {/* Last 7 Days Calendar */}
-      <WeekCalendar videos={videosData?.videos || []} />
+      <>{videosLoading && !videosData ? <VideoActivitySkeleton/> : videosError && !videosData ? <WorkspaceNotice onRetry={() => refetchVideos()}>Recent video activity could not be loaded.</WorkspaceNotice> : <WeekCalendar videos={videosData?.videos || []}/>}</>
 
       {/* Views Over Time */}
       <Box sx={{ mb: 4 }}>

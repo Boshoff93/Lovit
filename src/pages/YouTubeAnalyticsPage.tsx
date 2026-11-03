@@ -1,4 +1,5 @@
-import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import { VideoActivitySkeleton, VideoAnalyticsSkeleton } from "../components/AnalyticsSkeleton";
+import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useState, useMemo } from 'react';
 import {
   Box,
@@ -385,7 +386,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
     { userId, accountId: activeAccountId },
     { skip: !userId }
   );
-  const { data: videosData } = useGetYouTubeVideosQuery(
+  const { data: videosData, isLoading: videosLoading, error: videosError, refetch: refetchVideos } = useGetYouTubeVideosQuery(
     { userId, accountId: activeAccountId },
     { skip: !userId }
   );
@@ -402,11 +403,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
   }
 
   if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-        <WorkspaceSkeleton label="Loading YouTube analytics" rows={4} />
-      </Box>
-    );
+    return <VideoAnalyticsSkeleton platform="YouTube" />;
   }
 
   if (summaryError) {
@@ -602,7 +599,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
       </Box>
 
       {/* Last 7 Days Calendar */}
-      <WeekCalendar videos={videosData?.videos || []} />
+      <>{videosLoading && !videosData ? <VideoActivitySkeleton/> : videosError && !videosData ? <WorkspaceNotice onRetry={() => refetchVideos()}>Recent video activity could not be loaded.</WorkspaceNotice> : <WeekCalendar videos={videosData?.videos || []}/>}</>
 
       {/* Views Over Time */}
       <Box sx={{ mb: 4 }}>

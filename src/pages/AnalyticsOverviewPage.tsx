@@ -1,4 +1,4 @@
-import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
+import { AnalyticsChannelsSkeleton } from "../components/AnalyticsSkeleton";
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useMemo } from 'react';
 import { Alert, Button } from '@mui/material';
@@ -118,7 +118,7 @@ const AnalyticsOverviewPage: React.FC = () => {
         </WorkspaceNotice>
       )}
       {accountsQuery.isLoading ? (
-        <WorkspaceSkeleton label="Loading analytics channels" rows={4} />
+        <AnalyticsChannelsSkeleton />
       ) : (
         <div className="gd-channel-grid gd-analytics-grid">
           {platforms.map((platform) => {

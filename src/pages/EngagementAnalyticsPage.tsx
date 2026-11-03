@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Avatar, Button, MenuItem, Skeleton, TextField } from '@mui/material';
+import { Avatar, Button, MenuItem, TextField } from '@mui/material';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
@@ -13,6 +13,7 @@ import { useGetSocialAccountsQuery } from '../store/apiSlice';
 import { platformNames } from '../config/publishing';
 import WorkspaceNotice from '../components/WorkspaceNotice';
 import AnalyticsPosts from '../components/AnalyticsPosts';
+import { AnalyticsInsightsSkeleton } from '../components/AnalyticsSkeleton';
 import api from '../utils/axiosConfig';
 
 type Metric = { value: number | null; availability: string; coverageDays?: number; series?: { date: string; value: number | null }[] };
@@ -108,10 +109,7 @@ export default function EngagementAnalyticsPage() {
       <p className="gd-quiet">Meta will ask you to approve read access. App permission approval and business asset selection determine what is available.</p>
       <Button variant="contained" className="gd-card-action" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Continue with Meta'}</Button></div>
     </section>}
-    {busy && <div className="gd-analytics-loading" role="status" aria-label="Loading analytics" aria-busy="true">
-      <div className="gd-analytics-kpis">{[0,1,2].map(i => <div className="gd-stat" key={i}><Skeleton width="45%"/><Skeleton width="65%" height={54}/><Skeleton width="75%"/></div>)}</div>
-      <div className="gd-form-section"><Skeleton width="35%" height={28}/><Skeleton variant="rounded" width="100%" height={180}/></div>
-    </div>}
+    {!data && (accounts.isLoading || busy) && <AnalyticsInsightsSkeleton platform={platform} chartLabel={chartLabel}/>}
     {data && <>
       <section className="gd-analytics-account" aria-label="Selected account snapshot">
         <div className="gd-analytics-identity">{accountAvatar(account, true)}<div><strong>{accountLabel(account)}</strong><span>{platformNames[platform] || platform}{account?.username && account.username !== accountLabel(account) ? ' · ' + account.username : ''}</span></div></div>
@@ -135,7 +133,7 @@ export default function EngagementAnalyticsPage() {
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </section>
       </>}
-      <AnalyticsPosts key={`${userId}:${platform}:${accountId}:${refresh}`} platform={platform} accountId={accountId}/>
     </>}
+    {accountId && !error && <AnalyticsPosts key={`${userId}:${platform}:${accountId}:${refresh}`} platform={platform} accountId={accountId}/>}
   </div>;
 }
