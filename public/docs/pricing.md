@@ -33,7 +33,7 @@ Eligible accounts can start one three-day trial with a payment method. The selec
 - Hosted API access
 - Instagram carousels and TikTok photo posts
 - Bulk video scheduling
-- TikTok and YouTube analytics; Instagram, Facebook and X engagement summaries in beta, subject to platform permissions
+- YouTube analytics and Instagram engagement summaries in beta, subject to platform permissions. TikTok, X and Facebook analytics coming soon.
 - Founder support
 
 Scale and Pro highlight the MCP connector for agents. See the [MCP setup guide](https://agentgruvi.com/docs/agent-integration) and [API reference](https://agentgruvi.com/docs/api-reference) for supported clients and endpoints.
