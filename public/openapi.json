@@ -527,7 +527,8 @@
                           "permission_required",
                           "reconnect_required",
                           "rate_limited",
-                          "unavailable"
+                          "unavailable",
+                          "partial"
                         ]
                       },
                       "series": {
@@ -535,6 +536,20 @@
                         "items": {
                           "$ref": "#/components/schemas/AnalyticsPoint"
                         }
+                      },
+                      "coverageDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Known daily values included in a Facebook total. Missing days are not zero."
+                      },
+                      "expectedDays": {
+                        "type": "integer",
+                        "enum": [
+                          7,
+                          28
+                        ]
                       }
                     }
                   },
@@ -566,7 +581,8 @@
                           "permission_required",
                           "reconnect_required",
                           "rate_limited",
-                          "unavailable"
+                          "unavailable",
+                          "partial"
                         ]
                       },
                       "series": {
@@ -574,6 +590,20 @@
                         "items": {
                           "$ref": "#/components/schemas/AnalyticsPoint"
                         }
+                      },
+                      "coverageDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Known daily values included in a Facebook total. Missing days are not zero."
+                      },
+                      "expectedDays": {
+                        "type": "integer",
+                        "enum": [
+                          7,
+                          28
+                        ]
                       }
                     }
                   },
@@ -605,7 +635,8 @@
                           "permission_required",
                           "reconnect_required",
                           "rate_limited",
-                          "unavailable"
+                          "unavailable",
+                          "partial"
                         ]
                       },
                       "series": {
@@ -613,6 +644,20 @@
                         "items": {
                           "$ref": "#/components/schemas/AnalyticsPoint"
                         }
+                      },
+                      "coverageDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Known daily values included in a Facebook total. Missing days are not zero."
+                      },
+                      "expectedDays": {
+                        "type": "integer",
+                        "enum": [
+                          7,
+                          28
+                        ]
                       }
                     }
                   }

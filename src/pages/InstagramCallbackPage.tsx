@@ -1,205 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
-import { Check, Error } from '@mui/icons-material';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import FacebookIcon from '@mui/icons-material/Facebook';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Button, Skeleton, Typography } from '@mui/material';
+import { CheckCircleOutline, ErrorOutline } from '@mui/icons-material';
 import { instagramApi } from '../services/api';
 
-/**
- * Meta OAuth Callback Page (Instagram & Facebook)
- *
- * This page handles the OAuth callback from Facebook/Instagram after user authorization.
- * Facebook redirects here with ?code=xxx&state=yyy
- * We send these to the backend to exchange for tokens.
- * The platform (instagram/facebook) is stored in the state parameter.
- */
-const InstagramCallbackPage: React.FC = () => {
+/** The signed analytics state is verified on the backend. Client decoding is only for routing and labels. */
+export default function InstagramCallbackPage() {
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [platform, setPlatform] = useState<'instagram' | 'facebook'>('instagram');
-  const [message, setMessage] = useState('Connecting your account...');
-
+  const [analytics, setAnalytics] = useState(false);
+  const [message, setMessage] = useState('Checking your Meta authorization.');
+  const [errorCode, setErrorCode] = useState('');
+  const started = useRef(false);
   useEffect(() => {
-    const handleCallback = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
-      const error = urlParams.get('error');
-      const errorDescription = urlParams.get('error_description');
-
-      console.log('[MetaCallback] Processing callback...');
-      console.log('[MetaCallback] Has code:', !!code);
-      console.log('[MetaCallback] Has state:', !!state);
-      console.log('[MetaCallback] Error:', error);
-
-      // Try to extract platform from state before making API call
-      if (state) {
-        try {
-          const decodedState = JSON.parse(atob(state));
-          const detectedPlatform = decodedState.platform || 'instagram';
-          setPlatform(detectedPlatform);
-          setMessage(`Connecting your ${detectedPlatform === 'facebook' ? 'Facebook' : 'Instagram'} account...`);
-          console.log('[MetaCallback] Platform:', detectedPlatform);
-        } catch {
-          // Ignore decode errors, keep default platform
-        }
-      }
-
-      if (error) {
-        setStatus('error');
-        const platformName = platform === 'facebook' ? 'Facebook' : 'Instagram';
-        setMessage(error === 'access_denied'
-          ? `${platformName} authorization was cancelled.`
-          : `Authorization failed: ${errorDescription || error}`
-        );
-        return;
-      }
-
-      if (!code || !state) {
-        setStatus('error');
-        setMessage('Missing authorization parameters.');
-        return;
-      }
-
+    if (started.current) return;
+    started.current = true;
+    const complete = async () => {
+      const params = new URLSearchParams(window.location.search);
+      window.history.replaceState(null, '', window.location.pathname);
+      const code = params.get('code'), state = params.get('state');
+      let selectedPlatform: 'instagram' | 'facebook' = 'instagram', isAnalytics = false;
       try {
-        console.log('[MetaCallback] Sending code to backend...');
-
-        const analytics = (() => { try { return JSON.parse(atob(state)).analytics === true; } catch { return false; } })();
-        const response = analytics ? await instagramApi.handleAnalyticsCallback(code, state) : await instagramApi.handleCallback(code, state);
-
-        console.log('[MetaCallback] Backend response:', response.data);
-
-        if (response.data.success) {
-          // Update platform from response if available
-          const responsePlatform = response.data.platform || platform;
-          setPlatform(responsePlatform);
-
-          setStatus('success');
-          const username = response.data.username || 'your account';
-          const platformName = responsePlatform === 'facebook' ? 'Facebook' : 'Instagram';
-          setMessage(`Connected to ${platformName}${username ? ` (@${username})` : ''}! Redirecting...`);
-
-          // Redirect back to connected accounts page
-          setTimeout(() => {
-            window.location.href = response.data.analytics ? '/analytics/' + responsePlatform : '/settings/connected-accounts?instagram=success&username=' + encodeURIComponent(username);
-          }, 1500);
-        } else {
-          setStatus('error');
-          const platformName = platform === 'facebook' ? 'Facebook' : 'Instagram';
-          setMessage(`Failed to connect ${platformName}. Please try again.`);
-        }
-      } catch (err: any) {
-        console.error('[MetaCallback] Error:', err);
-        console.error('[MetaCallback] Error response:', err.response?.data);
-        setStatus('error');
-        const platformName = platform === 'facebook' ? 'Facebook' : 'Instagram';
-        setMessage(err.response?.data?.error || `Failed to connect ${platformName}. Please try again.`);
+        const metadata = JSON.parse(atob(state || ''));
+        selectedPlatform = metadata.platform === 'facebook' ? 'facebook' : 'instagram';
+        isAnalytics = metadata.analytics === true;
+      } catch { /* Backend validation remains authoritative. */ }
+      setPlatform(selectedPlatform); setAnalytics(isAnalytics);
+      if (params.has('error') || !code || !state) {
+        setStatus('error'); setMessage(params.get('error') === 'access_denied' ? 'Meta authorization was cancelled. Your existing connection has been kept.' : 'Authorization could not be completed. Return to Gruvi and start again.'); return;
+      }
+      try {
+        const response = isAnalytics ? await instagramApi.handleAnalyticsCallback(code, state) : await instagramApi.handleCallback(code, state);
+        if (!response.data.success) throw Error('Connection was not confirmed.');
+        const responsePlatform = response.data.platform === 'facebook' ? 'facebook' : selectedPlatform;
+        setPlatform(responsePlatform); setStatus('success');
+        setMessage(response.data.analytics ? 'Analytics access has been updated. Opening your dashboard.' : 'Your account is connected. Opening Connected accounts.');
+        setTimeout(() => { window.location.assign(response.data.analytics ? '/analytics/' + responsePlatform : '/settings/connected-accounts?instagram=success'); }, 1200);
+      } catch (error: any) {
+        setStatus('error'); setErrorCode(error.response?.data?.code || '');
+        setMessage(error.response?.data?.error || 'The connection could not be confirmed. Return to Gruvi and try again.');
       }
     };
-
-    handleCallback();
+    complete();
   }, []);
-
-  return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#fff',
-        p: 4,
-        textAlign: 'center',
-      }}
-    >
-      {/* Status Icon */}
-      <Box
-        sx={{
-          width: 80,
-          height: 80,
-          borderRadius: '20px',
-          background: status === 'success'
-            ? 'linear-gradient(135deg, #34C759 0%, #2DB14E 100%)'
-            : status === 'error'
-            ? 'linear-gradient(135deg, #FF3B30 0%, #E02020 100%)'
-            : platform === 'facebook'
-            ? '#1877F2'
-            : 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: status === 'success'
-            ? '0 8px 24px rgba(52, 199, 89, 0.3)'
-            : status === 'error'
-            ? '0 8px 24px rgba(255, 59, 48, 0.3)'
-            : platform === 'facebook'
-            ? '0 8px 24px rgba(24, 119, 242, 0.3)'
-            : '0 8px 24px rgba(131, 58, 180, 0.3)',
-          mb: 3,
-        }}
-      >
-        {status === 'success' ? (
-          <Check sx={{ fontSize: 40, color: '#fff' }} />
-        ) : status === 'error' ? (
-          <Error sx={{ fontSize: 40, color: '#fff' }} />
-        ) : platform === 'facebook' ? (
-          <FacebookIcon sx={{ fontSize: 40, color: '#fff' }} />
-        ) : (
-          <InstagramIcon sx={{ fontSize: 40, color: '#fff' }} />
-        )}
+  const back = analytics ? '/analytics/' + platform : '/settings/connected-accounts';
+  return <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', p: { xs: 2, sm: 4 }, background: '#0d1118', color: '#f4f7fb', boxSizing: 'border-box' }}>
+    <Box component="main" sx={{ width: '100%', maxWidth: 580, p: { xs: 3, sm: 4 }, border: '1px solid #ffffff14', borderRadius: '16px', background: '#171e28' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+        {status === 'error' ? <ErrorOutline sx={{ color: '#ff7777', fontSize: 30 }}/> : status === 'success' ? <CheckCircleOutline sx={{ color: '#9ee6cf', fontSize: 30 }}/> : null}
+        <Typography component="h1" variant="h5" sx={{ fontWeight: 600, color: '#f4f7fb' }}>{status === 'processing' ? 'Connecting to Meta' : status === 'success' ? 'Connection confirmed' : 'Connection needs attention'}</Typography>
       </Box>
-
-      {status === 'processing' && (
-        <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
-            Connecting to {platform === 'facebook' ? 'Facebook' : 'Instagram'}
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#86868B', mb: 3 }}>
-            {message}
-          </Typography>
-          <CircularProgress sx={{ color: platform === 'facebook' ? '#1877F2' : '#007AFF' }} size={32} />
-        </>
-      )}
-
-      {status === 'success' && (
-        <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
-            Connected!
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#86868B' }}>
-            {message}
-          </Typography>
-        </>
-      )}
-
-      {status === 'error' && (
-        <>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#141418' }}>
-            Connection Failed
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#86868B' }}>
-            {message}
-          </Typography>
-        </>
-      )}
-
-      {status !== 'processing' && (
-        <Typography
-          variant="body2"
-          sx={{
-            color: '#007AFF',
-            mt: 4,
-            cursor: 'pointer',
-            fontWeight: 500,
-            '&:hover': { textDecoration: 'underline' },
-          }}
-          onClick={() => window.location.href = '/settings/connected-accounts'}
-        >
-          Go back to Connected Accounts
-        </Typography>
-      )}
+      <Typography component="p" sx={{ color: '#b6c0cd', lineHeight: 1.8, fontSize: 15 }}>{message}</Typography>
+      {status === 'processing' && <Box aria-label="Checking Meta authorization" role="status" sx={{ mt: 3 }}><Skeleton width="80%"/><Skeleton width="60%"/></Box>}
+      {status === 'error' && <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mt: 3, alignItems: { xs: 'stretch', sm: 'center' } }}>
+        {errorCode === 'META_PAGE_ACCESS_REQUIRED' && <Button variant="outlined" href="https://www.facebook.com/settings?tab=business_tools" target="_blank" rel="noopener noreferrer" sx={{ color: '#f4f7fb', borderColor: '#ffffff35', textTransform: 'none', minHeight: 44 }}>Review Meta access ↗</Button>}
+        <Button variant="contained" href={back} sx={{ background: '#007aff', color: '#fff', textTransform: 'none', minHeight: 44 }}>{analytics ? 'Back to analytics' : 'Connected accounts'}</Button>
+      </Box>}
     </Box>
-  );
-};
-
-export default InstagramCallbackPage;
+  </Box>;
+}

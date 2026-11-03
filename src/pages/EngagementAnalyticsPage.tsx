@@ -11,7 +11,7 @@ import { platformNames } from '../config/publishing';
 import WorkspaceNotice from '../components/WorkspaceNotice';
 import api from '../utils/axiosConfig';
 
-type Metric = { value: number | null; availability: string };
+type Metric = { value: number | null; availability: string; coverageDays?: number; series?: { date: string; value: number | null }[] };
 type Summary = {
   accountId: string; followers: number | null; postCount: number; updatedAt: string; postsAvailable?: boolean;
   totals: Record<string, number | null>;
@@ -64,7 +64,9 @@ export default function EngagementAnalyticsPage() {
   };
   const insightStatus = data?.insights?.status;
   const needsPermission = isMeta && (!!error?.reconnect || ['permission_required', 'reconnect_required'].includes(insightStatus || ''));
-  const points = data?.insights?.daily.points || [];
+  const [chartMetric, setChartMetric] = useState('views');
+  const chartLabel = platform === 'facebook' ? ({views: 'Content views each day', reach: 'Unique viewers each day', interactions: 'Interactions each day'} as Record<string,string>)[chartMetric] : data?.insights?.daily.label || '';
+  const points = platform === 'facebook' ? data?.insights?.metrics[chartMetric]?.series || [] : data?.insights?.daily.points || [];
   const hasPoints = points.some(p => typeof p.value === 'number');
   const account = available.find(a => a.accountId === accountId);
   return <div className="gd gd-meta-analytics">
@@ -108,16 +110,16 @@ export default function EngagementAnalyticsPage() {
       {data.insights && <>
         <div className="gd-analytics-section-heading"><h2>Account insights</h2><p>{dateLabel(data.insights.window.since)} to {dateLabel(new Date(Date.parse(data.insights.window.until) - 1).toISOString())} · UTC</p></div>
         <div className="gd-analytics-kpis">{[['views', 'Content views'], ['reach', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached'], ['interactions', 'Interactions']].map(([id, label]) => <article className="gd-stat" key={id}>
-          <span>{label}</span><strong className={data.insights!.metrics[id]?.value == null ? 'is-unavailable' : ''}>{shown(data.insights!.metrics[id]?.value)}</strong>
-          <span>{id === 'reach' && platform === 'facebook' ? 'Daily unique audiences are not added together.' : 'For the selected account insights period.'}</span>
+          <span>{label}</span><strong className={data.insights!.metrics[id]?.value == null ? 'is-unavailable' : ''}>{id === 'reach' && platform === 'facebook' && data.insights!.metrics[id]?.availability === 'daily_only' ? 'Daily only' : shown(data.insights!.metrics[id]?.value)}</strong>
+          <span>{id === 'reach' && platform === 'facebook' ? 'Choose unique viewers in the daily chart below.' : data.insights!.metrics[id]?.availability === 'partial' ? `${data.insights!.metrics[id].coverageDays} of ${days} reporting days available.` : 'For the selected account insights period.'}</span>
         </article>)}</div>
-        <section className="gd-form-section gd-analytics-chart"><h2>{data.insights.daily.label}</h2>
-          {hasPoints ? <><p className="gd-quiet">Daily values returned by Meta. Missing periods stay missing.</p><div className="gd-chart-canvas" role="img" aria-label={data.insights.daily.label + '. Daily values are listed below.'}>
+        <section className="gd-form-section gd-analytics-chart"><h2>{chartLabel}</h2>{platform === 'facebook' && <TextField select label="Daily metric" value={chartMetric} onChange={e => setChartMetric(e.target.value)} sx={{ maxWidth: 280 }}><MenuItem value="views">Content views</MenuItem><MenuItem value="reach">Unique viewers</MenuItem><MenuItem value="interactions">Interactions</MenuItem></TextField>}
+          {hasPoints ? <><p className="gd-quiet">Daily values returned by Meta. Dates show bucket end times in UTC. Missing periods stay missing.</p><div className="gd-chart-canvas" role="img" aria-label={chartLabel + '. Daily values are listed below.'}>
             <ResponsiveContainer width="100%" height={240}><LineChart data={points} margin={{ top: 12, right: 12, bottom: 4, left: 0 }}>
               <CartesianGrid stroke="#ffffff12" vertical={false}/><XAxis dataKey="date" tickFormatter={dateLabel} tick={{ fill: '#aab4c2', fontSize: 11 }} minTickGap={28}/><YAxis tick={{ fill: '#aab4c2', fontSize: 11 }} width={45} allowDecimals={false}/>
-              <Tooltip labelFormatter={v => dateLabel(String(v))} contentStyle={{ background: '#171e28', border: '1px solid #ffffff28', borderRadius: 8, color: '#f4f7fb' }}/><Line type="linear" dataKey="value" name={platform === 'instagram' ? 'Accounts reached' : 'Content views'} stroke="#80baff" strokeWidth={2} dot={points.length <= 7} connectNulls={false}/>
+              <Tooltip labelFormatter={v => dateLabel(String(v))} contentStyle={{ background: '#171e28', border: '1px solid #ffffff28', borderRadius: 8, color: '#f4f7fb' }}/><Line type="linear" dataKey="value" name={platform === 'instagram' ? 'Accounts reached' : ({views:'Content views', reach:'Unique viewers', interactions:'Interactions'} as Record<string,string>)[chartMetric]} stroke="#80baff" strokeWidth={2} dot={points.length <= 7} connectNulls={false}/>
             </LineChart></ResponsiveContainer></div>
-            <details className="gd-analytics-details"><summary>View daily values</summary><table><thead><tr><th>Bucket ending (UTC)</th><th>{platform === 'instagram' ? 'Accounts reached' : 'Content views'}</th></tr></thead><tbody>{points.map(p => <tr key={p.date}><td>{dateLabel(p.date)}</td><td>{shown(p.value)}</td></tr>)}</tbody></table></details></>
+            <details className="gd-analytics-details"><summary>View daily values</summary><table><thead><tr><th>Bucket ending (UTC)</th><th>{platform === 'instagram' ? 'Accounts reached' : ({views:'Content views', reach:'Unique viewers', interactions:'Interactions'} as Record<string,string>)[chartMetric]}</th></tr></thead><tbody>{points.map(p => <tr key={p.date}><td>{dateLabel(p.date)}</td><td>{shown(p.value)}</td></tr>)}</tbody></table></details></>
           : <div className="gd-analytics-no-data"><InsightsRoundedIcon aria-hidden="true"/><p>{insightStatus === 'rate_limited' ? 'Meta is limiting requests. Try again in a few minutes.' : needsPermission ? 'Your recent posts remain available below while account insights need authorization.' : 'Meta has not returned daily insights for this period. This can happen with new accounts, privacy thresholds or unavailable metrics.'}</p></div>}
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </section>
