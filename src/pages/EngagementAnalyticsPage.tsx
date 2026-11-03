@@ -94,8 +94,8 @@ export default function EngagementAnalyticsPage() {
           <MenuItem value={7}>Last 7 complete days</MenuItem><MenuItem value={28}>Last 28 complete days</MenuItem>
         </TextField>}
         <Button variant="outlined" startIcon={<RefreshRoundedIcon />} disabled={!accountId || busy} onClick={() => setRefresh(n => n + 1)}>Refresh</Button>
+        {isMeta && accountId && !needsPermission && <Button variant="outlined" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Manage insights access'}</Button>}
       </div>
-      {isMeta && accountId && !needsPermission && <Button variant="outlined" className="gd-card-action" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Manage insights access'}</Button>}
       {!accounts.isLoading && !accounts.isError && !available.length
         ? <p>No {platformNames[platform]} account is connected. <Link className="gd-text-link" to="/settings/connected-accounts">Connect an account ↗</Link></p>
         : <p className="gd-quiet">{isMeta ? 'Account insights exclude today. Post engagement uses lifetime counts, loaded 10 posts at a time. ' : ''}Results can be cached for up to five minutes.</p>}
