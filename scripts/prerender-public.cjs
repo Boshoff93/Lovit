@@ -53,7 +53,8 @@ async function main() {
       const file = route === '/' ? '/_public/index.html' : '/_public' + route + '.html';
       fs.mkdirSync(path.dirname(build + file), { recursive: true });
       fs.writeFileSync(build + file, html);
-      if (route === '/') fs.writeFileSync(build + '/index.html', html);
+      // Keep index.html as the SPA fallback for private workspace routes.
+      // The public homepage is served from /_public/index.html at the edge.
       manifest[route] = file;
       console.log('Rendered ' + route + ' (' + Buffer.byteLength(html) + ' bytes)');
     }

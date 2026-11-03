@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /agents.md
 Disallow: /dashboard
 Disallow: /account
 Disallow: /agents
