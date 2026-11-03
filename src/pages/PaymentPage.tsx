@@ -58,9 +58,9 @@ export default function PaymentPage() {
           <details>
             <summary>Where are analytics available?</summary>
             <p>
-              YouTube has summary and trend analytics. Instagram has recent-post
-              engagement summaries in beta, subject to platform read permissions
-              and API access. TikTok, X and Facebook analytics are coming soon.
+              TikTok and YouTube have summary and trend analytics. Instagram and
+              Facebook add account insights when Meta permissions and account
+              eligibility allow them. X has recent-post engagement in beta.
             </p>
           </details>
         </section>

@@ -33,7 +33,7 @@ const workflows = [
   {
     icon: <BarChartRoundedIcon />,
     title: "Read the results.",
-    text: "TikTok and YouTube analytics, plus recent-post engagement for Instagram, Facebook and X in beta.",
+    text: "TikTok and YouTube analytics, Instagram and Facebook insights with Meta authorization, and X engagement in beta.",
     href: "/docs/api-reference#group-analytics",
     label: "Analytics API",
   },

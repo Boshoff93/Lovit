@@ -332,7 +332,7 @@
         "title": "Start by checking what each endpoint measures",
         "paragraphs": [
           "A social media analytics API is most useful when it is clear about the data it returns. A view, an impression, a reaction and a share are different measurements. Different platforms can also return different time ranges, post types and permission-dependent fields.",
-          "Gruvi has analytics pages for TikTok, YouTube, Instagram, Facebook and X. TikTok and YouTube have summary and trend endpoints. Instagram, Facebook and X currently have beta summaries for recent posts. Those summaries are not a claim to provide every network's full native analytics dashboard.",
+          "Gruvi has analytics pages for TikTok, YouTube, Instagram, Facebook and X. TikTok and YouTube have summary and trend endpoints. Instagram and Facebook add permission-dependent account insights for seven or 28 complete days, alongside recent-post lifetime counts. X has beta recent-post summaries. These measurements have different time ranges and should stay separate in reports.",
           "Choose an exact connected accountId when requesting metrics. That matters if you operate several channels on one platform: an account-wide label such as Instagram is not enough to identify which brand or creator account you meant."
         ],
         "links": [

@@ -249,7 +249,7 @@ const SocialPage: React.FC = () => {
             <Typography component="h2">Instagram & Facebook Analytics</Typography>
 
             <Typography component="p">
-              Analytics for Instagram and Facebook are coming soon. They'll follow the same dashboard pattern — KPI cards, trend charts, top performers — so the experience will be familiar.
+              Choose an exact connected account in Analytics, then select seven or 28 complete days. Instagram provides available views, reach and interactions. Facebook provides available content views, interactions and daily unique viewers. Meta authorization, Page roles, account eligibility and app permission access apply. The dashboard offers a separate read-access connection flow. Recent-post lifetime counts are shown separately from account insights. Missing metrics remain unavailable, and daily unique audiences are never added into a period total.
             </Typography>
 
             <SectionDivider />

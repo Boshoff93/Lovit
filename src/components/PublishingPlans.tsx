@@ -44,7 +44,7 @@ const sharedBenefits = [
   },
   {
     title: "Social analytics",
-    description: "Instagram and YouTube analytics. TikTok, X and Facebook analytics coming soon. Platform permissions apply.",
+    description: "TikTok and YouTube analytics, plus Instagram and Facebook insights when authorized. X engagement is in beta. Platform permissions apply.",
     icon: InsightsOutlined,
     href: "/blog/social-media-analytics-api",
   },

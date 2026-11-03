@@ -63,7 +63,8 @@ const InstagramCallbackPage: React.FC = () => {
       try {
         console.log('[MetaCallback] Sending code to backend...');
 
-        const response = await instagramApi.handleCallback(code, state);
+        const analytics = (() => { try { return JSON.parse(atob(state)).analytics === true; } catch { return false; } })();
+        const response = analytics ? await instagramApi.handleAnalyticsCallback(code, state) : await instagramApi.handleCallback(code, state);
 
         console.log('[MetaCallback] Backend response:', response.data);
 
@@ -79,7 +80,7 @@ const InstagramCallbackPage: React.FC = () => {
 
           // Redirect back to connected accounts page
           setTimeout(() => {
-            window.location.href = '/settings/connected-accounts?instagram=success&username=' + encodeURIComponent(username);
+            window.location.href = response.data.analytics ? '/analytics/' + responsePlatform : '/settings/connected-accounts?instagram=success&username=' + encodeURIComponent(username);
           }, 1500);
         } else {
           setStatus('error');

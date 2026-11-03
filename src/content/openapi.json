@@ -389,6 +389,267 @@
             }
           }
         }
+      },
+      "AnalyticsPoint": {
+        "type": "object",
+        "required": [
+          "date",
+          "value"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Provider bucket end time."
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      },
+      "MetaAnalytics": {
+        "type": "object",
+        "required": [
+          "accountId",
+          "platform",
+          "insights",
+          "posts",
+          "postsAvailable",
+          "profileAvailable"
+        ],
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "instagram",
+              "facebook"
+            ]
+          },
+          "followers": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "profileAvailable": {
+            "type": "boolean"
+          },
+          "postsAvailable": {
+            "type": "boolean"
+          },
+          "posts": {
+            "type": "array",
+            "maxItems": 25,
+            "items": {
+              "type": "object"
+            }
+          },
+          "totals": {
+            "type": "object",
+            "description": "Counts available on up to 25 recent posts, lifetime values independent of the selected account-insights range."
+          },
+          "insights": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "no_data",
+                  "permission_required",
+                  "reconnect_required",
+                  "rate_limited",
+                  "unavailable"
+                ]
+              },
+              "window": {
+                "type": "object",
+                "properties": {
+                  "days": {
+                    "type": "integer",
+                    "enum": [
+                      7,
+                      28
+                    ]
+                  },
+                  "since": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "until": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timezone": {
+                    "const": "UTC"
+                  },
+                  "includesToday": {
+                    "const": false
+                  }
+                }
+              },
+              "metrics": {
+                "type": "object",
+                "properties": {
+                  "views": {
+                    "type": "object",
+                    "required": [
+                      "value",
+                      "availability",
+                      "metric",
+                      "series"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "metric": {
+                        "type": "string"
+                      },
+                      "availability": {
+                        "type": "string",
+                        "enum": [
+                          "available",
+                          "daily_only",
+                          "no_data",
+                          "permission_required",
+                          "reconnect_required",
+                          "rate_limited",
+                          "unavailable"
+                        ]
+                      },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/AnalyticsPoint"
+                        }
+                      }
+                    }
+                  },
+                  "reach": {
+                    "type": "object",
+                    "required": [
+                      "value",
+                      "availability",
+                      "metric",
+                      "series"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "metric": {
+                        "type": "string"
+                      },
+                      "availability": {
+                        "type": "string",
+                        "enum": [
+                          "available",
+                          "daily_only",
+                          "no_data",
+                          "permission_required",
+                          "reconnect_required",
+                          "rate_limited",
+                          "unavailable"
+                        ]
+                      },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/AnalyticsPoint"
+                        }
+                      }
+                    }
+                  },
+                  "interactions": {
+                    "type": "object",
+                    "required": [
+                      "value",
+                      "availability",
+                      "metric",
+                      "series"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "metric": {
+                        "type": "string"
+                      },
+                      "availability": {
+                        "type": "string",
+                        "enum": [
+                          "available",
+                          "daily_only",
+                          "no_data",
+                          "permission_required",
+                          "reconnect_required",
+                          "rate_limited",
+                          "unavailable"
+                        ]
+                      },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/AnalyticsPoint"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "daily": {
+                "type": "object",
+                "properties": {
+                  "metric": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "points": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/AnalyticsPoint"
+                    }
+                  }
+                }
+              },
+              "requiredPermissions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -2090,7 +2351,7 @@
     },
     "/api/gruvi/instagram/analytics/summary": {
       "get": {
-        "summary": "Read Instagram engagement summary",
+        "summary": "Read Instagram account insights and post engagement",
         "security": [
           {
             "agentKey": []
@@ -2098,7 +2359,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Request result"
+            "description": "Analytics, possibly partial. Inspect availability before reporting metrics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaAnalytics"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid input"
@@ -2107,13 +2375,13 @@
             "description": "Bearer authentication required"
           },
           "403": {
-            "description": "Account permission or publishing access required"
+            "description": "Meta connection requires reconnection, or account access denied."
           },
           "429": {
             "description": "Rate limit or monthly allowance reached. Honor Retry-After."
           },
           "503": {
-            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+            "description": "Analytics temporarily unavailable."
           }
         },
         "parameters": [
@@ -2123,6 +2391,18 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                7,
+                28
+              ],
+              "default": 28
             }
           }
         ],
@@ -2130,13 +2410,13 @@
           "Analytics"
         ],
         "operationId": "getApiGruviInstagramAnalyticsSummary",
-        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
-        "x-displayName": "Instagram engagement"
+        "description": "Read native account insights for 7 or 28 complete UTC days, plus recent-post lifetime engagement. Meta permissions and eligibility apply. Inspect insights.status, metric availability, postsAvailable and profileAvailable. Empty or missing metrics are null, never zero. Unique daily audiences are never added. Cached up to five minutes. Reconnect through the account dashboard for missing Meta permissions. Analytics does not require a publishing subscription.",
+        "x-displayName": "Instagram analytics"
       }
     },
     "/api/gruvi/facebook/analytics/summary": {
       "get": {
-        "summary": "Read Facebook engagement summary",
+        "summary": "Read Facebook account insights and post engagement",
         "security": [
           {
             "agentKey": []
@@ -2144,7 +2424,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Request result"
+            "description": "Analytics, possibly partial. Inspect availability before reporting metrics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaAnalytics"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid input"
@@ -2153,13 +2440,13 @@
             "description": "Bearer authentication required"
           },
           "403": {
-            "description": "Account permission or publishing access required"
+            "description": "Meta connection requires reconnection, or account access denied."
           },
           "429": {
             "description": "Rate limit or monthly allowance reached. Honor Retry-After."
           },
           "503": {
-            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+            "description": "Analytics temporarily unavailable."
           }
         },
         "parameters": [
@@ -2170,14 +2457,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                7,
+                28
+              ],
+              "default": 28
+            }
           }
         ],
         "tags": [
           "Analytics"
         ],
         "operationId": "getApiGruviFacebookAnalyticsSummary",
-        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
-        "x-displayName": "Facebook engagement"
+        "description": "Read native account insights for 7 or 28 complete UTC days, plus recent-post lifetime engagement. Meta permissions and eligibility apply. Inspect insights.status, metric availability, postsAvailable and profileAvailable. Empty or missing metrics are null, never zero. Unique daily audiences are never added. Cached up to five minutes. Reconnect through the account dashboard for missing Meta permissions. Analytics does not require a publishing subscription.",
+        "x-displayName": "Facebook analytics"
       }
     },
     "/api/gruvi/twitter/analytics/summary": {

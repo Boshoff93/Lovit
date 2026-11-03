@@ -620,3 +620,49 @@
   .gd-calendar-placeholder-day { padding: 6px; }
 }
 @media(prefers-reduced-motion:reduce) { .gd-calendar-skeleton .MuiSkeleton-root { animation: none; } }
+
+/* Analytics keeps the selected-period account metrics separate from post lifetime counts. */
+.gd-workspace .gd-meta-analytics { display: flex; flex-direction: column; gap: 20px; }
+.gd-workspace .gd-meta-analytics > .gd-workspace-header, .gd-workspace .gd-meta-analytics > .MuiAlert-root { margin-bottom: 0; }
+.gd-workspace .gd-analytics-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.gd-workspace .gd-analytics-filters .MuiTextField-root { width: 300px; max-width: 100%; }
+.gd-workspace .gd-analytics-filters .MuiTextField-root:nth-child(2) { width: 240px; }
+.gd-workspace .gd-analytics-filters .MuiButton-root { min-height: 48px; }
+.gd-workspace .gd-analytics-filters .MuiOutlinedInput-root { height: 48px; }
+.gd-workspace .gd-analytics-controls > p { margin: 0; }
+.gd-analytics-account { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; color: #aab4c2; font-size: 12px; }
+.gd-analytics-account > span:first-child { color: #f4f7fb; font-weight: 600; }
+.gd-analytics-section-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.gd-workspace .gd-analytics-section-heading h2 { font-size: 23px; margin: 0; }
+.gd-workspace .gd-analytics-section-heading p { color: #aab4c2; font-size: 12px; margin: 0; }
+.gd-analytics-kpis { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.gd-workspace .gd-analytics-kpis .gd-stat { display: flex; flex-direction: column; gap: 12px; padding: 22px; min-width: 0; }
+.gd-workspace .gd-analytics-kpis .gd-stat strong { font-size: 34px; color: #f4f7fb; line-height: 1.2; }
+.gd-workspace .gd-analytics-kpis .gd-stat strong.is-unavailable { font-size: 20px; }
+.gd-workspace .gd-analytics-kpis .gd-stat span { font-size: 12px; color: #aab4c2; margin: 0; }
+.gd-workspace .gd-analytics-kpis .gd-stat span:last-child { margin-top: auto; }
+.gd-workspace .gd-analytics-permission { display: flex; flex-direction: row; align-items: flex-start; gap: 16px; }
+.gd-analytics-permission > svg { flex-shrink: 0; margin-top: 3px; color: #f4f7fb; }
+.gd-workspace .gd-analytics-permission h2 { margin-top: 0; }
+.gd-workspace .gd-analytics-permission .MuiButton-root { margin-top: 16px; }
+.gd-chart-canvas { min-width: 0; width: 100%; }
+.gd-analytics-loading { display: grid; gap: 20px; }
+.gd-analytics-no-data { display: flex; align-items: center; gap: 16px; padding: 20px; background: #111822; border: 1px solid #ffffff12; border-radius: 12px; }
+.gd-analytics-no-data > svg { flex-shrink: 0; color: #aab4c2; }
+.gd-workspace .gd-analytics-no-data > p { margin: 0; font-size: 13px; }
+.gd-recent-totals { display: flex; flex-wrap: wrap; gap: 8px; }
+.gd-recent-totals > span { background: #111822; color: #d7dfe9; border: 1px solid #ffffff14; padding: 6px 10px; border-radius: 8px; font-size: 12px; }
+.gd-workspace .gd-analytics-post { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px 0 0; }
+.gd-workspace .gd-analytics-post h3 { margin: 4px 0 8px; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.6; white-space: pre-wrap; }
+.gd-workspace .gd-analytics-post p { margin: 0; font-size: 12px; }
+.gd-analytics-details { color: #d7dfe9; font-size: 12px; }
+.gd-analytics-details summary { cursor: pointer; padding: 8px 0; }
+.gd-analytics-details table { width: 100%; border-collapse: collapse; }
+.gd-analytics-details th, .gd-analytics-details td { text-align: left; padding: 8px; border-bottom: 1px solid #ffffff14; }
+@media (max-width: 600px) {
+  .gd-analytics-kpis { grid-template-columns: 1fr; gap: 12px; }
+  .gd-workspace .gd-analytics-filters { flex-direction: column; align-items: stretch; }
+  .gd-workspace .gd-analytics-filters .MuiTextField-root, .gd-workspace .gd-analytics-filters .MuiTextField-root:nth-child(2), .gd-workspace .gd-analytics-filters .MuiButton-root { width: 100%; }
+  .gd-workspace .gd-analytics-permission { flex-direction: column; }
+  .gd-workspace .gd-analytics-permission .MuiButton-root { width: 100%; }
+}

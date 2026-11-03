@@ -137,7 +137,7 @@ const AnalyticsOverviewPage: React.FC = () => {
                   <h2>{platform.name}</h2>
                   <p>{platform.comingSoon
                     ? `${platform.name} analytics is coming to Gruvi.`
-                    : isConnected ? `View ${['instagram','facebook','twitter'].includes(platform.id) ? 'recent post engagement (beta)' : 'performance and engagement'} for your ${platform.name} content.`
+                    : isConnected ? `View ${platform.id === 'twitter' ? 'recent post engagement (beta)' : ['instagram','facebook'].includes(platform.id) ? 'account insights and recent post engagement' : 'performance and engagement'} for your ${platform.name} content.`
                     : `Connect your ${platform.name} account to view its performance.`}</p>
                 </div>
                 {isAvailable ? (

@@ -341,7 +341,7 @@ export default function HomePage() {
             <div className="gr-home-feature-links">
               <article className="gr-card"><p className="gm-eyebrow">Bulk video scheduling</p><h3>Plan the next 20 posts.</h3><p>Separate captions, exact account targets and a future time for every video. Retry-safe results keep accepted schedules intact.</p><Link className="gr-card-link" to="/blog/bulk-video-scheduling">See the batch workflow →</Link></article>
               <article className="gr-card"><p className="gm-eyebrow">Photo carousels</p><h3>Make the sequence count.</h3><p>Prepare 2 to 10 images for Instagram or TikTok. Arrange the frames, choose the caption and publish or schedule the set.</p><Link className="gr-card-link" to="/blog/instagram-tiktok-carousel-posts">Explore carousel posts →</Link></article>
-              <article className="gr-card"><p className="gm-eyebrow">Analytics</p><h3>Know what happened next.</h3><p>TikTok and YouTube analytics, with Instagram, Facebook and X engagement summaries in beta. Clear coverage for every metric.</p><Link className="gr-card-link" to="/blog/social-media-analytics-api">Compare analytics coverage →</Link></article>
+              <article className="gr-card"><p className="gm-eyebrow">Analytics</p><h3>Know what happened next.</h3><p>TikTok and YouTube analytics, plus Instagram and Facebook insights when authorized. X engagement is in beta. Clear coverage for every metric.</p><Link className="gr-card-link" to="/blog/social-media-analytics-api">Compare analytics coverage →</Link></article>
             </div>
           </div>
         </section>

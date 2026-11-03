@@ -38,7 +38,7 @@ Publish or schedule to one exact Instagram or TikTok destination. Immediate publ
 MCP: gruvi_upload_carousel, gruvi_publish_carousel, gruvi_schedule_carousel and gruvi_get_carousel_publication. Dashboard: /posts/carousel.
 
 ## Analytics coverage
-TikTok and YouTube have summary and trend endpoints. Instagram, Facebook and X have recent-post engagement summaries in beta, requiring platform read permissions and API access. Those summaries cover up to 25 recent posts and cache for five minutes. Missing metrics are null, not zero; totals cover returned posts, not lifetime account activity.
+TikTok and YouTube have summary and trend endpoints. Instagram and Facebook summary endpoints include native account insights for days=7 or days=28 (default 28), ending before today in UTC, plus daily values and up to 25 recent posts. Read insights.status and each metric availability before reporting a result. Account insights and recent-post lifetime totals are separate measurements. Never sum unique audiences across days. Missing metrics are null, not zero. Meta may withhold data for permissions, account eligibility, privacy thresholds or provider delays. Instagram needs instagram_manage_insights; Facebook needs read_insights and the Page ANALYZE task; both need pages_read_engagement. The account owner enables this separately in Analytics through Meta authorization; agent keys cannot change permissions. App review may be required for customer accounts. Results cache up to five minutes and reconnects invalidate cached results. X retains beta recent-post engagement only.
 Use an exact accountId. X uses platform=twitter. MCP: gruvi_get_analytics, with kind=summary for Instagram, Facebook or X. The dashboard exposes all five analytics pages.
 
 ## Publishing access and billing
@@ -81,8 +81,8 @@ Honor Retry-After on 429 responses. Read the error body for 403 access requireme
 - POST /api/gruvi/carousels/{carouselId}/publish: Publish one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.
 - POST /api/gruvi/carousels/{carouselId}/schedule: Schedule one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.
 - GET /api/gruvi/carousels/{carouselId}/publications/{requestId}: Check an uncertain carousel publication before retrying
-- GET /api/gruvi/instagram/analytics/summary: Read Instagram engagement summary
-- GET /api/gruvi/facebook/analytics/summary: Read Facebook engagement summary
+- GET /api/gruvi/instagram/analytics/summary: Read Instagram account insights and post engagement
+- GET /api/gruvi/facebook/analytics/summary: Read Facebook account insights and post engagement
 - GET /api/gruvi/twitter/analytics/summary: Read X engagement summary
 
 ## MCP tools

@@ -382,6 +382,8 @@ export const tiktokApi = {
 
 // Instagram API (also used for Facebook since they share Meta's OAuth flow)
 export const instagramApi = {
+  handleAnalyticsCallback: (code: string, state: string) =>
+    api.post('/api/gruvi/instagram/analytics/callback', { code, state }),
   getAuthUrl: (userId: string, platform: 'instagram' | 'facebook' = 'instagram') =>
     api.get(`/api/gruvi/instagram/auth-url?userId=${userId}&platform=${platform}`),
   

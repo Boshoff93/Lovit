@@ -171,11 +171,11 @@ export function requestExample(
 export const analyticsCoverage = [
   ["TikTok", "Views, likes, comments and shares", "Summary and trends"],
   ["YouTube", "Video performance and engagement", "Summary and trends"],
-  ["Instagram", "Available likes and comments", "Recent-post summary · beta"],
+  ["Instagram", "Views, reach, interactions and recent-post counts", "Account insights · Meta permission required"],
   [
     "Facebook",
-    "Available reactions, comments and shares",
-    "Recent-post summary · beta",
+    "Content views, interactions and recent-post counts",
+    "Account insights · Meta permission required",
   ],
   ["X", "Available post public metrics", "Recent-post summary · beta"],
 ];
