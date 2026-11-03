@@ -16,7 +16,7 @@ export default function GuideArtwork({
         srcSet={`${art.card} 768w, ${art.src} 1600w`}
         sizes={
           priority
-            ? "(max-width: 1030px) calc(100vw - 40px), 950px"
+            ? "(max-width: 600px) calc(100vw - 40px), (max-width: 900px) calc(100vw - 80px), (max-width: 1115px) calc(100vw - 365px), 750px"
             : "(max-width: 600px) calc(100vw - 40px), (max-width: 1100px) 50vw, 400px"
         }
         alt={art.alt}

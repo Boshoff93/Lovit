@@ -115,9 +115,6 @@ export default function BlogArticlePage() {
             <span>·</span> {guideMinutes(guide)} min read
           </p>
         </header>
-        <div className="gr-article-art">
-          <GuideArtwork guide={guide} priority />
-        </div>
         <div className="gr-article-layout">
           <aside className="gr-article-toc">
             <p className="gr-eyebrow">In this guide</p>
@@ -136,6 +133,9 @@ export default function BlogArticlePage() {
             </a>
           </aside>
           <article className="gr-article-body">
+            <div className="gr-article-art">
+              <GuideArtwork guide={guide} priority />
+            </div>
             <section className="gr-takeaways">
               <h2>What you need to know</h2>
               <ul>

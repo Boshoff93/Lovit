@@ -754,8 +754,8 @@
   color: #b8cbe5;
 }
 .gr-article-art {
-  max-width: 950px;
-  margin-inline: auto;
+  width: 100%;
+  margin-bottom: 28px;
   border: 1px solid var(--gr-line);
   border-radius: 20px;
   overflow: hidden;
@@ -768,7 +768,7 @@
   grid-template-columns: 220px minmax(0, 750px);
   gap: 65px;
   justify-content: center;
-  padding-block: 55px;
+  padding-block: 0 55px;
 }
 .gr-article-toc {
   position: sticky;
