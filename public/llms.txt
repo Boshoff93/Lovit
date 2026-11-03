@@ -1,18 +1,22 @@
 # Gruvi
 
-> Content distribution for agents. Bring finished content and thumbnails, publish or schedule across connected social accounts, and verify delivery.
+> Content distribution for agents. Upload finished media, publish or schedule with exact account targets, and verify delivery.
 
 ## Start
-- [Agent setup and MCP](https://agentgruvi.com/docs/agent-integration): API keys, versioned MCP installation and publishing workflow.
-- [Getting started](https://agentgruvi.com/docs/getting-started): Free account setup and the first post.
-- [API reference](https://agentgruvi.com/docs/api-reference): Upload, publish, schedule and billing endpoints.
-- [OpenAPI schema](https://agentgruvi.com/openapi.json): Machine-readable API contract.
-- [MCP discovery manifest](https://agentgruvi.com/.well-known/mcp.json): Stdio setup, tools and resource URIs.
-- [Full agent guide](https://agentgruvi.com/llms-full.txt): Setup, tools, billing and operational rules.
-- [MCP package](https://www.npmjs.com/package/@agent-gruvi/gruvi-mcp-server): Official npm package, Node.js 20+.
-- [Plans](https://agentgruvi.com/pricing): $10, $25 or $50 monthly. Free exploration; paid publishing/scheduling.
+- [Hosted API overview](https://agentgruvi.com/api): Capabilities, quickstart and analytics coverage.
+- [Searchable API reference](https://agentgruvi.com/docs/api-reference): OpenAPI fields and Shell, JavaScript and Python examples.
+- [OpenAPI schema](https://agentgruvi.com/openapi.json): Authoritative machine-readable HTTP contract.
+- [MCP setup](https://agentgruvi.com/docs/agent-integration): Install @agent-gruvi/gruvi-mcp-server@2.1.0 for Node.js 20+.
+- [MCP manifest](https://agentgruvi.com/.well-known/mcp.json): 26 local stdio tools and documentation resources.
+- [Full agent guide](https://agentgruvi.com/llms-full.txt): Authentication, access, billing, workflows and retry rules.
+- [Publishing guides](https://agentgruvi.com/blog): Original guides to agents, bulk scheduling, carousels and analytics, with plain-text versions.
+- [Plans](https://agentgruvi.com/pricing): $10, $25 or $50 monthly, with one three-day trial for eligible accounts.
 
-## Important
-Publishing supports video and custom thumbnails. Analytics currently covers TikTok and YouTube.
-Agents can initiate secure Stripe-hosted checkout with gruvi_create_checkout; payment and activation require separate confirmation.
-Never automatically repeat an uncertain publish request. Inspect per-platform status.
+## Capabilities
+Video distribution: X, Instagram, TikTok, YouTube, Facebook and LinkedIn.
+Photo carousels: Instagram and TikTok, 2 to 10 images per set.
+Bulk scheduling: 1 to 20 videos, with stable request IDs and per-item results.
+Analytics: TikTok and YouTube summary/trends; Instagram, Facebook and X recent-post engagement summaries in beta.
+
+## Operating rules
+Use exact connected account IDs. X is identified as twitter. Setup and media preparation remain available before subscribing. Publishing requires verified active access. Creating a checkout URL does not activate a plan. Respect Retry-After. An accepted request, a schedule and a TikTok draft are not proof of a live post.

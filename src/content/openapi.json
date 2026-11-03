@@ -1,0 +1,2260 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gruvi Content Distribution API",
+    "version": "2.1.0",
+    "description": "Upload finished media, publish or schedule posts, prepare carousels, schedule batches and read connected-account analytics. HTTPS JSON API with bearer agent keys. Preparation is available before subscribing; publishing requires an active plan, trial or complimentary access. OpenAPI 3.1 describes the deployed contract, not an unauthenticated API."
+  },
+  "servers": [
+    {
+      "url": "https://api.agentgruvi.com"
+    }
+  ],
+  "security": [
+    {
+      "agentKey": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "agentKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Create an agent key at https://agentgruvi.com/agents. Never put a key in a URL."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "subscription": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "Target": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "twitter",
+              "instagram",
+              "tiktok",
+              "youtube",
+              "facebook",
+              "linkedin"
+            ]
+          },
+          "accountId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform"
+        ]
+      },
+      "TikTokSettings": {
+        "type": "object",
+        "properties": {
+          "postMode": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "direct"
+            ],
+            "default": "draft"
+          },
+          "privacyLevel": {
+            "type": "string"
+          },
+          "allowComment": {
+            "type": "boolean"
+          },
+          "allowDuet": {
+            "type": "boolean"
+          },
+          "allowStitch": {
+            "type": "boolean"
+          },
+          "discloseContent": {
+            "type": "boolean"
+          },
+          "brandOrganic": {
+            "type": "boolean"
+          },
+          "brandedContent": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Video": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Schedule": {
+        "type": "object",
+        "properties": {
+          "scheduleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Target"
+            }
+          },
+          "scheduledTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "publishing",
+              "published",
+              "partial",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "uploadResults": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "platform": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                },
+                "postUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Checkout": {
+        "type": "object",
+        "properties": {
+          "checkoutUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "integer"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "interval": {
+                "type": "string"
+              }
+            }
+          },
+          "paymentStatus": {
+            "type": "string"
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "AccessError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "PUBLISHING_PLAN_REQUIRED",
+              "EMAIL_VERIFICATION_REQUIRED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "plans": {
+            "type": "string",
+            "format": "uri"
+          },
+          "checkoutEndpoint": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "BulkSchedule": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "posts"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "posts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "required": [
+                "videoId",
+                "platforms",
+                "scheduledTime"
+              ],
+              "properties": {
+                "videoId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "platforms": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 24,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "platform",
+                      "accountId"
+                    ],
+                    "properties": {
+                      "platform": {
+                        "type": "string",
+                        "enum": [
+                          "youtube",
+                          "tiktok",
+                          "instagram",
+                          "facebook",
+                          "linkedin",
+                          "twitter"
+                        ]
+                      },
+                      "accountId": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                },
+                "scheduledTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 10000
+                },
+                "tags": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
+                "tiktokSettings": {
+                  "$ref": "#/components/schemas/TikTokSettings"
+                },
+                "addThumbnailIntro": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateCarousel": {
+        "type": "object",
+        "required": [
+          "title",
+          "imageKeys"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "imageKeys": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "description": "Key returned by this account's carousel image upload allocation."
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/user/account": {
+      "get": {
+        "operationId": "getAccount",
+        "summary": "Read the authenticated account",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/Account"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Account"
+        ],
+        "parameters": [],
+        "x-displayName": "Read account"
+      }
+    },
+    "/api/user/subscription": {
+      "get": {
+        "operationId": "getBillingStatus",
+        "summary": "Read subscription status",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscription": {
+                      "type": "object",
+                      "properties": {
+                        "tier": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Subscription status"
+      }
+    },
+    "/api/publishing/plans": {
+      "get": {
+        "operationId": "getPlans",
+        "summary": "List monthly distribution plans",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "currency": {
+                      "type": "string"
+                    },
+                    "interval": {
+                      "type": "string"
+                    },
+                    "plans": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "monthlyPrice": {
+                            "type": "number"
+                          },
+                          "scheduledPosts": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "security": [],
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Plans and trial"
+      }
+    },
+    "/api/publishing/checkout": {
+      "post": {
+        "operationId": "createCheckout",
+        "summary": "Create hosted Stripe checkout without charging a card",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "enum": [
+                      "starter",
+                      "scale",
+                      "pro"
+                    ]
+                  },
+                  "requestId": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]{8,100}$"
+                  }
+                },
+                "required": [
+                  "planId",
+                  "requestId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Checkout"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Start checkout"
+      }
+    },
+    "/api/gruvi/social-accounts": {
+      "get": {
+        "operationId": "getSocialAccounts",
+        "summary": "List connected destination accounts",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "accountId": {
+                            "type": "string"
+                          },
+                          "platform": {
+                            "type": "string"
+                          },
+                          "accountName": {
+                            "type": "string"
+                          },
+                          "username": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "parameters": [],
+        "x-displayName": "Connected accounts"
+      }
+    },
+    "/api/gruvi/videos/{userId}": {
+      "get": {
+        "operationId": "listVideos",
+        "summary": "List media",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "videos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Video"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "List videos"
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}": {
+      "get": {
+        "operationId": "getVideo",
+        "summary": "Inspect a video",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Inspect a video"
+      }
+    },
+    "/api/gruvi/videos/{userId}/get-upload-url": {
+      "post": {
+        "operationId": "getVideoUploadUrl",
+        "summary": "Get a signed upload URL for a video up to 512 MB",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "fileType": {
+                    "type": "string",
+                    "enum": [
+                      "video/mp4",
+                      "video/quicktime",
+                      "video/webm"
+                    ]
+                  },
+                  "fileSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 536870912
+                  }
+                },
+                "required": [
+                  "fileName",
+                  "fileType",
+                  "fileSize"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "videoId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "videoKey": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "uploadUrl",
+                    "videoId",
+                    "videoKey"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Create video upload"
+      }
+    },
+    "/api/gruvi/videos/{userId}/finalize-upload": {
+      "post": {
+        "operationId": "finalizeVideoUpload",
+        "summary": "Save a completed direct upload",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "videoId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "videoKey": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "aspectRatio": {
+                    "type": "string",
+                    "enum": [
+                      "portrait",
+                      "landscape"
+                    ]
+                  }
+                },
+                "required": [
+                  "videoId",
+                  "videoKey",
+                  "title"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "video": {
+                      "$ref": "#/components/schemas/Video"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Finalize video upload"
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/upload-thumbnail": {
+      "post": {
+        "operationId": "uploadThumbnail",
+        "summary": "Upload a custom JPEG thumbnail",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "thumbnailBase64": {
+                    "type": "string",
+                    "description": "JPEG data URL, at most 5 MB decoded."
+                  }
+                },
+                "required": [
+                  "thumbnailBase64"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "thumbnailUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Upload thumbnail"
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/social-metadata": {
+      "put": {
+        "operationId": "updatePostMetadata",
+        "summary": "Set title, description and tags",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Update captions and tags"
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/batch-social-upload": {
+      "post": {
+        "operationId": "publishPost",
+        "summary": "Queue a video for immediate publishing; requires a publishing plan or trial",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platforms": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Target"
+                    },
+                    "minItems": 1
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "addThumbnailIntro": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "platforms"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Queued; inspect per-platform status before treating delivery as published.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Verified account and active publishing plan required. Free setup remains available.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessError"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Publishing"
+        ],
+        "x-displayName": "Publish a video"
+      }
+    },
+    "/api/gruvi/videos/{userId}/{videoId}/social-upload-status": {
+      "get": {
+        "operationId": "getPostStatus",
+        "summary": "Inspect per-platform immediate delivery",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Publishing"
+        ],
+        "x-displayName": "Video delivery status"
+      }
+    },
+    "/api/gruvi/scheduled-posts": {
+      "post": {
+        "operationId": "schedulePost",
+        "summary": "Schedule a future video post; requires a publishing plan or trial",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platforms": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Target"
+                    },
+                    "minItems": 1
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "addThumbnailIntro": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "videoId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "scheduledTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "thumbnailUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "thumbnailKey": {
+                    "type": "string"
+                  },
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$",
+                    "description": "A stable ID for this logical schedule. Reuse it with an unchanged body after an uncertain response."
+                  }
+                },
+                "required": [
+                  "videoId",
+                  "platforms",
+                  "scheduledTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Schedule created; not yet published.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "scheduledPost": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Verified account and active publishing plan required. Free setup remains available.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Monthly scheduling allowance reached"
+          }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "parameters": [],
+        "x-displayName": "Schedule a video"
+      },
+      "get": {
+        "operationId": "listScheduledPosts",
+        "summary": "Read calendar, delivery history and allowance",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scheduledPosts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Schedule"
+                      }
+                    },
+                    "schedulingLimits": {
+                      "type": "object",
+                      "properties": {
+                        "used": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "parameters": [],
+        "x-displayName": "List schedules"
+      }
+    },
+    "/api/gruvi/scheduled-posts/{scheduleId}": {
+      "get": {
+        "operationId": "getScheduledPost",
+        "summary": "Inspect one scheduled post",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scheduledPost": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "x-displayName": "Inspect a schedule"
+      },
+      "delete": {
+        "operationId": "cancelScheduledPost",
+        "summary": "Cancel a scheduled post",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "x-displayName": "Cancel a schedule"
+      }
+    },
+    "/api/gruvi/youtube/analytics/summary": {
+      "get": {
+        "operationId": "youtubesummary",
+        "summary": "Read YouTube summary analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "YouTube summary"
+      }
+    },
+    "/api/gruvi/youtube/analytics/trends": {
+      "get": {
+        "operationId": "youtubetrends",
+        "summary": "Read YouTube trends analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "YouTube trends"
+      }
+    },
+    "/api/gruvi/tiktok/analytics/summary": {
+      "get": {
+        "operationId": "tiktoksummary",
+        "summary": "Read TikTok summary analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "TikTok summary"
+      }
+    },
+    "/api/gruvi/tiktok/analytics/trends": {
+      "get": {
+        "operationId": "tiktoktrends",
+        "summary": "Read TikTok trends analytics",
+        "responses": {
+          "200": {
+            "description": "Successful request; publication status must be checked separately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Access or paid-plan requirement"
+          },
+          "429": {
+            "description": "Limit reached"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "TikTok trends"
+      }
+    },
+    "/api/gruvi/scheduled-posts/bulk": {
+      "post": {
+        "summary": "Schedule 1 to 20 videos with one stable requestId and per-item results",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          },
+          "201": {
+            "description": "All posts scheduled"
+          },
+          "207": {
+            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkSchedule"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "operationId": "bulkScheduleVideos",
+        "parameters": [],
+        "x-displayName": "Bulk video scheduling"
+      }
+    },
+    "/api/gruvi/carousels/get-upload-url": {
+      "post": {
+        "summary": "Allocate a ten-minute signed upload URL for one carousel image",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fileType",
+                  "fileSize"
+                ],
+                "properties": {
+                  "fileType": {
+                    "enum": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/webp"
+                    ]
+                  },
+                  "fileSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5242880
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "createCarouselUpload",
+        "parameters": [],
+        "x-displayName": "Create image upload"
+      }
+    },
+    "/api/gruvi/carousels": {
+      "post": {
+        "summary": "Save 2 to 10 uploaded images as a carousel without publishing",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          },
+          "201": {
+            "description": "Carousel saved without publishing."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCarousel"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "createCarousel",
+        "parameters": [],
+        "x-displayName": "Save a carousel"
+      },
+      "get": {
+        "summary": "List this account's saved carousels",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "listCarousels",
+        "parameters": [],
+        "x-displayName": "List carousels"
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/publish": {
+      "post": {
+        "summary": "Publish one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "platform",
+                  "accountId"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 10000
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "platform": {
+                    "enum": [
+                      "instagram",
+                      "tiktok"
+                    ]
+                  },
+                  "accountId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "publishCarousel",
+        "x-displayName": "Publish a carousel"
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/schedule": {
+      "post": {
+        "summary": "Schedule one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          },
+          "201": {
+            "description": "Carousel schedule created; not yet published."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "platforms",
+                  "scheduledTime"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 10000
+                  },
+                  "tiktokSettings": {
+                    "$ref": "#/components/schemas/TikTokSettings"
+                  },
+                  "platforms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "platform",
+                        "accountId"
+                      ],
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "youtube",
+                            "tiktok",
+                            "instagram",
+                            "facebook",
+                            "linkedin",
+                            "twitter"
+                          ]
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  },
+                  "scheduledTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "scheduleCarousel",
+        "x-displayName": "Schedule a carousel"
+      }
+    },
+    "/api/gruvi/carousels/{carouselId}/publications/{requestId}": {
+      "get": {
+        "summary": "Check an uncertain carousel publication before retrying",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "carouselId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "getCarouselPublication",
+        "x-displayName": "Carousel delivery status"
+      }
+    },
+    "/api/gruvi/instagram/analytics/summary": {
+      "get": {
+        "summary": "Read Instagram engagement summary",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviInstagramAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "Instagram engagement"
+      }
+    },
+    "/api/gruvi/facebook/analytics/summary": {
+      "get": {
+        "summary": "Read Facebook engagement summary",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviFacebookAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "Facebook engagement"
+      }
+    },
+    "/api/gruvi/twitter/analytics/summary": {
+      "get": {
+        "summary": "Read X engagement summary",
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Bearer authentication required"
+          },
+          "403": {
+            "description": "Account permission or publishing access required"
+          },
+          "429": {
+            "description": "Rate limit or monthly allowance reached. Honor Retry-After."
+          },
+          "503": {
+            "description": "Request could not be confirmed. Inspect state and reuse the request ID."
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviTwitterAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "X engagement"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Account",
+      "description": "Identify the account authorized by your agent key."
+    },
+    {
+      "name": "Billing",
+      "description": "Plans, trial eligibility and secure hosted checkout."
+    },
+    {
+      "name": "Media",
+      "description": "Upload finished videos and thumbnails without generating content."
+    },
+    {
+      "name": "Publishing",
+      "description": "Send a video and inspect delivery for each destination."
+    },
+    {
+      "name": "Scheduling",
+      "description": "Create, inspect and cancel schedules, including batches."
+    },
+    {
+      "name": "Carousels",
+      "description": "Prepare image sets and publish or schedule them on Instagram or TikTok."
+    },
+    {
+      "name": "Analytics",
+      "description": "Read the metrics available for each connected account."
+    }
+  ]
+}

@@ -39,7 +39,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node scripts/prerender-public.cjs",
+    "build": "node scripts/sync-public-content.cjs && react-scripts build && node scripts/prerender-public.cjs && node scripts/verify-public-content.cjs",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "preview": "node scripts/preview-distribution.cjs"

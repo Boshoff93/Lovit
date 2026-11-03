@@ -12,7 +12,9 @@ export default function DistributionFooter() {
         <p>Content distribution for agents.</p>
       </div>
       <nav aria-label="Footer">
+        <Link to="/api">API</Link>
         <Link to="/docs">Documentation</Link>
+        <Link to="/blog">Blog</Link>
         <a href="/llms.txt">Agent discovery</a>
         <Link to="/pricing">Pricing</Link>
         <Link to="/terms">Terms</Link>

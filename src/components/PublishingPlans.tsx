@@ -96,12 +96,12 @@ export default function PublishingPlans() {
               <li>Multiple accounts per platform</li>
               <li>Video uploads & custom thumbnails</li>
               <li>Publish now or schedule ahead</li>
-              <li>API included</li>
+              <li><Link to="/api">API included</Link></li>
               {plan.id !== 'starter' && <li><Link to="/docs/agent-integration">MCP connector for agents</Link><small className="gd-perk-detail">Connect Claude Code, Codex or another local MCP client.</small></li>}
-              <li>Instagram & TikTok photo carousels</li>
-              <li>Bulk video scheduling</li>
-              <li>TikTok & YouTube analytics</li>
-              <li>Instagram, Facebook & X engagement (beta)</li>
+              <li><Link to="/blog/instagram-tiktok-carousel-posts">Instagram & TikTok photo carousels</Link></li>
+              <li><Link to="/blog/bulk-video-scheduling">Bulk video scheduling</Link></li>
+              <li><Link to="/blog/social-media-analytics-api">TikTok & YouTube analytics</Link></li>
+              <li><Link to="/blog/social-media-analytics-api">Instagram, Facebook & X engagement (beta)</Link></li>
               <li><a href="mailto:admin@wbtechventures.com">Founder support</a></li>
             </ul>
             <Button

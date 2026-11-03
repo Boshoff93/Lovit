@@ -21,7 +21,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import DistributionAuthDialog from '../DistributionAuthDialog';
-import { getTabForRoute } from '../../config/tabRouting';
 
 interface MarketingHeaderProps {
   onOpenAuth?: () => void;
@@ -35,7 +34,8 @@ interface MarketingHeaderProps {
 const navItems = [
   { label: 'Home', href: '/', activeColor: '#5DD3B3' },
   { label: 'For Agents', href: '/docs', activeColor: '#60A5FA' },
-  { label: 'API', href: '/docs/api-reference', activeColor: '#60A5FA' },
+  { label: 'API', href: '/api', activeColor: '#60A5FA' },
+  { label: 'Blog', href: '/blog', activeColor: '#60A5FA' },
   { label: 'Pricing', href: '/pricing', activeColor: '#A855F7' },
 ];
 
@@ -69,11 +69,12 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
 
   // Check if current path matches nav item using tab routing logic
   const isActive = useCallback((href: string) => {
-    if (href === '/docs/api-reference') return location.pathname === href;
-    if (href === '/docs' && location.pathname === '/docs/api-reference') return false;
-    const currentTab = getTabForRoute(location.pathname);
-    const itemTab = getTabForRoute(href);
-    return currentTab === itemTab;
+    const path = location.pathname;
+    if (href === '/') return path === '/';
+    if (href === '/api') return path === '/api' || path === '/docs/api-reference';
+    if (href === '/docs') return path.startsWith('/docs') && path !== '/docs/api-reference';
+    if (href === '/blog') return path === '/blog' || path.startsWith('/blog/');
+    return path === href;
   }, [location.pathname]);
 
   // Find active nav index
@@ -258,6 +259,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
           {/* Mobile: hamburger menu */}
           {isMobile ? (
             <IconButton
+              aria-label="Open navigation menu"
               onClick={handleDrawerToggle}
               sx={{
                 color: lightMode ? '#141418' : '#fff',
@@ -527,7 +529,7 @@ const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               Gruvi
             </Typography>
           </Box>
-          <IconButton onClick={handleDrawerToggle} sx={{ color: '#fff' }}>
+          <IconButton aria-label="Close navigation menu" onClick={handleDrawerToggle} sx={{ color: '#fff' }}>
             <ChevronRightIcon />
           </IconButton>
         </Box>

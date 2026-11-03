@@ -11,6 +11,9 @@ import MarketingHeader from "../components/marketing/MarketingHeader";
 import DistributionFooter from "../components/DistributionFooter";
 import DistributionAuthDialog from "../components/DistributionAuthDialog";
 import PublishingPlans from "../components/PublishingPlans";
+import GuideArtwork from "../components/GuideArtwork";
+import { blogPosts, guideMinutes } from "../content/blog";
+import "../public-content.css";
 import {
   DISTRIBUTION_DESCRIPTION,
   publishingPlans,
@@ -71,6 +74,9 @@ export default function HomePage() {
                 "Social media scheduling calendar",
                 "Per-platform delivery status",
                 "TikTok and YouTube analytics",
+                "Instagram, Facebook and X engagement summaries",
+                "Bulk video scheduling",
+                "Instagram and TikTok photo carousels",
               ],
               offers: publishingPlans.map((plan) => ({
                 "@type": "Offer",
@@ -326,6 +332,19 @@ export default function HomePage() {
             <AgentConnection />
           </div>
         </section>
+        <section className="gr-home-developers" id="api">
+          <div className="gm-container">
+            <div className="gr-home-dev-intro">
+              <div><p className="gm-eyebrow">The hosted Gruvi API</p><h2>Build publishing into your workflow.</h2><p>Upload finished media, schedule a batch or send a carousel. Browse the endpoint reference, copy a request and keep your agent moving.</p></div>
+              <Link className="gr-button" to="/api">Explore the API ↗</Link>
+            </div>
+            <div className="gr-home-feature-links">
+              <article className="gr-card"><p className="gm-eyebrow">Bulk video scheduling</p><h3>Plan the next 20 posts.</h3><p>Separate captions, exact account targets and a future time for every video. Retry-safe results keep accepted schedules intact.</p><Link className="gr-card-link" to="/blog/bulk-video-scheduling">See the batch workflow →</Link></article>
+              <article className="gr-card"><p className="gm-eyebrow">Photo carousels</p><h3>Make the sequence count.</h3><p>Prepare 2 to 10 images for Instagram or TikTok. Arrange the frames, choose the caption and publish or schedule the set.</p><Link className="gr-card-link" to="/blog/instagram-tiktok-carousel-posts">Explore carousel posts →</Link></article>
+              <article className="gr-card"><p className="gm-eyebrow">Analytics</p><h3>Know what happened next.</h3><p>TikTok and YouTube analytics, with Instagram, Facebook and X engagement summaries in beta. Clear coverage for every metric.</p><Link className="gr-card-link" to="/blog/social-media-analytics-api">Compare analytics coverage →</Link></article>
+            </div>
+          </div>
+        </section>
         <section className="gm-section gm-pricing-section" id="pricing">
           <div className="gm-container">
             <SectionHeading
@@ -336,6 +355,12 @@ export default function HomePage() {
               with room to grow your schedule.
             </SectionHeading>
             <PublishingPlans />
+          </div>
+        </section>
+        <section className="gr-home-developers">
+          <div className="gm-container">
+            <div className="gr-home-dev-intro"><div><p className="gm-eyebrow">From the Gruvi blog</p><h2>Guides for your next integration.</h2><p>Practical examples for agents, APIs and the details that make publishing reliable.</p></div><Link className="gr-text-link" to="/blog">Browse all guides →</Link></div>
+            <div className="gr-blog-grid">{[blogPosts[0], blogPosts[4], blogPosts[5]].map(post => <article className="gr-guide-card" key={post.slug}><GuideArtwork variant={post.art} /><div className="gr-guide-card-body"><p className="gr-guide-meta">{post.category} · {guideMinutes(post)} min read</p><h3><Link to={`/blog/${post.slug}`}>{post.title}</Link></h3><p>{post.description}</p><Link className="gr-card-link" to={`/blog/${post.slug}`}>Read guide →</Link></div></article>)}</div>
           </div>
         </section>
         <section className="gm-section gm-faq-section" id="faq">

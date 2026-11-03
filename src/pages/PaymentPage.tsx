@@ -54,9 +54,9 @@ export default function PaymentPage() {
           <details>
             <summary>Where are analytics available?</summary>
             <p>
-              Gruvi currently provides TikTok and YouTube analytics for
-              connected accounts. Other supported networks provide publishing
-              and delivery results.
+              TikTok and YouTube have summary and trend analytics. Instagram,
+              Facebook and X have recent-post engagement summaries in beta,
+              subject to platform read permissions and API access.
             </p>
           </details>
         </section>

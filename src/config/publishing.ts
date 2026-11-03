@@ -1,6 +1,6 @@
 export const DISTRIBUTION_TAGLINE = "Content distribution. Built for agents.";
 export const DISTRIBUTION_DESCRIPTION =
-  "Content distribution built for agents. Publish and schedule social videos with Gruvi's API and MCP server, custom thumbnails and a social calendar.";
+  "Publish and schedule finished videos and image carousels with Gruvi's social media API, bulk scheduling, MCP connector and analytics.";
 export const publishingPlans = [
   {
     id: "starter",

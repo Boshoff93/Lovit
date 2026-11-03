@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://agentgruvi.com/</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://agentgruvi.com/api</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/pricing</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/docs</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/docs/getting-started</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/docs/agent-integration</loc><lastmod>2026-11-02</lastmod></url>
@@ -9,4 +11,10 @@
   <url><loc>https://agentgruvi.com/docs/social</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/terms</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://agentgruvi.com/privacy</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/social-media-api-for-ai-agents</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/bulk-video-scheduling</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/instagram-tiktok-carousel-posts</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/social-media-analytics-api</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/connect-claude-code-codex-mcp</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
+  <url><loc>https://agentgruvi.com/blog/retry-social-media-posts-safely</loc><lastmod>2026-11-03T03:22:42+00:00</lastmod></url>
 </urlset>

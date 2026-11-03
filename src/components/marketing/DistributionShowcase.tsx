@@ -666,7 +666,7 @@ export const distributionFaqs = [
   {
     question: "What is Gruvi?",
     answer:
-      "Gruvi is a content distribution API and dashboard for agents and teams. Bring finished videos and thumbnails, publish or schedule to connected social accounts, and follow delivery in one place.",
+      "Gruvi is a content distribution API and dashboard for agents and teams. Bring finished videos or image carousels, publish or schedule to connected social accounts, and follow delivery in one place.",
   },
   {
     question: "Can I publish without an agent?",
@@ -681,7 +681,7 @@ export const distributionFaqs = [
   {
     question: "Which platforms can I publish to?",
     answer:
-      "Gruvi supports video publishing to YouTube, Instagram, TikTok, Facebook, LinkedIn and X. Available formats, thumbnail behavior and publishing permissions depend on each platform and connected account.",
+      "Gruvi supports video publishing to YouTube, Instagram, TikTok, Facebook, LinkedIn and X, plus photo carousels for Instagram and TikTok. Formats, thumbnail behavior and permissions depend on the connected account.",
   },
   {
     question: "Can I use my own content and thumbnails?",
@@ -691,7 +691,7 @@ export const distributionFaqs = [
   {
     question: "What can I track?",
     answer:
-      "Review your calendar and per-platform delivery results for published, pending or failed posts. Connected TikTok and YouTube accounts also have video and account analytics.",
+      "Review your calendar and per-platform delivery results. TikTok and YouTube have summary and trend analytics. Instagram, Facebook and X have recent-post engagement summaries in beta, subject to platform permissions and API access.",
   },
   {
     question: "When do I choose a plan?",

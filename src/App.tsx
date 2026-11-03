@@ -15,6 +15,10 @@ import AuthInitializer from "./components/AuthInitializer";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import HomePage from "./pages/HomePage";
 import PaymentPage from "./pages/PaymentPage";
+import ApiPage from "./pages/ApiPage";
+import ApiReferencePage from "./pages/api/ApiReferencePage";
+import BlogPage from "./pages/BlogPage";
+import BlogArticlePage from "./pages/BlogArticlePage";
 import DashboardSubscriptionPage from "./pages/DashboardSubscriptionPage";
 import PublishingOverviewPage from "./pages/PublishingOverviewPage";
 import MediaLibraryPage from "./pages/MediaLibraryPage";
@@ -121,11 +125,14 @@ export default function App() {
             <Route path="/social-media" element={<LegacyPublishing />} />
             <Route path="/publishing" element={<LegacyPublishing />} />
             <Route path="/pricing" element={<PaymentPage />} />
+            <Route path="/api" element={<ApiPage />} />
+            <Route path="/docs/api-reference" element={<ApiReferencePage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogArticlePage />} />
             {[
               "/docs",
               "/docs/getting-started",
               "/docs/agent-integration",
-              "/docs/api-reference",
               "/docs/social",
             ].map((path) => (
               <Route

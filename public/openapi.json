@@ -3,7 +3,7 @@
   "info": {
     "title": "Gruvi Content Distribution API",
     "version": "2.1.0",
-    "description": "Content distribution for agents. Setup and read access are available without subscription; immediate publishing and scheduling require a paid plan. Queue acceptance does not confirm publication."
+    "description": "Upload finished media, publish or schedule posts, prepare carousels, schedule batches and read connected-account analytics. HTTPS JSON API with bearer agent keys. Preparation is available before subscribing; publishing requires an active plan, trial or complimentary access. OpenAPI 3.1 describes the deployed contract, not an unauthenticated API."
   },
   "servers": [
     {
@@ -422,7 +422,12 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Account"
+        ],
+        "parameters": [],
+        "x-displayName": "Read account"
       }
     },
     "/api/user/subscription": {
@@ -462,7 +467,12 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Subscription status"
       }
     },
     "/api/publishing/plans": {
@@ -518,7 +528,12 @@
             "description": "Limit reached"
           }
         },
-        "security": []
+        "security": [],
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Plans and trial"
       }
     },
     "/api/publishing/checkout": {
@@ -573,7 +588,12 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "x-displayName": "Start checkout"
       }
     },
     "/api/gruvi/social-accounts": {
@@ -622,7 +642,12 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "parameters": [],
+        "x-displayName": "Connected accounts"
       }
     },
     "/api/gruvi/videos/{userId}": {
@@ -687,7 +712,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "List videos"
       }
     },
     "/api/gruvi/videos/{userId}/{videoId}": {
@@ -732,7 +761,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Inspect a video"
       }
     },
     "/api/gruvi/videos/{userId}/get-upload-url": {
@@ -820,7 +853,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Create video upload"
       }
     },
     "/api/gruvi/videos/{userId}/finalize-upload": {
@@ -902,7 +939,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Finalize video upload"
       }
     },
     "/api/gruvi/videos/{userId}/{videoId}/upload-thumbnail": {
@@ -974,7 +1015,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Upload thumbnail"
       }
     },
     "/api/gruvi/videos/{userId}/{videoId}/social-metadata": {
@@ -1043,13 +1088,17 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Media"
+        ],
+        "x-displayName": "Update captions and tags"
       }
     },
     "/api/gruvi/videos/{userId}/{videoId}/batch-social-upload": {
       "post": {
         "operationId": "publishPost",
-        "summary": "Queue a video for immediate publishing; requires paid membership",
+        "summary": "Queue a video for immediate publishing; requires a publishing plan or trial",
         "parameters": [
           {
             "name": "userId",
@@ -1130,7 +1179,11 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Publishing"
+        ],
+        "x-displayName": "Publish a video"
       }
     },
     "/api/gruvi/videos/{userId}/{videoId}/social-upload-status": {
@@ -1175,13 +1228,17 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Publishing"
+        ],
+        "x-displayName": "Video delivery status"
       }
     },
     "/api/gruvi/scheduled-posts": {
       "post": {
         "operationId": "schedulePost",
-        "summary": "Schedule a future video post; requires paid membership",
+        "summary": "Schedule a future video post; requires a publishing plan or trial",
         "requestBody": {
           "required": true,
           "content": {
@@ -1229,6 +1286,13 @@
                   },
                   "thumbnailKey": {
                     "type": "string"
+                  },
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$",
+                    "description": "A stable ID for this logical schedule. Reuse it with an unchanged body after an uncertain response."
                   }
                 },
                 "required": [
@@ -1272,7 +1336,12 @@
           "429": {
             "description": "Monthly scheduling allowance reached"
           }
-        }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "parameters": [],
+        "x-displayName": "Schedule a video"
       },
       "get": {
         "operationId": "listScheduledPosts",
@@ -1316,7 +1385,12 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "parameters": [],
+        "x-displayName": "List schedules"
       }
     },
     "/api/gruvi/scheduled-posts/{scheduleId}": {
@@ -1358,7 +1432,11 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "x-displayName": "Inspect a schedule"
       },
       "delete": {
         "operationId": "cancelScheduledPost",
@@ -1398,13 +1476,17 @@
           "429": {
             "description": "Limit reached"
           }
-        }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "x-displayName": "Cancel a schedule"
       }
     },
     "/api/gruvi/youtube/analytics/summary": {
       "get": {
         "operationId": "youtubesummary",
-        "summary": "Read youtube summary analytics",
+        "summary": "Read YouTube summary analytics",
         "responses": {
           "200": {
             "description": "Successful request; publication status must be checked separately.",
@@ -1434,13 +1516,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "YouTube summary"
       }
     },
     "/api/gruvi/youtube/analytics/trends": {
       "get": {
         "operationId": "youtubetrends",
-        "summary": "Read youtube trends analytics",
+        "summary": "Read YouTube trends analytics",
         "responses": {
           "200": {
             "description": "Successful request; publication status must be checked separately.",
@@ -1470,13 +1556,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "YouTube trends"
       }
     },
     "/api/gruvi/tiktok/analytics/summary": {
       "get": {
         "operationId": "tiktoksummary",
-        "summary": "Read tiktok summary analytics",
+        "summary": "Read TikTok summary analytics",
         "responses": {
           "200": {
             "description": "Successful request; publication status must be checked separately.",
@@ -1506,13 +1596,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "TikTok summary"
       }
     },
     "/api/gruvi/tiktok/analytics/trends": {
       "get": {
         "operationId": "tiktoktrends",
-        "summary": "Read tiktok trends analytics",
+        "summary": "Read TikTok trends analytics",
         "responses": {
           "200": {
             "description": "Successful request; publication status must be checked separately.",
@@ -1542,7 +1636,11 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "x-displayName": "TikTok trends"
       }
     },
     "/api/gruvi/scheduled-posts/bulk": {
@@ -1554,8 +1652,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Request result"
+          "201": {
+            "description": "All posts scheduled"
+          },
+          "207": {
+            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
           },
           "400": {
             "description": "Invalid input"
@@ -1571,12 +1672,6 @@
           },
           "503": {
             "description": "Request could not be confirmed. Inspect state and reuse the request ID."
-          },
-          "201": {
-            "description": "All posts scheduled"
-          },
-          "207": {
-            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
           }
         },
         "requestBody": {
@@ -1588,7 +1683,13 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Scheduling"
+        ],
+        "operationId": "bulkScheduleVideos",
+        "parameters": [],
+        "x-displayName": "Bulk video scheduling"
       }
     },
     "/api/gruvi/carousels/get-upload-url": {
@@ -1646,7 +1747,13 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "createCarouselUpload",
+        "parameters": [],
+        "x-displayName": "Create image upload"
       }
     },
     "/api/gruvi/carousels": {
@@ -1658,8 +1765,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Request result"
+          "201": {
+            "description": "Carousel saved without publishing."
           },
           "400": {
             "description": "Invalid input"
@@ -1686,7 +1793,13 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "createCarousel",
+        "parameters": [],
+        "x-displayName": "Save a carousel"
       },
       "get": {
         "summary": "List this account's saved carousels",
@@ -1714,7 +1827,13 @@
           "503": {
             "description": "Request could not be confirmed. Inspect state and reuse the request ID."
           }
-        }
+        },
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "listCarousels",
+        "parameters": [],
+        "x-displayName": "List carousels"
       }
     },
     "/api/gruvi/carousels/{carouselId}/publish": {
@@ -1795,7 +1914,12 @@
               "format": "uuid"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "publishCarousel",
+        "x-displayName": "Publish a carousel"
       }
     },
     "/api/gruvi/carousels/{carouselId}/schedule": {
@@ -1807,8 +1931,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Request result"
+          "201": {
+            "description": "Carousel schedule created; not yet published."
           },
           "400": {
             "description": "Invalid input"
@@ -1899,7 +2023,12 @@
               "format": "uuid"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "scheduleCarousel",
+        "x-displayName": "Schedule a carousel"
       }
     },
     "/api/gruvi/carousels/{carouselId}/publications/{requestId}": {
@@ -1951,12 +2080,17 @@
               "pattern": "^[A-Za-z0-9_-]+$"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Carousels"
+        ],
+        "operationId": "getCarouselPublication",
+        "x-displayName": "Carousel delivery status"
       }
     },
     "/api/gruvi/instagram/analytics/summary": {
       "get": {
-        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "summary": "Read Instagram engagement summary",
         "security": [
           {
             "agentKey": []
@@ -1991,12 +2125,18 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviInstagramAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "Instagram engagement"
       }
     },
     "/api/gruvi/facebook/analytics/summary": {
       "get": {
-        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "summary": "Read Facebook engagement summary",
         "security": [
           {
             "agentKey": []
@@ -2031,12 +2171,18 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviFacebookAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "Facebook engagement"
       }
     },
     "/api/gruvi/twitter/analytics/summary": {
       "get": {
-        "summary": "Recent-post engagement, cached for five minutes. Requires platform read access; missing metrics are unavailable.",
+        "summary": "Read X engagement summary",
         "security": [
           {
             "agentKey": []
@@ -2071,8 +2217,44 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getApiGruviTwitterAnalyticsSummary",
+        "description": "Beta engagement summary for the most recent posts, cached for five minutes. Requires an exact connected accountId and platform read permissions. Missing metrics are null, not zero. X uses the platform identifier twitter.",
+        "x-displayName": "X engagement"
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Account",
+      "description": "Identify the account authorized by your agent key."
+    },
+    {
+      "name": "Billing",
+      "description": "Plans, trial eligibility and secure hosted checkout."
+    },
+    {
+      "name": "Media",
+      "description": "Upload finished videos and thumbnails without generating content."
+    },
+    {
+      "name": "Publishing",
+      "description": "Send a video and inspect delivery for each destination."
+    },
+    {
+      "name": "Scheduling",
+      "description": "Create, inspect and cancel schedules, including batches."
+    },
+    {
+      "name": "Carousels",
+      "description": "Prepare image sets and publish or schedule them on Instagram or TikTok."
+    },
+    {
+      "name": "Analytics",
+      "description": "Read the metrics available for each connected account."
+    }
+  ]
 }
