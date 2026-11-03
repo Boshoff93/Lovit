@@ -12,6 +12,10 @@ test.each([
 );
 
 test.each([
+  [401, { error: "YouTube not connected" }],
+  [401, { error: "TikTok not connected" }],
+  [401, { error: "YouTube authorization expired. Please reconnect your YouTube account." }],
+  [401, { error: "TikTok authorization expired. Please reconnect your TikTok account." }],
   [403, { error: "Publishing plan required" }],
   [403, { error: "Email verification required" }],
   [403, { error: "Account access denied" }],

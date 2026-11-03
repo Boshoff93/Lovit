@@ -1,4 +1,6 @@
 import { VideoActivitySkeleton, VideoAnalyticsSkeleton } from "../components/AnalyticsSkeleton";
+import AnalyticsWorkspaceHeader, { useAnalyticsAccount } from '../components/AnalyticsWorkspaceHeader';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useState, useMemo } from 'react';
 import {
@@ -13,11 +15,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Avatar,
   Chip,
   Tooltip as MuiTooltip,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -29,7 +28,6 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import PeopleIcon from '@mui/icons-material/People';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import {
@@ -360,38 +358,32 @@ const YouTubeAnalyticsPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?.userId || '';
   const [trendPeriod, setTrendPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
-  const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
 
-  const { data: socialAccountsData } = useGetSocialAccountsQuery(
+  const { data: socialAccountsData, isLoading: accountsLoading, isError: accountsError, refetch: refetchAccounts } = useGetSocialAccountsQuery(
     { userId },
     { skip: !userId }
   );
-  const youtubeAccounts = useMemo(
-    () => (socialAccountsData?.accounts || []).filter(a => a.platform === 'youtube'),
-    [socialAccountsData]
-  );
-  const activeAccountId = selectedAccountId || youtubeAccounts[0]?.accountId || undefined;
-  const activeAccount = youtubeAccounts.find(a => a.accountId === activeAccountId);
+  const { accountId: activeAccountId, select } = useAnalyticsAccount(socialAccountsData?.accounts || [], 'youtube');
 
-  const { data: summary, isLoading: summaryLoading, error: summaryError } = useGetYouTubeSummaryQuery(
+  const { currentData: summary, isFetching: summaryFetching, error: summaryError, refetch: refetchSummary } = useGetYouTubeSummaryQuery(
     { userId, accountId: activeAccountId },
-    { skip: !userId }
+    { skip: !userId || !activeAccountId }
   );
-  const { data: trendsData, isLoading: trendsLoading } = useGetYouTubeTrendsQuery(
+  const { currentData: trendsData, isFetching: trendsFetching, refetch: refetchTrends } = useGetYouTubeTrendsQuery(
     { userId, accountId: activeAccountId, period: trendPeriod },
-    { skip: !userId }
+    { skip: !userId || !activeAccountId }
   );
-  const { data: accountStats, isLoading: statsLoading } = useGetYouTubeAccountStatsQuery(
+  const { currentData: accountStats, isFetching: statsFetching, refetch: refetchStats } = useGetYouTubeAccountStatsQuery(
     { userId, accountId: activeAccountId },
-    { skip: !userId }
+    { skip: !userId || !activeAccountId }
   );
-  const { data: videosData, isLoading: videosLoading, error: videosError, refetch: refetchVideos } = useGetYouTubeVideosQuery(
+  const { currentData: videosData, isFetching: videosLoading, error: videosError, refetch: refetchVideos } = useGetYouTubeVideosQuery(
     { userId, accountId: activeAccountId },
-    { skip: !userId }
+    { skip: !userId || !activeAccountId }
   );
 
-  const isLoading = summaryLoading || trendsLoading || statsLoading;
+  const isLoading = accountsLoading || (!!activeAccountId && ((!summary && !summaryError) || (trendsFetching && !trendsData) || (statsFetching && !accountStats)));
+  const header = <AnalyticsWorkspaceHeader platform="youtube" accounts={socialAccountsData?.accounts || []} accountId={activeAccountId} onAccountChange={select} loading={accountsLoading}><Button variant="outlined" startIcon={<RefreshRoundedIcon/>} disabled={!activeAccountId || summaryFetching || trendsFetching || statsFetching || videosLoading} onClick={() => { refetchSummary(); refetchTrends(); refetchStats(); refetchVideos(); }}>Refresh</Button></AnalyticsWorkspaceHeader>;
 
   if (!userId) {
     return (
@@ -403,40 +395,13 @@ const YouTubeAnalyticsPage: React.FC = () => {
   }
 
   if (isLoading) {
-    return <VideoAnalyticsSkeleton platform="YouTube" />;
+    return <div className="gd gd-video-analytics">{header}<VideoAnalyticsSkeleton platform="YouTube" includeHeader={false}/></div>;
   }
 
-  if (summaryError) {
-    const errMsg = (summaryError as any)?.data?.error || 'Failed to load analytics';
-    return (
-      <Box className="gd-empty" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', p: 3 }}>
-        <BarChartIcon sx={{ fontSize: 64, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
-        <Typography variant="h6" sx={{ color: '#aab4c2', mb: 1 }}>YouTube Not Connected</Typography>
-        <Typography variant="body2" sx={{ color: '#91aaa9' }}>{errMsg}</Typography>
-        <Typography variant="body2" sx={{ color: '#91aaa9', mt: 1, mb: 3 }}>
-          Connect your YouTube account in Connected Accounts to view analytics.
-        </Typography>
-        <Button
-          className="gd-primary-action gd-card-action"
-          variant="contained"
-          onClick={() => navigate('/settings/connected-accounts')}
-          sx={{
-            background: 'linear-gradient(135deg, #FF0000 0%, #CC0000 100%)',
-            color: '#fff',
-            fontWeight: 600,
-            borderRadius: '12px',
-            px: 3,
-            py: 1,
-            textTransform: 'none',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
-            },
-          }}
-        >
-          Connect YouTube Account
-        </Button>
-      </Box>
-    );
+  if (accountsError || !activeAccountId || summaryError) {
+    return <div className="gd gd-video-analytics">{header}
+      {accountsError ? <WorkspaceNotice onRetry={() => refetchAccounts()}>Your connected accounts could not be loaded.</WorkspaceNotice> : summaryError ? <WorkspaceNotice onRetry={() => refetchSummary()}>We could not load this account's analytics. Try again shortly or check its connection in Connected Accounts.</WorkspaceNotice> : <section className="gd-form-section gd-analytics-empty"><h2>Connect YouTube</h2><p>Connect an account to see its audience and video performance.</p><Button variant="contained" className="gd-card-action" onClick={() => navigate('/settings/connected-accounts')}>Connect account</Button></section>}
+    </div>;
   }
 
   const trends = trendsData?.trends || [];
@@ -452,111 +417,8 @@ const YouTubeAnalyticsPage: React.FC = () => {
     : 0;
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
-          <Box sx={{
-            width: 56, height: 56, borderRadius: '16px',
-            background: 'linear-gradient(135deg, #FF0000 0%, #CC0000 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(255,0,0,0.3)',
-            flexShrink: 0,
-          }}>
-            <BarChartIcon sx={{ fontSize: 28, color: '#fff' }} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-              YouTube Analytics
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#aab4c2' }}>
-              {accountStats?.channelTitle || 'Performance overview'}
-              {summary?.totalPosts ? ` \u00B7 ${summary.totalPosts} videos` : ''}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Account selector dropdown */}
-        {youtubeAccounts.length > 0 && (
-          <>
-            <Button
-              onClick={(e) => setAccountMenuAnchor(e.currentTarget)}
-              sx={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '12px',
-                px: 2,
-                py: 1,
-                textTransform: 'none',
-                color: '#fff',
-                gap: 1,
-                flexShrink: 0,
-                '&:hover': {
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                },
-              }}
-            >
-              <Avatar
-                src={activeAccount?.avatarUrl || accountStats?.channelThumbnailUrl}
-                sx={{ width: 28, height: 28 }}
-              >
-                {(activeAccount?.accountName || '?')[0].toUpperCase()}
-              </Avatar>
-              <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {activeAccount?.accountName || 'Account'}
-              </Typography>
-              <KeyboardArrowDownIcon sx={{ fontSize: 20, color: '#aab4c2' }} />
-            </Button>
-            <Menu
-              anchorEl={accountMenuAnchor}
-              open={Boolean(accountMenuAnchor)}
-              onClose={() => setAccountMenuAnchor(null)}
-              PaperProps={{
-                sx: {
-                  background: '#171e28',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '12px',
-                  mt: 1,
-                  minWidth: 200,
-                },
-              }}
-            >
-              {youtubeAccounts.map((account) => (
-                <MenuItem
-                  key={account.accountId}
-                  selected={account.accountId === activeAccountId}
-                  onClick={() => {
-                    setSelectedAccountId(account.accountId);
-                    setAccountMenuAnchor(null);
-                  }}
-                  sx={{
-                    gap: 1.5,
-                    py: 1,
-                    color: '#fff',
-                    '&.Mui-selected': {
-                      background: 'rgba(255,0,0,0.15)',
-                    },
-                    '&:hover': {
-                      background: 'rgba(255,255,255,0.06)',
-                    },
-                  }}
-                >
-                  <Avatar src={account.avatarUrl} sx={{ width: 32, height: 32 }}>
-                    {(account.accountName || '?')[0].toUpperCase()}
-                  </Avatar>
-                  <Box>
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                      {account.accountName}
-                    </Typography>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Menu>
-          </>
-        )}
-      </Box>
-
+    <Box className="gd gd-video-analytics">
+      {header}
       {/* KPI Cards */}
       <Box sx={{
         display: 'grid',
@@ -566,7 +428,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
       }}>
         <KpiCard
           label="Subscribers"
-          value={accountStats?.subscriberCount || 0}
+          value={accountStats ? accountStats.hiddenSubscriberCount ? 'Hidden' : accountStats.subscriberCount : 'Unavailable'}
           icon={<PeopleIcon sx={{ fontSize: 20, color: '#fff' }} />}
           gradient="linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)"
         />
@@ -601,6 +463,7 @@ const YouTubeAnalyticsPage: React.FC = () => {
       {/* Last 7 Days Calendar */}
       <>{videosLoading && !videosData ? <VideoActivitySkeleton/> : videosError && !videosData ? <WorkspaceNotice onRetry={() => refetchVideos()}>Recent video activity could not be loaded.</WorkspaceNotice> : <WeekCalendar videos={videosData?.videos || []}/>}</>
 
+      <p className="gd-video-chart-context">Charts group lifetime video engagement by publication date, rather than the day each view happened.</p>
       {/* Views Over Time */}
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

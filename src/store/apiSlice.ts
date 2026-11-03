@@ -3,6 +3,7 @@ import { Character, Narrative, ScheduledPost } from '../services/api';
 import { API_BASE_URL } from '../utils/apiBaseUrl';
 import { logout } from './authSlice';
 import { shouldClearSession } from '../utils/sessionErrors';
+import { AnalyticsAccount, SnapshotRow, loadAnalyticsSnapshot } from '../utils/analyticsSnapshot';
 
 // TikTok Analytics types
 export interface TikTokVideo {
@@ -341,6 +342,18 @@ export const apiSlice = createApi({
     }),
 
     // Social Accounts (multi-account)
+    getAnalyticsSnapshot: builder.query<SnapshotRow[], { userId: string; accounts: AnalyticsAccount[] }>({
+      async queryFn({ userId, accounts }, queryApi, _extra, baseQuery) {
+        try {
+          const rows = await loadAnalyticsSnapshot(accounts, userId, url => baseQuery(url), queryApi.signal);
+          return { data: rows };
+        } catch {
+          return { error: { status: 'CUSTOM_ERROR', error: 'The account snapshot could not be loaded.' } };
+        }
+      },
+      keepUnusedDataFor: 300,
+      providesTags: ['SocialConnections', 'TikTokSummary', 'YouTubeSummary'],
+    }),
     getSocialAccounts: builder.query<
       { accounts: Array<{ accountId: string; platform: string; accountName?: string; username?: string; avatarUrl?: string; connectedAt?: string }> },
       { userId: string }
@@ -551,6 +564,7 @@ export const {
   useDeleteSlideshowMutation,
   // Social Media
   useGetSocialAccountsQuery,
+  useGetAnalyticsSnapshotQuery,
   useGetYouTubeStatusQuery,
   useGetTikTokStatusQuery,
   useGetInstagramStatusQuery,

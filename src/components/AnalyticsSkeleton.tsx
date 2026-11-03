@@ -31,7 +31,7 @@ export function AnalyticsInsightsSkeleton({ platform, chartLabel }: { platform: 
       <div className="gd-analytics-account"><div className="gd-analytics-identity"><Line width={44} height={44}/><div><Line width={130} height={16}/><Line width={80} height={12}/></div></div><div className="gd-analytics-snapshot-badges">{[90, 115, 115].map((width, i) => <span key={i}><Line width={width} height={18}/></span>)}</div></div>
       {isMeta && <>
         <div className="gd-analytics-section-heading"><h2>Account insights</h2><Line width={140} height={18}/></div>
-        <div className="gd-analytics-kpis">{['Content views', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached', 'Interactions'].map((label, i) => <div className="gd-stat" key={label}><span>{label}</span><Line width={120} height={platform === 'facebook' && i === 1 ? 24 : 41}/><div className="gd-kpi-loading-caption"><Line width="95%" height={12}/>{platform === 'facebook' && i === 1 && <Line width="80%" height={12}/>}</div></div>)}</div>
+        <div className="gd-analytics-kpis">{['Content views', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached', 'Interactions'].map((label, i) => <div className="gd-stat" key={label}><span className="gd-analytics-kpi-heading"><Line width={36} height={36}/>{label}</span><Line width={120} height={platform === 'facebook' && i === 1 ? 24 : 41}/><div className="gd-kpi-loading-caption"><Line width="95%" height={12}/>{platform === 'facebook' && i === 1 && <Line width="80%" height={12}/>}</div></div>)}</div>
         <div className="gd-form-section gd-analytics-chart">
           <h2>{chartLabel || (platform === 'facebook' ? 'Content views each day' : 'Accounts reached each day')}</h2>
           {platform === 'facebook' && <Line width={280} height={56}/>}
@@ -40,6 +40,7 @@ export function AnalyticsInsightsSkeleton({ platform, chartLabel }: { platform: 
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </div>
       </>}
+      {isMeta && <div className="gd-analytics-detail-grid">{['Post engagement', 'Top recent posts'].map(title => <div className="gd-form-section gd-engagement-panel" key={title}><h2>{title}</h2><Line width="85%"/>{[0,1,2].map(i => <Line key={i} width="100%" height={40}/>)}</div>)}</div>}
     </div>
     <span className="gd-sr-only">Loading account analytics.</span>
   </div>;
@@ -47,11 +48,7 @@ export function AnalyticsInsightsSkeleton({ platform, chartLabel }: { platform: 
 
 export function AnalyticsChannelsSkeleton() {
   return <div className="gd-analytics-skeleton" role="status" aria-label="Loading analytics channels" aria-busy="true">
-    <div className="gd-channel-grid gd-analytics-grid" aria-hidden="true">{[0, 1, 2, 3, 4].map(i => <div className="gd-channel-card" key={i}>
-      <div className="gd-channel-heading"><Line width={48} height={48}/><Line width={115} height={30}/></div>
-      <div className="gd-channel-loading-copy"><Line width={140} height={28}/><Line width="94%"/><Line width="76%"/></div>
-      <Line width={155} height={46}/>
-    </div>)}</div>
+    <div className="gd-analytics-overview-body" aria-hidden="true"><div className="gd-snapshot-kpis">{[0,1,2,3].map(i => <div className="gd-stat gd-snapshot-stat" key={i}><Line width={36} height={36}/><Line width="80%"/><Line width={120} height={40}/><Line width="90%"/><Line width="65%"/></div>)}</div><div className="gd-form-section"><Line width={140} height={28}/>{[0,1,2].map(i => <div className="gd-snapshot-account" key={i}><Line width={44} height={44}/><Line width="65%" height={30}/><Line width={130} height={48}/></div>)}</div></div>
     <span className="gd-sr-only">Loading connected analytics channels.</span>
   </div>;
 }
@@ -64,11 +61,11 @@ export function VideoActivitySkeleton() {
   return <div className="gd-analytics-skeleton" role="status" aria-label="Loading recent video activity" aria-busy="true"><div aria-hidden="true"><VideoWeekPlaceholder/></div><span className="gd-sr-only">Loading recent video activity.</span></div>;
 }
 
-export function VideoAnalyticsSkeleton({ platform }: { platform: 'YouTube' | 'TikTok' }) {
+export function VideoAnalyticsSkeleton({ platform, includeHeader = true }: { platform: 'YouTube' | 'TikTok'; includeHeader?: boolean }) {
   const labels = [platform === 'YouTube' ? 'Subscribers' : 'Followers', 'Total Videos', 'Total Views', 'Total Likes', 'Engagement Rate'];
-  return <div className="gd gd-video-analytics-skeleton gd-analytics-skeleton" role="status" aria-label={`Loading ${platform} analytics`} aria-busy="true">
+  return <div className={`gd gd-video-analytics-skeleton gd-analytics-skeleton${includeHeader ? '' : ' has-workspace-header'}`} role="status" aria-label={`Loading ${platform} analytics`} aria-busy="true">
     <div aria-hidden="true">
-      <div className="gd-video-loading-header"><div><Line width={56} height={56}/><div><h1>{platform} Analytics</h1><Line width={155} height={16}/></div></div><Line width={170} height={48}/></div>
+      {includeHeader && <div className="gd-video-loading-header"><div><Line width={56} height={56}/><div><h1>{platform} Analytics</h1><Line width={155} height={16}/></div></div><Line width={170} height={48}/></div>}
       <div className="gd-video-loading-kpis">{labels.map(label => <div key={label}><Line width={40} height={40}/><div><Line width={90} height={34}/><span>{label}</span></div></div>)}</div>
       <VideoWeekPlaceholder/>
       {['Views Over Time', 'Engagement Over Time', platform === 'YouTube' ? 'Upload Frequency' : 'Post Frequency'].map((title, i) => <div className="gd-video-loading-section" key={title}><div className="gd-video-loading-chart-heading"><h2>{title}</h2>{i === 0 && <Line width={175} height={32}/>}</div><div className="gd-video-loading-chart"><ChartPlaceholder height={i === 2 ? 166 : 266}/></div></div>)}
