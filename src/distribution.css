@@ -473,6 +473,9 @@
 .gd-pricing-intro p {
   margin-inline: auto;
 }
+.gd-publishing-plans {
+  container: publishing-plans / inline-size;
+}
 .gd-plan-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -599,6 +602,16 @@
   .gd-plan-benefits-grid { grid-template-columns: 1fr; }
   .gd-plan-benefits { margin-top: 32px; padding-top: 24px; }
   .gd-plan-benefits-grid > li { padding-block: 20px; }
+}
+@container publishing-plans (max-width: 780px) {
+  .gd-plan-grid { grid-template-columns: 1fr; }
+  .gd-plan .gd-plan-description { min-height: 0; }
+}
+@container publishing-plans (max-width: 1000px) {
+  .gd-plan-benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container publishing-plans (max-width: 600px) {
+  .gd-plan-benefits-grid { grid-template-columns: 1fr; }
 }
 .gd-plan .MuiButton-root {
   margin-top: auto;

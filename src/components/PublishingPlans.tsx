@@ -108,7 +108,7 @@ export default function PublishingPlans() {
     }
   };
   return (
-    <>
+    <div className="gd-publishing-plans">
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
@@ -203,6 +203,6 @@ export default function PublishingPlans() {
           if (token) navigate("/payment");
         }}
       />
-    </>
+    </div>
   );
 }
