@@ -686,7 +686,7 @@
 .gd-analytics-snapshot-badges { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .gd-analytics-snapshot-badges > span { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; background: #111822; border: 1px solid #ffffff14; border-radius: 8px; font-size: 12px; line-height: 18px; color: #d7dfe9; }
 .gd-analytics-snapshot-badges svg { width: 16px; height: 16px; flex-shrink: 0; color: #aab4c2; }
-.gd-analytics-section-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.gd-analytics-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 .gd-workspace .gd-analytics-section-heading h2 { font-size: 23px; margin: 0; }
 .gd-workspace .gd-analytics-section-heading p { color: #aab4c2; font-size: 12px; margin: 0; }
 .gd-analytics-kpis { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
