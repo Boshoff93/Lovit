@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import WorkspaceSkeleton from "./components/WorkspaceSkeleton";
+import AccountLoadingState from "./components/AccountLoadingState";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import api from "./utils/axiosConfig";
@@ -57,7 +58,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { token, user, isLoading } = useSelector((s: RootState) => s.auth);
   const location = useLocation();
   if (isLoading && !user)
-    return <div className="gd-workspace gd-auth-loading"><WorkspaceSkeleton label="Loading account" /></div>;
+    return <AccountLoadingState />;
   if (!token)
     return <Navigate to="/?signin=1" state={{ from: location }} replace />;
   if (user && !user.isVerified)

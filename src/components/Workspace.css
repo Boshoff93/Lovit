@@ -403,6 +403,21 @@
 .gd-loading-list .gd-loading-card { gap: 12px; padding: 20px; }
 
 .gd-auth-loading { padding: 40px; min-height: 100vh; }
+.gd-dashboard-stats .gd-dashboard-stat-loading { display: flex; align-items: center; min-height: 1.5em; }
+.gd-dashboard-stats .MuiSkeleton-root,
+.gd-dashboard-upcoming-loading .MuiSkeleton-root { background: #ffffff14; max-width: 100%; border-radius: 4px; }
+.gd-dashboard-upcoming-loading .gd-upcoming-row { align-items: center; }
+.gd-dashboard-upcoming-loading .gd-upcoming-row > span:first-child { flex: 1; min-width: 0; }
+.gd-dashboard-upcoming-loading .gd-upcoming-row small { margin-top: 10px; }
+.gd-dashboard-upcoming-loading .gd-upcoming-time-loading { flex-shrink: 0; }
+@media (max-width: 760px) {
+  .gd-dashboard-upcoming-loading .gd-upcoming-row { align-items: flex-start; }
+  .gd-dashboard-upcoming-loading .gd-upcoming-row > span:first-child { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gd-dashboard-stats .MuiSkeleton-root,
+  .gd-dashboard-upcoming-loading .MuiSkeleton-root { animation: none; }
+}
 .gd-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 @media(max-width:760px) {
   .gd-loading-shell:not(.gd-loading-calendar) { grid-template-columns: 1fr; }

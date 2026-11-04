@@ -15,17 +15,17 @@ export const LayoutContext=createContext<LayoutContextType|null>(null);
 export const useLayout=()=>{const context=useContext(LayoutContext);if(!context)throw new Error('useLayout must be used within a LayoutProvider');return context;};
 const sidebarWidth=SIDEBAR_WIDTH;const sidebarCollapsedWidth=SIDEBAR_COLLAPSED_WIDTH;const mobileTopBarHeight=56;
 const Main=styled('main',{shouldForwardProp:prop=>!['sidebarOpen','isMobile','sidebarCollapsed'].includes(prop as string)})<{sidebarOpen?:boolean;isMobile?:boolean;sidebarCollapsed?:boolean}>(({theme,isMobile})=>({flexGrow:1,width:'100%',minWidth:0,padding:theme.spacing(2),marginTop:isMobile?mobileTopBarHeight:0,transition:theme.transitions.create(['margin','width'],{easing:theme.transitions.easing.sharp,duration:theme.transitions.duration.leavingScreen})}));
-const Layout:React.FC<{children:React.ReactNode}>=({children})=>{
+const Layout:React.FC<{children:React.ReactNode;isInitializing?:boolean}>=({children,isInitializing=false})=>{
  const theme=useTheme();const workspaceTheme=useMemo(()=>createWorkspaceTheme(theme),[theme]);const navigate=useNavigate();const location=useLocation();const isMobile=useMediaQuery(theme.breakpoints.down('md'));const dispatch=useDispatch<AppDispatch>();
  const {token,subscription}=useSelector((s:RootState)=>s.auth);const [mobileOpen,setMobileOpen]=useState(false);const{sidebarCollapsed,setSidebarCollapsed}=useSidebar();const[logoutDialogOpen,setLogoutDialogOpen]=useState(false);const[currentViewingItem,setCurrentViewingItem]=useState<CurrentViewingItem|null>(null);const[notification,setNotification]=useState<{open:boolean;message:string;severity:'success'|'error'|'info'|'warning'}>({open:false,message:'',severity:'info'});
  const {fetchAccountData}=useAccountData();const hasActivePlayer=false;const hasSubscription=!!subscription?.tier&&subscription.tier!=='free';
- useEffect(()=>{fetchAccountData();setMobileOpen(false);setCurrentViewingItem(null);},[location.pathname,fetchAccountData]);
+ useEffect(()=>{if(!isInitializing)fetchAccountData();setMobileOpen(false);setCurrentViewingItem(null);},[location.pathname,fetchAccountData,isInitializing]);
  useEffect(()=>{if(!isMobile)setMobileOpen(false);},[isMobile]);
  const handleLogout=useCallback(()=>{dispatch(logoutAllState());navigate('/');},[dispatch,navigate]);
  const handleMobileDrawerToggle=()=>setMobileOpen(!mobileOpen);const handleSidebarCollapse=()=>setSidebarCollapsed(!sidebarCollapsed);
  const openCharacter=useCallback(()=>{navigate('/posts/new');setMobileOpen(false);},[navigate]);
  const handleNavigate=useCallback((path:string)=>{navigate(path);setMobileOpen(false);},[navigate]);
- const handleLogoutClick=()=>{setMobileOpen(false);setLogoutDialogOpen(true);};
+ const handleLogoutClick=()=>{if(isInitializing)return;setMobileOpen(false);setLogoutDialogOpen(true);};
  const handleCloseNotification=()=>setNotification(old=>({...old,open:false}));
  const sidebarProps={hasToken:!!token,remainingTokens:0,isMobile,hasSubscription,currentViewingItem,onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onTokensClick:()=>navigate('/payment'),onLogoutClick:handleLogoutClick,isTrialActive:false};
  const collapsedSidebarProps={onNavigate:handleNavigate,onSidebarCollapse:handleSidebarCollapse,onLogoutClick:handleLogoutClick};
