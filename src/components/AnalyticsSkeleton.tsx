@@ -13,6 +13,14 @@ function ChartPlaceholder({ height = 240 }: { height?: number }) {
   </div>;
 }
 
+function MetricPlaceholders({ labels, video = false }: { labels: string[]; video?: boolean }) {
+  return <div className={`gd-analytics-metric-grid${video ? ' is-video' : ''}`}>{labels.map(label => <div className="gd-analytics-metric-card" key={label}>
+    <div className="gd-analytics-metric-top"><Line width={38} height={38}/></div>
+    <div className="gd-analytics-metric-value"><Line width={90} height={38}/><span>{label}</span></div>
+    <Line width="75%" height={12}/>
+  </div>)}</div>;
+}
+
 /** Same thumbnail, text and divider geometry as the loaded paginated post rows. */
 export function AnalyticsPostRowsSkeleton() {
   return <div className="gd-posts-loading" aria-hidden="true">
@@ -31,7 +39,7 @@ export function AnalyticsInsightsSkeleton({ platform, chartLabel }: { platform: 
       <div className="gd-analytics-account"><div className="gd-analytics-identity"><Line width={44} height={44}/><div><Line width={130} height={16}/><Line width={80} height={12}/></div></div><div className="gd-analytics-snapshot-badges">{[90, 115, 115].map((width, i) => <span key={i}><Line width={width} height={18}/></span>)}</div></div>
       {isMeta && <>
         <div className="gd-analytics-section-heading"><h2>Account insights</h2><Line width={140} height={18}/></div>
-        <div className="gd-analytics-kpis">{['Content views', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached', 'Interactions'].map((label, i) => <div className="gd-stat" key={label}><span className="gd-analytics-kpi-heading"><Line width={36} height={36}/>{label}</span><Line width={120} height={platform === 'facebook' && i === 1 ? 24 : 41}/><div className="gd-kpi-loading-caption"><Line width="95%" height={12}/>{platform === 'facebook' && i === 1 && <Line width="80%" height={12}/>}</div></div>)}</div>
+        <MetricPlaceholders labels={['Content views', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached', 'Interactions']}/>
         <div className="gd-form-section gd-analytics-chart">
           <h2>{chartLabel || (platform === 'facebook' ? 'Content views each day' : 'Accounts reached each day')}</h2>
           {platform === 'facebook' && <Line width={280} height={56}/>}
@@ -40,7 +48,8 @@ export function AnalyticsInsightsSkeleton({ platform, chartLabel }: { platform: 
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </div>
       </>}
-      {isMeta && <div className="gd-analytics-detail-grid">{['Post engagement', 'Top recent posts'].map(title => <div className="gd-form-section gd-engagement-panel" key={title}><h2>{title}</h2><Line width="85%"/>{[0,1,2].map(i => <Line key={i} width="100%" height={40}/>)}</div>)}</div>}
+      {!isMeta && <><div className="gd-analytics-section-heading"><h2>Recent post engagement</h2><Line width={140} height={18}/></div><MetricPlaceholders labels={['Likes & reactions', 'Comments', 'Shares']}/></>}
+      <div className="gd-analytics-detail-grid">{['Post engagement', 'Top recent posts'].map(title => <div className="gd-form-section gd-engagement-panel" key={title}><h2>{title}</h2><Line width="85%"/>{[0,1,2].map(i => <Line key={i} width="100%" height={40}/>)}</div>)}</div>
     </div>
     <span className="gd-sr-only">Loading account analytics.</span>
   </div>;
@@ -66,7 +75,7 @@ export function VideoAnalyticsSkeleton({ platform, includeHeader = true }: { pla
   return <div className={`gd gd-video-analytics-skeleton gd-analytics-skeleton${includeHeader ? '' : ' has-workspace-header'}`} role="status" aria-label={`Loading ${platform} analytics`} aria-busy="true">
     <div aria-hidden="true">
       {includeHeader && <div className="gd-video-loading-header"><div><Line width={56} height={56}/><div><h1>{platform} Analytics</h1><Line width={155} height={16}/></div></div><Line width={170} height={48}/></div>}
-      <div className="gd-video-loading-kpis">{labels.map(label => <div key={label}><Line width={40} height={40}/><div><Line width={90} height={34}/><span>{label}</span></div></div>)}</div>
+      <MetricPlaceholders labels={labels} video/>
       <VideoWeekPlaceholder/>
       {['Views Over Time', 'Engagement Over Time', platform === 'YouTube' ? 'Upload Frequency' : 'Post Frequency'].map((title, i) => <div className="gd-video-loading-section" key={title}><div className="gd-video-loading-chart-heading"><h2>{title}</h2>{i === 0 && <Line width={175} height={32}/>}</div><div className="gd-video-loading-chart"><ChartPlaceholder height={i === 2 ? 166 : 266}/></div></div>)}
     </div>

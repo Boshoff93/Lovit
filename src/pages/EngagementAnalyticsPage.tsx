@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Button, MenuItem, TextField } from '@mui/material';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import AnalyticsMetricCard from '../components/AnalyticsMetricCard';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
+import IosShareRoundedIcon from '@mui/icons-material/IosShareRounded';
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
 import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
@@ -78,12 +81,11 @@ export default function EngagementAnalyticsPage() {
   const hasPoints = points.some(p => typeof p.value === 'number');
   const account = available.find(a => a.accountId === accountId);
   return <div className="gd gd-meta-analytics">
-    <AnalyticsWorkspaceHeader platform={platform} accounts={accounts.data?.accounts || []} accountId={accountId} onAccountChange={select} loading={accounts.isLoading}>
+    <AnalyticsWorkspaceHeader platform={platform} accounts={accounts.data?.accounts || []} accountId={accountId} onAccountChange={select} loading={accounts.isLoading} refreshing={busy} onRefresh={() => setRefresh(n => n + 1)} secondaryAction={isMeta && accountId && !needsPermission ? <Button variant="text" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Manage insights access'}</Button> : undefined}>
       {isMeta && <TextField select label="Account insights" value={days} onChange={e => setDays(Number(e.target.value))}><MenuItem value={7}>Last 7 complete days</MenuItem><MenuItem value={28}>Last 28 complete days</MenuItem></TextField>}
-      <Button variant="outlined" startIcon={<RefreshRoundedIcon/>} disabled={!accountId || busy} onClick={() => setRefresh(n => n + 1)}>Refresh</Button>
     </AnalyticsWorkspaceHeader>
     {accounts.isError && <WorkspaceNotice onRetry={() => accounts.refetch()}>Your connected accounts could not be loaded.</WorkspaceNotice>}
-    <div className="gd-analytics-context-note"><p>{isMeta ? 'Account insights exclude today. Recent-post counts are lifetime counts. ' : ''}Results can be cached for up to five minutes.</p>{isMeta && accountId && !needsPermission && <Button variant="outlined" onClick={enable} disabled={connecting}>{connecting ? 'Opening Meta...' : 'Manage insights access'}</Button>}</div>
+    <div className="gd-analytics-context-note"><p>{isMeta ? 'Account insights exclude today. Recent-post counts are lifetime counts. ' : ''}Results can be cached for up to five minutes.</p></div>
     {!accounts.isLoading && !accounts.isError && !available.length && <section className="gd-form-section gd-analytics-empty"><h2>Connect {platformNames[platform]}</h2><p>Connect an account to see your audience and content performance here.</p><Button component={Link} to="/settings/connected-accounts" variant="contained" className="gd-card-action">Connect an account</Button></section>}
     {error && <WorkspaceNotice onRetry={() => setRefresh(n => n + 1)}>{error.message}</WorkspaceNotice>}
     {connectError && <WorkspaceNotice severity="warning">{connectError}</WorkspaceNotice>}
@@ -102,10 +104,11 @@ export default function EngagementAnalyticsPage() {
       {data.warnings?.map(w => <WorkspaceNotice severity="warning" key={w}>{w}</WorkspaceNotice>)}
       {data.insights && <>
         <div className="gd-analytics-section-heading"><h2>Account insights</h2><p>{dateLabel(data.insights.window.since)} to {dateLabel(new Date(Date.parse(data.insights.window.until) - 1).toISOString())} · UTC</p></div>
-        <div className="gd-analytics-kpis">{[['views', 'Content views'], ['reach', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached'], ['interactions', 'Interactions']].map(([id, label]) => <article className="gd-stat" key={id}>
-          <span className="gd-analytics-kpi-heading"><i className={`gd-analytics-kpi-icon is-${id}`} aria-hidden="true">{id === 'views' ? <VisibilityOutlinedIcon/> : id === 'reach' ? <PeopleOutlineRoundedIcon/> : <InsightsRoundedIcon/>}</i>{label}</span><strong className={data.insights!.metrics[id]?.value == null ? 'is-unavailable' : ''}>{id === 'reach' && platform === 'facebook' && data.insights!.metrics[id]?.availability === 'daily_only' ? 'Daily only' : shown(data.insights!.metrics[id]?.value)}</strong>
-          <span>{id === 'reach' && platform === 'facebook' ? 'Choose unique viewers in the daily chart below.' : data.insights!.metrics[id]?.availability === 'partial' ? `${data.insights!.metrics[id].coverageDays} of ${days} reporting days available.` : 'For the selected account insights period.'}</span>
-        </article>)}</div>
+        <div className="gd-analytics-metric-grid">{[['views', 'Content views'], ['reach', platform === 'facebook' ? 'Unique viewers' : 'Accounts reached'], ['interactions', 'Interactions']].map(([id, label]) => <AnalyticsMetricCard key={id} label={label}
+          icon={id === 'views' ? <VisibilityOutlinedIcon/> : id === 'reach' ? <PeopleOutlineRoundedIcon/> : <InsightsRoundedIcon/>} tone={id === 'views' ? 'views' : id === 'reach' ? 'audience' : 'engagement'}
+          value={id === 'reach' && platform === 'facebook' && data.insights!.metrics[id]?.availability === 'daily_only' ? 'Daily only' : data.insights!.metrics[id]?.value ?? 'Unavailable'} unavailable={data.insights!.metrics[id]?.value == null}
+          subtitle={id === 'reach' && platform === 'facebook' ? 'Choose unique viewers in the daily chart below.' : data.insights!.metrics[id]?.availability === 'partial' ? `${data.insights!.metrics[id].coverageDays} of ${days} reporting days available.` : 'For the selected account insights period.'}
+        />)}</div>
         <section className="gd-form-section gd-analytics-chart"><h2>{chartLabel}</h2>{platform === 'facebook' && <TextField select label="Daily metric" value={chartMetric} onChange={e => setChartMetric(e.target.value)} sx={{ maxWidth: 280 }}><MenuItem value="views">Content views</MenuItem><MenuItem value="reach">Unique viewers</MenuItem><MenuItem value="interactions">Interactions</MenuItem></TextField>}
           {hasPoints ? <><p className="gd-quiet">Daily values returned by Meta. Dates show bucket end times in UTC. Missing periods stay missing.</p><div className="gd-chart-canvas" role="img" aria-label={chartLabel + '. Daily values are listed below.'}>
             <ResponsiveContainer width="100%" height={240}><LineChart data={points} margin={{ top: 12, right: 12, bottom: 4, left: 0 }}>
@@ -117,7 +120,12 @@ export default function EngagementAnalyticsPage() {
           <p className="gd-quiet">Meta may take 24 to 48 hours to update insights. Unavailable means no usable measurement was returned.</p>
         </section>
       </>}
-      {isMeta && <AnalyticsEngagementPanels posts={data.posts} totals={data.totals} available={data.postsAvailable !== false}/>}
+      {!isMeta && <><div className="gd-analytics-section-heading"><h2>Recent post engagement</h2><p>Lifetime counts on {data.posts.length} recent posts</p></div><div className="gd-analytics-metric-grid">{[
+        { id: 'likes', label: 'Likes & reactions', icon: <FavoriteBorderRoundedIcon/>, tone: 'likes' as const },
+        { id: 'comments', label: 'Comments', icon: <ChatBubbleOutlineRoundedIcon/>, tone: 'engagement' as const },
+        { id: 'shares', label: 'Shares', icon: <IosShareRoundedIcon/>, tone: 'posts' as const },
+      ].map(metric => <AnalyticsMetricCard key={metric.id} label={metric.label} icon={metric.icon} tone={metric.tone} value={data.postsAvailable === false ? 'Unavailable' : data.totals[metric.id] ?? 'Unavailable'} unavailable={data.postsAvailable === false || data.totals[metric.id] == null} subtitle="From the recent posts returned by this platform."/>)}</div></>}
+      <AnalyticsEngagementPanels posts={data.posts} totals={data.totals} available={data.postsAvailable !== false}/>
     </>}
     {accountId && !error && <AnalyticsPosts key={`${userId}:${platform}:${accountId}:${refresh}`} platform={platform} accountId={accountId}/>}
   </div>;

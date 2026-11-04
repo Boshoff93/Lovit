@@ -19,3 +19,17 @@ test('an unknown account is never selected and every channel remains reachable',
   expect(screen.getByRole('link',{name:/YouTube/})).toHaveAttribute('href','/analytics/youtube');
   expect(screen.getByRole('link',{name:'Connect account'})).toHaveAttribute('href','/settings/connected-accounts');
 });
+
+test('the compact refresh action is accessible and cannot issue duplicate requests while updating', () => {
+  const refresh=jest.fn();
+  const {rerender}=render(<MemoryRouter><AnalyticsWorkspaceHeader platform="instagram" accounts={accounts} accountId="one" onRefresh={refresh}/></MemoryRouter>);
+  fireEvent.click(screen.getByRole('button',{name:'Refresh analytics'}));
+  expect(refresh).toHaveBeenCalledTimes(1);
+  expect(screen.getByText('2 connected accounts')).toBeInTheDocument();
+  rerender(<MemoryRouter><AnalyticsWorkspaceHeader platform="instagram" accounts={accounts} accountId="one" onRefresh={refresh} refreshing/></MemoryRouter>);
+  const button=screen.getByRole('button',{name:'Refresh analytics'});
+  expect(button).toBeDisabled();
+  expect(button).toHaveAttribute('aria-busy','true');
+  fireEvent.click(button);
+  expect(refresh).toHaveBeenCalledTimes(1);
+});

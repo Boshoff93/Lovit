@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Button, Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import AnalyticsRefreshButton from './AnalyticsRefreshButton';
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
@@ -31,7 +31,7 @@ export default function AnalyticsSnapshot({ accounts, userId }: { accounts: Anal
 export function AnalyticsSnapshotView({ accounts: eligible, rows, loading = false, refreshing = false, onRefresh, failed = false }: { accounts: AnalyticsAccount[]; rows: SnapshotRow[]; loading?: boolean; refreshing?: boolean; onRefresh: () => void; failed?: boolean }) {
   return <div className="gd-analytics-overview-body">
     <section aria-labelledby="combined-snapshot-title" aria-busy={loading}>
-      <div className="gd-analytics-section-heading"><div><p className="gd-eyebrow">Across your channels</p><h2 id="combined-snapshot-title">Combined snapshot</h2></div><Button variant="outlined" startIcon={<RefreshRoundedIcon/>} disabled={refreshing || !eligible.length} onClick={onRefresh}>{refreshing ? 'Updating...' : 'Refresh snapshot'}</Button></div>
+      <div className="gd-analytics-section-heading"><div><p className="gd-eyebrow">Across your channels</p><h2 id="combined-snapshot-title">Combined snapshot</h2></div><AnalyticsRefreshButton label="Refresh snapshot" onClick={onRefresh} refreshing={refreshing} disabled={!eligible.length}/></div>
       <div className="gd-snapshot-kpis gd-analytics-skeleton">{metrics.map(m => {
         const total = snapshotMetric(rows, m.key);
         return <article className="gd-stat gd-snapshot-stat" key={m.key}><span className={`gd-analytics-kpi-icon is-${m.key}`} aria-hidden="true">{m.icon}</span><span>{m.label}</span>{loading ? <Skeleton width={120} height={40} variant="rounded"/> : <strong className={total.value === null ? 'is-unavailable' : ''}>{number(total.value)}</strong>}<p>{m.description}</p><small>{loading ? 'Loading accounts...' : `${total.reporting} of ${total.eligible} eligible accounts reporting`}</small></article>;

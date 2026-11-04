@@ -1,6 +1,6 @@
 import { VideoActivitySkeleton, VideoAnalyticsSkeleton } from "../components/AnalyticsSkeleton";
 import AnalyticsWorkspaceHeader, { useAnalyticsAccount } from '../components/AnalyticsWorkspaceHeader';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import AnalyticsMetricCard from '../components/AnalyticsMetricCard';
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useState, useMemo } from 'react';
 import {
@@ -20,8 +20,6 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -109,67 +107,6 @@ const groupVideosByDay = (videos: TikTokVideo[]): DayVideos[] => {
   }
   return days;
 };
-
-interface KpiCardProps {
-  label: string;
-  value: string | number;
-  icon: React.ReactNode;
-  gradient: string;
-  change?: number;
-  subtitle?: string;
-}
-
-const KpiCard: React.FC<KpiCardProps> = ({ label, value, icon, gradient, change, subtitle }) => (
-  <Box sx={{
-    borderRadius: '20px',
-    p: 2.5,
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1.5,
-  }}>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Box sx={{
-        width: 40, height: 40, borderRadius: '12px',
-        background: gradient,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-      }}>
-        {icon}
-      </Box>
-      {change !== undefined && (
-        <Chip
-          icon={change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14 }} /> : <TrendingDownIcon sx={{ fontSize: 14 }} />}
-          label={formatPercent(change)}
-          size="small"
-          sx={{
-            height: 24,
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            background: change >= 0 ? 'rgba(52,199,89,0.15)' : 'rgba(255,59,48,0.15)',
-            color: change >= 0 ? '#34C759' : '#FF3B30',
-            border: `1px solid ${change >= 0 ? 'rgba(52,199,89,0.3)' : 'rgba(255,59,48,0.3)'}`,
-            '& .MuiChip-icon': { color: 'inherit' },
-          }}
-        />
-      )}
-    </Box>
-    <Box>
-      <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>
-        {typeof value === 'number' ? formatNumber(value) : value}
-      </Typography>
-      <Typography sx={{ fontSize: '0.8rem', color: '#aab4c2', mt: 0.25 }}>
-        {label}
-      </Typography>
-      {subtitle && (
-        <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', mt: 0.25 }}>
-          {subtitle}
-        </Typography>
-      )}
-    </Box>
-  </Box>
-);
 
 const chartTooltipStyle = {
   contentStyle: {
@@ -389,7 +326,7 @@ const TikTokAnalyticsPage: React.FC = () => {
   );
 
   const isLoading = accountsLoading || (!!activeAccountId && ((!summary && !summaryError) || (trendsFetching && !trendsData) || (statsFetching && !accountStats)));
-  const header = <AnalyticsWorkspaceHeader platform="tiktok" accounts={socialAccountsData?.accounts || []} accountId={activeAccountId} onAccountChange={select} loading={accountsLoading}><Button variant="outlined" startIcon={<RefreshRoundedIcon/>} disabled={!activeAccountId || summaryFetching || trendsFetching || statsFetching || videosLoading} onClick={() => { refetchSummary(); refetchTrends(); refetchStats(); refetchVideos(); }}>Refresh</Button></AnalyticsWorkspaceHeader>;
+  const header = <AnalyticsWorkspaceHeader platform="tiktok" accounts={socialAccountsData?.accounts || []} accountId={activeAccountId} onAccountChange={select} loading={accountsLoading} refreshing={summaryFetching || trendsFetching || statsFetching || videosLoading} onRefresh={() => { refetchSummary(); refetchTrends(); refetchStats(); refetchVideos(); }}/>;
 
   if (!userId) {
     return (
@@ -428,43 +365,38 @@ const TikTokAnalyticsPage: React.FC = () => {
     <Box className="gd gd-video-analytics">
       {header}
       {/* KPI Cards */}
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)' },
-        gap: 2,
-        mb: 4,
-      }}>
-        <KpiCard
+      <Box className="gd-analytics-metric-grid is-video">
+        <AnalyticsMetricCard
           label="Followers"
           value={accountStats ? accountStats.followerCount : 'Unavailable'}
           icon={<PeopleIcon sx={{ fontSize: 20, color: '#fff' }} />}
-          gradient="linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)"
+          tone="audience"
         />
-        <KpiCard
+        <AnalyticsMetricCard
           label="Total Videos"
           value={accountStats?.videoCount || summary?.totalPosts || 0}
           icon={<VideoLibraryIcon sx={{ fontSize: 20, color: '#fff' }} />}
-          gradient="linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)"
+          tone="posts"
         />
-        <KpiCard
+        <AnalyticsMetricCard
           label="Total Views"
           value={allViews}
           icon={<VisibilityIcon sx={{ fontSize: 20, color: '#fff' }} />}
-          gradient="linear-gradient(135deg, #10B981 0%, #14B8A6 100%)"
+          tone="views"
           change={weekViewsChange}
           subtitle={`${formatNumber(avgViews)} avg/post`}
         />
-        <KpiCard
+        <AnalyticsMetricCard
           label="Total Likes"
           value={summary?.totals?.likes || 0}
           icon={<FavoriteIcon sx={{ fontSize: 20, color: '#fff' }} />}
-          gradient="linear-gradient(135deg, #EF4444 0%, #F97316 100%)"
+          tone="likes"
         />
-        <KpiCard
+        <AnalyticsMetricCard
           label="Engagement Rate"
           value={`${engagementRate.toFixed(1)}%`}
           icon={<ChatBubbleIcon sx={{ fontSize: 20, color: '#fff' }} />}
-          gradient="linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)"
+          tone="engagement"
         />
       </Box>
 

@@ -811,19 +811,56 @@
 .gd-analytics-platform-mark.is-facebook { color: #80baff; background: #007aff20; }
 .gd-analytics-platform-mark.is-tiktok { color: #90dfdc; background: #63d5d21a; }
 .gd-analytics-workspace-controls { border: 1px solid #ffffff1a; border-radius: 16px; background: #171e28; overflow: hidden; min-width: 0; }
-.gd-analytics-platform-nav { display: flex; gap: 4px; padding: 10px 12px; flex-wrap: wrap; border-bottom: 1px solid #ffffff14; }
-.gd-analytics-platform-nav a { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; text-decoration: none; color: #b4c0ce; padding: 10px 12px; min-height: 44px; border: 1px solid transparent; border-radius: 9px; white-space: nowrap; }
-.gd-analytics-platform-nav a:hover { background: #ffffff08; color: #fff; }
-.gd-analytics-platform-nav a[aria-current] { background: #007aff20; border-color: #007aff60; color: #f4f7fb; }
-.gd-analytics-platform-nav a > svg { width: 18px; height: 18px; flex-shrink: 0; }
-.gd-analytics-nav-count { font-size: 10px; padding: 1px 5px; border-radius: 4px; background: #ffffff09; color: #aab4c2; }
-.gd-workspace .gd-analytics-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 20px; }
-.gd-workspace .gd-analytics-toolbar .MuiTextField-root { width: 255px; max-width: 100%; }
-.gd-workspace .gd-analytics-toolbar .MuiTextField-root:nth-child(2) { width: 230px; }
-.gd-workspace .gd-analytics-toolbar .MuiOutlinedInput-root, .gd-workspace .gd-analytics-toolbar .MuiButton-root { height: 48px; min-height: 48px; }
-.gd-workspace .gd-analytics-toolbar .MuiSelect-select { padding-block: 8px; display: flex; align-items: center; }
-.gd-workspace .gd-analytics-toolbar .gd-analytics-connect { margin-left: auto; }
-.gd-analytics-connection-count { font-size: 13px; color: #cbd4df; }
+.gd-analytics-controls-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px 8px; }
+.gd-analytics-controls-heading > span:first-child { font-size: 12px; font-weight: 500; color: #aab4c2; }
+.gd-analytics-connection-count { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid #ffffff14; border-radius: 6px; background: #111822; font-size: 11px; line-height: 16px; color: #cbd4df; white-space: nowrap; }
+.gd-analytics-connection-count svg { width: 14px; height: 14px; }
+.gd-analytics-platform-nav { display: flex; gap: 6px; padding: 0 20px; overflow-x: auto; border-bottom: 1px solid #ffffff14; scrollbar-width: thin; scroll-padding-inline: 20px; }
+.gd-analytics-platform-nav a { display: inline-flex; align-items: center; flex-shrink: 0; gap: 7px; font-size: 12px; font-weight: 500; text-decoration: none; color: #aab4c2; padding: 10px 10px 12px; min-height: 44px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.gd-analytics-platform-nav a:hover { background: #ffffff05; color: #fff; }
+.gd-analytics-platform-nav a[aria-current] { border-bottom-color: #007aff; color: #f4f7fb; }
+.gd-analytics-platform-nav a > svg { width: 17px; height: 17px; flex-shrink: 0; }
+.gd-workspace .gd-analytics-toolbar { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; padding: 20px 20px 0; }
+.gd-analytics-account-field { display: grid; gap: 8px; width: 300px; max-width: 100%; min-width: 0; }
+.gd-analytics-control-label { font-size: 12px; color: #aab4c2; }
+.gd-workspace .gd-analytics-toolbar .MuiTextField-root { width: 240px; max-width: 100%; }
+.gd-workspace .gd-analytics-toolbar .MuiTextField-root > label { position: static; transform: none; font-size: 12px; line-height: 18px; margin-bottom: 8px; }
+.gd-workspace .gd-analytics-toolbar .MuiTextField-root fieldset > legend { display: none; }
+.gd-workspace .gd-analytics-toolbar .MuiOutlinedInput-root { height: 48px; min-height: 48px; border-radius: 10px; background: #111822; }
+.gd-workspace .gd-analytics-toolbar .MuiSelect-select { padding-block: 8px; display: flex; align-items: center; font-size: 13px; }
+.gd-analytics-account-field .gd-analytics-account-option .gd-analytics-select-avatar { width: 30px; height: 30px; }
+.gd-analytics-account-field .gd-analytics-account-option > span { display: flex; flex-direction: column; gap: 2px; }
+.gd-analytics-account-option strong { color: #f4f7fb; font-size: 13px; font-weight: 500; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gd-analytics-account-option small { font-size: 10px; color: #aab4c2; line-height: 12px; }
+.gd-analytics-account-menu .MuiMenuItem-root { min-height: 48px; padding: 10px 14px; font-size: 13px; }
+.gd-analytics-controls-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 20px; }
+.gd-workspace .gd-analytics-controls-actions > .MuiButton-root { width: auto; margin: 0; min-height: 42px; padding: 9px 14px; font-size: 12px; }
+.gd-workspace .gd-analytics-controls-actions > .gd-analytics-connect { margin: 0; }
+.gd-analytics-refresh-wrap { display: inline-flex; flex-shrink: 0; }
+.gd-workspace .gd-analytics-refresh.MuiIconButton-root { width: 40px; height: 40px; min-width: 40px; min-height: 40px; margin: 0 0 4px; padding: 9px; border: 1px solid #ffffff24; border-radius: 9px; background: transparent; color: #edf1f7; }
+.gd-workspace .gd-analytics-refresh.MuiIconButton-root:hover { background: #ffffff09; border-color: #ffffff40; }
+.gd-workspace .gd-analytics-refresh.Mui-disabled { color: #aab4c2; opacity: .5; }
+.gd-analytics-refresh svg { width: 20px; height: 20px; }
+.gd-analytics-refresh.is-refreshing svg { animation: gd-analytics-refresh-spin 1s linear infinite; }
+@keyframes gd-analytics-refresh-spin { to { transform: rotate(360deg); } }
+.gd-analytics-metric-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.gd-analytics-metric-grid.is-video { grid-template-columns: repeat(5,minmax(0,1fr)); margin-bottom: 24px; }
+.gd-workspace .gd-analytics-metric-card { display: flex; flex-direction: column; gap: 16px; padding: 20px; min-width: 0; border: 1px solid #ffffff1a; border-radius: 16px; background: #171e28; }
+.gd-analytics-metric-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.gd-analytics-metric-icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px; background: #203651; color: #a4ceff; }
+.gd-analytics-metric-icon.is-audience { background: #33294e; color: #cabbff; }
+.gd-analytics-metric-icon.is-views { background: #193e3b; color: #9ce5d5; }
+.gd-analytics-metric-icon.is-likes { background: #452c34; color: #ffc0c8; }
+.gd-analytics-metric-icon.is-engagement { background: #3c2b48; color: #e3b9f5; }
+.gd-analytics-metric-icon svg { width: 20px; height: 20px; color: inherit; }
+.gd-analytics-metric-change { display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: 6px; font-size: 10px; color: #a0dfbd; background: #20382c; }
+.gd-analytics-metric-change.is-negative { color: #f6a9a3; background: #3f292b; }
+.gd-analytics-metric-change svg { width: 14px; height: 14px; }
+.gd-analytics-metric-value { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.gd-workspace .gd-analytics-metric-value strong { color: #f4f7fb; font-size: 32px; font-weight: 650; line-height: 1.2; overflow-wrap: anywhere; }
+.gd-workspace .gd-analytics-metric-value strong.is-unavailable { font-size: 20px; }
+.gd-analytics-metric-value > span { color: #b4c0ce; font-size: 12px; line-height: 1.5; }
+.gd-workspace .gd-analytics-metric-card > p { margin: 0; color: #91a0b3; font-size: 11px; line-height: 1.6; }
 .gd-analytics-context-note { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .gd-workspace .gd-analytics-context-note p { color: #91a0b3; margin: 0; font-size: 12px; }
 .gd-workspace .gd-analytics-context-note .MuiButton-root { font-size: 12px; min-height: 40px; }
@@ -883,14 +920,20 @@
 .gd-snapshot-account dd { color: #edf1f7; font-size: 12px; margin: 0; font-weight: 500; }
 .gd-snapshot-unavailable { display: inline-flex; font-size: 10px; color: #e3c28c; margin-top: 4px; }
 .gd-workspace .gd-analytics-empty p { max-width: 600px; }
-@media(max-width:1199px) { .gd-snapshot-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media(max-width:899px) { .gd-analytics-detail-grid { grid-template-columns: 1fr; } .gd-workspace .gd-analytics-toolbar .gd-analytics-connect { margin-left: 0; } }
+@media(max-width:1199px) { .gd-snapshot-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); } .gd-analytics-metric-grid.is-video { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width:899px) { .gd-analytics-detail-grid { grid-template-columns: 1fr; } }
 @media(max-width:600px) {
-  .gd-analytics-platform-nav { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); padding: 8px; }
-  .gd-analytics-platform-nav a { min-width: 0; padding-inline: 10px; }
-  .gd-analytics-nav-count { margin-left: auto; }
-  .gd-workspace .gd-analytics-toolbar { display: grid; grid-template-columns: minmax(0,1fr); padding: 20px 16px 16px; gap: 12px; }
-  .gd-workspace .gd-analytics-toolbar .MuiTextField-root, .gd-workspace .gd-analytics-toolbar .MuiTextField-root:nth-child(2), .gd-workspace .gd-analytics-toolbar .MuiButton-root { width: 100%; }
+  .gd-analytics-controls-heading { padding: 14px 16px 6px; }
+  .gd-analytics-platform-nav { padding-inline: 6px; }
+  .gd-workspace .gd-analytics-toolbar { display: grid; grid-template-columns: minmax(0,1fr) 40px; padding: 16px 16px 0; gap: 16px 10px; }
+  .gd-analytics-account-field { width: 100%; grid-column: 1; }
+  .gd-workspace .gd-analytics-toolbar .MuiTextField-root { width: 100%; grid-column: 1 / -1; }
+  .gd-analytics-toolbar .gd-analytics-refresh-wrap { grid-column: 2; grid-row: 1; align-self: end; }
+  .gd-analytics-controls-actions { flex-direction: column; align-items: stretch; padding: 16px; gap: 10px; }
+  .gd-workspace .gd-analytics-controls-actions > .MuiButton-root { width: 100%; }
+  .gd-workspace .gd-analytics-controls-actions > .gd-analytics-connect { order: 2; }
+  .gd-analytics-metric-grid, .gd-analytics-metric-grid.is-video { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .gd-workspace .gd-analytics-metric-card { padding: 16px; }
   .gd-workspace .gd-analytics-title { align-items: flex-start; gap: 12px; }
   .gd-analytics-platform-mark { width: 42px; height: 42px; }
   .gd-workspace .gd-analytics-title p { font-size: 12px; }
@@ -905,3 +948,5 @@
 }
 .gd-workspace .gd-video-chart-context { color: #91a0b3; font-size: 12px; margin: 0 0 20px; }
 @media(max-width:600px) { .gd-workspace .gd-analytics-context-note .MuiButton-root { width: 100%; } }
+
+@media(prefers-reduced-motion:reduce) { .gd-analytics-refresh.is-refreshing svg { animation: none; } }
