@@ -160,12 +160,18 @@
 .gr-workflow-grid .gr-card {
   min-height: 245px;
 }
+.gr-api-page {
+  overflow-x: clip;
+}
 .gr-api-hero {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 55px;
-  align-items: center;
-  padding-block: 150px 65px;
+  align-items: start;
+  padding-block: 172px 65px;
+}
+.gr-api-hero-copy {
+  padding-top: 48px;
 }
 .gr-api-page .gr-section {
   border-top: 1px solid #ffffff16;
@@ -915,6 +921,10 @@
 @media (max-width: 1100px) {
   .gr-api-hero {
     gap: 35px;
+    padding-top: 155px;
+  }
+  .gr-api-hero-copy {
+    padding-top: 16px;
   }
   .gr-api-start {
     gap: 45px;
@@ -930,7 +940,9 @@
 @media (max-width: 900px) {
   .gr-api-hero {
     grid-template-columns: 1fr;
-    padding-top: 140px;
+  }
+  .gr-api-hero-copy {
+    padding-top: 0;
   }
   .gr-reference-layout {
     grid-template-columns: 1fr;
@@ -1033,7 +1045,7 @@
     padding-bottom: 45px;
   }
   .gr-api-hero {
-    padding-block: 130px 40px;
+    padding-block: 120px 40px;
   }
   .gm .gr-home-developers::before,
   .gm .gr-home-developers::after {

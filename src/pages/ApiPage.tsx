@@ -61,7 +61,7 @@ export default function ApiPage() {
       />
       <main>
         <section className="gr-container gr-api-hero">
-          <div>
+          <div className="gr-api-hero-copy">
             <p className="gr-eyebrow">The Gruvi API</p>
             <h1>
               Social media API.
