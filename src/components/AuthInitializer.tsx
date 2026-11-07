@@ -1,74 +1,47 @@
-import AccountLoadingState from "./AccountLoadingState";
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getToken } from "../utils/storage";
-import {
-  setToken,
-  refreshUserData,
-  fetchSubscription,
-  logout,
-} from "../store/authSlice";
-import { AppDispatch, RootState } from "../store/store";
+import AccountLoadingState from './AccountLoadingState';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getToken } from '../utils/storage';
+import { setToken, refreshUserData, logout } from '../store/authSlice';
+import { AppDispatch, RootState } from '../store/store';
 
-interface AuthInitializerProps {
-  children: React.ReactNode;
-}
-
-/**
- * Component to initialize auth state on application startup.
- * Ensures we have valid auth state before rendering the app.
- */
-const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
+/** The account response hydrates identity, subscription and allowances together. */
+export default function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch<AppDispatch>();
-  const { token: reduxToken, user } = useSelector(
-    (state: RootState) => state.auth,
-  );
-  const [isInitialized, setIsInitialized] = useState(false);
-  const initStarted = useRef(false);
+  const token = useSelector((state: RootState) => state.auth.token);
+  const hasUser = useSelector((state: RootState) => !!state.auth.user);
+  const [restoring, setRestoring] = useState(() => !!(token || getToken()));
+  const boot = useRef(true);
+  const checkedToken = useRef<string | null>(null);
 
   useEffect(() => {
-    // Prevent double initialization in strict mode
-    if (initStarted.current) return;
-    initStarted.current = true;
-
-    const initAuth = async () => {
-      // Get token from Redux or cookies
-      let token = reduxToken;
+    if (boot.current) {
+      boot.current = false;
       if (!token) {
-        const cookieToken = getToken();
-        if (cookieToken) {
-          token = cookieToken;
-          dispatch(setToken(cookieToken));
+        const cookie = getToken();
+        if (cookie) {
+          dispatch(setToken(cookie));
+          return;
         }
+        if (hasUser) dispatch(logout());
       }
+    }
 
-      // If we have a token, ensure we have user data
-      if (token) {
-        try {
-          await dispatch(refreshUserData()).unwrap();
-          await dispatch(fetchSubscription());
-        } catch {
-          // The API clients clear rejected sessions. A temporary service error
-          // should remain retryable without discarding a valid account.
-        }
-      } else {
-        // No token anywhere - ensure clean logged out state
-        if (user) {
-          dispatch(logout());
-        }
-      }
+    if (!token) {
+      checkedToken.current = null;
+      setRestoring(false);
+      return;
+    }
+    if (checkedToken.current === token) return;
+    checkedToken.current = token;
 
-      setIsInitialized(true);
-    };
+    void dispatch(refreshUserData()).unwrap().catch(() => {
+      // Rejected sessions are cleared by the API client. Temporary failures
+      // leave the signed-in account available.
+    }).finally(() => {
+      if (checkedToken.current === token) setRestoring(false);
+    });
+  }, [dispatch, token, hasUser]);
 
-    initAuth();
-  }, [dispatch, reduxToken, user]);
-
-  if (!isInitialized) {
-    return <AccountLoadingState />;
-  }
-
-  return <>{children}</>;
-};
-
-export default AuthInitializer;
+  return restoring ? <AccountLoadingState /> : <>{children}</>;
+}

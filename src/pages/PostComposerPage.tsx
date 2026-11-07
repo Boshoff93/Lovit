@@ -9,13 +9,14 @@ import {
   TextField,
 } from "@mui/material";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PublishingPaywall from "../components/PublishingPaywall";
 import DestinationPicker from "../components/DestinationPicker";
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import WorkspaceNotice from "../components/WorkspaceNotice";
-import { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import {
+  apiSlice,
   useGetSocialAccountsQuery,
   useGetUserVideosQuery,
 } from "../store/apiSlice";
@@ -27,6 +28,7 @@ import {
 } from "../utils/distributionMedia";
 
 export default function PostComposerPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const subscription = useSelector((s: RootState) => s.auth.subscription);
   const [paywall, setPaywall] = useState(false);
   const userId = useSelector((s: RootState) => s.auth.user?.userId) || "";
@@ -159,8 +161,9 @@ export default function PostComposerPage() {
             .filter(Boolean),
           tiktokSettings,
         });
+        dispatch(apiSlice.util.invalidateTags(["ScheduledPosts"]));
         setAcceptedId(result.data.scheduleId || "scheduled");
-        navigate("/settings/scheduled-content");
+        navigate(result.data.scheduleId ? `/settings/scheduled-content?highlight=${encodeURIComponent(result.data.scheduleId)}` : "/settings/scheduled-content");
       } else {
         await videosApi.batchSocialUpload(userId, id, {
           platforms,

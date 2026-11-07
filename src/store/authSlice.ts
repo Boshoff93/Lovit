@@ -130,9 +130,11 @@ export const confirmPasswordReset = createAsyncThunk(
 // Refresh user data from the server (used after profile updates)
 export const refreshUserData = createAsyncThunk(
   'auth/refreshUserData',
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue, signal }) => {
+    const token = (getState() as { auth: AuthState }).auth.token;
     try {
-      const response = await api.get('/api/user/account');
+      const response = await api.get('/api/user/account', { signal });
+      if (token !== (getState() as { auth: AuthState }).auth.token) return undefined;
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to refresh user data');
@@ -588,12 +590,15 @@ const authSlice = createSlice({
         // Don't set loading to avoid UI flicker
       })
       .addCase(refreshUserData.fulfilled, (state, action) => {
-        if (action.payload.user) {
+        if (action.payload?.user) {
+          const { subscription, allowances, ...profile } = action.payload.user;
+          if (subscription) state.subscription = { ...subscription, currentPeriodEnd: subscription.currentPeriodEnd || -1 };
+          state.allowances = allowances ?? null;
           // Update user with new profile data
           state.user = {
             ...state.user,
-            ...action.payload.user,
-            username: action.payload.user.username || state.user?.username,
+            ...profile,
+            username: profile.username || state.user?.username,
           };
         }
       })

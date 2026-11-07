@@ -1,48 +1,27 @@
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Alert, Button, Chip } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { videosApi } from "../services/api";
+import { apiSlice } from "../store/apiSlice";
 import { platformNames } from "../config/publishing";
 
 export default function PostStatusPage() {
   const { videoId } = useParams();
   const userId = useSelector((s: RootState) => s.auth.user?.userId) || "";
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState("");
-  const refresh = async () => {
-    try {
-      setError("");
-      setData(
-        (await videosApi.getSocialUploadStatus(userId, videoId || "")).data,
-      );
-    } catch {
-      setError("Delivery status could not be loaded.");
-    }
-  };
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const r = await videosApi.getSocialUploadStatus(userId, videoId || "");
-        if (active) {
-          setData(r.data);
-          setError("");
-        }
-      } catch {
-        if (active) setError("Delivery status could not be loaded.");
-      }
-    };
-    load();
-    const timer = setInterval(load, 15000);
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
-  }, [userId, videoId]);
-  const results = Object.entries(data?.results || {}) as Array<[string, any]>;
+  const endpoint = apiSlice.endpoints.getPostDelivery;
+  const arg = { userId, videoId: videoId || "" };
+  const skip = !userId || !videoId;
+  const { currentData: data, isError, isFetching } = endpoint.useQueryState(arg, { skip });
+  const inProgress = ["queued", "pending", "uploading", "publishing", "processing", "provider_processing"].includes(data?.status || "");
+  const { refetch } = endpoint.useQuerySubscription(arg, {
+    skip,
+    pollingInterval: inProgress && !isError ? 15000 : 0,
+    skipPollingIfUnfocused: true,
+    refetchOnMountOrArgChange: true,
+  });
+  const results = Object.entries(data?.results || {});
   return (
     <div className="gd">
       <header className="gd-workspace-header">
@@ -51,12 +30,12 @@ export default function PostStatusPage() {
           <h1>Post status</h1>
           <p>Follow each destination as it processes your content.</p>
           <div className="gd-card-actions">
-            <Button className="gd-card-action" variant="outlined" onClick={refresh}>Refresh status</Button>
+            <Button className="gd-card-action" variant="outlined" onClick={() => refetch()} disabled={skip || isFetching}>Refresh status</Button>
           </div>
         </div>
       </header>
-      {error && <Alert severity="error">{error}</Alert>}
-      {!data && !error && (
+      {isError && <Alert severity="error">Delivery status could not be loaded.</Alert>}
+      {!data && !isError && (
         <WorkspaceSkeleton label="Loading delivery status" kind="list" />
       )}
       {data && (
@@ -65,7 +44,7 @@ export default function PostStatusPage() {
             <h2>
               {data.status === "idle"
                 ? "No delivery in progress"
-                : data.status === "completed"
+                : !inProgress
                   ? "Delivery results"
                   : "Publishing progress"}
             </h2>

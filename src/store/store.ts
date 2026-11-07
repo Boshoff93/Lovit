@@ -19,6 +19,7 @@ import modelsReducer from "./modelsSlice";
 import galleryReducer from "./gallerySlice";
 import dataReducer from "./dataSlice";
 import { apiSlice } from "./apiSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 // Root reducer
 const rootReducer = combineReducers({
@@ -61,6 +62,7 @@ export const store = configureStore({
 });
 
 // Create persistor
+setupListeners(store.dispatch);
 export const persistor = persistStore(store);
 
 // Export types

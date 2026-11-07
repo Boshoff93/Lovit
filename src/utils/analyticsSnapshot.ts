@@ -1,4 +1,6 @@
 export type AnalyticsAccount = { accountId: string; platform: string; accountName?: string; username?: string; avatarUrl?: string };
+export const snapshotFreshnessSeconds = 60;
+export const noAnalyticsAccounts: AnalyticsAccount[] = [];
 export const analyticsPlatforms = ['youtube', 'tiktok', 'instagram', 'facebook', 'twitter'];
 export type SnapshotRow = AnalyticsAccount & {
   followers: number | null; views: number | null; likes: number | null; comments: number | null;
@@ -16,7 +18,7 @@ export async function loadAnalyticsSnapshot(accounts: AnalyticsAccount[], userId
     while (index < unique.length && !signal.aborted) {
       const i = index++, account = unique[i], video = ['youtube', 'tiktok'].includes(account.platform);
       const query = new URLSearchParams({ userId, accountId: account.accountId });
-      const summaryResult = await request(`/api/gruvi/${account.platform}/analytics/summary?${query}${video ? '' : '&days=28'}`);
+      const summaryResult = await request(`/api/gruvi/${account.platform}/analytics/summary?${query}${video ? '' : '&days=28&view=snapshot'}`);
       if (signal.aborted) return;
       const statsResult = video ? await request(`/api/gruvi/${account.platform}/account/stats?${query}`) : summaryResult;
       if (signal.aborted) return;
@@ -29,7 +31,7 @@ export async function loadAnalyticsSnapshot(accounts: AnalyticsAccount[], userId
         likes: postsAvailable ? analyticsCount(summary?.totals?.likes) : null,
         comments: postsAvailable ? analyticsCount(summary?.totals?.comments) : null,
         posts: postsAvailable ? analyticsCount(video ? summary?.totalPosts : summary?.postCount) : null,
-        coverage: video ? 'videos' : 'recent_posts', unavailable: !!summaryResult.error || !!statsResult.error,
+        coverage: video ? 'videos' : 'recent_posts', unavailable: !!summaryResult.error || !!statsResult.error || summary?.profileAvailable === false || summary?.postsAvailable === false,
         updatedAt: summary?.updatedAt || new Date().toISOString(),
       };
     }

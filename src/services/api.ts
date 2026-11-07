@@ -513,7 +513,8 @@ export interface ScheduledPost {
   hashtags?: string[]; // slideshow scheduled posts use 'hashtags' instead of 'tags'
   videoFooter?: string;
   aspectRatio?: 'portrait' | 'landscape';
-  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled' | 'rejected';
+  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled' | 'rejected' | 'pending_reconciliation' | 'completed';
+  provisioningStatus?: 'pending' | 'ready';
   rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
@@ -525,6 +526,7 @@ export interface ScheduledPost {
     postUrl?: string;
     error?: string;
     publishStatus?: string;
+    status?: string;
   }>;
 }
 

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Alert, Button, Checkbox, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
 import {
+  apiSlice,
   useGetSocialAccountsQuery,
   useGetUserVideosQuery,
 } from "../store/apiSlice";
@@ -21,6 +22,7 @@ const localTime = (time: number) => {
     .slice(0, 16);
 };
 export default function BulkSchedulePage() {
+  const dispatch = useDispatch<AppDispatch>();
   const { user, subscription } = useSelector((s: RootState) => s.auth);
   const userId = user?.userId || "";
   const library = useGetUserVideosQuery(
@@ -122,6 +124,7 @@ export default function BulkSchedulePage() {
         requestId,
         posts,
       });
+      dispatch(apiSlice.util.invalidateTags(["ScheduledPosts"]));
       setResults(response.data.results);
     } catch (e: any) {
       setError(

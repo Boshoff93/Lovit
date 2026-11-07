@@ -6,7 +6,9 @@ import PostComposerPage from "./pages/PostComposerPage";
 let mockSubscription = { tier: "free", status: "active" };
 const mockSchedule = jest.fn();
 const mockPublish = jest.fn();
+const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
+  useDispatch: () => mockDispatch,
   useSelector: (select: any) =>
     select({
       auth: {
@@ -16,6 +18,7 @@ jest.mock("react-redux", () => ({
     }),
 }));
 jest.mock("./store/apiSlice", () => ({
+  apiSlice: { util: { invalidateTags: (tags: string[]) => ({ type: "invalidate", tags }) } },
   useGetSocialAccountsQuery: () => ({
     data: {
       accounts: [
@@ -67,6 +70,7 @@ beforeEach(() => {
   mockSubscription = { tier: "free", status: "active" };
   mockSchedule.mockReset();
   mockPublish.mockReset();
+  mockDispatch.mockReset();
 });
 test("free accounts can open and prepare the composer; the paywall appears only on submit", async () => {
   const { container } = render(
@@ -87,6 +91,7 @@ test("free accounts can open and prepare the composer; the paywall appears only 
     await screen.findByRole("dialog", { name: "Choose a plan" }),
   ).toBeInTheDocument();
   expect(mockSchedule).not.toHaveBeenCalled();
+  expect(mockDispatch).not.toHaveBeenCalled();
   expect(mockPublish).not.toHaveBeenCalled();
   fireEvent.click(screen.getByText("Keep exploring"));
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -97,7 +102,7 @@ test("free accounts can open and prepare the composer; the paywall appears only 
 test("paid scheduling uses an existing video and exact selected account without generation", async () => {
   mockSubscription = { tier: "starter", status: "active" };
   mockSchedule.mockResolvedValue({
-    data: { scheduledPost: { scheduleId: "schedule-test" } },
+    data: { scheduleId: "schedule-test" },
   });
   const { container } = render(
     <MemoryRouter
@@ -123,4 +128,5 @@ test("paid scheduling uses an existing video and exact selected account without 
     title: "Existing video",
   });
   expect(mockPublish).not.toHaveBeenCalled();
+  expect(mockDispatch).toHaveBeenCalledWith({ type: "invalidate", tags: ["ScheduledPosts"] });
 });

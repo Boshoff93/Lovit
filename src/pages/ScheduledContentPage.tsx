@@ -30,17 +30,16 @@ import {
   HourglassTop as HourglassIcon,
   Block as BlockIcon,
   Close as CloseIcon,
-  PlayArrow as PlayArrowIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   scheduledPostsApi,
   ScheduledPost,
 } from '../services/api';
-import { useGetScheduledPostsQuery, useGetSocialAccountsQuery } from '../store/apiSlice';
+import { apiSlice, useGetScheduledPostsQuery, useGetSocialAccountsQuery } from '../store/apiSlice';
 import { useAuth } from '../hooks/useAuth';
 
 // TikTok icon component
@@ -72,9 +71,11 @@ const XIcon: React.FC<{ sx?: any }> = ({ sx }) => (
 );
 
 type ViewMode = 'day' | 'week' | 'month';
+const noScheduledPosts: ScheduledPost[] = [];
 
 const ScheduledContentPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { subscription } = useAuth();
@@ -94,8 +95,8 @@ const ScheduledContentPage: React.FC = () => {
   }, [socialAccountsData]);
 
   // RTK Query for scheduled posts
-  const scheduledPostsQuery = useGetScheduledPostsQuery();
-  const scheduledPosts = scheduledPostsQuery.data?.scheduledPosts || [];
+  const scheduledPostsQuery = useGetScheduledPostsQuery(undefined, { refetchOnMountOrArgChange: 60 });
+  const scheduledPosts = scheduledPostsQuery.data?.scheduledPosts ?? noScheduledPosts;
   const schedulingLimitsRaw = scheduledPostsQuery.data?.schedulingLimits;
   const loading = scheduledPostsQuery.isLoading;
 
@@ -157,18 +158,6 @@ const ScheduledContentPage: React.FC = () => {
       }
     }
   }, [highlightedPostId, scheduledPosts, loading]);
-
-  // Preload thumbnail images when posts are loaded (so they're cached when popup opens)
-  useEffect(() => {
-    if (scheduledPosts.length > 0) {
-      scheduledPosts.forEach(post => {
-        if (post.thumbnailUrl) {
-          const img = new Image();
-          img.src = post.thumbnailUrl;
-        }
-      });
-    }
-  }, [scheduledPosts]);
 
   // Handle post tile click - show details dialog
   const handlePostClick = useCallback((post: ScheduledPost) => {
@@ -236,21 +225,33 @@ const ScheduledContentPage: React.FC = () => {
     return dates;
   }, [currentDate]);
 
-  // Get posts for a specific date (for month view) - show all statuses except cancelled
-  const getPostsForDate = (date: Date) => {
-    return scheduledPosts.filter(post => {
-      const postDate = new Date(post.scheduledTime);
-      const matchesDate = postDate.toDateString() === date.toDateString() && post.status !== 'cancelled';
-      const matchesFilter = statusFilter === 'all' || post.status === statusFilter;
-      return matchesDate && matchesFilter;
-    });
-  };
+  const { days, hours } = useMemo(() => {
+    const days = new Map<string, ScheduledPost[]>();
+    const hours = new Map<string, ScheduledPost[]>();
+    const add = (map: Map<string, ScheduledPost[]>, key: string, post: ScheduledPost) => {
+      const group = map.get(key);
+      if (group) group.push(post);
+      else map.set(key, [post]);
+    };
+    for (const post of scheduledPosts) {
+      if (post.status === 'cancelled' || (statusFilter !== 'all' && statusFilter !== post.status)) continue;
+      const date = new Date(post.scheduledTime);
+      if (!Number.isFinite(date.getTime())) continue;
+      const day = date.toDateString();
+      add(days, day, post);
+      add(hours, `${day}:${date.getHours()}`, post);
+    }
+    return { days, hours };
+  }, [scheduledPosts, statusFilter]);
+  const getPostsForDate = (date: Date) => days.get(date.toDateString()) ?? noScheduledPosts;
 
   // Get status color and styling
   const getStatusStyle = (status: ScheduledPost['status']) => {
     switch (status) {
+      case 'completed':
       case 'published':
         return { bg: 'rgba(34, 197, 94, 0.15)', border: '#22C55E', text: '#4ADE80' };
+      case 'pending_reconciliation':
       case 'partial':
         return { bg: 'rgba(234, 179, 8, 0.15)', border: '#EAB308', text: '#FACC15' }; // Yellow for partial success
       case 'failed':
@@ -296,15 +297,7 @@ const ScheduledContentPage: React.FC = () => {
     }
   };
 
-  // Get posts for a specific date and hour - show all statuses except cancelled
-  const getPostsForSlot = (date: Date, hour: number) => {
-    return scheduledPosts.filter(post => {
-      const postDate = new Date(post.scheduledTime);
-      const matchesSlot = postDate.toDateString() === date.toDateString() && postDate.getHours() === hour && post.status !== 'cancelled';
-      const matchesFilter = statusFilter === 'all' || post.status === statusFilter;
-      return matchesSlot && matchesFilter;
-    });
-  };
+  const getPostsForSlot = (date: Date, hour: number) => hours.get(`${date.toDateString()}:${hour}`) ?? noScheduledPosts;
 
   // Check if date is today
   const isToday = (date: Date) => {
@@ -322,8 +315,7 @@ const ScheduledContentPage: React.FC = () => {
     try {
       setCancelling(true);
       await scheduledPostsApi.cancelScheduledPost(postToCancel.scheduleId);
-      // Refetch to get updated data
-      scheduledPostsQuery.refetch();
+      dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
       setCancelDialogOpen(false);
       setPostToCancel(null);
     } catch (error) {

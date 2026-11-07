@@ -65,6 +65,14 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
     return <Navigate to="/resend-verification" replace />;
   return <>{children}</>;
 }
+function HomeRoute() {
+  const token = useSelector((s: RootState) => s.auth.token);
+  const verified = useSelector((s: RootState) => s.auth.user?.isVerified);
+  if (token && verified !== undefined) {
+    return <Navigate to={verified ? "/dashboard" : "/resend-verification"} replace />;
+  }
+  return <HomePage />;
+}
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   useEffect(() => {
@@ -122,7 +130,7 @@ export default function App() {
         <ScrollToTop />
         <AuthInitializer>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomeRoute />} />
             <Route path="/social-media" element={<LegacyPublishing />} />
             <Route path="/publishing" element={<LegacyPublishing />} />
             <Route path="/pricing" element={<PaymentPage />} />

@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../utils/apiBaseUrl';
 import { logout } from './authSlice';
 import { shouldClearSession } from '../utils/sessionErrors';
 import { AnalyticsAccount, SnapshotRow, loadAnalyticsSnapshot } from '../utils/analyticsSnapshot';
+import { ScheduleOverview, summarizeSchedule } from '../utils/dashboardSchedule';
 
 // TikTok Analytics types
 export interface TikTokVideo {
@@ -343,6 +344,9 @@ export const apiSlice = createApi({
 
     // Social Accounts (multi-account)
     getAnalyticsSnapshot: builder.query<SnapshotRow[], { userId: string; accounts: AnalyticsAccount[] }>({
+      serializeQueryArgs: ({ queryArgs: { userId, accounts } }) => ({
+        userId, accountKeys: accounts.map(({ platform, accountId }) => JSON.stringify([platform, accountId])).sort(),
+      }),
       async queryFn({ userId, accounts }, queryApi, _extra, baseQuery) {
         try {
           const rows = await loadAnalyticsSnapshot(accounts, userId, url => baseQuery(url), queryApi.signal);
@@ -439,12 +443,30 @@ export const apiSlice = createApi({
       ],
     }),
 
+    // The dashboard only needs counts and the next five posts.
+    getScheduleOverview: builder.query<ScheduleOverview, string>({
+      query: () => '/api/gruvi/scheduled-posts?view=overview',
+      transformResponse: (response: ScheduleOverview | { scheduledPosts: ScheduledPost[] }) =>
+        'scheduledPosts' in response ? summarizeSchedule(response.scheduledPosts) : response,
+      keepUnusedDataFor: 300,
+      providesTags: ['ScheduledPosts'],
+    }),
+
+    getPostDelivery: builder.query<{
+      status: string;
+      results?: Record<string, { status?: string; success?: boolean; error?: string; postUrl?: string; url?: string }>;
+      error?: string;
+    }, { userId: string; videoId: string }>({
+      query: ({ userId, videoId }) => `/api/gruvi/videos/${encodeURIComponent(userId)}/${encodeURIComponent(videoId)}/social-upload-status`,
+    }),
+
     // Scheduled Posts
     getScheduledPosts: builder.query<
       { scheduledPosts: ScheduledPost[]; schedulingLimits?: { used: number; limit: number; remaining: number; tier: string } },
       void
     >({
       query: () => `/api/gruvi/scheduled-posts`,
+      keepUnusedDataFor: 300,
       providesTags: ['ScheduledPosts'],
     }),
 
@@ -573,6 +595,8 @@ export const {
   useGetTwitterStatusQuery,
   // Scheduled Posts
   useGetScheduledPostsQuery,
+  useGetScheduleOverviewQuery,
+  useGetPostDeliveryQuery,
   // TikTok Analytics
   useGetTikTokVideosQuery,
   useGetTikTokSummaryQuery,

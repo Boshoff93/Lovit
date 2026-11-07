@@ -6,7 +6,7 @@ import WorkspaceSkeleton from './WorkspaceSkeleton';
 
 export default function AccountLoadingState() {
   const { pathname } = useLocation();
-  if (pathname.replace(/\/$/, '') === '/dashboard') {
+  if (pathname === '/' || pathname.replace(/\/$/, '') === '/dashboard') {
     return <Layout isInitializing><DashboardSkeleton /></Layout>;
   }
   return <div className="gd-workspace gd-auth-loading"><WorkspaceSkeleton label="Loading account" /></div>;

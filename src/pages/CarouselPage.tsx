@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Button, MenuItem, TextField } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
-import { RootState } from "../store/store";
-import { useGetSocialAccountsQuery } from "../store/apiSlice";
+import { AppDispatch, RootState } from "../store/store";
+import { apiSlice, useGetSocialAccountsQuery } from "../store/apiSlice";
 import DestinationPicker from "../components/DestinationPicker";
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
@@ -11,6 +11,7 @@ import PublishingPaywall from "../components/PublishingPaywall";
 import { hasPublishingAccess } from "../config/publishing";
 import api from "../utils/axiosConfig";
 export default function CarouselPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const [searchParams] = useSearchParams();
   const linkedCarousel = searchParams.get("carouselId") || "";
   const linkedPublication = searchParams.get("publication") || "";
@@ -144,6 +145,7 @@ export default function CarouselPage() {
           tiktokSettings: { postMode: "draft" },
         });
         setSubmitted(true);
+        dispatch(apiSlice.util.invalidateTags(["ScheduledPosts"]));
         setMessage("Carousel scheduled. Review it in your calendar.");
       } else {
         setSubmitted(true);

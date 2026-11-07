@@ -2,23 +2,61 @@ import React from 'react';
 import { Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-/** Static dashboard content stays in place during account and data loading. */
-export function DashboardHeader() {
-  return <header className="gd-workspace-header">
-    <div>
-      <p className="gd-eyebrow">Your distribution workspace</p>
-      <h1>Ready for your next post.</h1>
-      <p>See what's scheduled, check delivery and keep your accounts connected.</p>
-      <div className="gd-card-actions">
-        <Link className="gd-button gd-primary-action gd-card-action" to="/posts/new">
-          New post <span aria-hidden="true">+</span>
-        </Link>
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
+import { SnapshotRow, snapshotMetric } from '../utils/analyticsSnapshot';
+import './DashboardOverview.css';
+
+const performanceMetrics = [
+  { key: 'followers', label: 'Followers & subscribers', icon: GroupOutlinedIcon },
+  { key: 'likes', label: 'Likes & reactions', icon: FavoriteBorderRoundedIcon },
+  { key: 'comments', label: 'Comments', icon: ChatBubbleOutlineRoundedIcon },
+] as const;
+const formatCount = new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 });
+
+export function DashboardHeader({ rows = [], loading = false, syncing = false, unavailable = false }: {
+  rows?: SnapshotRow[];
+  loading?: boolean;
+  syncing?: boolean;
+  unavailable?: boolean;
+}) {
+  return <header className="gd-workspace-header gd-dashboard-performance">
+    <div className="gd-dashboard-performance-heading">
+      <div>
+        <p className="gd-eyebrow"><BarChartRoundedIcon aria-hidden="true" /> Across channels</p>
+        <h1>Audience & engagement</h1>
+        <p>Audience counts and lifetime engagement on available posts.</p>
       </div>
+      <span className="gd-dashboard-sync" role="status">{syncing && <><SyncRoundedIcon aria-hidden="true" /> Syncing</>}</span>
+    </div>
+    <dl className="gd-dashboard-metrics" aria-busy={loading}>
+      {performanceMetrics.map(({ key, label, icon: Icon }) => {
+        const { value, reporting, eligible } = snapshotMetric(rows, key);
+        return <div className="gd-dashboard-metric" key={key}>
+          <dt><Icon aria-hidden="true" />{label}</dt>
+          <dd>{loading ? <Skeleton variant="rounded" width={78} height={30} /> :
+            <span title={value?.toLocaleString()} aria-label={value?.toLocaleString() || 'Unavailable'}>{value === null ? '—' : formatCount.format(value)}</span>}</dd>
+          <small>{loading ? <Skeleton variant="rounded" width={90} height={12} /> :
+            eligible ? `${reporting} of ${eligible} reporting` : unavailable ? 'Unavailable' : 'No reporting accounts'}</small>
+        </div>;
+      })}
+    </dl>
+    <div className="gd-card-actions">
+      <Link className="gd-button gd-primary-action gd-card-action" to="/posts/new">
+        New post <span aria-hidden="true">+</span>
+      </Link>
+      <Link className="gd-text-link" to="/analytics">View analytics ↗</Link>
     </div>
   </header>;
 }
 
-export function DashboardStats({ scheduled, failed, accounts, postsLoading = false, accountsLoading = false }: {
+export const scheduleLink = (id: string) => `/settings/scheduled-content?highlight=${encodeURIComponent(id)}`;
+
+export function DashboardStats({ scheduled, failed, accounts, postsLoading = false, accountsLoading = false, latestAttentionId }: {
+  latestAttentionId?: string;
   scheduled?: number | null;
   failed?: number | null;
   accounts?: number | null;
@@ -27,12 +65,12 @@ export function DashboardStats({ scheduled, failed, accounts, postsLoading = fal
 }) {
   const stats = [
     { label: 'Scheduled', value: scheduled, loading: postsLoading, to: '/settings/scheduled-content' },
-    { label: 'Need attention', value: failed, loading: postsLoading, to: '/settings/scheduled-content' },
+    { label: 'Needs attention', value: failed, loading: postsLoading, to: latestAttentionId ? scheduleLink(latestAttentionId) : '/settings/scheduled-content', hint: 'Past 7 days' },
     { label: 'Connected accounts', value: accounts, loading: accountsLoading, to: '/settings/connected-accounts' },
   ];
   return <div className="gd-stat-grid gd-dashboard-stats" aria-label="Workspace counts" aria-busy={postsLoading || accountsLoading}>
     {stats.map(stat => <Link to={stat.to} className="gd-stat" key={stat.label}>
-      <span>{stat.label}</span>
+      <span>{stat.label}{stat.hint && <small className="gd-dashboard-stat-hint">{stat.hint}</small>}</span>
       {stat.loading ? <strong className="gd-dashboard-stat-loading">
         <Skeleton component="span" variant="rounded" width="1.15em" height="0.85em" aria-hidden="true" />
         <span className="gd-sr-only">Loading</span>
@@ -71,14 +109,15 @@ export function UpcomingPostsSkeleton() {
 }
 
 export default function DashboardSkeleton() {
-  return <div className="gd gd-dashboard-loading" role="status" aria-label="Loading dashboard" aria-busy="true">
-    <DashboardHeader />
+  return <div className="gd gd-dashboard gd-dashboard-loading" aria-busy="true">
+    <span className="gd-sr-only" role="status" aria-label="Loading dashboard" aria-busy="true">Loading dashboard.</span>
+    <DashboardHeader loading />
     <DashboardStats postsLoading accountsLoading />
-    <DashboardNextSteps />
     <section className="gd-upcoming">
       <div className="gd-inline-heading"><h2>Coming up</h2></div>
       <UpcomingPostsSkeleton />
       <div className="gd-card-actions"><Link className="gd-text-link" to="/settings/scheduled-content">View schedule ↗</Link></div>
     </section>
+    <DashboardNextSteps />
   </div>;
 }

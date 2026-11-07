@@ -8,7 +8,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { useGetAnalyticsSnapshotQuery } from '../store/apiSlice';
-import { AnalyticsAccount, SnapshotRow, analyticsPlatforms, snapshotMetric } from '../utils/analyticsSnapshot';
+import { AnalyticsAccount, SnapshotRow, analyticsPlatforms, snapshotFreshnessSeconds, snapshotMetric } from '../utils/analyticsSnapshot';
 import { platformNames } from '../config/publishing';
 import { AnalyticsAvatar, AnalyticsPlatformIcon, analyticsAccountName } from './AnalyticsWorkspaceHeader';
 import WorkspaceNotice from './WorkspaceNotice';
@@ -23,7 +23,7 @@ const metrics = [
 
 export default function AnalyticsSnapshot({ accounts, userId }: { accounts: AnalyticsAccount[]; userId: string }) {
   const eligible = useMemo(() => accounts.filter(a => analyticsPlatforms.includes(a.platform)), [accounts]);
-  const query = useGetAnalyticsSnapshotQuery({ userId, accounts: eligible }, { skip: !eligible.length || !userId, refetchOnMountOrArgChange: 300 });
+  const query = useGetAnalyticsSnapshotQuery({ userId, accounts: eligible }, { skip: !eligible.length || !userId, refetchOnMountOrArgChange: snapshotFreshnessSeconds });
   const rows = query.currentData || eligible.map(a => ({ ...a, followers: null, views: null, likes: null, comments: null, posts: null, coverage: (['youtube','tiktok'].includes(a.platform) ? 'videos' : 'recent_posts') as 'videos' | 'recent_posts', unavailable: true, updatedAt: '' })), loading = query.isFetching && !query.currentData;
   return <AnalyticsSnapshotView accounts={eligible} rows={rows} loading={loading} refreshing={query.isFetching} onRefresh={() => query.refetch()} failed={query.isError}/>;
 }
