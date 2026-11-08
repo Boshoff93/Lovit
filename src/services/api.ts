@@ -272,13 +272,12 @@ export const videosApi = {
   }) => api.post(`/api/gruvi/videos/${userId}/${videoId}/upload-thumbnail`, data),
   
   // YouTube Upload
-  uploadToYouTube: (userId: string, videoId: string, data?: { addThumbnailIntro?: boolean }) =>
-    api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, data || {}),
+  uploadToYouTube: (userId: string, videoId: string) =>
+    api.post(`/api/gruvi/videos/${userId}/${videoId}/youtube-upload`, {}),
   
   // Batch Social Upload (background processing with email notification)
   batchSocialUpload: (userId: string, videoId: string, data: {
     platforms: Array<string | { platform: string; accountId?: string }>;
-    addThumbnailIntro?: boolean;
     tiktokSettings?: {
       postMode: 'draft' | 'direct';
       privacyLevel: string;

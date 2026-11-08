@@ -352,10 +352,6 @@
                 },
                 "tiktokSettings": {
                   "$ref": "#/components/schemas/TikTokSettings"
-                },
-                "addThumbnailIntro": {
-                  "type": "boolean",
-                  "default": false
                 }
               }
             }
@@ -1451,10 +1447,6 @@
                   },
                   "tiktokSettings": {
                     "$ref": "#/components/schemas/TikTokSettings"
-                  },
-                  "addThumbnailIntro": {
-                    "type": "boolean",
-                    "default": false
                   }
                 },
                 "required": [
@@ -1573,10 +1565,6 @@
                   },
                   "tiktokSettings": {
                     "$ref": "#/components/schemas/TikTokSettings"
-                  },
-                  "addThumbnailIntro": {
-                    "type": "boolean",
-                    "default": false
                   },
                   "videoId": {
                     "type": "string",

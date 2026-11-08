@@ -116,7 +116,6 @@ export default function BulkSchedulePage() {
             platform: a.platform,
             accountId: a.accountId,
           })),
-          addThumbnailIntro: false,
           tiktokSettings: { postMode: "draft", privacyLevel: "SELF_ONLY" },
         };
       });

@@ -207,7 +207,6 @@ const MusicVideoPlayer: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [backgroundUploadStarted, setBackgroundUploadStarted] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
-  const [addThumbnailIntro, setAddThumbnailIntro] = useState(true);
 
   // TikTok state
   const [tiktokConnected, setTiktokConnected] = useState(false);
@@ -937,9 +936,7 @@ const MusicVideoPlayer: React.FC = () => {
       });
       
       // Then upload to YouTube
-      // Only add thumbnail intro for portrait videos (shorts)
-      const shouldAddThumbnailIntro = videoData?.aspectRatio === 'portrait' ? addThumbnailIntro : false;
-      const response = await videosApi.uploadToYouTube(user.userId, videoId, { addThumbnailIntro: shouldAddThumbnailIntro });
+      const response = await videosApi.uploadToYouTube(user.userId, videoId);
       setYoutubeUrl(response.data.youtubeUrl);
       // Individual platform banner will show instead of generic socialSuccess
     } catch (err: any) {
