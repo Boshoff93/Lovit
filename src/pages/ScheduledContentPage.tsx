@@ -1491,11 +1491,13 @@ const ScheduledContentPage: React.FC = () => {
                           gap: 1,
                           p: 1,
                           borderRadius: '8px',
-                          bgcolor: result.success ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                          bgcolor: result.success ? 'rgba(34,197,94,0.1)' : result.warning ? 'rgba(249,115,22,0.1)' : 'rgba(239,68,68,0.1)',
                         }}
                       >
                         {result.success ? (
                           <CheckCircleIcon sx={{ fontSize: 18, color: '#22C55E' }} />
+                        ) : result.warning ? (
+                          <HourglassIcon sx={{ fontSize: 18, color: '#F97316' }} />
                         ) : (
                           <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />
                         )}
@@ -1507,9 +1509,12 @@ const ScheduledContentPage: React.FC = () => {
                             Sent to drafts
                           </Typography>
                         )}
+                        {result.success && result.publishStatus !== 'SEND_TO_USER_INBOX' && result.postUrl && /^https:\/\//i.test(result.postUrl) && (
+                          <Button size="small" component="a" href={result.postUrl} target="_blank" rel="noopener noreferrer">View post</Button>
+                        )}
                         {!result.success && (
-                          <Typography sx={{ fontSize: '0.75rem', color: '#EF4444' }}>
-                            {result.error || 'Upload failed'}
+                          <Typography sx={{ fontSize: '0.75rem', color: result.warning ? '#F97316' : '#EF4444' }}>
+                            {result.warning || result.error || 'Upload failed'}
                           </Typography>
                         )}
                       </Box>
@@ -1550,7 +1555,7 @@ const ScheduledContentPage: React.FC = () => {
                   setDetailsDialogOpen(false);
                   const isSlideshow = selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId);
                   if (isSlideshow && selectedPost.slideshowId) {
-                    navigate(`/slideshow/${selectedPost.slideshowId}`);
+                    navigate(`/posts/carousel?carouselId=${encodeURIComponent(selectedPost.slideshowId)}`);
                   } else {
                     navigate(`/posts/new?videoId=${selectedPost.videoId}`);
                   }
@@ -1564,7 +1569,7 @@ const ScheduledContentPage: React.FC = () => {
                   '&:hover': { bgcolor: '#0066DD' },
                 }}
               >
-                {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'View Slideshow' : 'Prepare another post'}
+                {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'Open carousel' : 'Prepare another post'}
               </Button>
               {/* Close button - only for completed or failed posts */}
               {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (

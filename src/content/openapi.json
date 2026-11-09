@@ -1946,6 +1946,12 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "All posts scheduled"
+          },
+          "207": {
+            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
+          },
           "400": {
             "description": "Invalid input"
           },
@@ -1960,12 +1966,6 @@
           },
           "503": {
             "description": "Request could not be confirmed. Inspect state and reuse the request ID."
-          },
-          "201": {
-            "description": "All posts scheduled"
-          },
-          "207": {
-            "description": "Per-item success and failure results. Retry the unchanged batch with the same requestId."
           }
         },
         "requestBody": {
@@ -2059,6 +2059,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Carousel saved without publishing."
+          },
           "400": {
             "description": "Invalid input"
           },
@@ -2073,9 +2076,6 @@
           },
           "503": {
             "description": "Request could not be confirmed. Inspect state and reuse the request ID."
-          },
-          "201": {
-            "description": "Carousel saved without publishing."
           }
         },
         "requestBody": {
@@ -2132,7 +2132,7 @@
     },
     "/api/gruvi/carousels/{carouselId}/publish": {
       "post": {
-        "summary": "Publish one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "summary": "Publish an image set to one Instagram account, TikTok account or Facebook Page.",
         "security": [
           {
             "agentKey": []
@@ -2142,8 +2142,11 @@
           "200": {
             "description": "Request result"
           },
+          "202": {
+            "description": "The platform has not confirmed publication. Check status before retrying."
+          },
           "400": {
-            "description": "Invalid input"
+            "description": "Invalid input or an unsupported destination. YouTube Community image posts return YOUTUBE_COMMUNITY_POST_UNSUPPORTED."
           },
           "401": {
             "description": "Bearer authentication required"
@@ -2186,7 +2189,8 @@
                   "platform": {
                     "enum": [
                       "instagram",
-                      "tiktok"
+                      "tiktok",
+                      "facebook"
                     ]
                   },
                   "accountId": {
@@ -2213,20 +2217,24 @@
           "Carousels"
         ],
         "operationId": "publishCarousel",
-        "x-displayName": "Publish a carousel"
+        "x-displayName": "Publish a carousel",
+        "description": "Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
       }
     },
     "/api/gruvi/carousels/{carouselId}/schedule": {
       "post": {
-        "summary": "Schedule one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.",
+        "summary": "Schedule an image set for one Instagram account, TikTok account or Facebook Page.",
         "security": [
           {
             "agentKey": []
           }
         ],
         "responses": {
+          "201": {
+            "description": "Carousel schedule created; not yet published."
+          },
           "400": {
-            "description": "Invalid input"
+            "description": "Invalid input or an unsupported destination. YouTube Community image posts return YOUTUBE_COMMUNITY_POST_UNSUPPORTED."
           },
           "401": {
             "description": "Bearer authentication required"
@@ -2239,9 +2247,6 @@
           },
           "503": {
             "description": "Request could not be confirmed. Inspect state and reuse the request ID."
-          },
-          "201": {
-            "description": "Carousel schedule created; not yet published."
           }
         },
         "requestBody": {
@@ -2283,12 +2288,9 @@
                         "platform": {
                           "type": "string",
                           "enum": [
-                            "youtube",
-                            "tiktok",
                             "instagram",
-                            "facebook",
-                            "linkedin",
-                            "twitter"
+                            "tiktok",
+                            "facebook"
                           ]
                         },
                         "accountId": {
@@ -2322,7 +2324,8 @@
           "Carousels"
         ],
         "operationId": "scheduleCarousel",
-        "x-displayName": "Schedule a carousel"
+        "x-displayName": "Schedule a carousel",
+        "description": "Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
       }
     },
     "/api/gruvi/carousels/{carouselId}/publications/{requestId}": {

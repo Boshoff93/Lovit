@@ -8,17 +8,22 @@ import DestinationPicker from "../components/DestinationPicker";
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import PublishingPaywall from "../components/PublishingPaywall";
-import { hasPublishingAccess } from "../config/publishing";
+import { hasPublishingAccess, platformNames } from "../config/publishing";
 import api from "../utils/axiosConfig";
+
+const carouselPlatforms = ["instagram", "tiktok", "facebook"];
+
 export default function CarouselPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [searchParams] = useSearchParams();
   const linkedCarousel = searchParams.get("carouselId") || "";
   const linkedPublication = searchParams.get("publication") || "";
-  const linkedResult = /^[A-Za-z0-9_-]{8,100}$/.test(linkedCarousel) && /^[A-Za-z0-9_-]{8,100}$/.test(linkedPublication);
+  const linkedSavedCarousel = /^[A-Za-z0-9_-]{8,100}$/.test(linkedCarousel);
+  const linkedResult = linkedSavedCarousel && /^[A-Za-z0-9_-]{8,100}$/.test(linkedPublication);
   const { user, subscription } = useSelector((s: RootState) => s.auth);
   const userId = user?.userId || "";
   const accounts = useGetSocialAccountsQuery({ userId }, { skip: !userId });
+  const destinations = (accounts.data?.accounts || []).filter((a) => carouselPlatforms.includes(a.platform));
   const [files, setFiles] = useState<File[]>([]),
     [previews, setPreviews] = useState<string[]>([]),
     [title, setTitle] = useState(""),
@@ -45,13 +50,13 @@ export default function CarouselPage() {
     try {
       const carousels = (await api.get('/api/gruvi/carousels')).data.carousels || [];
       setSaved(carousels);
-      if (linkedResult) {
+      if (linkedSavedCarousel) {
         const selected = carousels.find((item: any) => (item.carouselId || item.slideshowId) === linkedCarousel);
-        if (selected) { setTitle(selected.title || ""); setCaption(selected.description || ""); }
+        if (selected) { setCarouselId(linkedCarousel); setTitle(selected.title || ""); setCaption(selected.description || ""); }
       }
     }
     catch { setSavedLoadError(true); }
-  }, [linkedResult, linkedCarousel]);
+  }, [linkedSavedCarousel, linkedCarousel]);
   useEffect(() => { loadSaved(); }, [loadSaved]);
   const prepare = async () => {
     setBusy(true);
@@ -102,10 +107,10 @@ export default function CarouselPage() {
         data.status === "published"
           ? "Published."
           : data.status === "failed"
-            ? "Publication failed. Review the error before a new attempt."
+            ? data.error || "Publication failed. Review the error before a new attempt."
             : data.status === "draft"
               ? "Ready in TikTok drafts. Open TikTok to review and finish publishing."
-            : "TikTok or Gruvi is still processing this publication. Review your TikTok inbox for draft posts.",
+            : data.warning || "Publication is still processing. Check again before sending another post.",
       );
     } catch (e: any) {
       setError(e.response?.data?.error || "Status could not be checked.");
@@ -121,7 +126,7 @@ export default function CarouselPage() {
       setPaywall(true);
       return;
     }
-    const account = (accounts.data?.accounts || []).find(
+    const account = destinations.find(
       (a) => a.accountId === target[0],
     );
     if (!carouselId || !account) {
@@ -130,6 +135,7 @@ export default function CarouselPage() {
     }
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       if (mode === "schedule") {
         if (!time || new Date(time).getTime() <= Date.now() + 60000)
@@ -142,7 +148,7 @@ export default function CarouselPage() {
             { platform: account.platform, accountId: account.accountId },
           ],
           scheduledTime: new Date(time).toISOString(),
-          tiktokSettings: { postMode: "draft" },
+          ...(account.platform === "facebook" ? {} : { tiktokSettings: { postMode: "draft" } }),
         });
         setSubmitted(true);
         dispatch(apiSlice.util.invalidateTags(["ScheduledPosts"]));
@@ -156,13 +162,17 @@ export default function CarouselPage() {
             caption,
             platform: account.platform,
             accountId: account.accountId,
-            tiktokSettings: { postMode: "draft" },
+            ...(account.platform === "facebook" ? {} : { tiktokSettings: { postMode: "draft" } }),
           },
         );
         setMessage(
           data.status === "published"
-            ? "Published on Instagram."
-            : "Accepted for TikTok processing. Open TikTok to review and finish draft posts.",
+            ? `Published on ${platformNames[account.platform]}.`
+            : data.status === "draft"
+              ? "Ready in TikTok drafts. Open TikTok to review and finish publishing."
+              : data.status === "failed"
+                ? data.error || "Publication failed. Check the status for details."
+                : data.warning || "Publication is still processing. Check its status before sending again.",
         );
       }
     } catch (e: any) {
@@ -182,8 +192,7 @@ export default function CarouselPage() {
           <p className="gd-eyebrow">Swipe through your story</p>
           <h1>Carousel posts</h1>
           <p>
-            Upload a sequence of images for Instagram or TikTok. No generation
-            required.
+            Share a sequence of images on Instagram, TikTok or a Facebook Page.
           </p>
           <Link
             className="gd-text-link gd-related-link"
@@ -303,20 +312,16 @@ export default function CarouselPage() {
               kind="list"
               rows={2}
             />
-          ) : accounts.data?.accounts.some((a) =>
-              ["instagram", "tiktok"].includes(a.platform),
-            ) ? (
+          ) : destinations.length ? (
             <DestinationPicker
-              accounts={(accounts.data?.accounts || []).filter((a) =>
-                ["instagram", "tiktok"].includes(a.platform),
-              )}
+              accounts={destinations}
               selectedIds={target}
               disabled={busy || submitted}
               onToggle={(id, checked) => setTarget(checked ? [id] : [])}
             />
           ) : (
             <div className="gd-destination-empty">
-              <p>Connect Instagram or TikTok to publish a carousel.</p>
+              <p>Connect Instagram, TikTok or a Facebook Page to publish a carousel.</p>
               <Link className="gd-text-link" to="/settings/connected-accounts">
                 Connect an account →
               </Link>
@@ -324,7 +329,7 @@ export default function CarouselPage() {
           )}
           <p className="gd-quiet">
             TikTok photo posts go to the creator inbox so you can review and
-            publish them. Instagram requires an eligible professional account.
+            publish them. Instagram requires a professional account. Facebook publishes all images in one Page post.
           </p>
         </section>
         <section className="gd-form-section">

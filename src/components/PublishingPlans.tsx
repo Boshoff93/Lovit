@@ -32,7 +32,7 @@ const sharedBenefits = [
   },
   {
     title: "Image carousels",
-    description: "Prepare image sequences for Instagram and TikTok photo posts.",
+    description: "Publish image sequences to Instagram, TikTok and Facebook Pages.",
     icon: ViewCarouselOutlined,
     href: "/blog/instagram-tiktok-carousel-posts",
   },

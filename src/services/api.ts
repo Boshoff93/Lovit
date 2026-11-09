@@ -524,6 +524,7 @@ export interface ScheduledPost {
     postId?: string;
     postUrl?: string;
     error?: string;
+    warning?: string;
     publishStatus?: string;
     status?: string;
   }>;
@@ -720,4 +721,4 @@ export const narrativesApi = {
     api.delete(`/api/gruvi/narratives/${userId}/${narrativeId}`),
 };
 
-export default api; 
+export default api;

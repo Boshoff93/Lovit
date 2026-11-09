@@ -5,7 +5,7 @@ description: Distribute finished content through the Gruvi API and local MCP ser
 
 # Gruvi: content distribution for agents
 
-Gruvi distributes finished videos to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It also prepares image carousels for Instagram and TikTok. Use the dashboard manually, the hosted HTTPS API, or the local stdio MCP server. Gruvi does not generate the content.
+Gruvi distributes finished videos to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It also publishes image carousels to Instagram and TikTok and multi-photo posts to Facebook Pages. Use the dashboard manually, the hosted HTTPS API, or the local stdio MCP server. Gruvi does not generate the content.
 
 ## Read first
 - API overview: https://agentgruvi.com/api
@@ -39,7 +39,7 @@ MCP: gruvi_bulk_schedule_videos. Dashboard: /posts/bulk.
 
 ## Image carousels
 Use 2 to 10 JPEG, PNG or WebP images up to 5 MB each. Allocate signed image uploads through /api/gruvi/carousels/get-upload-url, upload the bytes, then save the ordered imageKeys through POST /api/gruvi/carousels. Keys must belong to the current account. Images fit a 1080 x 1350 canvas without cropping.
-Publish or schedule to one exact Instagram or TikTok destination. Immediate publication uses platform, accountId and a stable requestId. Check /carousels/{carouselId}/publications/{requestId} after an uncertain send. TikTok defaults to creator-inbox review; an inbox draft is not a live post.
+Publish or schedule to one exact Instagram, TikTok or Facebook Page destination. Facebook creates a single Page post with all photos. Immediate publication uses platform, accountId and a stable requestId. Check /carousels/{carouselId}/publications/{requestId} after an uncertain send. TikTok defaults to creator-inbox review; an inbox draft is not a live post.
 MCP: gruvi_upload_carousel, gruvi_publish_carousel, gruvi_schedule_carousel and gruvi_get_carousel_publication. Dashboard: /posts/carousel.
 
 ## Analytics coverage
@@ -83,8 +83,8 @@ Honor Retry-After on 429 responses. Read the error body for 403 access requireme
 - POST /api/gruvi/carousels/get-upload-url: Allocate a ten-minute signed upload URL for one carousel image
 - POST /api/gruvi/carousels: Save 2 to 10 uploaded images as a carousel without publishing
 - GET /api/gruvi/carousels: List this account's saved carousels
-- POST /api/gruvi/carousels/{carouselId}/publish: Publish one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.
-- POST /api/gruvi/carousels/{carouselId}/schedule: Schedule one carousel to one Instagram or TikTok account. TikTok defaults to creator-inbox review.
+- POST /api/gruvi/carousels/{carouselId}/publish: Publish an image set to one Instagram account, TikTok account or Facebook Page.
+- POST /api/gruvi/carousels/{carouselId}/schedule: Schedule an image set for one Instagram account, TikTok account or Facebook Page.
 - GET /api/gruvi/carousels/{carouselId}/publications/{requestId}: Check an uncertain carousel publication before retrying
 - GET /api/gruvi/instagram/analytics/summary: Read Instagram account insights and post engagement
 - GET /api/gruvi/facebook/analytics/summary: Read Facebook account insights and post engagement

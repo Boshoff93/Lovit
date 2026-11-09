@@ -14,7 +14,7 @@
 
 ## Capabilities
 Video distribution: X, Instagram, TikTok, YouTube, Facebook and LinkedIn.
-Photo carousels: Instagram and TikTok, 2 to 10 images per set.
+Photo carousels: Instagram and TikTok. Multi-photo posts: Facebook Pages. Each set supports 2 to 10 images.
 Bulk scheduling: 1 to 20 videos, with stable request IDs and per-item results.
 Analytics: TikTok and YouTube summary/trends; Instagram, Facebook and X recent-post engagement summaries in beta.
 

@@ -681,7 +681,7 @@ export const distributionFaqs = [
   {
     question: "Which platforms can I publish to?",
     answer:
-      "Gruvi supports video publishing to YouTube, Instagram, TikTok, Facebook, LinkedIn and X, plus photo carousels for Instagram and TikTok. Formats, thumbnail behavior and permissions depend on the connected account.",
+      "Gruvi supports video publishing to YouTube, Instagram, TikTok, Facebook, LinkedIn and X. You can also publish photo carousels to Instagram and TikTok and multi-photo posts to Facebook Pages. Formats, thumbnail behavior and permissions depend on the connected account.",
   },
   {
     question: "Can I use my own content and thumbnails?",

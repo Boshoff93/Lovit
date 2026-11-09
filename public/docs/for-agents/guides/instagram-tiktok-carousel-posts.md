@@ -1,6 +1,6 @@
 # Instagram and TikTok carousels: upload, order and schedule your images
 
-Prepare 2 to 10 images as a Gruvi carousel, choose Instagram or TikTok and understand the difference between a saved set, a draft and a published post.
+Prepare 2 to 10 images for Instagram, TikTok or a Facebook Page, then publish now or choose a future time.
 
 ![Gruvi unfolding a five-frame picture sequence from sunrise to night.](https://agentgruvi.com/marketing/blog/gruvi-carousel-editorial.webp)
 
@@ -12,13 +12,13 @@ Author: Gruvi
 ## What you need to know
 - A carousel is an ordered image post, not a batch of separate video posts.
 - Gruvi accepts 2 to 10 JPEG, PNG or WebP images, up to 5 MB each.
-- Choose one exact Instagram or TikTok destination per carousel operation.
+- Choose one Instagram, TikTok or Facebook Page destination per carousel operation.
 
 ## What is a carousel post?
 
 A carousel combines several images into one post that a viewer can move through. It works well for a short visual sequence, a product walkthrough or a set of ideas that need more than one frame. It is a different workflow from bulk scheduling, where each video becomes a separate scheduled post.
 
-Gruvi supports image carousels for Instagram and TikTok. You bring the images, arrange their order and add the caption. The same preparation flow is available in the dashboard and through the API or MCP connector. Platform account eligibility and permissions still apply.
+Gruvi supports image carousels for Instagram and TikTok, and multi-photo posts for Facebook Pages. You bring the images, arrange their order and add the caption. The same preparation flow is available in the dashboard and through the API or MCP connector. Platform account eligibility and permissions still apply.
 
 ## Prepare a consistent image set
 
@@ -42,7 +42,7 @@ The image keys must belong to the authenticated account and come from the carous
 
 ## Publish now or choose a future time
 
-Select one exact connected account on Instagram or TikTok. An immediate publication includes platform, accountId and a stable requestId. To schedule instead, send the saved carousel ID, one destination and a future scheduledTime to its schedule endpoint.
+Select one connected Instagram account, TikTok account or Facebook Page. An immediate publication includes platform, accountId and a stable requestId. To schedule instead, send the saved carousel ID, one destination and a future scheduledTime to its schedule endpoint.
 
 If you want to send the same images to a second destination, create a separate operation with that account and its own request ID. This keeps delivery results and retries unambiguous for each network.
 

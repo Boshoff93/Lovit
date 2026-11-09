@@ -92,7 +92,7 @@ const endpointText = Object.entries(read("src/content/openapi.json").paths)
   .join("\n");
 const guide = `# Gruvi: content distribution for agents
 
-Gruvi distributes finished videos to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It also prepares image carousels for Instagram and TikTok. Use the dashboard manually, the hosted HTTPS API, or the local stdio MCP server. Gruvi does not generate the content.
+Gruvi distributes finished videos to connected X, Instagram, TikTok, YouTube, Facebook and LinkedIn accounts. It also publishes image carousels to Instagram and TikTok and multi-photo posts to Facebook Pages. Use the dashboard manually, the hosted HTTPS API, or the local stdio MCP server. Gruvi does not generate the content.
 
 ## Read first
 - API overview: https://agentgruvi.com/api
@@ -126,7 +126,7 @@ MCP: gruvi_bulk_schedule_videos. Dashboard: /posts/bulk.
 
 ## Image carousels
 Use 2 to 10 JPEG, PNG or WebP images up to 5 MB each. Allocate signed image uploads through /api/gruvi/carousels/get-upload-url, upload the bytes, then save the ordered imageKeys through POST /api/gruvi/carousels. Keys must belong to the current account. Images fit a 1080 x 1350 canvas without cropping.
-Publish or schedule to one exact Instagram or TikTok destination. Immediate publication uses platform, accountId and a stable requestId. Check /carousels/{carouselId}/publications/{requestId} after an uncertain send. TikTok defaults to creator-inbox review; an inbox draft is not a live post.
+Publish or schedule to one exact Instagram, TikTok or Facebook Page destination. Facebook creates a single Page post with all photos. Immediate publication uses platform, accountId and a stable requestId. Check /carousels/{carouselId}/publications/{requestId} after an uncertain send. TikTok defaults to creator-inbox review; an inbox draft is not a live post.
 MCP: gruvi_upload_carousel, gruvi_publish_carousel, gruvi_schedule_carousel and gruvi_get_carousel_publication. Dashboard: /posts/carousel.
 
 ## Analytics coverage
@@ -186,7 +186,7 @@ write(
 
 ## Capabilities
 Video distribution: X, Instagram, TikTok, YouTube, Facebook and LinkedIn.
-Photo carousels: Instagram and TikTok, 2 to 10 images per set.
+Photo carousels: Instagram and TikTok. Multi-photo posts: Facebook Pages. Each set supports 2 to 10 images.
 Bulk scheduling: 1 to 20 videos, with stable request IDs and per-item results.
 Analytics: TikTok and YouTube summary/trends; Instagram, Facebook and X recent-post engagement summaries in beta.
 
