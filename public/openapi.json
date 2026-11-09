@@ -2143,7 +2143,7 @@
             "description": "Request result"
           },
           "202": {
-            "description": "The platform has not confirmed publication. Check status before retrying."
+            "description": "Accepted for processing. Poll the publication status with the same requestId and honor Retry-After."
           },
           "400": {
             "description": "Invalid input or an unsupported destination. YouTube Community image posts return YOUTUBE_COMMUNITY_POST_UNSUPPORTED."
@@ -2218,7 +2218,7 @@
         ],
         "operationId": "publishCarousel",
         "x-displayName": "Publish a carousel",
-        "description": "Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
+        "description": "Instagram queues the carousel and returns 202 while it processes. Poll the publication status with the same requestId to confirm delivery. Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
       }
     },
     "/api/gruvi/carousels/{carouselId}/schedule": {

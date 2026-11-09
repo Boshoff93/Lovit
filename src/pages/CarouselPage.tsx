@@ -40,6 +40,7 @@ export default function CarouselPage() {
     [requestId, setRequestId] = useState(() => linkedResult ? linkedPublication : crypto.randomUUID()),
     [submitted, setSubmitted] = useState(linkedResult);
   const [savedLoadError, setSavedLoadError] = useState(false);
+  const [statusCheck, setStatusCheck] = useState(0);
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
     setPreviews(urls);
@@ -97,29 +98,58 @@ export default function CarouselPage() {
       setBusy(false);
     }
   };
-  const readPublication = useCallback(async (selectedCarousel: string, selectedRequest: string) => {
-    setError("");
-    try {
-      const { data } = await api.get(
-        `/api/gruvi/carousels/${encodeURIComponent(selectedCarousel)}/publications/${encodeURIComponent(selectedRequest)}`,
-      );
-      setMessage(
-        data.status === "published"
-          ? "Published."
-          : data.status === "failed"
-            ? data.error || "Publication failed. Review the error before a new attempt."
-            : data.status === "draft"
-              ? "Ready in TikTok drafts. Open TikTok to review and finish publishing."
-            : data.warning || "Publication is still processing. Check again before sending another post.",
-      );
-    } catch (e: any) {
-      setError(e.response?.data?.error || "Status could not be checked.");
-    }
-  }, []);
-  const status = () => readPublication(carouselId, requestId);
   useEffect(() => {
-    if (userId && linkedResult) readPublication(linkedCarousel, linkedPublication);
-  }, [userId, linkedResult, linkedCarousel, linkedPublication, readPublication]);
+    if (!userId || !submitted || busy || mode !== "now" || !carouselId) return;
+
+    const controller = new AbortController();
+    const deadline = Date.now() + 16 * 60_000;
+    let timer: number | undefined;
+    const retryStatus = (seconds: number) => {
+      if (Date.now() < deadline) timer = window.setTimeout(checkPublication, seconds * 1000);
+    };
+
+    const checkPublication = async () => {
+      try {
+        const { data, headers } = await api.get(
+          `/api/gruvi/carousels/${encodeURIComponent(carouselId)}/publications/${encodeURIComponent(requestId)}`,
+          { signal: controller.signal },
+        );
+        if (controller.signal.aborted) return;
+        setError("");
+        switch (data.status) {
+          case "published":
+            setMessage("Published.");
+            break;
+          case "failed":
+            setMessage("");
+            setError(data.error || "Publication failed. Review the error before a new attempt.");
+            break;
+          case "draft":
+            setMessage("Ready in TikTok drafts. Open TikTok to review and finish publishing.");
+            break;
+          case "pending_reconciliation":
+            setMessage(data.warning || "Publication could not be confirmed. Check your social account.");
+            break;
+          case "processing":
+            setMessage(data.warning || "Publishing your carousel. This page updates automatically.");
+            retryStatus(Math.max(5, Number(headers["retry-after"]) || 10));
+            break;
+        }
+      } catch (e: any) {
+        if (controller.signal.aborted) return;
+        setError(e.response?.data?.error || "Status could not be checked.");
+        if (!e.response || e.response.status === 429 || e.response.status >= 500) {
+          retryStatus(Math.max(10, Number(e.response?.headers?.["retry-after"]) || 10));
+        }
+      }
+    };
+
+    void checkPublication();
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [userId, submitted, busy, mode, carouselId, requestId, statusCheck]);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasPublishingAccess(subscription)) {
@@ -172,10 +202,11 @@ export default function CarouselPage() {
               ? "Ready in TikTok drafts. Open TikTok to review and finish publishing."
               : data.status === "failed"
                 ? data.error || "Publication failed. Check the status for details."
-                : data.warning || "Publication is still processing. Check its status before sending again.",
+                : data.warning || "Publishing your carousel. This page updates automatically.",
         );
       }
     } catch (e: any) {
+      if (e.response?.data?.code === "CAROUSEL_QUEUE_UNAVAILABLE") setSubmitted(false);
       setError(
         e.response?.data?.error ||
           e.message ||
@@ -357,7 +388,7 @@ export default function CarouselPage() {
         </section>
         <footer className="gd-form-actions">
           {submitted && mode === "now" && (
-            <Button variant="outlined" onClick={status}>
+            <Button variant="outlined" onClick={() => setStatusCheck((value) => value + 1)}>
               Check publication status
             </Button>
           )}
