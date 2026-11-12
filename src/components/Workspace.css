@@ -646,24 +646,13 @@
 .gd-workspace .gd-inline-fields > .MuiButton-root { align-self: flex-start; }
 .gd-workspace .gd-field-note { font-size: 12px; color: #aab4c2; }
 
-/* Calendar loading follows the actual calendar grid, without standalone tiles. */
-.gd-calendar-skeleton { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 360px; background: #111822; border: 1px solid #ffffff14; border-radius: 12px; overflow: hidden; }
-.gd-calendar-skeleton-days { display: grid; grid-template-columns: repeat(var(--calendar-columns), minmax(0, 1fr)); border-bottom: 1px solid #ffffff14; }
-.gd-calendar-skeleton-days > span { display: flex; justify-content: center; padding: 14px 6px; }
-.gd-calendar-skeleton-grid { display: grid; grid-template-columns: repeat(var(--calendar-columns), minmax(0, 1fr)); grid-template-rows: repeat(var(--calendar-rows), minmax(64px, 1fr)); flex: 1; }
-.gd-calendar-placeholder-day { min-width: 0; padding: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; border-right: 1px solid #ffffff0c; border-bottom: 1px solid #ffffff0c; }
-.gd-calendar-placeholder-day > span:last-child { align-self: flex-start; }
-.gd-calendar-skeleton .MuiSkeleton-root { background: #ffffff09; border-radius: 4px; }
-.gd-calendar-skeleton.is-week .gd-calendar-placeholder-day, .gd-calendar-skeleton.is-day .gd-calendar-placeholder-day { background: repeating-linear-gradient(to bottom, transparent 0, transparent 56px, #ffffff06 56px, #ffffff06 57px); }
 @media(max-width:600px) {
   .gd-workspace .MuiAlert-root { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 14px; }
   .gd-workspace .MuiAlert-action { grid-column: 2; justify-self: start; }
   .gd-workspace .gd-inline-fields { flex-direction: column; }
   .gd-workspace .gd-inline-fields .MuiTextField-root { flex: auto; width: 100%; max-width: 100%; }
   .gd-workspace .gd-inline-fields > .MuiButton-root { width: 100%; }
-  .gd-calendar-placeholder-day { padding: 6px; }
 }
-@media(prefers-reduced-motion:reduce) { .gd-calendar-skeleton .MuiSkeleton-root { animation: none; } }
 
 /* Analytics keeps the selected-period account metrics separate from post lifetime counts. */
 .gd-workspace .gd-meta-analytics { display: flex; flex-direction: column; gap: 20px; }

@@ -1,4 +1,3 @@
-import WorkspaceSkeleton from "../components/WorkspaceSkeleton";
 import WorkspaceNotice from "../components/WorkspaceNotice";
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
@@ -6,6 +5,7 @@ import {
   Typography,
   IconButton,
   CircularProgress,
+  LinearProgress,
   Button,
   ButtonGroup,
   Dialog,
@@ -653,32 +653,27 @@ const ScheduledContentPage: React.FC = () => {
         </Box>
       </Box>
 
+      <Box sx={{ height: 3, flexShrink: 0 }}>
+        {scheduledPostsQuery.isFetching && (
+          <LinearProgress
+            aria-label="Loading calendar posts"
+            sx={{
+              height: '100%',
+              backgroundColor: 'rgba(0,122,255,0.15)',
+              '@media (prefers-reduced-motion: reduce)': {
+                '& .MuiLinearProgress-bar1Indeterminate': { animation: 'none', width: '40%' },
+                '& .MuiLinearProgress-bar2Indeterminate': { display: 'none' },
+              },
+            }}
+          />
+        )}
+      </Box>
+
       {/* Main Content - Calendar fills remaining space */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto', minWidth: 0 }}>
 
         {/* Calendar Grid */}
-        <Box sx={{ flex: 1, background: '#141418', borderRadius: '0 0 16px 16px', position: 'relative', minHeight: 400, minWidth: { xs: 'auto', sm: 700 }, overflow: 'auto' }}>
-          {/* Loading overlay */}
-          {loading && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#0d1118',
-                padding: 2.5,
-                zIndex: 100,
-                borderRadius: '0 0 16px 16px',
-              }}
-            >
-              <WorkspaceSkeleton label="Loading calendar" kind="calendar" calendarView={viewMode} />
-            </Box>
-          )}
+        <Box aria-busy={scheduledPostsQuery.isFetching} sx={{ flex: 1, background: '#141418', borderRadius: '0 0 16px 16px', position: 'relative', minHeight: 400, minWidth: { xs: 'auto', sm: 700 }, overflow: 'auto' }}>
             {/* Empty state overlay - centered, doesn't affect layout */}
             {scheduledPosts.filter(p => p.status !== 'cancelled').length === 0 && !loading && !scheduledPostsQuery.isError && (
               <Box
