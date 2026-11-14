@@ -54,9 +54,111 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Gruvi | Social Publishing API &amp; MCP for Agents</title>
+    <link rel="preload" as="image" href="%PUBLIC_URL%/gruvi-loader.webp" />
+    <style>
+      /* These styles paint the loader while the app bundle is still downloading. */
+      #gruvi-startup:not([hidden]) {
+        --orbit-radius: clamp(68px, 22vmin, 104px);
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at center, #142c33 0, #10171d 320px);
+      }
+
+      #gruvi-startup:not([hidden]) ~ #root {
+        visibility: hidden;
+      }
+
+      .gruvi-startup-logo {
+        grid-area: 1 / 1;
+        width: clamp(64px, 20vmin, 100px);
+        height: auto;
+        filter: drop-shadow(0 8px 22px #55dcc930);
+      }
+
+      .gruvi-startup-orbit {
+        grid-area: 1 / 1;
+        position: relative;
+        box-sizing: border-box;
+        width: calc(2 * var(--orbit-radius));
+        aspect-ratio: 1;
+        border: 1px solid #9ae9e426;
+        border-radius: 50%;
+        animation: gruvi-startup-spin 18s linear infinite;
+      }
+
+      .gruvi-startup-icon {
+        position: absolute;
+        top: calc(50% + var(--y) * var(--orbit-radius));
+        left: calc(50% + var(--x) * var(--orbit-radius));
+        translate: -50% -50%;
+        box-sizing: border-box;
+        width: clamp(30px, 8vmin, 42px);
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        color: var(--brand);
+        background: #1b2a32;
+        border: 1px solid #b4dce529;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px #0a121a80;
+        animation: gruvi-startup-spin 18s linear infinite reverse;
+      }
+
+      .gruvi-startup-icon svg {
+        width: 52%;
+        height: 52%;
+        fill: currentColor;
+      }
+
+      @keyframes gruvi-startup-spin {
+        to { transform: rotate(1turn); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .gruvi-startup-orbit,
+        .gruvi-startup-icon {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <noscript>For a text version, read the <a href="/llms-full.txt">Gruvi agent guide</a>.</noscript>
+    <div id="gruvi-startup" role="status" aria-label="Loading Gruvi" hidden>
+      <img class="gruvi-startup-logo" src="%PUBLIC_URL%/gruvi-loader.webp" alt="" width="224" height="224" />
+      <div class="gruvi-startup-orbit" aria-hidden="true">
+        <!-- Use the same platform marks as the Gruvi homepage. -->
+        <span class="gruvi-startup-icon" style="--x: 0; --y: -1; --brand: #ff5757;">
+          <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z" /></svg>
+        </span>
+        <span class="gruvi-startup-icon" style="--x: .866; --y: -.5; --brand: #f07bab;">
+          <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z" /></svg>
+        </span>
+        <span class="gruvi-startup-icon" style="--x: .866; --y: .5; --brand: #54e2d6;">
+          <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+        </span>
+        <span class="gruvi-startup-icon" style="--x: 0; --y: 1; --brand: #6aa9ff;">
+          <svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m13 2h-2.5A3.5 3.5 0 0 0 12 8.5V11h-2v3h2v7h3v-7h3v-3h-3V9a1 1 0 0 1 1-1h2V5z" /></svg>
+        </span>
+        <span class="gruvi-startup-icon" style="--x: -.866; --y: .5; --brand: #74b6ef;">
+          <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" /></svg>
+        </span>
+        <span class="gruvi-startup-icon" style="--x: -.866; --y: -.5; --brand: #e5e7eb;">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+        </span>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var loader = document.getElementById('gruvi-startup');
+        loader.hidden = false;
+        // Reveal any prerendered content if the app cannot finish booting.
+        window.setTimeout(function () { loader.remove(); }, 15000);
+      })();
+    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

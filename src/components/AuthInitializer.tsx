@@ -1,5 +1,5 @@
 import AccountLoadingState from './AccountLoadingState';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../utils/storage';
 import { setToken, refreshUserData, logout } from '../store/authSlice';
@@ -13,6 +13,10 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
   const [restoring, setRestoring] = useState(() => !!(token || getToken()));
   const boot = useRef(true);
   const checkedToken = useRef<string | null>(null);
+
+  useLayoutEffect(() => {
+    if (!restoring) document.getElementById('gruvi-startup')?.remove();
+  }, [restoring]);
 
   useEffect(() => {
     if (boot.current) {
