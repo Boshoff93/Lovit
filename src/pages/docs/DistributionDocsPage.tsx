@@ -470,7 +470,9 @@ export default function DistributionDocsPage() {
                 ))}
               </div>
               <h2>Carousel posts</h2>
-              <p>Instagram and TikTok support photo sequences. Upload 2 to 10 of your own images in display order, then publish or schedule to an exact account. TikTok inbox delivery requires the creator to finish posting in TikTok. A draft or processing result is not a confirmed live post.</p>
+              <p>Facebook, Instagram and TikTok support photo sequences. Upload 2 to 10 of your own images in display order, then publish or schedule to an exact account. TikTok inbox delivery requires the creator to finish posting in TikTok. A draft or processing result is not a confirmed live post.</p>
+              <h2>YouTube Community posts</h2>
+              <p>Schedule a Community post on YouTube, then use Add YouTube post in the Gruvi calendar to record its link and time. YouTube handles publishing, and removing the calendar entry in Gruvi leaves the YouTube post alone.</p>
               <h2>Custom thumbnails</h2>
               <p>
                 Upload your thumbnail before sending the post. A platform may

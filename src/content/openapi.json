@@ -149,7 +149,7 @@
         "properties": {
           "scheduleId": {
             "type": "string",
-            "format": "uuid"
+            "description": "Gruvi schedule or YouTube calendar entry ID."
           },
           "videoId": {
             "type": "string",
@@ -176,7 +176,8 @@
               "published",
               "partial",
               "failed",
-              "cancelled"
+              "cancelled",
+              "external"
             ]
           },
           "uploadResults": {
@@ -199,6 +200,11 @@
                 }
               }
             }
+          },
+          "externalUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical Community post link for a YouTube calendar entry."
           }
         }
       },
@@ -2218,7 +2224,7 @@
         ],
         "operationId": "publishCarousel",
         "x-displayName": "Publish a carousel",
-        "description": "Instagram queues the carousel and returns 202 while it processes. Poll the publication status with the same requestId to confirm delivery. Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
+        "description": "Instagram queues the carousel and returns 202 while it processes. Poll the publication status with the same requestId to confirm delivery. Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube’s Community image API is limited to pilot partners. Record externally scheduled YouTube posts with POST /api/gruvi/scheduled-posts/external-youtube."
       }
     },
     "/api/gruvi/carousels/{carouselId}/schedule": {
@@ -2325,7 +2331,7 @@
         ],
         "operationId": "scheduleCarousel",
         "x-displayName": "Schedule a carousel",
-        "description": "Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube Community image posts are unavailable through YouTube’s public API."
+        "description": "Facebook creates one Page post with multiple photos. TikTok defaults to creator-inbox review. YouTube’s Community image API is limited to pilot partners. Record externally scheduled YouTube posts with POST /api/gruvi/scheduled-posts/external-youtube."
       }
     },
     "/api/gruvi/carousels/{carouselId}/publications/{requestId}": {
@@ -3054,6 +3060,128 @@
             "description": "Provider or pagination temporarily unavailable."
           }
         }
+      }
+    },
+    "/api/gruvi/scheduled-posts/external-youtube": {
+      "post": {
+        "operationId": "addYouTubeCalendarEntry",
+        "summary": "Record a Community post scheduled on YouTube",
+        "description": "Creates or updates a calendar entry for a post already scheduled on YouTube. The same post link updates the same entry. YouTube handles publishing and the entry does not count toward the Gruvi scheduling allowance.",
+        "tags": [
+          "Scheduling"
+        ],
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "accountId",
+                  "title",
+                  "postUrl",
+                  "scheduledTime"
+                ],
+                "properties": {
+                  "accountId": {
+                    "type": "string",
+                    "description": "The connected YouTube channel account ID."
+                  },
+                  "title": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "postUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://www.youtube.com/post/Ugkx1234567890"
+                  },
+                  "scheduledTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The time scheduled on YouTube, including an explicit time zone offset or Z."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calendar entry saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scheduledPost": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid title, YouTube Posts URL, or date with timezone"
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "403": {
+            "description": "Requires a connected YouTube channel on this account"
+          },
+          "503": {
+            "description": "The calendar entry could not be saved"
+          }
+        },
+        "x-displayName": "Add a YouTube calendar entry"
+      }
+    },
+    "/api/gruvi/scheduled-posts/external-youtube/{scheduleId}": {
+      "delete": {
+        "operationId": "removeYouTubeCalendarEntry",
+        "summary": "Remove a YouTube calendar entry",
+        "description": "Removes the entry from Gruvi. YouTube retains its post and publishing schedule.",
+        "tags": [
+          "Scheduling"
+        ],
+        "security": [
+          {
+            "agentKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^youtube-[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Calendar entry removed or already absent"
+          },
+          "401": {
+            "description": "Invalid authentication"
+          },
+          "404": {
+            "description": "Invalid calendar entry ID"
+          },
+          "503": {
+            "description": "The calendar entry could not be removed"
+          }
+        },
+        "x-displayName": "Remove a YouTube calendar entry"
       }
     }
   },

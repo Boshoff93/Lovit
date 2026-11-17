@@ -497,7 +497,8 @@ export interface ScheduledPost {
   scheduleId: string;
   videoId?: string;
   slideshowId?: string;
-  contentType?: 'video' | 'slideshow';
+  contentType?: 'video' | 'slideshow' | 'external';
+  externalUrl?: string;
   platforms: Array<{
     platform: string;
     accountId?: string;
@@ -512,7 +513,7 @@ export interface ScheduledPost {
   hashtags?: string[]; // slideshow scheduled posts use 'hashtags' instead of 'tags'
   videoFooter?: string;
   aspectRatio?: 'portrait' | 'landscape';
-  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled' | 'rejected' | 'pending_reconciliation' | 'completed';
+  status: 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'cancelled' | 'rejected' | 'pending_reconciliation' | 'completed' | 'external';
   provisioningStatus?: 'pending' | 'ready';
   rejectionReason?: string;
   createdAt: string;
@@ -532,6 +533,12 @@ export interface ScheduledPost {
 
 // Scheduled Posts API
 export const scheduledPostsApi = {
+  addYouTubeCalendarEntry: (data: { accountId: string; title: string; postUrl: string; scheduledTime: string }) =>
+    api.post<{ scheduledPost: ScheduledPost }>('/api/gruvi/scheduled-posts/external-youtube', data),
+
+  removeYouTubeCalendarEntry: (scheduleId: string) =>
+    api.delete(`/api/gruvi/scheduled-posts/external-youtube/${encodeURIComponent(scheduleId)}`),
+
   // Create a new scheduled post
   createScheduledPost: (data: {
     videoId: string;

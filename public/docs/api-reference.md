@@ -87,6 +87,8 @@ Honor Retry-After on 429 responses. Read the error body for 403 access requireme
 - GET /api/gruvi/instagram/analytics/posts: Page through Instagram post engagement
 - GET /api/gruvi/facebook/analytics/posts: Page through Facebook post engagement
 - GET /api/gruvi/twitter/analytics/posts: Page through X post engagement
+- POST /api/gruvi/scheduled-posts/external-youtube: Record a Community post scheduled on YouTube
+- DELETE /api/gruvi/scheduled-posts/external-youtube/{scheduleId}: Remove a YouTube calendar entry
 
 ## MCP tools
 - gruvi_login
