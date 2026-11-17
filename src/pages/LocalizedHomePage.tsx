@@ -28,11 +28,12 @@ export default function LocalizedHomePage({ locale }: { locale: TranslatedLandin
   const { path, ogLocale } = locales[locale];
   const { title, description, nav, hero, channels, workflow, integration, features, plans, faq, footer } = translations[locale];
   const canonical = siteOrigin + path;
+  const isRtl = locale === "ar";
   const money = new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const number = new Intl.NumberFormat(locale);
 
   return (
-    <div className="gd gm gm-localized">
+    <div className="gd gm gm-localized" dir={isRtl ? "rtl" : undefined}>
       <SEO
         title={title}
         description={description}
@@ -74,7 +75,7 @@ export default function LocalizedHomePage({ locale }: { locale: TranslatedLandin
               <h1>{hero.title} <span className="gm-gradient-text">{hero.accent}</span></h1>
               <p className="gm-hero-description">{hero.body}</p>
               <div className="gm-actions">
-                <Link className="gm-button" to="/?signin=1">{nav.start}<ArrowForwardRoundedIcon /></Link>
+                <Link className="gm-button" to="/?signin=1">{nav.start}<ArrowForwardRoundedIcon className="gm-local-forward" /></Link>
                 <Link className="gm-button gm-button-secondary" to="/docs/agent-integration">{nav.docs}<CodeRoundedIcon /></Link>
               </div>
             </div>
@@ -120,7 +121,9 @@ export default function LocalizedHomePage({ locale }: { locale: TranslatedLandin
                 <article className="gr-card" key={feature.title}>
                   <h3>{feature.title}</h3>
                   <p>{feature.body}</p>
-                  <Link className="gr-card-link" to={guideLinks[index]}>{feature.link} →</Link>
+                  <Link className="gr-card-link" to={guideLinks[index]}>
+                    {feature.link} <span aria-hidden="true">{isRtl ? "←" : "→"}</span>
+                  </Link>
                 </article>
               ))}
             </div>
@@ -139,7 +142,7 @@ export default function LocalizedHomePage({ locale }: { locale: TranslatedLandin
                 </li>
               ))}
             </ul>
-            <div className="gm-local-plan-action"><Link className="gm-button gm-button-secondary" to="/pricing">{plans.action}<ArrowForwardRoundedIcon /></Link></div>
+            <div className="gm-local-plan-action"><Link className="gm-button gm-button-secondary" to="/pricing">{plans.action}<ArrowForwardRoundedIcon className="gm-local-forward" /></Link></div>
           </div>
         </section>
 

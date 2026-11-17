@@ -7,5 +7,22 @@
   "it": { "path": "/it", "name": "Italiano", "ogLocale": "it_IT", "modified": "2026-11-17" },
   "id": { "path": "/id", "name": "Bahasa Indonesia", "ogLocale": "id_ID", "modified": "2026-11-17" },
   "ja": { "path": "/ja", "name": "日本語", "ogLocale": "ja_JP", "modified": "2026-11-17" },
-  "ko": { "path": "/ko", "name": "한국어", "ogLocale": "ko_KR", "modified": "2026-11-17" }
+  "ko": { "path": "/ko", "name": "한국어", "ogLocale": "ko_KR", "modified": "2026-11-17" },
+  "ar": { "path": "/ar", "name": "العربية", "ogLocale": "ar_SA", "modified": "2026-11-17" },
+  "bg": { "path": "/bg", "name": "Български", "ogLocale": "bg_BG", "modified": "2026-11-17" },
+  "cs": { "path": "/cs", "name": "Čeština", "ogLocale": "cs_CZ", "modified": "2026-11-17" },
+  "el": { "path": "/el", "name": "Ελληνικά", "ogLocale": "el_GR", "modified": "2026-11-17" },
+  "fi": { "path": "/fi", "name": "Suomi", "ogLocale": "fi_FI", "modified": "2026-11-17" },
+  "fil": { "path": "/fil", "name": "Filipino", "ogLocale": "fil_PH", "modified": "2026-11-17" },
+  "hi": { "path": "/hi", "name": "हिन्दी", "ogLocale": "hi_IN", "modified": "2026-11-17" },
+  "nl": { "path": "/nl", "name": "Nederlands", "ogLocale": "nl_NL", "modified": "2026-11-17" },
+  "pl": { "path": "/pl", "name": "Polski", "ogLocale": "pl_PL", "modified": "2026-11-17" },
+  "ro": { "path": "/ro", "name": "Română", "ogLocale": "ro_RO", "modified": "2026-11-17" },
+  "ru": { "path": "/ru", "name": "Русский", "ogLocale": "ru_RU", "modified": "2026-11-17" },
+  "th": { "path": "/th", "name": "ไทย", "ogLocale": "th_TH", "modified": "2026-11-17" },
+  "tr": { "path": "/tr", "name": "Türkçe", "ogLocale": "tr_TR", "modified": "2026-11-17" },
+  "uk": { "path": "/uk", "name": "Українська", "ogLocale": "uk_UA", "modified": "2026-11-17" },
+  "vi": { "path": "/vi", "name": "Tiếng Việt", "ogLocale": "vi_VN", "modified": "2026-11-17" },
+  "zh": { "path": "/zh", "name": "简体中文", "ogLocale": "zh_CN", "modified": "2026-11-17" },
+  "zh-Hant": { "path": "/zh-hant", "name": "繁體中文", "ogLocale": "zh_TW", "modified": "2026-11-17" }
 }
