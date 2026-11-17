@@ -1,0 +1,874 @@
+{
+  "es": {
+    "title": "Gruvi | API de publicación en redes sociales y MCP para agentes",
+    "description": "Programa y publica vídeos y carruseles en redes sociales con Gruvi. Usa un panel, la API o MCP y consulta los resultados en un solo sitio.",
+    "nav": {
+      "menu": "Navegación",
+      "platforms": "Plataformas",
+      "docs": "Documentación",
+      "pricing": "Precios",
+      "language": "Idioma",
+      "start": "Empezar"
+    },
+    "hero": {
+      "eyebrow": "Publicación en redes sociales",
+      "title": "Distribuye tu contenido.",
+      "accent": "Con tu agente.",
+      "body": "Sube vídeos terminados y carruseles, elige tus cuentas y programa tus publicaciones. Tu agente y tú trabajáis con el mismo calendario.",
+      "orbit": {
+        "label": "Gruvi conecta a tu agente con YouTube, Instagram, TikTok, Facebook, LinkedIn y X",
+        "agent": "Tu agente",
+        "post": "Tu próxima publicación",
+        "media": "Vídeo + miniatura"
+      }
+    },
+    "channels": {
+      "title": "Seis plataformas, un calendario",
+      "body": "Conecta tus cuentas y elige dónde quieres publicar cada pieza.",
+      "details": {
+        "youtube": "Vídeos y Shorts",
+        "instagram": "Vídeos y Reels",
+        "tiktok": "Borradores y publicación directa",
+        "facebook": "Vídeos para páginas",
+        "linkedin": "Publicaciones de vídeo",
+        "twitter": "Publicaciones de vídeo"
+      },
+      "note": "Los formatos y permisos varían según la cuenta.",
+      "link": "Consultar formatos compatibles"
+    },
+    "workflow": {
+      "title": "De tu biblioteca a tus redes",
+      "steps": [
+        {
+          "title": "Prepara el contenido",
+          "body": "Sube el vídeo, añade una miniatura y escribe el texto que acompañará la publicación."
+        },
+        {
+          "title": "Organiza tu calendario",
+          "body": "Elige las cuentas y decide si quieres publicar ahora o programar para más adelante."
+        },
+        {
+          "title": "Comprueba el resultado",
+          "body": "Consulta los enlaces de las publicaciones y revisa los errores de cada plataforma desde el mismo panel."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Añade Gruvi al flujo de trabajo de tu agente",
+      "body": "Configura el servidor MCP en un cliente compatible o llama a la API HTTP con una clave de agente. También puedes publicar directamente desde el panel.",
+      "api": "Explorar la API"
+    },
+    "features": [
+      {
+        "title": "Programación en lote",
+        "body": "Programa hasta 20 vídeos en un lote. Define el texto, las cuentas y la hora de publicación de cada vídeo.",
+        "link": "Ver cómo programar en lote"
+      },
+      {
+        "title": "Carruseles de fotos",
+        "body": "Ordena de 2 a 10 imágenes y publícalas en Instagram, TikTok o una página de Facebook compatible.",
+        "link": "Ver cómo publicar carruseles"
+      },
+      {
+        "title": "Analítica por plataforma",
+        "body": "Consulta las métricas de TikTok y YouTube. Las estadísticas de Instagram y Facebook dependen de los permisos de la cuenta. La interacción en X está en beta.",
+        "link": "Comparar las métricas disponibles"
+      }
+    ],
+    "plans": {
+      "title": "Planes para tu ritmo de publicación",
+      "body": "Configura tu cuenta, conecta tus perfiles y prepara tu agente. Elige un plan mensual cuando quieras publicar o programar. Todos incluyen el panel, la API y MCP.",
+      "monthly": "al mes",
+      "posts": "{count} publicaciones al mes",
+      "action": "Comparar planes"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "items": [
+        {
+          "question": "¿Necesito un agente para publicar?",
+          "answer": "Puedes hacerlo desde el panel de Gruvi. Sube el contenido, añade el texto, selecciona las cuentas y elige cuándo publicarlo."
+        },
+        {
+          "question": "¿Cómo conecto mi agente?",
+          "answer": "Conecta tus cuentas sociales, crea una clave de agente y configura el servidor MCP en tu cliente. También puedes usar esa clave con la API HTTP."
+        },
+        {
+          "question": "¿Puedo usar mis propias miniaturas?",
+          "answer": "Sí. Sube un vídeo MP4, MOV o WebM y añade tu miniatura. La forma en que se muestra depende de la plataforma de destino."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Enlaces del pie de página",
+      "blog": "Blog",
+      "terms": "Condiciones",
+      "privacy": "Privacidad",
+      "cookies": "Preferencias de cookies",
+      "cookieError": "No se pudo abrir la configuración de cookies. Usa los controles de tu navegador o escribe a admin@wbtechventures.com."
+    }
+  },
+  "pt-BR": {
+    "title": "Gruvi | API de publicação em redes sociais e MCP para agentes",
+    "description": "Agende e publique vídeos e carrosséis nas redes sociais com a Gruvi. Use o painel, a API ou o MCP e acompanhe os resultados em um só lugar.",
+    "nav": {
+      "menu": "Navegação",
+      "platforms": "Plataformas",
+      "docs": "Documentação",
+      "pricing": "Preços",
+      "language": "Idioma",
+      "start": "Começar"
+    },
+    "hero": {
+      "eyebrow": "Publicação em redes sociais",
+      "title": "Distribua seu conteúdo.",
+      "accent": "Com seu agente.",
+      "body": "Envie vídeos prontos e carrosséis, selecione os perfis e agende as publicações. Você e seu agente trabalham com o mesmo calendário.",
+      "orbit": {
+        "label": "A Gruvi conecta seu agente ao YouTube, Instagram, TikTok, Facebook, LinkedIn e X",
+        "agent": "Seu agente",
+        "post": "Sua próxima publicação",
+        "media": "Vídeo + miniatura"
+      }
+    },
+    "channels": {
+      "title": "Seis plataformas, um calendário",
+      "body": "Conecte seus perfis e escolha onde cada conteúdo vai aparecer.",
+      "details": {
+        "youtube": "Vídeos e Shorts",
+        "instagram": "Vídeos e Reels",
+        "tiktok": "Rascunhos e publicação direta",
+        "facebook": "Vídeos para páginas",
+        "linkedin": "Publicações em vídeo",
+        "twitter": "Publicações em vídeo"
+      },
+      "note": "Os formatos e as permissões variam de acordo com a conta.",
+      "link": "Confira os formatos compatíveis"
+    },
+    "workflow": {
+      "title": "Da biblioteca às redes sociais",
+      "steps": [
+        {
+          "title": "Prepare seu conteúdo",
+          "body": "Envie o vídeo, adicione uma miniatura e escreva a legenda."
+        },
+        {
+          "title": "Monte seu calendário",
+          "body": "Escolha os perfis e publique na hora ou agende para mais tarde."
+        },
+        {
+          "title": "Acompanhe a publicação",
+          "body": "Veja o link de cada publicação e confira eventuais erros por plataforma no painel."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Inclua a Gruvi no fluxo do seu agente",
+      "body": "Configure o servidor MCP em um cliente compatível ou use uma chave de agente para acessar a API HTTP. Você também pode publicar pelo painel.",
+      "api": "Explorar a API"
+    },
+    "features": [
+      {
+        "title": "Agendamento em lote",
+        "body": "Agende até 20 vídeos por lote, com legenda, perfis e horário de publicação definidos para cada um.",
+        "link": "Conheça o agendamento em lote"
+      },
+      {
+        "title": "Carrosséis de fotos",
+        "body": "Organize de 2 a 10 imagens e publique no Instagram, no TikTok ou em uma página do Facebook compatível.",
+        "link": "Veja como publicar carrosséis"
+      },
+      {
+        "title": "Métricas por plataforma",
+        "body": "Acompanhe as métricas do TikTok e do YouTube. Os dados do Instagram e do Facebook dependem das permissões de cada conta. O engajamento no X está em beta.",
+        "link": "Compare as métricas disponíveis"
+      }
+    ],
+    "plans": {
+      "title": "Planos para o seu ritmo de publicação",
+      "body": "Configure sua conta, conecte seus perfis e prepare seu agente. Escolha um plano mensal quando quiser publicar ou agendar. Todos incluem painel, API e MCP.",
+      "monthly": "por mês",
+      "posts": "{count} publicações por mês",
+      "action": "Comparar planos"
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "items": [
+        {
+          "question": "Preciso de um agente para publicar?",
+          "answer": "Você pode publicar direto pelo painel da Gruvi. Envie o conteúdo, escreva a legenda, escolha os perfis e defina o horário."
+        },
+        {
+          "question": "Como conecto meu agente?",
+          "answer": "Conecte seus perfis, crie uma chave de agente e configure o servidor MCP no seu cliente. Você também pode usar a chave para acessar a API HTTP."
+        },
+        {
+          "question": "Posso usar minhas próprias miniaturas?",
+          "answer": "Sim. Envie um vídeo MP4, MOV ou WebM e adicione uma miniatura. A exibição varia conforme a plataforma de destino."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Links do rodapé",
+      "blog": "Blog",
+      "terms": "Termos",
+      "privacy": "Privacidade",
+      "cookies": "Preferências de cookies",
+      "cookieError": "Não foi possível abrir as preferências de cookies. Use os controles do navegador ou escreva para admin@wbtechventures.com."
+    }
+  },
+  "fr": {
+    "title": "Gruvi | API de publication sur les réseaux sociaux et MCP pour agents",
+    "description": "Programmez et publiez vos vidéos et carrousels avec Gruvi. Utilisez le tableau de bord, l’API ou MCP pour gérer vos publications et suivre leurs résultats.",
+    "nav": {
+      "menu": "Navigation",
+      "platforms": "Plateformes",
+      "docs": "Documentation",
+      "pricing": "Tarifs",
+      "language": "Langue",
+      "start": "Commencer"
+    },
+    "hero": {
+      "eyebrow": "Publication sur les réseaux sociaux",
+      "title": "Diffusez vos contenus.",
+      "accent": "Avec votre agent.",
+      "body": "Importez vos vidéos et carrousels, sélectionnez vos comptes et programmez vos publications. Votre agent et vous partagez le même calendrier.",
+      "orbit": {
+        "label": "Gruvi connecte votre agent à YouTube, Instagram, TikTok, Facebook, LinkedIn et X",
+        "agent": "Votre agent",
+        "post": "Votre prochaine publication",
+        "media": "Vidéo + miniature"
+      }
+    },
+    "channels": {
+      "title": "Six plateformes, un seul calendrier",
+      "body": "Connectez vos comptes et choisissez où diffuser chaque contenu.",
+      "details": {
+        "youtube": "Vidéos et Shorts",
+        "instagram": "Vidéos et Reels",
+        "tiktok": "Brouillons et publication directe",
+        "facebook": "Vidéos pour les Pages",
+        "linkedin": "Publications vidéo",
+        "twitter": "Publications vidéo"
+      },
+      "note": "Les formats et les autorisations varient selon le compte.",
+      "link": "Voir les formats pris en charge"
+    },
+    "workflow": {
+      "title": "De votre bibliothèque à vos réseaux",
+      "steps": [
+        {
+          "title": "Préparez votre contenu",
+          "body": "Importez votre vidéo, ajoutez une miniature et rédigez la légende."
+        },
+        {
+          "title": "Planifiez la publication",
+          "body": "Choisissez vos comptes et publiez tout de suite ou à une date précise."
+        },
+        {
+          "title": "Vérifiez le résultat",
+          "body": "Retrouvez les liens des publications et les erreurs éventuelles pour chaque plateforme."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Intégrez Gruvi aux outils de votre agent",
+      "body": "Configurez le serveur MCP dans un client compatible ou appelez l’API HTTP avec une clé d’agent. Le tableau de bord permet aussi de publier directement.",
+      "api": "Explorer l’API"
+    },
+    "features": [
+      {
+        "title": "Programmation par lot",
+        "body": "Programmez jusqu’à 20 vidéos par lot. Chaque vidéo a sa propre légende, ses comptes de destination et son horaire.",
+        "link": "Découvrir la programmation par lot"
+      },
+      {
+        "title": "Carrousels de photos",
+        "body": "Organisez de 2 à 10 images et publiez-les sur Instagram, TikTok ou une Page Facebook compatible.",
+        "link": "Découvrir les carrousels"
+      },
+      {
+        "title": "Statistiques par plateforme",
+        "body": "Suivez les statistiques de TikTok et de YouTube. Les données Instagram et Facebook dépendent des autorisations. Les statistiques d’engagement sur X sont en bêta.",
+        "link": "Comparer les statistiques disponibles"
+      }
+    ],
+    "plans": {
+      "title": "Une formule à votre rythme",
+      "body": "Configurez votre compte, connectez vos réseaux et préparez votre agent. Choisissez une formule mensuelle au moment de publier ou de programmer. Toutes comprennent le tableau de bord, l’API et MCP.",
+      "monthly": "par mois",
+      "posts": "{count} publications par mois",
+      "action": "Comparer les formules"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": [
+        {
+          "question": "Ai-je besoin d’un agent pour publier ?",
+          "answer": "Le tableau de bord Gruvi suffit. Importez votre contenu, ajoutez la légende et choisissez les comptes et l’heure de publication."
+        },
+        {
+          "question": "Comment connecter mon agent ?",
+          "answer": "Connectez vos comptes, créez une clé d’agent et configurez le serveur MCP dans votre client. Cette clé permet aussi de passer par l’API HTTP."
+        },
+        {
+          "question": "Puis-je utiliser mes propres miniatures ?",
+          "answer": "Oui. Importez une vidéo MP4, MOV ou WebM et ajoutez la miniature de votre choix. Son affichage dépend de la plateforme."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Liens de pied de page",
+      "blog": "Blog",
+      "terms": "Conditions",
+      "privacy": "Confidentialité",
+      "cookies": "Préférences de cookies",
+      "cookieError": "Les paramètres des cookies sont indisponibles. Utilisez les réglages de votre navigateur ou contactez admin@wbtechventures.com."
+    }
+  },
+  "de": {
+    "title": "Gruvi | Social-Media-Publishing per API und MCP",
+    "description": "Plane und veröffentliche Videos und Bilderkarussells auf Social Media. Mit Gruvi arbeitest du im Dashboard, über die API oder per MCP.",
+    "nav": {
+      "menu": "Navigation",
+      "platforms": "Plattformen",
+      "docs": "Dokumentation",
+      "pricing": "Preise",
+      "language": "Sprache",
+      "start": "Loslegen"
+    },
+    "hero": {
+      "eyebrow": "Social-Media-Publishing",
+      "title": "Veröffentliche deine Inhalte.",
+      "accent": "Mit deinem Agenten.",
+      "body": "Lade fertige Videos und Bilderkarussells hoch, wähle deine Konten und plane deine Beiträge. Du und dein Agent arbeiten im selben Kalender.",
+      "orbit": {
+        "label": "Gruvi verbindet deinen Agenten mit YouTube, Instagram, TikTok, Facebook, LinkedIn und X",
+        "agent": "Dein Agent",
+        "post": "Dein nächster Beitrag",
+        "media": "Video + Vorschaubild"
+      }
+    },
+    "channels": {
+      "title": "Sechs Plattformen, ein Kalender",
+      "body": "Verbinde deine Konten und wähle für jeden Beitrag die passenden Kanäle aus.",
+      "details": {
+        "youtube": "Videos und Shorts",
+        "instagram": "Videos und Reels",
+        "tiktok": "Entwürfe und direkte Veröffentlichung",
+        "facebook": "Videos für Seiten",
+        "linkedin": "Videobeiträge",
+        "twitter": "Videobeiträge"
+      },
+      "note": "Formate und Berechtigungen hängen vom verbundenen Konto ab.",
+      "link": "Unterstützte Formate ansehen"
+    },
+    "workflow": {
+      "title": "Von der Mediathek auf deine Kanäle",
+      "steps": [
+        {
+          "title": "Inhalte vorbereiten",
+          "body": "Lade dein Video hoch und ergänze ein Vorschaubild sowie den Text für den Beitrag."
+        },
+        {
+          "title": "Beiträge planen",
+          "body": "Wähle deine Konten und veröffentliche sofort oder zu einem geplanten Zeitpunkt."
+        },
+        {
+          "title": "Veröffentlichung prüfen",
+          "body": "Sieh für jede Plattform, ob der Beitrag veröffentlicht wurde. Im Dashboard findest du die Links und mögliche Fehler."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Binde Gruvi in den Workflow deines Agenten ein",
+      "body": "Richte den MCP-Server in einem kompatiblen Client ein oder nutze die HTTP-API mit einem Agentenschlüssel. Auch im Dashboard kannst du direkt veröffentlichen.",
+      "api": "API ansehen"
+    },
+    "features": [
+      {
+        "title": "Mehrere Videos auf einmal planen",
+        "body": "Plane bis zu 20 Videos pro Stapel mit eigenem Text, Zielkonten und Veröffentlichungszeitpunkt für jedes Video.",
+        "link": "Stapelplanung kennenlernen"
+      },
+      {
+        "title": "Bilderkarussells",
+        "body": "Ordne 2 bis 10 Bilder an und veröffentliche sie auf Instagram, TikTok oder einer unterstützten Facebook-Seite.",
+        "link": "Karussells kennenlernen"
+      },
+      {
+        "title": "Statistiken je Plattform",
+        "body": "Analysiere TikTok und YouTube. Welche Statistiken Instagram und Facebook liefern, hängt von den Berechtigungen ab. Interaktionsdaten für X gibt es als Beta.",
+        "link": "Verfügbare Kennzahlen vergleichen"
+      }
+    ],
+    "plans": {
+      "title": "Tarife für deinen Veröffentlichungsrhythmus",
+      "body": "Richte dein Konto ein, verbinde deine Kanäle und konfiguriere deinen Agenten. Wähle einen Monatstarif, sobald du Beiträge veröffentlichen oder planen willst. Dashboard, API und MCP sind immer enthalten.",
+      "monthly": "pro Monat",
+      "posts": "{count} Beiträge pro Monat",
+      "action": "Tarife vergleichen"
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "items": [
+        {
+          "question": "Kann ich auch ohne Agenten veröffentlichen?",
+          "answer": "Ja. Lade deine Inhalte direkt im Gruvi-Dashboard hoch, ergänze den Text und wähle Konten und Veröffentlichungszeitpunkt."
+        },
+        {
+          "question": "Wie verbinde ich meinen Agenten?",
+          "answer": "Verbinde deine Social-Media-Konten, erstelle einen Agentenschlüssel und richte den Gruvi-MCP-Server in deinem Client ein. Du kannst den Schlüssel auch für die HTTP-API nutzen."
+        },
+        {
+          "question": "Kann ich eigene Vorschaubilder verwenden?",
+          "answer": "Ja. Lade dein Video als MP4, MOV oder WebM hoch und füge ein eigenes Vorschaubild hinzu. Die Darstellung hängt von der Plattform ab."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Links in der Fußzeile",
+      "blog": "Blog",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutz",
+      "cookies": "Cookie-Einstellungen",
+      "cookieError": "Die Cookie-Einstellungen sind nicht verfügbar. Nutze die Browsereinstellungen oder schreibe an admin@wbtechventures.com."
+    }
+  },
+  "it": {
+    "title": "Gruvi | API di pubblicazione sui social e MCP per agenti",
+    "description": "Programma e pubblica video e caroselli sui social con Gruvi. Gestisci i contenuti dalla dashboard, tramite API o con MCP e segui i risultati.",
+    "nav": {
+      "menu": "Navigazione",
+      "platforms": "Piattaforme",
+      "docs": "Documentazione",
+      "pricing": "Prezzi",
+      "language": "Lingua",
+      "start": "Inizia"
+    },
+    "hero": {
+      "eyebrow": "Pubblicazione sui social",
+      "title": "Distribuisci i tuoi contenuti.",
+      "accent": "Con il tuo agente.",
+      "body": "Carica video pronti e caroselli, scegli gli account e programma i post. Tu e il tuo agente lavorate sullo stesso calendario.",
+      "orbit": {
+        "label": "Gruvi collega il tuo agente a YouTube, Instagram, TikTok, Facebook, LinkedIn e X",
+        "agent": "Il tuo agente",
+        "post": "Il tuo prossimo post",
+        "media": "Video + miniatura"
+      }
+    },
+    "channels": {
+      "title": "Sei piattaforme, un calendario",
+      "body": "Collega i tuoi account e scegli dove pubblicare ogni contenuto.",
+      "details": {
+        "youtube": "Video e Shorts",
+        "instagram": "Video e Reels",
+        "tiktok": "Bozze e pubblicazione diretta",
+        "facebook": "Video per le Pagine",
+        "linkedin": "Post video",
+        "twitter": "Post video"
+      },
+      "note": "I formati e le autorizzazioni variano in base all’account.",
+      "link": "Vedi i formati supportati"
+    },
+    "workflow": {
+      "title": "Dalla libreria ai tuoi canali",
+      "steps": [
+        {
+          "title": "Prepara il contenuto",
+          "body": "Carica il video, aggiungi una miniatura e scrivi la didascalia."
+        },
+        {
+          "title": "Organizza il calendario",
+          "body": "Scegli gli account e pubblica subito o programma il post per un secondo momento."
+        },
+        {
+          "title": "Controlla il risultato",
+          "body": "Consulta i link ai post e gli eventuali errori di ogni piattaforma dalla dashboard."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Integra Gruvi nel flusso del tuo agente",
+      "body": "Configura il server MCP in un client compatibile o usa l’API HTTP con una chiave per agenti. Puoi anche pubblicare direttamente dalla dashboard.",
+      "api": "Esplora l’API"
+    },
+    "features": [
+      {
+        "title": "Programmazione in blocco",
+        "body": "Programma fino a 20 video in un blocco, con didascalia, account di destinazione e orario per ogni video.",
+        "link": "Scopri la programmazione in blocco"
+      },
+      {
+        "title": "Caroselli di foto",
+        "body": "Disponi da 2 a 10 immagini e pubblicale su Instagram, TikTok o una Pagina Facebook compatibile.",
+        "link": "Scopri i caroselli"
+      },
+      {
+        "title": "Statistiche per piattaforma",
+        "body": "Consulta i dati di TikTok e YouTube. Le statistiche di Instagram e Facebook dipendono dalle autorizzazioni. I dati sulle interazioni di X sono in beta.",
+        "link": "Confronta le metriche disponibili"
+      }
+    ],
+    "plans": {
+      "title": "Scegli un piano per il tuo ritmo",
+      "body": "Configura l’account, collega i tuoi canali e prepara il tuo agente. Scegli un piano mensile quando vuoi pubblicare o programmare. Tutti includono dashboard, API e MCP.",
+      "monthly": "al mese",
+      "posts": "{count} pubblicazioni al mese",
+      "action": "Confronta i piani"
+    },
+    "faq": {
+      "title": "Domande frequenti",
+      "items": [
+        {
+          "question": "Mi serve un agente per pubblicare?",
+          "answer": "Puoi pubblicare direttamente dalla dashboard Gruvi. Carica il contenuto, aggiungi la didascalia e scegli gli account e l’orario."
+        },
+        {
+          "question": "Come collego il mio agente?",
+          "answer": "Collega gli account, crea una chiave e configura il server MCP nel tuo client. Puoi usare la stessa chiave anche per l’API HTTP."
+        },
+        {
+          "question": "Posso usare le mie miniature?",
+          "answer": "Sì. Carica il video in formato MP4, MOV o WebM e aggiungi una miniatura. La visualizzazione dipende dalla piattaforma."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Link a piè di pagina",
+      "blog": "Blog",
+      "terms": "Condizioni",
+      "privacy": "Privacy",
+      "cookies": "Preferenze sui cookie",
+      "cookieError": "Le impostazioni dei cookie non sono disponibili. Usa i controlli del browser o scrivi a admin@wbtechventures.com."
+    }
+  },
+  "id": {
+    "title": "Gruvi | API Publikasi Media Sosial dan MCP untuk Agen",
+    "description": "Jadwalkan dan publikasikan video serta carousel dengan Gruvi. Gunakan dasbor, API, atau MCP untuk mengelola unggahan dan memantau hasilnya.",
+    "nav": {
+      "menu": "Navigasi",
+      "platforms": "Platform",
+      "docs": "Dokumentasi",
+      "pricing": "Harga",
+      "language": "Bahasa",
+      "start": "Mulai"
+    },
+    "hero": {
+      "eyebrow": "Publikasi media sosial",
+      "title": "Sebarkan kontenmu.",
+      "accent": "Bersama agen AI-mu.",
+      "body": "Unggah video dan carousel yang sudah siap, pilih akun tujuan, lalu jadwalkan postingan. Kamu dan agenmu memakai kalender yang sama.",
+      "orbit": {
+        "label": "Gruvi menghubungkan agenmu ke YouTube, Instagram, TikTok, Facebook, LinkedIn, dan X",
+        "agent": "Agenmu",
+        "post": "Postingan berikutnya",
+        "media": "Video + gambar sampul"
+      }
+    },
+    "channels": {
+      "title": "Enam platform, satu kalender",
+      "body": "Hubungkan akunmu dan tentukan kanal tujuan untuk setiap postingan.",
+      "details": {
+        "youtube": "Video dan Shorts",
+        "instagram": "Video dan Reels",
+        "tiktok": "Draf dan publikasi langsung",
+        "facebook": "Video untuk Halaman",
+        "linkedin": "Postingan video",
+        "twitter": "Postingan video"
+      },
+      "note": "Format dan izin bergantung pada akun yang terhubung.",
+      "link": "Lihat format yang didukung"
+    },
+    "workflow": {
+      "title": "Dari pustaka ke kanalmu",
+      "steps": [
+        {
+          "title": "Siapkan konten",
+          "body": "Unggah video, tambahkan gambar sampul, dan tulis caption."
+        },
+        {
+          "title": "Atur jadwal",
+          "body": "Pilih akun tujuan lalu publikasikan sekarang atau tentukan waktunya di kalender."
+        },
+        {
+          "title": "Cek hasilnya",
+          "body": "Lihat tautan postingan dan kendala di tiap platform langsung dari dasbor."
+        }
+      ]
+    },
+    "integration": {
+      "title": "Hubungkan Gruvi ke alur kerja agenmu",
+      "body": "Siapkan server MCP di klien yang mendukungnya, atau panggil API HTTP dengan kunci agen. Kamu juga bisa memublikasikan langsung dari dasbor.",
+      "api": "Jelajahi API"
+    },
+    "features": [
+      {
+        "title": "Penjadwalan massal",
+        "body": "Jadwalkan hingga 20 video sekaligus, dengan caption, akun tujuan, dan waktu tayang tersendiri untuk setiap video.",
+        "link": "Pelajari cara menjadwalkan banyak video"
+      },
+      {
+        "title": "Carousel foto",
+        "body": "Susun 2 hingga 10 gambar dan publikasikan ke Instagram, TikTok, atau Halaman Facebook yang mendukungnya.",
+        "link": "Lihat cara menerbitkan carousel"
+      },
+      {
+        "title": "Analitik per platform",
+        "body": "Pantau statistik TikTok dan YouTube. Data Instagram dan Facebook bergantung pada izin akun. Statistik interaksi di X masih dalam tahap beta.",
+        "link": "Bandingkan metrik yang tersedia"
+      }
+    ],
+    "plans": {
+      "title": "Paket sesuai jadwal publikasi",
+      "body": "Siapkan akun, hubungkan kanal, dan konfigurasikan agenmu. Pilih paket bulanan saat siap memublikasikan atau menjadwalkan konten. Semua paket mencakup dasbor, API, dan MCP.",
+      "monthly": "per bulan",
+      "posts": "{count} postingan per bulan",
+      "action": "Bandingkan paket"
+    },
+    "faq": {
+      "title": "Pertanyaan umum",
+      "items": [
+        {
+          "question": "Apakah saya perlu agen untuk memublikasikan?",
+          "answer": "Kamu bisa memakai dasbor Gruvi. Unggah konten, tulis caption, lalu pilih akun dan waktu publikasi."
+        },
+        {
+          "question": "Bagaimana cara menghubungkan agen saya?",
+          "answer": "Hubungkan akun sosial, buat kunci agen, lalu siapkan server MCP di klienmu. Kunci ini juga bisa digunakan untuk API HTTP."
+        },
+        {
+          "question": "Bisakah saya memakai gambar sampul sendiri?",
+          "answer": "Bisa. Unggah video MP4, MOV, atau WebM lalu tambahkan gambar sampul. Tampilannya bergantung pada platform tujuan."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "Tautan bagian bawah halaman",
+      "blog": "Blog",
+      "terms": "Ketentuan",
+      "privacy": "Privasi",
+      "cookies": "Preferensi cookie",
+      "cookieError": "Pengaturan cookie tidak tersedia. Gunakan pengaturan browser atau hubungi admin@wbtechventures.com."
+    }
+  },
+  "ja": {
+    "title": "Gruvi | AIエージェント向けSNS投稿API・MCP",
+    "description": "Gruviなら、動画やカルーセルのSNS投稿を予約・公開できます。ダッシュボード、API、MCPから投稿を管理し、結果を確認できます。",
+    "nav": {
+      "menu": "ナビゲーション",
+      "platforms": "対応サービス",
+      "docs": "ドキュメント",
+      "pricing": "料金",
+      "language": "言語",
+      "start": "はじめる"
+    },
+    "hero": {
+      "eyebrow": "SNS投稿",
+      "title": "コンテンツを届ける。",
+      "accent": "AIエージェントと。",
+      "body": "完成した動画やカルーセルをアップロードし、投稿先と公開日時を選びましょう。あなたとエージェントが同じカレンダーで投稿を管理できます。",
+      "orbit": {
+        "label": "GruviはAIエージェントをYouTube、Instagram、TikTok、Facebook、LinkedIn、Xにつなぎます",
+        "agent": "AIエージェント",
+        "post": "次の投稿",
+        "media": "動画＋サムネイル"
+      }
+    },
+    "channels": {
+      "title": "6つのSNSをひとつのカレンダーで",
+      "body": "アカウントを連携し、コンテンツごとに投稿先を選べます。",
+      "details": {
+        "youtube": "動画とショート",
+        "instagram": "動画とリール",
+        "tiktok": "下書きと直接投稿",
+        "facebook": "ページへの動画投稿",
+        "linkedin": "動画投稿",
+        "twitter": "動画投稿"
+      },
+      "note": "利用できる形式や機能は、連携したアカウントの権限によって異なります。",
+      "link": "対応する投稿形式を見る"
+    },
+    "workflow": {
+      "title": "素材の準備から投稿まで",
+      "steps": [
+        {
+          "title": "コンテンツを準備",
+          "body": "動画をアップロードし、サムネイルとキャプションを追加します。"
+        },
+        {
+          "title": "投稿をスケジュール",
+          "body": "投稿先を選び、すぐに公開するか、カレンダーで日時を指定します。"
+        },
+        {
+          "title": "投稿結果を確認",
+          "body": "ダッシュボードから、サービスごとの投稿リンクやエラーを確認できます。"
+        }
+      ]
+    },
+    "integration": {
+      "title": "いつものAIエージェントにGruviを追加",
+      "body": "対応するクライアントにMCPサーバーを設定するか、エージェントキーでHTTP APIを利用できます。ダッシュボードから手動で投稿することもできます。",
+      "api": "APIを見る"
+    },
+    "features": [
+      {
+        "title": "動画をまとめて予約",
+        "body": "1回で最大20本の動画を予約できます。動画ごとにキャプション、投稿先、公開日時を指定できます。",
+        "link": "一括予約の手順を見る"
+      },
+      {
+        "title": "写真カルーセル",
+        "body": "2〜10枚の画像を並べて、Instagram、TikTok、対応するFacebookページに公開できます。",
+        "link": "カルーセル投稿を見る"
+      },
+      {
+        "title": "SNSごとの分析",
+        "body": "TikTokとYouTubeの指標を確認できます。InstagramとFacebookのデータはアカウントの権限に応じて表示されます。Xのエンゲージメント分析はベータ版です。",
+        "link": "確認できる指標を比較する"
+      }
+    ],
+    "plans": {
+      "title": "投稿ペースに合ったプラン",
+      "body": "まずアカウントや投稿先、エージェントを設定できます。公開や予約を始めるときに月額プランを選んでください。すべてのプランでダッシュボード、API、MCPが使えます。",
+      "monthly": "／月",
+      "posts": "月{count}件の投稿",
+      "action": "プランを比較"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "items": [
+        {
+          "question": "AIエージェントなしでも投稿できますか？",
+          "answer": "Gruviのダッシュボードから直接投稿できます。コンテンツとキャプションを追加し、投稿先と公開日時を選んでください。"
+        },
+        {
+          "question": "AIエージェントを連携するには？",
+          "answer": "SNSアカウントを連携し、エージェントキーを作成してから、お使いのクライアントにMCPサーバーを設定してください。キーはHTTP APIでも使えます。"
+        },
+        {
+          "question": "自分のサムネイルを使えますか？",
+          "answer": "はい。MP4、MOV、WebM形式の動画にサムネイルを追加できます。表示方法は投稿先によって異なります。"
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "フッターリンク",
+      "blog": "ブログ",
+      "terms": "利用規約",
+      "privacy": "プライバシー",
+      "cookies": "Cookie設定",
+      "cookieError": "Cookie設定を開けませんでした。ブラウザーの設定を確認するか、admin@wbtechventures.comにお問い合わせください。"
+    }
+  },
+  "ko": {
+    "title": "Gruvi | AI 에이전트를 위한 소셜 미디어 게시 API 및 MCP",
+    "description": "Gruvi로 동영상과 캐러셀을 예약하고 게시하세요. 대시보드, API 또는 MCP에서 게시물을 관리하고 결과를 확인할 수 있습니다.",
+    "nav": {
+      "menu": "메뉴",
+      "platforms": "지원 플랫폼",
+      "docs": "문서",
+      "pricing": "요금",
+      "language": "언어",
+      "start": "시작하기"
+    },
+    "hero": {
+      "eyebrow": "소셜 미디어 게시",
+      "title": "콘텐츠를 더 널리.",
+      "accent": "AI 에이전트와 함께.",
+      "body": "완성한 동영상과 캐러셀을 올리고 게시할 계정과 시간을 선택하세요. 에이전트와 같은 캘린더에서 일정을 관리할 수 있습니다.",
+      "orbit": {
+        "label": "Gruvi는 AI 에이전트를 YouTube, Instagram, TikTok, Facebook, LinkedIn, X에 연결합니다",
+        "agent": "내 에이전트",
+        "post": "다음 게시물",
+        "media": "동영상 + 썸네일"
+      }
+    },
+    "channels": {
+      "title": "6개 플랫폼을 하나의 캘린더로",
+      "body": "소셜 계정을 연결하고 각 콘텐츠에 맞는 게시 채널을 선택하세요.",
+      "details": {
+        "youtube": "동영상 및 Shorts",
+        "instagram": "동영상 및 릴스",
+        "tiktok": "초안 및 직접 게시",
+        "facebook": "페이지 동영상",
+        "linkedin": "동영상 게시물",
+        "twitter": "동영상 게시물"
+      },
+      "note": "지원 형식과 권한은 연결한 계정에 따라 달라집니다.",
+      "link": "지원 형식 확인"
+    },
+    "workflow": {
+      "title": "미디어 라이브러리에서 게시까지",
+      "steps": [
+        {
+          "title": "콘텐츠 준비",
+          "body": "동영상을 업로드하고 썸네일과 캡션을 추가하세요."
+        },
+        {
+          "title": "게시 일정 선택",
+          "body": "게시할 계정을 선택하고 바로 게시하거나 캘린더에서 시간을 예약하세요."
+        },
+        {
+          "title": "게시 결과 확인",
+          "body": "대시보드에서 플랫폼별 게시물 링크와 오류를 확인하세요."
+        }
+      ]
+    },
+    "integration": {
+      "title": "에이전트 작업 흐름에 Gruvi 연결하기",
+      "body": "호환 클라이언트에 MCP 서버를 설정하거나 에이전트 키로 HTTP API를 호출하세요. 대시보드에서 직접 게시할 수도 있습니다.",
+      "api": "API 살펴보기"
+    },
+    "features": [
+      {
+        "title": "동영상 일괄 예약",
+        "body": "동영상을 최대 20개까지 한 번에 예약하고 각 동영상에 캡션, 게시할 계정, 게시 시간을 지정할 수 있습니다.",
+        "link": "일괄 예약 방법 보기"
+      },
+      {
+        "title": "사진 캐러셀",
+        "body": "이미지 2~10장을 순서대로 배치해 Instagram, TikTok 또는 지원되는 Facebook 페이지에 게시하세요.",
+        "link": "캐러셀 게시 방법 보기"
+      },
+      {
+        "title": "플랫폼별 분석",
+        "body": "TikTok과 YouTube의 분석 지표를 확인하세요. Instagram과 Facebook의 데이터는 계정 권한에 따라 제공됩니다. X 참여 지표는 베타입니다.",
+        "link": "지원 지표 비교하기"
+      }
+    ],
+    "plans": {
+      "title": "게시 일정에 맞는 요금제",
+      "body": "먼저 계정을 만들고 채널과 에이전트를 연결하세요. 게시하거나 예약할 준비가 되면 월간 요금제를 선택할 수 있습니다. 모든 요금제에 대시보드, API, MCP가 포함됩니다.",
+      "monthly": "월",
+      "posts": "월 {count}개 게시물",
+      "action": "요금제 비교"
+    },
+    "faq": {
+      "title": "자주 묻는 질문",
+      "items": [
+        {
+          "question": "에이전트 없이도 게시할 수 있나요?",
+          "answer": "Gruvi 대시보드에서 직접 게시할 수 있습니다. 콘텐츠를 업로드하고 캡션, 계정, 게시 시간을 선택하세요."
+        },
+        {
+          "question": "AI 에이전트를 어떻게 연결하나요?",
+          "answer": "소셜 계정을 연결하고 에이전트 키를 만든 뒤 클라이언트에 MCP 서버를 설정하세요. 이 키는 HTTP API에도 사용할 수 있습니다."
+        },
+        {
+          "question": "직접 만든 썸네일을 사용할 수 있나요?",
+          "answer": "네. MP4, MOV, WebM 동영상에 직접 만든 썸네일을 추가할 수 있습니다. 표시 방식은 게시 플랫폼에 따라 다릅니다."
+        }
+      ]
+    },
+    "footer": {
+      "navigation": "하단 링크",
+      "blog": "블로그",
+      "terms": "이용약관",
+      "privacy": "개인정보 보호",
+      "cookies": "쿠키 설정",
+      "cookieError": "쿠키 설정을 열 수 없습니다. 브라우저 설정에서 관리하거나 admin@wbtechventures.com으로 문의하세요."
+    }
+  }
+}

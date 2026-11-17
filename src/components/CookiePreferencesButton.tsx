@@ -3,8 +3,12 @@ import { openCookiePreferences } from "../utils/privacyConsent";
 
 export default function CookiePreferencesButton({
   className = "gm-legal-link",
+  label = "Cookie preferences",
+  unavailableMessage = "Cookie settings are unavailable in this browser. Use your browser's cookie controls or contact admin@wbtechventures.com.",
 }: {
   className?: string;
+  label?: string;
+  unavailableMessage?: string;
 }) {
   const [unavailable, setUnavailable] = useState(false);
   return (
@@ -14,12 +18,11 @@ export default function CookiePreferencesButton({
         className={className}
         onClick={() => setUnavailable(!openCookiePreferences())}
       >
-        Cookie preferences
+        {label}
       </button>
       {unavailable && (
         <span className="gm-cookie-message" role="status">
-          Cookie settings are unavailable in this browser. Use your browser's
-          cookie controls or contact admin@wbtechventures.com.
+          {unavailableMessage}
         </span>
       )}
     </span>

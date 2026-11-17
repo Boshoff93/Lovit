@@ -20,8 +20,20 @@ const xml = (value) =>
       })[character],
   );
 const posts = read("src/content/blog.json");
+const landingLocales = read("src/config/landingLocales.json");
+const localizedRoutes = Object.entries(landingLocales)
+  .filter(([language]) => language !== "en")
+  .map(([, locale]) => locale);
+const landingPaths = new Set(Object.values(landingLocales).map(({ path }) => path));
+const sitemapAlternates = [
+  ...Object.entries(landingLocales).map(([language, locale]) => [language, locale.path]),
+  ["x-default", landingLocales.en.path],
+].map(([language, route]) =>
+  `<xhtml:link rel="alternate" hreflang="${xml(language)}" href="https://agentgruvi.com${xml(route)}"/>`,
+).join("");
 const routes = [
   ...read("src/config/publicPages.json"),
+  ...localizedRoutes,
   ...posts.map((post) => ({
     path: "/blog/" + post.slug,
     modified: post.updatedAt,
@@ -34,11 +46,11 @@ write(
 );
 write(
   "public/sitemap.xml",
-  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
+  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
     routes
       .map(
         (route) =>
-          `  <url><loc>https://agentgruvi.com${xml(route.path)}</loc><lastmod>${xml(route.modified)}</lastmod>${route.image ? `<image:image><image:loc>https://agentgruvi.com${xml(route.image)}</image:loc></image:image>` : ""}</url>`,
+          `  <url><loc>https://agentgruvi.com${xml(route.path)}</loc><lastmod>${xml(route.modified)}</lastmod>${landingPaths.has(route.path) ? sitemapAlternates : ""}${route.image ? `<image:image><image:loc>https://agentgruvi.com${xml(route.image)}</image:loc></image:image>` : ""}</url>`,
       )
       .join("\n") +
     "\n</urlset>\n",

@@ -15,6 +15,9 @@ import Layout from "./components/Layout";
 import AuthInitializer from "./components/AuthInitializer";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import HomePage from "./pages/HomePage";
+import LocalizedHomePage from "./pages/LocalizedHomePage";
+import landingLocales from "./config/landingLocales.json";
+import { translatedLandingLocales } from "./config/landingLocales";
 import PaymentPage from "./pages/PaymentPage";
 import ApiPage from "./pages/ApiPage";
 import ApiReferencePage from "./pages/api/ApiReferencePage";
@@ -131,6 +134,9 @@ export default function App() {
         <AuthInitializer>
           <Routes>
             <Route path="/" element={<HomeRoute />} />
+            {translatedLandingLocales.map((locale) => (
+              <Route key={locale} path={landingLocales[locale].path} element={<LocalizedHomePage locale={locale} />} />
+            ))}
             <Route path="/social-media" element={<LegacyPublishing />} />
             <Route path="/publishing" element={<LegacyPublishing />} />
             <Route path="/pricing" element={<PaymentPage />} />

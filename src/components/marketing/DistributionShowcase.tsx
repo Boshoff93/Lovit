@@ -62,12 +62,17 @@ export function PlatformIcon({ id }: { id: string }) {
   );
 }
 
-export function SocialOrbit() {
+export function SocialOrbit({
+  label = "Gruvi connects an agent's content to YouTube, Instagram, TikTok, Facebook, LinkedIn and X",
+  agent = "Your agent",
+  post = "Your next post",
+  media = "Video + thumbnail",
+}: { label?: string; agent?: string; post?: string; media?: string } = {}) {
   return (
     <div
       className="gm-orbit"
       role="img"
-      aria-label="Gruvi connects an agent's content to YouTube, Instagram, TikTok, Facebook, LinkedIn and X"
+      aria-label={label}
     >
       <div className="gm-orbit-glow" />
       <div className="gm-orbit-ring gm-orbit-ring-outer" />
@@ -110,7 +115,7 @@ export function SocialOrbit() {
       </svg>
       <div className="gm-orbit-agent">
         <CodeRoundedIcon />
-        <span>Your agent</span>
+        <span>{agent}</span>
         <i />
       </div>
       <div className="gm-orbit-mascot">
@@ -141,7 +146,7 @@ export function SocialOrbit() {
       <div className="gm-orbit-content">
         <img src="/thumbnails/tent.jpeg" alt="" width="40" height="50" />
         <span>
-          Your next post<small>Video + thumbnail</small>
+          {post}<small>{media}</small>
         </span>
         <PlayArrowRoundedIcon />
       </div>
@@ -154,20 +159,20 @@ export function SectionHeading({
   title,
   children,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
     <header className="gm-section-heading">
-      <p className="gm-eyebrow">{eyebrow}</p>
+      {eyebrow && <p className="gm-eyebrow">{eyebrow}</p>}
       <h2>{title}</h2>
       {children && <p>{children}</p>}
     </header>
   );
 }
 
-export function PlatformGrid() {
+export function PlatformGrid({ details }: { details?: Record<PlatformId, string> } = {}) {
   return (
     <div className="gm-platform-grid">
       {publishingPlatforms.map((platform) => (
@@ -181,7 +186,7 @@ export function PlatformGrid() {
             <PlatformIcon id={platform.id} />
           </span>
           <h3>{platform.name}</h3>
-          <p>{platform.detail}</p>
+          <p>{details?.[platform.id] ?? platform.detail}</p>
           <ArrowForwardRoundedIcon className="gm-platform-arrow" />
         </Link>
       ))}

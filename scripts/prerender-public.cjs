@@ -43,7 +43,7 @@ async function main() {
       const metas = [
         ['name', 'description', seo.description], ['name', 'robots', seo.robots || 'index, follow'],
         ['property', 'og:title', seo.ogTitle || seo.title], ['property', 'og:description', seo.ogDescription || seo.description],
-        ['property', 'og:url', canonical], ['property', 'og:type', seo.ogType || 'website'], ['property', 'og:image', image],
+        ['property', 'og:url', canonical], ['property', 'og:type', seo.ogType || 'website'], ['property', 'og:locale', seo.ogLocale || 'en_US'], ['property', 'og:image', image],
         ['property', 'og:image:width', seo.ogImageWidth || '1200'], ['property', 'og:image:height', seo.ogImageHeight || '630'], ['property', 'og:image:alt', seo.ogImageAlt || 'Gruvi content distribution for agents'],
         ['name', 'twitter:card', 'summary_large_image'], ['name', 'twitter:title', seo.twitterTitle || seo.title],
         ['name', 'twitter:description', seo.twitterDescription || seo.description], ['name', 'twitter:image', image],
@@ -51,7 +51,12 @@ async function main() {
       ].map(([attribute, key, value]) => `<meta ${attribute}="${key}" content="${escape(value)}">`).join('');
       let html = template.replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, '').replace(/<meta\b[^>]*(?:name|property)="(?:description|robots|og:[^"]*|twitter:[^"]*)"[^>]*>/gi, '').replace(/<link\b[^>]*rel="canonical"[^>]*>/gi, '');
       const schema = seo.structuredData ? `<script id="gruvi-page-schema" type="application/ld+json">${JSON.stringify(seo.structuredData).replace(/</g, '\\u003c')}</script>` : '';
-      html = html.replace('</head>', `<title>${escape(seo.title)}</title>${metas}<link rel="canonical" href="${canonical}">${schema}</head>`).replace('<div id="root"></div>', `<div id="root">${markup}</div>`);
+      const alternates = (seo.alternateLanguages || []).map(({ language, href }) =>
+        `<link rel="alternate" hreflang="${escape(language)}" href="${escape(href)}">`,
+      ).join('');
+      html = html.replace(/<html lang="[^"]*">/, `<html lang="${escape(seo.language || 'en')}">`)
+        .replace('</head>', `<title>${escape(seo.title)}</title>${metas}<link rel="canonical" href="${canonical}">${alternates}${schema}</head>`)
+        .replace('<div id="root"></div>', `<div id="root">${markup}</div>`);
       const file = route === '/' ? '/_public/index.html' : '/_public' + route + '.html';
       fs.mkdirSync(path.dirname(build + file), { recursive: true });
       fs.writeFileSync(build + file, html);

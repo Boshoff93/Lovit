@@ -8,6 +8,8 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { RootState } from "../store/store";
 import { SEO } from "../utils/seoHelper";
 import MarketingHeader from "../components/marketing/MarketingHeader";
+import LandingLanguageLinks from "../components/marketing/LandingLanguageLinks";
+import { landingAlternateLinks } from "../config/landingLocales";
 import DistributionFooter from "../components/DistributionFooter";
 import DistributionAuthDialog from "../components/DistributionAuthDialog";
 import PublishingPlans from "../components/PublishingPlans";
@@ -49,6 +51,7 @@ export default function HomePage() {
         twitterTitle="Gruvi | Content Distribution Built for Agents"
         description={DISTRIBUTION_DESCRIPTION}
         canonicalUrl="https://agentgruvi.com/"
+        alternateLanguages={landingAlternateLinks}
         ogUrl="https://agentgruvi.com/"
         structuredData={{
           "@context": "https://schema.org",
@@ -401,6 +404,7 @@ export default function HomePage() {
         </section>
       </main>
       <DistributionFooter />
+      <LandingLanguageLinks />
       <DistributionAuthDialog open={auth} onClose={() => setAuth(false)} />
     </div>
   );

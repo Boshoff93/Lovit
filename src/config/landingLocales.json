@@ -1,0 +1,11 @@
+{
+  "en": { "path": "/", "name": "English", "ogLocale": "en_US" },
+  "es": { "path": "/es", "name": "Español", "ogLocale": "es_ES", "modified": "2026-11-17" },
+  "pt-BR": { "path": "/pt-br", "name": "Português (Brasil)", "ogLocale": "pt_BR", "modified": "2026-11-17" },
+  "fr": { "path": "/fr", "name": "Français", "ogLocale": "fr_FR", "modified": "2026-11-17" },
+  "de": { "path": "/de", "name": "Deutsch", "ogLocale": "de_DE", "modified": "2026-11-17" },
+  "it": { "path": "/it", "name": "Italiano", "ogLocale": "it_IT", "modified": "2026-11-17" },
+  "id": { "path": "/id", "name": "Bahasa Indonesia", "ogLocale": "id_ID", "modified": "2026-11-17" },
+  "ja": { "path": "/ja", "name": "日本語", "ogLocale": "ja_JP", "modified": "2026-11-17" },
+  "ko": { "path": "/ko", "name": "한국어", "ogLocale": "ko_KR", "modified": "2026-11-17" }
+}

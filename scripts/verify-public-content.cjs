@@ -50,6 +50,23 @@ assert.deepEqual(
 const htmlPages = new Map(
   Object.entries(manifest).map(([url, file]) => [url, read("build" + file)]),
 );
+const locales = JSON.parse(read("src/config/landingLocales.json"));
+const sitemap = read("public/sitemap.xml");
+const alternateLinks = Object.entries({ ...locales, "x-default": locales.en })
+  .map(([language, { path }]) => [language, "https://agentgruvi.com" + path]);
+for (const [language, { path, ogLocale }] of Object.entries(locales)) {
+  const html = htmlPages.get(path);
+  const sitemapEntry = sitemap.split("\n").find((line) =>
+    line.includes("<loc>https://agentgruvi.com" + path + "</loc>"),
+  );
+  assert(html?.includes('<html lang="' + language + '">'), "Incorrect page language: " + path);
+  assert(html.includes('property="og:locale" content="' + ogLocale + '"'), "Missing social locale: " + path);
+  assert(sitemapEntry, "Landing page missing from sitemap: " + path);
+  const hreflangPattern = /rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g;
+  const pairs = (content) => [...content.matchAll(hreflangPattern)].map((match) => match.slice(1));
+  assert.deepEqual(pairs(html.split("</head>")[0]), alternateLinks, "Page alternates: " + path);
+  assert.deepEqual(pairs(sitemapEntry), alternateLinks, "Sitemap alternates: " + path);
+}
 const titles = new Set();
 for (const [url, html] of htmlPages) {
   const title = html.match(/<title>(.*?)<\/title>/)?.[1];

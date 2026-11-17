@@ -20,6 +20,7 @@ interface SEOProps {
   twitterSite?: string;
   twitterCreator?: string;
   canonicalUrl?: string;
+  alternateLanguages?: Array<{ language: string; href: string }>;
   robots?: string;
   author?: string;
   language?: string;
@@ -50,13 +51,14 @@ export const SEO: React.FC<SEOProps> = ({
   twitterSite = "@gruvimusic",
   twitterCreator,
   canonicalUrl,
+  alternateLanguages,
   robots = "index, follow",
   author,
   language = "en",
   structuredData,
 }) => {
   const staticSeo = useContext(StaticSeoContext);
-  if (staticSeo) staticSeo.current = { title, description, keywords, ogTitle, ogDescription, ogType, ogUrl, ogImage, ogImageWidth, ogImageHeight, ogImageAlt, ogSiteName, ogLocale, twitterCard, twitterTitle, twitterDescription, twitterImage, twitterSite, twitterCreator, canonicalUrl, robots, author, language, structuredData };
+  if (staticSeo) staticSeo.current = { title, description, keywords, ogTitle, ogDescription, ogType, ogUrl, ogImage, ogImageWidth, ogImageHeight, ogImageAlt, ogSiteName, ogLocale, twitterCard, twitterTitle, twitterDescription, twitterImage, twitterSite, twitterCreator, canonicalUrl, alternateLanguages, robots, author, language, structuredData };
 
   // Use default image if not provided
   const defaultImage = "/gruvi-social.png";
@@ -66,6 +68,7 @@ export const SEO: React.FC<SEOProps> = ({
 
   useEffect(() => {
     document.title = title;
+    document.documentElement.lang = language;
     const url =
       canonicalUrl ||
       ogUrl ||
@@ -134,6 +137,14 @@ export const SEO: React.FC<SEOProps> = ({
       document.head.appendChild(canonical);
     }
     canonical.href = url;
+    document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
+    for (const alternate of alternateLanguages ?? []) {
+      const link = document.createElement("link");
+      link.rel = "alternate";
+      link.hreflang = alternate.language;
+      link.href = alternate.href;
+      document.head.appendChild(link);
+    }
     let schema = document.getElementById("gruvi-page-schema");
     if (structuredData) {
       if (!schema) {
@@ -168,6 +179,7 @@ export const SEO: React.FC<SEOProps> = ({
     twitterSite,
     twitterCreator,
     canonicalUrl,
+    alternateLanguages,
     robots,
     author,
     language,
