@@ -1,4 +1,5 @@
 import WorkspaceNotice from "../components/WorkspaceNotice";
+import YouTubeCalendarEntryDialog from '../components/YouTubeCalendarEntryDialog';
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
   Box,
@@ -114,8 +115,10 @@ const ScheduledContentPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'partial' | 'failed' | 'rejected'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [youtubeDialogOpen, setYouTubeDialogOpen] = useState(false);
   const [postToCancel, setPostToCancel] = useState<ScheduledPost | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
 
   // Details dialog state
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -234,7 +237,8 @@ const ScheduledContentPage: React.FC = () => {
       else map.set(key, [post]);
     };
     for (const post of scheduledPosts) {
-      if (post.status === 'cancelled' || (statusFilter !== 'all' && statusFilter !== post.status)) continue;
+      const calendarStatus = post.status === 'external' ? 'scheduled' : post.status;
+      if (calendarStatus === 'cancelled' || (statusFilter !== 'all' && statusFilter !== calendarStatus)) continue;
       const date = new Date(post.scheduledTime);
       if (!Number.isFinite(date.getTime())) continue;
       const day = date.toDateString();
@@ -248,6 +252,8 @@ const ScheduledContentPage: React.FC = () => {
   // Get status color and styling
   const getStatusStyle = (status: ScheduledPost['status']) => {
     switch (status) {
+      case 'external':
+        return { bg: 'rgba(239, 68, 68, 0.09)', border: '#ff6868', text: '#ffadad' };
       case 'completed':
       case 'published':
         return { bg: 'rgba(34, 197, 94, 0.15)', border: '#22C55E', text: '#4ADE80' };
@@ -306,6 +312,7 @@ const ScheduledContentPage: React.FC = () => {
   };
 
   const handleCancelClick = (post: ScheduledPost) => {
+    setCancelError('');
     setPostToCancel(post);
     setCancelDialogOpen(true);
   };
@@ -314,12 +321,17 @@ const ScheduledContentPage: React.FC = () => {
     if (!postToCancel) return;
     try {
       setCancelling(true);
-      await scheduledPostsApi.cancelScheduledPost(postToCancel.scheduleId);
+      setCancelError('');
+      if (postToCancel.status === 'external') {
+        await scheduledPostsApi.removeYouTubeCalendarEntry(postToCancel.scheduleId);
+      } else {
+        await scheduledPostsApi.cancelScheduledPost(postToCancel.scheduleId);
+      }
       dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
       setCancelDialogOpen(false);
       setPostToCancel(null);
-    } catch (error) {
-      console.error('Failed to cancel scheduled post:', error);
+    } catch {
+      setCancelError('The calendar entry could not be removed. Try again.');
     } finally {
       setCancelling(false);
     }
@@ -398,31 +410,36 @@ const ScheduledContentPage: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Primary page action */}
-          <Button
-            className="gd-primary-action"
-            variant="contained"
-            onClick={() => navigate('/posts/new')}
-            endIcon={<ArrowForwardIcon />}
-            sx={{
-              background: '#007AFF',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: '10px',
-              px: 2.5,
-              py: 1,
-              boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              '&:hover': {
-                background: '#0066CC',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
-              },
-            }}
-          >
-            Create a Post
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignSelf: 'flex-end', ml: 'auto', width: { xs: '100%', sm: 'auto' } }}>
+            <Button variant="outlined" startIcon={<YouTubeIcon />}
+              onClick={() => setYouTubeDialogOpen(true)} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
+              Add YouTube post
+            </Button>
+            <Button
+              className="gd-primary-action"
+              variant="contained"
+              onClick={() => navigate('/posts/new')}
+              endIcon={<ArrowForwardIcon />}
+              sx={{
+                background: '#007AFF',
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: '10px',
+                px: 2.5,
+                py: 1,
+                boxShadow: '0 2px 8px rgba(0,122,255,0.3)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                '&:hover': {
+                  background: '#0066CC',
+                  boxShadow: '0 4px 12px rgba(0,122,255,0.4)',
+                },
+              }}
+            >
+              Create a Post
+            </Button>
+          </Box>
 
         </Box>
       </Box>
@@ -1173,6 +1190,20 @@ const ScheduledContentPage: React.FC = () => {
           </Box>
       </Box>
 
+      {youtubeDialogOpen && (
+        <YouTubeCalendarEntryDialog
+          accounts={(socialAccountsData?.accounts || []).filter(account => account.platform === 'youtube')}
+          onClose={() => setYouTubeDialogOpen(false)}
+          onSaved={post => {
+            dispatch(apiSlice.util.invalidateTags(['ScheduledPosts']));
+            setStatusFilter('all');
+            setCurrentDate(new Date(post.scheduledTime));
+            setHighlightedPostId(post.scheduleId);
+            setYouTubeDialogOpen(false);
+          }}
+        />
+      )}
+
       {/* Cancel Dialog */}
       <Dialog
         open={cancelDialogOpen}
@@ -1186,11 +1217,16 @@ const ScheduledContentPage: React.FC = () => {
           }
         }}
       >
-        <DialogTitle sx={{ fontWeight: 600, color: '#fff' }}>Cancel Scheduled Post?</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600, color: '#fff' }}>
+          {postToCancel?.status === 'external' ? 'Remove YouTube entry?' : 'Cancel Scheduled Post?'}
+        </DialogTitle>
         <DialogContent>
           <Typography sx={{ color: '#aab4c2' }}>
-            This will cancel the scheduled upload. The content will remain in your library.
+            {postToCancel?.status === 'external'
+              ? 'This removes the entry from your Gruvi calendar. Manage the publishing schedule on YouTube.'
+              : 'This will cancel the scheduled upload. The content will remain in your library.'}
           </Typography>
+          {cancelError && <WorkspaceNotice>{cancelError}</WorkspaceNotice>}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button
@@ -1207,7 +1243,7 @@ const ScheduledContentPage: React.FC = () => {
               },
             }}
           >
-            Keep Scheduled
+            {postToCancel?.status === 'external' ? 'Keep entry' : 'Keep Scheduled'}
           </Button>
           <Button
             onClick={handleConfirmCancel}
@@ -1222,7 +1258,8 @@ const ScheduledContentPage: React.FC = () => {
               },
             }}
           >
-            {cancelling ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Cancel Post'}
+            {cancelling ? <CircularProgress size={20} sx={{ color: '#fff' }} />
+              : postToCancel?.status === 'external' ? 'Remove entry' : 'Cancel Post'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1257,14 +1294,16 @@ const ScheduledContentPage: React.FC = () => {
                       px: 1.5,
                       py: 0.5,
                       borderRadius: '20px',
-                      bgcolor: selectedPost.status === 'scheduled' ? 'rgba(0,122,255,0.1)'
+                      bgcolor: selectedPost.status === 'external' ? getStatusStyle('external').bg
+                        : selectedPost.status === 'scheduled' ? 'rgba(0,122,255,0.1)'
                         : selectedPost.status === 'published' ? 'rgba(34,197,94,0.1)'
                         : selectedPost.status === 'partial' ? 'rgba(234,179,8,0.1)'
                         : selectedPost.status === 'failed' ? 'rgba(239,68,68,0.1)'
                         : selectedPost.status === 'publishing' ? 'rgba(249,115,22,0.1)'
                         : selectedPost.status === 'rejected' ? 'rgba(168,85,247,0.1)'
                         : 'rgba(156,163,175,0.1)',
-                      color: selectedPost.status === 'scheduled' ? '#007AFF'
+                      color: selectedPost.status === 'external' ? getStatusStyle('external').text
+                        : selectedPost.status === 'scheduled' ? '#007AFF'
                         : selectedPost.status === 'published' ? '#22C55E'
                         : selectedPost.status === 'partial' ? '#EAB308'
                         : selectedPost.status === 'failed' ? '#EF4444'
@@ -1274,13 +1313,14 @@ const ScheduledContentPage: React.FC = () => {
                     }}
                   >
                     {selectedPost.status === 'scheduled' && <ScheduleIcon sx={{ fontSize: 16 }} />}
+                    {selectedPost.status === 'external' && <YouTubeIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'published' && <CheckCircleIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'partial' && <WarningIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'failed' && <ErrorIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'publishing' && <HourglassIcon sx={{ fontSize: 16 }} />}
                     {selectedPost.status === 'rejected' && <BlockIcon sx={{ fontSize: 16 }} />}
                     <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' }}>
-                      {selectedPost.status}
+                      {selectedPost.status === 'external' ? 'Scheduled on YouTube' : selectedPost.status}
                     </Typography>
                   </Box>
                 </Box>
@@ -1521,7 +1561,7 @@ const ScheduledContentPage: React.FC = () => {
 
             <DialogActions sx={{ p: 3, pt: 0, gap: 1 }}>
               {/* Cancel button - only for scheduled posts */}
-              {selectedPost.status === 'scheduled' && (
+              {(selectedPost.status === 'scheduled' || selectedPost.status === 'external') && (
                 <Button
                   onClick={() => {
                     setDetailsDialogOpen(false);
@@ -1540,12 +1580,17 @@ const ScheduledContentPage: React.FC = () => {
                     },
                   }}
                 >
-                  Cancel Post
+                  {selectedPost.status === 'external' ? 'Remove entry' : 'Cancel Post'}
                 </Button>
               )}
               <Box sx={{ flex: 1 }} />
               {/* Prepare another post/Slideshow button */}
-              <Button
+              {selectedPost.status === 'external' ? (
+                <Button variant="contained" component="a" href={selectedPost.externalUrl}
+                  target="_blank" rel="noopener noreferrer" endIcon={<ArrowForwardIcon />}>
+                  Open on YouTube
+                </Button>
+              ) : <Button
                 onClick={() => {
                   setDetailsDialogOpen(false);
                   const isSlideshow = selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId);
@@ -1565,7 +1610,7 @@ const ScheduledContentPage: React.FC = () => {
                 }}
               >
                 {(selectedPost.contentType === 'slideshow' || (!selectedPost.contentType && selectedPost.slideshowId)) ? 'Open carousel' : 'Prepare another post'}
-              </Button>
+              </Button>}
               {/* Close button - only for completed or failed posts */}
               {(selectedPost.status === 'published' || selectedPost.status === 'failed') && (
                 <Button
